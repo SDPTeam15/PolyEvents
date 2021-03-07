@@ -12,6 +12,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.sdpteam15.polyevents.fragments.HomeFragment
+import com.google.firebase.auth.FirebaseAuth
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -34,8 +35,13 @@ class NavigationViewFragmentTest {
         Espresso.onView(withId(R.id.ic_list)).perform(click())
         Espresso.onView(withId(R.id.id_fragment_list)).check(matches(isDisplayed()))
 
-        Espresso.onView(withId(R.id.ic_profile)).perform(click())
-        Espresso.onView(withId(R.id.id_fragment_profile)).check(matches(isDisplayed()))
+        if(FirebaseAuth.getInstance().currentUser==null) {
+            Espresso.onView(withId(R.id.ic_profile)).perform(click())
+            Espresso.onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
+        } else{
+            Espresso.onView(withId(R.id.ic_profile)).perform(click())
+            Espresso.onView(withId(R.id.id_fragment_profile)).check(matches(isDisplayed()))
+        }
 
         Espresso.onView(withId(R.id.ic_more)).perform(click())
         Espresso.onView(withId(R.id.id_fragment_more)).check(matches(isDisplayed()))
