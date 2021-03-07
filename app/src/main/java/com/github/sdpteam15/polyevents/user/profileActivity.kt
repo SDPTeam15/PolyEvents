@@ -1,10 +1,12 @@
-package com.github.sdpteam15.polyevents
+package com.github.sdpteam15.polyevents.user
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
+import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.google.firebase.auth.FirebaseAuth
 
 class profileActivity : AppCompatActivity() {
@@ -17,19 +19,14 @@ class profileActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
         if(auth.currentUser == null){
-            val loginIntent = Intent(this, loginActivity::class.java)
-            startActivity(loginIntent)
-            finish()
+            HelperFunctions.startActivityAndTerminate(this, loginActivity::class.java)
         }
         val token = findViewById<TextView>(R.id.displayName)
-        token.setText(auth.currentUser.displayName)
+        token.setText(auth.currentUser.displayName+" " + auth.currentUser.email +" "+ auth.currentUser.uid)
     }
 
     fun signOut(view: View){
         auth.signOut()
-
-        val loginIntent = Intent(this, loginActivity::class.java)
-        startActivity(loginIntent)
-        finish()
+        HelperFunctions.startActivityAndTerminate(this, loginActivity::class.java)
     }
 }
