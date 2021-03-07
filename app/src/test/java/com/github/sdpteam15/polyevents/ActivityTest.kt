@@ -8,7 +8,7 @@ import org.junit.Test
 import org.junit.Assert.*
 import org.junit.Before
 import java.time.LocalDateTime
-import java.util.*
+import org.hamcrest.CoreMatchers.`is` as Is
 
 /**
  * Unit tests for the Activity implementation.
@@ -20,10 +20,11 @@ class ActivityTest {
 
     @Before
     fun createNewActivity() {
-        activity = Activity("Test Activity","Activity to make tests !",
-                            Pair(LocalDateTime.of(2020, 3, 15, 14, 0),
-                                 LocalDateTime.of(2020, 3, 15, 18, 0)),
-                    "The best organizer", "A", null)
+        activity = Activity(
+                "Test Activity", "Activity to make tests !",
+                LocalDateTime.of(2020, 3, 15, 14, 0),
+                "The best organizer", "A", null)
+        activity.durationHours = 3F
     }
 
     @Test
@@ -40,5 +41,16 @@ class ActivityTest {
 
         activity.removeTag(newTag)
         assertThat(activity.tags, not(hasItem(newTag)))
+    }
+
+    @Test
+    fun negativeDurationIsResetToDefault() {
+        val newActivity = Activity(
+                "Test Activity", "Activity to make tests !",
+                LocalDateTime.of(2020, 3, 15, 14, 0),
+                "The best organizer", "A", null)
+        activity.durationHours = -1.5F
+
+        assertThat(activity.durationHours, Is(Activity.DEFAULT_DURATION))
     }
 }

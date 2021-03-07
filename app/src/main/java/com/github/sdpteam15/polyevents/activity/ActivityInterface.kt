@@ -15,13 +15,14 @@ import java.time.LocalDateTime
  */
 interface ActivityInterface {
 
-    val name: String
-    val description: String
-    val schedule: Pair<LocalDateTime, LocalDateTime>
-    val organizer: String
-    val zone: String
+    var name: String
+    var description: String
+    var start: LocalDateTime
+    var durationHours: Float
+    var organizer: String
+    var zone: String
     val tags: MutableSet<String>
-    val icon: Bitmap?
+    var icon: Bitmap?
 
     /**
      * Add a new tag for this activity
