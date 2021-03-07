@@ -63,7 +63,7 @@ class LoginFragment : Fragment(), View.OnClickListener{
         failedLogin = builder.create()
     }
 
-    fun signInGoogle(view: View){
+    fun signInGoogle(){
         signIn.signOut()
         startActivityForResult(signIn.signInIntent, SIGN_IN_RC)
     }
@@ -110,6 +110,6 @@ class LoginFragment : Fragment(), View.OnClickListener{
 
     override fun onClick(v: View) {
         //Only one button on this fragment, no need to have a distinguish cases
-        signInGoogle(v)
+        signInGoogle()
     }
 }

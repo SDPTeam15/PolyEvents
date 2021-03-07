@@ -26,6 +26,4 @@
             android:onClick="signOut"
             android:text="@string/logout_button_text" />
     </RelativeLayout>
-
-
 </FrameLayout>
