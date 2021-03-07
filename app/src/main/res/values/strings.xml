@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">PolyEvents</string>
+    <string name="upcoming_activities_txt">Upcoming activities</string>
 
     <string-array name="countries_array">
         <item>Afghanistan</item>
