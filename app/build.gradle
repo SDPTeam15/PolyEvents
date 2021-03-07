@@ -67,6 +67,9 @@ dependencies {
     //Database Cloud firestore or real time data base dependencies
     //implementation 'com.google.firebase: firebase-firestore-ktx'
     //implementation 'com.google.firebase: firebase-database-ktx'
+
+    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+    testImplementation 'org.jetbrains.kotlin:kotlin-test-junit'
 }
 
 tasks.withType(Test) {

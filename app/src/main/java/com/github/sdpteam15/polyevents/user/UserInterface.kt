@@ -1,6 +1,6 @@
 package com.github.sdpteam15.polyevents.user
 
-import com.google.firebase.auth.FirebaseUser
+import com.github.sdpteam15.polyevents.database.FirebaseUserInterface
 
 /**
  *  Application user interface
@@ -9,7 +9,7 @@ interface UserInterface {
     /**
      * Associates FirebaseUser
      */
-    val FirebaseUser : FirebaseUser
+    val FirebaseUser : FirebaseUserInterface
 
     /***
      * Application user profile List
@@ -44,5 +44,5 @@ interface UserInterface {
     /**
      * Remove a Profile
      */
-    fun removeProfile(profile: ProfileInterface)
+    fun removeProfile(profile: ProfileInterface) : Boolean
 }
