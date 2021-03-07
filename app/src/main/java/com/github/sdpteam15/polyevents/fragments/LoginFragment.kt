@@ -1,4 +1,4 @@
-package com.github.sdpteam15.polyevents.user
+package com.github.sdpteam15.polyevents.fragments
 
 import android.app.Activity
 import android.content.Context

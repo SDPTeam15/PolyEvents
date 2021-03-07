@@ -9,7 +9,6 @@ import android.view.Menu
 import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.fragments.*
-import com.github.sdpteam15.polyevents.user.LoginFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,12 +19,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val homeFragment = HomeFragment()
-        //val mapFragment = MapFragment()
         val mapFragment = MapsFragment()
-
         val listFragment = ListFragment()
         val loginFragment = LoginFragment()
-        val profileFragment = ProfileFragment()
         val moreFragment = MoreFragment()
 
 
@@ -34,11 +30,11 @@ class MainActivity : AppCompatActivity() {
         var bottom_navigation = findViewById<BottomNavigationView>(R.id.navigation_bar)
         bottom_navigation.setOnNavigationItemSelectedListener {
             when (it.itemId) {
-                R.id.ic_home -> makeCurrentFragment(homeFragment)
                 R.id.ic_map -> makeCurrentFragment(mapFragment)
                 R.id.ic_list -> makeCurrentFragment(listFragment)
                 R.id.ic_profile -> makeCurrentFragment(loginFragment)
                 R.id.ic_more -> makeCurrentFragment(moreFragment)
+                else -> makeCurrentFragment(homeFragment)
             }
             true
         }
@@ -66,12 +62,13 @@ class MainActivity : AppCompatActivity() {
             commit()
         }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.nav_menu, menu)
 
-        val search = menu?.findItem(R.id.nav_search)
-        val searchView = search?.actionView as SearchView
+        val search = menu.findItem(R.id.nav_search)
+        val searchView = search.actionView as SearchView
         searchView.queryHint = "Search something!"
+        /*
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(p0: String?): Boolean {
                 return false
@@ -82,6 +79,8 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
         })
+
+         */
 
         return super.onCreateOptionsMenu(menu)
     }
