@@ -31,11 +31,11 @@ class MainActivity : AppCompatActivity() {
         var bottom_navigation = findViewById<BottomNavigationView>(R.id.navigation_bar)
         bottom_navigation.setOnNavigationItemSelectedListener {
             when (it.itemId) {
-                R.id.ic_home -> makeCurrentFragment(homeFragment)
                 R.id.ic_map -> makeCurrentFragment(mapFragment)
                 R.id.ic_list -> makeCurrentFragment(listFragment)
                 R.id.ic_profile -> makeCurrentFragment(profileFragment)
                 R.id.ic_more -> makeCurrentFragment(moreFragment)
+                else -> makeCurrentFragment(homeFragment)
             }
             true
         }
@@ -63,12 +63,13 @@ class MainActivity : AppCompatActivity() {
             commit()
         }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.nav_menu, menu)
 
-        val search = menu?.findItem(R.id.nav_search)
-        val searchView = search?.actionView as SearchView
+        val search = menu.findItem(R.id.nav_search)
+        val searchView = search.actionView as SearchView
         searchView.queryHint = "Search something!"
+        /*
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(p0: String?): Boolean {
                 return false
@@ -79,6 +80,8 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
         })
+
+         */
 
         return super.onCreateOptionsMenu(menu)
     }
