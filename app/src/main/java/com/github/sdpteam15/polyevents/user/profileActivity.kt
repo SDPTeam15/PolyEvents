@@ -10,7 +10,6 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.google.firebase.auth.FirebaseAuth
 
 class profileActivity : AppCompatActivity() {
-
     private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
