@@ -1,5 +1,7 @@
 package com.github.sdpteam15.polyevents.user
 
+import com.github.sdpteam15.polyevents.database.FirebaseUserAdapter
+import com.github.sdpteam15.polyevents.database.FirebaseUserInterface
 import com.google.firebase.auth.FirebaseAuth
 
 /**
@@ -15,6 +17,6 @@ object UserObject {
         val currentUser = FirebaseAuth.getInstance().currentUser
         if(currentUser?.uid != lastCurrentUserUid)
             User.invoke(lastCurrentUserUid)?.removeCache()
-        return User.invoke(currentUser)
+        return User.invoke(FirebaseUserAdapter(currentUser))
     }
 }
