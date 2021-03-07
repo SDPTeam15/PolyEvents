@@ -9,12 +9,13 @@ import java.time.LocalDateTime
 data class Activity(override var name: String,
                     override var description: String,
                     override var start: LocalDateTime,
+                    val durationHrs: Float,
                     override var organizer: String,
                     override var zone: String,
                     override var icon: Bitmap?,
                     override val tags: MutableSet<String> = mutableSetOf()) : ActivityInterface {
 
-    override var durationHours: Float = 1F
+    override var durationHours: Float = durationHrs
         set(durationH) {
             field = if(durationH < 0) Companion.DEFAULT_DURATION else durationH
         }
