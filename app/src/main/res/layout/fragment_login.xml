@@ -2,6 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:id="@+id/fragment_login_id"
     android:layout_height="match_parent"
     tools:context=".user.LoginFragment">
     <RelativeLayout
@@ -15,9 +16,9 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginStart="85dp"
-            android:layout_marginEnd="128dp"
-            android:layout_marginBottom="426dp" />
+            android:layout_marginStart="103dp"
+            android:layout_marginEnd="110dp"
+            android:layout_marginBottom="187dp" />
     </RelativeLayout>
 
 

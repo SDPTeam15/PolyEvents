@@ -26,33 +26,27 @@ private const val ARG_PARAM2 = "param2"
 class ProfileFragment : Fragment(), View.OnClickListener{
     private lateinit var auth: FirebaseAuth
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         auth = FirebaseAuth.getInstance()
         if(auth.currentUser == null){
-            changeFragment(activity,LoginFragment())
+            changeFragment(activity, LoginFragment())
         }
-        val token = activity?.findViewById<TextView>(R.id.displayName)
-        token?.setText(auth.currentUser.displayName+" " + auth.currentUser.email +" "+ auth.currentUser.uid)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val viewRoot =  inflater.inflate(R.layout.fragment_profile, container, false)
-        val btn = viewRoot.findViewById<Button>(R.id.logoutButton)
-        btn.setOnClickListener(this)
+        viewRoot.findViewById<Button>(R.id.btnLogout).setOnClickListener(this)
+        viewRoot.findViewById<TextView>(R.id.displayName).setText(auth.currentUser.displayName+" " + auth.currentUser.email +" "+ auth.currentUser.uid)
+
         return viewRoot
     }
 
-    fun signOut(view: View){
-        auth.signOut()
-        changeFragment(activity,LoginFragment())
-    }
-
     override fun onClick(v: View) {
-        signOut(v)
+        auth.signOut()
+        changeFragment(activity, LoginFragment())
     }
 }
