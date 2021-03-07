@@ -38,4 +38,10 @@ interface ActivityInterface {
      * was not present
      */
     fun removeTag(tag: String): Boolean
+
+    /**
+     * Return the hour (and minutes) at which the activity occurs
+     * @return string HH:MM
+     */
+    fun getTime(): String
 }

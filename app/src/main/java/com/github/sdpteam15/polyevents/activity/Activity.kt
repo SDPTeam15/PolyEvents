@@ -1,6 +1,8 @@
 package com.github.sdpteam15.polyevents.activity
 
 import android.graphics.Bitmap
+import android.os.Build
+import androidx.annotation.RequiresApi
 import java.time.LocalDateTime
 
 /**
@@ -32,6 +34,13 @@ data class Activity(override var name: String,
 
     override fun removeTag(tag: String): Boolean {
         return tags.remove(tag)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun getTime(): String {
+        val hour = start.hour.toString().padStart(2, '0')
+        val minute = start.minute.toString().padStart(2, '0')
+        return "$hour:$minute"
     }
 
     companion object {
