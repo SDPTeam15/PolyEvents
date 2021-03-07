@@ -5,6 +5,7 @@ plugins {
 }
 
 apply plugin: 'kotlin-android'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 30
@@ -52,6 +53,20 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.3.0'
     implementation "androidx.core:core-ktx:+"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    //Google Firebase dependencies
+    implementation platform('com.google.firebase:firebase-bom:26.6.0')
+
+    // Add the dependencies for the desired Firebase products
+    // https://firebase.google.com/docs/android/setup#available-libraries
+
+    //Google Authentication
+    implementation 'com.google.firebase:firebase-auth-ktx'
+    implementation 'com.google.android.gms:play-services-auth:19.0.0'
+
+    //Database Cloud firestore or real time data base dependencies
+    //implementation 'com.google.firebase: firebase-firestore-ktx'
+    //implementation 'com.google.firebase: firebase-database-ktx'
 }
 
 tasks.withType(Test) {
