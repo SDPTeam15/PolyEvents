@@ -9,32 +9,34 @@ import android.view.Menu
 import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.fragments.*
+import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.google.android.gms.maps.MapFragment
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var adapter: ArrayAdapter<*>
+    private val mapFragment:MutableMap<Int, Fragment> = HashMap()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val homeFragment = HomeFragment()
-        val mapFragment = MapsFragment()
-        val listFragment = ListFragment()
-        val loginFragment = LoginFragment()
-        val moreFragment = MoreFragment()
+        mapFragment[R.id.ic_home]=HomeFragment()
+        mapFragment[R.id.ic_map]=MapsFragment()
+        mapFragment[R.id.ic_list]=ListFragment()
+        mapFragment[R.id.ic_profile]=LoginFragment()
+        mapFragment[R.id.ic_more]=MoreFragment()
 
-
-        makeCurrentFragment(homeFragment);
+        HelperFunctions.changeFragment(this, mapFragment[R.id.ic_home] as Fragment)
 
         var bottom_navigation = findViewById<BottomNavigationView>(R.id.navigation_bar)
         bottom_navigation.setOnNavigationItemSelectedListener {
             when (it.itemId) {
-                R.id.ic_map -> makeCurrentFragment(mapFragment)
-                R.id.ic_list -> makeCurrentFragment(listFragment)
-                R.id.ic_profile -> makeCurrentFragment(loginFragment)
-                R.id.ic_more -> makeCurrentFragment(moreFragment)
-                else -> makeCurrentFragment(homeFragment)
+                R.id.ic_map -> HelperFunctions.changeFragment(this, mapFragment[R.id.ic_map] as Fragment)
+                R.id.ic_list -> HelperFunctions.changeFragment(this, mapFragment[R.id.ic_list] as Fragment)
+                R.id.ic_profile -> HelperFunctions.changeFragment(this, mapFragment[R.id.ic_profile] as Fragment)
+                R.id.ic_more -> HelperFunctions.changeFragment(this, mapFragment[R.id.ic_more] as Fragment)
+                else -> HelperFunctions.changeFragment(this, mapFragment[R.id.ic_home] as Fragment)
             }
             true
         }
@@ -55,12 +57,6 @@ class MainActivity : AppCompatActivity() {
 
         */
     }
-
-    private fun makeCurrentFragment(fragment: Fragment) =
-        supportFragmentManager.beginTransaction().apply {
-            replace(R.id.fl_wrapper, fragment)
-            commit()
-        }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.nav_menu, menu)
