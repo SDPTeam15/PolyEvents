@@ -22,6 +22,11 @@ interface UserInterface {
     val Name : String
 
     /**
+     * User mail
+     */
+    val Email : String
+
+    /**
      * Application user uid
      */
     val UID : String

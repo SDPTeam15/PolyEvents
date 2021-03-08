@@ -6,4 +6,5 @@ package com.github.sdpteam15.polyevents.database
 interface FirebaseUserInterface {
     val displayName: String
     val uid: String
+    val email: String
 }

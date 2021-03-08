@@ -59,6 +59,8 @@ class User private constructor(override val FirebaseUser: FirebaseUserInterface)
         get() = FirebaseUser.displayName
     override val UID: String
         get() = FirebaseUser.uid
+    override val Email: String
+        get() = FirebaseUser.email
 
     /**
      * Current application user profile id

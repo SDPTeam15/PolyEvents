@@ -10,4 +10,6 @@ class FirebaseUserAdapter constructor(private val firebaseUser : FirebaseUser) :
         get() = firebaseUser.displayName
     override val uid: String
         get() = firebaseUser.uid
+    override val email: String
+        get() = firebaseUser.email
 }

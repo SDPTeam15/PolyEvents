@@ -15,7 +15,7 @@ object UserObject {
      * Current user of the application
      */
     val CurrentUser: UserInterface?
-        get() {
+        get(){
             try {
                 val currentUser : FirebaseUser = FirebaseAuth.getInstance().currentUser ?: return null
                 if (currentUser.uid != lastCurrentUserUid)
