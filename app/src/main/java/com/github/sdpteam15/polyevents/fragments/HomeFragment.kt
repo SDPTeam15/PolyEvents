@@ -58,10 +58,13 @@ class HomeFragment : Fragment() {
         activityName.text = activity.name
 
         val activitySchedule = activityTab.findViewById<TextView>(R.id.id_activity_schedule_text)
-        activitySchedule.text = "at ${activity.getTime()}"
+        activitySchedule.text =  getString(R.string.at_hour_text, activity.getTime())
 
         val activityZone = activityTab.findViewById<TextView>(R.id.id_activity_zone)
         activityZone.text = activity.zone
+
+        val activityDescription = activityTab.findViewById<TextView>(R.id.id_activity_description)
+        activityDescription.text = activity.description
 
         // TODO : set the icon of the activity
         val activityIcon = activityTab.findViewById<ImageView>(R.id.id_activity_icon)

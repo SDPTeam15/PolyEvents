@@ -25,7 +25,9 @@ object ActivitiesQueryHelper : ActivitiesQueryHelperInterface {
         activities.add(
             Activity(
                 "Aqua Poney",
-                "Super cool activity !",
+                "Super cool activity !" +
+                        " With a super long description that essentially describes and explains" +
+                        " the content of the activity we are speaking of.",
                 LocalDateTime.of(2021, 3, 7, 14, 15),
                 3.5F,
                 "The Aqua Poney team",

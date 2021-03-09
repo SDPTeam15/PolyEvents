@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">PolyEvents</string>
     <string name="upcoming_activities_txt">Upcoming activities</string>
+    <string name="at_hour_text">at %1$s</string>
 
     <string-array name="countries_array">
         <item>Afghanistan</item>
