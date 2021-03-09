@@ -16,7 +16,7 @@
         android:textColor="@color/black" />
 
     <LinearLayout
-        android:id="@+id/upcoming_activities_list"
+        android:id="@+id/id_upcoming_activities_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
