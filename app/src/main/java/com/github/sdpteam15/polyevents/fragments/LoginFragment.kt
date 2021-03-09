@@ -46,11 +46,7 @@ class LoginFragment : Fragment(){
     //Allow us to use a fake user for the tests
     var currentUser: UserInterface?
         get(){
-            if(testUser!= null){
-                return testUser
-            }else{
-                return UserObject.CurrentUser
-            }
+            if(testUser!= null) { return testUser } else { return UserObject.CurrentUser}
         }
         set(value){
             testUser = value
@@ -58,7 +54,6 @@ class LoginFragment : Fragment(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         if(currentUser !=null){
             HelperFunctions.changeFragment(activity, MainActivity.fragments[R.id.id_fragment_profile])
         }
@@ -74,7 +69,7 @@ class LoginFragment : Fragment(){
         val builder = AlertDialog.Builder(activity as Activity)
         builder.setMessage(R.string.login_failed_text)
             .setTitle(R.string.login_failed_title)
-        builder.setPositiveButton(R.string.ok_button_text, DialogInterface.OnClickListener{ dialog, id -> {}})
+            .setPositiveButton(R.string.ok_button_text, { dialog, id -> {}})
         failedLogin = builder.create()
     }
 
@@ -88,14 +83,9 @@ class LoginFragment : Fragment(){
         if(requestCode == SIGN_IN_RC){
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             if(task.isSuccessful){
-                try{
-                    //Google Sign In was successful, authenticate with firebase
-                    val account = task.getResult(ApiException::class.java)!!
-                    firebaseAuthWithGoogle(account.idToken!!)
-                }catch(e: ApiException){
-                    //Fail to sign in
-                    failedLogin.show()
-                }
+                try{ //Google Sign In was successful, authenticate with firebase
+                    firebaseAuthWithGoogle(task.getResult(ApiException::class.java)!!.idToken!!)
+                }catch(e: ApiException){ failedLogin.show() }
             }else{
                 failedLogin.show()
             }
@@ -105,12 +95,9 @@ class LoginFragment : Fragment(){
     private fun firebaseAuthWithGoogle(idToken: String){
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         FirebaseAuth.getInstance().signInWithCredential(credential).addOnCompleteListener(activity as Activity){
-            task->
-            if(task.isSuccessful){
-                //sign in success
+            task-> if(task.isSuccessful){
                 HelperFunctions.changeFragment(activity, MainActivity.fragments[R.id.id_fragment_profile])
             }else{
-                //Sign in fail, display a message to the user
                 failedLogin.show()
             }
         }
@@ -121,7 +108,7 @@ class LoginFragment : Fragment(){
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_login, container, false)
         rootView.findViewById<com.google.android.gms.common.SignInButton>(R.id.btnLogin).setOnClickListener {
-            v ->
+            _ ->
             if(currentUser == null) {
                 signInGoogle()
             } else{

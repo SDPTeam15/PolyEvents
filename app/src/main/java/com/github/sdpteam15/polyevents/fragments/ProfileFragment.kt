@@ -27,11 +27,8 @@ class ProfileFragment : Fragment(){
     //Allow us to use a fake user for the tests
     var currentUser: UserInterface?
         get(){
-            if(testUser!= null){
-                return testUser
-            }else{
-                return CurrentUser
-            }
+            if(testUser!= null) {return testUser}
+            else {return CurrentUser}
         }
         set(value){
             testUser = value
@@ -46,14 +43,12 @@ class ProfileFragment : Fragment(){
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
         val viewRoot = inflater.inflate(R.layout.fragment_profile, container, false)
 
-        viewRoot.findViewById<Button>(R.id.btnLogout).setOnClickListener { v ->
+        viewRoot.findViewById<Button>(R.id.btnLogout).setOnClickListener { _ ->
             FirebaseAuth.getInstance().signOut()
             changeFragment(activity, MainActivity.fragments[R.id.ic_login])
         }
-
         viewRoot.findViewById<TextView>(R.id.displayName).setText(currentUser?.Name)
         viewRoot.findViewById<TextView>(R.id.displayUID).setText(currentUser?.UID)
         viewRoot.findViewById<TextView>(R.id.displayEmail).setText(currentUser?.Email)
