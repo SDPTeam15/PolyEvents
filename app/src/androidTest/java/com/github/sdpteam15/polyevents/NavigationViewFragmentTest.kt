@@ -21,7 +21,7 @@ class NavigationViewFragmentTest {
     var mainActivity = ActivityScenarioRule(MainActivity::class.java)
 
     @Test
-    fun NavigationBarDisplaysCorrectFragment(){
+    fun NavigationBarDisplaysCorrectFragment() {
         //Initial state
         Espresso.onView(withId(R.id.id_fragment_home)).check(matches(isDisplayed()))
 
@@ -31,11 +31,11 @@ class NavigationViewFragmentTest {
         Espresso.onView(withId(R.id.ic_list)).perform(click())
         Espresso.onView(withId(R.id.id_fragment_list)).check(matches(isDisplayed()))
 
-        if(FirebaseAuth.getInstance().currentUser==null) {
-            Espresso.onView(withId(R.id.ic_profile)).perform(click())
+        if (FirebaseAuth.getInstance().currentUser == null) {
+            Espresso.onView(withId(R.id.ic_login)).perform(click())
             Espresso.onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
-        } else{
-            Espresso.onView(withId(R.id.ic_profile)).perform(click())
+        } else {
+            Espresso.onView(withId(R.id.ic_login)).perform(click())
             Espresso.onView(withId(R.id.id_fragment_profile)).check(matches(isDisplayed()))
         }
 
@@ -47,5 +47,12 @@ class NavigationViewFragmentTest {
 
         Espresso.onView(withId(R.id.nav_search)).perform(click())
         Espresso.onView(withId(R.id.id_fragment_home)).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun loginFragmentDisplayedIfNoAuth() {
+        FirebaseAuth.getInstance().signOut()
+        Espresso.onView(withId(R.id.ic_login)).perform(click())
+        Espresso.onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
     }
 }
