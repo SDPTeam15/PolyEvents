@@ -17,6 +17,9 @@ import androidx.constraintlayout.motion.widget.Debug
 import com.github.sdpteam15.polyevents.MainActivity
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.user.UserInterface
+import com.github.sdpteam15.polyevents.user.UserObject
+import com.github.sdpteam15.polyevents.user.UserObject.CurrentUser
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -34,18 +37,30 @@ private const val ARG_PARAM2 = "param2"
  * Use the [LoginFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class LoginFragment : Fragment(), View.OnClickListener{
-    private lateinit var auth: FirebaseAuth
+class LoginFragment : Fragment(){
     private lateinit var signIn : GoogleSignInClient
     private val SIGN_IN_RC: Int = 200
     private lateinit var failedLogin: AlertDialog
 
+    private var testUser: UserInterface?=null
+    //Allow us to use a fake user for the tests
+    var currentUser: UserInterface?
+        get(){
+            if(testUser!= null){
+                return testUser
+            }else{
+                return UserObject.CurrentUser
+            }
+        }
+        set(value){
+            testUser = value
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        auth = FirebaseAuth.getInstance()
 
-        if(auth.currentUser !=null){
-            HelperFunctions.changeFragment(activity, ProfileFragment())
+        if(currentUser !=null){
+            HelperFunctions.changeFragment(activity, MainActivity.fragments[R.id.id_fragment_profile])
         }
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -89,14 +104,15 @@ class LoginFragment : Fragment(), View.OnClickListener{
 
     private fun firebaseAuthWithGoogle(idToken: String){
         val credential = GoogleAuthProvider.getCredential(idToken, null)
-        auth.signInWithCredential(credential).addOnCompleteListener(activity as Activity){
-                task-> if(task.isSuccessful){
-            //sign in success
-            HelperFunctions.changeFragment(activity, ProfileFragment())
-        }else{
-            //Sign in fail, display a message to the user
-            failedLogin.show()
-        }
+        FirebaseAuth.getInstance().signInWithCredential(credential).addOnCompleteListener(activity as Activity){
+            task->
+            if(task.isSuccessful){
+                //sign in success
+                HelperFunctions.changeFragment(activity, MainActivity.fragments[R.id.id_fragment_profile])
+            }else{
+                //Sign in fail, display a message to the user
+                failedLogin.show()
+            }
         }
     }
 
@@ -104,12 +120,15 @@ class LoginFragment : Fragment(), View.OnClickListener{
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_login, container, false)
-        rootView.findViewById<com.google.android.gms.common.SignInButton>(R.id.btnLogin).setOnClickListener(this);
+        rootView.findViewById<com.google.android.gms.common.SignInButton>(R.id.btnLogin).setOnClickListener {
+            v ->
+            if(currentUser == null) {
+                signInGoogle()
+            } else{
+                //In test
+                HelperFunctions.changeFragment(activity,MainActivity.fragments[R.id.id_fragment_profile])
+            }
+        }
         return rootView
-    }
-
-    override fun onClick(v: View) {
-        //Only one button on this fragment, no need to have a distinguish cases
-        signInGoogle()
     }
 }
