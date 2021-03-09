@@ -10,33 +10,40 @@ import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.fragments.*
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
-import com.google.android.gms.maps.MapFragment
 
 class MainActivity : AppCompatActivity() {
+    companion object{
+        private val mapFragment:MutableMap<Int, Fragment> = HashMap()
 
+        val fragments:Map<Int, Fragment>
+            get(){
+                if(mapFragment.isEmpty()){
+                    mapFragment[R.id.ic_home]=HomeFragment()
+                    mapFragment[R.id.ic_map]=MapsFragment()
+                    mapFragment[R.id.ic_list]=ListFragment()
+                    mapFragment[R.id.ic_login]=LoginFragment()
+                    mapFragment[R.id.ic_more]=MoreFragment()
+                    mapFragment[R.id.id_fragment_profile]=ProfileFragment()
+                }
+                return HashMap<Int, Fragment>(mapFragment)
+            }
+    }
     private lateinit var adapter: ArrayAdapter<*>
-    private val mapFragment:MutableMap<Int, Fragment> = HashMap()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        mapFragment[R.id.ic_home]=HomeFragment()
-        mapFragment[R.id.ic_map]=MapsFragment()
-        mapFragment[R.id.ic_list]=ListFragment()
-        mapFragment[R.id.ic_profile]=LoginFragment()
-        mapFragment[R.id.ic_more]=MoreFragment()
-
-        HelperFunctions.changeFragment(this, mapFragment[R.id.ic_home] as Fragment)
+        HelperFunctions.changeFragment(this, fragments[R.id.ic_home])
 
         var bottom_navigation = findViewById<BottomNavigationView>(R.id.navigation_bar)
         bottom_navigation.setOnNavigationItemSelectedListener {
             when (it.itemId) {
-                R.id.ic_map -> HelperFunctions.changeFragment(this, mapFragment[R.id.ic_map] as Fragment)
-                R.id.ic_list -> HelperFunctions.changeFragment(this, mapFragment[R.id.ic_list] as Fragment)
-                R.id.ic_profile -> HelperFunctions.changeFragment(this, mapFragment[R.id.ic_profile] as Fragment)
-                R.id.ic_more -> HelperFunctions.changeFragment(this, mapFragment[R.id.ic_more] as Fragment)
-                else -> HelperFunctions.changeFragment(this, mapFragment[R.id.ic_home] as Fragment)
+                R.id.ic_map -> HelperFunctions.changeFragment(this, fragments[R.id.ic_map])
+                R.id.ic_list -> HelperFunctions.changeFragment(this, fragments[R.id.ic_list])
+                R.id.ic_login -> HelperFunctions.changeFragment(this, fragments[R.id.ic_login])
+                R.id.ic_more -> HelperFunctions.changeFragment(this, fragments[R.id.ic_more])
+                else -> HelperFunctions.changeFragment(this, fragments[R.id.ic_home])
             }
             true
         }
@@ -54,7 +61,6 @@ class MainActivity : AppCompatActivity() {
         }
         var tv_emptyTextView = findViewById<TextView>(R.id.tv_emptyTextView)
         lv_listView.emptyView = tv_emptyTextView
-
         */
     }
 
