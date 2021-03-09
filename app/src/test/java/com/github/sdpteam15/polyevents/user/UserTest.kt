@@ -3,8 +3,6 @@ package com.github.sdpteam15.polyevents.user
 import com.github.sdpteam15.polyevents.database.FakeDatabase
 import com.github.sdpteam15.polyevents.database.FakeFirebaseUser
 import com.github.sdpteam15.polyevents.database.FirebaseUserInterface
-import com.github.sdpteam15.polyevents.user.UserObject.CurrentUser
-import com.google.firebase.auth.FirebaseAuth
 import org.junit.Test
 import kotlin.test.*
 
@@ -38,12 +36,12 @@ class UserTest {
 
         assertEquals(user.ProfileList[user.CurrentProfileId], user.CurrentProfile)
 
-        user.CurrentProfileId = 1;
+        user.CurrentProfileId = 1
         assertEquals(user.ProfileList[1] ,user.CurrentProfile)
 
-        user.CurrentProfile = user.ProfileList[0];
+        user.CurrentProfile = user.ProfileList[0]
         assertEquals(user.ProfileList[0], user.CurrentProfile)
-        user.CurrentProfile = user.ProfileList[1];
+        user.CurrentProfile = user.ProfileList[1]
         assertEquals(user.ProfileList[1], user.CurrentProfile)
 
         user.removeProfile(user.CurrentProfile)

@@ -2,7 +2,10 @@ package com.github.sdpteam15.polyevents.user
 
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.DatabaseObject
+import com.github.sdpteam15.polyevents.database.FirebaseUserAdapter
 import com.github.sdpteam15.polyevents.database.FirebaseUserInterface
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 
 /**
  * Application user
@@ -35,9 +38,29 @@ class User private constructor(override val FirebaseUser: FirebaseUserInterface)
                 return null
             return instances[uid]
         }
+
+        private var lastCurrentUserUid: String? = null
+
+        /**
+         * Current user of the application
+         */
+        val CurrentUser: UserInterface?
+            get() {
+                try {
+                    val currentUser: FirebaseUser =
+                        FirebaseAuth.getInstance().currentUser ?: return null
+                    if (currentUser.uid != lastCurrentUserUid)
+                        invoke(lastCurrentUserUid)?.removeCache()
+                    return invoke(FirebaseUserAdapter(currentUser))
+                } catch (e: ExceptionInInitializerError) {
+                    return null
+                } catch (e: NoClassDefFoundError) {
+                    return null
+                }
+            }
     }
 
-    private var profileList: MutableList<ProfileInterface>? = null;
+    private var profileList: MutableList<ProfileInterface>? = null
     private var currentProfileId: Int = 0
     var database: DatabaseInterface = DatabaseObject.Singleton
 
@@ -76,7 +99,7 @@ class User private constructor(override val FirebaseUser: FirebaseUserInterface)
     override var CurrentProfile: ProfileInterface
         get() = ProfileList[currentProfileId]
         set(value) {
-            var i: Int = 0
+            var i = 0
             for (v in ProfileList) {
                 if (v == value) {
                     CurrentProfileId = i
@@ -102,11 +125,11 @@ class User private constructor(override val FirebaseUser: FirebaseUserInterface)
         if (!(profileList as MutableList<ProfileInterface>).contains(profile))
             return false
         if (CurrentProfile == profile)
-            currentProfileId = 0;
+            currentProfileId = 0
         profileList.remove(profile)
         database.removeProfile(profile, UID, this)
         if (profileList.size == 0)
             newProfile(this.Name)
-        return true;
+        return true
     }
 }
