@@ -1,12 +1,11 @@
 package com.github.sdpteam15.polyevents
 
-import androidx.test.espresso.Espresso.*
-import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.assertion.ViewAssertions.*
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.github.sdpteam15.polyevents.database.FirebaseUserInterface
-
 import com.github.sdpteam15.polyevents.fragments.LoginFragment
 import com.github.sdpteam15.polyevents.fragments.ProfileFragment
 import com.github.sdpteam15.polyevents.user.User
@@ -14,11 +13,11 @@ import com.github.sdpteam15.polyevents.user.UserInterface
 import com.google.firebase.auth.FirebaseAuth
 import org.hamcrest.Matchers
 import org.junit.Before
-import org.mockito.Mockito.*
-import org.mockito.Mockito.`when`
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.mock
 import org.mockito.junit.MockitoJUnitRunner
 
 private const val diplayNameTest = "Test displayName"
@@ -34,7 +33,6 @@ class ProfileFragmentTest {
     lateinit var user:UserInterface
     lateinit var mockedFirebaseUser:FirebaseUserInterface
 
-
     @Before
     fun setup(){
         mockedFirebaseUser = mock(FirebaseUserInterface::class.java)
@@ -44,7 +42,6 @@ class ProfileFragmentTest {
         `when`(mockedFirebaseUser.uid).thenReturn(uidTest)
         testRule = ActivityScenarioRule<MainActivity>(MainActivity::class.java)
     }
-
 
     @Test
     fun signOutButtonRedirectToLoginFragment() {
@@ -69,10 +66,9 @@ class ProfileFragmentTest {
 
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         loginFragment.currentUser = user
-        onView(withId(R.id.ic_login)).perform(click())
+
         onView(withId(R.id.ic_home)).perform(click())
         onView(withId(R.id.ic_login)).perform(click())
-
 
         onView(withId(R.id.id_fragment_profile)).check(matches(isDisplayed()))
     }
