@@ -5,5 +5,6 @@ package com.github.sdpteam15.polyevents.database
  */
 class FakeFirebaseUser (
     override val displayName : String = "Test Name",
-    override val uid: String = "Test UID"
+    override val uid: String = "Test UID",
+    override val email: String = "Test email"
 ) : FirebaseUserInterface {}

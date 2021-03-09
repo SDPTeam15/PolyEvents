@@ -18,16 +18,17 @@ class MainActivity : AppCompatActivity() {
         val fragments:Map<Int, Fragment>
             get(){
                 if(mapFragment.isEmpty()){
-                    mapFragment[R.id.ic_home]=HomeFragment()
-                    mapFragment[R.id.ic_map]=MapsFragment()
-                    mapFragment[R.id.ic_list]=ListFragment()
-                    mapFragment[R.id.ic_login]=LoginFragment()
-                    mapFragment[R.id.ic_more]=MoreFragment()
-                    mapFragment[R.id.id_fragment_profile]=ProfileFragment()
+                    mapFragment[R.id.ic_home] = HomeFragment()
+                    mapFragment[R.id.ic_map] = MapsFragment()
+                    mapFragment[R.id.ic_list] = ListFragment()
+                    mapFragment[R.id.ic_login] = LoginFragment()
+                    mapFragment[R.id.ic_more] = MoreFragment()
+                    mapFragment[R.id.id_fragment_profile] = ProfileFragment()
                 }
                 return HashMap<Int, Fragment>(mapFragment)
             }
     }
+
     private lateinit var adapter: ArrayAdapter<*>
 
     override fun onCreate(savedInstanceState: Bundle?) {
