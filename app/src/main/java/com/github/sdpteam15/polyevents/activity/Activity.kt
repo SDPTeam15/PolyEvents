@@ -8,25 +8,25 @@ import java.time.LocalDateTime
 /**
  * Implements the activity interface.
  */
-data class Activity(
+class Activity(
     override var name: String,
     override var description: String,
     override var start: LocalDateTime,
-    val durationHrs: Float,
+    durationHours: Float,
     override var organizer: String,
     override var zone: String,
     override var icon: Bitmap?,
     override val tags: MutableSet<String> = mutableSetOf()
 ) : ActivityInterface {
 
-    override var durationHours: Float = durationHrs
+    override var durationHours: Float = durationHours
         set(durationH) {
             field = if (durationH < 0) Companion.DEFAULT_DURATION else durationH
         }
 
     init {
         if (durationHours < 0) {
-            durationHours = Companion.DEFAULT_DURATION
+            this@Activity.durationHours = Companion.DEFAULT_DURATION
         }
     }
 

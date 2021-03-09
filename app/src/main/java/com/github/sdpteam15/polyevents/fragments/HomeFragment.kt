@@ -14,15 +14,8 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.activity.Activity
 import com.github.sdpteam15.polyevents.helper.ActivitiesQueryHelper
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
 /**
- * A simple [Fragment] subclass.
- * Use the [HomeFragment.newInstance] factory method to
- * create an instance of this fragment.
+ * The fragment for the home page.
  */
 class HomeFragment : Fragment() {
 
@@ -41,7 +34,7 @@ class HomeFragment : Fragment() {
         val fragmentView = inflater.inflate(R.layout.fragment_home, container, false)
         val linearLayout = fragmentView.findViewById<LinearLayout>(R.id.id_upcoming_activities_list)
 
-        val activities = getUpcomingActivities()
+        val activities = ActivitiesQueryHelper.getUpcomingActivities()
 
         for (activity: Activity in activities) {
             setupActivityTab(activity, linearLayout)
@@ -50,6 +43,11 @@ class HomeFragment : Fragment() {
         return fragmentView
     }
 
+    /**
+     * Setup the layout for an activity tab and add it to the layout provided
+     * @param activity : the activity to add as a tab
+     * @param incomingActivities : the linear layout where to add this new activity tab
+     */
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setupActivityTab(activity: Activity, incomingActivities: LinearLayout) {
         val activityTab = layoutInflater.inflate(R.layout.tab_activity, null)
@@ -71,11 +69,5 @@ class HomeFragment : Fragment() {
         //activityIcon.setImageBitmap(activity.icon)
 
         incomingActivities.addView(activityTab)
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun getUpcomingActivities(): List<Activity> {
-        // TODO : adapt to the db interface
-        return ActivitiesQueryHelper.getUpcomingActivities()
     }
 }
