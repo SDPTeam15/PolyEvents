@@ -8,8 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import com.github.sdpteam15.polyevents.MainActivity
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.Companion.changeFragment
+import com.github.sdpteam15.polyevents.user.UserInterface
+import com.github.sdpteam15.polyevents.user.UserObject.CurrentUser
 import com.google.firebase.auth.FirebaseAuth
 
 /**
@@ -17,30 +20,43 @@ import com.google.firebase.auth.FirebaseAuth
  * Use the [ProfileFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class ProfileFragment : Fragment(), View.OnClickListener{
-    private lateinit var auth: FirebaseAuth
+private const val ARG_PARAM1 = "param1"
+private const val ARG_PARAM2 = "param2"
+class ProfileFragment : Fragment(){
+    private var testUser: UserInterface?=null
+    //Allow us to use a fake user for the tests
+    var currentUser: UserInterface?
+        get(){
+            if(testUser!= null){
+                return testUser
+            }else{
+                return CurrentUser
+            }
+        }
+        set(value){
+            testUser = value
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        auth = FirebaseAuth.getInstance()
-        if(auth.currentUser == null){
-            changeFragment(activity, LoginFragment())
+        if(currentUser == null){
+            changeFragment(activity, MainActivity.fragments[R.id.ic_login])
         }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        val viewRoot =  inflater.inflate(R.layout.fragment_profile, container, false)
-        viewRoot.findViewById<Button>(R.id.btnLogout).setOnClickListener(this)
-        viewRoot.findViewById<TextView>(R.id.displayName).setText(auth.currentUser.displayName+" " + auth.currentUser.email +" "+ auth.currentUser.uid)
+        val viewRoot = inflater.inflate(R.layout.fragment_profile, container, false)
 
+        viewRoot.findViewById<Button>(R.id.btnLogout).setOnClickListener { v ->
+            FirebaseAuth.getInstance().signOut()
+            changeFragment(activity, MainActivity.fragments[R.id.ic_login])
+        }
+
+        viewRoot.findViewById<TextView>(R.id.displayName).setText(currentUser?.Name)
+        viewRoot.findViewById<TextView>(R.id.displayUID).setText(currentUser?.UID)
+        viewRoot.findViewById<TextView>(R.id.displayEmail).setText(currentUser?.Email)
         return viewRoot
-    }
-
-    override fun onClick(v: View) {
-        auth.signOut()
-        changeFragment(activity, LoginFragment())
     }
 }
