@@ -18,7 +18,6 @@ import com.github.sdpteam15.polyevents.helper.ActivitiesQueryHelper
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
-private const val NBR_UPCOMING_ACTIVITIES = 3
 
 /**
  * A simple [Fragment] subclass.
@@ -74,6 +73,6 @@ class HomeFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun getUpcomingActivities(): List<Activity> {
         // TODO : adapt to the db interface
-        return ActivitiesQueryHelper.getUpcomingActivities(NBR_UPCOMING_ACTIVITIES)
+        return ActivitiesQueryHelper.getUpcomingActivities()
     }
 }
