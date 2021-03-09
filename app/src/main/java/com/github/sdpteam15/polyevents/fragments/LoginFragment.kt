@@ -27,26 +27,21 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
 /**
- * A simple [Fragment] subclass.
- * Use the [LoginFragment.newInstance] factory method to
- * create an instance of this fragment.
+ * [Fragment] subclass representing the login page.
  */
 class LoginFragment : Fragment(){
     private lateinit var signIn : GoogleSignInClient
     private val SIGN_IN_RC: Int = 200
     private lateinit var failedLogin: AlertDialog
 
+    //User that we can set manually for testing
     private var testUser: UserInterface?=null
-    //Allow us to use a fake user for the tests
+    //Return CurrentUser if we are not in test, but we can use a fake user in test this way
     var currentUser: UserInterface?
         get(){
-            if(testUser!= null) { return testUser } else { return UserObject.CurrentUser}
+            if(testUser!= null) { return testUser }
+            else { return UserObject.CurrentUser}
         }
         set(value){
             testUser = value
@@ -54,6 +49,7 @@ class LoginFragment : Fragment(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //If the user is already logged in, we redirect him to the Profile fragment
         if(currentUser !=null){
             HelperFunctions.changeFragment(activity, MainActivity.fragments[R.id.id_fragment_profile])
         }
@@ -62,10 +58,9 @@ class LoginFragment : Fragment(){
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
-
         signIn = GoogleSignIn.getClient(activity as Activity, gso)
 
-        /* Create and store the AlertDialog */
+        /* Precreate and store the AlertDialog that will be shown any time there is an error*/
         val builder = AlertDialog.Builder(activity as Activity)
         builder.setMessage(R.string.login_failed_text)
             .setTitle(R.string.login_failed_title)
@@ -73,17 +68,14 @@ class LoginFragment : Fragment(){
         failedLogin = builder.create()
     }
 
-    fun signInGoogle(){
-        signIn.signOut()
-        startActivityForResult(signIn.signInIntent, SIGN_IN_RC)
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if(requestCode == SIGN_IN_RC){
+            //get the google account
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             if(task.isSuccessful){
-                try{ //Google Sign In was successful, authenticate with firebase
+                try{
+                    //Google Sign In was successful, authenticate with firebase
                     firebaseAuthWithGoogle(task.getResult(ApiException::class.java)!!.idToken!!)
                 }catch(e: ApiException){ failedLogin.show() }
             }else{
@@ -93,6 +85,7 @@ class LoginFragment : Fragment(){
     }
 
     private fun firebaseAuthWithGoogle(idToken: String){
+        //Get the credential back and instanciate FirebaseAuth object
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         FirebaseAuth.getInstance().signInWithCredential(credential).addOnCompleteListener(activity as Activity){
             task-> if(task.isSuccessful){
@@ -105,14 +98,15 @@ class LoginFragment : Fragment(){
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_login, container, false)
         rootView.findViewById<com.google.android.gms.common.SignInButton>(R.id.btnLogin).setOnClickListener {
             _ ->
             if(currentUser == null) {
-                signInGoogle()
+                //This "remove" the cache of the chosen user. Without it, google doesn't propose the choice of account anymore and log aumatically into the previously logged one
+                signIn.signOut()
+                startActivityForResult(signIn.signInIntent, SIGN_IN_RC)
             } else{
-                //In test
+                //This branch allow us to test the communication between ProfileFragment and LoginFragment. During a normal execution, it won't be used.
                 HelperFunctions.changeFragment(activity,MainActivity.fragments[R.id.id_fragment_profile])
             }
         }

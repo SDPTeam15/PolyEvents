@@ -12,23 +12,21 @@ import com.github.sdpteam15.polyevents.MainActivity
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.Companion.changeFragment
 import com.github.sdpteam15.polyevents.user.UserInterface
+import com.github.sdpteam15.polyevents.user.UserObject
 import com.github.sdpteam15.polyevents.user.UserObject.CurrentUser
 import com.google.firebase.auth.FirebaseAuth
 
 /**
- * A simple [Fragment] subclass.
- * Use the [ProfileFragment.newInstance] factory method to
- * create an instance of this fragment.
+ *  [Fragment] subclass that represents the profile page.
  */
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 class ProfileFragment : Fragment(){
+    //User that we can set manually for testing
     private var testUser: UserInterface?=null
     //Allow us to use a fake user for the tests
     var currentUser: UserInterface?
         get(){
-            if(testUser!= null) {return testUser}
-            else {return CurrentUser}
+            if( testUser!= null) {return testUser}
+            else {return UserObject.CurrentUser}
         }
         set(value){
             testUser = value
@@ -36,6 +34,7 @@ class ProfileFragment : Fragment(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //If the user is not logged in, redirect him to the login page
         if(currentUser == null){
             changeFragment(activity, MainActivity.fragments[R.id.ic_login])
         }
@@ -44,11 +43,11 @@ class ProfileFragment : Fragment(){
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val viewRoot = inflater.inflate(R.layout.fragment_profile, container, false)
-
         viewRoot.findViewById<Button>(R.id.btnLogout).setOnClickListener { _ ->
             FirebaseAuth.getInstance().signOut()
             changeFragment(activity, MainActivity.fragments[R.id.ic_login])
         }
+        //Replace the fields in the fragment by the user informations
         viewRoot.findViewById<TextView>(R.id.displayName).setText(currentUser?.Name)
         viewRoot.findViewById<TextView>(R.id.displayUID).setText(currentUser?.UID)
         viewRoot.findViewById<TextView>(R.id.displayEmail).setText(currentUser?.Email)
