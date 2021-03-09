@@ -1,16 +1,25 @@
 package com.github.sdpteam15.polyevents.user
 
 import com.github.sdpteam15.polyevents.database.FakeDatabase
-import com.github.sdpteam15.polyevents.database.FakeFirebaseUser
 import com.github.sdpteam15.polyevents.database.FirebaseUserInterface
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.mockito.Mockito
+import org.mockito.junit.MockitoJUnitRunner
 import kotlin.test.*
 
+@RunWith(MockitoJUnitRunner::class)
 class UserTest {
+
     @Test
     fun invokeTest() {
-        val fakeFirebaseUser = FakeFirebaseUser()
+        val fakeFirebaseUser = Mockito.mock(FirebaseUserInterface::class.java)
+        Mockito.`when`(fakeFirebaseUser.email).thenReturn("Test email")
+        Mockito.`when`(fakeFirebaseUser.uid).thenReturn("Test UID")
+        Mockito.`when`(fakeFirebaseUser.displayName).thenReturn("Test name")
+
         val user = User.invoke(fakeFirebaseUser)
+
         assertEquals(user, User.invoke(fakeFirebaseUser))
         assertFailsWith<IllegalArgumentException> { User.invoke(null as FirebaseUserInterface?) }
         assertEquals(user, User.invoke(fakeFirebaseUser.uid))
@@ -19,7 +28,11 @@ class UserTest {
 
     @Test
     fun profileListTest() {
-        val fakeFirebaseUser = FakeFirebaseUser()
+        val fakeFirebaseUser = Mockito.mock(FirebaseUserInterface::class.java)
+        Mockito.`when`(fakeFirebaseUser.email).thenReturn("Test email")
+        Mockito.`when`(fakeFirebaseUser.uid).thenReturn("Test UID")
+        Mockito.`when`(fakeFirebaseUser.displayName).thenReturn("Test name")
+
         val user = User.invoke(fakeFirebaseUser)
         user.database = FakeDatabase()
 
@@ -51,7 +64,10 @@ class UserTest {
         user.newProfile("New Name")
         user.removeProfile(user.ProfileList[1])
 
-        user.removeProfile(FakeProfile("null"))
+        val fakeProfile = Mockito.mock(ProfileInterface::class.java)
+        Mockito.`when`(fakeProfile.Name).thenReturn("null")
+
+        user.removeProfile(fakeProfile)
 
         user.removeCache()
         assertEquals(user.ProfileList[user.CurrentProfileId], user.CurrentProfile)
@@ -61,6 +77,6 @@ class UserTest {
         assertEquals(2, user.ProfileList.size)
 
         user.removeCache()
-        user.removeProfile(FakeProfile("null"))
+        user.removeProfile(fakeProfile)
     }
 }

@@ -16,7 +16,7 @@ class Profile(override var Name : String) : ProfileInterface{
         /**
          * Defaut profile of the application
          */
-        val Defaut : ProfileInterface
+        val Default : ProfileInterface
             get() {
                 if(default == null)
                     default = Profile("default")
@@ -28,7 +28,7 @@ class Profile(override var Name : String) : ProfileInterface{
          */
         val CurrentProfile : ProfileInterface get() {
             if(CurrentUser == null)
-                return Defaut
+                return Default
             return (CurrentUser as UserInterface).CurrentProfile
         }
     }

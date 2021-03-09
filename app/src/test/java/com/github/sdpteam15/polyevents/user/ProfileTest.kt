@@ -7,11 +7,11 @@ import kotlin.test.assertNotEquals
 class ProfileTest {
     @Test
     fun defautTest() {
-        val defautProfile = Profile.Defaut
-        assertEquals(defautProfile, Profile.Defaut)
+        val defautProfile = Profile.Default
+        assertEquals(defautProfile, Profile.Default)
         if(User.CurrentUser == null)
-            assertEquals(Profile.CurrentProfile, Profile.Defaut)
+            assertEquals(Profile.CurrentProfile, Profile.Default)
         else
-            assertNotEquals(Profile.CurrentProfile, Profile.Defaut)
+            assertNotEquals(Profile.CurrentProfile, Profile.Default)
     }
 }
