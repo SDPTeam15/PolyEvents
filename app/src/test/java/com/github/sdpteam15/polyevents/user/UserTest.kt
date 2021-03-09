@@ -3,6 +3,8 @@ package com.github.sdpteam15.polyevents.user
 import com.github.sdpteam15.polyevents.database.FakeDatabase
 import com.github.sdpteam15.polyevents.database.FakeFirebaseUser
 import com.github.sdpteam15.polyevents.database.FirebaseUserInterface
+import com.github.sdpteam15.polyevents.user.UserObject.CurrentUser
+import com.google.firebase.auth.FirebaseAuth
 import org.junit.Test
 import kotlin.test.*
 
