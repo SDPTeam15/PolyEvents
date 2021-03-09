@@ -13,20 +13,21 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions
 
 class MainActivity : AppCompatActivity() {
     companion object{
-        private val mapFragment:MutableMap<Int, Fragment> = HashMap()
+        private var mapFragment:MutableMap<Int, Fragment>? = null
         //make the fragments available from outside of the activity and instantiate only once
         val fragments:Map<Int, Fragment>
             get(){
-                if(mapFragment.isEmpty()){
-                    mapFragment[R.id.ic_home] = HomeFragment()
-                    mapFragment[R.id.ic_map] = MapsFragment()
-                    mapFragment[R.id.ic_list] = ListFragment()
-                    mapFragment[R.id.ic_login] = LoginFragment()
-                    mapFragment[R.id.ic_more] = MoreFragment()
-                    mapFragment[R.id.id_fragment_profile] = ProfileFragment()
+                if(mapFragment == null){
+                    mapFragment = HashMap()
+                    mapFragment!![R.id.ic_home] = HomeFragment()
+                    mapFragment!![R.id.ic_map] = MapsFragment()
+                    mapFragment!![R.id.ic_list] = ListFragment()
+                    mapFragment!![R.id.ic_login] = LoginFragment()
+                    mapFragment!![R.id.ic_more] = MoreFragment()
+                    mapFragment!![R.id.id_fragment_profile] = ProfileFragment()
                 }
                 //return type immutable
-                return HashMap<Int, Fragment>(mapFragment)
+                return HashMap<Int, Fragment>(mapFragment as HashMap)
             }
     }
 
