@@ -18,8 +18,7 @@ import com.github.sdpteam15.polyevents.MainActivity
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.user.UserInterface
-import com.github.sdpteam15.polyevents.user.UserObject
-import com.github.sdpteam15.polyevents.user.UserObject.CurrentUser
+import com.github.sdpteam15.polyevents.user.User
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -30,9 +29,9 @@ import com.google.firebase.auth.GoogleAuthProvider
 /**
  * [Fragment] subclass representing the login page.
  */
+private const val SIGN_IN_RC: Int = 200
 class LoginFragment : Fragment(){
     private lateinit var signIn : GoogleSignInClient
-    private val SIGN_IN_RC: Int = 200
     private lateinit var failedLogin: AlertDialog
 
     //User that we can set manually for testing
@@ -41,7 +40,7 @@ class LoginFragment : Fragment(){
     var currentUser: UserInterface?
         get(){
             if(testUser!= null) { return testUser }
-            else { return UserObject.CurrentUser}
+            else { return User.CurrentUser}
         }
         set(value){
             testUser = value
