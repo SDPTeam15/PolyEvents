@@ -23,8 +23,8 @@ class ActivityTest {
         activity = Activity(
                 "Test Activity", "Activity to make tests !",
                 LocalDateTime.of(2020, 3, 15, 14, 0),
+                3.5F,
                 "The best organizer", "A", null)
-        activity.durationHours = 3F
     }
 
     @Test
@@ -48,9 +48,9 @@ class ActivityTest {
         val newActivity = Activity(
                 "Test Activity", "Activity to make tests !",
                 LocalDateTime.of(2020, 3, 15, 14, 0),
+                -2.25F,
                 "The best organizer", "A", null)
-        activity.durationHours = -1.5F
 
-        assertThat(activity.durationHours, Is(Activity.DEFAULT_DURATION))
+        assertThat(newActivity.durationHours, Is(Activity.DEFAULT_DURATION))
     }
 }
