@@ -14,7 +14,7 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions
 class MainActivity : AppCompatActivity() {
     companion object{
         private val mapFragment:MutableMap<Int, Fragment> = HashMap()
-
+        //make the fragments available from outside of the activity and instantiate only once
         val fragments:Map<Int, Fragment>
             get(){
                 if(mapFragment.isEmpty()){
@@ -25,6 +25,7 @@ class MainActivity : AppCompatActivity() {
                     mapFragment[R.id.ic_more] = MoreFragment()
                     mapFragment[R.id.id_fragment_profile] = ProfileFragment()
                 }
+                //return type immutable
                 return HashMap<Int, Fragment>(mapFragment)
             }
     }
@@ -35,10 +36,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        //Set the basic fragment to the home one
         HelperFunctions.changeFragment(this, fragments[R.id.ic_home])
 
-        var bottom_navigation = findViewById<BottomNavigationView>(R.id.navigation_bar)
-        bottom_navigation.setOnNavigationItemSelectedListener {
+        //Add a listener to the menu to switch between fragments
+        findViewById<BottomNavigationView>(R.id.navigation_bar).setOnNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.ic_map -> HelperFunctions.changeFragment(this, fragments[R.id.ic_map])
                 R.id.ic_list -> HelperFunctions.changeFragment(this, fragments[R.id.ic_list])
