@@ -99,13 +99,11 @@ class User private constructor(override val FirebaseUser: FirebaseUserInterface)
     override var CurrentProfile: ProfileInterface
         get() = ProfileList[currentProfileId]
         set(value) {
-            var i = 0
-            for (v in ProfileList) {
-                if (v == value) {
-                    CurrentProfileId = i
+            for (v in ProfileList.withIndex()) {
+                if (v.value == value) {
+                    CurrentProfileId = v.index
                     break
                 }
-                ++i
             }
         }
 
