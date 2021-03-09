@@ -14,9 +14,7 @@ class UserTest {
     @Test
     fun invokeTest() {
         val fakeFirebaseUser = Mockito.mock(FirebaseUserInterface::class.java)
-        Mockito.`when`(fakeFirebaseUser.email).thenReturn("Test email")
         Mockito.`when`(fakeFirebaseUser.uid).thenReturn("Test UID")
-        Mockito.`when`(fakeFirebaseUser.displayName).thenReturn("Test name")
 
         val user = User.invoke(fakeFirebaseUser)
 
@@ -29,7 +27,6 @@ class UserTest {
     @Test
     fun profileListTest() {
         val fakeFirebaseUser = Mockito.mock(FirebaseUserInterface::class.java)
-        Mockito.`when`(fakeFirebaseUser.email).thenReturn("Test email")
         Mockito.`when`(fakeFirebaseUser.uid).thenReturn("Test UID")
         Mockito.`when`(fakeFirebaseUser.displayName).thenReturn("Test name")
 
@@ -64,10 +61,8 @@ class UserTest {
         user.newProfile("New Name")
         user.removeProfile(user.ProfileList[1])
 
-        val fakeProfile = Mockito.mock(ProfileInterface::class.java)
-        Mockito.`when`(fakeProfile.Name).thenReturn("null")
-
-        user.removeProfile(fakeProfile)
+        val fakeProfil = Mockito.mock(ProfileInterface::class.java)
+        user.removeProfile(fakeProfil)
 
         user.removeCache()
         assertEquals(user.ProfileList[user.CurrentProfileId], user.CurrentProfile)
@@ -76,7 +71,7 @@ class UserTest {
         user.newProfile("New Name")
         assertEquals(2, user.ProfileList.size)
 
+        user.removeProfile(fakeProfil)
         user.removeCache()
-        user.removeProfile(fakeProfile)
     }
 }
