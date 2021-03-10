@@ -7,15 +7,14 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import com.github.sdpteam15.polyevents.activity.Activity
-import com.github.sdpteam15.polyevents.fragments.EXTRA_MESSAGE
-import java.util.*
+import com.github.sdpteam15.polyevents.fragments.EXTRA_ACTIVITY
 
 class ActivityActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_activity)
-        val message = intent.getStringExtra(EXTRA_MESSAGE)
+        val message = intent.getStringExtra(EXTRA_ACTIVITY)
         val activity = Activity.instances.get(message)
         // Capture the layout's TextView and set the string as its text
         findViewById<TextView>(R.id.txt_activity_Name).apply {

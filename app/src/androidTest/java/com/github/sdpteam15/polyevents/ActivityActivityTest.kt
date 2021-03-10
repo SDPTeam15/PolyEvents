@@ -1,0 +1,80 @@
+package com.github.sdpteam15.polyevents
+
+
+import androidx.test.espresso.Espresso
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.hasChildCount
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.ext.junit.rules.ActivityScenarioRule
+import com.github.sdpteam15.polyevents.activity.Activity
+import com.github.sdpteam15.polyevents.helper.ActivitiesQueryHelper
+import com.github.sdpteam15.polyevents.helper.ActivitiesQueryHelperInterface
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.mock
+import org.mockito.junit.MockitoJUnitRunner
+import java.time.LocalDateTime
+
+@RunWith(MockitoJUnitRunner::class)
+class ActivityActivityTest {
+    lateinit var activities: ArrayList<Activity>
+    lateinit var mockedUpcomingActivitiesProvider: ActivitiesQueryHelperInterface
+
+    @Rule
+    @JvmField
+    var mainActivity = ActivityScenarioRule(MainActivity::class.java)
+
+    @Before
+    fun setup() {
+        activities = ArrayList<Activity>()
+        activities.add(
+            Activity(
+                "Sushi demo",
+                "Super hungry activity !",
+                LocalDateTime.of(2021, 3, 7, 12, 15),
+                1F,
+                "The fish band",
+                "Kitchen",
+                null, "1", mutableSetOf("cooking","sushi","miam")
+            )
+        )
+
+        activities.add(
+            Activity(
+                "Aqua Poney",
+                "Super cool activity !",
+                LocalDateTime.of(2021, 3, 7, 15, 0),
+                1.5F,
+                "The Aqua Poney team",
+                "Swimming pool",
+                null, "2", mutableSetOf("horse","swimming","pony")
+            )
+        )
+
+        activities.add(
+            Activity(
+                "Concert",
+                "Super noisy activity !",
+                LocalDateTime.of(2021, 3, 7, 21, 15),
+                2.75F,
+                "AcademiC DeCibel",
+                "Concert Hall",
+                null, "3", mutableSetOf("music","live","pogo")
+            ))
+
+        mockedUpcomingActivitiesProvider = mock(ActivitiesQueryHelper::class.java)
+        `when`(mockedUpcomingActivitiesProvider.getUpcomingActivities()).thenReturn(activities)
+
+        // Initially, we are on the home page, click on it to be sure
+        Espresso.onView(withId(R.id.ic_list)).perform(click())
+    }
+
+    @Test
+    fun correctNumberUpcomingActivitiesDisplayed() {
+        Espresso.onView(withId(R.id.recycler_activites_list)).check(matches(hasChildCount(activities.size)))
+    }
+}

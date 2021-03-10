@@ -1,6 +1,5 @@
 package com.github.sdpteam15.polyevents.activity
 
-import android.content.Intent
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
@@ -8,9 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.github.sdpteam15.polyevents.ActivityActivity
 import com.github.sdpteam15.polyevents.R
 
 class ActivityItemAdapter (

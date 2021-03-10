@@ -7,21 +7,16 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.ActivityActivity
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.activity.Activity
 import com.github.sdpteam15.polyevents.activity.ActivityItemAdapter
-import com.github.sdpteam15.polyevents.activity.Datasource
+import com.github.sdpteam15.polyevents.helper.ActivitiesQueryHelper
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-const val EXTRA_MESSAGE = "com.example.myfirstapp.MESSAGE"
+
+const val EXTRA_ACTIVITY = "com.github.sdpteam15.polyevents.activity.ACTIVITY_ID"
 
 /**
  * A simple [Fragment] subclass.
@@ -41,18 +36,18 @@ class ListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val dataset = Datasource().loadUpcomingActivities()
+        val activities = ActivitiesQueryHelper.getUpcomingActivities()
         val fragmentView = inflater.inflate(R.layout.fragment_list, container, false)
-        val recyclerView = fragmentView.findViewById<RecyclerView>(R.id.recycler_view)
+        val recyclerView = fragmentView.findViewById<RecyclerView>(R.id.recycler_activites_list)
 
         val openActivity = {activity : Activity ->
             val intent = Intent(inflater.context, ActivityActivity::class.java).apply {
-                putExtra(EXTRA_MESSAGE, activity.id)
+                putExtra(EXTRA_ACTIVITY, activity.id)
             }
             startActivity(intent)
         }
 
-        recyclerView.adapter = ActivityItemAdapter(dataset,openActivity)
+        recyclerView.adapter = ActivityItemAdapter(activities,openActivity)
 
 
         recyclerView.setHasFixedSize(true)

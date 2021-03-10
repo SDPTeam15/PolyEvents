@@ -12,8 +12,7 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.activity.Activity
-import com.github.sdpteam15.polyevents.activity.Datasource
-import java.time.LocalDateTime
+import com.github.sdpteam15.polyevents.helper.ActivitiesQueryHelper
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -40,7 +39,7 @@ class HomeFragment : Fragment() {
         val fragmentView = inflater.inflate(R.layout.fragment_home, container, false)
         val linearLayout = fragmentView.findViewById<LinearLayout>(R.id.upcoming_activities_list)
 
-        val activities = Datasource().loadUpcomingActivities()
+        val activities = ActivitiesQueryHelper.getUpcomingActivities()
 
         for(activity: Activity in activities) {
             setupActivityTab(activity, linearLayout)
