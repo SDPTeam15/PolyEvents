@@ -18,7 +18,7 @@ object ActivitiesQueryHelper : ActivitiesQueryHelperInterface {
                 LocalDateTime.of(2021, 3, 7, 12, 15),
                 1F,
                 "The fish band",
-                "Kitchen", null
+                "Kitchen", null, "1"
             )
         )
 
@@ -31,7 +31,7 @@ object ActivitiesQueryHelper : ActivitiesQueryHelperInterface {
                 LocalDateTime.of(2021, 3, 7, 14, 15),
                 3.5F,
                 "The Aqua Poney team",
-                "Swimming pool", null
+                "Swimming pool", null, "2"
             )
         )
 
@@ -42,7 +42,7 @@ object ActivitiesQueryHelper : ActivitiesQueryHelperInterface {
                 LocalDateTime.of(2021, 3, 7, 17, 15),
                 0.75F,
                 "The music band",
-                "Concert Hall", null
+                "Concert Hall", null, "3"
             )
         )
 

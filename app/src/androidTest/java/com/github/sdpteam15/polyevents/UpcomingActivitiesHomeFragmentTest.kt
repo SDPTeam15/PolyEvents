@@ -39,7 +39,7 @@ class UpcomingActivitiesHomeFragmentTest {
                 LocalDateTime.of(2021, 3, 7, 12, 15),
                 1F,
                 "The fish band",
-                "Kitchen", null)
+                "Kitchen", null, "1")
         )
 
         activities.add(
@@ -49,7 +49,7 @@ class UpcomingActivitiesHomeFragmentTest {
                 LocalDateTime.of(2021, 3, 7, 15, 0),
                 1.5F,
                 "The Aqua Poney team",
-                "Swimming pool", null)
+                "Swimming pool", null, "2")
         )
 
         activities.add(
@@ -59,7 +59,7 @@ class UpcomingActivitiesHomeFragmentTest {
                 LocalDateTime.of(2021, 3, 7, 21, 15),
                 2.75F,
                 "AcademiC DeCibel",
-                "Concert Hall", null))
+                "Concert Hall", null, "3"))
 
         mockedUpcomingActivitiesProvider = mock(ActivitiesQueryHelperInterface::class.java)
         `when`(mockedUpcomingActivitiesProvider.getUpcomingActivities()).thenReturn(activities)
