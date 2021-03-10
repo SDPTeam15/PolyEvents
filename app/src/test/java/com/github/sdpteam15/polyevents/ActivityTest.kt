@@ -3,9 +3,8 @@ package com.github.sdpteam15.polyevents
 import com.github.sdpteam15.polyevents.activity.Activity
 import org.hamcrest.CoreMatchers.hasItem
 import org.hamcrest.CoreMatchers.not
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
-
-import org.junit.Assert.*
 import org.junit.Before
 import java.time.LocalDateTime
 import org.hamcrest.CoreMatchers.`is` as Is
