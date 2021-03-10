@@ -22,9 +22,8 @@
         android:background="@color/design_default_color_primary"
         app:itemIconTint="#fff"
         app:itemTextColor="#fff"
-        app:menu="@menu/nav_menu2" >
+        app:menu="@menu/nav_menu2" />
 
-    </com.google.android.material.bottomnavigation.BottomNavigationView>
     <!--
     <ListView
         android:layout_width="match_parent"
