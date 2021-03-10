@@ -6,20 +6,27 @@ import androidx.annotation.RequiresApi
 import java.time.LocalDateTime
 
 /**
- * Implements the activity interface.
+ * Describe an activity :
+ * - its name
+ * - description
+ * - when it happens
+ * - its duration
+ * - the organizer of this activity
+ * - the zone where the activity is
+ * - the tags the activity corresponds to
+ * - an icon for this activity to display
  */
 class Activity(
-    override var name: String,
-    override var description: String,
-    override var start: LocalDateTime,
+    var name: String,
+    var description: String,
+    var start: LocalDateTime,
     durationHours: Float,
-    override var organizer: String,
-    override var zone: String,
-    override var icon: Bitmap?,
-    override val tags: MutableSet<String> = mutableSetOf()
-) : ActivityInterface {
+    var organizer: String,
+    var zone: String,
+    var icon: Bitmap?,
+    val tags: MutableSet<String> = mutableSetOf()) {
 
-    override var durationHours: Float = durationHours
+    var durationHours: Float = durationHours
         set(durationH) {
             field = if (durationH < 0) Companion.DEFAULT_DURATION else durationH
         }
@@ -30,16 +37,31 @@ class Activity(
         }
     }
 
-    override fun addTag(newTag: String): Boolean {
+    /**
+     * Add a new tag for this activity
+     * @param newTag : the tag to add
+     * @return true if this tag was successfully added
+     */
+    fun addTag(newTag: String): Boolean {
         return tags.add(newTag)
     }
 
-    override fun removeTag(tag: String): Boolean {
+    /**
+     * Remove a tag for this activity
+     * @param tag : the tag to remove
+     * @return true if this tag was successfully remove, false if it
+     * was not present
+     */
+    fun removeTag(tag: String): Boolean {
         return tags.remove(tag)
     }
 
+    /**
+     * Return the hour (and minutes) at which the activity occurs
+     * @return string HH:MM
+     */
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun getTime(): String {
+    fun getTime(): String {
         val hour = start.hour.toString().padStart(2, '0')
         val minute = start.minute.toString().padStart(2, '0')
         return "$hour:$minute"

@@ -20,8 +20,8 @@
         android:id="@+id/id_upcoming_activities_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_below="@id/id_title_upcoming_activities">
+        android:layout_below="@id/id_title_upcoming_activities"
+        android:orientation="vertical">
 
     </LinearLayout>
 </RelativeLayout>
