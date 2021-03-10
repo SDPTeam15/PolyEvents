@@ -19,6 +19,7 @@
         app:itemIconTint="#fff"
         app:itemTextColor="#fff"
         app:menu="@menu/nav_menu2" />
+
     <!--
     <ListView
         android:layout_width="match_parent"
