@@ -24,6 +24,7 @@ class Activity(
     var organizer: String,
     var zone: String,
     var icon: Bitmap?,
+    var id: String,
     val tags: MutableSet<String> = mutableSetOf()) {
 
     var durationHours: Float = durationHours
