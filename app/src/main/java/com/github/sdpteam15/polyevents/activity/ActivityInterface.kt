@@ -15,6 +15,7 @@ import java.time.LocalDateTime
  */
 interface ActivityInterface {
 
+    val id: String
     var name: String
     var description: String
     var start: LocalDateTime

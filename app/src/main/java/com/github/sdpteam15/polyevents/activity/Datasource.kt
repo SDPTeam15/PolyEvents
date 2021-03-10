@@ -11,6 +11,7 @@ class Datasource {
         val activities = ArrayList<Activity>()
 
         activities.add(Activity(
+            "a",
             "Sushi demo",
             "Super hungry activity !",
             LocalDateTime.of(2021, 3, 7, 12, 15),
@@ -19,6 +20,7 @@ class Datasource {
             "Kitchen", null))
 
         activities.add(Activity(
+            "b",
             "Aqua Poney",
             "Super cool activity !",
             LocalDateTime.of(2021, 3, 7, 14, 15),
@@ -27,6 +29,7 @@ class Datasource {
             "Swimming pool", null))
 
         activities.add(Activity(
+            "c",
             "Saxophone demo",
             "Super noisy activity !",
             LocalDateTime.of(2021, 3, 7, 17, 15),
@@ -34,6 +37,7 @@ class Datasource {
             "The music band",
             "Concert Hall", null))
         activities.add(Activity(
+            "d",
             "Sushi demo",
             "Super hungry activity !",
             LocalDateTime.of(2021, 3, 7, 12, 15),
@@ -42,6 +46,7 @@ class Datasource {
             "Kitchen", null))
 
         activities.add(Activity(
+            "e",
             "Aqua Poney",
             "Super cool activity !",
             LocalDateTime.of(2021, 3, 7, 14, 15),
@@ -50,6 +55,7 @@ class Datasource {
             "Swimming pool", null))
 
         activities.add(Activity(
+            "f",
             "Saxophone demo",
             "Super noisy activity !",
             LocalDateTime.of(2021, 3, 7, 17, 15),
@@ -57,6 +63,7 @@ class Datasource {
             "The music band",
             "Concert Hall", null))
         activities.add(Activity(
+            "g",
             "Sushi demo",
             "Super hungry activity !",
             LocalDateTime.of(2021, 3, 7, 12, 15),
@@ -65,6 +72,7 @@ class Datasource {
             "Kitchen", null))
 
         activities.add(Activity(
+            "h",
             "Aqua Poney",
             "Super cool activity !",
             LocalDateTime.of(2021, 3, 7, 14, 15),
@@ -73,6 +81,7 @@ class Datasource {
             "Swimming pool", null))
 
         activities.add(Activity(
+            "i",
             "Saxophone demo",
             "Super noisy activity !",
             LocalDateTime.of(2021, 3, 7, 17, 15),
@@ -80,6 +89,7 @@ class Datasource {
             "The music band",
             "Concert Hall", null))
         activities.add(Activity(
+            "j",
             "Sushi demo",
             "Super hungry activity !",
             LocalDateTime.of(2021, 3, 7, 12, 15),
@@ -88,6 +98,7 @@ class Datasource {
             "Kitchen", null))
 
         activities.add(Activity(
+            "k",
             "Aqua Poney",
             "Super cool activity !",
             LocalDateTime.of(2021, 3, 7, 14, 15),
@@ -96,6 +107,7 @@ class Datasource {
             "Swimming pool", null))
 
         activities.add(Activity(
+            "l",
             "Saxophone demo",
             "Super noisy activity !",
             LocalDateTime.of(2021, 3, 7, 17, 15),
@@ -103,6 +115,7 @@ class Datasource {
             "The music band",
             "Concert Hall", null))
         activities.add(Activity(
+            "m",
             "Sushi demo",
             "Super hungry activity !",
             LocalDateTime.of(2021, 3, 7, 12, 15),
@@ -111,6 +124,7 @@ class Datasource {
             "Kitchen", null))
 
         activities.add(Activity(
+            "n",
             "Aqua Poney",
             "Super cool activity !",
             LocalDateTime.of(2021, 3, 7, 14, 15),
@@ -119,6 +133,7 @@ class Datasource {
             "Swimming pool", null))
 
         activities.add(Activity(
+            "o",
             "Saxophone demo",
             "Super noisy activity !",
             LocalDateTime.of(2021, 3, 7, 17, 15),

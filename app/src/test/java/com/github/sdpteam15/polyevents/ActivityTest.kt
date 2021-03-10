@@ -20,7 +20,7 @@ class ActivityTest {
 
     @Before
     fun createNewActivity() {
-        activity = Activity(
+        activity = Activity("a",
                 "Test Activity", "Activity to make tests !",
                 LocalDateTime.of(2020, 3, 15, 14, 0),
                 "The best organizer", "A", null)

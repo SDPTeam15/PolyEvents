@@ -8,7 +8,8 @@ import java.time.LocalDateTime
 /**
  * Implements the activity interface.
  */
-data class Activity(override var name: String,
+data class Activity(override val id: String,
+                    override var name: String,
                     override var description: String,
                     override var start: LocalDateTime,
                     val durationHrs: Float,
@@ -26,6 +27,7 @@ data class Activity(override var name: String,
         if(durationHours < 0) {
             durationHours = Companion.DEFAULT_DURATION
         }
+        instances.put(id,this)
     }
 
     override fun addTag(newTag: String): Boolean {
@@ -45,5 +47,6 @@ data class Activity(override var name: String,
 
     companion object {
         const val DEFAULT_DURATION = 1F
+        val instances : MutableMap<String, Activity> = HashMap()
     }
 }
