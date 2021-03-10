@@ -3,6 +3,15 @@
     <string name="upcoming_activities_txt">Upcoming activities</string>
     <string name="at_hour_text">at %1$s</string>
 
+    <!-- Login Activity strings-->
+    <string name="login_failed_text">Failed to log into your Google account</string>
+    <string name="login_failed_title">Login failed</string>
+    <string name="ok_button_text">Ok</string>
+    <string name="login_button_text">Sign in with Google</string>
+
+    <!-- Profile activity strings-->
+    <string name="logout_button_text">Logout</string>
+
     <string-array name="countries_array">
         <item>Afghanistan</item>
         <item>Albania</item>
@@ -39,4 +48,6 @@
         <item>Bulgaria</item>
         <item>Switzerland</item>
     </string-array>
+
+    <string name="google_maps_key"></string>
 </resources>

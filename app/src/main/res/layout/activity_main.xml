@@ -25,6 +25,7 @@
         app:menu="@menu/nav_menu2" >
 
     </com.google.android.material.bottomnavigation.BottomNavigationView>
+
     <!--
     <ListView
         android:layout_width="match_parent"
