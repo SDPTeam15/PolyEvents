@@ -34,7 +34,7 @@ class ActivityActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_activity)
-
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     /**
