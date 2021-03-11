@@ -24,8 +24,9 @@ class Activity(
     var organizer: String,
     var zone: String,
     var icon: Bitmap?,
-    var id: String,
-    val tags: MutableSet<String> = mutableSetOf()) {
+    val id: String,
+    val tags: MutableSet<String> = mutableSetOf()
+) {
 
     var durationHours: Float = durationHours
         set(durationH) {
@@ -36,8 +37,6 @@ class Activity(
         if (durationHours < 0) {
             this@Activity.durationHours = Companion.DEFAULT_DURATION
         }
-        //TODO : REPLACE BY CALL TO DATABASE
-        instances.put(id,this)
     }
 
     /**
@@ -72,7 +71,5 @@ class Activity(
 
     companion object {
         const val DEFAULT_DURATION = 1F
-        //TODO : REMOVE AND USE DATABASE INSTEAD
-        val instances : MutableMap<String, Activity> = HashMap()
     }
 }

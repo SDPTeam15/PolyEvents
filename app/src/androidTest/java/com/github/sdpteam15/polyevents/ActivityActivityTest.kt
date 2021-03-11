@@ -1,15 +1,26 @@
 package com.github.sdpteam15.polyevents
 
 
+import android.view.View
+import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
+import androidx.test.espresso.NoMatchingViewException
+import androidx.test.espresso.ViewAssertion
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.hasChildCount
-import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.contrib.RecyclerViewActions
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.Intents.intended
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.github.sdpteam15.polyevents.activity.Activity
+import com.github.sdpteam15.polyevents.activity.ActivityItemAdapter
 import com.github.sdpteam15.polyevents.helper.ActivitiesQueryHelper
 import com.github.sdpteam15.polyevents.helper.ActivitiesQueryHelperInterface
+import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.CoreMatchers.containsString
+import org.hamcrest.Matcher
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -18,6 +29,7 @@ import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
 import org.mockito.junit.MockitoJUnitRunner
 import java.time.LocalDateTime
+
 
 @RunWith(MockitoJUnitRunner::class)
 class ActivityActivityTest {
@@ -39,7 +51,7 @@ class ActivityActivityTest {
                 1F,
                 "The fish band",
                 "Kitchen",
-                null, "1", mutableSetOf("cooking","sushi","miam")
+                null, "1", mutableSetOf("cooking", "sushi", "miam")
             )
         )
 
@@ -51,7 +63,7 @@ class ActivityActivityTest {
                 1.5F,
                 "The Aqua Poney team",
                 "Swimming pool",
-                null, "2", mutableSetOf("horse","swimming","pony")
+                null, "2", mutableSetOf("horse", "swimming", "pony")
             )
         )
 
@@ -63,18 +75,120 @@ class ActivityActivityTest {
                 2.75F,
                 "AcademiC DeCibel",
                 "Concert Hall",
-                null, "3", mutableSetOf("music","live","pogo")
-            ))
+                null, "3", mutableSetOf("music", "live", "pogo")
+            )
+        )
 
-        mockedUpcomingActivitiesProvider = mock(ActivitiesQueryHelper::class.java)
+        mockedUpcomingActivitiesProvider = mock(ActivitiesQueryHelperInterface::class.java)
         `when`(mockedUpcomingActivitiesProvider.getUpcomingActivities()).thenReturn(activities)
+        `when`(mockedUpcomingActivitiesProvider.getActivityFromId("1")).thenReturn(activities[0])
+        `when`(mockedUpcomingActivitiesProvider.getActivityFromId("2")).thenReturn(activities[1])
+        `when`(mockedUpcomingActivitiesProvider.getActivityFromId("3")).thenReturn(activities[2])
+        // go to activities list fragment
+        mainActivity = ActivityScenarioRule(MainActivity::class.java)
+        // TODO GET THE FUCKING FRAGMENT AND SET ITS QUERY HELPER
+        // TODO GET THE ACTIVITY ACTIVITY TAB AND SET iTS QUERY HELPER
 
-        // Initially, we are on the home page, click on it to be sure
         Espresso.onView(withId(R.id.ic_list)).perform(click())
+
+
     }
+
 
     @Test
     fun correctNumberUpcomingActivitiesDisplayed() {
-        Espresso.onView(withId(R.id.recycler_activites_list)).check(matches(hasChildCount(activities.size)))
+        Espresso.onView(withId(R.id.recycler_activites_list))
+            .check(RecyclerViewItemCountAssertion(ActivitiesQueryHelper.getUpcomingActivities().size));
+    }
+
+    @Test
+    fun activityActivityOpensOnClick() {
+        Intents.init()
+        Espresso.onView(withId(R.id.recycler_activites_list)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<ActivityItemAdapter.ItemViewHolder>(
+                0,
+                click()
+            )
+        )
+        intended(hasComponent(ActivityActivity::class.java.getName()))
+    }
+
+    @Test
+    fun activityActivityShowsValuesFromGivenActivity() {
+        val indexToTest: Int = 0
+        Espresso.onView(withId(R.id.recycler_activites_list)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<ActivityItemAdapter.ItemViewHolder>(
+                indexToTest,
+                click()
+            )
+        )
+        val activityToTest = ActivitiesQueryHelper.getActivityFromId("1")
+        Espresso.onView(withId(R.id.txt_activity_Name)).check(
+            matches(
+                withText(
+                    containsString(
+                        activityToTest.name
+                    )
+                )
+            )
+        )
+        Espresso.onView(withId(R.id.txt_activity_description)).check(
+            matches(
+                withText(
+                    containsString(
+                        activityToTest.description
+                    )
+                )
+            )
+        )
+        Espresso.onView(withId(R.id.txt_activity_organizer)).check(
+            matches(
+                withText(
+                    containsString(
+                        activityToTest.organizer
+                    )
+                )
+            )
+        )
+        Espresso.onView(withId(R.id.txt_activity_zone)).check(
+            matches(
+                withText(
+                    containsString(
+                        activityToTest.zone
+                    )
+                )
+            )
+        )
+        Espresso.onView(withId(R.id.txt_activity_date)).check(
+            matches(
+                withText(
+                    containsString(
+                        activityToTest.getTime()
+                    )
+                )
+            )
+        )
+        Espresso.onView(withId(R.id.txt_activity_tags)).check(
+            matches(
+                withText(
+                    containsString(
+                        activityToTest.tags.joinToString { s -> s })
+                )
+            )
+        )
+        //TODO check image is correct
+    }
+}
+
+class RecyclerViewItemCountAssertion(expectedCount: Int) : ViewAssertion {
+    private val matcher: Matcher<Int> = `is`(expectedCount)
+
+    override fun check(view: View, noViewFoundException: NoMatchingViewException?) {
+        if (noViewFoundException != null) {
+            throw noViewFoundException
+        }
+        val recyclerView = view as RecyclerView
+        val adapter = recyclerView.adapter
+        assertThat(adapter!!.itemCount, matcher)
     }
 }
