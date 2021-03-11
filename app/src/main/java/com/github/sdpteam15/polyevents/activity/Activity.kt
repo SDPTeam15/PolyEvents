@@ -13,8 +13,10 @@ import java.time.LocalDateTime
  * - its duration
  * - the organizer of this activity
  * - the zone where the activity is
- * - the tags the activity corresponds to
  * - an icon for this activity to display
+ * - an id to uniquely identify the activity
+ * - the tags the activity corresponds to
+ *
  */
 class Activity(
     var name: String,
@@ -25,8 +27,7 @@ class Activity(
     var zone: String,
     var icon: Bitmap?,
     val id: String,
-    val tags: MutableSet<String> = mutableSetOf()
-) {
+    val tags: MutableSet<String> = mutableSetOf()) {
 
     var durationHours: Float = durationHours
         set(durationH) {

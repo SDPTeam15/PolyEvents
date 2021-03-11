@@ -20,10 +20,10 @@ class ActivityTest {
     @Before
     fun createNewActivity() {
         activity = Activity(
-            "Test Activity", "Activity to make tests !",
-            LocalDateTime.of(2020, 3, 15, 14, 0),
-            3.5F,
-            "The best organizer", "A", null, "1")
+                "Test Activity", "Activity to make tests !",
+                LocalDateTime.of(2020, 3, 15, 14, 0),
+                3.5F,
+                "The best organizer", "A", null, "1")
     }
 
     @Test
@@ -45,10 +45,10 @@ class ActivityTest {
     @Test
     fun negativeDurationIsResetToDefault() {
         val newActivity = Activity(
-            "Test Activity", "Activity to make tests !",
-            LocalDateTime.of(2020, 3, 15, 14, 0),
-            -2.25F,
-            "The best organizer", "A", null, "2")
+                "Test Activity", "Activity to make tests !",
+                LocalDateTime.of(2020, 3, 15, 14, 0),
+                -2.25F,
+                "The best organizer", "A", null, "2")
 
         assertThat(newActivity.durationHours, Is(Activity.DEFAULT_DURATION))
         newActivity.durationHours = -1.5F

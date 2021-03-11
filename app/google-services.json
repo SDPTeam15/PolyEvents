@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "56227356049",
+    "project_id": "polyevents-31143",
+    "storage_bucket": "polyevents-31143.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:56227356049:android:3d48d1e6a20944f1e5ce30",
+        "android_client_info": {
+          "package_name": "com.github.sdpteam15.polyevents"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "56227356049-pfmquo6okj7r37ec4oc08dae54i6emq1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.github.sdpteam15.polyevents",
+            "certificate_hash": "3ed68fe154ac1b79f4457aa4f3fa87b8d4c698cd"
+          }
+        },
+        {
+          "client_id": "56227356049-pmv0hrvhm49mncm4pl88sldr1p96ls19.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5JGXnsRcq9H42hpbHbC-7EzRz0i_ZaO0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "56227356049-pmv0hrvhm49mncm4pl88sldr1p96ls19.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

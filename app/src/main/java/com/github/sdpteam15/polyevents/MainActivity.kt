@@ -2,14 +2,34 @@ package com.github.sdpteam15.polyevents
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Menu
 import android.widget.ArrayAdapter
+import com.google.android.material.bottomnavigation.BottomNavigationView
+
+import android.view.Menu
 import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.fragments.*
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.github.sdpteam15.polyevents.helper.HelperFunctions
 
 class MainActivity : AppCompatActivity() {
+    companion object{
+        private var mapFragment:MutableMap<Int, Fragment>? = null
+        //make the fragments available from outside of the activity and instantiate only once
+        val fragments:Map<Int, Fragment>
+            get(){
+                if(mapFragment == null){
+                    mapFragment = HashMap()
+                    mapFragment!![R.id.ic_home] = HomeFragment()
+                    mapFragment!![R.id.ic_map] = MapsFragment()
+                    mapFragment!![R.id.ic_list] = ListFragment()
+                    mapFragment!![R.id.ic_login] = LoginFragment()
+                    mapFragment!![R.id.ic_more] = MoreFragment()
+                    mapFragment!![R.id.id_fragment_profile] = ProfileFragment()
+                }
+                //return type immutable
+                return HashMap<Int, Fragment>(mapFragment as HashMap)
+            }
+    }
 
     private lateinit var adapter: ArrayAdapter<*>
 
@@ -17,25 +37,17 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val homeFragment = HomeFragment()
-        //val mapFragment = MapFragment()
-        val mapFragment = MapsFragment()
+        //Set the basic fragment to the home one
+        HelperFunctions.changeFragment(this, fragments[R.id.ic_home])
 
-        val listFragment = ListFragment()
-        val profileFragment = ProfileFragment()
-        val moreFragment = MoreFragment()
-
-
-        makeCurrentFragment(homeFragment);
-
-        var bottom_navigation = findViewById<BottomNavigationView>(R.id.navigation_bar)
-        bottom_navigation.setOnNavigationItemSelectedListener {
+        //Add a listener to the menu to switch between fragments
+        findViewById<BottomNavigationView>(R.id.navigation_bar).setOnNavigationItemSelectedListener {
             when (it.itemId) {
-                R.id.ic_map -> makeCurrentFragment(mapFragment)
-                R.id.ic_list -> makeCurrentFragment(listFragment)
-                R.id.ic_profile -> makeCurrentFragment(profileFragment)
-                R.id.ic_more -> makeCurrentFragment(moreFragment)
-                else -> makeCurrentFragment(homeFragment)
+                R.id.ic_map -> HelperFunctions.changeFragment(this, fragments[R.id.ic_map])
+                R.id.ic_list -> HelperFunctions.changeFragment(this, fragments[R.id.ic_list])
+                R.id.ic_login -> HelperFunctions.changeFragment(this, fragments[R.id.ic_login])
+                R.id.ic_more -> HelperFunctions.changeFragment(this, fragments[R.id.ic_more])
+                else -> HelperFunctions.changeFragment(this, fragments[R.id.ic_home])
             }
             true
         }
@@ -53,15 +65,8 @@ class MainActivity : AppCompatActivity() {
         }
         var tv_emptyTextView = findViewById<TextView>(R.id.tv_emptyTextView)
         lv_listView.emptyView = tv_emptyTextView
-
         */
     }
-
-    private fun makeCurrentFragment(fragment: Fragment) =
-        supportFragmentManager.beginTransaction().apply {
-            replace(R.id.fl_wrapper, fragment)
-            commit()
-        }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.nav_menu, menu)
