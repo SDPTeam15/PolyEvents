@@ -52,21 +52,16 @@ class HomeFragment : Fragment() {
     private fun setupActivityTab(activity: Activity, incomingActivities: LinearLayout) {
         val activityTab = layoutInflater.inflate(R.layout.tab_activity, null)
 
-        val activityName = activityTab.findViewById<TextView>(R.id.id_activity_name_text)
-        activityName.text = activity.name
+        activityTab.findViewById<TextView>(R.id.id_activity_name_text).text = activity.name
 
-        val activitySchedule = activityTab.findViewById<TextView>(R.id.id_activity_schedule_text)
-        activitySchedule.text =  getString(R.string.at_hour_text, activity.getTime())
+        activityTab.findViewById<TextView>(R.id.id_activity_schedule_text).text = getString(R.string.at_hour_text, activity.getTime())
 
-        val activityZone = activityTab.findViewById<TextView>(R.id.id_activity_zone)
-        activityZone.text = activity.zone
+        activityTab.findViewById<TextView>(R.id.id_activity_zone).text = activity.zone
 
-        val activityDescription = activityTab.findViewById<TextView>(R.id.id_activity_description)
-        activityDescription.text = activity.description
+        activityTab.findViewById<TextView>(R.id.id_activity_description).text = activity.description
 
         // TODO : set the icon of the activity
-        val activityIcon = activityTab.findViewById<ImageView>(R.id.id_activity_icon)
-        //activityIcon.setImageBitmap(activity.icon)
+        //activityTab.findViewById<ImageView>(R.id.id_activity_icon).setImageBitmap(activity.icon)
 
         incomingActivities.addView(activityTab)
     }
