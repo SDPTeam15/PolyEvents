@@ -9,12 +9,12 @@ import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnitRunner
 import kotlin.test.assertEquals
 
-private const val diplayNameTest = "Test displayName"
+private const val displayNameTest = "Test displayName"
 private const val emailTest = "Test email"
 private const val uidTest = "Test uid"
 
 @RunWith(MockitoJUnitRunner::class)
-class FirebaserUserAdapterTest {
+class FirebaseUserAdapterTest {
     lateinit var mockedFirebaseUser: FirebaseUser
     lateinit var firebaseUser: FirebaseUserAdapter
 
@@ -24,7 +24,7 @@ class FirebaserUserAdapterTest {
         mockedFirebaseUser = Mockito.mock(FirebaseUser::class.java)
         firebaseUser = FirebaseUserAdapter(mockedFirebaseUser)
         Mockito.`when`(mockedFirebaseUser.email).thenReturn(emailTest)
-        Mockito.`when`(mockedFirebaseUser.displayName).thenReturn(diplayNameTest)
+        Mockito.`when`(mockedFirebaseUser.displayName).thenReturn(displayNameTest)
         Mockito.`when`(mockedFirebaseUser.uid).thenReturn(uidTest)
     }
 
@@ -32,7 +32,7 @@ class FirebaserUserAdapterTest {
     fun firebaseAdapterReturnCorrectValues() {
         assertEquals(emailTest, firebaseUser.email)
         assertEquals(uidTest, firebaseUser.uid)
-        assertEquals(diplayNameTest, firebaseUser.displayName)
+        assertEquals(displayNameTest, firebaseUser.displayName)
     }
 
 }
