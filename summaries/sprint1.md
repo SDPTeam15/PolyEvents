@@ -1,6 +1,10 @@
-# Summary for week 0
+# Summary for week 1
 
 ## Alessio
+
+I implemented the sign-in with Google system using FirebaseAuth. Two displayable fragment were created to handle login as well as displaying the basic user information. My time estimates were good only for implementing the Sign-In Authentication, i.e. the estimates didn't take into account the time needed to implement the tests. 
+
+Next time, I'll probably take smaller tasks if they require to read a lot of documentation. 
 
 ## Cyrille
 I implemented a class to describe an Activity (in the event sense, will need to rename this). Also, I designed a small layout to display a summary of an activity as a "card" and add some stubs activities to the home page.
