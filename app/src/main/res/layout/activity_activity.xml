@@ -61,14 +61,16 @@
             app:layout_constraintStart_toStartOf="@+id/img_activity_logo"
             app:layout_constraintTop_toBottomOf="@+id/img_activity_logo" />
 
-        <TextView
-            android:id="@+id/txt_activity_description"
-            android:layout_width="371dp"
-            android:layout_height="wrap_content"
-            android:text="@string/text_lorem_ipsum"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView5" />
+    <TextView
+        android:id="@+id/txt_activity_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:text="@string/text_lorem_ipsum"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
         <TextView
             android:id="@+id/textView7"
@@ -79,14 +81,16 @@
             app:layout_constraintStart_toStartOf="@+id/txt_activity_description"
             app:layout_constraintTop_toBottomOf="@+id/txt_activity_description" />
 
-        <TextView
-            android:id="@+id/txt_activity_tags"
-            android:layout_width="371dp"
-            android:layout_height="wrap_content"
-            android:text="@string/text_lorem_ipsum"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView7" />
+    <TextView
+        android:id="@+id/txt_activity_tags"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:text="@string/text_lorem_ipsum"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView7" />
 
         <TextView
             android:id="@+id/txt_activity_organizer"
