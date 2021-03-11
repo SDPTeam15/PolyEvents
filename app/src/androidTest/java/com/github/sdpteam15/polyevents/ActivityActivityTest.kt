@@ -1,8 +1,11 @@
 package com.github.sdpteam15.polyevents
 
 
+import android.content.Intent
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import androidx.test.core.app.ActivityScenario
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.NoMatchingViewException
 import androidx.test.espresso.ViewAssertion
@@ -16,7 +19,8 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.github.sdpteam15.polyevents.activity.Activity
 import com.github.sdpteam15.polyevents.activity.ActivityItemAdapter
-import com.github.sdpteam15.polyevents.helper.ActivitiesQueryHelper
+import com.github.sdpteam15.polyevents.fragments.EXTRA_ACTIVITY
+import com.github.sdpteam15.polyevents.fragments.ListFragment
 import com.github.sdpteam15.polyevents.helper.ActivitiesQueryHelperInterface
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.containsString
@@ -86,19 +90,19 @@ class ActivityActivityTest {
         `when`(mockedUpcomingActivitiesProvider.getActivityFromId("3")).thenReturn(activities[2])
         // go to activities list fragment
         mainActivity = ActivityScenarioRule(MainActivity::class.java)
+        Espresso.onView(withId(R.id.ic_list)).perform(click())
         // TODO GET THE FUCKING FRAGMENT AND SET ITS QUERY HELPER
         // TODO GET THE ACTIVITY ACTIVITY TAB AND SET iTS QUERY HELPER
-
-        Espresso.onView(withId(R.id.ic_list)).perform(click())
-
-
+        // Set the activities query helper in list fragment
+        val listFragment = MainActivity.fragments[R.id.ic_list] as ListFragment
+        listFragment.currentQueryHelper = mockedUpcomingActivitiesProvider
     }
 
 
     @Test
     fun correctNumberUpcomingActivitiesDisplayed() {
         Espresso.onView(withId(R.id.recycler_activites_list))
-            .check(RecyclerViewItemCountAssertion(ActivitiesQueryHelper.getUpcomingActivities().size));
+            .check(RecyclerViewItemCountAssertion(mockedUpcomingActivitiesProvider.getUpcomingActivities().size));
     }
 
     @Test
@@ -110,19 +114,25 @@ class ActivityActivityTest {
                 click()
             )
         )
-        intended(hasComponent(ActivityActivity::class.java.getName()))
+        intended(hasComponent(ActivityActivity::class.java.name))
+
+        Intents.release()
     }
 
     @Test
     fun activityActivityShowsValuesFromGivenActivity() {
         val indexToTest: Int = 0
-        Espresso.onView(withId(R.id.recycler_activites_list)).perform(
-            RecyclerViewActions.actionOnItemAtPosition<ActivityItemAdapter.ItemViewHolder>(
-                indexToTest,
-                click()
-            )
+        val intent = Intent(
+            ApplicationProvider.getApplicationContext(),
+            ActivityActivity::class.java
         )
-        val activityToTest = ActivitiesQueryHelper.getActivityFromId("1")
+        intent.putExtra(EXTRA_ACTIVITY, "1")
+        val activityToTest = mockedUpcomingActivitiesProvider.getActivityFromId("1")
+        val scenario = ActivityScenario.launch<ActivityActivity>(intent)
+        scenario.onActivity { activity ->
+            activity.currentQueryHelper = mockedUpcomingActivitiesProvider
+        }
+        Thread.sleep(1000)
         Espresso.onView(withId(R.id.txt_activity_Name)).check(
             matches(
                 withText(
@@ -176,7 +186,9 @@ class ActivityActivityTest {
                 )
             )
         )
+        scenario.close()
         //TODO check image is correct
+
     }
 }
 

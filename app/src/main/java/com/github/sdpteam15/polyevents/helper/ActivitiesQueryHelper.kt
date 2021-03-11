@@ -4,11 +4,10 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.github.sdpteam15.polyevents.activity.Activity
 import java.time.LocalDateTime
-import java.util.function.Consumer
 
 @RequiresApi(Build.VERSION_CODES.O)
 object ActivitiesQueryHelper : ActivitiesQueryHelperInterface {
-    val activities = ArrayList<Activity>()
+    private val activities = ArrayList<Activity>()
 
     init {
 
@@ -19,7 +18,7 @@ object ActivitiesQueryHelper : ActivitiesQueryHelperInterface {
                 LocalDateTime.of(2021, 3, 7, 12, 15),
                 1F,
                 "The fish band",
-                "Kitchen", null, "1", mutableSetOf("sushi","japan","cooking")
+                "Kitchen", null, "1", mutableSetOf("sushi", "japan", "cooking")
             )
         )
 
