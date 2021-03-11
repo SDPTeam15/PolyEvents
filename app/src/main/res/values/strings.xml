@@ -11,6 +11,9 @@
 
     <!-- Profile activity strings-->
     <string name="logout_button_text">Logout</string>
+    <string name="label_activity_description">Description:</string>
+    <string name="text_lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse sed hendrerit quam. Phasellus sed nisl suscipit, dictum mauris et, imperdiet elit. Curabitur metus ipsum, ullamcorper sed augue quis, fermentum aliquet orci. Fusce suscipit dolor libero, et malesuada dolor viverra eget. Aenean imperdiet risus lectus, in consequat quam congue vel. Duis ut risus interdum, tincidunt lacus in, euismod dolor. Vestibulum ornare nulla nisl, vitae viverra libero finibus vitae. Nunc vitae lobortis ante. Nullam et erat sit amet erat faucibus elementum et non nisl. Aliquam convallis pellentesque nulla at luctus. Morbi rhoncus est quam, ac euismod urna cursus sed. Donec dignissim mi non est posuere vehicula.</string>
+    <string name="label_tags">Tags:</string>
 
     <string-array name="countries_array">
         <item>Afghanistan</item>
