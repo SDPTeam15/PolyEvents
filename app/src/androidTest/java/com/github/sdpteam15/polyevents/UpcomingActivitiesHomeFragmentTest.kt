@@ -7,9 +7,9 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.hasChildCount
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
+import androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread
 import com.github.sdpteam15.polyevents.activity.Activity
 import com.github.sdpteam15.polyevents.fragments.HomeFragment
-import com.github.sdpteam15.polyevents.fragments.ProfileFragment
 import com.github.sdpteam15.polyevents.helper.ActivitiesQueryHelperInterface
 import org.junit.Before
 import org.junit.Rule
@@ -19,6 +19,7 @@ import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
 import org.mockito.junit.MockitoJUnitRunner
 import java.time.LocalDateTime
+
 
 @RunWith(MockitoJUnitRunner::class)
 class UpcomingActivitiesHomeFragmentTest {
@@ -41,7 +42,8 @@ class UpcomingActivitiesHomeFragmentTest {
                 LocalDateTime.of(2021, 3, 7, 12, 15),
                 1F,
                 "The fish band",
-                "Kitchen", null, "1")
+                "Kitchen", null, "1"
+            )
         )
 
         activities.add(
@@ -51,26 +53,31 @@ class UpcomingActivitiesHomeFragmentTest {
                 LocalDateTime.of(2021, 3, 7, 15, 0),
                 1.5F,
                 "The Aqua Poney team",
-                "Swimming pool", null, "2")
+                "Swimming pool", null, "2"
+            )
         )
 
         activities.add(
             Activity(
                 "Concert",
                 "Super noisy activity !",
-                LocalDateTime.of(2021, 3, 7, 21, 15),
+                LocalDateTime.of(2021, 3, 7, 17, 15),
                 2.75F,
                 "AcademiC DeCibel",
-                "Concert Hall", null, "3"))
+                "Concert Hall", null, "3"
+            )
+        )
 
         activities.add(
             Activity(
                 "Cricket",
                 "Outdoor activity !",
-                LocalDateTime.of(2021, 8, 7, 21, 15),
+                LocalDateTime.of(2021, 3, 7, 18, 15),
                 1.75F,
                 "Cricket club",
-                "Field", null, "4"))
+                "Field", null, "4"
+            )
+        )
 
         mockedUpcomingActivitiesProvider = mock(ActivitiesQueryHelperInterface::class.java)
         `when`(mockedUpcomingActivitiesProvider.getUpcomingActivities()).thenReturn(activities)
@@ -80,7 +87,10 @@ class UpcomingActivitiesHomeFragmentTest {
         homeFragment.activitiesQueryHelper = mockedUpcomingActivitiesProvider
 
         // Update the content to use the mock activities query helper
-        homeFragment.updateContent()
+        runOnUiThread {
+            // Stuff that updates the UI
+            homeFragment.updateContent()
+        }
 
         // Initially should be on home fragment but click on it if it gets modified
         Espresso.onView(withId(R.id.ic_home)).perform(click())
@@ -88,6 +98,12 @@ class UpcomingActivitiesHomeFragmentTest {
 
     @Test
     fun correctNumberUpcomingActivitiesDisplayed() {
-        Espresso.onView(withId(R.id.id_upcoming_activities_list)).check(matches(hasChildCount(activities.size)))
+        Espresso.onView(withId(R.id.id_upcoming_activities_list)).check(
+            matches(
+                hasChildCount(
+                    activities.size
+                )
+            )
+        )
     }
 }
