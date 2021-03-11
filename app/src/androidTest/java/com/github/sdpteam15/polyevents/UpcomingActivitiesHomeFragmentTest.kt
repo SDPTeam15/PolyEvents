@@ -8,6 +8,8 @@ import androidx.test.espresso.matcher.ViewMatchers.hasChildCount
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.github.sdpteam15.polyevents.activity.Activity
+import com.github.sdpteam15.polyevents.fragments.HomeFragment
+import com.github.sdpteam15.polyevents.fragments.ProfileFragment
 import com.github.sdpteam15.polyevents.helper.ActivitiesQueryHelperInterface
 import org.junit.Before
 import org.junit.Rule
@@ -61,10 +63,26 @@ class UpcomingActivitiesHomeFragmentTest {
                 "AcademiC DeCibel",
                 "Concert Hall", null, "3"))
 
+        activities.add(
+            Activity(
+                "Cricket",
+                "Outdoor activity !",
+                LocalDateTime.of(2021, 8, 7, 21, 15),
+                1.75F,
+                "Cricket club",
+                "Field", null, "4"))
+
         mockedUpcomingActivitiesProvider = mock(ActivitiesQueryHelperInterface::class.java)
         `when`(mockedUpcomingActivitiesProvider.getUpcomingActivities()).thenReturn(activities)
 
-        // Initially, we are on the home page, click on it to be sure
+        // Set the activities query helper in home fragment
+        val homeFragment = MainActivity.fragments[R.id.ic_home] as HomeFragment
+        homeFragment.activitiesQueryHelper = mockedUpcomingActivitiesProvider
+
+        // Update the content to use the mock activities query helper
+        homeFragment.updateContent()
+
+        // Initially should be on home fragment but click on it if it gets modified
         Espresso.onView(withId(R.id.ic_home)).perform(click())
     }
 

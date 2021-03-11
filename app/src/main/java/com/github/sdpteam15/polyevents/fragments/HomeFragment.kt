@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.RequiresApi
@@ -13,16 +12,22 @@ import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.activity.Activity
 import com.github.sdpteam15.polyevents.helper.ActivitiesQueryHelper
+import com.github.sdpteam15.polyevents.helper.ActivitiesQueryHelperInterface
 
 /**
  * The fragment for the home page.
  */
 class HomeFragment : Fragment() {
 
+    lateinit var activitiesQueryHelper: ActivitiesQueryHelperInterface
+    private lateinit var listUpcomingActivitiesLayout: LinearLayout
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setHasOptionsMenu(true)
+
+        activitiesQueryHelper = ActivitiesQueryHelper
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -32,15 +37,26 @@ class HomeFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val fragmentView = inflater.inflate(R.layout.fragment_home, container, false)
-        val linearLayout = fragmentView.findViewById<LinearLayout>(R.id.id_upcoming_activities_list)
+        listUpcomingActivitiesLayout = fragmentView.findViewById<LinearLayout>(R.id.id_upcoming_activities_list)
 
-        val activities = ActivitiesQueryHelper.getUpcomingActivities()
-
-        for (activity: Activity in activities) {
-            setupActivityTab(activity, linearLayout)
-        }
+        updateContent()
 
         return fragmentView
+    }
+
+    /**
+     * Update the content of the upcoming activities
+     */
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun updateContent() {
+        // Remove all the content first
+        listUpcomingActivitiesLayout.removeAllViews()
+
+        val activities = activitiesQueryHelper.getUpcomingActivities()
+
+        for (activity: Activity in activities) {
+            setupActivityTab(activity)
+        }
     }
 
     /**
@@ -49,7 +65,7 @@ class HomeFragment : Fragment() {
      * @param incomingActivities : the linear layout where to add this new activity tab
      */
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun setupActivityTab(activity: Activity, incomingActivities: LinearLayout) {
+    private fun setupActivityTab(activity: Activity) {
         val activityTab = layoutInflater.inflate(R.layout.tab_activity, null)
 
         activityTab.findViewById<TextView>(R.id.id_activity_name_text).text = activity.name
@@ -63,6 +79,6 @@ class HomeFragment : Fragment() {
         // TODO : set the icon of the activity
         //activityTab.findViewById<ImageView>(R.id.id_activity_icon).setImageBitmap(activity.icon)
 
-        incomingActivities.addView(activityTab)
+        listUpcomingActivitiesLayout.addView(activityTab)
     }
 }
