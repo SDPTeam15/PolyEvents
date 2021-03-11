@@ -18,6 +18,12 @@ Next time, I will split the functionalities in more branches so that the PR can 
 
 ## Mathieu
 
+I implemented the UI for the mainActivity. It is composed of a Navigation bar used to switch the active fragment and a search bar which will be implemented in the future.
+
+The estimated time for the task was way to short. I spent the estimated time spent to search how to implement a navigation bar and the search button and then about the same time to implement and test.
+
+Next time, I will take into account the search time, even if it may be a lot easier than I think it is. So that I have time to take another task or review more code from pull request.
+
 ## Robin
 
 I implemented an adapter from the Firebase class by Google. This adapter will be used to support the concept of user in the rest of the application, for example for permissions.
