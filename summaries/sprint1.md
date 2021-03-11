@@ -2,7 +2,9 @@
 
 ## Alessio
 
-I implemented the sign-in with Google system using FirebaseAuth. Two displayable fragment were created to handle login as well as displaying the basic user information. My time estimates were good only for implementing the Sign-In Authentication, i.e. the estimates didn't take into account the time needed to implement the tests. 
+I implemented the sign-in with Google system using FirebaseAuth. Two displayable fragment were created to handle login as well as displaying the basic user information.
+ 
+My time estimates were good only for implementing the Sign-In Authentication, i.e. the estimates didn't take into account the time needed to implement the tests. 
 
 Next time, I'll probably take smaller tasks if they require to read a lot of documentation. 
 
@@ -15,6 +17,12 @@ My time estimate was for the activity class was somewhat good (a bit too short) 
 Next time, I will split the functionalities in more branches so that the PR can be easily reviewed and merged earlier during the week so that others can use my code (or at least its interface) if needed.
 
 ## Florian (Scrum Master)
+
+I implemented a RecyclerView and its adapter to show a scrollable list of activities under the list section. I also implemented an (android) Activity showing the activity information.
+
+The estimated time for the task was not enough. I did not take the tests part into account and spent a lot of time searching for documentation and solutions to test my code.
+
+Next time, I'll manage my time to take tests into account.
 
 ## Mathieu
 
@@ -35,3 +43,9 @@ Next time, I'll break the Product Backlog in smaller task and smaller branches.
 ## Stephane
 
 ## Overall team
+
+We implemented all the tasks assigned this week from our sprint backlog and did their corresponding tests. We also took some time to read the documentation about firebase to prepare the database for incoming weeks.
+
+Our time estimates were bad in general and we took much more time than expected to do our tasks. This was mainly due to test time underestimates and documentation reading. We'll try to take this into account for next week.
+
+We did a meeting on tuesday and most of us already finished our tasks. Alessio, Cyrille and Florian had a hard time finding how to test the Fragments but we finally found a good solution to do it.
