@@ -15,6 +15,9 @@ import com.github.sdpteam15.polyevents.helper.ActivitiesQueryHelperInterface
  */
 class ActivityActivity : AppCompatActivity() {
 
+    /**
+     * The data source
+     */
     var currentQueryHelper: ActivitiesQueryHelperInterface = ActivitiesQueryHelper
         @RequiresApi(Build.VERSION_CODES.O)
         set(value) {
@@ -26,6 +29,12 @@ class ActivityActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         updateInfos()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_activity)
+
     }
 
     /**
@@ -59,10 +68,5 @@ class ActivityActivity : AppCompatActivity() {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_activity)
-
-    }
 
 }

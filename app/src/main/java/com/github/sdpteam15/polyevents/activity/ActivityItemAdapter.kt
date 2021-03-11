@@ -30,6 +30,7 @@ class ActivityItemAdapter(
         private val activityName = view.findViewById<TextView>(R.id.id_activity_name_text)
         private val activitySchedule = view.findViewById<TextView>(R.id.id_activity_schedule_text)
         private val activityZone = view.findViewById<TextView>(R.id.id_activity_zone)
+        private val activityDescription = view.findViewById<TextView>(R.id.id_activity_description)
         private val activityIcon = view.findViewById<ImageView>(R.id.id_activity_icon)
 
         /**
@@ -40,6 +41,7 @@ class ActivityItemAdapter(
             activityName.text = activity.name
             activitySchedule.text = "at ${activity.getTime()}"
             activityZone.text = activity.zone
+            activityDescription.text = activity.description
 
             // TODO : set the icon of the activity
             //activityIcon.setImageBitmap(activity.icon)
