@@ -17,7 +17,9 @@ import com.github.sdpteam15.polyevents.helper.ActivitiesQueryHelper
 import com.github.sdpteam15.polyevents.helper.ActivitiesQueryHelperInterface
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 
-
+/**
+ * Extra containing the activity ID to show on the launched activity page
+ */
 const val EXTRA_ACTIVITY = "com.github.sdpteam15.polyevents.activity.ACTIVITY_ID"
 
 /**
