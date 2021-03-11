@@ -10,23 +10,29 @@ import com.github.sdpteam15.polyevents.fragments.EXTRA_ACTIVITY
 import com.github.sdpteam15.polyevents.helper.ActivitiesQueryHelper
 import com.github.sdpteam15.polyevents.helper.ActivitiesQueryHelperInterface
 
+/**
+ * An activity containing activities description
+ */
 class ActivityActivity : AppCompatActivity() {
 
     var currentQueryHelper: ActivitiesQueryHelperInterface = ActivitiesQueryHelper
         @RequiresApi(Build.VERSION_CODES.O)
         set(value) {
             field = value
-            writeInfos()
+            updateInfos()
         }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onResume() {
         super.onResume()
-        writeInfos()
+        updateInfos()
     }
 
+    /**
+     * Updates the activity information
+     */
     @RequiresApi(Build.VERSION_CODES.O)
-    fun writeInfos() {
+    fun updateInfos() {
         val id = intent.getStringExtra(EXTRA_ACTIVITY)
         val activity = currentQueryHelper.getActivityFromId(id!!)
         // Capture the layout's TextView and set the string as its text
