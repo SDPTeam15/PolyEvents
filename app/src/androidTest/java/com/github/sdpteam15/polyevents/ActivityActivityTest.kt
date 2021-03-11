@@ -91,8 +91,6 @@ class ActivityActivityTest {
         // go to activities list fragment
         mainActivity = ActivityScenarioRule(MainActivity::class.java)
         Espresso.onView(withId(R.id.ic_list)).perform(click())
-        // TODO GET THE FUCKING FRAGMENT AND SET ITS QUERY HELPER
-        // TODO GET THE ACTIVITY ACTIVITY TAB AND SET iTS QUERY HELPER
         // Set the activities query helper in list fragment
         val listFragment = MainActivity.fragments[R.id.ic_list] as ListFragment
         listFragment.currentQueryHelper = mockedUpcomingActivitiesProvider
