@@ -1,6 +1,5 @@
 package com.github.sdpteam15.polyevents.user
 
-import com.github.sdpteam15.polyevents.database.FakeDatabase
 import com.github.sdpteam15.polyevents.database.Database
 import com.google.firebase.auth.FirebaseUser
 import org.junit.Before

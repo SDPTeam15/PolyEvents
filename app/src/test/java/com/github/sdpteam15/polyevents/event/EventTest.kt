@@ -1,7 +1,7 @@
 package com.github.sdpteam15.polyevents.event
 
 import com.github.sdpteam15.polyevents.database.Database.Companion.currentDatabase
-import com.github.sdpteam15.polyevents.database.FakeDatabase
+import com.github.sdpteam15.polyevents.user.FakeDatabase
 import org.hamcrest.CoreMatchers.hasItem
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.MatcherAssert.assertThat
@@ -19,10 +19,10 @@ class EventTest {
     lateinit var event: Event
 
     @Before
-    fun createNewActivity() {
+    fun createNewEvent() {
         currentDatabase = FakeDatabase
         event = Event(
-            "Test Activity", "Activity to make tests !",
+            "Test Event", "Event to make tests !",
             LocalDateTime.of(2020, 3, 15, 14, 0),
             3.5F,
             "The best organizer", "A", null, "1"
@@ -47,16 +47,16 @@ class EventTest {
 
     @Test
     fun negativeDurationIsResetToDefault() {
-        val newActivity = Event(
-            "Test Activity", "Activity to make tests !",
+        val newEvent = Event(
+            "Test Event", "Event to make tests !",
             LocalDateTime.of(2020, 3, 15, 14, 0),
             -2.25F,
             "The best organizer", "A", null, "2"
         )
 
-        assertThat(newActivity.durationHours, Is(EVENT_DEFAULT_DURATION))
-        newActivity.durationHours = -1.5F
-        assertThat(newActivity.durationHours, Is(EVENT_DEFAULT_DURATION))
+        assertThat(newEvent.durationHours, Is(EVENT_DEFAULT_DURATION))
+        newEvent.durationHours = -1.5F
+        assertThat(newEvent.durationHours, Is(EVENT_DEFAULT_DURATION))
     }
 
     @Test

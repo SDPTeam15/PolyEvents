@@ -1,6 +1,5 @@
 package com.github.sdpteam15.polyevents.user
 
-import com.github.sdpteam15.polyevents.database.FakeDatabase
 import com.github.sdpteam15.polyevents.database.Database
 import org.junit.Before
 import org.junit.Test
