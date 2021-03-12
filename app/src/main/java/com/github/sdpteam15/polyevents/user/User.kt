@@ -1,7 +1,7 @@
 package com.github.sdpteam15.polyevents.user
 
+import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
-import com.github.sdpteam15.polyevents.database.DatabaseObject
 import com.github.sdpteam15.polyevents.database.FirebaseUserAdapter
 import com.github.sdpteam15.polyevents.database.FirebaseUserInterface
 import com.google.firebase.auth.FirebaseAuth
@@ -62,7 +62,7 @@ class User private constructor(override val FirebaseUser: FirebaseUserInterface)
 
     private var profileList: MutableList<ProfileInterface>? = null
     private var currentProfileId: Int = 0
-    var database: DatabaseInterface = DatabaseObject.Singleton
+    var database: DatabaseInterface = currentDatabase
 
     private fun FromDatabase(): MutableList<ProfileInterface> {
         if (profileList == null)

@@ -30,11 +30,11 @@ class ProfileFragmentTest {
     @JvmField
     var testRule = ActivityScenarioRule<MainActivity>(MainActivity::class.java)
 
-    lateinit var user:UserInterface
-    lateinit var mockedFirebaseUser:FirebaseUserInterface
+    lateinit var user: UserInterface
+    lateinit var mockedFirebaseUser: FirebaseUserInterface
 
     @Before
-    fun setup(){
+    fun setup() {
         mockedFirebaseUser = mock(FirebaseUserInterface::class.java)
         user = User.invoke(mockedFirebaseUser)
         `when`(mockedFirebaseUser.email).thenReturn(emailTest)
@@ -56,7 +56,7 @@ class ProfileFragmentTest {
     }
 
     @Test
-    fun backToSignInIfCurrentUserNull(){
+    fun backToSignInIfCurrentUserNull() {
         FirebaseAuth.getInstance().signOut()
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
         profileFragment.currentUser = null
@@ -74,7 +74,7 @@ class ProfileFragmentTest {
     }
 
     @Test
-    fun signInButtonRedirectToProfileFragmentAfterSuccess(){
+    fun signInButtonRedirectToProfileFragmentAfterSuccess() {
         FirebaseAuth.getInstance().signOut()
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         loginFragment.currentUser = null
@@ -88,9 +88,9 @@ class ProfileFragmentTest {
         onView(withId(R.id.btnLogin)).perform(click())
         onView(withId(R.id.id_fragment_profile)).check(matches(isDisplayed()))
 
-        onView(withId(R.id.displayName)).check(matches(withText(Matchers.equalTo(diplayNameTest))))
-        onView(withId(R.id.displayEmail)).check(matches(withText(Matchers.equalTo(emailTest))))
-        onView(withId(R.id.displayUID)).check(matches(withText(Matchers.equalTo(uidTest))))
+        onView(withId(R.id.profileName)).check(matches(withText(Matchers.equalTo(diplayNameTest))))
+        onView(withId(R.id.ProfileEmail)).check(matches(withText(Matchers.equalTo(emailTest))))
+        onView(withId(R.id.profileUID)).check(matches(withText(Matchers.equalTo(uidTest))))
     }
 
 
