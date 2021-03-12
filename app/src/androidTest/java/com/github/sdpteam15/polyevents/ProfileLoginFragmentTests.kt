@@ -5,7 +5,6 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
-import com.github.sdpteam15.polyevents.database.FirebaseUserInterface
 import com.github.sdpteam15.polyevents.fragments.LoginFragment
 import com.github.sdpteam15.polyevents.fragments.ProfileFragment
 import com.github.sdpteam15.polyevents.user.User
@@ -20,6 +19,8 @@ import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
 import org.mockito.junit.MockitoJUnitRunner
 
+import com.github.sdpteam15.polyevents.database.DatabaseUserInterface
+
 private const val diplayNameTest = "Test displayName"
 private const val emailTest = "Test email"
 private const val uidTest = "Test uid"
@@ -31,15 +32,15 @@ class ProfileFragmentTest {
     var testRule = ActivityScenarioRule<MainActivity>(MainActivity::class.java)
 
     lateinit var user: UserInterface
-    lateinit var mockedFirebaseUser: FirebaseUserInterface
+    lateinit var mockedDatabaseUser: DatabaseUserInterface
 
     @Before
     fun setup() {
-        mockedFirebaseUser = mock(FirebaseUserInterface::class.java)
-        user = User.invoke(mockedFirebaseUser)
-        `when`(mockedFirebaseUser.email).thenReturn(emailTest)
-        `when`(mockedFirebaseUser.displayName).thenReturn(diplayNameTest)
-        `when`(mockedFirebaseUser.uid).thenReturn(uidTest)
+        mockedDatabaseUser = mock(DatabaseUserInterface::class.java)
+        `when`(mockedDatabaseUser.email).thenReturn(emailTest)
+        `when`(mockedDatabaseUser.displayName).thenReturn(diplayNameTest)
+        `when`(mockedDatabaseUser.uid).thenReturn(uidTest)
+        user = User.invoke(mockedDatabaseUser)
         testRule = ActivityScenarioRule<MainActivity>(MainActivity::class.java)
     }
 

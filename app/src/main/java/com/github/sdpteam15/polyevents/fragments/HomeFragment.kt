@@ -10,24 +10,19 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.activity.Activity
-import com.github.sdpteam15.polyevents.helper.ActivitiesQueryHelper
-import com.github.sdpteam15.polyevents.helper.ActivitiesQueryHelperInterface
+import com.github.sdpteam15.polyevents.event.Event
+import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 
 /**
  * The fragment for the home page.
  */
 class HomeFragment : Fragment() {
 
-    lateinit var activitiesQueryHelper: ActivitiesQueryHelperInterface
-    private lateinit var listUpcomingActivitiesLayout: LinearLayout
+    private lateinit var listUpcomingEventsLayout: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setHasOptionsMenu(true)
-
-        activitiesQueryHelper = ActivitiesQueryHelper
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -37,7 +32,8 @@ class HomeFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val fragmentView = inflater.inflate(R.layout.fragment_home, container, false)
-        listUpcomingActivitiesLayout = fragmentView.findViewById<LinearLayout>(R.id.id_upcoming_activities_list)
+        listUpcomingEventsLayout =
+            fragmentView.findViewById<LinearLayout>(R.id.id_upcoming_events_list)
 
         updateContent()
 
@@ -45,40 +41,40 @@ class HomeFragment : Fragment() {
     }
 
     /**
-     * Update the content of the upcoming activities
+     * Update the content of the upcoming events
      */
     @RequiresApi(Build.VERSION_CODES.O)
     fun updateContent() {
         // Remove all the content first
-        listUpcomingActivitiesLayout.removeAllViews()
+        listUpcomingEventsLayout.removeAllViews()
 
-        val activities = activitiesQueryHelper.getUpcomingActivities()
+        val events = currentDatabase.getUpcomingEvents()
 
-        for (activity: Activity in activities) {
-            setupActivityTab(activity)
+        for (event: Event in events) {
+            setupEventTab(event)
         }
     }
 
     /**
-     * Setup the layout for an activity tab and add it to the layout provided
-     * @param activity : the activity to add as a tab
-     * @param incomingActivities : the linear layout where to add this new activity tab
+     * Setup the layout for an event tab and add it to the layout provided
+     * @param event : the event to add as a tab
      */
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun setupActivityTab(activity: Activity) {
-        val activityTab = layoutInflater.inflate(R.layout.tab_activity, null)
+    private fun setupEventTab(event: Event) {
+        val eventTab = layoutInflater.inflate(R.layout.tab_event, null)
 
-        activityTab.findViewById<TextView>(R.id.id_activity_name_text).text = activity.name
+        eventTab.findViewById<TextView>(R.id.id_event_name_text).text = event.name
 
-        activityTab.findViewById<TextView>(R.id.id_activity_schedule_text).text = getString(R.string.at_hour_text, activity.getTime())
+        eventTab.findViewById<TextView>(R.id.id_event_schedule_text).text =
+            getString(R.string.at_hour_text, event.getTime())
 
-        activityTab.findViewById<TextView>(R.id.id_activity_zone).text = activity.zone
+        eventTab.findViewById<TextView>(R.id.id_event_zone).text = event.zone
 
-        activityTab.findViewById<TextView>(R.id.id_activity_description).text = activity.description
+        eventTab.findViewById<TextView>(R.id.id_event_description).text = event.description
 
-        // TODO : set the icon of the activity
-        //activityTab.findViewById<ImageView>(R.id.id_activity_icon).setImageBitmap(activity.icon)
+        // TODO : set the icon of the event
+        //eventTab.findViewById<ImageView>(R.id.id_event_icon).setImageBitmap(event.icon)
 
-        listUpcomingActivitiesLayout.addView(activityTab)
+        listUpcomingEventsLayout.addView(eventTab)
     }
 }

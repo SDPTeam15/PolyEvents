@@ -1,10 +1,13 @@
 package com.github.sdpteam15.polyevents.database
 
+/**
+ * Database
+ */
 object Database {
-    var mutableCurrentDatabase: DatabaseInterface? = null
+    private var mutableCurrentDatabase: DatabaseInterface? = null
     var currentDatabase: DatabaseInterface
         get() {
-            mutableCurrentDatabase = mutableCurrentDatabase ?: FirestoreDatabaseProvider
+            mutableCurrentDatabase = mutableCurrentDatabase ?: FakeDatabase
             return mutableCurrentDatabase!!
         }
         set(value) {

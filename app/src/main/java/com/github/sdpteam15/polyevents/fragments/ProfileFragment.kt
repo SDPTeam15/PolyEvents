@@ -20,23 +20,27 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions.changeFragment
 import com.github.sdpteam15.polyevents.user.Profile
 import com.github.sdpteam15.polyevents.user.UserInterface
 import com.github.sdpteam15.polyevents.user.User
-import com.github.sdpteam15.polyevents.user.User.Companion.CurrentUser
+import com.github.sdpteam15.polyevents.user.User.Companion.currentUser
 import com.google.firebase.auth.FirebaseAuth
 import kotlin.properties.Delegates
 
 /**
  *  [Fragment] subclass that represents the profile page.
  */
-class ProfileFragment : Fragment(){
+class ProfileFragment : Fragment() {
     //User that we can set manually for testing
-    private var testUser: UserInterface?=null
+    private var testUser: UserInterface? = null
+
     //Allow us to use a fake user for the tests
     var currentUser: UserInterface?
-        get(){
-            if( testUser!= null) {return testUser}
-            else {return User.CurrentUser}
+        get() {
+            if (testUser != null) {
+                return testUser
+            } else {
+                return User.currentUser
+            }
         }
-        set(value){
+        set(value) {
             testUser = value
         }
 
@@ -60,7 +64,7 @@ class ProfileFragment : Fragment(){
         viewRoot.findViewById<Button>(R.id.btnUpdateInfos).setOnClickListener {
             val map = HashMap<String,String>()
             map["username"] = viewRoot.findViewById<EditText>(R.id.profileUsernameET).text.toString()
-            currentDatabase.updateUserInformation(map,update,"Alessio2", CurrentUser!!)
+            currentDatabase.updateUserInformation(map,update,"Alessio2", currentUser!!)
 
         }
         //Replace the fields in the fragment by the user informations
