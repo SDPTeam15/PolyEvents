@@ -9,8 +9,9 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread
 import com.github.sdpteam15.polyevents.activity.Activity
+import com.github.sdpteam15.polyevents.database.Database.Companion.currentDatabase
+import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.fragments.HomeFragment
-import com.github.sdpteam15.polyevents.helper.ActivitiesQueryHelperInterface
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -25,7 +26,7 @@ import java.time.LocalDateTime
 class UpcomingActivitiesHomeFragmentTest {
 
     lateinit var activities: ArrayList<Activity>
-    lateinit var mockedUpcomingActivitiesProvider: ActivitiesQueryHelperInterface
+    lateinit var mockedUpcomingActivitiesProvider: DatabaseInterface
 
     @Rule
     @JvmField
@@ -79,12 +80,12 @@ class UpcomingActivitiesHomeFragmentTest {
             )
         )
 
-        mockedUpcomingActivitiesProvider = mock(ActivitiesQueryHelperInterface::class.java)
+        mockedUpcomingActivitiesProvider = mock(DatabaseInterface::class.java)
         `when`(mockedUpcomingActivitiesProvider.getUpcomingActivities()).thenReturn(activities)
 
         // Set the activities query helper in home fragment
         val homeFragment = MainActivity.fragments[R.id.ic_home] as HomeFragment
-        homeFragment.activitiesQueryHelper = mockedUpcomingActivitiesProvider
+        currentDatabase = mockedUpcomingActivitiesProvider
 
         // Update the content to use the mock activities query helper
         runOnUiThread {

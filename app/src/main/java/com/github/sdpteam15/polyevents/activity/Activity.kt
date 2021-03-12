@@ -3,20 +3,22 @@ package com.github.sdpteam15.polyevents.activity
 import android.graphics.Bitmap
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.github.sdpteam15.polyevents.database.Database.Companion.currentDatabase
 import java.time.LocalDateTime
 
+const val ACTIVITY_DEFAULT_DURATION = 1F
+
 /**
- * Describe an activity :
- * - its name
- * - description
- * - when it happens
- * - its duration
- * - the organizer of this activity
- * - the zone where the activity is
- * - an icon for this activity to display
- * - an id to uniquely identify the activity
- * - the tags the activity corresponds to
- *
+ * Describe an activit
+ * @property name its name
+ * @property description description
+ * @property start when it happens
+ * @property organizer its duration
+ * @param durationHours the organizer of this activity
+ * @property organizer the zone where the activity is
+ * @property icon an icon for this activity to display
+ * @property id an id to uniquely identify the activity
+ * @property tags the tags the activity corresponds to
  */
 class Activity(
     var name: String,
@@ -25,20 +27,21 @@ class Activity(
     durationHours: Float,
     var organizer: String,
     var zone: String,
-    var icon: Bitmap?,
+    var icon: Bitmap? = null,
     val id: String,
     val tags: MutableSet<String> = mutableSetOf()
 ) {
 
-    var durationHours: Float = durationHours
+    /**
+     * Duration of the activity
+     */
+    var durationHours: Float = ACTIVITY_DEFAULT_DURATION
         set(durationH) {
-            field = if (durationH < 0) Companion.DEFAULT_DURATION else durationH
+            field = if (durationH < 0) ACTIVITY_DEFAULT_DURATION else durationH
         }
 
     init {
-        if (durationHours < 0) {
-            this@Activity.durationHours = Companion.DEFAULT_DURATION
-        }
+        this@Activity.durationHours = durationHours
     }
 
     /**
@@ -47,7 +50,10 @@ class Activity(
      * @return true if this tag was successfully added
      */
     fun addTag(newTag: String): Boolean {
-        return tags.add(newTag)
+        val result = tags.add(newTag)
+        if (result)
+            currentDatabase.updateActivity(this);
+        return result
     }
 
     /**
@@ -57,7 +63,10 @@ class Activity(
      * was not present
      */
     fun removeTag(tag: String): Boolean {
-        return tags.remove(tag)
+        val result = tags.remove(tag)
+        if (result)
+            currentDatabase.updateActivity(this);
+        return result
     }
 
     /**
@@ -69,9 +78,5 @@ class Activity(
         val hour = start.hour.toString().padStart(2, '0')
         val minute = start.minute.toString().padStart(2, '0')
         return "$hour:$minute"
-    }
-
-    companion object {
-        const val DEFAULT_DURATION = 1F
     }
 }

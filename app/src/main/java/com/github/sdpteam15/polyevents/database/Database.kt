@@ -1,17 +1,40 @@
-package com.github.sdpteam15.polyevents.helper
+package com.github.sdpteam15.polyevents.database
 
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.github.sdpteam15.polyevents.activity.Activity
+import com.github.sdpteam15.polyevents.user.ProfileInterface
+import com.github.sdpteam15.polyevents.user.UserInterface
 import java.time.LocalDateTime
 
-@RequiresApi(Build.VERSION_CODES.O)
-object ActivitiesQueryHelper : ActivitiesQueryHelperInterface {
-    private val activities = ArrayList<Activity>()
+/**
+ * Database
+ */
+class Database : DatabaseInterface {
+    companion object {
+        var mutableCurrentDatabase: DatabaseInterface? = null
+        var currentDatabase: DatabaseInterface
+            get() {
+                mutableCurrentDatabase = mutableCurrentDatabase ?: Database()
+                return mutableCurrentDatabase!!
+            }
+            set(value) {
+                mutableCurrentDatabase = value
+            }
+    }
 
     init {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            initActivities()
+        }
+    }
 
-        activities.add(
+    private var activities: ArrayList<Activity>? = null
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun initActivities() {
+        activities = ArrayList()
+        activities?.add(
             Activity(
                 "Sushi demo",
                 "Super hungry activity !",
@@ -21,8 +44,7 @@ object ActivitiesQueryHelper : ActivitiesQueryHelperInterface {
                 "Kitchen", null, "1", mutableSetOf("sushi", "japan", "cooking")
             )
         )
-
-        activities.add(
+        activities?.add(
             Activity(
                 "Aqua Poney",
                 "Super cool activity !" +
@@ -34,8 +56,7 @@ object ActivitiesQueryHelper : ActivitiesQueryHelperInterface {
                 "Swimming pool", null, "2"
             )
         )
-
-        activities.add(
+        activities?.add(
             Activity(
                 "Saxophone demo",
                 "Super noisy activity !",
@@ -45,7 +66,7 @@ object ActivitiesQueryHelper : ActivitiesQueryHelperInterface {
                 "Concert Hall", null, "3"
             )
         )
-        activities.add(
+        activities?.add(
             Activity(
                 "Sushi demo",
                 "Super hungry activity !",
@@ -55,8 +76,7 @@ object ActivitiesQueryHelper : ActivitiesQueryHelperInterface {
                 "Kitchen", null, "4"
             )
         )
-
-        activities.add(
+        activities?.add(
             Activity(
                 "Aqua Poney",
                 "Super cool activity !" +
@@ -68,8 +88,7 @@ object ActivitiesQueryHelper : ActivitiesQueryHelperInterface {
                 "Swimming pool", null, "5"
             )
         )
-
-        activities.add(
+        activities?.add(
             Activity(
                 "Saxophone demo",
                 "Super noisy activity !",
@@ -79,7 +98,7 @@ object ActivitiesQueryHelper : ActivitiesQueryHelperInterface {
                 "Concert Hall", null, "6"
             )
         )
-        activities.add(
+        activities?.add(
             Activity(
                 "Sushi demo",
                 "Super hungry activity !",
@@ -89,8 +108,7 @@ object ActivitiesQueryHelper : ActivitiesQueryHelperInterface {
                 "Kitchen", null, "7"
             )
         )
-
-        activities.add(
+        activities?.add(
             Activity(
                 "Aqua Poney",
                 "Super cool activity !" +
@@ -102,8 +120,7 @@ object ActivitiesQueryHelper : ActivitiesQueryHelperInterface {
                 "Swimming pool", null, "8"
             )
         )
-
-        activities.add(
+        activities?.add(
             Activity(
                 "Saxophone demo",
                 "Super noisy activity !",
@@ -113,7 +130,7 @@ object ActivitiesQueryHelper : ActivitiesQueryHelperInterface {
                 "Concert Hall", null, "9"
             )
         )
-        activities.add(
+        activities?.add(
             Activity(
                 "Sushi demo",
                 "Super hungry activity !",
@@ -123,8 +140,7 @@ object ActivitiesQueryHelper : ActivitiesQueryHelperInterface {
                 "Kitchen", null, "10"
             )
         )
-
-        activities.add(
+        activities?.add(
             Activity(
                 "Aqua Poney",
                 "Super cool activity !" +
@@ -136,8 +152,7 @@ object ActivitiesQueryHelper : ActivitiesQueryHelperInterface {
                 "Swimming pool", null, "11"
             )
         )
-
-        activities.add(
+        activities?.add(
             Activity(
                 "Saxophone demo",
                 "Super noisy activity !",
@@ -147,7 +162,7 @@ object ActivitiesQueryHelper : ActivitiesQueryHelperInterface {
                 "Concert Hall", null, "12"
             )
         )
-        activities.add(
+        activities?.add(
             Activity(
                 "Sushi demo",
                 "Super hungry activity !",
@@ -157,8 +172,7 @@ object ActivitiesQueryHelper : ActivitiesQueryHelperInterface {
                 "Kitchen", null, "13"
             )
         )
-
-        activities.add(
+        activities?.add(
             Activity(
                 "Aqua Poney",
                 "Super cool activity !" +
@@ -170,8 +184,7 @@ object ActivitiesQueryHelper : ActivitiesQueryHelperInterface {
                 "Swimming pool", null, "14"
             )
         )
-
-        activities.add(
+        activities?.add(
             Activity(
                 "Saxophone demo",
                 "Super noisy activity !",
@@ -183,14 +196,34 @@ object ActivitiesQueryHelper : ActivitiesQueryHelperInterface {
         )
     }
 
-    override fun getUpcomingActivities(nbr: Int): List<Activity> {
-        // TODO : Replace these stubs with a query to the database for (sorted) upcoming activities
-        return activities
+    override fun getListProfile(uid: String, user: UserInterface): List<ProfileInterface> =
+        emptyList()
+
+    override fun addProfile(profile: ProfileInterface, uid: String, user: UserInterface): Boolean =
+        true
+
+    override fun removeProfile(
+        profile: ProfileInterface,
+        uid: String,
+        user: UserInterface
+    ): Boolean = true
+
+    override fun updateProfile(profile: ProfileInterface, user: UserInterface): Boolean = true
+
+    override fun getListActivity(
+        matcher: String?,
+        number: Int?,
+        profile: ProfileInterface
+    ): List<Activity> = activities as List<Activity>
+
+    override fun getUpcomingActivities(number: Int, profile: ProfileInterface): List<Activity> =
+        activities as List<Activity>
+
+    override fun getActivityFromId(id: String, profile: ProfileInterface): Activity? = try {
+        activities?.single { activity -> activity.id == id }
+    } catch (e: NoSuchElementException) {
+        null
     }
 
-    override fun getActivityFromId(id: String): Activity {
-        // TODO : Replace with a query to the database for the given activity
-        return activities.single { activity -> activity.id == id }
-    }
-
+    override fun updateActivity(Activity: Activity, profile: ProfileInterface): Boolean = true
 }

@@ -12,9 +12,8 @@ import com.github.sdpteam15.polyevents.R
 
 /**
  * Adapts activities to RecyclerView's ItemViewHolders
- * Takes :
- * - The list of activities to adapt
- * - A listener that will be triggered on click of an ItemViewHolder element
+ * @param activities The list of activities to adapt
+ * @param listener A listener that will be triggered on click of an ItemViewHolder element
  */
 class ActivityItemAdapter(
     private val activities: List<Activity>,

@@ -19,9 +19,9 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.github.sdpteam15.polyevents.activity.Activity
 import com.github.sdpteam15.polyevents.activity.ActivityItemAdapter
-import com.github.sdpteam15.polyevents.fragments.EXTRA_ACTIVITY
-import com.github.sdpteam15.polyevents.fragments.ListFragment
-import com.github.sdpteam15.polyevents.helper.ActivitiesQueryHelperInterface
+import com.github.sdpteam15.polyevents.database.Database.Companion.currentDatabase
+import com.github.sdpteam15.polyevents.database.DatabaseInterface
+import com.github.sdpteam15.polyevents.fragments.EXTRA_ACTIVITY_ID
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.containsString
 import org.hamcrest.Matcher
@@ -38,7 +38,7 @@ import java.time.LocalDateTime
 @RunWith(MockitoJUnitRunner::class)
 class ActivityActivityTest {
     lateinit var activities: ArrayList<Activity>
-    lateinit var mockedUpcomingActivitiesProvider: ActivitiesQueryHelperInterface
+    lateinit var mockedUpcomingActivitiesProvider: DatabaseInterface
 
     @Rule
     @JvmField
@@ -83,7 +83,8 @@ class ActivityActivityTest {
             )
         )
 
-        mockedUpcomingActivitiesProvider = mock(ActivitiesQueryHelperInterface::class.java)
+        mockedUpcomingActivitiesProvider = mock(DatabaseInterface::class.java)
+        currentDatabase = mockedUpcomingActivitiesProvider
         `when`(mockedUpcomingActivitiesProvider.getUpcomingActivities()).thenReturn(activities)
         `when`(mockedUpcomingActivitiesProvider.getActivityFromId("1")).thenReturn(activities[0])
         `when`(mockedUpcomingActivitiesProvider.getActivityFromId("2")).thenReturn(activities[1])
@@ -91,9 +92,6 @@ class ActivityActivityTest {
         // go to activities list fragment
         mainActivity = ActivityScenarioRule(MainActivity::class.java)
         Espresso.onView(withId(R.id.ic_list)).perform(click())
-        // Set the activities query helper in list fragment
-        val listFragment = MainActivity.fragments[R.id.ic_list] as ListFragment
-        listFragment.currentQueryHelper = mockedUpcomingActivitiesProvider
     }
 
 
@@ -119,17 +117,13 @@ class ActivityActivityTest {
 
     @Test
     fun activityActivityShowsValuesFromGivenActivity() {
-        val indexToTest: Int = 0
         val intent = Intent(
             ApplicationProvider.getApplicationContext(),
             ActivityActivity::class.java
         )
-        intent.putExtra(EXTRA_ACTIVITY, "1")
-        val activityToTest = mockedUpcomingActivitiesProvider.getActivityFromId("1")
+        intent.putExtra(EXTRA_ACTIVITY_ID, "1")
+        val activityToTest = mockedUpcomingActivitiesProvider.getActivityFromId("1") as Activity
         val scenario = ActivityScenario.launch<ActivityActivity>(intent)
-        scenario.onActivity { activity ->
-            activity.currentQueryHelper = mockedUpcomingActivitiesProvider
-        }
         Thread.sleep(1000)
         Espresso.onView(withId(R.id.txt_activity_Name)).check(
             matches(

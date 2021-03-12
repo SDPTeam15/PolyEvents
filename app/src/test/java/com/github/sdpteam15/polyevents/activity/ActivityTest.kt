@@ -1,11 +1,12 @@
-package com.github.sdpteam15.polyevents
+package com.github.sdpteam15.polyevents.activity
 
-import com.github.sdpteam15.polyevents.activity.Activity
+import com.github.sdpteam15.polyevents.database.Database.Companion.currentDatabase
+import com.github.sdpteam15.polyevents.database.FakeDatabase
 import org.hamcrest.CoreMatchers.hasItem
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.MatcherAssert.assertThat
-import org.junit.Test
 import org.junit.Before
+import org.junit.Test
 import java.time.LocalDateTime
 import org.hamcrest.CoreMatchers.`is` as Is
 
@@ -19,11 +20,13 @@ class ActivityTest {
 
     @Before
     fun createNewActivity() {
+        currentDatabase = FakeDatabase
         activity = Activity(
-                "Test Activity", "Activity to make tests !",
-                LocalDateTime.of(2020, 3, 15, 14, 0),
-                3.5F,
-                "The best organizer", "A", null, "1")
+            "Test Activity", "Activity to make tests !",
+            LocalDateTime.of(2020, 3, 15, 14, 0),
+            3.5F,
+            "The best organizer", "A", null, "1"
+        )
     }
 
     @Test
@@ -45,14 +48,15 @@ class ActivityTest {
     @Test
     fun negativeDurationIsResetToDefault() {
         val newActivity = Activity(
-                "Test Activity", "Activity to make tests !",
-                LocalDateTime.of(2020, 3, 15, 14, 0),
-                -2.25F,
-                "The best organizer", "A", null, "2")
+            "Test Activity", "Activity to make tests !",
+            LocalDateTime.of(2020, 3, 15, 14, 0),
+            -2.25F,
+            "The best organizer", "A", null, "2"
+        )
 
-        assertThat(newActivity.durationHours, Is(Activity.DEFAULT_DURATION))
+        assertThat(newActivity.durationHours, Is(ACTIVITY_DEFAULT_DURATION))
         newActivity.durationHours = -1.5F
-        assertThat(newActivity.durationHours, Is(Activity.DEFAULT_DURATION))
+        assertThat(newActivity.durationHours, Is(ACTIVITY_DEFAULT_DURATION))
     }
 
     @Test

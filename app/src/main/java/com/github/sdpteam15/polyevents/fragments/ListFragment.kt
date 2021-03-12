@@ -13,25 +13,19 @@ import com.github.sdpteam15.polyevents.ActivityActivity
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.activity.Activity
 import com.github.sdpteam15.polyevents.activity.ActivityItemAdapter
-import com.github.sdpteam15.polyevents.helper.ActivitiesQueryHelper
-import com.github.sdpteam15.polyevents.helper.ActivitiesQueryHelperInterface
+import com.github.sdpteam15.polyevents.database.Database.Companion.currentDatabase
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 
 /**
  * Extra containing the activity ID to show on the launched activity page
  */
-const val EXTRA_ACTIVITY = "com.github.sdpteam15.polyevents.activity.ACTIVITY_ID"
+const val EXTRA_ACTIVITY_ID = "com.github.sdpteam15.polyevents.activity.ACTIVITY_ID"
 
 /**
  * Shows the list of activities and displays them in a new activity when we click on one of them
  */
 class ListFragment : Fragment() {
 
-    var currentQueryHelper: ActivitiesQueryHelperInterface = ActivitiesQueryHelper
-        set(value) {
-            field = value
-            updateContent()
-        }
     private lateinit var recyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,11 +44,11 @@ class ListFragment : Fragment() {
         val fragmentView = inflater.inflate(R.layout.fragment_list, container, false)
         recyclerView = fragmentView.findViewById<RecyclerView>(R.id.recycler_activites_list)
 
-        val activities = currentQueryHelper.getUpcomingActivities()
+        val activities = currentDatabase.getUpcomingActivities()
 
         val openActivity = { activity: Activity ->
             val intent = Intent(inflater.context, ActivityActivity::class.java).apply {
-                putExtra(EXTRA_ACTIVITY, activity.id)
+                putExtra(EXTRA_ACTIVITY_ID, activity.id)
             }
             startActivity(intent)
         }

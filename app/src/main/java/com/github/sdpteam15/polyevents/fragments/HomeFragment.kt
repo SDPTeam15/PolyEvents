@@ -11,23 +11,18 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.activity.Activity
-import com.github.sdpteam15.polyevents.helper.ActivitiesQueryHelper
-import com.github.sdpteam15.polyevents.helper.ActivitiesQueryHelperInterface
+import com.github.sdpteam15.polyevents.database.Database.Companion.currentDatabase
 
 /**
  * The fragment for the home page.
  */
 class HomeFragment : Fragment() {
 
-    lateinit var activitiesQueryHelper: ActivitiesQueryHelperInterface
     private lateinit var listUpcomingActivitiesLayout: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setHasOptionsMenu(true)
-
-        activitiesQueryHelper = ActivitiesQueryHelper
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -37,7 +32,8 @@ class HomeFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val fragmentView = inflater.inflate(R.layout.fragment_home, container, false)
-        listUpcomingActivitiesLayout = fragmentView.findViewById<LinearLayout>(R.id.id_upcoming_activities_list)
+        listUpcomingActivitiesLayout =
+            fragmentView.findViewById<LinearLayout>(R.id.id_upcoming_activities_list)
 
         updateContent()
 
@@ -52,7 +48,7 @@ class HomeFragment : Fragment() {
         // Remove all the content first
         listUpcomingActivitiesLayout.removeAllViews()
 
-        val activities = activitiesQueryHelper.getUpcomingActivities()
+        val activities = currentDatabase.getUpcomingActivities()
 
         for (activity: Activity in activities) {
             setupActivityTab(activity)
@@ -70,7 +66,8 @@ class HomeFragment : Fragment() {
 
         activityTab.findViewById<TextView>(R.id.id_activity_name_text).text = activity.name
 
-        activityTab.findViewById<TextView>(R.id.id_activity_schedule_text).text = getString(R.string.at_hour_text, activity.getTime())
+        activityTab.findViewById<TextView>(R.id.id_activity_schedule_text).text =
+            getString(R.string.at_hour_text, activity.getTime())
 
         activityTab.findViewById<TextView>(R.id.id_activity_zone).text = activity.zone
 

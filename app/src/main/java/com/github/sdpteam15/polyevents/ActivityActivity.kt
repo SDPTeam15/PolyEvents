@@ -6,24 +6,13 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import com.github.sdpteam15.polyevents.fragments.EXTRA_ACTIVITY
-import com.github.sdpteam15.polyevents.helper.ActivitiesQueryHelper
-import com.github.sdpteam15.polyevents.helper.ActivitiesQueryHelperInterface
+import com.github.sdpteam15.polyevents.database.Database.Companion.currentDatabase
+import com.github.sdpteam15.polyevents.fragments.EXTRA_ACTIVITY_ID
 
 /**
  * An activity containing activities description
  */
 class ActivityActivity : AppCompatActivity() {
-
-    /**
-     * The data source
-     */
-    var currentQueryHelper: ActivitiesQueryHelperInterface = ActivitiesQueryHelper
-        @RequiresApi(Build.VERSION_CODES.O)
-        set(value) {
-            field = value
-            updateInfos()
-        }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onResume() {
@@ -42,8 +31,8 @@ class ActivityActivity : AppCompatActivity() {
      */
     @RequiresApi(Build.VERSION_CODES.O)
     fun updateInfos() {
-        val id = intent.getStringExtra(EXTRA_ACTIVITY)
-        val activity = currentQueryHelper.getActivityFromId(id!!)
+        val id = intent.getStringExtra(EXTRA_ACTIVITY_ID)
+        val activity = currentDatabase.getActivityFromId(id!!)!!
         // Capture the layout's TextView and set the string as its text
         findViewById<TextView>(R.id.txt_activity_Name).apply {
             text = activity.name
