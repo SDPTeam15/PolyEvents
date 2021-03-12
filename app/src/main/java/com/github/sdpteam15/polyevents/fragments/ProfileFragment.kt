@@ -27,7 +27,7 @@ class ProfileFragment : Fragment() {
             if (testUser != null) {
                 return testUser
             } else {
-                return User.CurrentUser
+                return User.currentUser
             }
         }
         set(value) {

@@ -13,7 +13,7 @@ import com.github.sdpteam15.polyevents.ActivityActivity
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.activity.Activity
 import com.github.sdpteam15.polyevents.activity.ActivityItemAdapter
-import com.github.sdpteam15.polyevents.database.Database.Companion.currentDatabase
+import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 
 /**

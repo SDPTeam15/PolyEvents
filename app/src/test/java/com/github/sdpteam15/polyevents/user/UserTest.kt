@@ -1,6 +1,10 @@
 package com.github.sdpteam15.polyevents.user
 
-import com.github.sdpteam15.polyevents.database.Database
+import com.github.sdpteam15.polyevents.database.Database.currentDatabase
+import com.github.sdpteam15.polyevents.database.DatabaseInterface
+import com.github.sdpteam15.polyevents.database.DatabaseUserInterface
+import com.github.sdpteam15.polyevents.database.FakeDatabase
+import com.github.sdpteam15.polyevents.database.FirebaseUserAdapter
 import com.google.firebase.auth.FirebaseUser
 import org.junit.Before
 import org.junit.Test
@@ -15,36 +19,36 @@ class UserTest {
 
     @Before
     fun setup() {
-        Database.currentDatabase = FakeDatabase
+        currentDatabase = FakeDatabase
     }
 
     @Test
     fun invokeTest() {
-        val mockedFirebaseUser = Mockito.mock(FirebaseUser::class.java)
-        Mockito.`when`(mockedFirebaseUser.uid).thenReturn("Test UID")
+        val mockedDatabaseUser = Mockito.mock(DatabaseUserInterface::class.java)
+        Mockito.`when`(mockedDatabaseUser.uid).thenReturn("Test UID")
 
-        val user = User.invoke(mockedFirebaseUser)
+        val user = User.invoke(mockedDatabaseUser)
 
-        assertEquals(user, User.invoke(mockedFirebaseUser))
-        assertEquals(user, User.invoke(mockedFirebaseUser.uid))
+        assertEquals(user, User.invoke(mockedDatabaseUser))
+        assertEquals(user, User.invoke(mockedDatabaseUser.uid))
     }
 
     @Test
     fun profileListTest() {
-        val mockedFirebaseUser = Mockito.mock(FirebaseUser::class.java)
-        Mockito.`when`(mockedFirebaseUser.uid).thenReturn("Test UID")
-        Mockito.`when`(mockedFirebaseUser.displayName).thenReturn("Test name")
+        val mockedDatabaseUser = Mockito.mock(DatabaseUserInterface::class.java)
+        Mockito.`when`(mockedDatabaseUser.uid).thenReturn("Test UID")
+        Mockito.`when`(mockedDatabaseUser.displayName).thenReturn("Test name")
 
-        val user = User.invoke(mockedFirebaseUser)
+        val user = User.invoke(mockedDatabaseUser)
 
         assertEquals(1, user.profileList.size)
-        assertEquals(mockedFirebaseUser.displayName, user.profileList[0].name)
+        assertEquals(mockedDatabaseUser.displayName, user.profileList[0].name)
         assertFailsWith<IndexOutOfBoundsException> { user.currentProfileId = -1 }
         assertFailsWith<IndexOutOfBoundsException> { user.currentProfileId = 1 }
 
         user.newProfile("New Name")
         assertEquals(2, user.profileList.size)
-        assertEquals(mockedFirebaseUser.displayName, user.profileList[0].name)
+        assertEquals(mockedDatabaseUser.displayName, user.profileList[0].name)
         assertEquals("New Name", user.profileList[1].name)
         assertEquals(user.profileList[0], user.currentProfile)
 
@@ -77,5 +81,23 @@ class UserTest {
 
         user.removeProfile(fakeProfile)
         user.removeCache()
+    }
+
+    @Test
+    fun currentUserTest(){
+        val mockedDatabase = Mockito.mock(DatabaseInterface::class.java)
+        val mockedCurrentUser1 = Mockito.mock(DatabaseUserInterface ::class.java)
+        val mockedCurrentUser2 = Mockito.mock(DatabaseUserInterface ::class.java)
+        currentDatabase = mockedDatabase;
+
+        Mockito.`when`(mockedDatabase.currentUser).thenReturn(mockedCurrentUser1)
+        Mockito.`when`(mockedCurrentUser1.uid).thenReturn("0")
+        assertEquals("0", User.currentUser!!.uid)
+        assertEquals("0", User.currentUser!!.uid)
+
+        Mockito.`when`(mockedDatabase.currentUser).thenReturn(mockedCurrentUser2)
+        Mockito.`when`(mockedCurrentUser2.uid).thenReturn("1")
+        assertEquals("1", User.currentUser!!.uid)
+
     }
 }

@@ -3,7 +3,7 @@ package com.github.sdpteam15.polyevents.database
 import com.github.sdpteam15.polyevents.activity.Activity
 import com.github.sdpteam15.polyevents.user.Profile.Companion.CurrentProfile
 import com.github.sdpteam15.polyevents.user.ProfileInterface
-import com.github.sdpteam15.polyevents.user.User.Companion.CurrentUser
+import com.github.sdpteam15.polyevents.user.User.Companion.currentUser
 import com.github.sdpteam15.polyevents.user.UserInterface
 
 const val NUMBER_UPCOMING_ACTIVITIES = 3
@@ -12,6 +12,12 @@ const val NUMBER_UPCOMING_ACTIVITIES = 3
  * Database interface
  */
 interface DatabaseInterface {
+
+    /**
+     * Current user of this database
+     */
+    val currentUser : DatabaseUserInterface?
+
     /**
      * Get list of profile of a user uid
      * @param uid uid
@@ -20,7 +26,7 @@ interface DatabaseInterface {
      */
     fun getListProfile(
         uid: String,
-        user: UserInterface = CurrentUser as UserInterface
+        user: UserInterface = currentUser as UserInterface
     ): List<ProfileInterface>
 
     /**
@@ -32,7 +38,7 @@ interface DatabaseInterface {
      */
     fun addProfile(
         profile: ProfileInterface, uid: String,
-        user: UserInterface = CurrentUser as UserInterface
+        user: UserInterface = currentUser as UserInterface
     ): Boolean
 
     /**
@@ -43,8 +49,8 @@ interface DatabaseInterface {
      * @return if the operation succeed
      */
     fun removeProfile(
-        profile: ProfileInterface, uid: String = (CurrentUser as UserInterface).uid,
-        user: UserInterface = CurrentUser as UserInterface
+        profile: ProfileInterface, uid: String = (currentUser as UserInterface).uid,
+        user: UserInterface = currentUser as UserInterface
     ): Boolean
 
     /**
@@ -55,7 +61,7 @@ interface DatabaseInterface {
      */
     fun updateProfile(
         profile: ProfileInterface,
-        user: UserInterface = CurrentUser as UserInterface
+        user: UserInterface = currentUser as UserInterface
     ): Boolean
 
     /**

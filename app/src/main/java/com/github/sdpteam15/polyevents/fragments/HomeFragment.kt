@@ -11,7 +11,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.activity.Activity
-import com.github.sdpteam15.polyevents.database.Database.Companion.currentDatabase
+import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 
 /**
  * The fragment for the home page.

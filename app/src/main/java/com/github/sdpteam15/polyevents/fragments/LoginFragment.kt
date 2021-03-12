@@ -31,7 +31,7 @@ class LoginFragment : Fragment() {
 
     //Return CurrentUser if we are not in test, but we can use a fake user in test this way
     var currentUser: UserInterface? = null
-        get() = field ?: User.CurrentUser
+        get() = field ?: User.currentUser
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

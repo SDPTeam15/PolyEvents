@@ -1,7 +1,7 @@
 package com.github.sdpteam15.polyevents.activity
 
-import com.github.sdpteam15.polyevents.database.Database.Companion.currentDatabase
-import com.github.sdpteam15.polyevents.user.FakeDatabase
+import com.github.sdpteam15.polyevents.database.Database.currentDatabase
+import com.github.sdpteam15.polyevents.database.FakeDatabase
 import org.hamcrest.CoreMatchers.hasItem
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.MatcherAssert.assertThat

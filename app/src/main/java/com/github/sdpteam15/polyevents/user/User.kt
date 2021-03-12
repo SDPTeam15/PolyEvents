@@ -1,14 +1,13 @@
 package com.github.sdpteam15.polyevents.user
 
-import com.github.sdpteam15.polyevents.database.Database.Companion.currentDatabase
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
+import com.github.sdpteam15.polyevents.database.Database.currentDatabase
+import com.github.sdpteam15.polyevents.database.DatabaseUserInterface
 
 /**
  * Application user
- * @param firebaseUser associates FirebaseUser
+ * @param databaseUser associates FirebaseUser
  */
-class User private constructor(override val firebaseUser: FirebaseUser) : UserInterface {
+class User private constructor(override val databaseUser: DatabaseUserInterface) : UserInterface {
     companion object {
         private val instances: MutableMap<String, User> = HashMap()
 
@@ -17,10 +16,10 @@ class User private constructor(override val firebaseUser: FirebaseUser) : UserIn
          * @param firebaseUser associates FirebaseUser
          * @return the application user associates to the FirebaseUser
          */
-        fun invoke(firebaseUser: FirebaseUser): User {
-            if (!instances.containsKey(firebaseUser.uid))
-                instances[firebaseUser.uid] = User(firebaseUser)
-            return instances[firebaseUser.uid] as User
+        fun invoke(databaseUser: DatabaseUserInterface): User {
+            if (!instances.containsKey(databaseUser.uid))
+                instances[databaseUser.uid] = User(databaseUser)
+            return instances[databaseUser.uid] as User
         }
 
         /**
@@ -35,20 +34,13 @@ class User private constructor(override val firebaseUser: FirebaseUser) : UserIn
         /**
          * Current user of the application
          */
-        val CurrentUser: UserInterface?
+        val currentUser: UserInterface?
             get() {
-                try {
-                    val currentUser: FirebaseUser =
-                        FirebaseAuth.getInstance().currentUser ?: return null
-                    if (lastCurrentUserUid != null && currentUser.uid != lastCurrentUserUid)
-                        invoke(lastCurrentUserUid!!)?.removeCache()
-                    lastCurrentUserUid = currentUser.uid
-                    return invoke(currentUser)
-                } catch (e: ExceptionInInitializerError) {
-                    return null
-                } catch (e: NoClassDefFoundError) {
-                    return null
-                }
+                val currentUser: DatabaseUserInterface = currentDatabase.currentUser ?: return null
+                if(lastCurrentUserUid != null && lastCurrentUserUid != currentUser.uid)
+                    invoke(lastCurrentUserUid!!)?.removeCache()
+                lastCurrentUserUid = currentUser.uid
+                return invoke(currentUser)
             }
     }
 
@@ -66,11 +58,11 @@ class User private constructor(override val firebaseUser: FirebaseUser) : UserIn
     override val profileList: List<ProfileInterface>
         get() = mutableProfileList as List<ProfileInterface>
     override val name: String
-        get() = firebaseUser.displayName ?: ""
+        get() = databaseUser.displayName ?: ""
     override val uid: String
-        get() = firebaseUser.uid
+        get() = databaseUser.uid
     override val email: String
-        get() = firebaseUser.email ?: ""
+        get() = databaseUser.email ?: ""
 
     /**
      * Current application user profile id

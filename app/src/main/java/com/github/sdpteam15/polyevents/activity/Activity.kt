@@ -3,7 +3,7 @@ package com.github.sdpteam15.polyevents.activity
 import android.graphics.Bitmap
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.github.sdpteam15.polyevents.database.Database.Companion.currentDatabase
+import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import java.time.LocalDateTime
 
 const val ACTIVITY_DEFAULT_DURATION = 1F

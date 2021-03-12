@@ -5,12 +5,12 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
+import com.github.sdpteam15.polyevents.database.DatabaseUserInterface
 import com.github.sdpteam15.polyevents.fragments.LoginFragment
 import com.github.sdpteam15.polyevents.fragments.ProfileFragment
 import com.github.sdpteam15.polyevents.user.User
 import com.github.sdpteam15.polyevents.user.UserInterface
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import org.hamcrest.Matchers
 import org.junit.Before
 import org.junit.Rule
@@ -31,15 +31,15 @@ class ProfileFragmentTest {
     var testRule = ActivityScenarioRule<MainActivity>(MainActivity::class.java)
 
     lateinit var user: UserInterface
-    lateinit var mockedFirebaseUser: FirebaseUser
+    lateinit var mockedDatabaseUser: DatabaseUserInterface
 
     @Before
     fun setup() {
-        mockedFirebaseUser = mock(FirebaseUser::class.java)
-        `when`(mockedFirebaseUser.email).thenReturn(emailTest)
-        `when`(mockedFirebaseUser.displayName).thenReturn(diplayNameTest)
-        `when`(mockedFirebaseUser.uid).thenReturn(uidTest)
-        user = User.invoke(mockedFirebaseUser)
+        mockedDatabaseUser = mock(DatabaseUserInterface::class.java)
+        `when`(mockedDatabaseUser.email).thenReturn(emailTest)
+        `when`(mockedDatabaseUser.displayName).thenReturn(diplayNameTest)
+        `when`(mockedDatabaseUser.uid).thenReturn(uidTest)
+        user = User.invoke(mockedDatabaseUser)
         testRule = ActivityScenarioRule<MainActivity>(MainActivity::class.java)
     }
 

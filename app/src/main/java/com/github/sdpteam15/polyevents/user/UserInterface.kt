@@ -1,6 +1,6 @@
 package com.github.sdpteam15.polyevents.user
 
-import com.google.firebase.auth.FirebaseUser
+import com.github.sdpteam15.polyevents.database.DatabaseUserInterface
 
 /**
  *  Application user interface
@@ -9,7 +9,7 @@ interface UserInterface {
     /**
      * Associates FirebaseUser
      */
-    val firebaseUser: FirebaseUser
+    val databaseUser: DatabaseUserInterface
 
     /***
      * Application user profile List

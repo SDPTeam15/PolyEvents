@@ -1,6 +1,6 @@
 package com.github.sdpteam15.polyevents.user
 
-import com.github.sdpteam15.polyevents.user.User.Companion.CurrentUser
+import com.github.sdpteam15.polyevents.user.User.Companion.currentUser
 
 /**
  * Application user profile
@@ -28,6 +28,6 @@ class Profile(override var name: String, override val associatedUser: UserInterf
         /**
          * Current profile of the application
          */
-        val CurrentProfile: ProfileInterface get() = CurrentUser?.currentProfile ?: Default
+        val CurrentProfile: ProfileInterface get() = currentUser?.currentProfile ?: Default
     }
 }
