@@ -9,20 +9,20 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
-import com.github.sdpteam15.polyevents.ActivityActivity
+import com.github.sdpteam15.polyevents.EventActivity
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.activity.Activity
-import com.github.sdpteam15.polyevents.activity.ActivityItemAdapter
+import com.github.sdpteam15.polyevents.event.Event
+import com.github.sdpteam15.polyevents.event.EventItemAdapter
 import com.github.sdpteam15.polyevents.database.Database.Companion.currentDatabase
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 
 /**
- * Extra containing the activity ID to show on the launched activity page
+ * Extra containing the event ID to show on the launched event page
  */
-const val EXTRA_ACTIVITY_ID = "com.github.sdpteam15.polyevents.activity.ACTIVITY_ID"
+const val EXTRA_EVENT_ID = "com.github.sdpteam15.polyevents.event.EVENT_ID"
 
 /**
- * Shows the list of activities and displays them in a new activity when we click on one of them
+ * Shows the list of events and displays them in a new event when we click on one of them
  */
 class ListFragment : Fragment() {
 
@@ -42,18 +42,18 @@ class ListFragment : Fragment() {
     ): View? {
 
         val fragmentView = inflater.inflate(R.layout.fragment_list, container, false)
-        recyclerView = fragmentView.findViewById<RecyclerView>(R.id.recycler_activites_list)
+        recyclerView = fragmentView.findViewById<RecyclerView>(R.id.recycler_events_list)
 
-        val activities = currentDatabase.getUpcomingActivities()
+        val events = currentDatabase.getUpcomingEvents()
 
-        val openActivity = { activity: Activity ->
-            val intent = Intent(inflater.context, ActivityActivity::class.java).apply {
-                putExtra(EXTRA_ACTIVITY_ID, activity.id)
+        val openEvent = { event: Event ->
+            val intent = Intent(inflater.context, EventActivity::class.java).apply {
+                putExtra(EXTRA_EVENT_ID, event.id)
             }
             startActivity(intent)
         }
 
-        recyclerView.adapter = ActivityItemAdapter(activities, openActivity)
+        recyclerView.adapter = EventItemAdapter(events, openEvent)
 
         recyclerView.setHasFixedSize(false)
         // Inflate the layout for this fragment
@@ -61,12 +61,11 @@ class ListFragment : Fragment() {
     }
 
     /**
-     * Update the content of the upcoming activities
+     * Update the content of the upcoming events
      */
     fun updateContent() {
         // Remove all the content first
         HelperFunctions.refreshFragment(fragmentManager, this)
-
     }
 
 }

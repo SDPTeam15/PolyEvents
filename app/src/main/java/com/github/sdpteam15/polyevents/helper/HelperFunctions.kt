@@ -9,8 +9,8 @@ import com.github.sdpteam15.polyevents.R
 
 object HelperFunctions {
     /**
-     * Method that allows to switch the fragment in an activity
-     * @param newFrag: the fragment we want to display (should be in the fragments app from MainActivity otherwise nothing happen)
+     * Method that allows to switch the fragment in an event
+     * @param newFrag: the fragment we want to display (should be in the fragments app from Mainevent otherwise nothing happen)
      * @param activity: the activity in which a fragment is instantiate
      */
     fun changeFragment(activity: FragmentActivity?, newFrag: Fragment?) {
@@ -24,8 +24,8 @@ object HelperFunctions {
     }
 
     /**
-     * Method that allows to switch the fragment in an activity
-     * @param newFrag: the fragment we want to display (should be in the fragments app from MainActivity otherwise nothing happen)
+     * Method that allows to switch the fragment in an event
+     * @param newFrag: the fragment we want to display (should be in the fragments app from MainEvent otherwise nothing happen)
      * @param activity: the activity in which a fragment is instantiate
      */
     fun refreshFragment(fragmentManager: FragmentManager?, frag: Fragment) {

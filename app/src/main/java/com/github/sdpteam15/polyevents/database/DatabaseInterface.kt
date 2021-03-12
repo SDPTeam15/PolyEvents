@@ -1,12 +1,12 @@
 package com.github.sdpteam15.polyevents.database
 
-import com.github.sdpteam15.polyevents.activity.Activity
+import com.github.sdpteam15.polyevents.event.Event
 import com.github.sdpteam15.polyevents.user.Profile.Companion.CurrentProfile
 import com.github.sdpteam15.polyevents.user.ProfileInterface
 import com.github.sdpteam15.polyevents.user.User.Companion.CurrentUser
 import com.github.sdpteam15.polyevents.user.UserInterface
 
-const val NUMBER_UPCOMING_ACTIVITIES = 3
+const val NUMBER_UPCOMING_EVENTS = 3
 
 /**
  * Database interface
@@ -49,7 +49,7 @@ interface DatabaseInterface {
 
     /**
      * Update profile
-     * @param Activity Activity to update
+     * @param event event to update
      * @param profile profile for database access
      * @return if the operation succeed
      */
@@ -59,46 +59,46 @@ interface DatabaseInterface {
     ): Boolean
 
     /**
-     * Get list of activity
+     * Get list of event
      * @param matcher matcher for the recherche
      * @param number maximum of result
      * @param profile profile for database access
-     * @return list of activity
+     * @return list of event
      */
-    fun getListActivity(
+    fun getListEvent(
         matcher: String? = null, number: Int? = null,
         profile: ProfileInterface = CurrentProfile
-    ): List<Activity>
+    ): List<Event>
 
     /**
-     * Query the upcoming activities
-     * @param number : the number of activities to retrieve
+     * Query the upcoming events
+     * @param number : the number of events to retrieve
      * @param profile profile for database access
-     * @return List of activities in upcoming order (closest first)
+     * @return List of events in upcoming order (closest first)
      */
-    fun getUpcomingActivities(
-        number: Int = NUMBER_UPCOMING_ACTIVITIES,
+    fun getUpcomingEvents(
+        number: Int = NUMBER_UPCOMING_EVENTS,
         profile: ProfileInterface = CurrentProfile
-    ): List<Activity>
+    ): List<Event>
 
     /**
-     * Get activity from ID
-     * @param id ID of the Activity
+     * Get event from ID
+     * @param id ID of the event
      * @param profile profile for database access
-     * @return Activity corresponding to the given ID
+     * @return event corresponding to the given ID
      */
-    fun getActivityFromId(
+    fun getEventFromId(
         id: String,
         profile: ProfileInterface = CurrentProfile
-    ): Activity?
+    ): Event?
 
     /**
-     * Update or request an update for an activity
-     * @param Activity Activity to update
+     * Update or request an update for an event
+     * @param Event event to update
      * @param profile profile for database access
      */
-    fun updateActivity(
-        Activity: Activity,
+    fun updateEvent(
+        Event: Event,
         profile: ProfileInterface = CurrentProfile
     ): Boolean
 }

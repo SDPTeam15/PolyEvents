@@ -14,7 +14,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private var mapFragment: MutableMap<Int, Fragment>? = null
 
-        //make the fragments available from outside of the activity and instantiate only once
+        //make the fragments available from outside of the event and instantiate only once
         val fragments: Map<Int, Fragment>
             get() {
                 if (mapFragment == null) {

@@ -51,7 +51,7 @@ class ProfileFragment : Fragment() {
             FirebaseAuth.getInstance().signOut()
             changeFragment(activity, MainActivity.fragments[R.id.ic_login])
         }
-        //Replace the fields in the fragment by the user informations
+        //Replace the fields in the fragment by the user information
         viewRoot.findViewById<TextView>(R.id.displayName).setText(currentUser?.name)
         viewRoot.findViewById<TextView>(R.id.displayUID).setText(currentUser?.uid)
         viewRoot.findViewById<TextView>(R.id.displayEmail).setText(currentUser?.email)
