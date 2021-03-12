@@ -8,10 +8,10 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ActivityActivity">
+        tools:context=".EventActivity">
 
         <ImageView
-            android:id="@+id/img_activity_logo"
+            android:id="@+id/img_event_logo"
             android:layout_width="130dp"
             android:layout_height="130dp"
             android:layout_marginStart="20dp"
@@ -22,35 +22,35 @@
             tools:srcCompat="@tools:sample/avatars" />
 
         <TextView
-            android:id="@+id/txt_activity_Name"
+            android:id="@+id/txt_event_Name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            app:layout_constraintBottom_toTopOf="@+id/txt_activity_date"
+            app:layout_constraintBottom_toTopOf="@+id/txt_event_date"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/img_activity_logo"
-            app:layout_constraintTop_toTopOf="@+id/img_activity_logo"
+            app:layout_constraintStart_toEndOf="@+id/img_event_logo"
+            app:layout_constraintTop_toTopOf="@+id/img_event_logo"
             app:layout_constraintVertical_bias="0.552" />
 
         <TextView
-            android:id="@+id/txt_activity_date"
+            android:id="@+id/txt_event_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="@+id/img_activity_logo"
+            app:layout_constraintBottom_toBottomOf="@+id/img_event_logo"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.502"
-            app:layout_constraintStart_toEndOf="@+id/img_activity_logo"
-            app:layout_constraintTop_toTopOf="@+id/img_activity_logo" />
+            app:layout_constraintStart_toEndOf="@+id/img_event_logo"
+            app:layout_constraintTop_toTopOf="@+id/img_event_logo" />
 
         <TextView
-            android:id="@+id/txt_activity_zone"
+            android:id="@+id/txt_event_zone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@+id/txt_activity_organizer"
+            app:layout_constraintBottom_toTopOf="@+id/txt_event_organizer"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.502"
-            app:layout_constraintStart_toEndOf="@+id/img_activity_logo"
-            app:layout_constraintTop_toBottomOf="@+id/txt_activity_date" />
+            app:layout_constraintStart_toEndOf="@+id/img_event_logo"
+            app:layout_constraintTop_toBottomOf="@+id/txt_event_date" />
 
         <TextView
             android:id="@+id/textView5"
@@ -58,11 +58,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
             android:text="@string/label_activity_description"
-            app:layout_constraintStart_toStartOf="@+id/img_activity_logo"
-            app:layout_constraintTop_toBottomOf="@+id/img_activity_logo" />
+            app:layout_constraintStart_toStartOf="@+id/img_event_logo"
+            app:layout_constraintTop_toBottomOf="@+id/img_event_logo" />
 
     <TextView
-        android:id="@+id/txt_activity_description"
+        android:id="@+id/txt_event_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -78,11 +78,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="@string/label_tags"
-            app:layout_constraintStart_toStartOf="@+id/txt_activity_description"
-            app:layout_constraintTop_toBottomOf="@+id/txt_activity_description" />
+            app:layout_constraintStart_toStartOf="@+id/txt_event_description"
+            app:layout_constraintTop_toBottomOf="@+id/txt_event_description" />
 
     <TextView
-        android:id="@+id/txt_activity_tags"
+        android:id="@+id/txt_event_tags"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -93,12 +93,12 @@
         app:layout_constraintTop_toBottomOf="@+id/textView7" />
 
         <TextView
-            android:id="@+id/txt_activity_organizer"
+            android:id="@+id/txt_event_organizer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="@+id/img_activity_logo"
+            app:layout_constraintBottom_toBottomOf="@+id/img_event_logo"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/img_activity_logo" />
+            app:layout_constraintStart_toEndOf="@+id/img_event_logo" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

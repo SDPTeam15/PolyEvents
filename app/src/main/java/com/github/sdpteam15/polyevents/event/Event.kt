@@ -1,4 +1,4 @@
-package com.github.sdpteam15.polyevents.activity
+package com.github.sdpteam15.polyevents.event
 
 import android.graphics.Bitmap
 import android.os.Build
@@ -6,21 +6,21 @@ import androidx.annotation.RequiresApi
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import java.time.LocalDateTime
 
-const val ACTIVITY_DEFAULT_DURATION = 1F
+const val EVENT_DEFAULT_DURATION = 1F
 
 /**
- * Describe an activit
+ * Describe an event
  * @property name its name
  * @property description description
  * @property start when it happens
  * @property organizer its duration
- * @param durationHours the organizer of this activity
- * @property organizer the zone where the activity is
- * @property icon an icon for this activity to display
- * @property id an id to uniquely identify the activity
- * @property tags the tags the activity corresponds to
+ * @param durationHours the organizer of this event
+ * @property organizer the zone where the event is
+ * @property icon an icon for this event to display
+ * @property id an id to uniquely identify the event
+ * @property tags the tags the event corresponds to
  */
-class Activity(
+class Event(
     var name: String,
     var description: String,
     var start: LocalDateTime,
@@ -33,31 +33,31 @@ class Activity(
 ) {
 
     /**
-     * Duration of the activity
+     * Duration of the event
      */
-    var durationHours: Float = ACTIVITY_DEFAULT_DURATION
+    var durationHours: Float = EVENT_DEFAULT_DURATION
         set(durationH) {
-            field = if (durationH < 0) ACTIVITY_DEFAULT_DURATION else durationH
+            field = if (durationH < 0) EVENT_DEFAULT_DURATION else durationH
         }
 
     init {
-        this@Activity.durationHours = durationHours
+        this@Event.durationHours = durationHours
     }
 
     /**
-     * Add a new tag for this activity
+     * Add a new tag for this event
      * @param newTag : the tag to add
      * @return true if this tag was successfully added
      */
     fun addTag(newTag: String): Boolean {
         val result = tags.add(newTag)
         if (result)
-            currentDatabase.updateActivity(this);
+            currentDatabase.updateEvent(this);
         return result
     }
 
     /**
-     * Remove a tag for this activity
+     * Remove a tag for this event
      * @param tag : the tag to remove
      * @return true if this tag was successfully remove, false if it
      * was not present
@@ -65,12 +65,12 @@ class Activity(
     fun removeTag(tag: String): Boolean {
         val result = tags.remove(tag)
         if (result)
-            currentDatabase.updateActivity(this);
+            currentDatabase.updateEvent(this);
         return result
     }
 
     /**
-     * Return the hour (and minutes) at which the activity occurs
+     * Return the hour (and minutes) at which the event occurs
      * @return string HH:MM
      */
     @RequiresApi(Build.VERSION_CODES.O)

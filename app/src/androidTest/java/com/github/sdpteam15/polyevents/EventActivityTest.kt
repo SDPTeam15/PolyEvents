@@ -17,11 +17,11 @@ import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
-import com.github.sdpteam15.polyevents.activity.Activity
-import com.github.sdpteam15.polyevents.activity.ActivityItemAdapter
+import com.github.sdpteam15.polyevents.event.Event
+import com.github.sdpteam15.polyevents.event.EventItemAdapter
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
-import com.github.sdpteam15.polyevents.fragments.EXTRA_ACTIVITY_ID
+import com.github.sdpteam15.polyevents.fragments.EXTRA_EVENT_ID
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.containsString
 import org.hamcrest.Matcher

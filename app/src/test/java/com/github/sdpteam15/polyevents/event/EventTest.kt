@@ -1,4 +1,4 @@
-package com.github.sdpteam15.polyevents.activity
+package com.github.sdpteam15.polyevents.event
 
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.FakeDatabase
@@ -14,15 +14,15 @@ import org.hamcrest.CoreMatchers.`is` as Is
  * Unit tests for the Activity implementation.
  */
 
-class ActivityTest {
+class EventTest {
 
-    lateinit var activity: Activity
+    lateinit var event: Event
 
     @Before
-    fun createNewActivity() {
+    fun createNewEvent() {
         currentDatabase = FakeDatabase
-        activity = Activity(
-            "Test Activity", "Activity to make tests !",
+        event = Event(
+            "Test Event", "Event to make tests !",
             LocalDateTime.of(2020, 3, 15, 14, 0),
             3.5F,
             "The best organizer", "A", null, "1"
@@ -32,72 +32,72 @@ class ActivityTest {
     @Test
     fun addTagIsCorrect() {
         val newTag = "Food"
-        activity.addTag(newTag)
-        assertThat(activity.tags, hasItem(newTag))
+        event.addTag(newTag)
+        assertThat(event.tags, hasItem(newTag))
     }
 
     @Test
     fun removeTagIsCorrect() {
         val newTag = "Movie"
-        activity.addTag(newTag)
+        event.addTag(newTag)
 
-        activity.removeTag(newTag)
-        assertThat(activity.tags, not(hasItem(newTag)))
+        event.removeTag(newTag)
+        assertThat(event.tags, not(hasItem(newTag)))
     }
 
     @Test
     fun negativeDurationIsResetToDefault() {
-        val newActivity = Activity(
-            "Test Activity", "Activity to make tests !",
+        val newEvent = Event(
+            "Test Event", "Event to make tests !",
             LocalDateTime.of(2020, 3, 15, 14, 0),
             -2.25F,
             "The best organizer", "A", null, "2"
         )
 
-        assertThat(newActivity.durationHours, Is(ACTIVITY_DEFAULT_DURATION))
-        newActivity.durationHours = -1.5F
-        assertThat(newActivity.durationHours, Is(ACTIVITY_DEFAULT_DURATION))
+        assertThat(newEvent.durationHours, Is(EVENT_DEFAULT_DURATION))
+        newEvent.durationHours = -1.5F
+        assertThat(newEvent.durationHours, Is(EVENT_DEFAULT_DURATION))
     }
 
     @Test
     fun setGetNameIsCorrect() {
         val newName = "New Name de bleu !"
-        activity.name = newName
-        assertThat(activity.name, Is(newName))
+        event.name = newName
+        assertThat(event.name, Is(newName))
     }
 
     @Test
     fun setGetDescriptionIsCorrect() {
         val newDesc = "New description"
-        activity.description = newDesc
-        assertThat(activity.description, Is(newDesc))
+        event.description = newDesc
+        assertThat(event.description, Is(newDesc))
     }
 
     @Test
     fun setGetStartIsCorrect() {
         val newStart = LocalDateTime.of(2420, 9, 1, 4, 55)
-        activity.start = newStart
-        assertThat(activity.start, Is(newStart))
+        event.start = newStart
+        assertThat(event.start, Is(newStart))
     }
 
     @Test
     fun setGetDurationIsCorrect() {
         val newDuration = 3.75F
-        activity.durationHours = newDuration
-        assertThat(activity.durationHours, Is(newDuration))
+        event.durationHours = newDuration
+        assertThat(event.durationHours, Is(newDuration))
     }
 
     @Test
     fun setGetOrganizerIsCorrect() {
         val newOrganizer = "New organizer"
-        activity.organizer = newOrganizer
-        assertThat(activity.organizer, Is(newOrganizer))
+        event.organizer = newOrganizer
+        assertThat(event.organizer, Is(newOrganizer))
     }
 
     @Test
     fun setGetZoneIsCorrect() {
         val newZone = "New zone"
-        activity.zone = newZone
-        assertThat(activity.zone, Is(newZone))
+        event.zone = newZone
+        assertThat(event.zone, Is(newZone))
     }
 }
