@@ -13,55 +13,140 @@
 
         <Button
             android:id="@+id/btnLogout"
-            android:layout_width="213dp"
-            android:layout_height="wrap_content"
+            android:layout_width="160dp"
+            android:layout_height="53dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
             android:layout_centerInParent="true"
-            android:layout_marginBottom="144dp"
+            android:layout_marginBottom="44dp"
             android:text="@string/logout_button_text"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.919"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/btnUpdateInfos"
+            android:layout_width="160dp"
+            android:layout_height="53dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="44dp"
+            android:text="Update Infos"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.135"
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
-            android:id="@+id/displayName"
+            android:id="@+id/nameTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@+id/btnLogout"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="40dp"
-            android:text=""
-            app:layout_constraintBottom_toTopOf="@+id/displayUID"
+            android:layout_marginTop="28dp"
+            android:text="Full name"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintHorizontal_bias="0.063"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ProfileEmail" />
 
         <TextView
-            android:id="@+id/displayUID"
-            android:layout_width="91dp"
-            android:layout_height="18dp"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginBottom="44dp"
-            app:layout_constraintBottom_toTopOf="@+id/displayEmail"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <TextView
-            android:id="@+id/displayEmail"
+            android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="32dp"
-            app:layout_constraintBottom_toTopOf="@+id/btnLogout"
+            android:layout_marginStart="24dp"
+            android:text="Username"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.099" />
+
+        <TextView
+            android:id="@+id/textView8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Update My infos"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.022" />
+
+        <TextView
+            android:id="@+id/emailTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Email"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintHorizontal_bias="0.063"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profileUsernameET" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="20dp"
+            android:text="Birthday"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profileName" />
+
+        <TextView
+            android:id="@+id/profileUID"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="412dp"
+            android:text="displayUID"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.866"
             app:layout_constraintStart_toStartOf="parent" />
+
+        <EditText
+            android:id="@+id/profileUsernameET"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="13dp"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="Name"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+        <EditText
+            android:id="@+id/ProfileEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:ems="10"
+            android:enabled="false"
+            android:inputType="textPersonName"
+            android:text="Name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.119"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/emailTitle" />
+
+        <EditText
+            android:id="@+id/profileName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:ems="10"
+            android:enabled="false"
+            android:inputType="textPersonName"
+            android:text="Name"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/nameTitle" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

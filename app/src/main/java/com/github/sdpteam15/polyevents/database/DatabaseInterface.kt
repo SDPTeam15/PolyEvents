@@ -19,8 +19,8 @@ interface DatabaseInterface {
      * @param uid uid
      * @param user user for database access
      */
-    fun getListProfile(uid : String = (User.CurrentUser as UserInterface).UID,
-        user : UserInterface = User.CurrentUser as UserInterface) : List<ProfileInterface>
+    fun getListProfile(profilListToUpdate: MutableLiveData<List<Profile>>,uid : String = (User.CurrentUser as UserInterface).UID,
+        user : UserInterface = User.CurrentUser as UserInterface)
 
     /**
      * Add profile to a user
@@ -28,8 +28,8 @@ interface DatabaseInterface {
      * @param uid uid
      * @param user user for database access
      */
-    fun addProfile(profile: ProfileInterface, uid : String = (User.CurrentUser as UserInterface).UID,
-                   user : UserInterface = User.CurrentUser as UserInterface) : Boolean
+    fun addProfile(profile: ProfileInterface, success: MutableLiveData<Boolean>, uid : String = (User.CurrentUser as UserInterface).UID,
+                   user : UserInterface = User.CurrentUser as UserInterface)
 
     /**
      * Remove profile from a user
@@ -37,8 +37,8 @@ interface DatabaseInterface {
      * @param uid uid
      * @param user user for database access
      */
-    fun removeProfile(profile: ProfileInterface, uid : String = (User.CurrentUser as UserInterface).UID,
-                   user : UserInterface = User.CurrentUser as UserInterface) : Boolean
+    fun removeProfile(profile: ProfileInterface, success: MutableLiveData<Boolean>, uid : String = (User.CurrentUser as UserInterface).UID,
+                   user : UserInterface = User.CurrentUser as UserInterface)
     /*
     fun acceptMaterialReservation()
 
