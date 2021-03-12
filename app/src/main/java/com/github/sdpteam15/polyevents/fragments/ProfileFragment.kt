@@ -44,25 +44,23 @@ class ProfileFragment : Fragment() {
             changeFragment(activity, MainActivity.fragments[R.id.ic_login])
         }
 
-
         //Replace the fields in the fragment by the user informations
         viewRoot.findViewById<EditText>(R.id.profileName).setText(currentUser?.name)
         viewRoot.findViewById<TextView>(R.id.profileUID).setText(currentUser?.uid)
         viewRoot.findViewById<EditText>(R.id.ProfileEmail).setText(currentUser?.email)
 
-        val update = MutableLiveData<Boolean>()
+        val update = MutableLiveData<String>()
         viewRoot.findViewById<Button>(R.id.btnUpdateInfos).setOnClickListener {
             val map = HashMap<String,String>()
             map["username"] = viewRoot.findViewById<EditText>(R.id.profileUsernameET).text.toString()
             currentDatabase.updateUserInformation(map,update,"Alessio2", currentUser!!)
-
         }
 
         val string2 = MutableLiveData<String>()
         val observer = Observer<String>{
             newValue ->  viewRoot.findViewById<TextView>(R.id.ProfileEmail).setText(newValue)
         }
-        string2.observe(this,observer)
+        update.observe(this,observer)
 
         val profileObservable = MutableLiveData<Profile>()
         val observer2 = Observer<Profile>{
@@ -77,7 +75,7 @@ class ProfileFragment : Fragment() {
                 newValue ->println(newValue)
         })
 
-        profileObservable.observe(this,observer2)
+        profileObservable.observe(this, observer2)
         return viewRoot
     }
 }

@@ -2,7 +2,6 @@ package com.github.sdpteam15.polyevents.database
 
 import androidx.lifecycle.MutableLiveData
 import com.github.sdpteam15.polyevents.event.Event
-import com.github.sdpteam15.polyevents.user.Profile
 import com.github.sdpteam15.polyevents.user.ProfileInterface
 import com.github.sdpteam15.polyevents.user.User
 import com.github.sdpteam15.polyevents.user.UserInterface
@@ -75,16 +74,32 @@ object FirestoreDatabaseProvider : DatabaseInterface {
 
     override fun updateUserInformation(
         newValues: HashMap<String, String>,
-        success: MutableLiveData<Boolean>,
+        success: MutableLiveData<String>,
         uid: String,
         userAccess: UserInterface
-    ) {
+    ): MutableLiveData<Boolean> {
+        val ending = MutableLiveData<Boolean>()
         firestore.collection("users")
             .document(uid)
             .update(newValues as Map<String, Any>)
-            .addOnSuccessListener { _ ->
-                success.postValue(true)
-            }
+            .addOnSuccessListener { _ -> ending.postValue(true)}
+            .addOnFailureListener{_-> ending.postValue(false)}
+        return ending
+    }
+
+    override fun firstConnexion(
+        user: UserInterface,
+        userAccess: UserInterface
+    ): MutableLiveData<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun inDatabase(
+        isInDb: MutableLiveData<Boolean>,
+        uid: String,
+        userAccess: UserInterface
+    ): MutableLiveData<Boolean> {
+        TODO("Not yet implemented")
     }
 
     override fun getUserInformation(
@@ -94,7 +109,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     ): MutableLiveData<Boolean> {
         val ending = MutableLiveData<Boolean>()
         firestore.collection("users")
-            .document("Alessio")
+            .document(uid)
             .get()
             .addOnSuccessListener { document ->
                 //listener.postValue(document)
