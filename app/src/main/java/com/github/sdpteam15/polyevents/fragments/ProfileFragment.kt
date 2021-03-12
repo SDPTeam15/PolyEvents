@@ -1,48 +1,32 @@
 package com.github.sdpteam15.polyevents.fragments
 
-import android.app.ProgressDialog
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.github.sdpteam15.polyevents.MainActivity
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
-import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.changeFragment
 import com.github.sdpteam15.polyevents.user.Profile
-import com.github.sdpteam15.polyevents.user.UserInterface
 import com.github.sdpteam15.polyevents.user.User
-import com.github.sdpteam15.polyevents.user.User.Companion.currentUser
+import com.github.sdpteam15.polyevents.user.UserInterface
 import com.google.firebase.auth.FirebaseAuth
-import kotlin.properties.Delegates
 
 /**
  *  [Fragment] subclass that represents the profile page.
  */
 class ProfileFragment : Fragment() {
     //User that we can set manually for testing
-    private var testUser: UserInterface? = null
-
-    //Allow us to use a fake user for the tests
-    var currentUser: UserInterface?
-        get() {
-            if (testUser != null) {
-                return testUser
-            } else {
-                return User.currentUser
-            }
-        }
-        set(value) {
-            testUser = value
-        }
+    //Return CurrentUser if we are not in test, but we can use a fake user in test this way
+    var currentUser: UserInterface? = null
+        get() = field ?: User.currentUser
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +44,12 @@ class ProfileFragment : Fragment() {
             changeFragment(activity, MainActivity.fragments[R.id.ic_login])
         }
 
+
+        //Replace the fields in the fragment by the user informations
+        viewRoot.findViewById<EditText>(R.id.profileName).setText(currentUser?.name)
+        viewRoot.findViewById<TextView>(R.id.profileUID).setText(currentUser?.uid)
+        viewRoot.findViewById<EditText>(R.id.ProfileEmail).setText(currentUser?.email)
+
         val update = MutableLiveData<Boolean>()
         viewRoot.findViewById<Button>(R.id.btnUpdateInfos).setOnClickListener {
             val map = HashMap<String,String>()
@@ -67,10 +57,6 @@ class ProfileFragment : Fragment() {
             currentDatabase.updateUserInformation(map,update,"Alessio2", currentUser!!)
 
         }
-        //Replace the fields in the fragment by the user informations
-        viewRoot.findViewById<EditText>(R.id.profileName).setText(currentUser?.Name)
-        viewRoot.findViewById<TextView>(R.id.profileUID).setText(currentUser?.UID)
-        viewRoot.findViewById<EditText>(R.id.ProfileEmail).setText(currentUser?.Email)
 
         val string2 = MutableLiveData<String>()
         val observer = Observer<String>{
@@ -82,9 +68,14 @@ class ProfileFragment : Fragment() {
         val observer2 = Observer<Profile>{
                 newValue ->
             run {
-                viewRoot.findViewById<TextView>(R.id.ProfileEmail).setText(newValue.Name)
+                viewRoot.findViewById<TextView>(R.id.ProfileEmail).setText(newValue.name)
             }
         }
+        val string3 = MutableLiveData<User>()
+        val getter = currentDatabase.getUserInformation(string3,"Alessio2", currentUser!!)
+        getter.observe(this,Observer<Boolean>{
+                newValue ->println(newValue)
+        })
 
         profileObservable.observe(this,observer2)
         return viewRoot

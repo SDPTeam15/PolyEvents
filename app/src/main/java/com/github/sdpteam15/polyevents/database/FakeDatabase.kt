@@ -1,16 +1,20 @@
 package com.github.sdpteam15.polyevents.database
 
-import androidx.lifecycle.MutableLiveData
-import com.github.sdpteam15.polyevents.user.Profile
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.lifecycle.MutableLiveData
 import com.github.sdpteam15.polyevents.event.Event
+import com.github.sdpteam15.polyevents.user.Profile
 import com.github.sdpteam15.polyevents.user.ProfileInterface
 import com.github.sdpteam15.polyevents.user.User
 import com.github.sdpteam15.polyevents.user.UserInterface
-import java.util.HashMap
-import kotlin.properties.ObservableProperty
 import java.time.LocalDateTime
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.List
+import kotlin.collections.emptyList
+import kotlin.collections.mutableSetOf
+import kotlin.collections.single
 
 object FakeDatabase : DatabaseInterface {
     init {
@@ -191,41 +195,53 @@ object FakeDatabase : DatabaseInterface {
     override fun getListProfile(uid: String, user: UserInterface): List<ProfileInterface> =
         emptyList()
 
-    override fun addProfile(profile: ProfileInterface, uid: String, user: UserInterface): Boolean =
-        true
+
+    override fun addProfile(profile: ProfileInterface, uid: String, user: UserInterface): Boolean {
+        return true //TODO
+    }
+
 
     override fun removeProfile(
         profile: ProfileInterface,
         uid: String,
         user: UserInterface
-    ): Boolean = true
+    ): Boolean {
+        return false //TODO
+    }
 
-    override fun updateProfile(profile: ProfileInterface, user: UserInterface): Boolean = true
+    override fun removeProfile(
+        profile: ProfileInterface,
+        success: MutableLiveData<Boolean>,
+        uid: String,
+        user: UserInterface
+    ) {
+        //TODO
+    }
+
+
+    override fun updateProfile(profile: ProfileInterface, user: UserInterface): Boolean {
+        return false//TODO
+    }
 
     override fun getListEvent(
         matcher: String?,
         number: Int?,
         profile: ProfileInterface
-    ): List<Event> = events as List<Event>
+    ): List<Event> {
+        return events!!
+    }
 
-    override fun getUpcomingEvents(number: Int, profile: ProfileInterface): List<Event> =
-        events as List<Event>
+    override fun getUpcomingEvents(number: Int, profile: ProfileInterface): List<Event> {
+        return events!!
+    }
 
-/**
- * Fake Database
- */
-class FakeDatabase :  DatabaseInterface {
-    override fun getListProfile(uid: String, user: UserInterface): List<ProfileInterface> =
-        emptyList()
+    override fun getEventFromId(id: String, profile: ProfileInterface): Event? {
+        return null
+    }
 
-    override fun addProfile(profile: ProfileInterface, uid: String, user: UserInterface): Boolean =
-        true
-
-    override fun removeProfile(
-        profile: ProfileInterface,
-        uid: String,
-        user: UserInterface
-    ): Boolean = true
+    override fun updateEvent(Event: Event, profile: ProfileInterface): Boolean {
+        return true
+    }
 
     override fun updateUserInformation(
         newValues: HashMap<String, String>,
@@ -240,15 +256,7 @@ class FakeDatabase :  DatabaseInterface {
         listener: MutableLiveData<User>,
         uid: String,
         userAccess: UserInterface
-    ) {
+    ): MutableLiveData<Boolean> {
         TODO("Not yet implemented")
     }
-    override fun getEventFromId(id: String, profile: ProfileInterface): Event? = try {
-        events?.single { event -> event.id == id }
-    } catch (e: NoSuchElementException) {
-        null
-    }
-
-    override fun updateEvent(event: Event, profile: ProfileInterface): Boolean = true
-
 }

@@ -1,16 +1,14 @@
 package com.github.sdpteam15.polyevents.database
 
-import com.github.sdpteam15.polyevents.user.Profile.Companion.CurrentProfile
 import androidx.lifecycle.MutableLiveData
 import com.github.sdpteam15.polyevents.event.Event
 import com.github.sdpteam15.polyevents.user.Profile
+import com.github.sdpteam15.polyevents.user.Profile.Companion.CurrentProfile
 import com.github.sdpteam15.polyevents.user.ProfileInterface
-import com.github.sdpteam15.polyevents.user.User.Companion.currentUser
-import com.github.sdpteam15.polyevents.user.UserInterface
 import com.github.sdpteam15.polyevents.user.User
+import com.github.sdpteam15.polyevents.user.UserInterface
+import com.google.android.gms.tasks.Task
 import java.util.*
-import java.util.concurrent.Future
-import kotlin.properties.ObservableProperty
 
 const val NUMBER_UPCOMING_EVENTS = 3
 
@@ -34,8 +32,6 @@ interface DatabaseInterface {
         uid: String,
         user: UserInterface = currentUser as UserInterface
     ): List<ProfileInterface>
-    fun getListProfile(profilListToUpdate: MutableLiveData<List<Profile>>,uid : String = (User.CurrentUser as UserInterface).UID,
-        user : UserInterface = User.currentUser as UserInterface)
 
     /**
      * Add profile to a user
@@ -48,8 +44,6 @@ interface DatabaseInterface {
         profile: ProfileInterface, uid: String,
         user: UserInterface = currentUser as UserInterface
     ): Boolean
-    fun addProfile(profile: ProfileInterface, success: MutableLiveData<Boolean>, uid : String = (User.CurrentUser as UserInterface).UID,
-                   user : UserInterface = User.currentUser as UserInterface)
 
     /**
      * Remove profile from a user
@@ -117,7 +111,7 @@ interface DatabaseInterface {
         Event: Event,
         profile: ProfileInterface = CurrentProfile
     ): Boolean
-    fun removeProfile(profile: ProfileInterface, success: MutableLiveData<Boolean>, uid : String = (User.CurrentUser as UserInterface).UID,
+    fun removeProfile(profile: ProfileInterface, success: MutableLiveData<Boolean>, uid : String = (User.currentUser as UserInterface).uid,
                    user : UserInterface = User.currentUser as UserInterface)
     /*
     fun acceptMaterialReservation()
@@ -138,7 +132,7 @@ interface DatabaseInterface {
 
     fun getUpcomingEvents(activityListToModify: MutableLiveData<List<Activity>>)
     */
-    fun updateUserInformation(newValues: HashMap<String, String>, success: MutableLiveData<Boolean>, uid:String, userAccess: UserInterface = User.CurrentUser as UserInterface)
+    fun updateUserInformation(newValues: HashMap<String, String>, success: MutableLiveData<Boolean>, uid:String, userAccess: UserInterface = User.currentUser as UserInterface)
 
-    fun getUserInformation(listener: MutableLiveData<User>, uid: String = (User.CurrentUser as UserInterface).UID, userAccess: UserInterface = User.CurrentUser as UserInterface)
+    fun getUserInformation(listener: MutableLiveData<User>, uid: String = (User.currentUser as UserInterface).uid, userAccess: UserInterface = User.currentUser as UserInterface): MutableLiveData<Boolean>
 }

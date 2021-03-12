@@ -1,21 +1,15 @@
 package com.github.sdpteam15.polyevents
 
-import android.database.Observable
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.widget.ArrayAdapter
 import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.github.sdpteam15.polyevents.database.Database
-import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.fragments.*
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.user.User.Companion.currentUser
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlin.properties.Delegates.observable
-import kotlin.properties.ObservableProperty
 
 class MainActivity : AppCompatActivity() {
     companion object {
