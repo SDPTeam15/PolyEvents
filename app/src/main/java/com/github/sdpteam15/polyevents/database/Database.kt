@@ -6,6 +6,9 @@ import com.github.sdpteam15.polyevents.activity.Activity
 import com.github.sdpteam15.polyevents.user.ProfileInterface
 import com.github.sdpteam15.polyevents.user.UserInterface
 import java.time.LocalDateTime
+import java.util.*
+import kotlin.NoSuchElementException
+import kotlin.collections.ArrayList
 
 /**
  * Database

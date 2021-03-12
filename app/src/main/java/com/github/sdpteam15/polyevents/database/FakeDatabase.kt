@@ -14,11 +14,12 @@ object FakeDatabase : DatabaseInterface {
         }
     }
 
-    private val activities = ArrayList<Activity>()
+    private var activities : ArrayList<Activity>? = null
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun initActivities() {
-        activities.add(
+        activities = ArrayList()
+        activities?.add(
             Activity(
                 "Sushi demo",
                 "Super hungry activity !",
@@ -28,7 +29,7 @@ object FakeDatabase : DatabaseInterface {
                 "Kitchen", null, "1", mutableSetOf("sushi", "japan", "cooking")
             )
         )
-        activities.add(
+        activities?.add(
             Activity(
                 "Aqua Poney",
                 "Super cool activity !" +
@@ -40,7 +41,7 @@ object FakeDatabase : DatabaseInterface {
                 "Swimming pool", null, "2"
             )
         )
-        activities.add(
+        activities?.add(
             Activity(
                 "Saxophone demo",
                 "Super noisy activity !",
@@ -50,7 +51,7 @@ object FakeDatabase : DatabaseInterface {
                 "Concert Hall", null, "3"
             )
         )
-        activities.add(
+        activities?.add(
             Activity(
                 "Sushi demo",
                 "Super hungry activity !",
@@ -60,7 +61,7 @@ object FakeDatabase : DatabaseInterface {
                 "Kitchen", null, "4"
             )
         )
-        activities.add(
+        activities?.add(
             Activity(
                 "Aqua Poney",
                 "Super cool activity !" +
@@ -72,7 +73,7 @@ object FakeDatabase : DatabaseInterface {
                 "Swimming pool", null, "5"
             )
         )
-        activities.add(
+        activities?.add(
             Activity(
                 "Saxophone demo",
                 "Super noisy activity !",
@@ -82,7 +83,7 @@ object FakeDatabase : DatabaseInterface {
                 "Concert Hall", null, "6"
             )
         )
-        activities.add(
+        activities?.add(
             Activity(
                 "Sushi demo",
                 "Super hungry activity !",
@@ -92,7 +93,7 @@ object FakeDatabase : DatabaseInterface {
                 "Kitchen", null, "7"
             )
         )
-        activities.add(
+        activities?.add(
             Activity(
                 "Aqua Poney",
                 "Super cool activity !" +
@@ -104,7 +105,7 @@ object FakeDatabase : DatabaseInterface {
                 "Swimming pool", null, "8"
             )
         )
-        activities.add(
+        activities?.add(
             Activity(
                 "Saxophone demo",
                 "Super noisy activity !",
@@ -114,7 +115,7 @@ object FakeDatabase : DatabaseInterface {
                 "Concert Hall", null, "9"
             )
         )
-        activities.add(
+        activities?.add(
             Activity(
                 "Sushi demo",
                 "Super hungry activity !",
@@ -124,7 +125,7 @@ object FakeDatabase : DatabaseInterface {
                 "Kitchen", null, "10"
             )
         )
-        activities.add(
+        activities?.add(
             Activity(
                 "Aqua Poney",
                 "Super cool activity !" +
@@ -136,7 +137,7 @@ object FakeDatabase : DatabaseInterface {
                 "Swimming pool", null, "11"
             )
         )
-        activities.add(
+        activities?.add(
             Activity(
                 "Saxophone demo",
                 "Super noisy activity !",
@@ -146,7 +147,7 @@ object FakeDatabase : DatabaseInterface {
                 "Concert Hall", null, "12"
             )
         )
-        activities.add(
+        activities?.add(
             Activity(
                 "Sushi demo",
                 "Super hungry activity !",
@@ -156,7 +157,7 @@ object FakeDatabase : DatabaseInterface {
                 "Kitchen", null, "13"
             )
         )
-        activities.add(
+        activities?.add(
             Activity(
                 "Aqua Poney",
                 "Super cool activity !" +
@@ -168,7 +169,7 @@ object FakeDatabase : DatabaseInterface {
                 "Swimming pool", null, "14"
             )
         )
-        activities.add(
+        activities?.add(
             Activity(
                 "Saxophone demo",
                 "Super noisy activity !",
@@ -198,13 +199,16 @@ object FakeDatabase : DatabaseInterface {
         matcher: String?,
         number: Int?,
         profile: ProfileInterface
-    ): List<Activity> = activities
+    ): List<Activity> = activities as List<Activity>
 
-    override fun getUpcomingActivities(number: Int, profile: ProfileInterface): List<Activity> =
-        activities
+    override fun getUpcomingActivities(number: Int, profile: ProfileInterface): List<Activity>{
+        println("FakeDatabase")
+        return activities as List<Activity>
+    }
+
 
     override fun getActivityFromId(id: String, profile: ProfileInterface): Activity? = try {
-        activities.single { activity -> activity.id == id }
+        activities?.single { activity -> activity.id == id }
     } catch (e: NoSuchElementException) {
         null
     }
