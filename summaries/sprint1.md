@@ -41,6 +41,11 @@ The estimated time was too low. I didn't predict that there will be many issues 
 Next time, I'll break the Product Backlog in smaller task and smaller branches.
 
 ## Stephane
+I explored backend options using Firebase. I decided to go with the Google Cloud Firestore for storing our data and retrieve it. I read corresponding documentation, played with a couple of demo apps to see how everything works and familiarized with the NoSQL model. I also established an initial Entity-relation diagram for our app with Alessio.
+
+There was no hands-on code involved except for the demo apps. Reading the documentation took much more time than expected, particularly for trying to adapt to the NoSQL model. 
+
+Next week, I will try to get more into the code and implement an initial functional backend. If I have spare time, I'll maybe expose an interface for the others to work with the database if the need arised. 
 
 ## Overall team
 
