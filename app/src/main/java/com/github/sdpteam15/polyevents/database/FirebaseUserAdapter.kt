@@ -4,7 +4,7 @@ import com.google.firebase.auth.FirebaseUser
 
 /**
  * FirebaseUser adapter
- */
+*/
 class FirebaseUserAdapter constructor(private val firebaseUser : FirebaseUser) : FirebaseUserInterface{
     override val displayName: String
         get() = firebaseUser.displayName
