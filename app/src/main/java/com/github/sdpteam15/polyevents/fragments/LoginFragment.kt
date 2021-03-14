@@ -8,8 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import com.github.sdpteam15.polyevents.MainActivity
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.user.User
 import com.github.sdpteam15.polyevents.user.UserInterface
@@ -81,14 +84,36 @@ class LoginFragment : Fragment() {
         FirebaseAuth.getInstance().signInWithCredential(credential)
             .addOnCompleteListener(activity as Activity) { task ->
                 if (task.isSuccessful) {
-                    HelperFunctions.changeFragment(
-                        activity,
-                        MainActivity.fragments[R.id.id_fragment_profile]
-                    )
+                    addIfNotInDB()
                 } else {
                     failedLogin.show()
                 }
             }
+    }
+
+    private fun addIfNotInDB(){
+        val inDb = MutableLiveData<Boolean>()
+        currentDatabase.inDatabase(inDb,currentUser!!.uid,currentUser!!).observe(this, Observer<Boolean> { newValue ->
+            if (newValue) {
+                HelperFunctions.changeFragment(
+                    activity,
+                    MainActivity.fragments[R.id.id_fragment_profile]
+                )
+            } else {
+                currentDatabase
+                    .firstConnexion(currentUser!!, currentUser!!)
+                    .observe(this, Observer<Boolean> { newValue ->
+                        if (newValue) {
+                            HelperFunctions.changeFragment(
+                                activity,
+                                MainActivity.fragments[R.id.id_fragment_profile]
+                            )
+                        } else {
+                            failedLogin.show()
+                        }
+                    })
+            }
+        })
     }
 
     override fun onCreateView(

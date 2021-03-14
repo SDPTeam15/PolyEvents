@@ -245,10 +245,9 @@ object FakeDatabase : DatabaseInterface {
 
     override fun updateUserInformation(
         newValues: HashMap<String, String>,
-        success: MutableLiveData<String>,
         uid: String,
         userAccess: UserInterface
-    ):MutableLiveData<Boolean> {
+    ): MutableLiveData<Boolean> {
         TODO("Not yet implemented")
     }
 

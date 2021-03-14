@@ -138,7 +138,6 @@ interface DatabaseInterface {
     */
     fun updateUserInformation(
         newValues: HashMap<String, String>,
-        success: MutableLiveData<String>,
         uid: String,
         userAccess: UserInterface = User.currentUser as UserInterface
     ): MutableLiveData<Boolean>

@@ -8,8 +8,6 @@ import com.github.sdpteam15.polyevents.user.UserInterface
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import java.util.*
-import kotlin.collections.ArrayList
 
 object FirestoreDatabaseProvider : DatabaseInterface {
     val firestore = Firebase.firestore
@@ -22,11 +20,11 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             }
 
     override fun getListProfile(uid: String, user: UserInterface): List<ProfileInterface> {
-      return ArrayList<ProfileInterface>() //TODO
+        return ArrayList<ProfileInterface>() //TODO
     }
 
     override fun addProfile(profile: ProfileInterface, uid: String, user: UserInterface): Boolean {
-       return true//TODO
+        return true//TODO
     }
 
     override fun removeProfile(
@@ -34,7 +32,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         uid: String,
         user: UserInterface
     ): Boolean {
-       return true//TODO
+        return true//TODO
     }
 
     override fun removeProfile(
@@ -43,11 +41,11 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         uid: String,
         user: UserInterface
     ) {
-       //TODO
+        //TODO
     }
 
     override fun updateProfile(profile: ProfileInterface, user: UserInterface): Boolean {
-       return true//TODO
+        return true//TODO
     }
 
     override fun getListEvent(
@@ -55,7 +53,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         number: Int?,
         profile: ProfileInterface
     ): List<Event> {
-       return ArrayList<Event>()//TODO
+        return ArrayList<Event>()//TODO
     }
 
     override fun getUpcomingEvents(number: Int, profile: ProfileInterface): List<Event> {
@@ -63,18 +61,17 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     }
 
     override fun getEventFromId(id: String, profile: ProfileInterface): Event? {
-       return null//TODO
+        return null//TODO
     }
 
     override fun updateEvent(Event: Event, profile: ProfileInterface): Boolean {
-       return true//TODO
+        return true//TODO
     }
 
     //Up to here delete
 
     override fun updateUserInformation(
-        newValues: HashMap<String, String>,
-        success: MutableLiveData<String>,
+        newValues: java.util.HashMap<String, String>,
         uid: String,
         userAccess: UserInterface
     ): MutableLiveData<Boolean> {
@@ -82,8 +79,8 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         firestore.collection("users")
             .document(uid)
             .update(newValues as Map<String, Any>)
-            .addOnSuccessListener { _ -> ending.postValue(true)}
-            .addOnFailureListener{_-> ending.postValue(false)}
+            .addOnSuccessListener { _ -> ending.postValue(true) }
+            .addOnFailureListener { _ -> ending.postValue(false) }
         return ending
     }
 
@@ -91,7 +88,19 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         user: UserInterface,
         userAccess: UserInterface
     ): MutableLiveData<Boolean> {
-        TODO("Not yet implemented")
+        val ended = MutableLiveData<Boolean>()
+        val map = HashMap<String, String>()
+        map["uid"] = user.uid
+        map["displayName"] = user.name
+        map["email"] = user.email
+        firestore.collection("users")
+            .document(user.uid)
+            .set(map)
+            .addOnSuccessListener {
+                ended.postValue(true)
+            }
+            .addOnFailureListener { ended.postValue(false) }
+        return ended
     }
 
     override fun inDatabase(
@@ -99,7 +108,20 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         uid: String,
         userAccess: UserInterface
     ): MutableLiveData<Boolean> {
-        TODO("Not yet implemented")
+        val ended = MutableLiveData<Boolean>()
+        firestore.collection("users")
+            .document(uid)
+            .get()
+            .addOnSuccessListener { doc ->
+                if (doc.exists()) {
+                    isInDb.postValue(true)
+                } else {
+                    isInDb.postValue(false)
+                }
+                ended.postValue(true)
+            }
+            .addOnFailureListener { ended.postValue(false) }
+        return ended
     }
 
     override fun getUserInformation(

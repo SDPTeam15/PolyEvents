@@ -14,7 +14,6 @@ import com.github.sdpteam15.polyevents.MainActivity
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.changeFragment
-import com.github.sdpteam15.polyevents.user.Profile
 import com.github.sdpteam15.polyevents.user.User
 import com.github.sdpteam15.polyevents.user.UserInterface
 import com.google.firebase.auth.FirebaseAuth
@@ -31,51 +30,61 @@ class ProfileFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //If the user is not logged in, redirect him to the login page
-        if(currentUser == null){
+        if (currentUser == null) {
             changeFragment(activity, MainActivity.fragments[R.id.ic_login])
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val viewRoot = inflater.inflate(R.layout.fragment_profile, container, false)
         viewRoot.findViewById<Button>(R.id.btnLogout).setOnClickListener { _ ->
             FirebaseAuth.getInstance().signOut()
             changeFragment(activity, MainActivity.fragments[R.id.ic_login])
         }
 
-        //Replace the fields in the fragment by the user informations
-        viewRoot.findViewById<EditText>(R.id.profileName).setText(currentUser?.name)
-        viewRoot.findViewById<TextView>(R.id.profileUID).setText(currentUser?.uid)
-        viewRoot.findViewById<EditText>(R.id.ProfileEmail).setText(currentUser?.email)
+        val newUserInfos = MutableLiveData<User>()
 
-        val update = MutableLiveData<String>()
-        viewRoot.findViewById<Button>(R.id.btnUpdateInfos).setOnClickListener {
-            val map = HashMap<String,String>()
-            map["username"] = viewRoot.findViewById<EditText>(R.id.profileUsernameET).text.toString()
-            currentDatabase.updateUserInformation(map,update,"Alessio2", currentUser!!)
-        }
-
-        val string2 = MutableLiveData<String>()
-        val observer = Observer<String>{
-            newValue ->  viewRoot.findViewById<TextView>(R.id.ProfileEmail).setText(newValue)
-        }
-        update.observe(this,observer)
-
-        val profileObservable = MutableLiveData<Profile>()
-        val observer2 = Observer<Profile>{
-                newValue ->
-            run {
-                viewRoot.findViewById<TextView>(R.id.ProfileEmail).setText(newValue.name)
+        val getInfosObserver = Observer<Boolean> { newValue ->
+            if (newValue) {
+                println(newValue)
+                updateFields(viewRoot, newUserInfos)
+            } else {
+                println(newValue)
             }
         }
-        val string3 = MutableLiveData<User>()
-        val getter = currentDatabase.getUserInformation(string3,"Alessio2", currentUser!!)
-        getter.observe(this,Observer<Boolean>{
-                newValue ->println(newValue)
-        })
+        currentDatabase.getUserInformation(newUserInfos, "Alessio2", currentUser!!)
+            .observe(this, getInfosObserver)
 
-        profileObservable.observe(this, observer2)
+        viewRoot.findViewById<Button>(R.id.btnUpdateInfos).setOnClickListener {
+            val map = HashMap<String, String>()
+            map["username"] =
+                viewRoot.findViewById<EditText>(R.id.profileUsernameET).text.toString()
+            currentDatabase.updateUserInformation(map, currentUser!!.uid, currentUser!!)
+                .observe(this, Observer<Boolean> { newValue ->
+                    if (newValue) {
+                        currentDatabase.getUserInformation(
+                            newUserInfos,
+                            currentUser!!.uid,
+                            currentUser!!
+                        ).observe(this, getInfosObserver)
+                    } else {
+                        println("Update impossible")
+                    }
+                })
+        }
+
+
         return viewRoot
+    }
+
+    private fun updateFields(viewRoot: View, userInfos: MutableLiveData<User>) {
+        //Replace the fields in the fragment by the user informations
+        viewRoot.findViewById<EditText>(R.id.profileName).setText(userInfos.value?.name)
+        viewRoot.findViewById<TextView>(R.id.profileUID).setText(userInfos.value?.uid)
+        viewRoot.findViewById<EditText>(R.id.ProfileEmail).setText(userInfos.value?.email)
+        //viewRoot.findViewById<EditText>(R.id.profileUsernameET).setText(userInfos.value?.username)
     }
 }
