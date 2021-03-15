@@ -27,7 +27,7 @@ object FakeDatabase : DatabaseInterface {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun initEvents() {
         events = ArrayList()
-        events?.add(
+        events!!.add(
             Event(
                 "Sushi demo",
                 "Super hungry activity !",
@@ -37,7 +37,7 @@ object FakeDatabase : DatabaseInterface {
                 "Kitchen", null, "1", mutableSetOf("sushi", "japan", "cooking")
             )
         )
-        events?.add(
+        events!!.add(
             Event(
                 "Aqua Poney",
                 "Super cool activity !" +
@@ -49,7 +49,7 @@ object FakeDatabase : DatabaseInterface {
                 "Swimming pool", null, "2"
             )
         )
-        events?.add(
+        events!!.add(
             Event(
                 "Saxophone demo",
                 "Super noisy activity !",
@@ -59,7 +59,7 @@ object FakeDatabase : DatabaseInterface {
                 "Concert Hall", null, "3"
             )
         )
-        events?.add(
+        events!!.add(
             Event(
                 "Sushi demo",
                 "Super hungry activity !",
@@ -69,7 +69,7 @@ object FakeDatabase : DatabaseInterface {
                 "Kitchen", null, "4"
             )
         )
-        events?.add(
+        events!!.add(
             Event(
                 "Aqua Poney",
                 "Super cool activity !" +
@@ -81,7 +81,7 @@ object FakeDatabase : DatabaseInterface {
                 "Swimming pool", null, "5"
             )
         )
-        events?.add(
+        events!!.add(
             Event(
                 "Saxophone demo",
                 "Super noisy activity !",
@@ -91,7 +91,7 @@ object FakeDatabase : DatabaseInterface {
                 "Concert Hall", null, "6"
             )
         )
-        events?.add(
+        events!!.add(
             Event(
                 "Sushi demo",
                 "Super hungry activity !",
@@ -101,7 +101,7 @@ object FakeDatabase : DatabaseInterface {
                 "Kitchen", null, "7"
             )
         )
-        events?.add(
+        events!!.add(
             Event(
                 "Aqua Poney",
                 "Super cool activity !" +
@@ -113,7 +113,7 @@ object FakeDatabase : DatabaseInterface {
                 "Swimming pool", null, "8"
             )
         )
-        events?.add(
+        events!!.add(
             Event(
                 "Saxophone demo",
                 "Super noisy activity !",
@@ -123,7 +123,7 @@ object FakeDatabase : DatabaseInterface {
                 "Concert Hall", null, "9"
             )
         )
-        events?.add(
+        events!!.add(
             Event(
                 "Sushi demo",
                 "Super hungry activity !",
@@ -133,7 +133,7 @@ object FakeDatabase : DatabaseInterface {
                 "Kitchen", null, "10"
             )
         )
-        events?.add(
+        events!!.add(
             Event(
                 "Aqua Poney",
                 "Super cool activity !" +
@@ -145,7 +145,7 @@ object FakeDatabase : DatabaseInterface {
                 "Swimming pool", null, "11"
             )
         )
-        events?.add(
+        events!!.add(
             Event(
                 "Saxophone demo",
                 "Super noisy activity !",
@@ -155,7 +155,7 @@ object FakeDatabase : DatabaseInterface {
                 "Concert Hall", null, "12"
             )
         )
-        events?.add(
+        events!!.add(
             Event(
                 "Sushi demo",
                 "Super hungry activity !",
@@ -165,7 +165,7 @@ object FakeDatabase : DatabaseInterface {
                 "Kitchen", null, "13"
             )
         )
-        events?.add(
+        events!!.add(
             Event(
                 "Aqua Poney",
                 "Super cool activity !" +
@@ -177,7 +177,7 @@ object FakeDatabase : DatabaseInterface {
                 "Swimming pool", null, "14"
             )
         )
-        events?.add(
+        events!!.add(
             Event(
                 "Saxophone demo",
                 "Super noisy activity !",
@@ -267,7 +267,7 @@ object FakeDatabase : DatabaseInterface {
     }
 
     override fun getUserInformation(
-        listener: MutableLiveData<User>,
+        listener: MutableLiveData<UserInterface>,
         uid: String,
         userAccess: UserInterface
     ): MutableLiveData<Boolean> {
