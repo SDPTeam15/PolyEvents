@@ -34,6 +34,6 @@ class FirestoreDatabaseProviderTest {
 
     @Test
     fun canAddAUser(){
-
+        //database.firstConnexion(user, user).observe()
     }
 }
