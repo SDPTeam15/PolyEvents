@@ -10,15 +10,25 @@ import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 
+/**
+ * Adapts items to RecyclerView's ItemViewHolders
+ * Takes :
+ * - The list of available items to adapt
+ * - A listener that will be triggered on click on a checkbox of an item view holder
+ */
 class ItemRequestAdapter(
     private val availableItems: List<String>,
     private val onItemCheckChangeListener: (String, Boolean) -> Boolean
 ) : RecyclerView.Adapter<ItemRequestAdapter.ItemViewHolder>() {
 
+    /**
+     * Adapted ViewHolder for each item
+     * Takes the corresponding item "tab" view
+     */
     inner class ItemViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
 
-        val itemName = view.findViewById<TextView>(R.id.id_item_name)
-        val itemCheckBox = view.findViewById<CheckBox>(R.id.id_item_requested)
+        private val itemName = view.findViewById<TextView>(R.id.id_item_name)
+        private val itemCheckBox = view.findViewById<CheckBox>(R.id.id_item_requested)
 
         /**
          * Binds the value of the item to the layout of the item tab
