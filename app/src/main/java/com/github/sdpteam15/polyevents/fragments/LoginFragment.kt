@@ -31,6 +31,7 @@ private const val SIGN_IN_RC: Int = 200
 class LoginFragment : Fragment() {
     private lateinit var signIn: GoogleSignInClient
     private lateinit var failedLogin: AlertDialog
+    val inDbMutableLiveData = MutableLiveData<Boolean>()
 
     //Return CurrentUser if we are not in test, but we can use a fake user in test this way
     var currentUser: UserInterface? = null
@@ -91,29 +92,32 @@ class LoginFragment : Fragment() {
             }
     }
 
-    private fun addIfNotInDB(){
-        val inDb = MutableLiveData<Boolean>()
-        currentDatabase.inDatabase(inDb,currentUser!!.uid,currentUser!!).observe(this, Observer<Boolean> { newValue ->
-            if (newValue) {
-                HelperFunctions.changeFragment(
-                    activity,
-                    MainActivity.fragments[R.id.id_fragment_profile]
-                )
-            } else {
-                currentDatabase
-                    .firstConnexion(currentUser!!, currentUser!!)
-                    .observe(this, Observer<Boolean> { newValue ->
-                        if (newValue) {
-                            HelperFunctions.changeFragment(
-                                activity,
-                                MainActivity.fragments[R.id.id_fragment_profile]
-                            )
-                        } else {
-                            failedLogin.show()
-                        }
-                    })
-            }
-        })
+    private fun addIfNotInDB() {
+        currentDatabase.inDatabase(inDbMutableLiveData, currentUser!!.uid, currentUser!!)
+            .observe(this, Observer<Boolean> { newValue ->
+                if (newValue) {
+                    println("Testo123")
+                    if (inDbMutableLiveData.value!!) {
+                        println("IN DB ")
+                        HelperFunctions.changeFragment(activity, MainActivity.fragments[R.id.id_fragment_profile])
+                    } else {
+                        println("NOT IN DB")
+                        currentDatabase
+                            .firstConnexion(currentUser!!, currentUser!!)
+                            .observe(this, Observer<Boolean> { newValue2 ->
+                                if (newValue2) {
+                                    println("REDIRECTED")
+                                    HelperFunctions.changeFragment(activity, MainActivity.fragments[R.id.id_fragment_profile])
+                                } else {
+                                    println("FAILED")
+                                    failedLogin.show()
+                                }
+                            })
+                    }
+                } else {
+                    failedLogin.show()
+                }
+            })
     }
 
     override fun onCreateView(
@@ -129,10 +133,7 @@ class LoginFragment : Fragment() {
                     startActivityForResult(signIn.signInIntent, SIGN_IN_RC)
                 } else {
                     //This branch allow us to test the communication between ProfileFragment and LoginFragment. During a normal execution, it won't be used.
-                    HelperFunctions.changeFragment(
-                        activity,
-                        MainActivity.fragments[R.id.id_fragment_profile]
-                    )
+                    addIfNotInDB()
                 }
             }
         return rootView
