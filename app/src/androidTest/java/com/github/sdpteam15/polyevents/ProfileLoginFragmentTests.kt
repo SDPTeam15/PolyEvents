@@ -5,7 +5,7 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
-import com.github.sdpteam15.polyevents.database.FirebaseUserInterface
+import com.github.sdpteam15.polyevents.database.DatabaseUserInterface
 import com.github.sdpteam15.polyevents.fragments.LoginFragment
 import com.github.sdpteam15.polyevents.fragments.ProfileFragment
 import com.github.sdpteam15.polyevents.user.User
@@ -30,16 +30,16 @@ class ProfileFragmentTest {
     @JvmField
     var testRule = ActivityScenarioRule<MainActivity>(MainActivity::class.java)
 
-    lateinit var user:UserInterface
-    lateinit var mockedFirebaseUser:FirebaseUserInterface
+    lateinit var user: UserInterface
+    lateinit var mockedDatabaseUser: DatabaseUserInterface
 
     @Before
-    fun setup(){
-        mockedFirebaseUser = mock(FirebaseUserInterface::class.java)
-        user = User.invoke(mockedFirebaseUser)
-        `when`(mockedFirebaseUser.email).thenReturn(emailTest)
-        `when`(mockedFirebaseUser.displayName).thenReturn(diplayNameTest)
-        `when`(mockedFirebaseUser.uid).thenReturn(uidTest)
+    fun setup() {
+        mockedDatabaseUser = mock(DatabaseUserInterface::class.java)
+        `when`(mockedDatabaseUser.email).thenReturn(emailTest)
+        `when`(mockedDatabaseUser.displayName).thenReturn(diplayNameTest)
+        `when`(mockedDatabaseUser.uid).thenReturn(uidTest)
+        user = User.invoke(mockedDatabaseUser)
         testRule = ActivityScenarioRule<MainActivity>(MainActivity::class.java)
     }
 
@@ -56,7 +56,7 @@ class ProfileFragmentTest {
     }
 
     @Test
-    fun backToSignInIfCurrentUserNull(){
+    fun backToSignInIfCurrentUserNull() {
         FirebaseAuth.getInstance().signOut()
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
         profileFragment.currentUser = null
@@ -74,7 +74,7 @@ class ProfileFragmentTest {
     }
 
     @Test
-    fun signInButtonRedirectToProfileFragmentAfterSuccess(){
+    fun signInButtonRedirectToProfileFragmentAfterSuccess() {
         FirebaseAuth.getInstance().signOut()
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         loginFragment.currentUser = null

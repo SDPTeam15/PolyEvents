@@ -17,11 +17,11 @@ import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
-import com.github.sdpteam15.polyevents.activity.Activity
-import com.github.sdpteam15.polyevents.activity.ActivityItemAdapter
-import com.github.sdpteam15.polyevents.fragments.EXTRA_ACTIVITY
-import com.github.sdpteam15.polyevents.fragments.ListFragment
-import com.github.sdpteam15.polyevents.helper.ActivitiesQueryHelperInterface
+import com.github.sdpteam15.polyevents.database.Database.currentDatabase
+import com.github.sdpteam15.polyevents.database.DatabaseInterface
+import com.github.sdpteam15.polyevents.event.Event
+import com.github.sdpteam15.polyevents.event.EventItemAdapter
+import com.github.sdpteam15.polyevents.fragments.EXTRA_EVENT_ID
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.containsString
 import org.hamcrest.Matcher
@@ -36,9 +36,9 @@ import java.time.LocalDateTime
 
 
 @RunWith(MockitoJUnitRunner::class)
-class ActivityActivityTest {
-    lateinit var activities: ArrayList<Activity>
-    lateinit var mockedUpcomingActivitiesProvider: ActivitiesQueryHelperInterface
+class EventActivityTest {
+    lateinit var events: ArrayList<Event>
+    lateinit var mockedUpcomingEventsProvider: DatabaseInterface
 
     @Rule
     @JvmField
@@ -46,9 +46,9 @@ class ActivityActivityTest {
 
     @Before
     fun setup() {
-        activities = ArrayList<Activity>()
-        activities.add(
-            Activity(
+        events = ArrayList<Event>()
+        events.add(
+            Event(
                 "Sushi demo",
                 "Super hungry activity !",
                 LocalDateTime.of(2021, 3, 7, 12, 15),
@@ -59,8 +59,8 @@ class ActivityActivityTest {
             )
         )
 
-        activities.add(
-            Activity(
+        events.add(
+            Event(
                 "Aqua Poney",
                 "Super cool activity !",
                 LocalDateTime.of(2021, 3, 7, 15, 0),
@@ -71,8 +71,8 @@ class ActivityActivityTest {
             )
         )
 
-        activities.add(
-            Activity(
+        events.add(
+            Event(
                 "Concert",
                 "Super noisy activity !",
                 LocalDateTime.of(2021, 3, 7, 21, 15),
@@ -83,104 +83,98 @@ class ActivityActivityTest {
             )
         )
 
-        mockedUpcomingActivitiesProvider = mock(ActivitiesQueryHelperInterface::class.java)
-        `when`(mockedUpcomingActivitiesProvider.getUpcomingActivities()).thenReturn(activities)
-        `when`(mockedUpcomingActivitiesProvider.getActivityFromId("1")).thenReturn(activities[0])
-        `when`(mockedUpcomingActivitiesProvider.getActivityFromId("2")).thenReturn(activities[1])
-        `when`(mockedUpcomingActivitiesProvider.getActivityFromId("3")).thenReturn(activities[2])
+        mockedUpcomingEventsProvider = mock(DatabaseInterface::class.java)
+        currentDatabase = mockedUpcomingEventsProvider
+        `when`(mockedUpcomingEventsProvider.getUpcomingEvents()).thenReturn(events)
+        `when`(mockedUpcomingEventsProvider.getEventFromId("1")).thenReturn(events[0])
+        `when`(mockedUpcomingEventsProvider.getEventFromId("2")).thenReturn(events[1])
+        `when`(mockedUpcomingEventsProvider.getEventFromId("3")).thenReturn(events[2])
         // go to activities list fragment
         mainActivity = ActivityScenarioRule(MainActivity::class.java)
         Espresso.onView(withId(R.id.ic_list)).perform(click())
-        // Set the activities query helper in list fragment
-        val listFragment = MainActivity.fragments[R.id.ic_list] as ListFragment
-        listFragment.currentQueryHelper = mockedUpcomingActivitiesProvider
     }
 
 
     @Test
-    fun correctNumberUpcomingActivitiesDisplayed() {
-        Espresso.onView(withId(R.id.recycler_activites_list))
-            .check(RecyclerViewItemCountAssertion(mockedUpcomingActivitiesProvider.getUpcomingActivities().size));
+    fun correctNumberUpcomingEventsDisplayed() {
+        Espresso.onView(withId(R.id.recycler_events_list))
+            .check(RecyclerViewItemCountAssertion(mockedUpcomingEventsProvider.getUpcomingEvents().size));
     }
 
     @Test
-    fun activityActivityOpensOnClick() {
+    fun eventActivityOpensOnClick() {
         Intents.init()
-        Espresso.onView(withId(R.id.recycler_activites_list)).perform(
-            RecyclerViewActions.actionOnItemAtPosition<ActivityItemAdapter.ItemViewHolder>(
+        Espresso.onView(withId(R.id.recycler_events_list)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<EventItemAdapter.ItemViewHolder>(
                 0,
                 click()
             )
         )
-        intended(hasComponent(ActivityActivity::class.java.name))
+        intended(hasComponent(EventActivity::class.java.name))
 
         Intents.release()
     }
 
     @Test
-    fun activityActivityShowsValuesFromGivenActivity() {
-        val indexToTest: Int = 0
+    fun eventActivityShowsValuesFromGivenActivity() {
         val intent = Intent(
             ApplicationProvider.getApplicationContext(),
-            ActivityActivity::class.java
+            EventActivity::class.java
         )
-        intent.putExtra(EXTRA_ACTIVITY, "1")
-        val activityToTest = mockedUpcomingActivitiesProvider.getActivityFromId("1")
-        val scenario = ActivityScenario.launch<ActivityActivity>(intent)
-        scenario.onActivity { activity ->
-            activity.currentQueryHelper = mockedUpcomingActivitiesProvider
-        }
+        intent.putExtra(EXTRA_EVENT_ID, "1")
+        val eventToTest = mockedUpcomingEventsProvider.getEventFromId("1") as Event
+        val scenario = ActivityScenario.launch<EventActivity>(intent)
         Thread.sleep(1000)
-        Espresso.onView(withId(R.id.txt_activity_Name)).check(
+        Espresso.onView(withId(R.id.txt_event_Name)).check(
             matches(
                 withText(
                     containsString(
-                        activityToTest.name
+                        eventToTest.name
                     )
                 )
             )
         )
-        Espresso.onView(withId(R.id.txt_activity_description)).check(
+        Espresso.onView(withId(R.id.txt_event_description)).check(
             matches(
                 withText(
                     containsString(
-                        activityToTest.description
+                        eventToTest.description
                     )
                 )
             )
         )
-        Espresso.onView(withId(R.id.txt_activity_organizer)).check(
+        Espresso.onView(withId(R.id.txt_event_organizer)).check(
             matches(
                 withText(
                     containsString(
-                        activityToTest.organizer
+                        eventToTest.organizer
                     )
                 )
             )
         )
-        Espresso.onView(withId(R.id.txt_activity_zone)).check(
+        Espresso.onView(withId(R.id.txt_event_zone)).check(
             matches(
                 withText(
                     containsString(
-                        activityToTest.zone
+                        eventToTest.zone
                     )
                 )
             )
         )
-        Espresso.onView(withId(R.id.txt_activity_date)).check(
+        Espresso.onView(withId(R.id.txt_event_date)).check(
             matches(
                 withText(
                     containsString(
-                        activityToTest.getTime()
+                        eventToTest.getTime()
                     )
                 )
             )
         )
-        Espresso.onView(withId(R.id.txt_activity_tags)).check(
+        Espresso.onView(withId(R.id.txt_event_tags)).check(
             matches(
                 withText(
                     containsString(
-                        activityToTest.tags.joinToString { s -> s })
+                        eventToTest.tags.joinToString { s -> s })
                 )
             )
         )

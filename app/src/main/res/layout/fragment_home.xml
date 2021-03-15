@@ -7,7 +7,7 @@
     tools:context=".fragments.HomeFragment">
 
     <TextView
-        android:id="@+id/id_title_upcoming_activities"
+        android:id="@+id/id_title_upcoming_events"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/upcoming_activities_txt"
@@ -17,10 +17,10 @@
         android:textColor="@color/black" />
 
     <LinearLayout
-        android:id="@+id/id_upcoming_activities_list"
+        android:id="@+id/id_upcoming_events_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/id_title_upcoming_activities"
+        android:layout_below="@id/id_title_upcoming_events"
         android:orientation="vertical">
 
     </LinearLayout>

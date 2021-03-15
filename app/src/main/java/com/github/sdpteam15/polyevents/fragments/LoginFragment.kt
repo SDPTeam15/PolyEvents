@@ -31,7 +31,7 @@ class LoginFragment : Fragment() {
 
     //Return CurrentUser if we are not in test, but we can use a fake user in test this way
     var currentUser: UserInterface? = null
-        get() = field ?: User.CurrentUser
+        get() = field ?: User.currentUser
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,7 +53,7 @@ class LoginFragment : Fragment() {
         val builder = AlertDialog.Builder(activity as Activity)
         builder.setMessage(R.string.login_failed_text)
             .setTitle(R.string.login_failed_title)
-            .setPositiveButton(R.string.ok_button_text) { dialog, id -> {} }
+            .setPositiveButton(R.string.ok_button_text) { _, _ -> }
         failedLogin = builder.create()
     }
 

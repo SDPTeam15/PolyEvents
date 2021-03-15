@@ -1,17 +1,13 @@
 package com.github.sdpteam15.polyevents.user
 
-import com.github.sdpteam15.polyevents.database.DatabaseInterface
-import com.github.sdpteam15.polyevents.database.DatabaseObject
-import com.github.sdpteam15.polyevents.database.FirebaseUserAdapter
-import com.github.sdpteam15.polyevents.database.FirebaseUserInterface
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
+import com.github.sdpteam15.polyevents.database.Database.currentDatabase
+import com.github.sdpteam15.polyevents.database.DatabaseUserInterface
 
 /**
  * Application user
- * @param FirebaseUser associates FirebaseUser
+ * @param databaseUser associates FirebaseUser
  */
-class User private constructor(override val FirebaseUser: FirebaseUserInterface) : UserInterface {
+class User private constructor(override val databaseUser: DatabaseUserInterface) : UserInterface {
     companion object {
         private val instances: MutableMap<String, User> = HashMap()
 
@@ -20,12 +16,10 @@ class User private constructor(override val FirebaseUser: FirebaseUserInterface)
          * @param firebaseUser associates FirebaseUser
          * @return the application user associates to the FirebaseUser
          */
-        fun invoke(firebaseUser: FirebaseUserInterface?): User {
-            if (firebaseUser == null)
-                throw IllegalArgumentException("FirebaseUser must be not null")
-            if (!instances.containsKey(firebaseUser.uid))
-                instances[firebaseUser.uid] = User(firebaseUser)
-            return instances[firebaseUser.uid] as User
+        fun invoke(databaseUser: DatabaseUserInterface): User {
+            if (!instances.containsKey(databaseUser.uid))
+                instances[databaseUser.uid] = User(databaseUser)
+            return instances[databaseUser.uid] as User
         }
 
         /**
@@ -33,101 +27,84 @@ class User private constructor(override val FirebaseUser: FirebaseUserInterface)
          * @param uid associates FirebaseUser.uid
          * @return the application user associates to the uid
          */
-        fun invoke(uid: String?): User? {
-            if (uid == null)
-                return null
-            return instances[uid]
-        }
+        fun invoke(uid: String): User? = instances[uid]
 
         private var lastCurrentUserUid: String? = null
 
         /**
          * Current user of the application
          */
-        val CurrentUser: UserInterface?
+        val currentUser: UserInterface?
             get() {
-                try {
-                    val currentUser: FirebaseUser =
-                        FirebaseAuth.getInstance().currentUser ?: return null
-                    if (currentUser.uid != lastCurrentUserUid)
-                        invoke(lastCurrentUserUid)?.removeCache()
-                    return invoke(FirebaseUserAdapter(currentUser))
-                } catch (e: ExceptionInInitializerError) {
-                    return null
-                } catch (e: NoClassDefFoundError) {
-                    return null
-                }
+                val currentUser: DatabaseUserInterface = currentDatabase.currentUser ?: return null
+                if(lastCurrentUserUid != null && lastCurrentUserUid != currentUser.uid)
+                    invoke(lastCurrentUserUid!!)?.removeCache()
+                lastCurrentUserUid = currentUser.uid
+                return invoke(currentUser)
             }
     }
 
-    private var profileList: MutableList<ProfileInterface>? = null
-    private var currentProfileId: Int = 0
-    var database: DatabaseInterface = DatabaseObject.Singleton
-
-    private fun FromDatabase(): MutableList<ProfileInterface> {
-        if (profileList == null)
-            profileList = database.getListProfile(UID, this).toMutableList()
-        if ((profileList as MutableList<ProfileInterface>).size == 0) {
-            val profile = Profile(Name)
-            (profileList as MutableList<ProfileInterface>).add(profile)
-            database.addProfile(profile, UID, this)
+    private var mutableProfileList: MutableList<ProfileInterface>? = null
+        get() {
+            field = field ?: currentDatabase.getListProfile(uid, this).toMutableList()
+            if (field!!.size == 0) {
+                val profile = Profile(name, this)
+                field!!.add(profile)
+                currentDatabase.addProfile(profile, uid, this)
+            }
+            return field
         }
-        return profileList as MutableList<ProfileInterface>
-    }
 
-    override val ProfileList: List<ProfileInterface>
-        get() = FromDatabase() as List<ProfileInterface>
-
-    override val Name: String
-        get() = FirebaseUser.displayName
-    override val UID: String
-        get() = FirebaseUser.uid
-    override val Email: String
-        get() = FirebaseUser.email
+    override val profileList: List<ProfileInterface>
+        get() = mutableProfileList as List<ProfileInterface>
+    override val name: String
+        get() = databaseUser.displayName ?: ""
+    override val uid: String
+        get() = databaseUser.uid
+    override val email: String
+        get() = databaseUser.email ?: ""
 
     /**
      * Current application user profile id
      */
-    var CurrentProfileId: Int
-        get() = currentProfileId
+    var currentProfileId: Int = 0
         set(value) {
-            if (value < 0 || value >= ProfileList.size)
-                throw IndexOutOfBoundsException("value must be between 0 and ${ProfileList.size}")
-            else currentProfileId = value
+            field =
+                if (value >= 0 && value < this.profileList.size) value else throw IndexOutOfBoundsException(
+                    "value must be between 0 and ${this.profileList.size}"
+                )
         }
 
-    override var CurrentProfile: ProfileInterface
-        get() = ProfileList[currentProfileId]
+    override var currentProfile: ProfileInterface
+        get() = profileList[currentProfileId]
         set(value) {
-            for (v in ProfileList.withIndex()) {
+            for (v in this.profileList.withIndex()) {
                 if (v.value == value) {
-                    CurrentProfileId = v.index
+                    currentProfileId = v.index
                     break
                 }
             }
         }
 
     override fun removeCache() {
-        profileList = null
+        mutableProfileList = null
     }
 
     override fun newProfile(name: String) {
-        val profileList = FromDatabase()
-        val profile = Profile(name)
-        profileList.add(profile)
-        database.addProfile(profile, UID, this)
+        val profile = Profile(name, this)
+        mutableProfileList!!.add(profile)
+        currentDatabase.addProfile(profile, uid, this)
     }
 
     override fun removeProfile(profile: ProfileInterface): Boolean {
-        val profileList = FromDatabase()
-        if (!(profileList as MutableList<ProfileInterface>).contains(profile))
+        if (!profileList.contains(profile))
             return false
-        if (CurrentProfile == profile)
+        if (currentProfile == profile)
             currentProfileId = 0
-        profileList.remove(profile)
-        database.removeProfile(profile, UID, this)
-        if (profileList.size == 0)
-            newProfile(this.Name)
+        mutableProfileList?.remove(profile)
+        currentDatabase.removeProfile(profile, uid, this)
+        if (profileList.isEmpty())
+            newProfile(this.name)
         return true
     }
 }
