@@ -1,11 +1,13 @@
 package com.github.sdpteam15.polyevents
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 import android.view.Menu
+import android.view.View
 import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.fragments.*
