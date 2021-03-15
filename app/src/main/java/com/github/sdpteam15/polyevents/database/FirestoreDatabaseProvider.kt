@@ -9,8 +9,14 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
+
 object FirestoreDatabaseProvider : DatabaseInterface {
     val firestore = Firebase.firestore
+    const val USER_DOCUMENT = "users"
+    const val USER_DOCUMENT_ID  = "uid"
+    const val EVENT_DOCUMENT = "events"
+    const val EVENT_DOCUMENT_ID = "eventId"
+
     override val currentUser: DatabaseUserInterface?
         get() =
             if (FirebaseAuth.getInstance().currentUser != null) {
@@ -76,7 +82,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         userAccess: UserInterface
     ): MutableLiveData<Boolean> {
         val ending = MutableLiveData<Boolean>()
-        firestore.collection("users")
+        firestore.collection(USER_DOCUMENT)
             .document(uid)
             .update(newValues as Map<String, Any>)
             .addOnSuccessListener { _ -> ending.postValue(true) }
@@ -93,13 +99,15 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         map["uid"] = user.uid
         map["displayName"] = user.name
         map["email"] = user.email
-        firestore.collection("users")
+        firestore.collection(USER_DOCUMENT)
             .document(user.uid)
             .set(map)
             .addOnSuccessListener {
                 ended.postValue(true)
             }
-            .addOnFailureListener { ended.postValue(false) }
+            .addOnFailureListener {
+                ended.postValue(false)
+            }
         return ended
     }
 
@@ -109,23 +117,26 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         userAccess: UserInterface
     ): MutableLiveData<Boolean> {
         val ended = MutableLiveData<Boolean>()
-        firestore.collection("users")
-            .document(uid)
+        firestore.collection(USER_DOCUMENT)
+            .whereEqualTo(USER_DOCUMENT_ID, uid)
+            .limit(1)
             .get()
             .addOnSuccessListener { doc ->
-                if (doc.exists()) {
+                if (doc.documents.size == 1) {
                     isInDb.postValue(true)
                 } else {
                     isInDb.postValue(false)
                 }
                 ended.postValue(true)
             }
-            .addOnFailureListener { ended.postValue(false) }
+            .addOnFailureListener {
+                ended.postValue(false)
+            }
         return ended
     }
 
     override fun getUserInformation(
-        listener: MutableLiveData<User>,
+        userValue: MutableLiveData<UserInterface>,
         uid: String,
         userAccess: UserInterface
     ): MutableLiveData<Boolean> {
@@ -134,7 +145,8 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             .document(uid)
             .get()
             .addOnSuccessListener { document ->
-                //listener.postValue(document)
+                //TODO once the data class User is created, set the user with the correct value
+                userValue.postValue(User.invoke(currentUser!!))
                 ending.postValue(true)
             }
             .addOnFailureListener { _ ->

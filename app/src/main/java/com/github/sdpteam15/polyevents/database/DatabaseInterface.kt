@@ -116,7 +116,6 @@ interface DatabaseInterface {
         uid: String = (User.currentUser as UserInterface).uid,
         user: UserInterface = User.currentUser as UserInterface
     )
-
     /*
     fun acceptMaterialReservation()
 
@@ -136,21 +135,55 @@ interface DatabaseInterface {
 
     fun getUpcomingEvents(activityListToModify: MutableLiveData<List<Activity>>)
     */
+
+
+
+    /**
+     * Update the user information in the database
+     * @param newValues : a map with the new value to set in the database
+     * @param uid : the uid of the user from which we want to query the informations
+     * @param userAccess: the user object to use its permission
+     * @return A mutable live data that will be set to true if the query was successfully performed or false otherwise
+     */
     fun updateUserInformation(
         newValues: HashMap<String, String>,
         uid: String,
         userAccess: UserInterface = User.currentUser as UserInterface
     ): MutableLiveData<Boolean>
 
-    fun firstConnexion(user:UserInterface, userAccess: UserInterface = User.currentUser as UserInterface): MutableLiveData<Boolean>
+    /**
+     * Register the user in the database with its basic informations (uid, email, name)
+     * @param user : user with all the requested informations
+     * @param userAccess: the user object to use its permission
+     * @return A mutable live data that will be set to true if the query was successfully performed or false otherwise
+     */
+    fun firstConnexion(
+        user: UserInterface,
+        userAccess: UserInterface = User.currentUser as UserInterface
+    ): MutableLiveData<Boolean>
+
+    /**
+     * Look in the database if the user already exists or not
+     * @oaram isInDb : Will be set to true if in Database or to false otherwise
+     * @param uid : user uid we want to check the existence
+     * @param userAccess: the user object to use its permission
+     * @return A mutable live data that will be set to true if the query was successfully performed or false otherwise
+     */
     fun inDatabase(
         isInDb: MutableLiveData<Boolean>,
         uid: String,
         userAccess: UserInterface = User.currentUser as UserInterface
     ): MutableLiveData<Boolean>
 
+    /**
+     * Look in the database if the user already exists or not
+     * @oaram user : live data that will be set with the find user value
+     * @param uid : user uid we want to get the informations
+     * @param userAccess: the user object to use its permission
+     * @return A mutable live data that will be set to true if the query was successfully performed or false otherwise
+     */
     fun getUserInformation(
-        listener: MutableLiveData<User>,
+        user: MutableLiveData<UserInterface>,
         uid: String = (User.currentUser as UserInterface).uid,
         userAccess: UserInterface = User.currentUser as UserInterface
     ): MutableLiveData<Boolean>
