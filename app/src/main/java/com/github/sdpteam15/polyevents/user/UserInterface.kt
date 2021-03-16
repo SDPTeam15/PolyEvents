@@ -1,6 +1,6 @@
 package com.github.sdpteam15.polyevents.user
 
-import com.github.sdpteam15.polyevents.database.FirebaseUserInterface
+import com.github.sdpteam15.polyevents.database.DatabaseUserInterface
 
 /**
  *  Application user interface
@@ -9,32 +9,32 @@ interface UserInterface {
     /**
      * Associates FirebaseUser
      */
-    val FirebaseUser : FirebaseUserInterface
+    val databaseUser: DatabaseUserInterface
 
     /***
      * Application user profile List
      */
-    val ProfileList : List<ProfileInterface>
+    val profileList: List<ProfileInterface>
 
     /**
      * Application user name
      */
-    val Name : String
+    val name: String
 
     /**
      * User mail
      */
-    val Email : String
+    val email: String
 
     /**
      * Application user uid
      */
-    val UID : String
+    val uid: String
 
     /**
      * Current application user profile
      */
-    val CurrentProfile : ProfileInterface
+    val currentProfile: ProfileInterface
 
     /**
      * Delete all cache
@@ -49,5 +49,5 @@ interface UserInterface {
     /**
      * Remove a Profile
      */
-    fun removeProfile(profile: ProfileInterface) : Boolean
+    fun removeProfile(profile: ProfileInterface): Boolean
 }

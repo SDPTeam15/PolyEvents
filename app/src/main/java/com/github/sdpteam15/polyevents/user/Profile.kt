@@ -1,36 +1,33 @@
 package com.github.sdpteam15.polyevents.user
 
-import com.github.sdpteam15.polyevents.user.User.Companion.CurrentUser
+import com.github.sdpteam15.polyevents.user.User.Companion.currentUser
 
 /**
  * Application user profile
- * @param Name profile name
+ * @property name Profile name
+ * @property associatedUser Associated user of the profile
  */
-class Profile(override var Name : String) : ProfileInterface{
+class Profile(override var name: String, override val associatedUser: UserInterface?) :
+    ProfileInterface {
+
     /**
      * Application user profile constants
      */
     companion object {
-        private var default : ProfileInterface? = null
+        private var default: ProfileInterface? = null
 
         /**
-         * Defaut profile of the application
+         * Default profile of the application
          */
-        val Default : ProfileInterface
+        val Default: ProfileInterface
             get() {
-                if(default == null)
-                    default = Profile("default")
+                default = default ?: Profile("default", null)
                 return default as ProfileInterface
             }
 
         /**
          * Current profile of the application
          */
-        val CurrentProfile : ProfileInterface get() {
-            if(CurrentUser == null)
-                return Default
-            return (CurrentUser as UserInterface).CurrentProfile
-        }
+        val CurrentProfile: ProfileInterface get() = currentUser?.currentProfile ?: Default
     }
-
 }

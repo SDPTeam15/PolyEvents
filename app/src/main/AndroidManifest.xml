@@ -21,7 +21,7 @@
             android:label="@string/title_activity_item_request"
             android:theme="@style/Theme.PolyEvents.NoActionBar" />
         <activity
-            android:name=".ActivityActivity"
+            android:name=".EventActivity"
             android:parentActivityName=".MainActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.

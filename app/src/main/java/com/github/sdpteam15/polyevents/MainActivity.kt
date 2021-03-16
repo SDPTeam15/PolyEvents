@@ -3,23 +3,24 @@ package com.github.sdpteam15.polyevents
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.ArrayAdapter
-import com.google.android.material.bottomnavigation.BottomNavigationView
-
 import android.view.Menu
+import android.widget.ArrayAdapter
 import android.view.View
 import android.widget.SearchView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.fragments.*
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
-    companion object{
-        private var mapFragment:MutableMap<Int, Fragment>? = null
-        //make the fragments available from outside of the activity and instantiate only once
-        val fragments:Map<Int, Fragment>
-            get(){
-                if(mapFragment == null){
+    companion object {
+        private var mapFragment: MutableMap<Int, Fragment>? = null
+
+        //make the fragments available from outside of the event and instantiate only once
+        val fragments: Map<Int, Fragment>
+            get() {
+                if (mapFragment == null) {
                     mapFragment = HashMap()
                     mapFragment!![R.id.ic_home] = HomeFragment()
                     mapFragment!![R.id.ic_map] = MapsFragment()

@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.user
 
+import com.github.sdpteam15.polyevents.database.DatabaseUserInterface
 import com.github.sdpteam15.polyevents.database.FirebaseUserAdapter
 import com.google.firebase.auth.FirebaseUser
 import org.junit.Before
@@ -16,7 +17,7 @@ private const val uidTest = "Test uid"
 @RunWith(MockitoJUnitRunner::class)
 class FirebaseUserAdapterTest {
     lateinit var mockedFirebaseUser: FirebaseUser
-    lateinit var firebaseUser: FirebaseUserAdapter
+    lateinit var firebaseUser: DatabaseUserInterface
 
 
     @Before
@@ -34,5 +35,4 @@ class FirebaseUserAdapterTest {
         assertEquals(uidTest, firebaseUser.uid)
         assertEquals(displayNameTest, firebaseUser.displayName)
     }
-
 }
