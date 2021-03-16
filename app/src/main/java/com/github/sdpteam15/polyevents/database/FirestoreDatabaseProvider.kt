@@ -11,7 +11,7 @@ import com.google.firebase.ktx.Firebase
 
 
 object FirestoreDatabaseProvider : DatabaseInterface {
-    val firestore = Firebase.firestore
+    var firestore = Firebase.firestore
     const val USER_DOCUMENT = "users"
     const val USER_DOCUMENT_ID  = "uid"
     const val EVENT_DOCUMENT = "events"
@@ -29,9 +29,11 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         return ArrayList<ProfileInterface>() //TODO
     }
 
+
     override fun addProfile(profile: ProfileInterface, uid: String, user: UserInterface): Boolean {
         return true//TODO
     }
+
 
     override fun removeProfile(
         profile: ProfileInterface,
@@ -39,15 +41,6 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         user: UserInterface
     ): Boolean {
         return true//TODO
-    }
-
-    override fun removeProfile(
-        profile: ProfileInterface,
-        success: MutableLiveData<Boolean>,
-        uid: String,
-        user: UserInterface
-    ) {
-        //TODO
     }
 
     override fun updateProfile(profile: ProfileInterface, user: UserInterface): Boolean {
@@ -75,7 +68,6 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     }
 
     //Up to here delete
-
     override fun updateUserInformation(
         newValues: java.util.HashMap<String, String>,
         uid: String,
@@ -136,7 +128,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     }
 
     override fun getUserInformation(
-        userValue: MutableLiveData<UserInterface>,
+        user: MutableLiveData<UserInterface>,
         uid: String,
         userAccess: UserInterface
     ): MutableLiveData<Boolean> {
@@ -146,7 +138,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             .get()
             .addOnSuccessListener { document ->
                 //TODO once the data class User is created, set the user with the correct value
-                userValue.postValue(User.invoke(currentUser!!))
+                user.postValue(User.invoke(currentUser!!))
                 ending.postValue(true)
             }
             .addOnFailureListener { _ ->

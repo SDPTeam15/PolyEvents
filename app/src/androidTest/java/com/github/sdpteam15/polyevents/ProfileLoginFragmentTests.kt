@@ -15,7 +15,6 @@ import com.github.sdpteam15.polyevents.user.User
 import com.github.sdpteam15.polyevents.user.UserInterface
 import com.google.firebase.auth.FirebaseAuth
 import org.hamcrest.Matchers
-import org.hamcrest.core.Is.`is`
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -73,10 +72,10 @@ class ProfileFragmentTest {
      */
     private fun loginDirectly(loginFragment: LoginFragment, id: Int) {
         //Mock the sign in method
-        var endingRequest2 = MutableLiveData<Boolean>()
+        val endingRequest2 = MutableLiveData<Boolean>()
         When(
             mockedDatabase.inDatabase(loginFragment.inDbMutableLiveData, uidTest, user)
-        ).thenAnswer { y ->
+        ).thenAnswer { _ ->
             loginFragment.inDbMutableLiveData.postValue(true)
             endingRequest2
         }
@@ -143,7 +142,7 @@ class ProfileFragmentTest {
                 uidTest,
                 user
             )
-        ).thenAnswer { y ->
+        ).thenAnswer { _ ->
             profileFragment.userInfoLiveData.postValue(user)
             endingRequest
         }
@@ -155,8 +154,7 @@ class ProfileFragmentTest {
         onView(withId(R.id.id_fragment_profile)).check(matches(isDisplayed()))
 
         onView(withId(R.id.profileName)).check(matches(withText(Matchers.equalTo(displayNameTest))))
-        onView(withId(R.id.ProfileEmail)).check(matches(withText(Matchers.equalTo(emailTest))))
-        onView(withId(R.id.profileUID)).check(matches(withText(Matchers.equalTo(uidTest))))
+        onView(withId(R.id.profileEmail)).check(matches(withText(Matchers.equalTo(emailTest))))
     }
 
 
@@ -167,14 +165,14 @@ class ProfileFragmentTest {
 
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
         profileFragment.currentUser = user
-        loginDirectly(loginFragment,R.id.ic_login)
+        loginDirectly(loginFragment, R.id.ic_login)
 
         //Mock the update UserInformation method
         var endingRequestUpdate = MutableLiveData<Boolean>()
         var updated = false
         When(
             mockedDatabase.updateUserInformation(profileFragment.hashMapNewInfos, uidTest, user)
-        ).thenAnswer { y ->
+        ).thenAnswer { _ ->
             updated = true
             endingRequestUpdate
         }
@@ -186,7 +184,7 @@ class ProfileFragmentTest {
                 uidTest,
                 user
             )
-        ).thenAnswer { y ->
+        ).thenAnswer { _ ->
             profileFragment.userInfoLiveData.postValue(user2)
             endingRequest
         }
@@ -201,9 +199,7 @@ class ProfileFragmentTest {
 
         //Check if the values are correctly displayed
         onView(withId(R.id.profileName)).check(matches(withText(Matchers.equalTo(displayNameTest2))))
-        onView(withId(R.id.ProfileEmail)).check(matches(withText(Matchers.equalTo(emailTest2))))
-        onView(withId(R.id.profileUID)).check(matches(withText(Matchers.equalTo(uidTest2))))
-
+        onView(withId(R.id.profileEmail)).check(matches(withText(Matchers.equalTo(emailTest2))))
 
         //Mock the getUserInformation method to post a user with other values than previously
         //So that we can see if the getUserInformation() has been called (it shouldn't)
@@ -213,7 +209,7 @@ class ProfileFragmentTest {
                 uidTest,
                 user
             )
-        ).thenAnswer { y ->
+        ).thenAnswer { _ ->
             profileFragment.userInfoLiveData.postValue(user)
             endingRequest
         }
@@ -225,12 +221,11 @@ class ProfileFragmentTest {
 
         //check that the values are still the same
         onView(withId(R.id.profileName)).check(matches(withText(Matchers.equalTo(displayNameTest2))))
-        onView(withId(R.id.ProfileEmail)).check(matches(withText(Matchers.equalTo(emailTest2))))
-        onView(withId(R.id.profileUID)).check(matches(withText(Matchers.equalTo(uidTest2))))
+        onView(withId(R.id.profileEmail)).check(matches(withText(Matchers.equalTo(emailTest2))))
     }
-/*
+
     @Test
-    fun ifInDBNotAdded(){
+    fun ifNotInDbAddIt() {
         FirebaseAuth.getInstance().signOut()
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         loginFragment.currentUser = null
@@ -241,74 +236,24 @@ class ProfileFragmentTest {
         profileFragment.currentUser = user
         loginFragment.currentUser = user
 
-        var endingRequestInDatabase = MutableLiveData<Boolean>()
+        val endingRequestInDatabase = MutableLiveData<Boolean>()
         When(
-            mockedDatabase.inDatabase(loginFragment.inDbMutableLiveData, uidTest, user)
-        ).thenAnswer { y ->
-            loginFragment.inDbMutableLiveData.postValue(false)
-            println("Yoooo")
-            endingRequestInDatabase
-        }
-
-        var endingRequestFirstConnection = MutableLiveData<Boolean>()
-        var accountCreated2 = MutableLiveData<Boolean>()
-        var accountCreated = false
-        When(
-            mockedDatabase.firstConnexion(user, user)
-        ).thenAnswer { y ->
-            println("Nooooooo")
-            accountCreated = true
-            accountCreated2.postValue(true)
-            println(accountCreated)
-            endingRequestFirstConnection
-        }
-
-        //Mock the getInformation method to be able to launch the Profile Fragment
-        When(
-            mockedDatabase.getUserInformation(
-                profileFragment.userInfoLiveData,
+            mockedDatabase.inDatabase(
+                loginFragment.inDbMutableLiveData,
                 uidTest,
-                user
+                loginFragment.currentUser!!
             )
-        ).thenAnswer { y ->
-            profileFragment.userInfoLiveData.postValue(user)
-            endingRequest
-        }
-
-        onView(withId(R.id.btnLogin)).perform(click())
-        endingRequestInDatabase.postValue(true)
-
-        endingRequest.postValue(true)
-        accountCreated2.postValue(true)
-        assertThat(!accountCreated, `is`(true))
-    }
-
-    @Test
-    fun ifNotInDBAddIt(){
-        FirebaseAuth.getInstance().signOut()
-        val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
-        loginFragment.currentUser = null
-        onView(withId(R.id.ic_login)).perform(click())
-        onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
-
-        val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
-        profileFragment.currentUser = user
-
-        loginFragment.currentUser = user
-
-        var endingRequestInDatabase = MutableLiveData<Boolean>()
-        When(
-            mockedDatabase.inDatabase(loginFragment.inDbMutableLiveData, uidTest, user)
-        ).thenAnswer { y ->
+        ).thenAnswer { _ ->
             loginFragment.inDbMutableLiveData.postValue(false)
             endingRequestInDatabase
         }
 
-        var endingRequestFirstConnection = MutableLiveData<Boolean>()
+        val endingRequestFirstConnection = MutableLiveData<Boolean>()
         var accountCreated = false
+
         When(
-            mockedDatabase.firstConnexion(user, user)
-        ).thenAnswer { y ->
+            mockedDatabase.firstConnexion(loginFragment.currentUser!!, loginFragment.currentUser!!)
+        ).thenAnswer { _ ->
             accountCreated = true
             endingRequestFirstConnection
         }
@@ -320,7 +265,7 @@ class ProfileFragmentTest {
                 uidTest,
                 user
             )
-        ).thenAnswer { y ->
+        ).thenAnswer { _ ->
             profileFragment.userInfoLiveData.postValue(user)
             endingRequest
         }
@@ -329,7 +274,49 @@ class ProfileFragmentTest {
         endingRequestInDatabase.postValue(true)
         endingRequestFirstConnection.postValue(true)
         endingRequest.postValue(true)
+        Thread.sleep(3000)
         assert(accountCreated)
-    }*/
+    }
+
+    @Test
+    fun ifInDbDoNotAddIt() {
+        FirebaseAuth.getInstance().signOut()
+        val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
+        loginFragment.currentUser = null
+        onView(withId(R.id.ic_login)).perform(click())
+        onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
+
+        val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
+        profileFragment.currentUser = user
+        loginFragment.currentUser = user
+
+        val endingRequestFirstConnection = MutableLiveData<Boolean>()
+        var accountNotCreated = true
+
+        When(
+            mockedDatabase.firstConnexion(loginFragment.currentUser!!, loginFragment.currentUser!!)
+        ).thenAnswer { _ ->
+            accountNotCreated = false
+            endingRequestFirstConnection
+        }
+
+        //Mock the getInformation method to be able to launch the Profile Fragment
+        When(
+            mockedDatabase.getUserInformation(
+                profileFragment.userInfoLiveData,
+                uidTest,
+                user
+            )
+        ).thenAnswer { _ ->
+            profileFragment.userInfoLiveData.postValue(user)
+            endingRequest
+        }
+
+        loginDirectly(loginFragment,R.id.btnLogin)
+        endingRequestFirstConnection.postValue(true)
+        endingRequest.postValue(true)
+        Thread.sleep(3000)
+        assert(accountNotCreated)
+    }
 }
 

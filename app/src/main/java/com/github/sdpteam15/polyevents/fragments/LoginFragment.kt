@@ -96,20 +96,19 @@ class LoginFragment : Fragment() {
         currentDatabase.inDatabase(inDbMutableLiveData, currentUser!!.uid, currentUser!!)
             .observe(this, Observer<Boolean> { newValue ->
                 if (newValue) {
-                    println("Testo123")
                     if (inDbMutableLiveData.value!!) {
-                        println("IN DB ")
+                        //If already in database redirect
                         HelperFunctions.changeFragment(activity, MainActivity.fragments[R.id.id_fragment_profile])
                     } else {
-                        println("NOT IN DB")
+                        //If not in DB, first connection: need to register
                         currentDatabase
                             .firstConnexion(currentUser!!, currentUser!!)
                             .observe(this, Observer<Boolean> { newValue2 ->
                                 if (newValue2) {
-                                    println("REDIRECTED")
+                                    //If correctly registered, redirect it
                                     HelperFunctions.changeFragment(activity, MainActivity.fragments[R.id.id_fragment_profile])
                                 } else {
-                                    println("FAILED")
+                                    //otherwise display error
                                     failedLogin.show()
                                 }
                             })

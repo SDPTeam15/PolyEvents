@@ -297,7 +297,6 @@ interface DatabaseInterface {
         profile: ProfileInterface,
         user: UserInterface = currentUser as UserInterface
     ): MutableLiveData<Boolean>
-    */
 
     /**
      * Get list of profile of a user uid
@@ -311,6 +310,8 @@ interface DatabaseInterface {
         profileList:MutableLiveData<List<ProfileInterface>>,
         user: UserInterface = currentUser as UserInterface
     ): MutableLiveData<Boolean>
+        */
+
     /**
      * Update the user information in the database
      * @param newValues : a map with the new value to set in the database

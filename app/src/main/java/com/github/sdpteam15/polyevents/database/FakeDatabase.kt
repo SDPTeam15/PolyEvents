@@ -209,15 +209,6 @@ object FakeDatabase : DatabaseInterface {
         return false //TODO
     }
 
-    override fun removeProfile(
-        profile: ProfileInterface,
-        success: MutableLiveData<Boolean>,
-        uid: String,
-        user: UserInterface
-    ) {
-        //TODO
-    }
-
 
     override fun updateProfile(profile: ProfileInterface, user: UserInterface): Boolean {
         return false//TODO
@@ -267,7 +258,7 @@ object FakeDatabase : DatabaseInterface {
     }
 
     override fun getUserInformation(
-        listener: MutableLiveData<UserInterface>,
+        user: MutableLiveData<UserInterface>,
         uid: String,
         userAccess: UserInterface
     ): MutableLiveData<Boolean> {

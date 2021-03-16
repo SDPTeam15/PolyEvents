@@ -5,9 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.github.sdpteam15.polyevents.user.User
 import com.github.sdpteam15.polyevents.user.UserInterface
+import com.google.firebase.firestore.FirebaseFirestore
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.Mockito.mock
 import kotlin.test.assertTrue
 
 private const val diplayNameTest = "Test displayName"
@@ -22,18 +24,20 @@ class FirestoreDatabaseProviderTest {
 
     @Before
     fun setup() {
-        mockedDatabaseUser = Mockito.mock(DatabaseUserInterface::class.java)
+        mockedDatabaseUser = mock(DatabaseUserInterface::class.java)
         Mockito.`when`(mockedDatabaseUser.email).thenReturn(emailTest)
         Mockito.`when`(mockedDatabaseUser.displayName).thenReturn(diplayNameTest)
         Mockito.`when`(mockedDatabaseUser.uid).thenReturn(uidTest)
         user = User.invoke(mockedDatabaseUser)
-
+/*
         endingRequest = MutableLiveData<Boolean>()
-        database = FirestoreDatabaseProvider
+        FirestoreDatabaseProvider.firestore = mock(FirebaseFirestore::class.java)
+        database = FirestoreDatabaseProvider*/
     }
 
     @Test
     fun canAddAUser(){
-        //database.firstConnexion(user, user).observe()
+
+
     }
 }
