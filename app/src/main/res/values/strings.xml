@@ -2,6 +2,7 @@
     <string name="app_name">PolyEvents</string>
     <string name="upcoming_activities_txt">Upcoming activities</string>
     <string name="at_hour_text">at %1$s</string>
+    <string name="max_item_quantity_text">There are only %1$s %2$s available !</string>
 
     <!-- Login Activity strings-->
     <string name="login_failed_text">Failed to log into your Google account</string>
@@ -156,4 +157,5 @@
     <string name="send_request_button_text">Send request</string>
     <string name="item_request_sent_text">Your request has been sent !</string>
     <string name="item_request_empty_text">Your request is empty. Please select some items !</string>
+    <string name="item_quantity_positive_text">The quantity must be positive !</string>
 </resources>
