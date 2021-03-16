@@ -214,4 +214,16 @@ object FakeDatabase : DatabaseInterface {
 
     override fun updateEvent(event: Event, profile: ProfileInterface): Boolean = true
 
+    override fun getAvailableItems(): Map<String, Int> {
+        val map = mutableMapOf<String, Int>()
+        map["230V plug"] = 20
+        map["Cord rewinder (50m)"] = 10
+        map["Cooking plate"] = 5
+        map["Cord rewinder (100m)"] = 1
+        map["Cord rewinder (10m)"] = 30
+        map["Fridge (large)"] = 2
+        map["Fridge (small)"] = 10
+
+        return map
+    }
 }

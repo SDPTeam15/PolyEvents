@@ -107,4 +107,6 @@ interface DatabaseInterface {
         Event: Event,
         profile: ProfileInterface = CurrentProfile
     ): Boolean
+
+    fun getAvailableItems(): Map<String, Int>
 }
