@@ -2,24 +2,18 @@ package com.github.sdpteam15.polyevents.fragments
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import com.github.sdpteam15.polyevents.ItemRequestActivity
 import androidx.fragment.app.Fragment
+import com.github.sdpteam15.polyevents.ItemRequestActivity
 import com.github.sdpteam15.polyevents.R
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
-
-/**
- * Extra containing the activity ID to show on the launched activity page
- */
-const val EXTRA__ACTIVITY_ITEM_REQUEST = "com.github.sdpteam15.polyevents.activity.EXTRA_ACTIVITY_ITEM_REQUEST"
 
 /**
  * A simple [Fragment] subclass.
