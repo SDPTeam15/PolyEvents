@@ -51,8 +51,7 @@ class ProfileFragment : Fragment() {
 
         userInfoLiveData.observe(this, Observer<UserInterface>{ userInfo ->
             viewRoot.findViewById<EditText>(R.id.profileName).setText(userInfo.name)
-            viewRoot.findViewById<TextView>(R.id.profileUID).text = userInfo.uid
-            viewRoot.findViewById<EditText>(R.id.ProfileEmail).setText(userInfo.email)
+            viewRoot.findViewById<EditText>(R.id.profileEmail).setText(userInfo.email)
         })
 
         currentDatabase.getUserInformation(userInfoLiveData, currentUser!!.uid, currentUser!!)
