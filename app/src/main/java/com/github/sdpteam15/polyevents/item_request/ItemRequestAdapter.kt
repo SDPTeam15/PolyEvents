@@ -23,7 +23,7 @@ import com.github.sdpteam15.polyevents.R
  */
 class ItemRequestAdapter(
     private val availableItems: List<Pair<String, Int>>,
-    private val onItemCheckChangeListener: (Pair<String, Int>, Boolean) -> Unit,
+    private val onItemCheckChangeListener: (Pair<String, Int>, Boolean, Int) -> Unit,
     private val onItemQuantityChangeListener: (String, Int) -> Unit
 ) : RecyclerView.Adapter<ItemRequestAdapter.ItemViewHolder>() {
 
@@ -45,8 +45,9 @@ class ItemRequestAdapter(
             itemName.text = item.first
             itemCheckBox.setOnClickListener { view ->
                 val isChecked = (view as CheckBox).isChecked
-                onItemCheckChangeListener(item, isChecked)
+                onItemCheckChangeListener(item, isChecked, itemQuantity.text.toString().toInt())
             }
+
             itemQuantity.setText(item.second.toString())
             itemQuantity.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(
