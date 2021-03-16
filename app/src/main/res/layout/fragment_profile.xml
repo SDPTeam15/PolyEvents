@@ -34,7 +34,9 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/FullNamePlaceholder">
+                    android:hint="@string/FullNamePlaceholder"
+                    app:boxBackgroundColor="@android:color/transparent"
+                    android:background="@android:color/transparent">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/profileName"
@@ -62,7 +64,9 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/emailPlaceholder">
+                    android:hint="@string/emailPlaceholder"
+                    app:boxBackgroundColor="@android:color/transparent"
+                    android:background="@android:color/transparent">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/profileEmail"
@@ -91,7 +95,9 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/UsernamePlaceholder">
+                    android:hint="@string/UsernamePlaceholder"
+                    app:boxBackgroundColor="@android:color/transparent"
+                    android:background="@android:color/transparent">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/profileUsernameET"
@@ -119,7 +125,9 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/birthdayPlaceholder">
+                    android:hint="@string/birthdayPlaceholder"
+                    app:boxBackgroundColor="@android:color/transparent"
+                    android:background="@android:color/transparent">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/profileBirthdayET"
