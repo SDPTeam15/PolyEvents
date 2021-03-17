@@ -2,6 +2,7 @@ package com.github.sdpteam15.polyevents.database
 
 import android.content.ClipData
 import androidx.lifecycle.MutableLiveData
+import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.event.Event
 import com.github.sdpteam15.polyevents.user.Profile.Companion.CurrentProfile
 import com.github.sdpteam15.polyevents.user.ProfileInterface
@@ -344,10 +345,10 @@ interface DatabaseInterface {
      * @return A mutable live data that will be set to true if the communication with the DB is over and no error
      */
     fun inDatabase(
-        isInDb: MutableLiveData<Boolean>,
+        isInDb: Observable<Boolean>,
         uid: String,
         userAccess: UserInterface = User.currentUser as UserInterface
-    ): MutableLiveData<Boolean>
+    ): Observable<Boolean>
 
     /**
      * Look in the database if the user already exists or not

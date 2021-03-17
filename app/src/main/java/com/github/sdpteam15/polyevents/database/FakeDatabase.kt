@@ -3,6 +3,7 @@ package com.github.sdpteam15.polyevents.database
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
+import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.event.Event
 import com.github.sdpteam15.polyevents.user.Profile
 import com.github.sdpteam15.polyevents.user.ProfileInterface
@@ -250,10 +251,10 @@ object FakeDatabase : DatabaseInterface {
     }
 
     override fun inDatabase(
-        isInDb: MutableLiveData<Boolean>,
+        isInDb: Observable<Boolean>,
         uid: String,
         userAccess: UserInterface
-    ): MutableLiveData<Boolean> {
+    ): Observable<Boolean> {
         TODO("Not yet implemented")
     }
 

@@ -13,6 +13,7 @@ import androidx.lifecycle.Observer
 import com.github.sdpteam15.polyevents.MainActivity
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
+import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.user.User
 import com.github.sdpteam15.polyevents.user.UserInterface
@@ -31,7 +32,7 @@ private const val SIGN_IN_RC: Int = 200
 class LoginFragment : Fragment() {
     private lateinit var signIn: GoogleSignInClient
     private lateinit var failedLogin: AlertDialog
-    val inDbMutableLiveData = MutableLiveData<Boolean>()
+    val inDbMutableLiveData = Observable<Boolean>()
 
     //Return CurrentUser if we are not in test, but we can use a fake user in test this way
     var currentUser: UserInterface? = null
@@ -94,8 +95,8 @@ class LoginFragment : Fragment() {
 
     private fun addIfNotInDB() {
         currentDatabase.inDatabase(inDbMutableLiveData, currentUser!!.uid, currentUser!!)
-            .observe(this, Observer<Boolean> { newValue ->
-                if (newValue) {
+            .observe(this) { newValue ->
+                if (newValue!!) {
                     if (inDbMutableLiveData.value!!) {
                         //If already in database redirect
                         HelperFunctions.changeFragment(activity, MainActivity.fragments[R.id.id_fragment_profile])
@@ -116,7 +117,7 @@ class LoginFragment : Fragment() {
                 } else {
                     failedLogin.show()
                 }
-            })
+            }
     }
 
     override fun onCreateView(

@@ -1,12 +1,17 @@
 package com.github.sdpteam15.polyevents.database
 
 import androidx.lifecycle.MutableLiveData
+import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.event.Event
 import com.github.sdpteam15.polyevents.user.ProfileInterface
 import com.github.sdpteam15.polyevents.user.User
 import com.github.sdpteam15.polyevents.user.UserInterface
+import com.google.android.gms.tasks.OnFailureListener
+import com.google.android.gms.tasks.OnSuccessListener
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -106,27 +111,41 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         return ended
     }
 
+    var lastGetSuccessListener : ((QuerySnapshot) -> Unit)? = null
+    var lastSetSuccessListener : OnSuccessListener<Void>? = null
+    var lastFailureListener : ((Exception) -> Unit)? = null
+
+
+    fun thenDo(task : Task<QuerySnapshot>, onSuccessListener: (QuerySnapshot) -> Unit, onFailureListener: (Exception) -> Unit){
+        lastGetSuccessListener = onSuccessListener
+        lastFailureListener = onFailureListener
+        task.addOnSuccessListener(onSuccessListener).addOnFailureListener(onFailureListener)
+    }
+
+
+
     override fun inDatabase(
-        isInDb: MutableLiveData<Boolean>,
+        isInDb: Observable<Boolean>,
         uid: String,
         userAccess: UserInterface
-    ): MutableLiveData<Boolean> {
-        val ended = MutableLiveData<Boolean>()
-        firestore!!.collection(USER_DOCUMENT)
-            .whereEqualTo(USER_DOCUMENT_ID, uid)
-            .limit(1)
-            .get()
-            .addOnSuccessListener { doc ->
-                if (doc.documents.size == 1) {
-                    isInDb.postValue(true)
-                } else {
-                    isInDb.postValue(false)
-                }
-                ended.postValue(true)
-            }
-            .addOnFailureListener {
-                ended.postValue(false)
-            }
+    ): Observable<Boolean> {
+        val ended = Observable(false)
+
+        this.thenDo( firestore!!.collection(USER_DOCUMENT)
+                .whereEqualTo(USER_DOCUMENT_ID, uid)
+                .limit(1)
+                .get(),
+                { doc : QuerySnapshot->
+                    if (doc.documents.size == 1) {
+                        isInDb.postValue(true)
+                    } else {
+                        isInDb.postValue(false)
+                    }
+                    ended.postValue(true)
+                },
+                {
+                    ended.postValue(false)
+                })
         return ended
     }
 
