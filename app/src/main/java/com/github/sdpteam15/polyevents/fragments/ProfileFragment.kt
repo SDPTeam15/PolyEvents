@@ -13,6 +13,7 @@ import androidx.lifecycle.Observer
 import com.github.sdpteam15.polyevents.MainActivity
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
+import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.changeFragment
 import com.github.sdpteam15.polyevents.user.User
 import com.github.sdpteam15.polyevents.user.UserInterface
@@ -26,7 +27,7 @@ class ProfileFragment : Fragment() {
     //Return CurrentUser if we are not in test, but we can use a fake user in test this way
     var currentUser: UserInterface? = null
         get() = field ?: User.currentUser
-    val userInfoLiveData: MutableLiveData<UserInterface> = MutableLiveData()
+    val userInfoLiveData = Observable<UserInterface>()
     val hashMapNewInfos= HashMap<String,String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,10 +50,10 @@ class ProfileFragment : Fragment() {
             changeFragment(activity, MainActivity.fragments[R.id.ic_login])
         }
 
-        userInfoLiveData.observe(this, Observer<UserInterface>{ userInfo ->
-            viewRoot.findViewById<EditText>(R.id.profileName).setText(userInfo.name)
-            viewRoot.findViewById<EditText>(R.id.profileEmail).setText(userInfo.email)
-        })
+        userInfoLiveData.observe(this){ userInfo ->
+            viewRoot.findViewById<EditText>(R.id.profileName).setText(userInfo!!.name)
+            viewRoot.findViewById<EditText>(R.id.profileEmail).setText(userInfo!!.email)
+        }
 
         currentDatabase.getUserInformation(userInfoLiveData, currentUser!!.uid, currentUser!!)
 
@@ -62,8 +63,8 @@ class ProfileFragment : Fragment() {
             hashMapNewInfos["username"] = viewRoot.findViewById<EditText>(R.id.profileUsernameET).text.toString()
             //hashMapNewInfos["birthday"] = viewRoot.findViewById<EditText>(R.id.profileBirthdayET).text.toString()
             currentDatabase.updateUserInformation(hashMapNewInfos, currentUser!!.uid, currentUser!!)
-                .observe(this, Observer<Boolean> { newValue ->
-                    if (newValue) {
+                .observe(this){ newValue ->
+                    if (newValue!!) {
                         currentDatabase.getUserInformation(
                             userInfoLiveData,
                             currentUser!!.uid,
@@ -72,7 +73,7 @@ class ProfileFragment : Fragment() {
                     } else {
                         println("Update impossible")
                     }
-                })
+                }
         }
         return viewRoot
     }

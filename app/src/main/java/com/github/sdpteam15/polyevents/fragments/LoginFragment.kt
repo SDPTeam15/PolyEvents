@@ -31,7 +31,7 @@ private const val SIGN_IN_RC: Int = 200
 class LoginFragment : Fragment() {
     private lateinit var signIn: GoogleSignInClient
     private lateinit var failedLogin: AlertDialog
-    val inDbMutableLiveData = Observable<Boolean>()
+    val inDbObservable = Observable<Boolean>()
 
     //Return CurrentUser if we are not in test, but we can use a fake user in test this way
     var currentUser: UserInterface? = null
@@ -93,31 +93,25 @@ class LoginFragment : Fragment() {
     }
 
     private fun addIfNotInDB() {
-        currentDatabase.inDatabase(inDbMutableLiveData, currentUser!!.uid, currentUser!!)
+        currentDatabase.inDatabase(inDbObservable, currentUser!!.uid, currentUser!!)
             .observe(this) { newValue ->
                 if (newValue!!) {
-                    if (inDbMutableLiveData.value!!) {
+                    if (inDbObservable.value!!) {
                         //If already in database redirect
-                        HelperFunctions.changeFragment(
-                            activity,
-                            MainActivity.fragments[R.id.id_fragment_profile]
-                        )
+                        HelperFunctions.changeFragment(activity, MainActivity.fragments[R.id.id_fragment_profile])
                     } else {
                         //If not in DB, first connection: need to register
                         currentDatabase
                             .firstConnexion(currentUser!!, currentUser!!)
-                            .observe(this, Observer<Boolean> { newValue2 ->
-                                if (newValue2) {
+                            .observe(this){ newValue2 ->
+                                if (newValue2!!) {
                                     //If correctly registered, redirect it
-                                    HelperFunctions.changeFragment(
-                                        activity,
-                                        MainActivity.fragments[R.id.id_fragment_profile]
-                                    )
+                                    HelperFunctions.changeFragment(activity, MainActivity.fragments[R.id.id_fragment_profile])
                                 } else {
                                     //otherwise display error
                                     failedLogin.show()
                                 }
-                            })
+                            }
                     }
                 } else {
                     failedLogin.show()

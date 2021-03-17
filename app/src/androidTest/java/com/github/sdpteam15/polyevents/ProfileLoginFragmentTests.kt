@@ -1,6 +1,5 @@
 package com.github.sdpteam15.polyevents
 
-import androidx.lifecycle.MutableLiveData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -9,6 +8,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.DatabaseUserInterface
+import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.fragments.LoginFragment
 import com.github.sdpteam15.polyevents.fragments.ProfileFragment
 import com.github.sdpteam15.polyevents.user.User
@@ -23,7 +23,7 @@ import org.mockito.Mockito.mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.Mockito.`when` as When
 
-/*
+
 private const val displayNameTest = "Test displayName"
 private const val emailTest = "Test email"
 private const val uidTest = "Test uid"
@@ -32,8 +32,8 @@ private const val displayNameTest2 = "Test displayName2"
 private const val emailTest2 = "Test email2"
 private const val uidTest2 = "Test uid2"
 
-@RunWith(MockitoJUnitRunner::class)*/
-class ProfileFragmentTest {/*
+@RunWith(MockitoJUnitRunner::class)
+class ProfileLoginFragmentTests {
     @Rule
     @JvmField
     var testRule = ActivityScenarioRule<MainActivity>(MainActivity::class.java)
@@ -43,7 +43,7 @@ class ProfileFragmentTest {/*
     lateinit var mockedDatabaseUser: DatabaseUserInterface
     lateinit var mockedDatabaseUser2: DatabaseUserInterface
     lateinit var mockedDatabase: DatabaseInterface
-    lateinit var endingRequest: MutableLiveData<Boolean>
+    lateinit var endingRequest: Observable<Boolean>
 
     @Before
     fun setup() {
@@ -60,7 +60,7 @@ class ProfileFragmentTest {/*
         user2 = User.invoke(mockedDatabaseUser2)
 
         testRule = ActivityScenarioRule<MainActivity>(MainActivity::class.java)
-        endingRequest = MutableLiveData()
+        endingRequest = Observable()
 
         mockedDatabase = mock(DatabaseInterface::class.java)
         When(mockedDatabase.currentUser).thenReturn(null)
@@ -72,11 +72,11 @@ class ProfileFragmentTest {/*
      */
     private fun loginDirectly(loginFragment: LoginFragment, id: Int) {
         //Mock the sign in method
-        val endingRequest2 = MutableLiveData<Boolean>()
+        val endingRequest2 = Observable<Boolean>()
         When(
-            mockedDatabase.inDatabase(loginFragment.inDbMutableLiveData, uidTest, user)
+            mockedDatabase.inDatabase(loginFragment.inDbObservable, uidTest, user)
         ).thenAnswer { _ ->
-            loginFragment.inDbMutableLiveData.postValue(true)
+            loginFragment.inDbObservable.postValue(true)
             endingRequest2
         }
         onView(withId(id)).perform(click())
@@ -168,7 +168,7 @@ class ProfileFragmentTest {/*
         loginDirectly(loginFragment, R.id.ic_login)
 
         //Mock the update UserInformation method
-        var endingRequestUpdate = MutableLiveData<Boolean>()
+        var endingRequestUpdate = Observable<Boolean>()
         var updated = false
         When(
             mockedDatabase.updateUserInformation(profileFragment.hashMapNewInfos, uidTest, user)
@@ -215,7 +215,7 @@ class ProfileFragmentTest {/*
         }
 
         //Nothing happens
-        endingRequestUpdate = MutableLiveData()
+        endingRequestUpdate = Observable()
         onView(withId(R.id.btnUpdateInfos)).perform(click())
         endingRequestUpdate.postValue(false)
 
@@ -236,19 +236,19 @@ class ProfileFragmentTest {/*
         profileFragment.currentUser = user
         loginFragment.currentUser = user
 
-        val endingRequestInDatabase = MutableLiveData<Boolean>()
+        val endingRequestInDatabase = Observable<Boolean>()
         When(
             mockedDatabase.inDatabase(
-                loginFragment.inDbMutableLiveData,
+                loginFragment.inDbObservable,
                 uidTest,
                 loginFragment.currentUser!!
             )
         ).thenAnswer { _ ->
-            loginFragment.inDbMutableLiveData.postValue(false)
+            loginFragment.inDbObservable.postValue(false)
             endingRequestInDatabase
         }
 
-        val endingRequestFirstConnection = MutableLiveData<Boolean>()
+        val endingRequestFirstConnection = Observable<Boolean>()
         var accountCreated = false
 
         When(
@@ -290,7 +290,7 @@ class ProfileFragmentTest {/*
         profileFragment.currentUser = user
         loginFragment.currentUser = user
 
-        val endingRequestFirstConnection = MutableLiveData<Boolean>()
+        val endingRequestFirstConnection = Observable<Boolean>()
         var accountNotCreated = true
 
         When(
@@ -317,6 +317,6 @@ class ProfileFragmentTest {/*
         endingRequest.postValue(true)
         Thread.sleep(3000)
         assert(accountNotCreated)
-    }*/
+    }
 }
 
