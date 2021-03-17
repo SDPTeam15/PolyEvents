@@ -2,20 +2,13 @@ package com.github.sdpteam15.polyevents.database
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.MutableLiveData
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.event.Event
-import com.github.sdpteam15.polyevents.user.Profile
 import com.github.sdpteam15.polyevents.user.ProfileInterface
-import com.github.sdpteam15.polyevents.user.User
 import com.github.sdpteam15.polyevents.user.UserInterface
 import java.time.LocalDateTime
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.collections.List
-import kotlin.collections.emptyList
-import kotlin.collections.mutableSetOf
-import kotlin.collections.single
 
 object FakeDatabase : DatabaseInterface {
     init {
@@ -239,14 +232,14 @@ object FakeDatabase : DatabaseInterface {
         newValues: HashMap<String, String>,
         uid: String,
         userAccess: UserInterface
-    ): MutableLiveData<Boolean> {
+    ): Observable<Boolean> {
         TODO("Not yet implemented")
     }
 
     override fun firstConnexion(
         user: UserInterface,
         userAccess: UserInterface
-    ): MutableLiveData<Boolean> {
+    ): Observable<Boolean> {
         TODO("Not yet implemented")
     }
 
@@ -259,10 +252,10 @@ object FakeDatabase : DatabaseInterface {
     }
 
     override fun getUserInformation(
-        user: MutableLiveData<UserInterface>,
+        user: Observable<UserInterface>,
         uid: String,
         userAccess: UserInterface
-    ): MutableLiveData<Boolean> {
+    ): Observable<Boolean> {
         TODO("Not yet implemented")
     }
 }

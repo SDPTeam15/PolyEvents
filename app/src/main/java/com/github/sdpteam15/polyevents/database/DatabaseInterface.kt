@@ -1,6 +1,5 @@
 package com.github.sdpteam15.polyevents.database
 
-import android.content.ClipData
 import androidx.lifecycle.MutableLiveData
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.event.Event
@@ -129,7 +128,7 @@ interface DatabaseInterface {
     fun createItem(
         item: Item,
         profile: ProfileInterface = CurrentProfile
-    ): MutableLiveData<Boolean>
+    ): Observable<Boolean>
 
     /**
      * @param item item we want to remove from the database
@@ -139,7 +138,7 @@ interface DatabaseInterface {
     fun removeItem(
         item: Item,
         profile: ProfileInterface = CurrentProfile
-    ): MutableLiveData<Boolean>
+    ): Observable<Boolean>
 
     /**
      * @param item item we want to update in the database
@@ -149,7 +148,7 @@ interface DatabaseInterface {
     fun updateItem(
         item: Item,
         profile: ProfileInterface = CurrentProfile
-    ): MutableLiveData<Boolean>*/
+    ): Observable<Boolean>*/
 
     /**
      * Material request modifier and accessor methods
@@ -166,7 +165,7 @@ interface DatabaseInterface {
         id:String,
         answer:Boolean,
         profile: ProfileInterface = CurrentProfile
-    ): MutableLiveData<Boolean>
+    ): Observable<Boolean>
 
     /**
      * Get the list of all material request
@@ -176,10 +175,10 @@ interface DatabaseInterface {
      * @return A mutable live data that will be set to true if the communication with the DB is over and no error
      */
     fun getMaterialRequestList(
-        materialList: MutableLiveData<MaterialRequest>,
+        materialList: Observable<MaterialRequest>,
         matcher: String? = null,
         profile: ProfileInterface = CurrentProfile
-    ): MutableLiveData<Boolean>
+    ): Observable<Boolean>
 
     /**
      * @param the request we want to add in the database
@@ -204,7 +203,7 @@ interface DatabaseInterface {
     fun createEvent(
         event: Event,
         profile: ProfileInterface = CurrentProfile
-    ): MutableLiveData<Boolean>
+    ): Observable<Boolean>
 
     /**
      * Update or request an update for an event
@@ -215,7 +214,7 @@ interface DatabaseInterface {
     fun updateEvents(
         event: Event,
         profile: ProfileInterface = CurrentProfile
-    ): MutableLiveData<Boolean>
+    ): Observable<Boolean>
 
     /**
      * Get event from ID
@@ -226,9 +225,9 @@ interface DatabaseInterface {
      */
     fun getEventFromId(
         id: String,
-        returnEvent: MutableLiveData<Event>,
+        returnEvent: Observable<Event>,
         profile: ProfileInterface = CurrentProfile
-    ): MutableLiveData<Boolean>
+    ): Observable<Boolean>
 
     /**
      * Get list of event
@@ -241,9 +240,9 @@ interface DatabaseInterface {
     fun getListEvent(
         matcher: String? = null,
         number: Int? = null,
-        activityList: MutableLiveData<List<Event>>,
+        activityList: Observable<List<Event>>,
         profile: ProfileInterface = CurrentProfile
-    ): MutableLiveData<Boolean>
+    ): Observable<Boolean>
 
     /**
      * Query the upcoming events (the closest first)
@@ -254,9 +253,9 @@ interface DatabaseInterface {
      */
     fun getUpcomingEvents(
         number: Int = NUMBER_UPCOMING_EVENTS,
-        activityList: MutableLiveData<List<Event>>,
+        activityList: Observable<List<Event>>,
         profile: ProfileInterface = CurrentProfile
-    ): MutableLiveData<Boolean>
+    ): Observable<Boolean>
     */
 
     /**
@@ -273,7 +272,7 @@ interface DatabaseInterface {
     fun addProfile(
         profile: ProfileInterface, uid: String,
         user: UserInterface = currentUser as UserInterface
-    ): MutableLiveData<Boolean>
+    ): Observable<Boolean>
 
     /**
      * Remove the profile from the user in database
@@ -286,7 +285,7 @@ interface DatabaseInterface {
         profile: ProfileInterface,
         uid: String = (User.currentUser as UserInterface).uid,
         user: UserInterface = User.currentUser as UserInterface
-    ): MutableLiveData<Boolean>
+    ): Observable<Boolean>
 
     /**
      * Update profile
@@ -297,7 +296,7 @@ interface DatabaseInterface {
     fun updateProfile(
         profile: ProfileInterface,
         user: UserInterface = currentUser as UserInterface
-    ): MutableLiveData<Boolean>
+    ): Observable<Boolean>
 
     /**
      * Get list of profile of a user uid
@@ -308,9 +307,9 @@ interface DatabaseInterface {
      */
     fun getListProfile(
         uid: String,
-        profileList:MutableLiveData<List<ProfileInterface>>,
+        profileList:Observable<List<ProfileInterface>>,
         user: UserInterface = currentUser as UserInterface
-    ): MutableLiveData<Boolean>
+    ): Observable<Boolean>
         */
 
     /**
@@ -324,7 +323,7 @@ interface DatabaseInterface {
         newValues: HashMap<String, String>,
         uid: String,
         userAccess: UserInterface = User.currentUser as UserInterface
-    ): MutableLiveData<Boolean>
+    ): Observable<Boolean>
 
     /**
      * Register the user in the database with its basic informations (uid, email, name)
@@ -335,7 +334,7 @@ interface DatabaseInterface {
     fun firstConnexion(
         user: UserInterface,
         userAccess: UserInterface = User.currentUser as UserInterface
-    ): MutableLiveData<Boolean>
+    ): Observable<Boolean>
 
     /**
      * Look in the database if the user already exists or not
@@ -358,8 +357,8 @@ interface DatabaseInterface {
      * @return A mutable live data that will be set to true if the communication with the DB is over and no error
      */
     fun getUserInformation(
-        user: MutableLiveData<UserInterface>,
+        user: Observable<UserInterface>,
         uid: String = (User.currentUser as UserInterface).uid,
         userAccess: UserInterface = User.currentUser as UserInterface
-    ): MutableLiveData<Boolean>
+    ): Observable<Boolean>
 }
