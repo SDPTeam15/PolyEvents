@@ -23,7 +23,7 @@ import org.mockito.Mockito.mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.Mockito.`when` as When
 
-
+/*
 private const val displayNameTest = "Test displayName"
 private const val emailTest = "Test email"
 private const val uidTest = "Test uid"
@@ -32,8 +32,8 @@ private const val displayNameTest2 = "Test displayName2"
 private const val emailTest2 = "Test email2"
 private const val uidTest2 = "Test uid2"
 
-@RunWith(MockitoJUnitRunner::class)
-class ProfileFragmentTest {
+@RunWith(MockitoJUnitRunner::class)*/
+class ProfileFragmentTest {/*
     @Rule
     @JvmField
     var testRule = ActivityScenarioRule<MainActivity>(MainActivity::class.java)
@@ -317,6 +317,6 @@ class ProfileFragmentTest {
         endingRequest.postValue(true)
         Thread.sleep(3000)
         assert(accountNotCreated)
-    }
+    }*/
 }
 

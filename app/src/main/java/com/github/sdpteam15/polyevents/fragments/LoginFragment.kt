@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.github.sdpteam15.polyevents.MainActivity
 import com.github.sdpteam15.polyevents.R
@@ -99,7 +98,10 @@ class LoginFragment : Fragment() {
                 if (newValue!!) {
                     if (inDbMutableLiveData.value!!) {
                         //If already in database redirect
-                        HelperFunctions.changeFragment(activity, MainActivity.fragments[R.id.id_fragment_profile])
+                        HelperFunctions.changeFragment(
+                            activity,
+                            MainActivity.fragments[R.id.id_fragment_profile]
+                        )
                     } else {
                         //If not in DB, first connection: need to register
                         currentDatabase
@@ -107,7 +109,10 @@ class LoginFragment : Fragment() {
                             .observe(this, Observer<Boolean> { newValue2 ->
                                 if (newValue2) {
                                     //If correctly registered, redirect it
-                                    HelperFunctions.changeFragment(activity, MainActivity.fragments[R.id.id_fragment_profile])
+                                    HelperFunctions.changeFragment(
+                                        activity,
+                                        MainActivity.fragments[R.id.id_fragment_profile]
+                                    )
                                 } else {
                                     //otherwise display error
                                     failedLogin.show()

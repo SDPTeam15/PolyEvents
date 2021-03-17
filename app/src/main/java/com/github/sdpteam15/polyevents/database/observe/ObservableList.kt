@@ -1,11 +1,11 @@
 package com.github.sdpteam15.polyevents.database.observe
 
-import android.annotation.SuppressLint
-import androidx.arch.core.executor.ArchTaskExecutor
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.observeOnStop
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.run
 import java.util.*
 
 class ObservableList<T> {
@@ -193,16 +193,6 @@ class ObservableList<T> {
     fun observeUpdate(lifecycle: LifecycleOwner, observer: (T?, Int) -> Unit): () -> Boolean =
         observeOnStop(lifecycle, observeUpdate(observer))
 
-    private fun observeOnStop(lifecycle: LifecycleOwner, result: () -> Boolean): () -> Boolean {
-        //Anonymous class to observe the ON_STOP Event ao the Activity/Fragment
-        val lifecycleObserver = object : LifecycleObserver {
-            @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-            fun stopListener() = result()
-        }
-        lifecycle.lifecycle.addObserver(lifecycleObserver)
-        return result
-    }
-
     /**
      *  Add an observer for the live data
      *  @param observer observer for the live data
@@ -218,18 +208,8 @@ class ObservableList<T> {
      *  @param observer lifecycle of the observer to automatically remove it from the observers when stopped
      *  @return a method to remove the observer
      */
-    fun observe(lifecycle: LifecycleOwner, observer: (List<T?>) -> Unit): () -> Boolean {
-        val result = observe(observer)
-
-        //Anonymous class to observe the ON_STOP Event ao the Activity/Fragment
-        val lifecycleObserver = object : LifecycleObserver {
-            @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-            fun stopListener() = result()
-        }
-
-        lifecycle.lifecycle.addObserver(lifecycleObserver)
-        return result
-    }
+    fun observe(lifecycle: LifecycleOwner, observer: (List<T?>) -> Unit): () -> Boolean =
+        observeOnStop(lifecycle, observe(observer))
 
     private fun itemRemoved(value: T?) {
         run(Runnable {
@@ -268,15 +248,6 @@ class ObservableList<T> {
             val valueList = this.value
             for (obs in observers)
                 obs(valueList)
-        }
-    }
-
-    @SuppressLint("RestrictedApi")
-    private fun run(runnable: Runnable) {
-        try {
-            ArchTaskExecutor.getInstance().postToMainThread(runnable)
-        } catch (e: RuntimeException) {
-            runnable.run()
         }
     }
 }
