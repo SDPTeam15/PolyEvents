@@ -19,6 +19,8 @@ class ObservableList<T> {
     private val values: MutableList<Observable<T>> = mutableListOf()
     private val removeItemObserver: MutableMap<Observable<T>, () -> Boolean> = mutableMapOf()
 
+    val size get() = values.size
+
     /**
      * To list of T
      */
@@ -68,6 +70,7 @@ class ObservableList<T> {
      * @return observable added.
      */
     fun add(observable: Observable<T>): Observable<T> {
+        values.add(observable)
         removeItemObserver[observable] =
             observable.observe { itemUpdated(it, values.indexOf(observable)) }
         itemAdded(observable.value)
@@ -133,18 +136,8 @@ class ObservableList<T> {
      *  @param observer lifecycle of the observer to automatically remove it from the observers when stopped
      *  @return a method to remove the observer
      */
-    fun observeAdd(lifecycle: LifecycleOwner, observer: (T?) -> Unit): () -> Boolean {
-        val result = observeAdd(observer)
-
-        //Anonymous class to observe the ON_STOP Event ao the Activity/Fragment
-        val lifecycleObserver = object : LifecycleObserver {
-            @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-            fun stopListener() = result()
-        }
-
-        lifecycle.lifecycle.addObserver(lifecycleObserver)
-        return result
-    }
+    fun observeAdd(lifecycle: LifecycleOwner, observer: (T?) -> Unit): () -> Boolean =
+        observeOnStop(lifecycle, observeAdd(observer))
 
     /**
      *  Add an observer for the live data removals
@@ -161,18 +154,8 @@ class ObservableList<T> {
      *  @param observer lifecycle of the observer to automatically remove it from the observers when stopped
      *  @return a method to remove the observer
      */
-    fun observeRemove(lifecycle: LifecycleOwner, observer: (T?) -> Unit): () -> Boolean {
-        val result = observeRemove(observer)
-
-        //Anonymous class to observe the ON_STOP Event ao the Activity/Fragment
-        val lifecycleObserver = object : LifecycleObserver {
-            @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-            fun stopListener() = result()
-        }
-
-        lifecycle.lifecycle.addObserver(lifecycleObserver)
-        return result
-    }
+    fun observeRemove(lifecycle: LifecycleOwner, observer: (T?) -> Unit): () -> Boolean =
+        observeOnStop(lifecycle, observeRemove(observer))
 
     /**
      *  Add an observer for the live data clearing
@@ -189,15 +172,33 @@ class ObservableList<T> {
      *  @param observer lifecycle of the observer to automatically remove it from the observers when stopped
      *  @return a method to remove the observer
      */
-    fun observeClear(lifecycle: LifecycleOwner, observer: () -> Unit): () -> Boolean {
-        val result = observeClear(observer)
+    fun observeClear(lifecycle: LifecycleOwner, observer: () -> Unit): () -> Boolean =
+        observeOnStop(lifecycle, observeClear(observer))
 
+    /**
+     *  Add an observer for the live data clearing
+     *  @param observer observer for the live data clearing
+     *  @return a method to remove the observer
+     */
+    fun observeUpdate(observer: (T?, Int) -> Unit): () -> Boolean {
+        observersItemUpdate.add(observer)
+        return { observersItemUpdate.remove(observer) }
+    }
+
+    /**
+     *  Add an observer for the live data clearing
+     *  @param observer lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @return a method to remove the observer
+     */
+    fun observeUpdate(lifecycle: LifecycleOwner, observer: (T?, Int) -> Unit): () -> Boolean =
+        observeOnStop(lifecycle, observeUpdate(observer))
+
+    private fun observeOnStop(lifecycle: LifecycleOwner, result: () -> Boolean): () -> Boolean {
         //Anonymous class to observe the ON_STOP Event ao the Activity/Fragment
         val lifecycleObserver = object : LifecycleObserver {
             @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
             fun stopListener() = result()
         }
-
         lifecycle.lifecycle.addObserver(lifecycleObserver)
         return result
     }
