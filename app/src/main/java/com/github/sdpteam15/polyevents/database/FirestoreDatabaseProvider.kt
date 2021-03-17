@@ -6,14 +6,17 @@ import com.github.sdpteam15.polyevents.user.ProfileInterface
 import com.github.sdpteam15.polyevents.user.User
 import com.github.sdpteam15.polyevents.user.UserInterface
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 
 object FirestoreDatabaseProvider : DatabaseInterface {
-    var firestore = Firebase.firestore
+    var firestore: FirebaseFirestore? = null
+        get() = field ?: Firebase.firestore
+
     const val USER_DOCUMENT = "users"
-    const val USER_DOCUMENT_ID  = "uid"
+    const val USER_DOCUMENT_ID = "uid"
     const val EVENT_DOCUMENT = "events"
     const val EVENT_DOCUMENT_ID = "eventId"
 
@@ -74,7 +77,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         userAccess: UserInterface
     ): MutableLiveData<Boolean> {
         val ending = MutableLiveData<Boolean>()
-        firestore.collection(USER_DOCUMENT)
+        firestore!!.collection(USER_DOCUMENT)
             .document(uid)
             .update(newValues as Map<String, Any>)
             .addOnSuccessListener { _ -> ending.postValue(true) }
@@ -91,7 +94,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         map["uid"] = user.uid
         map["displayName"] = user.name
         map["email"] = user.email
-        firestore.collection(USER_DOCUMENT)
+        firestore!!.collection(USER_DOCUMENT)
             .document(user.uid)
             .set(map)
             .addOnSuccessListener {
@@ -109,7 +112,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         userAccess: UserInterface
     ): MutableLiveData<Boolean> {
         val ended = MutableLiveData<Boolean>()
-        firestore.collection(USER_DOCUMENT)
+        firestore!!.collection(USER_DOCUMENT)
             .whereEqualTo(USER_DOCUMENT_ID, uid)
             .limit(1)
             .get()
@@ -133,7 +136,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         userAccess: UserInterface
     ): MutableLiveData<Boolean> {
         val ending = MutableLiveData<Boolean>()
-        firestore.collection("users")
+        firestore!!.collection("users")
             .document(uid)
             .get()
             .addOnSuccessListener { document ->
