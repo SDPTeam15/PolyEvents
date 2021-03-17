@@ -1,9 +1,6 @@
 package com.github.sdpteam15.polyevents.database
 
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
-import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.user.User
 import com.github.sdpteam15.polyevents.user.UserInterface
 import com.google.firebase.firestore.FirebaseFirestore
@@ -13,9 +10,10 @@ import org.mockito.Mockito
 import org.mockito.Mockito.mock
 import kotlin.test.assertTrue
 
-private const val diplayNameTest = "Test displayName"
+private const val displayNameTest = "Test displayName"
 private const val emailTest = "Test email"
 private const val uidTest = "Test uid"
+
 class FirestoreDatabaseProviderTest {
     lateinit var user: UserInterface
     lateinit var mockedDatabaseUser: DatabaseUserInterface
@@ -27,7 +25,7 @@ class FirestoreDatabaseProviderTest {
     fun setup() {
         mockedDatabaseUser = mock(DatabaseUserInterface::class.java)
         Mockito.`when`(mockedDatabaseUser.email).thenReturn(emailTest)
-        Mockito.`when`(mockedDatabaseUser.displayName).thenReturn(diplayNameTest)
+        Mockito.`when`(mockedDatabaseUser.displayName).thenReturn(displayNameTest)
         Mockito.`when`(mockedDatabaseUser.uid).thenReturn(uidTest)
         user = User.invoke(mockedDatabaseUser)
     }
@@ -35,6 +33,5 @@ class FirestoreDatabaseProviderTest {
     @Test
     fun canAddAUser(){
 
-        currentDatabase.firstConnexion(user, user)
     }
 }

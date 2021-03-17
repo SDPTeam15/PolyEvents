@@ -19,6 +19,8 @@ class ObservableList<T> {
     private val values: MutableList<Observable<T>> = mutableListOf()
     private val removeItemObserver: MutableMap<Observable<T>, () -> Boolean> = mutableMapOf()
 
+    val size get() = values.size
+
     /**
      * To list of T
      */
@@ -33,8 +35,14 @@ class ObservableList<T> {
     /**
      * Returns the element at the specified index in the list.
      * @return the element at the specified index in the list.
-      */
-    operator fun get(index: Int) : T? = values[index].value
+     */
+    operator fun get(index: Int): T? = values[index].value
+
+    /**
+     * Returns the observable element at the specified index in the list.
+     * @return the observable element at the specified index in the list.
+     */
+    fun getObservable(index: Int): Observable<T> = values[index]
 
     /**
      * Replaces the element at the specified position in this list with the specified element.
@@ -44,12 +52,27 @@ class ObservableList<T> {
     operator fun set(index: Int, value: T?) = values[index].postValue(value)
 
     /**
+     * Replaces the element at the specified position in this list with the specified element.
+     * @param index position in this list
+     * @param value new value
+     */
+    operator fun set(index: Int, value: Observable<T>) {
+        removeItemObserver[values[index]]!!()
+        removeItemObserver.remove(values[index])
+        values[index] = value
+        removeItemObserver[value] = value.observe { itemUpdated(it, index) }
+        itemUpdated(value.value, index)
+    }
+
+    /**
      * Add an observable.
      * @param observable observable to add.
      * @return observable added.
      */
-    fun add(observable: Observable<T>) : Observable<T>{
-        removeItemObserver[observable] = observable.observe { itemUpdated(it, values.indexOf(observable)) }
+    fun add(observable: Observable<T>): Observable<T> {
+        values.add(observable)
+        removeItemObserver[observable] =
+            observable.observe { itemUpdated(it, values.indexOf(observable)) }
         itemAdded(observable.value)
         return observable
     }
@@ -59,15 +82,15 @@ class ObservableList<T> {
      * @param item item to add.
      * @return observable added.
      */
-    fun add(item: T) : Observable<T> = add(Observable(item))
+    fun add(item: T): Observable<T> = add(Observable(item))
 
     /**
      * Remove an item.
-     * @param item item to add.
-     * @return observable added.
+     * @param item item to remove.
+     * @return observable removed.
      */
-    fun remove(observable: Observable<T>) : Observable<T>?{
-        if(!values.remove(observable))
+    fun remove(observable: Observable<T>): Observable<T>? {
+        if (!values.remove(observable))
             return null
         removeItemObserver[observable]!!()
         removeItemObserver.remove(observable)
@@ -76,12 +99,22 @@ class ObservableList<T> {
     }
 
     /**
+     * Remove an item.
+     * @param item item to remove.
+     * @return observable removed.
+     */
+    fun remove(item: T): Observable<T>? {
+        val observable: Observable<T>? = values.find { it.value == item }
+        if (observable != null)
+            return remove(observable)
+        return null
+    }
+
+    /**
      * Clear all items.
-     * @param item item to add.
-     * @return observable added.
      */
     fun clear() {
-        for(item in values)
+        for (item in values)
             removeItemObserver[item]!!()
         values.clear()
         removeItemObserver.clear()
@@ -100,37 +133,11 @@ class ObservableList<T> {
 
     /**
      *  Add an observer for the live data additions
-     *  @param observer observer for the live data additions
-     *  @return a method to remove the observer
-     */
-    fun observeAdd(observer: Observer<T?>): () -> Boolean =
-        observeAdd { value: T? -> observer.update(value) }
-
-    /**
-     *  Add an observer for the live data additions
      *  @param observer lifecycle of the observer to automatically remove it from the observers when stopped
      *  @return a method to remove the observer
      */
-    fun observeAdd(lifecycle: LifecycleOwner, observer: (T?) -> Unit) : () -> Boolean{
-        val result = observeAdd(observer)
-
-        //Anonymous class to observe the ON_STOP Event ao the Activity/Fragment
-        val lifecycleObserver = object : LifecycleObserver {
-            @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-            fun stopListener() = result()
-        }
-
-        lifecycle.lifecycle.addObserver(lifecycleObserver)
-        return result
-    }
-
-    /**
-     *  Add an observer for the live data additions
-     *  @param observer lifecycle of the observer to automatically remove it from the observers when stopped
-     *  @return a method to remove the observer
-     */
-    fun observeAdd(lifecycle: LifecycleOwner, observer: Observer<T?>) : () -> Boolean =
-        observeAdd(lifecycle) { value: T? -> observer.update(value) }
+    fun observeAdd(lifecycle: LifecycleOwner, observer: (T?) -> Unit): () -> Boolean =
+        observeOnStop(lifecycle, observeAdd(observer))
 
     /**
      *  Add an observer for the live data removals
@@ -144,37 +151,11 @@ class ObservableList<T> {
 
     /**
      *  Add an observer for the live data removals
-     *  @param observer observer for the live data removals
-     *  @return a method to remove the observer
-     */
-    fun observeRemove(observer: Observer<T?>): () -> Boolean =
-        observeRemove { value: T? -> observer.update(value) }
-
-    /**
-     *  Add an observer for the live data removals
      *  @param observer lifecycle of the observer to automatically remove it from the observers when stopped
      *  @return a method to remove the observer
      */
-    fun observeRemove(lifecycle: LifecycleOwner, observer: (T?) -> Unit) : () -> Boolean{
-        val result = observeRemove(observer)
-
-        //Anonymous class to observe the ON_STOP Event ao the Activity/Fragment
-        val lifecycleObserver = object : LifecycleObserver {
-            @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-            fun stopListener() = result()
-        }
-
-        lifecycle.lifecycle.addObserver(lifecycleObserver)
-        return result
-    }
-
-    /**
-     *  Add an observer for the live data removals
-     *  @param observer lifecycle of the observer to automatically remove it from the observers when stopped
-     *  @return a method to remove the observer
-     */
-    fun observeRemove(lifecycle: LifecycleOwner, observer: Observer<T?>) : () -> Boolean =
-        observeRemove(lifecycle) { value: T? -> observer.update(value) }
+    fun observeRemove(lifecycle: LifecycleOwner, observer: (T?) -> Unit): () -> Boolean =
+        observeOnStop(lifecycle, observeRemove(observer))
 
     /**
      *  Add an observer for the live data clearing
@@ -188,38 +169,39 @@ class ObservableList<T> {
 
     /**
      *  Add an observer for the live data clearing
+     *  @param observer lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @return a method to remove the observer
+     */
+    fun observeClear(lifecycle: LifecycleOwner, observer: () -> Unit): () -> Boolean =
+        observeOnStop(lifecycle, observeClear(observer))
+
+    /**
+     *  Add an observer for the live data clearing
      *  @param observer observer for the live data clearing
      *  @return a method to remove the observer
      */
-    fun observeClear(observer: Observer<Unit>): () -> Boolean =
-        observeClear { observer.update(Unit) }
+    fun observeUpdate(observer: (T?, Int) -> Unit): () -> Boolean {
+        observersItemUpdate.add(observer)
+        return { observersItemUpdate.remove(observer) }
+    }
 
     /**
      *  Add an observer for the live data clearing
      *  @param observer lifecycle of the observer to automatically remove it from the observers when stopped
      *  @return a method to remove the observer
      */
-    fun observeClear(lifecycle: LifecycleOwner, observer: () -> Unit) : () -> Boolean{
-        val result = observeClear(observer)
+    fun observeUpdate(lifecycle: LifecycleOwner, observer: (T?, Int) -> Unit): () -> Boolean =
+        observeOnStop(lifecycle, observeUpdate(observer))
 
+    private fun observeOnStop(lifecycle: LifecycleOwner, result: () -> Boolean): () -> Boolean {
         //Anonymous class to observe the ON_STOP Event ao the Activity/Fragment
         val lifecycleObserver = object : LifecycleObserver {
             @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
             fun stopListener() = result()
         }
-
         lifecycle.lifecycle.addObserver(lifecycleObserver)
         return result
     }
-
-    /**
-     *  Add an observer for the live data
-     *  @param observer lifecycle of the observer to automatically remove it from the observers when stopped
-     *  @return a method to remove the observer
-     */
-    fun observeClear(lifecycle: LifecycleOwner, observer: Observer<Unit>) : () -> Boolean =
-        observeClear(lifecycle) { observer.update(Unit) }
-
 
     /**
      *  Add an observer for the live data
@@ -233,18 +215,10 @@ class ObservableList<T> {
 
     /**
      *  Add an observer for the live data
-     *  @param observer observer for the live data
-     *  @return a method to remove the observer
-     */
-    fun observe(observer: Observer<List<T?>>): () -> Boolean =
-        observe { value: List<T?> -> observer.update(value) }
-
-    /**
-     *  Add an observer for the live data
      *  @param observer lifecycle of the observer to automatically remove it from the observers when stopped
      *  @return a method to remove the observer
      */
-    fun observe(lifecycle: LifecycleOwner, observer: (List<T?>) -> Unit) : () -> Boolean{
+    fun observe(lifecycle: LifecycleOwner, observer: (List<T?>) -> Unit): () -> Boolean {
         val result = observe(observer)
 
         //Anonymous class to observe the ON_STOP Event ao the Activity/Fragment
@@ -257,66 +231,52 @@ class ObservableList<T> {
         return result
     }
 
-    /**
-     *  Add an observer for the live data
-     *  @param observer lifecycle of the observer to automatically remove it from the observers when stopped
-     *  @return a method to remove the observer
-     */
-    fun observe(lifecycle: LifecycleOwner, observer: Observer<List<T?>>) : () -> Boolean =
-        observe(lifecycle) { value: List<T?> -> observer.update(value) }
-
-
-
-
-    @SuppressLint("RestrictedApi")
     private fun itemRemoved(value: T?) {
-        ArchTaskExecutor.getInstance().postToMainThread(Runnable {
+        run(Runnable {
             for (obs in observersRemove)
                 obs(value);
-            if (observers.isNotEmpty()) {
-                val valueList = this.value
-                for (obs in observers)
-                    obs(valueList)
-            }
+            notifyUpdate()
         })
     }
 
-    @SuppressLint("RestrictedApi")
     private fun itemAdded(value: T?) {
-        ArchTaskExecutor.getInstance().postToMainThread(Runnable {
+        run(Runnable {
             for (obs in observersAdd)
                 obs(value);
-            if (observers.isNotEmpty()) {
-                val valueList = this.value
-                for (obs in observers)
-                    obs(valueList)
-            }
+            notifyUpdate()
         })
     }
 
-    @SuppressLint("RestrictedApi")
     private fun itemUpdated(value: T?, index: Int) {
-        ArchTaskExecutor.getInstance().postToMainThread(Runnable {
+        run(Runnable {
             for (obs in observersItemUpdate)
                 obs(value, index);
-            if (observers.isNotEmpty()) {
-                val valueList = this.value
-                for (obs in observers)
-                    obs(valueList)
-            }
+            notifyUpdate()
         })
     }
 
-    @SuppressLint("RestrictedApi")
     private fun itemClear() {
-        ArchTaskExecutor.getInstance().postToMainThread(Runnable {
+        run(Runnable {
             for (obs in observersClear)
                 obs();
-            if (observers.isNotEmpty()) {
-                val valueList = this.value
-                for (obs in observers)
-                    obs(valueList)
-            }
+            notifyUpdate()
         })
+    }
+
+    private fun notifyUpdate() {
+        if (observers.isNotEmpty()) {
+            val valueList = this.value
+            for (obs in observers)
+                obs(valueList)
+        }
+    }
+
+    @SuppressLint("RestrictedApi")
+    private fun run(runnable: Runnable) {
+        try {
+            ArchTaskExecutor.getInstance().postToMainThread(runnable)
+        } catch (e: RuntimeException) {
+            runnable.run()
+        }
     }
 }
