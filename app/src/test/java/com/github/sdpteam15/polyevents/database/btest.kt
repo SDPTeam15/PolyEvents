@@ -7,12 +7,9 @@ class btest {
     @Test
     fun test(){
         val b = Observable<Boolean>()
-        b.observe { bool : Boolean ->
+        /*b.observe { bool : Boolean ->
             assert(bool)
         }
-        b.postValue(true)
-
-
+        b.postValue(true)*/
     }
-
 }
