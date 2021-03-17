@@ -220,8 +220,10 @@ object FakeDatabase : DatabaseInterface {
         return events!!
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun getEventFromId(id: String, profile: ProfileInterface): Event? {
-        return null
+        initEvents()
+        return events!!.get(0)
     }
 
     override fun updateEvent(Event: Event, profile: ProfileInterface): Boolean {

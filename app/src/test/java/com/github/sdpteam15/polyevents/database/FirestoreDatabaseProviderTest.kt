@@ -35,6 +35,7 @@ class FirestoreDatabaseProviderTest {
         When(mockedDatabaseUser.uid).thenReturn(uidTest)
         user = User.invoke(mockedDatabaseUser)
 
+
         mockedDatabase = mock(FirebaseFirestore::class.java)
         FirestoreDatabaseProvider.firestore = mockedDatabase
     }
