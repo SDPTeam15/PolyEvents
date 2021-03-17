@@ -1,15 +1,14 @@
 package com.github.sdpteam15.polyevents.database
 
-import androidx.lifecycle.MutableLiveData
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.event.Event
 import com.github.sdpteam15.polyevents.user.ProfileInterface
-import com.github.sdpteam15.polyevents.user.User
 import com.github.sdpteam15.polyevents.user.UserInterface
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
@@ -75,97 +74,110 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         return true//TODO
     }
 
+    //Method used to get listener in the task to mock and test the database
+    var lastGetSuccessListener: OnSuccessListener<QuerySnapshot>? = null
+    var lastSetSuccessListener: OnSuccessListener<Void>? = null
+    var lastFailureListener: OnFailureListener? = null
+    var lastMultGetSuccessListener: OnSuccessListener<DocumentSnapshot>? = null
+
+
+    fun thenDoGet(
+        task: Task<QuerySnapshot>,
+        onSuccessListener: (QuerySnapshot) -> Unit
+    ): Observable<Boolean> {
+        val ended = Observable<Boolean>()
+        lastGetSuccessListener = OnSuccessListener<QuerySnapshot> {
+            onSuccessListener(it)
+            ended.postValue(true)
+        }
+        lastFailureListener = OnFailureListener { ended.postValue(false) }
+        task.addOnSuccessListener(lastGetSuccessListener!!)
+            .addOnFailureListener(lastFailureListener!!)
+        return ended
+    }
+
+    fun thenDoMultGet(
+        task: Task<DocumentSnapshot>,
+        onSuccessListener: (DocumentSnapshot) -> Unit
+    ): Observable<Boolean> {
+        val ended = Observable<Boolean>()
+        lastMultGetSuccessListener = OnSuccessListener<DocumentSnapshot> {
+            onSuccessListener(it)
+            ended.postValue(true)
+        }
+        lastFailureListener = OnFailureListener { ended.postValue(false) }
+        task.addOnSuccessListener(lastMultGetSuccessListener!!)
+            .addOnFailureListener(lastFailureListener!!)
+        return ended
+    }
+
+    fun thenDoSet(
+        task: Task<Void>
+    ): Observable<Boolean> {
+        val ended = Observable<Boolean>()
+
+        lastSetSuccessListener = OnSuccessListener<Void> { ended.postValue(true) }
+        lastFailureListener = OnFailureListener { ended.postValue(false) }
+        task.addOnSuccessListener(lastSetSuccessListener!!)
+            .addOnFailureListener(lastFailureListener!!)
+        return ended
+    }
+
     //Up to here delete
     override fun updateUserInformation(
         newValues: java.util.HashMap<String, String>,
         uid: String,
         userAccess: UserInterface
-    ): MutableLiveData<Boolean> {
-        val ending = MutableLiveData<Boolean>()
+    ): Observable<Boolean> = thenDoSet(
         firestore!!.collection(USER_DOCUMENT)
             .document(uid)
             .update(newValues as Map<String, Any>)
-            .addOnSuccessListener { _ -> ending.postValue(true) }
-            .addOnFailureListener { _ -> ending.postValue(false) }
-        return ending
-    }
+    )
+
 
     override fun firstConnexion(
         user: UserInterface,
         userAccess: UserInterface
-    ): MutableLiveData<Boolean> {
-        val ended = MutableLiveData<Boolean>()
+    ): Observable<Boolean> {
         val map = HashMap<String, String>()
         map["uid"] = user.uid
         map["displayName"] = user.name
         map["email"] = user.email
-        firestore!!.collection(USER_DOCUMENT)
-            .document(user.uid)
-            .set(map)
-            .addOnSuccessListener {
-                ended.postValue(true)
-            }
-            .addOnFailureListener {
-                ended.postValue(false)
-            }
-        return ended
+
+        return thenDoSet(
+            firestore!!.collection(USER_DOCUMENT)
+                .document(user.uid)
+                .set(map)
+        )
     }
-
-    var lastGetSuccessListener : ((QuerySnapshot) -> Unit)? = null
-    var lastSetSuccessListener : OnSuccessListener<Void>? = null
-    var lastFailureListener : ((Exception) -> Unit)? = null
-
-
-    fun thenDo(task : Task<QuerySnapshot>, onSuccessListener: (QuerySnapshot) -> Unit, onFailureListener: (Exception) -> Unit){
-        lastGetSuccessListener = onSuccessListener
-        lastFailureListener = onFailureListener
-        task.addOnSuccessListener(onSuccessListener).addOnFailureListener(onFailureListener)
-    }
-
-
 
     override fun inDatabase(
         isInDb: Observable<Boolean>,
         uid: String,
         userAccess: UserInterface
-    ): Observable<Boolean> {
-        val ended = Observable(false)
-
-        this.thenDo( firestore!!.collection(USER_DOCUMENT)
-                .whereEqualTo(USER_DOCUMENT_ID, uid)
-                .limit(1)
-                .get(),
-                { doc : QuerySnapshot->
-                    if (doc.documents.size == 1) {
-                        isInDb.postValue(true)
-                    } else {
-                        isInDb.postValue(false)
-                    }
-                    ended.postValue(true)
-                },
-                {
-                    ended.postValue(false)
-                })
-        return ended
+    ): Observable<Boolean> = thenDoGet(
+        firestore!!.collection(USER_DOCUMENT)
+            .whereEqualTo(USER_DOCUMENT_ID, uid)
+            .limit(1)
+            .get()
+    ) { doc: QuerySnapshot ->
+        if (doc.documents.size == 1) {
+            isInDb.postValue(true)
+        } else {
+            isInDb.postValue(false)
+        }
     }
 
     override fun getUserInformation(
-        user: MutableLiveData<UserInterface>,
+        user: Observable<UserInterface>,
         uid: String,
         userAccess: UserInterface
-    ): MutableLiveData<Boolean> {
-        val ending = MutableLiveData<Boolean>()
+    ): Observable<Boolean> = thenDoMultGet(
         firestore!!.collection("users")
             .document(uid)
             .get()
-            .addOnSuccessListener { document ->
-                //TODO once the data class User is created, set the user with the correct value
-                user.postValue(User.invoke(currentUser!!))
-                ending.postValue(true)
-            }
-            .addOnFailureListener { _ ->
-                ending.postValue(false)
-            }
-        return ending
+    ) { document ->
+        //TODO once the data class User is created, set the user with the correct value
+        user.postValue(userAccess)
     }
 }
