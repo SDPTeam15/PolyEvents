@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,6 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
+import com.github.sdpteam15.polyevents.fragments.MoreFragment
 import com.github.sdpteam15.polyevents.item_request.ItemRequestAdapter
 
 /**
@@ -30,43 +32,38 @@ class ItemRequestActivity : AppCompatActivity() {
         // TODO : Adapt that stub and put it in the db interface
         val availableItems = currentDatabase.getAvailableItems()
 
-        // Listener to keep the selected items in a list
-        val onItemCheckChangeListener =
-            { item: Pair<String, Int>, isChecked: Boolean, setQuantity: Int ->
-                if (isChecked and (setQuantity > 0)) {
-                    mapSelectedItems[item.first] = setQuantity
-                } else {
-                    mapSelectedItems.remove(item.first)
-                }
-                // Otherwise the above map operations return an Int
-                Unit
-        }
-
         val onItemQuantityChangeListener = {item: String, newQuantity: Int ->
-            if(mapSelectedItems.containsKey(item)) {
-                mapSelectedItems[item] = newQuantity
+            when {
+                mapSelectedItems.containsKey(item) and (newQuantity == 0) -> {
+                    mapSelectedItems.remove(item)
+                }
+                newQuantity > 0 -> {
+                    mapSelectedItems[item] = newQuantity
+                }
+                else -> {}
             }
+            Unit
         }
 
-        recyclerView.adapter = ItemRequestAdapter(availableItems.toList(), onItemCheckChangeListener, onItemQuantityChangeListener)
+        recyclerView.adapter = ItemRequestAdapter(availableItems.toList(), onItemQuantityChangeListener)
 
         recyclerView.setHasFixedSize(false)
     }
 
     fun sendItemsRequest(view: View) {
         if (mapSelectedItems.isEmpty()) {
-            Toast.makeText(this, getString(R.string.item_request_empty_text), Toast.LENGTH_SHORT)
+            Toast.makeText(this, getString(R.string.item_request_empty_text), Toast.LENGTH_LONG)
                 .show()
         } else {
             // TODO : send the request through the db interface
             // sendRequest(listSelectedItems)
 
-            Toast.makeText(this, getString(R.string.item_request_sent_text) + mapSelectedItems.size.toString(), Toast.LENGTH_SHORT)
+            Toast.makeText(this, getString(R.string.item_request_sent_text), Toast.LENGTH_LONG)
                 .show()
 
             // Go back to previous activity
-            // val intent = Intent(this, MainActivity::class.java)
-            //startActivity(intent)
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
         }
     }
 }

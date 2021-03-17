@@ -23,7 +23,6 @@ import com.github.sdpteam15.polyevents.R
  */
 class ItemRequestAdapter(
     private val availableItems: List<Pair<String, Int>>,
-    private val onItemCheckChangeListener: (Pair<String, Int>, Boolean, Int) -> Unit,
     private val onItemQuantityChangeListener: (String, Int) -> Unit
 ) : RecyclerView.Adapter<ItemRequestAdapter.ItemViewHolder>() {
 
@@ -34,7 +33,6 @@ class ItemRequestAdapter(
     inner class ItemViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
 
         private val itemName = view.findViewById<TextView>(R.id.id_item_name)
-        private val itemCheckBox = view.findViewById<CheckBox>(R.id.id_item_requested)
         private val itemQuantity = view.findViewById<EditText>(R.id.id_item_quantity)
 
         /**
@@ -42,13 +40,10 @@ class ItemRequestAdapter(
          */
         @RequiresApi(Build.VERSION_CODES.O)
         fun bind(item: Pair<String, Int>) {
-            itemName.text = item.first
-            itemCheckBox.setOnClickListener { view ->
-                val isChecked = (view as CheckBox).isChecked
-                onItemCheckChangeListener(item, isChecked, itemQuantity.text.toString().toInt())
-            }
+            itemName.text = view.context.getString(R.string.item_name_quantity_text, item.first, item.second)
 
-            itemQuantity.setText(item.second.toString())
+            // Set initial quantity to 0
+            itemQuantity.setText("0")
             itemQuantity.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(
                     s: CharSequence?,
@@ -72,14 +67,18 @@ class ItemRequestAdapter(
                             Toast.makeText(view.context, view.context.getString(R.string.item_quantity_positive_text), Toast.LENGTH_LONG)
                                 .show()
                         } else if (value > item.second) {
-                            val maxQuantity = item.second.toString()
-                            itemQuantity.setText(maxQuantity)
+                            val maxQuantity = item.second
+                            itemQuantity.setText(maxQuantity.toString())
 
-                            Toast.makeText(view.context, view.context.getString(R.string.max_item_quantity_text, maxQuantity, itemName.text), Toast.LENGTH_LONG)
+                            // Update the list with the max quantity available
+                            onItemQuantityChangeListener(item.first, maxQuantity)
+
+                            Toast.makeText(view.context, view.context.getString(R.string.max_item_quantity_text, maxQuantity.toString(), itemName.text), Toast.LENGTH_LONG)
                                 .show()
+                        } else {
+                            // Update the list
+                            onItemQuantityChangeListener(item.first, value)
                         }
-                        // Update the list
-                        onItemQuantityChangeListener(item.first, value)
                     }
                 }
             })

@@ -3,6 +3,7 @@
     <string name="upcoming_activities_txt">Upcoming activities</string>
     <string name="at_hour_text">at %1$s</string>
     <string name="max_item_quantity_text">There are only %1$s %2$s available !</string>
+    <string name="item_name_quantity_text">%1$s (%2$d available)</string>
 
     <!-- Login Activity strings-->
     <string name="login_failed_text">Failed to log into your Google account</string>
@@ -54,7 +55,7 @@
     </string-array>
 
     <string name="google_maps_key"></string>
-    <string name="title_activity_item_request">ItemRequestActivity</string>
+    <string name="title_activity_item_request">Items Request</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
