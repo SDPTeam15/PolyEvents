@@ -14,4 +14,12 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <style name="Theme.PolyEvents.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.PolyEvents.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.PolyEvents.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>
