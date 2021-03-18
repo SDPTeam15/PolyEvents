@@ -13,15 +13,14 @@ import com.google.firebase.firestore.DocumentSnapshot
  *
  * IMPORTANT: This should be updated whenever we add, remove or update fields of Event.
  */
-class EventAdapter {
-    companion object {
-            /**
-             * Convert an event entity to an intermediate mapping
-             * of fields to their values, that we can pass to the document directly.
-             * Firestore document keys are always strings.
-             * @param event the entity we're converting
-             * @return a hashmap of the entity fields to their values
-             */
+object EventAdapter {
+        /**
+         * Convert an event entity to an intermediate mapping
+         * of fields to their values, that we can pass to the document directly.
+         * Firestore document keys are always strings.
+         * @param event the entity we're converting
+         * @return a hashmap of the entity fields to their values
+         */
         fun toEventDocument(event: Event): HashMap<String, Any?> =
                 hashMapOf(
                         "eventName" to event.eventName,
@@ -34,14 +33,14 @@ class EventAdapter {
                         "tags" to event.tags.toList()
                 )
 
-            /**
-             * Convert document data to an event entity in our model.
-             * Data retrieved from Firestore documents are always of the form of a mutable mapping,
-             * that maps strings - which are the names of the fields of our entity - to their values,
-             * which can be of any type..
-             * @param documentData this is the data we retrieve from the document.
-             * @return the corresponding Event entity.
-             */
+        /**
+         * Convert document data to an event entity in our model.
+         * Data retrieved from Firestore documents are always of the form of a mutable mapping,
+         * that maps strings - which are the names of the fields of our entity - to their values,
+         * which can be of any type..
+         * @param documentData this is the data we retrieve from the document.
+         * @return the corresponding Event entity.
+         */
         fun toEventEntity(documentData: MutableMap<String, Any?>): Event =
                 Event(
                         eventName = documentData["eventName"] as String?,
@@ -54,5 +53,4 @@ class EventAdapter {
                                 .mapKeys { Item.valueOf(it.key) }.toMutableMap(),
                         tags = (documentData["tags"] as List<String>).toMutableSet()
                 )
-    }
 }

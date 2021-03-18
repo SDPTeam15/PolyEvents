@@ -13,11 +13,13 @@ object Depot {
     const val DEPOT_NAME: String = "mainDepot"
     val inventory: MutableMap<Item, Int> = mutableMapOf()
 
+    // TODO: refactor Inventory management maybe between Depot and Event
     /**
-     * Set the amount of a certain item in the inventory of the depot
+     * Set the amount of a certain item in the inventory of the depot.
+     * Same functionality as the inventory of Events.
      * @param item: the item to add
      * @param amount the amount of the item to add.
-     * @return the old previous amount of that item, or null if the item was not found
+     * @return the old previous amount of that item in the depot, or null if the item was not found
      */
     fun setItemAmount(item: Item, amount: Int): Int? {
         if (amount < 0) {
@@ -29,9 +31,10 @@ object Depot {
 
     /**
      * Add an amount of an item to the inventory of the depot
+     * Same functionality as inventory of events.
      * @param item: the item to add
      * @param amount the amount of the item to add. By default is 1
-     * @return the old previous amount of that item, or null if the item was not found
+     * @return the old previous amount of that item in the depot, or null if the item was not found
      */
     fun addItemToDepot(item: Item, amount: Int = 1): Int? {
         val currentAmount = inventory.getOrDefault(item, 0)
