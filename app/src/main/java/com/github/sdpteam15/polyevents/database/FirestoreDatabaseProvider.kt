@@ -28,7 +28,9 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     const val AREA_DOCUMENT = "areas"
     const val AREA_DOCUMENT_ID = "areaId"
 
-
+    /**
+     * Map used in the firstConnection method. It's public to be able to use it in tests
+     */
     val firstConnectionMap = HashMap<String, String>()
 
     override val currentUser: DatabaseUserInterface?

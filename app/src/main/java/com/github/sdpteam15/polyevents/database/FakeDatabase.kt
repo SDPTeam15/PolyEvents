@@ -21,7 +21,7 @@ object FakeDatabase : DatabaseInterface {
         items = arrayListOf("Scie-tronconneuse", "Bonnet de bain")
     }
 
-    private var events: ArrayList<Event>? = null
+    var events: ArrayList<Event>? = null
 
     private var items: ArrayList<String>? = null
 
@@ -201,7 +201,7 @@ object FakeDatabase : DatabaseInterface {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun getEventFromId(id: String, profile: ProfileInterface): Event? {
         initEvents()
-        return events!!.get(0)
+        return events!!.get(id.toInt())
     }
 
     override fun updateEvent(Event: Event, profile: ProfileInterface): Boolean {
