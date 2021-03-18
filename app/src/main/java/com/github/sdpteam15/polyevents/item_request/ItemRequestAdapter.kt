@@ -62,6 +62,8 @@ class ItemRequestAdapter(
                         val value = s.toString().toInt()
                         when {
                             value < 0 -> {
+                                // Value set it negative, change it to 0
+                                // and inform the user
                                 itemQuantity.setText("0")
 
                                 Toast.makeText(
@@ -72,6 +74,8 @@ class ItemRequestAdapter(
                                     .show()
                             }
                             value > item.second -> {
+                                // The quantity set is too high, set it to the max quantity
+                                // available and inform the user
                                 val maxQuantity = item.second
                                 itemQuantity.setText(maxQuantity.toString())
 

@@ -25,9 +25,9 @@ class ItemRequestActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.id_recycler_items_request)
         mapSelectedItems = mutableMapOf()
 
-        // TODO : Adapt that stub and put it in the db interface
         val availableItems = currentDatabase.getAvailableItems()
 
+        // Listener that update the map of selected items when the quantity is changed
         val onItemQuantityChangeListener = { item: String, newQuantity: Int ->
             when {
                 mapSelectedItems.containsKey(item) and (newQuantity == 0) -> {
