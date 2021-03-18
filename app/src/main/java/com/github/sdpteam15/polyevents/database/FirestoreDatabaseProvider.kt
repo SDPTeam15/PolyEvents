@@ -1,5 +1,7 @@
 package com.github.sdpteam15.polyevents.database
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.event.Event
 import com.github.sdpteam15.polyevents.user.ProfileInterface
@@ -207,21 +209,25 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         user.postValue(userAccess)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun getItemsList(): MutableList<String> {
         //TODO adapt to firebase
         return FakeDatabase.getItemsList()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun addItem(item: String): Boolean {
         //TODO adapt to firebase
         return FakeDatabase.addItem(item)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun removeItem(item: String): Boolean {
         //TODO adapt to firebase
         return FakeDatabase.removeItem(item)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun getAvailableItems(): Map<String, Int> {
         //TODO adapt to firebase
         return FakeDatabase.getAvailableItems()

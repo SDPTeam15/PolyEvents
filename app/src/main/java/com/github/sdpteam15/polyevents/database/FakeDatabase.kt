@@ -10,11 +10,10 @@ import com.github.sdpteam15.polyevents.user.UserInterface
 import java.time.LocalDateTime
 import java.util.*
 
+@RequiresApi(Build.VERSION_CODES.O)
 object FakeDatabase : DatabaseInterface {
     init {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            initEvents()
-        }
+        initEvents()
         initProfiles()
         initItems()
     }
