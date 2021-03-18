@@ -21,6 +21,12 @@ Next week, I will try to take a task more related to the backend as I did not do
 
 ## Mathieu
 
+This week, I set the google map fragment up and explorated the features it offers. I created a function to draw areas and add the information window related to it.
+
+My time estimate to set google map up was a bit too long because everything went right on the first try. Then for the part exploring the google map features, I put an estimated time but didn't try to follow it as I was experimenting and always wanted to implement more. Also, I looked for a way to test the clickListeners for google map for some time but didn't really succeed, which took some more time.
+
+Next week, I will take a backend developping task to do more programming. 
+
 ## Robin
 
 I implemented the Observable, ObservableList and Observer classes to avoid issues due to MutableLiveData, then FakeDatabase for risked tests which would need a database.
