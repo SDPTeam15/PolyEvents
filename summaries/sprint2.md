@@ -32,3 +32,8 @@ Next week, I'll take a graphical tasks. I have done only backend until there so 
 ## Stephane
 
 ## Overall team
+Approximately all the user stories selected for this sprint were implemented. There are some that we did not have time to merge at the very end of the week before the weekly meeting. They will probably be part of the next sprint.
+
+Our time estimates are slightly better (less worse) than last week. We still underestimate vastly the time of tests and PR reviews etc in my opinion. This introduce some frustration as we can feel that we don't do much in terms of new features but pass a lot of time doing tests. This comes from the fact that we are often stuck when trying to test some feature.
+
+We only did 1 "official" standup meeting this week on Monday evening. This was enough because we communicate a lot on our discord server. Therefore we are directly aware if something is going wrong.
