@@ -15,10 +15,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.item_request.ItemAdapter
 
+/**
+ * Activity displaying Items and supports items creation and deletion
+ */
 class ItemsAdminActivity : AppCompatActivity() {
 
     //var items: MutableLiveData<MutableList<String>> = MutableLiveData()
 
+    /**
+     * Recycler containing all the items
+     */
     lateinit var recyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {

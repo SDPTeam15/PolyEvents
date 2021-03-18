@@ -11,6 +11,9 @@ import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.FakeDatabase
 
+/**
+ * Adapts items to RecyclerView ItemsViews
+ */
 class ItemAdapter(
     // TODO ADD private var data: MutableLiveData<MutableList<String>>,
     // TODO ADD private val onItemClickListener: (String) -> Unit
@@ -27,7 +30,7 @@ class ItemAdapter(
     }
 
     /**
-     * adapted ViewHolder for each event
+     * adapted ViewHolder for each item
      * Takes the corresponding event view
      */
     inner class ItemViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
@@ -36,7 +39,7 @@ class ItemAdapter(
         private val btnRemove = view.findViewById<ImageButton>(R.id.id_remove_item)
 
         /**
-         * Binds the values of each field of an event to the layout of an event
+         * Binds the values of each view of an event to the layout of an event
          */
         fun bind(item: String) {
             btnRemove.setOnClickListener {
