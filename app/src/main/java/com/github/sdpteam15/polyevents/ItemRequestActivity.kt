@@ -36,8 +36,6 @@ class ItemRequestActivity : AppCompatActivity() {
                 newQuantity > 0 -> {
                     mapSelectedItems[item] = newQuantity
                 }
-                else -> {
-                }
             }
             Unit
         }
