@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'jacoco'
+    id 'com.google.secrets_gradle_plugin' version '0.5'
 }
 
 apply plugin: 'kotlin-android'
@@ -48,6 +49,7 @@ dependencies {
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
+    implementation 'com.google.android.gms:play-services-location:18.0.0'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
@@ -80,6 +82,9 @@ dependencies {
 
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
     testImplementation 'org.jetbrains.kotlin:kotlin-test-junit'
+
+    //UIAutomator
+    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
 }
 
 tasks.withType(Test) {
