@@ -8,11 +8,5 @@ object Depot {
     val inventory: MutableMap<Item, Int> = mutableMapOf()
 
     fun isAvailable(itemType: Item): Boolean =
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            inventory.getOrDefault(itemType, 0) > 0
-        } else {
-            val temp = inventory.get(itemType)
-            val amount: Int = if (temp == null) 0 else temp
-            amount > 0
-        }
+        inventory.getOrDefault(itemType, 0) > 0
 }
