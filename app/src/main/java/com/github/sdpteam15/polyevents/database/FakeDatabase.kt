@@ -17,12 +17,12 @@ object FakeDatabase : DatabaseInterface {
         initProfiles()
     }
 
-    private var events: MutableList<Event>? = null
-    private var profiles: MutableList<ProfileInterface>? = null
+    private lateinit var events: MutableList<Event>
+    private lateinit var profiles: MutableList<ProfileInterface>
 
     private fun initEvents() {
         events = mutableListOf()
-        events!!.add(
+        events.add(
             Event(
                 "Sushi demo",
                 "Super hungry activity !",
@@ -34,7 +34,7 @@ object FakeDatabase : DatabaseInterface {
                 mutableSetOf("sushi", "japan", "cooking")
             )
         )
-        events!!.add(
+        events.add(
             Event(
                 "Aqua Poney",
                 "Super cool activity !" +
@@ -47,7 +47,7 @@ object FakeDatabase : DatabaseInterface {
                 "2"
             )
         )
-        events!!.add(
+        events.add(
             Event(
                 "Saxophone demo",
                 "Super noisy activity !",
@@ -58,7 +58,7 @@ object FakeDatabase : DatabaseInterface {
                 "3"
             )
         )
-        events!!.add(
+        events.add(
             Event(
                 "Sushi demo",
                 "Super hungry activity !",
@@ -69,7 +69,7 @@ object FakeDatabase : DatabaseInterface {
                 "4"
             )
         )
-        events!!.add(
+        events.add(
             Event(
                 "Aqua Poney",
                 "Super cool activity !" +
@@ -82,7 +82,7 @@ object FakeDatabase : DatabaseInterface {
                 "5"
             )
         )
-        events!!.add(
+        events.add(
             Event(
                 "Saxophone demo",
                 "Super noisy activity !",
@@ -93,7 +93,7 @@ object FakeDatabase : DatabaseInterface {
                 "6"
             )
         )
-        events!!.add(
+        events.add(
             Event(
                 "Sushi demo",
                 "Super hungry activity !",
@@ -104,7 +104,7 @@ object FakeDatabase : DatabaseInterface {
                 "7"
             )
         )
-        events!!.add(
+        events.add(
             Event(
                 "Aqua Poney",
                 "Super cool activity !" +
@@ -117,7 +117,7 @@ object FakeDatabase : DatabaseInterface {
                 "8"
             )
         )
-        events!!.add(
+        events.add(
             Event(
                 "Saxophone demo",
                 "Super noisy activity !",
@@ -128,7 +128,7 @@ object FakeDatabase : DatabaseInterface {
                 "9"
             )
         )
-        events!!.add(
+        events.add(
             Event(
                 "Sushi demo",
                 "Super hungry activity !",
@@ -139,7 +139,7 @@ object FakeDatabase : DatabaseInterface {
                 "10"
             )
         )
-        events!!.add(
+        events.add(
             Event(
                 "Aqua Poney",
                 "Super cool activity !" +
@@ -152,7 +152,7 @@ object FakeDatabase : DatabaseInterface {
                 "11"
             )
         )
-        events!!.add(
+        events.add(
             Event(
                 "Saxophone demo",
                 "Super noisy activity !",
@@ -163,7 +163,7 @@ object FakeDatabase : DatabaseInterface {
                 "12"
             )
         )
-        events!!.add(
+        events.add(
             Event(
                 "Sushi demo",
                 "Super hungry activity !",
@@ -174,7 +174,7 @@ object FakeDatabase : DatabaseInterface {
                 "13"
             )
         )
-        events!!.add(
+        events.add(
             Event(
                 "Aqua Poney",
                 "Super cool activity !" +
@@ -187,7 +187,7 @@ object FakeDatabase : DatabaseInterface {
                 "14"
             )
         )
-        events!!.add(
+        events.add(
             Event(
                 "Saxophone demo",
                 "Super noisy activity !",
@@ -210,17 +210,17 @@ object FakeDatabase : DatabaseInterface {
     }
 
     override fun getListProfile(uid: String, user: UserInterface): List<ProfileInterface> =
-        profiles!!
+        profiles
 
 
     override fun addProfile(profile: ProfileInterface, uid: String, user: UserInterface): Boolean =
-        profiles!!.add(profile)
+        profiles.add(profile)
 
     override fun removeProfile(
         profile: ProfileInterface,
         uid: String,
         user: UserInterface
-    ): Boolean = profiles!!.remove(profile)
+    ): Boolean = profiles.remove(profile)
 
     override fun updateProfile(profile: ProfileInterface, user: UserInterface): Boolean = true
 
@@ -230,7 +230,7 @@ object FakeDatabase : DatabaseInterface {
         profile: ProfileInterface
     ): List<Event> {
         val res = mutableListOf<Event>()
-        for(v in events!!){
+        for(v in events){
             res.add(v)
             if(res.size == number)
                 break
@@ -241,7 +241,7 @@ object FakeDatabase : DatabaseInterface {
     override fun getUpcomingEvents(number: Int, profile: ProfileInterface): List<Event> = getListEvent("", number, profile)
 
     override fun getEventFromId(id: String, profile: ProfileInterface): Event =
-        events!![0]
+        events[0]
 
     override fun updateEvent(Event: Event, profile: ProfileInterface): Boolean = true
 
