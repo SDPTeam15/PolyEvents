@@ -1,8 +1,5 @@
 package com.github.sdpteam15.polyevents.model
 
-import com.github.sdpteam15.polyevents.exceptions.InsufficientAmountException
-import java.lang.IllegalArgumentException
-
 /**
  * Singleton class to denote a central depot, keeping track of available inventory
  *
@@ -14,43 +11,6 @@ object Depot {
     val inventory: MutableMap<Item, Int> = mutableMapOf()
 
     // TODO: refactor Inventory management maybe between Depot and Event
-    /**
-     * Same functionality as the inventory of Events. Please refer to Event for details
-     * @return the old previous amount of that item in the depot, or null if the item was not found
-     */
-    fun setItemAmount(item: Item, amount: Int): Int? {
-        if (amount < 0) {
-            throw IllegalArgumentException("Amount of items must >= 0")
-        } else {
-            return inventory.put(item, amount)
-        }
-    }
-
-    /**
-     * Same functionality as the inventory of Events. Please refer to Event for details
-     * @return the old previous amount of that item in the depot, or null if the item was not found
-     */
-    fun addItemToDepot(item: Item, amount: Int = 1): Int? {
-        val currentAmount = inventory.getOrDefault(item, 0)
-        return inventory.put(item, currentAmount + amount)
-    }
-
-    /**
-     * Take an amount of some item from the inventory of the depot.
-     *
-     * @param item the item to take
-     * @param amount amount of the item to take. By default is 1
-     * @return the old previous amount of that item, or null if the item was not found
-     */
-    fun takeItemFromDepot(item: Item, amount: Int = 1): Int? {
-        val currentAmount = inventory.getOrDefault(item, 0)
-        if (amount > currentAmount) {
-            throw InsufficientAmountException("There are only $currentAmount of $item available" +
-                    "in the depot.")
-        } else {
-            return inventory.put(item, currentAmount - amount)
-        }
-    }
 
     /**
      * Check if a certain item is available in the depot
