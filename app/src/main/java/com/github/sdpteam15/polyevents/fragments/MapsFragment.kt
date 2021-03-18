@@ -206,7 +206,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
      * TODO : Check if we should make it a singleton to save memory/performance
      */
     private fun getMarkerIcon(): BitmapDescriptor {
-        val vectorDrawable: Drawable? = ContextCompat.getDrawable(context!!, R.drawable.ic_location)
+        val vectorDrawable: Drawable? = ContextCompat.getDrawable(requireContext(), R.drawable.ic_location)
         vectorDrawable?.setBounds(0, 0, 0, 0)
         val bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
@@ -372,7 +372,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
          */
 
         if (ContextCompat.checkSelfPermission(
-                context!!,
+                requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
             )
             == PackageManager.PERMISSION_GRANTED
@@ -380,7 +380,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
             locationPermissionGranted = true
         } else {
             ActivityCompat.requestPermissions(
-                activity!!,
+                requireActivity(),
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                 PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
             )
