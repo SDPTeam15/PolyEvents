@@ -15,7 +15,7 @@ class UserAdapter() {
         /**
          * Convert a user entity to an intermediate mapping
          * of fields to their values, that we can pass to the document directly.
-         * Firestore document keys are alwyas strings.
+         * Firestore document keys are always strings.
          * @param user the entity we're converting
          * @return a hashmap of the entity fields to their values
          */
