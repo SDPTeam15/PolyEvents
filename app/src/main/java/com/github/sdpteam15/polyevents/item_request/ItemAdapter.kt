@@ -5,8 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.Database
@@ -18,12 +16,12 @@ class ItemAdapter(
     // TODO ADD private val onItemClickListener: (String) -> Unit
 ) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
-/*TODO ADD
-    private val observer = Observer<MutableList<String>> { t ->
-        items = t!!
-        notifyDataSetChanged()
-    }
-*/
+    /*TODO ADD
+        private val observer = Observer<MutableList<String>> { t ->
+            items = t!!
+            notifyDataSetChanged()
+        }
+    */
     init {
         //TODO ADD data.observeForever(observer)
     }

@@ -15,7 +15,7 @@ object FakeDatabase : DatabaseInterface {
     }
 
     private fun initItems() {
-        items = arrayListOf("Scie-tronconneuse","Bonnet de bain")
+        items = arrayListOf("Scie-tronconneuse", "Bonnet de bain")
     }
 
     private var events: ArrayList<Event>? = null
