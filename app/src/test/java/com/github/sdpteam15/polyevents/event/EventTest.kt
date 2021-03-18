@@ -24,7 +24,7 @@ class EventTest {
             "Test Event", "Event to make tests !",
             LocalDateTime.of(2020, 3, 15, 14, 0),
             3.5F,
-            "The best organizer", "A", null, "1"
+            "The best organizer", "A", "1"
         )
         currentDatabase = FakeDatabase
     }
@@ -58,7 +58,7 @@ class EventTest {
             "Test Event", "Event to make tests !",
             LocalDateTime.of(2020, 3, 15, 14, 0),
             -2.25F,
-            "The best organizer", "A", null, "2"
+            "The best organizer", "A", "2"
         )
 
         assertThat(newEvent.durationHours, Is(EVENT_DEFAULT_DURATION))

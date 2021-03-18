@@ -8,9 +8,9 @@ import androidx.test.espresso.matcher.ViewMatchers.hasChildCount
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread
-import com.github.sdpteam15.polyevents.event.Event
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
+import com.github.sdpteam15.polyevents.event.Event
 import com.github.sdpteam15.polyevents.fragments.HomeFragment
 import org.junit.Before
 import org.junit.Rule
@@ -43,7 +43,7 @@ class UpcomingEventsHomeFragmentTest {
                 LocalDateTime.of(2021, 3, 7, 12, 15),
                 1F,
                 "The fish band",
-                "Kitchen", null, "1"
+                "Kitchen", "1"
             )
         )
 
@@ -54,7 +54,7 @@ class UpcomingEventsHomeFragmentTest {
                 LocalDateTime.of(2021, 3, 7, 15, 0),
                 1.5F,
                 "The Aqua Poney team",
-                "Swimming pool", null, "2"
+                "Swimming pool", "2"
             )
         )
 
@@ -65,7 +65,7 @@ class UpcomingEventsHomeFragmentTest {
                 LocalDateTime.of(2021, 3, 7, 17, 15),
                 2.75F,
                 "AcademiC DeCibel",
-                "Concert Hall", null, "3"
+                "Concert Hall", "3"
             )
         )
 
@@ -76,7 +76,7 @@ class UpcomingEventsHomeFragmentTest {
                 LocalDateTime.of(2021, 3, 7, 18, 15),
                 1.75F,
                 "Cricket club",
-                "Field", null, "4"
+                "Field", "4"
             )
         )
 
