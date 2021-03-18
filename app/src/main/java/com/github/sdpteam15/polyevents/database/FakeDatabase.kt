@@ -2,10 +2,13 @@ package com.github.sdpteam15.polyevents.database
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.event.Event
 import com.github.sdpteam15.polyevents.user.ProfileInterface
 import com.github.sdpteam15.polyevents.user.UserInterface
 import java.time.LocalDateTime
+import java.util.*
+import kotlin.collections.ArrayList
 
 object FakeDatabase : DatabaseInterface {
     init {
@@ -164,34 +167,77 @@ object FakeDatabase : DatabaseInterface {
     override fun getListProfile(uid: String, user: UserInterface): List<ProfileInterface> =
         emptyList()
 
-    override fun addProfile(profile: ProfileInterface, uid: String, user: UserInterface): Boolean =
-        true
+
+    override fun addProfile(profile: ProfileInterface, uid: String, user: UserInterface): Boolean {
+        return true //TODO
+    }
+
 
     override fun removeProfile(
         profile: ProfileInterface,
         uid: String,
         user: UserInterface
-    ): Boolean = true
+    ): Boolean {
+        return false //TODO
+    }
 
-    override fun updateProfile(profile: ProfileInterface, user: UserInterface): Boolean = true
+
+    override fun updateProfile(profile: ProfileInterface, user: UserInterface): Boolean {
+        return false//TODO
+    }
 
     override fun getListEvent(
         matcher: String?,
         number: Int?,
         profile: ProfileInterface
-    ): List<Event> = events as List<Event>
-
-    override fun getUpcomingEvents(number: Int, profile: ProfileInterface): List<Event> =
-        events as List<Event>
-
-    override fun getEventFromId(id: String, profile: ProfileInterface): Event? = try {
-        events?.single { event -> event.id == id }
-    } catch (e: NoSuchElementException) {
-        null
+    ): List<Event> {
+        return events!!
     }
 
-    override fun updateEvent(event: Event, profile: ProfileInterface): Boolean = true
+    override fun getUpcomingEvents(number: Int, profile: ProfileInterface): List<Event> {
+        return events!!
+    }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun getEventFromId(id: String, profile: ProfileInterface): Event? {
+        initEvents()
+        return events!!.get(0)
+    }
+
+    override fun updateEvent(Event: Event, profile: ProfileInterface): Boolean {
+        return true
+    }
+
+    override fun updateUserInformation(
+        newValues: HashMap<String, String>,
+        uid: String,
+        userAccess: UserInterface
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun firstConnexion(
+        user: UserInterface,
+        userAccess: UserInterface
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun inDatabase(
+        isInDb: Observable<Boolean>,
+        uid: String,
+        userAccess: UserInterface
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getUserInformation(
+        user: Observable<UserInterface>,
+        uid: String,
+        userAccess: UserInterface
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
     override fun getItemsList(): MutableList<String> {
         return items!!
     }
