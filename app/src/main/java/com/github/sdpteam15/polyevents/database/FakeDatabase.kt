@@ -24,8 +24,7 @@ object FakeDatabase : DatabaseInterface {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun initEvents() {
-        events = ArrayList()
-        events?.add(
+        events = arrayListOf(
             Event(
                 "Sushi demo",
                 "Super hungry activity !",
@@ -33,9 +32,7 @@ object FakeDatabase : DatabaseInterface {
                 1F,
                 "The fish band",
                 "Kitchen", null, "1", mutableSetOf("sushi", "japan", "cooking")
-            )
-        )
-        events?.add(
+            ),
             Event(
                 "Aqua Poney",
                 "Super cool activity !" +
@@ -45,9 +42,7 @@ object FakeDatabase : DatabaseInterface {
                 3.5F,
                 "The Aqua Poney team",
                 "Swimming pool", null, "2"
-            )
-        )
-        events?.add(
+            ),
             Event(
                 "Saxophone demo",
                 "Super noisy activity !",
@@ -55,9 +50,7 @@ object FakeDatabase : DatabaseInterface {
                 0.75F,
                 "The music band",
                 "Concert Hall", null, "3"
-            )
-        )
-        events?.add(
+            ),
             Event(
                 "Sushi demo",
                 "Super hungry activity !",
@@ -65,9 +58,7 @@ object FakeDatabase : DatabaseInterface {
                 1F,
                 "The fish band",
                 "Kitchen", null, "4"
-            )
-        )
-        events?.add(
+            ),
             Event(
                 "Aqua Poney",
                 "Super cool activity !" +
@@ -77,9 +68,7 @@ object FakeDatabase : DatabaseInterface {
                 3.5F,
                 "The Aqua Poney team",
                 "Swimming pool", null, "5"
-            )
-        )
-        events?.add(
+            ),
             Event(
                 "Saxophone demo",
                 "Super noisy activity !",
@@ -87,9 +76,7 @@ object FakeDatabase : DatabaseInterface {
                 0.75F,
                 "The music band",
                 "Concert Hall", null, "6"
-            )
-        )
-        events?.add(
+            ),
             Event(
                 "Sushi demo",
                 "Super hungry activity !",
@@ -97,9 +84,7 @@ object FakeDatabase : DatabaseInterface {
                 1F,
                 "The fish band",
                 "Kitchen", null, "7"
-            )
-        )
-        events?.add(
+            ),
             Event(
                 "Aqua Poney",
                 "Super cool activity !" +
@@ -109,9 +94,7 @@ object FakeDatabase : DatabaseInterface {
                 3.5F,
                 "The Aqua Poney team",
                 "Swimming pool", null, "8"
-            )
-        )
-        events?.add(
+            ),
             Event(
                 "Saxophone demo",
                 "Super noisy activity !",
@@ -119,9 +102,7 @@ object FakeDatabase : DatabaseInterface {
                 0.75F,
                 "The music band",
                 "Concert Hall", null, "9"
-            )
-        )
-        events?.add(
+            ),
             Event(
                 "Sushi demo",
                 "Super hungry activity !",
@@ -129,9 +110,7 @@ object FakeDatabase : DatabaseInterface {
                 1F,
                 "The fish band",
                 "Kitchen", null, "10"
-            )
-        )
-        events?.add(
+            ),
             Event(
                 "Aqua Poney",
                 "Super cool activity !" +
@@ -141,9 +120,7 @@ object FakeDatabase : DatabaseInterface {
                 3.5F,
                 "The Aqua Poney team",
                 "Swimming pool", null, "11"
-            )
-        )
-        events?.add(
+            ),
             Event(
                 "Saxophone demo",
                 "Super noisy activity !",
@@ -151,9 +128,7 @@ object FakeDatabase : DatabaseInterface {
                 0.75F,
                 "The music band",
                 "Concert Hall", null, "12"
-            )
-        )
-        events?.add(
+            ),
             Event(
                 "Sushi demo",
                 "Super hungry activity !",
@@ -161,9 +136,7 @@ object FakeDatabase : DatabaseInterface {
                 1F,
                 "The fish band",
                 "Kitchen", null, "13"
-            )
-        )
-        events?.add(
+            ),
             Event(
                 "Aqua Poney",
                 "Super cool activity !" +
@@ -173,9 +146,7 @@ object FakeDatabase : DatabaseInterface {
                 3.5F,
                 "The Aqua Poney team",
                 "Swimming pool", null, "14"
-            )
-        )
-        events?.add(
+            ),
             Event(
                 "Saxophone demo",
                 "Super noisy activity !",

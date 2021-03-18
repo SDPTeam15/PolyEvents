@@ -27,9 +27,9 @@ class ItemsAdminActivity : AppCompatActivity() {
 
         // TODO take existing items from the database
 
-        val clickListener = { _: String -> } // TODO define what happens when we click on an Item
+        //val clickListener = { _: String -> } // TODO define what happens when we click on an Item
         recyclerView = findViewById(R.id.id_recycler_items_list)
-        recyclerView.adapter = ItemAdapter(clickListener)
+        recyclerView.adapter = ItemAdapter(/*clickListener*/)
 
         val btnAdd = findViewById<ImageButton>(R.id.id_add_item_button)
         btnAdd.setOnClickListener { createAddItemPopup() }

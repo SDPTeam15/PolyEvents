@@ -10,10 +10,12 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.Database
+import com.github.sdpteam15.polyevents.database.Database.currentDatabase
+import com.github.sdpteam15.polyevents.database.FakeDatabase
 
 class ItemAdapter(
-    /*TODO ADD private var data: MutableLiveData<MutableList<String>>,*/
-    private val onItemClickListener: (String) -> Unit
+    // TODO ADD private var data: MutableLiveData<MutableList<String>>,
+    // TODO ADD private val onItemClickListener: (String) -> Unit
 ) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
 /*TODO ADD
@@ -55,11 +57,14 @@ class ItemAdapter(
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        val item = Database.currentDatabase.getItemsList()[position]
+        println("SALE O " + (currentDatabase == FakeDatabase))
+        val item = currentDatabase.getItemsList()[position]
         holder.bind(item)
+        /*
         holder.itemView.setOnClickListener {
+
             onItemClickListener(item)
-        }
+        }*/
     }
 
     override fun getItemCount(): Int {
