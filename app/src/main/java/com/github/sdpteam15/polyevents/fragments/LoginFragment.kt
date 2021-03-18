@@ -102,19 +102,23 @@ class LoginFragment : Fragment() {
                         HelperFunctions.changeFragment(activity, MainActivity.fragments[R.id.id_fragment_profile])
                     } else {
                         //If not in DB, i.e. first connection, need to register
-                        currentDatabase
-                            .firstConnexion(currentUser!!, currentUser!!)
-                            .observe(this){ newValue2 ->
-                                if (newValue2!!) {
-                                    //If correctly registered, redirect it
-                                    HelperFunctions.changeFragment(activity, MainActivity.fragments[R.id.id_fragment_profile])
-                                } else {
-                                    //otherwise display error
-                                    failedLogin.show()
-                                }
-                            }
+                       connectAndRedirect()
                     }
                 } else {
+                    failedLogin.show()
+                }
+            }
+    }
+
+    private fun connectAndRedirect(){
+        currentDatabase
+            .firstConnexion(currentUser!!, currentUser!!)
+            .observe(this){ newValue2 ->
+                if (newValue2!!) {
+                    //If correctly registered, redirect it
+                    HelperFunctions.changeFragment(activity, MainActivity.fragments[R.id.id_fragment_profile])
+                } else {
+                    //otherwise display error
                     failedLogin.show()
                 }
             }

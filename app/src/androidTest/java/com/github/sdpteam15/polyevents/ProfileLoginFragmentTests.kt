@@ -227,8 +227,7 @@ class ProfileLoginFragmentTests {
         onView(withId(R.id.profileEmail)).check(matches(withText(Matchers.equalTo(emailTest2))))
     }
 
-    @Test
-    fun ifNotInDbAddIt() {
+    private fun initDBTests(){
         //Make sure we are not connected to Firebase
         FirebaseAuth.getInstance().signOut()
         //remove current user so that we stay on login fragment
@@ -242,6 +241,15 @@ class ProfileLoginFragmentTests {
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
         profileFragment.currentUser = user
         loginFragment.currentUser = user
+    }
+
+    @Test
+    fun ifNotInDbAddIt() {
+        val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
+        val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
+
+        initDBTests()
+
 
         //Mock the in database method, to return false
         val endingRequestInDatabase = Observable<Boolean>()
@@ -298,19 +306,9 @@ class ProfileLoginFragmentTests {
 
     @Test
     fun ifInDbDoNotAddIt() {
-        //Make sure we are not connected to Firebase
-        FirebaseAuth.getInstance().signOut()
-        //remove current user so that we stay on login fragment
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
-        loginFragment.currentUser = null
-        onView(withId(R.id.ic_login)).perform(click())
-        //make sure we are on login fragment
-        onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
-
-        //set the user variable to avoid redirection from Profile Fragment
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
-        profileFragment.currentUser = user
-        loginFragment.currentUser = user
+        initDBTests()
 
         val endingRequestFirstConnection = Observable<Boolean>()
         var accountNotCreated = true

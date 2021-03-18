@@ -315,7 +315,7 @@ interface DatabaseInterface {
     /**
      * Update the user information in the database
      * @param newValues : a map with the new value to set in the database
-     * @param uid : the uid of the user from which we want to query the informations
+     * @param uid : the uid of the user from which we want to query the information
      * @param userAccess: the user object to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
@@ -326,8 +326,8 @@ interface DatabaseInterface {
     ): Observable<Boolean>
 
     /**
-     * Register the user in the database with its basic informations (uid, email, name)
-     * @param user : user with all the requested informations
+     * Register the user in the database with its basic information (uid, email, name)
+     * @param user : user with all the requested information
      * @param userAccess: the user object to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
@@ -338,7 +338,7 @@ interface DatabaseInterface {
 
     /**
      * Look in the database if the user already exists or not
-     * @oaram isInDb : Will be set to true if in Database or to false otherwise
+     * @param isInDb : Will be set to true if in Database or to false otherwise
      * @param uid : user uid we want to check the existence
      * @param userAccess: the user object to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
@@ -351,8 +351,8 @@ interface DatabaseInterface {
 
     /**
      * Look in the database if the user already exists or not
-     * @oaram user : live data that will be set with the find user value
-     * @param uid : user uid we want to get the informations
+     * @param user : live data that will be set with the find user value
+     * @param uid : user uid we want to get the information
      * @param userAccess: the user object to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */

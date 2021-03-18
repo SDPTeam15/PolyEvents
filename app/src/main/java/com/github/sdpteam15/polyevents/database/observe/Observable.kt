@@ -7,6 +7,7 @@ import androidx.lifecycle.OnLifecycleEvent
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.observeOnStop
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.run
 import java.util.*
+import kotlin.collections.HashSet
 
 /**
  * Observable live data of type T
@@ -15,7 +16,7 @@ import java.util.*
 class Observable<T>(value: T? = null) {
     constructor() : this(null)
 
-    private val observers = ArrayList<(T?) -> Unit>()
+    private val observers = HashSet<(T?) -> Unit>()
 
     private var tempValue: T? = null
 
