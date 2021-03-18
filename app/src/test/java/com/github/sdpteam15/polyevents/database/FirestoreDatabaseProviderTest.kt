@@ -2,6 +2,8 @@ package com.github.sdpteam15.polyevents.database
 
 import androidx.lifecycle.MutableLiveData
 import com.github.sdpteam15.polyevents.database.observe.Observable
+import com.github.sdpteam15.polyevents.event.Event
+import com.github.sdpteam15.polyevents.user.ProfileInterface
 import com.github.sdpteam15.polyevents.user.User
 import com.github.sdpteam15.polyevents.user.User.Companion.currentUser
 import com.github.sdpteam15.polyevents.user.UserInterface
@@ -13,6 +15,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.mock
 import kotlin.concurrent.thread
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import org.mockito.Mockito.`when` as When
 
 private const val displayNameTest = "Test displayName"
@@ -38,6 +41,23 @@ class FirestoreDatabaseProviderTest {
 
         mockedDatabase = mock(FirebaseFirestore::class.java)
         FirestoreDatabaseProvider.firestore = mockedDatabase
+    }
+
+    @Test
+    fun toRemoveTest() {
+        val mokedUserInterface = mock(UserInterface::class.java)
+        val mokedProfileInterface = mock(ProfileInterface::class.java)
+        val mokedEvent = mock(Event::class.java)
+
+        assertNotNull(FirestoreDatabaseProvider.getListProfile("", mokedUserInterface))
+        assertNotNull(FirestoreDatabaseProvider.addProfile(mokedProfileInterface, "", mokedUserInterface))
+        assertNotNull(FirestoreDatabaseProvider.removeProfile(mokedProfileInterface, "", mokedUserInterface))
+        assertNotNull(FirestoreDatabaseProvider.updateProfile(mokedProfileInterface, mokedUserInterface))
+        assert(FirestoreDatabaseProvider.getListEvent("", 1, mokedProfileInterface).size <= 1)
+        assert(FirestoreDatabaseProvider.getListEvent("", 100, mokedProfileInterface).size <= 100)
+        assert(FirestoreDatabaseProvider.getUpcomingEvents(1, mokedProfileInterface).size <= 1)
+        assert(FirestoreDatabaseProvider.getUpcomingEvents(100, mokedProfileInterface).size <= 100)
+        assert(FirestoreDatabaseProvider.updateEvent(mokedEvent, mokedProfileInterface))
     }
 
     @Test

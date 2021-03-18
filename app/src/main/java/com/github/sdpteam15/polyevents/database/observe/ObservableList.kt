@@ -9,11 +9,11 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions.run
 import java.util.*
 
 class ObservableList<T> {
-    private val observersAdd = ArrayList<(T?) -> Unit>()
-    private val observersRemove = ArrayList<(T?) -> Unit>()
-    private val observersClear = ArrayList<() -> Unit>()
-    private val observersItemUpdate = ArrayList<(T?, Int) -> Unit>()
-    private val observers = ArrayList<(List<T?>) -> Unit>()
+    private val observersAdd = mutableSetOf<(T?) -> Unit>()
+    private val observersRemove = mutableSetOf<(T?) -> Unit>()
+    private val observersClear = mutableSetOf<() -> Unit>()
+    private val observersItemUpdate = mutableSetOf<(T?, Int) -> Unit>()
+    private val observers = mutableSetOf<(List<T?>) -> Unit>()
 
 
     private val values: MutableList<Observable<T>> = mutableListOf()

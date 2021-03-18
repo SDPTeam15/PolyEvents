@@ -55,7 +55,7 @@ class EventActivityTest {
                 1F,
                 "The fish band",
                 "Kitchen",
-                null, "1", mutableSetOf("cooking", "sushi", "miam")
+                "1", mutableSetOf("cooking", "sushi", "miam")
             )
         )
 
@@ -67,7 +67,7 @@ class EventActivityTest {
                 1.5F,
                 "The Aqua Poney team",
                 "Swimming pool",
-                null, "2", mutableSetOf("horse", "swimming", "pony")
+                "2", mutableSetOf("horse", "swimming", "pony")
             )
         )
 
@@ -79,7 +79,7 @@ class EventActivityTest {
                 2.75F,
                 "AcademiC DeCibel",
                 "Concert Hall",
-                null, "3", mutableSetOf("music", "live", "pogo")
+                "3", mutableSetOf("music", "live", "pogo")
             )
         )
 
