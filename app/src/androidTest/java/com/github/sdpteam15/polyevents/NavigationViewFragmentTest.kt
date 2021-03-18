@@ -31,8 +31,8 @@ class NavigationViewFragmentTest {
         Espresso.onView(withId(R.id.ic_list)).perform(click())
         Espresso.onView(withId(R.id.id_fragment_list)).check(matches(isDisplayed()))
 
-        Espresso.onView(withId(R.id.ic_map)).perform(click())
-        Espresso.onView(withId(R.id.id_fragment_map)).check(matches(isDisplayed()))
+        //Espresso.onView(withId(R.id.ic_map)).perform(click())
+        //Espresso.onView(withId(R.id.id_fragment_map)).check(matches(isDisplayed()))
 
         if (FirebaseAuth.getInstance().currentUser == null) {
             Espresso.onView(withId(R.id.ic_login)).perform(click())
