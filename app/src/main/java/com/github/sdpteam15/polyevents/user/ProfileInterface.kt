@@ -7,5 +7,10 @@ interface ProfileInterface {
     /**
      * Profile name
      */
-    var Name: String
+    var name: String
+
+    /**
+     * Associated user of the profile
+     */
+    val associatedUser: UserInterface?
 }

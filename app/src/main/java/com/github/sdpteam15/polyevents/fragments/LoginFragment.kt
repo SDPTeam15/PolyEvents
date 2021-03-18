@@ -8,8 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import com.github.sdpteam15.polyevents.MainActivity
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.database.Database.currentDatabase
+import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.user.User
 import com.github.sdpteam15.polyevents.user.UserInterface
@@ -28,10 +31,11 @@ private const val SIGN_IN_RC: Int = 200
 class LoginFragment : Fragment() {
     private lateinit var signIn: GoogleSignInClient
     private lateinit var failedLogin: AlertDialog
+    val inDbObservable = Observable<Boolean>()
 
     //Return CurrentUser if we are not in test, but we can use a fake user in test this way
     var currentUser: UserInterface? = null
-        get() = field ?: User.CurrentUser
+        get() = field ?: User.currentUser
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +47,7 @@ class LoginFragment : Fragment() {
             )
         }
 
+        //Sign in options for Google Login.
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
@@ -53,7 +58,7 @@ class LoginFragment : Fragment() {
         val builder = AlertDialog.Builder(activity as Activity)
         builder.setMessage(R.string.login_failed_text)
             .setTitle(R.string.login_failed_title)
-            .setPositiveButton(R.string.ok_button_text) { dialog, id -> {} }
+            .setPositiveButton(R.string.ok_button_text) { _, _ -> }
         failedLogin = builder.create()
     }
 
@@ -76,16 +81,44 @@ class LoginFragment : Fragment() {
     }
 
     private fun firebaseAuthWithGoogle(idToken: String) {
-        //Get the credential back and instanciate FirebaseAuth object
+        //Get the credential back and instantiate FirebaseAuth object
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         FirebaseAuth.getInstance().signInWithCredential(credential)
             .addOnCompleteListener(activity as Activity) { task ->
                 if (task.isSuccessful) {
-                    HelperFunctions.changeFragment(
-                        activity,
-                        MainActivity.fragments[R.id.id_fragment_profile]
-                    )
+                    addIfNotInDB()
                 } else {
+                    failedLogin.show()
+                }
+            }
+    }
+
+    private fun addIfNotInDB() {
+        currentDatabase.inDatabase(inDbObservable, currentUser!!.uid, currentUser!!)
+            .observe(this) { newValue ->
+                if (newValue!!) {
+                    if (inDbObservable.value!!) {
+                        //If already in database redirect
+                        HelperFunctions.changeFragment(activity, MainActivity.fragments[R.id.id_fragment_profile])
+                    } else {
+                        //If not in DB, i.e. first connection, need to register
+                       connectAndRedirect()
+                    }
+                } else {
+                    failedLogin.show()
+                }
+            }
+    }
+
+    private fun connectAndRedirect(){
+        currentDatabase
+            .firstConnexion(currentUser!!, currentUser!!)
+            .observe(this){ newValue2 ->
+                if (newValue2!!) {
+                    //If correctly registered, redirect it
+                    HelperFunctions.changeFragment(activity, MainActivity.fragments[R.id.id_fragment_profile])
+                } else {
+                    //otherwise display error
                     failedLogin.show()
                 }
             }
@@ -104,10 +137,7 @@ class LoginFragment : Fragment() {
                     startActivityForResult(signIn.signInIntent, SIGN_IN_RC)
                 } else {
                     //This branch allow us to test the communication between ProfileFragment and LoginFragment. During a normal execution, it won't be used.
-                    HelperFunctions.changeFragment(
-                        activity,
-                        MainActivity.fragments[R.id.id_fragment_profile]
-                    )
+                    addIfNotInDB()
                 }
             }
         return rootView

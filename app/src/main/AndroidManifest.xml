@@ -16,7 +16,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PolyEvents">
         <activity
-            android:name=".ActivityActivity"
+            android:name=".ItemRequestActivity"
+            android:label="@string/title_activity_item_request"
+            android:parentActivityName=".MainActivity"/>
+        <activity
+            android:name=".EventActivity"
             android:parentActivityName=".MainActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -27,13 +31,13 @@
              You can define the keys for the debug and release targets in src/debug/ and src/release/.
         -->
         <meta-data
-
             android:name="com.google.android.geo.API_KEY"
             android:value="TODO" />
 
         <activity android:name=".MainActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
