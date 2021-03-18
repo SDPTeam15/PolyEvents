@@ -15,10 +15,7 @@ object Depot {
 
     // TODO: refactor Inventory management maybe between Depot and Event
     /**
-     * Set the amount of a certain item in the inventory of the depot.
-     * Same functionality as the inventory of Events.
-     * @param item: the item to add
-     * @param amount the amount of the item to add.
+     * Same functionality as the inventory of Events. Please refer to Event for details
      * @return the old previous amount of that item in the depot, or null if the item was not found
      */
     fun setItemAmount(item: Item, amount: Int): Int? {
@@ -30,10 +27,7 @@ object Depot {
     }
 
     /**
-     * Add an amount of an item to the inventory of the depot
-     * Same functionality as inventory of events.
-     * @param item: the item to add
-     * @param amount the amount of the item to add. By default is 1
+     * Same functionality as the inventory of Events. Please refer to Event for details
      * @return the old previous amount of that item in the depot, or null if the item was not found
      */
     fun addItemToDepot(item: Item, amount: Int = 1): Int? {
