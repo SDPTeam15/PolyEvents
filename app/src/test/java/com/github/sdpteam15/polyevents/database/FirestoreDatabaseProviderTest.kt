@@ -2,6 +2,8 @@ package com.github.sdpteam15.polyevents.database
 
 import androidx.lifecycle.MutableLiveData
 import com.github.sdpteam15.polyevents.database.observe.Observable
+import com.github.sdpteam15.polyevents.event.Event
+import com.github.sdpteam15.polyevents.user.ProfileInterface
 import com.github.sdpteam15.polyevents.user.User
 import com.github.sdpteam15.polyevents.user.UserInterface
 import com.google.android.gms.tasks.Task
@@ -10,7 +12,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.mock
-import java.lang.Exception
+import kotlin.test.assertNotNull
 import org.mockito.Mockito.`when` as When
 
 private const val displayNameTest = "Test displayName"
@@ -44,6 +46,40 @@ class FirestoreDatabaseProviderTest {
     }
 
     @Test
+    fun toRemoveTest() {
+        val mokedUserInterface = mock(UserInterface::class.java)
+        val mokedProfileInterface = mock(ProfileInterface::class.java)
+        val mokedEvent = mock(Event::class.java)
+
+        assertNotNull(FirestoreDatabaseProvider.getListProfile("", mokedUserInterface))
+        assertNotNull(
+            FirestoreDatabaseProvider.addProfile(
+                mokedProfileInterface,
+                "",
+                mokedUserInterface
+            )
+        )
+        assertNotNull(
+            FirestoreDatabaseProvider.removeProfile(
+                mokedProfileInterface,
+                "",
+                mokedUserInterface
+            )
+        )
+        assertNotNull(
+            FirestoreDatabaseProvider.updateProfile(
+                mokedProfileInterface,
+                mokedUserInterface
+            )
+        )
+        assert(FirestoreDatabaseProvider.getListEvent("", 1, mokedProfileInterface).size <= 1)
+        assert(FirestoreDatabaseProvider.getListEvent("", 100, mokedProfileInterface).size <= 100)
+        assert(FirestoreDatabaseProvider.getUpcomingEvents(1, mokedProfileInterface).size <= 1)
+        assert(FirestoreDatabaseProvider.getUpcomingEvents(100, mokedProfileInterface).size <= 100)
+        assert(FirestoreDatabaseProvider.updateEvent(mokedEvent, mokedProfileInterface))
+    }
+
+    @Test
     fun inDatabaseCorrectlySetTheObservable() {
         //Mock all the necessary class to mock the methods
         val mockedCollectionReference = mock(CollectionReference::class.java)
@@ -53,8 +89,15 @@ class FirestoreDatabaseProviderTest {
         val mockedList = mock(List::class.java) as List<DocumentSnapshot>
 
         //Mock all the needed method to perform the query correctly
-        When(mockedDatabase.collection(FirestoreDatabaseProvider.USER_DOCUMENT)).thenReturn(mockedCollectionReference)
-        When(mockedCollectionReference.whereEqualTo(FirestoreDatabaseProvider.USER_DOCUMENT_ID, uidTest)).thenReturn(mockedQuery)
+        When(mockedDatabase.collection(FirestoreDatabaseProvider.USER_DOCUMENT)).thenReturn(
+            mockedCollectionReference
+        )
+        When(
+            mockedCollectionReference.whereEqualTo(
+                FirestoreDatabaseProvider.USER_DOCUMENT_ID,
+                uidTest
+            )
+        ).thenReturn(mockedQuery)
         When(mockedQuery.limit(1)).thenReturn(mockedQuery)
         When(mockedQuery.get()).thenReturn(mockedTask)
         When(mockedDocument.documents).thenReturn(mockedList)
@@ -87,8 +130,15 @@ class FirestoreDatabaseProviderTest {
         val mockedList = mock(List::class.java) as List<DocumentSnapshot>
 
         //mock the needed method
-        When(mockedDatabase.collection(FirestoreDatabaseProvider.USER_DOCUMENT)).thenReturn(mockedCollectionReference)
-        When(mockedCollectionReference.whereEqualTo(FirestoreDatabaseProvider.USER_DOCUMENT_ID, uidTest)).thenReturn(mockedQuery)
+        When(mockedDatabase.collection(FirestoreDatabaseProvider.USER_DOCUMENT)).thenReturn(
+            mockedCollectionReference
+        )
+        When(
+            mockedCollectionReference.whereEqualTo(
+                FirestoreDatabaseProvider.USER_DOCUMENT_ID,
+                uidTest
+            )
+        ).thenReturn(mockedQuery)
         When(mockedQuery.limit(1)).thenReturn(mockedQuery)
         When(mockedQuery.get()).thenReturn(mockedTask)
         When(mockedDocument.documents).thenReturn(mockedList)
@@ -119,7 +169,9 @@ class FirestoreDatabaseProviderTest {
         val mockedDocument = mock(DocumentSnapshot::class.java)
 
         //mock the needed method
-        When(mockedDatabase.collection(FirestoreDatabaseProvider.USER_DOCUMENT)).thenReturn(mockedCollectionReference)
+        When(mockedDatabase.collection(FirestoreDatabaseProvider.USER_DOCUMENT)).thenReturn(
+            mockedCollectionReference
+        )
         When(mockedCollectionReference.document(uidTest)).thenReturn(mockedDocumentReference)
         When(mockedDocumentReference.get()).thenReturn(mockedTask)
         //TODO Mock the result from the database once the data class user is terminated
@@ -141,9 +193,9 @@ class FirestoreDatabaseProviderTest {
         assert(userObs.value != null)
         //Check that the value indeed corresponds to the correct user
         val userValue = userObs.value!!
-        assert(userValue.email== emailTest)
-        assert(userValue.name== displayNameTest)
-        assert(userValue.uid== uidTest)
+        assert(userValue.email == emailTest)
+        assert(userValue.name == displayNameTest)
+        assert(userValue.uid == uidTest)
     }
 
     @Test
@@ -154,19 +206,21 @@ class FirestoreDatabaseProviderTest {
         val mockedTask = mock(Task::class.java) as Task<Void>
 
         //Create a hashmap with values to update
-        val map :HashMap<String, String> = HashMap()
+        val map: HashMap<String, String> = HashMap()
         map["uid"] = uidTest2
         map["username"] = username
         map["displayName"] = displayNameTest2
         map["email"] = emailTest2
 
-        var emailSet=""
-        var nameSet=""
-        var uidSet=""
-        var usernameSet =""
+        var emailSet = ""
+        var nameSet = ""
+        var uidSet = ""
+        var usernameSet = ""
 
         //mock the needed method
-        When(mockedDatabase.collection(FirestoreDatabaseProvider.USER_DOCUMENT)).thenReturn(mockedCollectionReference)
+        When(mockedDatabase.collection(FirestoreDatabaseProvider.USER_DOCUMENT)).thenReturn(
+            mockedCollectionReference
+        )
         When(mockedCollectionReference.document(uidTest)).thenReturn(mockedDocumentReference)
         When(mockedDocumentReference.update(map as Map<String, Any>)).thenReturn(mockedTask)
         //TODO Mock the result from the database once the data class user is terminated
@@ -177,7 +231,7 @@ class FirestoreDatabaseProviderTest {
             emailSet = emailTest2
             nameSet = displayNameTest2
             uidSet = uidTest2
-            usernameSet= username
+            usernameSet = username
             mockedTask
         }
 
@@ -201,13 +255,17 @@ class FirestoreDatabaseProviderTest {
         val mockedDocumentReference = mock(DocumentReference::class.java)
         val mockedTask = mock(Task::class.java) as Task<Void>
 
-        var emailSet=""
-        var nameSet=""
-        var uidSet=""
+        var emailSet = ""
+        var nameSet = ""
+        var uidSet = ""
 
-        When(mockedDatabase.collection(FirestoreDatabaseProvider.USER_DOCUMENT)).thenReturn(mockedCollectionReference)
+        When(mockedDatabase.collection(FirestoreDatabaseProvider.USER_DOCUMENT)).thenReturn(
+            mockedCollectionReference
+        )
         When(mockedCollectionReference.document(uidTest)).thenReturn(mockedDocumentReference)
-        When(mockedDocumentReference.set(FirestoreDatabaseProvider.firstConnectionMap)).thenReturn(mockedTask)
+        When(mockedDocumentReference.set(FirestoreDatabaseProvider.firstConnectionMap)).thenReturn(
+            mockedTask
+        )
 
         When(mockedTask.addOnSuccessListener(any())).thenAnswer {
             FirestoreDatabaseProvider.lastSetSuccessListener!!.onSuccess(null)

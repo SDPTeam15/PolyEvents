@@ -1,6 +1,5 @@
 package com.github.sdpteam15.polyevents.database
 
-import androidx.lifecycle.MutableLiveData
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.event.Event
 import com.github.sdpteam15.polyevents.user.Profile.Companion.CurrentProfile
@@ -21,13 +20,13 @@ interface DatabaseInterface {
      */
     val currentUser: DatabaseUserInterface?
 
-    // Temporary methods
     /**
      * Get list of profile of a user uid
      * @param uid uid
      * @param user user for database access
      * @return list of profile of a user uid
      */
+    //@Deprecated(message = "Use the asynchronous method")
     fun getListProfile(
         uid: String,
         user: UserInterface = currentUser as UserInterface
@@ -40,6 +39,7 @@ interface DatabaseInterface {
      * @param user user for database access
      * @return if the operation succeed
      */
+    //@Deprecated(message = "Use the asynchronous method")
     fun addProfile(
         profile: ProfileInterface, uid: String,
         user: UserInterface = currentUser as UserInterface
@@ -52,6 +52,7 @@ interface DatabaseInterface {
      * @param user user for database access
      * @return if the operation succeed
      */
+    //@Deprecated(message = "Use the asynchronous method")
     fun removeProfile(
         profile: ProfileInterface, uid: String = (currentUser as UserInterface).uid,
         user: UserInterface = currentUser as UserInterface
@@ -63,6 +64,7 @@ interface DatabaseInterface {
      * @param user profile for database access
      * @return if the operation succeed
      */
+    //@Deprecated(message = "Use the asynchronous method")
     fun updateProfile(
         profile: ProfileInterface,
         user: UserInterface = currentUser as UserInterface
@@ -75,6 +77,7 @@ interface DatabaseInterface {
      * @param profile profile for database access
      * @return list of event
      */
+    //@Deprecated(message = "Use the asynchronous method")
     fun getListEvent(
         matcher: String? = null, number: Int? = null,
         profile: ProfileInterface = CurrentProfile
@@ -86,6 +89,7 @@ interface DatabaseInterface {
      * @param profile profile for database access
      * @return List of events in upcoming order (closest first)
      */
+    //@Deprecated(message = "Use the asynchronous method")
     fun getUpcomingEvents(
         number: Int = NUMBER_UPCOMING_EVENTS,
         profile: ProfileInterface = CurrentProfile
@@ -97,6 +101,7 @@ interface DatabaseInterface {
      * @param profile profile for database access
      * @return event corresponding to the given ID
      */
+    //@Deprecated(message = "Use the asynchronous method")
     fun getEventFromId(
         id: String,
         profile: ProfileInterface = CurrentProfile
@@ -107,6 +112,7 @@ interface DatabaseInterface {
      * @param Event event to update
      * @param profile profile for database access
      */
+    //@Deprecated(message = "Use the asynchronous method")
     fun updateEvent(
         Event: Event,
         profile: ProfileInterface = CurrentProfile

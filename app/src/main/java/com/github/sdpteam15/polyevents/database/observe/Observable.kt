@@ -1,13 +1,8 @@
 package com.github.sdpteam15.polyevents.database.observe
 
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.OnLifecycleEvent
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.observeOnStop
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.run
-import java.util.*
-import kotlin.collections.HashSet
 
 /**
  * Observable live data of type T
@@ -16,7 +11,7 @@ import kotlin.collections.HashSet
 class Observable<T>(value: T? = null) {
     constructor() : this(null)
 
-    private val observers = HashSet<(T?) -> Unit>()
+    private val observers = mutableSetOf<(T?) -> Unit>()
 
     private var tempValue: T? = null
 
@@ -38,6 +33,8 @@ class Observable<T>(value: T? = null) {
      */
     fun observe(observer: (T?) -> Unit): () -> Boolean {
         observers.add(observer)
+        if (value != null)
+            observer(value)
         return { observers.remove(observer) }
     }
 
@@ -46,8 +43,8 @@ class Observable<T>(value: T? = null) {
      *  @param observer lifecycle of the observer to automatically remove it from the observers when stopped
      *  @return a method to remove the observer
      */
-    fun observe(lifecycle: LifecycleOwner, observer: (T?) -> Unit): () -> Boolean
-        = observeOnStop(lifecycle, observe(observer))
+    fun observe(lifecycle: LifecycleOwner, observer: (T?) -> Unit): () -> Boolean =
+        observeOnStop(lifecycle, observe(observer))
 
     /**
      * Post a new value
