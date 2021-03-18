@@ -361,4 +361,11 @@ interface DatabaseInterface {
         uid: String = (User.currentUser as UserInterface).uid,
         userAccess: UserInterface = User.currentUser as UserInterface
     ): Observable<Boolean>
+
+    /**
+     * TODO : adapt into asynchronous method
+     * Fetch the available items
+     * @return (for now) map of pair : <item name, available quantity>
+     */
+    fun getAvailableItems(): Map<String, Int>
 }
