@@ -23,6 +23,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     const val USER_DOCUMENT_ID = "uid"
     const val EVENT_DOCUMENT = "events"
     const val EVENT_DOCUMENT_ID = "eventId"
+    val firstConnectionMap = HashMap<String, String>()
 
     override val currentUser: DatabaseUserInterface?
         get() =
@@ -33,25 +34,23 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             }
 
     override fun getListProfile(uid: String, user: UserInterface): List<ProfileInterface> {
-        return ArrayList<ProfileInterface>() //TODO
+        return ArrayList<ProfileInterface>()/*TODO*/
     }
-
 
     override fun addProfile(profile: ProfileInterface, uid: String, user: UserInterface): Boolean {
-        return true//TODO
+        return true/*TODO*/
     }
-
 
     override fun removeProfile(
         profile: ProfileInterface,
         uid: String,
         user: UserInterface
     ): Boolean {
-        return true//TODO
+        return true/*TODO*/
     }
 
     override fun updateProfile(profile: ProfileInterface, user: UserInterface): Boolean {
-        return true//TODO
+        return true/*TODO*/
     }
 
     override fun getListEvent(
@@ -59,20 +58,22 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         number: Int?,
         profile: ProfileInterface
     ): List<Event> {
-        return ArrayList<Event>()//TODO
+        return ArrayList<Event>()/*TODO*/
     }
 
     override fun getUpcomingEvents(number: Int, profile: ProfileInterface): List<Event> {
-        return ArrayList<Event>()//TODO
+        return ArrayList<Event>()/*TODO*/
     }
 
     override fun getEventFromId(id: String, profile: ProfileInterface): Event? {
-        return null//TODO
+        return null/*TODO*/
     }
 
     override fun updateEvent(Event: Event, profile: ProfileInterface): Boolean {
-        return true//TODO
+        return true/*TODO*/
     }
+    //Up to here delete
+
 
     //Method used to get listener in the task to mock and test the database
     var lastGetSuccessListener: OnSuccessListener<QuerySnapshot>? = null
@@ -90,6 +91,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             onSuccessListener(it)
             ended.postValue(true)
         }
+
         lastFailureListener = OnFailureListener { ended.postValue(false) }
         task.addOnSuccessListener(lastGetSuccessListener!!)
             .addOnFailureListener(lastFailureListener!!)
@@ -123,7 +125,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         return ended
     }
 
-    //Up to here delete
+
     override fun updateUserInformation(
         newValues: java.util.HashMap<String, String>,
         uid: String,
@@ -139,15 +141,14 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         user: UserInterface,
         userAccess: UserInterface
     ): Observable<Boolean> {
-        val map = HashMap<String, String>()
-        map["uid"] = user.uid
-        map["displayName"] = user.name
-        map["email"] = user.email
+        firstConnectionMap["uid"] = user.uid
+        firstConnectionMap["displayName"] = user.name
+        firstConnectionMap["email"] = user.email
 
         return thenDoSet(
             firestore!!.collection(USER_DOCUMENT)
                 .document(user.uid)
-                .set(map)
+                .set(firstConnectionMap)
         )
     }
 

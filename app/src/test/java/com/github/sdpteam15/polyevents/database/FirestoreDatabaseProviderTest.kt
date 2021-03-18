@@ -3,7 +3,6 @@ package com.github.sdpteam15.polyevents.database
 import androidx.lifecycle.MutableLiveData
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.user.User
-import com.github.sdpteam15.polyevents.user.User.Companion.currentUser
 import com.github.sdpteam15.polyevents.user.UserInterface
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.*
@@ -11,13 +10,16 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.mock
-import kotlin.concurrent.thread
-import kotlin.test.assertEquals
+import java.lang.Exception
 import org.mockito.Mockito.`when` as When
 
 private const val displayNameTest = "Test displayName"
 private const val emailTest = "Test email"
 private const val uidTest = "Test uid"
+private const val uidTest2 = "Test uid2"
+private const val emailTest2 = "Test email"
+private const val displayNameTest2 = "Test uid2"
+private const val username = "Test username"
 
 class FirestoreDatabaseProviderTest {
     lateinit var user: UserInterface
@@ -61,7 +63,6 @@ class FirestoreDatabaseProviderTest {
         When(mockedTask.addOnFailureListener(any())).thenAnswer {
             mockedTask
         }
-
 
         val isInDb = Observable<Boolean>()
         val result = FirestoreDatabaseProvider.inDatabase(isInDb, uidTest, user)
@@ -126,5 +127,81 @@ class FirestoreDatabaseProviderTest {
         assert(userValue.email== emailTest)
         assert(userValue.name== displayNameTest)
         assert(userValue.uid== uidTest)
+    }
+
+    @Test
+    fun updateUserInformationSetTheGoodInformations() {
+        val mockedCollectionReference = mock(CollectionReference::class.java)
+        val mockedDocumentReference = mock(DocumentReference::class.java)
+        val mockedTask = mock(Task::class.java) as Task<Void>
+
+        val map :HashMap<String, String> = HashMap()
+        map["uid"] = uidTest2
+        map["username"] = username
+        map["displayName"] = displayNameTest2
+        map["email"] = emailTest2
+
+        var emailSet=""
+        var nameSet=""
+        var uidSet=""
+        var usernameSet =""
+
+        When(mockedDatabase.collection(FirestoreDatabaseProvider.USER_DOCUMENT)).thenReturn(mockedCollectionReference)
+        When(mockedCollectionReference.document(uidTest)).thenReturn(mockedDocumentReference)
+        When(mockedDocumentReference.update(map as Map<String, Any>)).thenReturn(mockedTask)
+        //TODO Mock the result from the database once the data class user is terminated
+
+        When(mockedTask.addOnSuccessListener(any())).thenAnswer {
+            FirestoreDatabaseProvider.lastSetSuccessListener!!.onSuccess(null)
+            emailSet = emailTest2
+            nameSet = displayNameTest2
+            uidSet = uidTest2
+            usernameSet= username
+            mockedTask
+        }
+
+        When(mockedTask.addOnFailureListener(any())).thenAnswer {
+            mockedTask
+        }
+
+        val result = FirestoreDatabaseProvider.updateUserInformation(map, uidTest, user)
+        assert(result.value!!)
+        assert(emailSet.equals(emailTest2))
+        assert(nameSet.equals(displayNameTest2))
+        assert(uidSet.equals(uidTest2))
+        assert(usernameSet.equals(username))
+    }
+
+    @Test
+    fun firstConnectionSetTheGoodInformations() {
+        val mockedCollectionReference = mock(CollectionReference::class.java)
+        val mockedDocumentReference = mock(DocumentReference::class.java)
+        val mockedTask = mock(Task::class.java) as Task<Void>
+
+        var emailSet=""
+        var nameSet=""
+        var uidSet=""
+
+        When(mockedDatabase.collection(FirestoreDatabaseProvider.USER_DOCUMENT)).thenReturn(mockedCollectionReference)
+        When(mockedCollectionReference.document(uidTest)).thenReturn(mockedDocumentReference)
+        When(mockedDocumentReference.set(FirestoreDatabaseProvider.firstConnectionMap)).thenReturn(mockedTask)
+
+        When(mockedTask.addOnSuccessListener(any())).thenAnswer {
+            FirestoreDatabaseProvider.lastSetSuccessListener!!.onSuccess(null)
+            emailSet = user.email
+            nameSet = user.name
+            uidSet = user.uid
+            mockedTask
+        }
+
+        When(mockedTask.addOnFailureListener(any())).thenAnswer {
+            mockedTask
+        }
+
+        val result = FirestoreDatabaseProvider.firstConnexion(user, user)
+        assert(result.value!!)
+        assert(emailSet.equals(user.email))
+        assert(nameSet.equals(user.name))
+        assert(uidSet.equals(user.uid))
     }
 }

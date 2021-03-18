@@ -11,7 +11,5 @@ class FakeDatabaseTests {
     fun toDo(){
         currentDatabase = FakeDatabase
         currentDatabase.getEventFromId("0")
-
     }
-
 }
