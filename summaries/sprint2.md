@@ -19,6 +19,12 @@ Next week, I will try to take a task more related to the backend as I did not do
 
 ## Florian
 
+I added the admin UI to allow them to see what items are in the database. They can add new items and delete existing ones from this one.
+
+I spent more time than expected to do my part because of the tests. I spent too much time reading the documentation to understand some part of the test libraries.
+
+Next week, I'll try to take more backend tasks as I only worked on UI until now.
+
 ## Mathieu
 
 This week, I set the google map fragment up and explorated the features it offers. I created a function to draw areas and add the information window related to it.
