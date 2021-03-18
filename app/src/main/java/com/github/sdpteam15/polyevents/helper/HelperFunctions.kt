@@ -1,6 +1,8 @@
 package com.github.sdpteam15.polyevents.helper
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.widget.Toast
 import androidx.arch.core.executor.ArchTaskExecutor
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -57,5 +59,14 @@ object HelperFunctions {
         }
         lifecycle.lifecycle.addObserver(lifecycleObserver)
         return result
+    }
+
+    /**
+     * Method that display a message as a Toast
+     * @param message : the message to display
+     * @param context : the context in which to show the toast
+     */
+    fun showToast(message: String, context: Context) {
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
     }
 }

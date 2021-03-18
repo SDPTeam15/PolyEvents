@@ -1,10 +1,13 @@
 package com.github.sdpteam15.polyevents.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.fragment.app.Fragment
+import com.github.sdpteam15.polyevents.ItemRequestActivity
 import com.github.sdpteam15.polyevents.R
 
 // TODO: Rename parameter arguments, choose names that match
@@ -27,7 +30,13 @@ class MoreFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_more, container, false)
-    }
+        val fragmentView = inflater.inflate(R.layout.fragment_more, container, false)
 
+        fragmentView.findViewById<Button>(R.id.id_request_button).setOnClickListener{
+            val intent = Intent(activity, ItemRequestActivity::class.java)
+            startActivity(intent)
+        }
+
+        return fragmentView
+    }
 }
