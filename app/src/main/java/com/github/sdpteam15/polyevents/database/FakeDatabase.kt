@@ -11,9 +11,16 @@ object FakeDatabase : DatabaseInterface {
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             initEvents()
+        initItems()
+    }
+
+    private fun initItems() {
+        items = arrayListOf("Scie-tronconneuse","Bonnet de bain")
     }
 
     private var events: ArrayList<Event>? = null
+
+    private var items: ArrayList<String>? = null
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun initEvents() {
@@ -213,5 +220,18 @@ object FakeDatabase : DatabaseInterface {
     }
 
     override fun updateEvent(event: Event, profile: ProfileInterface): Boolean = true
+
+    override fun getItemsList(): MutableList<String> {
+        return items!!
+    }
+
+    override fun addItem(item: String): Boolean {
+        return items!!.add(item)
+    }
+
+    override fun removeItem(item: String): Boolean {
+        return items!!.remove(item)
+    }
+
 
 }

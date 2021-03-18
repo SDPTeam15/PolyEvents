@@ -9,20 +9,21 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.database.Database
 
 class ItemAdapter(
-    private var data: MutableLiveData<MutableList<String>>,
+    /*TODO ADD private var data: MutableLiveData<MutableList<String>>,*/
     private val onItemClickListener: (String) -> Unit
 ) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
-    var items = mutableListOf("Salut")
 
+/*TODO ADD
     private val observer = Observer<MutableList<String>> { t ->
         items = t!!
         notifyDataSetChanged()
     }
-
+*/
     init {
-        data.observeForever(observer)
+        //TODO ADD data.observeForever(observer)
     }
 
     /**
@@ -39,8 +40,9 @@ class ItemAdapter(
          */
         fun bind(item: String) {
             btnRemove.setOnClickListener {
-                items.remove(item)
-                data.postValue(items)
+                Database.currentDatabase.removeItem(item)
+                // TODO ADD data.postValue(items)
+                notifyDataSetChanged()
             }
             itemName.text = item
         }
@@ -53,7 +55,7 @@ class ItemAdapter(
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        val item = items[position]
+        val item = Database.currentDatabase.getItemsList()[position]
         holder.bind(item)
         holder.itemView.setOnClickListener {
             onItemClickListener(item)
@@ -61,7 +63,7 @@ class ItemAdapter(
     }
 
     override fun getItemCount(): Int {
-        return items.size
+        return Database.currentDatabase.getItemsList().size
     }
 }
 

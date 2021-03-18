@@ -11,14 +11,15 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
+import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.item_request.ItemAdapter
 
 class ItemsAdminActivity : AppCompatActivity() {
 
-    lateinit var items: MutableLiveData<MutableList<String>>
-    private lateinit var recyclerView: RecyclerView
+    //var items: MutableLiveData<MutableList<String>> = MutableLiveData()
+
+    lateinit var recyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,23 +27,9 @@ class ItemsAdminActivity : AppCompatActivity() {
 
         // TODO take existing items from the database
 
-        items = MutableLiveData()
-
-        items.postValue(
-            mutableListOf(
-                "Scie-tronconneuse",
-                "Bout de bois",
-                "Feu",
-                "Masque team Philippe",
-                "Micro Yeti",
-                "Led RGB",
-                "Bouteille de Pergola"
-            )
-        )
-
-        val clickListener = { _: String -> }
-        recyclerView = findViewById(R.id.id_recycler_items_request)
-        recyclerView.adapter = ItemAdapter(items, clickListener)
+        val clickListener = { _: String -> } // TODO define what happens when we click on an Item
+        recyclerView = findViewById(R.id.id_recycler_items_list)
+        recyclerView.adapter = ItemAdapter(clickListener)
 
         val btnAdd = findViewById<ImageButton>(R.id.id_add_item_button)
         btnAdd.setOnClickListener { createAddItemPopup() }
@@ -82,11 +69,16 @@ class ItemsAdminActivity : AppCompatActivity() {
 
         // Set a click listener for popup's button widget
         confirmButton.setOnClickListener {
-            // Dismiss the popup window
-            val newList = items.value
+
+
+            /* TODO ADD val newList = items.value
             val newItem = itemName.text.toString()
             newList!!.add(newItem)
-            items.postValue(newList)
+            //items.postValue(newList)*/
+
+            currentDatabase.addItem(itemName.text.toString()) // TODO REMOVE
+            recyclerView.adapter!!.notifyDataSetChanged()
+            // Dismiss the popup window
             popupWindow.dismiss()
 
         }

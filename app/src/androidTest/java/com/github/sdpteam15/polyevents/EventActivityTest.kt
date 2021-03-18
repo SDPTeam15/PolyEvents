@@ -184,15 +184,3 @@ class EventActivityTest {
     }
 }
 
-class RecyclerViewItemCountAssertion(expectedCount: Int) : ViewAssertion {
-    private val matcher: Matcher<Int> = `is`(expectedCount)
-
-    override fun check(view: View, noViewFoundException: NoMatchingViewException?) {
-        if (noViewFoundException != null) {
-            throw noViewFoundException
-        }
-        val recyclerView = view as RecyclerView
-        val adapter = recyclerView.adapter
-        assertThat(adapter!!.itemCount, matcher)
-    }
-}

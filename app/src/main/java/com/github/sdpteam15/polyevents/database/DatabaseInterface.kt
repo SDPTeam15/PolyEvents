@@ -107,4 +107,8 @@ interface DatabaseInterface {
         Event: Event,
         profile: ProfileInterface = CurrentProfile
     ): Boolean
+
+    fun getItemsList(): MutableList<String>
+    fun addItem(item : String):Boolean
+    fun removeItem(item: String):Boolean
 }
