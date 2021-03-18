@@ -69,4 +69,6 @@
     <string name="item_request_sent_text">Your request has been sent !</string>
     <string name="item_request_empty_text">Your request is empty. Please select some items !</string>
     <string name="item_quantity_positive_text">The quantity must be positive !</string>
+    <string name="item_name_quantity_text">%1$s (%2$d available)</string>
+    <string name="max_item_quantity_text">There are only %1$s %2$s available !</string>
 </resources>
