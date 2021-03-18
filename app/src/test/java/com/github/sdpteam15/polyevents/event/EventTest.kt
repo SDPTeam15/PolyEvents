@@ -26,6 +26,7 @@ class EventTest {
             3.5F,
             "The best organizer", "A", null, "1"
         )
+        currentDatabase = FakeDatabase
     }
 
     @Test

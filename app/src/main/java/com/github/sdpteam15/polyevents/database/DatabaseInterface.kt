@@ -112,8 +112,6 @@ interface DatabaseInterface {
         profile: ProfileInterface = CurrentProfile
     ): Boolean
 
-    fun getAvailableItems(): Map<String, Int>
-
     //All the methods above need to be deleted before the end of the project
 
     // Methods that we should use to have asynchronous communication
@@ -363,4 +361,6 @@ interface DatabaseInterface {
         uid: String = (User.currentUser as UserInterface).uid,
         userAccess: UserInterface = User.currentUser as UserInterface
     ): Observable<Boolean>
+
+    fun getAvailableItems(): Map<String, Int>
 }
