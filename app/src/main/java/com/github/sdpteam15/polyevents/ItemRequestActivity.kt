@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.item_request.ItemRequestAdapter
 
 /**
@@ -48,14 +49,12 @@ class ItemRequestActivity : AppCompatActivity() {
 
     fun sendItemsRequest(view: View) {
         if (mapSelectedItems.isEmpty()) {
-            Toast.makeText(this, getString(R.string.item_request_empty_text), Toast.LENGTH_LONG)
-                .show()
+            showToast(getString(R.string.item_request_empty_text), this)
         } else {
             // TODO : send the request through the db interface
             // sendRequest(listSelectedItems)
 
-            Toast.makeText(this, getString(R.string.item_request_sent_text), Toast.LENGTH_LONG)
-                .show()
+            showToast(getString(R.string.item_request_sent_text), this)
 
             // Go back to previous activity
             val intent = Intent(this, MainActivity::class.java)

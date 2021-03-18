@@ -139,7 +139,7 @@ class ItemRequestActivityTest {
 
     @Test
     fun sendingNonEmptyItemRequestGoBackToMainActivity() {
-        selectItemQuantity(0, 1.toString())
+        selectItemQuantity(0, "1")
 
         Intents.init()
         onView(withId(R.id.id_button_make_request)).perform(click())
@@ -166,7 +166,7 @@ class ItemRequestActivityTest {
     fun settingNegativeQuantityMakeEmptyRequest() {
         val quantityToSelect = 1
         val itemToSelect = 1
-        selectItemQuantity(0, (-1).toString())
+        selectItemQuantity(0, "-1")
         selectItemQuantity(itemToSelect, quantityToSelect.toString())
 
         val correctMap = mutableMapOf<String, Int>()
