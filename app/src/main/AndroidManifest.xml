@@ -17,6 +17,10 @@
         android:theme="@style/Theme.PolyEvents">
         <activity android:name=".ItemsAdminActivity"></activity>
         <activity
+            android:name=".ItemRequestActivity"
+            android:label="@string/title_activity_item_request"
+            android:parentActivityName=".MainActivity"/>
+        <activity
             android:name=".EventActivity"
             android:parentActivityName=".MainActivity" />
         <!--

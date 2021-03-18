@@ -20,13 +20,13 @@ class EventTest {
 
     @Before
     fun createNewEvent() {
-        currentDatabase = FakeDatabase
         event = Event(
             "Test Event", "Event to make tests !",
             LocalDateTime.of(2020, 3, 15, 14, 0),
             3.5F,
             "The best organizer", "A", null, "1"
         )
+        currentDatabase = FakeDatabase
     }
 
     @Test
@@ -43,6 +43,13 @@ class EventTest {
 
         event.removeTag(newTag)
         assertThat(event.tags, not(hasItem(newTag)))
+    }
+
+    @Test
+    fun removeNonPresentTagIsCorrect() {
+        val newTag = "Movie"
+        val res = event.removeTag(newTag)
+        assertThat(res, Is(false))
     }
 
     @Test

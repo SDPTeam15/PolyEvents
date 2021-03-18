@@ -381,4 +381,11 @@ interface DatabaseInterface {
      * @return true if the item is successfully removed from the database
      */
     fun removeItem(item: String):Boolean
+
+    /**
+     * TODO : adapt into asynchronous method
+     * Fetch the available items
+     * @return (for now) map of pair : <item name, available quantity>
+     */
+    fun getAvailableItems(): Map<String, Int>
 }

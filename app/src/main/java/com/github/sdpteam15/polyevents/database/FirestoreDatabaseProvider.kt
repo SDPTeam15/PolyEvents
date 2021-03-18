@@ -221,4 +221,8 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         //TODO adapt to firebase
         return FakeDatabase.removeItem(item)
     }
+
+    override fun getAvailableItems(): Map<String, Int> {
+        TODO("Not yet implemented")
+    }
 }
