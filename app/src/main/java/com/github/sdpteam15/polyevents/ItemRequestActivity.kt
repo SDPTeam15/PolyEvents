@@ -47,6 +47,13 @@ class ItemRequestActivity : AppCompatActivity() {
         recyclerView.setHasFixedSize(false)
     }
 
+    /**
+     * Send the items request to the admins (TODO : actually send it)
+     * and display a short message confirming the request was sent.
+     * This redirect to the Main activity.
+     * If the request is empty, display an error message.
+     * @param view : the button clicked
+     */
     fun sendItemsRequest(view: View) {
         if (mapSelectedItems.isEmpty()) {
             showToast(getString(R.string.item_request_empty_text), this)
