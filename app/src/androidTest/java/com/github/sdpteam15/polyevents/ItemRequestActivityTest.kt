@@ -37,9 +37,9 @@ import org.mockito.junit.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)
 class ItemRequestActivityTest {
-    lateinit var availableItems: MutableMap<String, Int>
-    lateinit var availableItemsList: List<Pair<String, Int>>
-    lateinit var mockedAvailableItemsProvider: DatabaseInterface
+    private lateinit var availableItems: MutableMap<String, Int>
+    private lateinit var availableItemsList: List<Pair<String, Int>>
+    private lateinit var mockedAvailableItemsProvider: DatabaseInterface
 
     @Rule
     @JvmField
@@ -58,13 +58,18 @@ class ItemRequestActivityTest {
     // Source : https://stackoverflow.com/questions/38737127/espresso-how-to-get-current-activity-to-test-fragments/58684943#58684943
     private fun getCurrentActivity(): Activity? {
         var currentActivity: Activity? = null
-        getInstrumentation().runOnMainSync { run { currentActivity = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(
-            Stage.RESUMED
-        ).elementAtOrNull(0) } }
+        getInstrumentation().runOnMainSync {
+            run {
+                currentActivity =
+                    ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(
+                        Stage.RESUMED
+                    ).elementAtOrNull(0)
+            }
+        }
         return currentActivity
     }
 
-    private fun selectItemQuantity(item:Int, quantity: String) {
+    private fun selectItemQuantity(item: Int, quantity: String) {
         onView(withId(R.id.id_recycler_items_request)).perform(
             RecyclerViewActions.actionOnItemAtPosition<ItemRequestAdapter.ItemViewHolder>(
                 item,
@@ -75,7 +80,7 @@ class ItemRequestActivityTest {
 
     @Before
     fun setup() {
-        availableItems = mutableMapOf<String, Int>()
+        availableItems = mutableMapOf()
         availableItems["Bananas"] = 30
         availableItems["Kiwis"] = 10
         availableItems["230V plugs"] = 30
@@ -216,11 +221,11 @@ class ToastMatcher : TypeSafeMatcher<Root?>() {
     override fun matchesSafely(item: Root?): Boolean {
         val type: Int? = item?.windowLayoutParams?.get()?.type
 
-        if(TYPE_TOAST == type || TYPE_APPLICATION_OVERLAY == type) {
+        if (TYPE_TOAST == type || TYPE_APPLICATION_OVERLAY == type) {
             val windowToken = item.decorView.windowToken
             val appToken = item.decorView.applicationWindowToken
 
-            if(windowToken == appToken) {
+            if (windowToken == appToken) {
                 return true
             }
         }

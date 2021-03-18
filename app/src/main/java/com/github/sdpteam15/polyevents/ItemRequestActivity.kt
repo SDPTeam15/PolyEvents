@@ -2,15 +2,11 @@ package com.github.sdpteam15.polyevents
 
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
-import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
-import com.github.sdpteam15.polyevents.fragments.MoreFragment
 import com.github.sdpteam15.polyevents.item_request.ItemRequestAdapter
 
 /**
@@ -32,7 +28,7 @@ class ItemRequestActivity : AppCompatActivity() {
         // TODO : Adapt that stub and put it in the db interface
         val availableItems = currentDatabase.getAvailableItems()
 
-        val onItemQuantityChangeListener = {item: String, newQuantity: Int ->
+        val onItemQuantityChangeListener = { item: String, newQuantity: Int ->
             when {
                 mapSelectedItems.containsKey(item) and (newQuantity == 0) -> {
                     mapSelectedItems.remove(item)
@@ -40,12 +36,14 @@ class ItemRequestActivity : AppCompatActivity() {
                 newQuantity > 0 -> {
                     mapSelectedItems[item] = newQuantity
                 }
-                else -> {}
+                else -> {
+                }
             }
             Unit
         }
 
-        recyclerView.adapter = ItemRequestAdapter(availableItems.toList(), onItemQuantityChangeListener)
+        recyclerView.adapter =
+            ItemRequestAdapter(availableItems.toList(), onItemQuantityChangeListener)
 
         recyclerView.setHasFixedSize(false)
     }
