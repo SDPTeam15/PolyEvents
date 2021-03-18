@@ -4,6 +4,8 @@ import android.app.Activity
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.NoMatchingViewException
+import androidx.test.espresso.UiController
+import androidx.test.espresso.ViewAction
 import androidx.test.espresso.ViewAssertion
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
@@ -12,13 +14,24 @@ import androidx.test.runner.lifecycle.Stage
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Matcher
 
+
 object TestHelper {
-    // Source : https://stackoverflow.com/questions/38737127/espresso-how-to-get-current-activity-to-test-fragments/58684943#58684943
-    fun getCurrentActivity(): Activity? {
-        var currentActivity: Activity? = null
-        getInstrumentation().runOnMainSync { run { currentActivity = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(
-            Stage.RESUMED).elementAtOrNull(0) } }
-        return currentActivity
+
+    fun clickChildViewWithId(id: Int): ViewAction? {
+        return object : ViewAction {
+            override fun getConstraints(): Matcher<View>? {
+                return null
+            }
+
+            override fun getDescription(): String {
+                return "Click on a child view with specified id."
+            }
+
+            override fun perform(uiController: UiController?, view: View) {
+                val v = view.findViewById<View>(id)
+                v.performClick()
+            }
+        }
     }
 }
 
