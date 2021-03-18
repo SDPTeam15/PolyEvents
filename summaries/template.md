@@ -4,7 +4,7 @@
 
 ## Cyrille
 
-## Florian (Scrum Master)
+## Florian 
 
 ## Mathieu
 

@@ -2,9 +2,9 @@
 
 ## Alessio
 
-## Cyrille
+## Cyrille (Scrum Master)
 
-## Florian (Scrum Master)
+## Florian 
 
 ## Mathieu
 
