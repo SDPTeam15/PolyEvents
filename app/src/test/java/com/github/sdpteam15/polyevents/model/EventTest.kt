@@ -4,6 +4,7 @@ import com.github.sdpteam15.polyevents.exceptions.InsufficientAmountException
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
+import java.lang.IllegalArgumentException
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
@@ -65,23 +66,30 @@ class EventTest {
 
     @Test
     fun testAddItemToInventory() {
+        val currentAmountOfCoca = event.inventory.getOrDefault(Item.COCA, 0)
         event.addItem(Item.COCA)
-        assertEquals(event.inventory.get(Item.COCA), 1)
+        assertEquals(event.inventory.get(Item.COCA), currentAmountOfCoca + 1)
 
+        val currentAmountOfPlugs = event.inventory.getOrDefault(Item.ELECTRIC_PLUG, 0)
         event.addItem(Item.ELECTRIC_PLUG, 2)
-        assertEquals(event.inventory.get(Item.ELECTRIC_PLUG), 2)
+        assertEquals(event.inventory.get(Item.ELECTRIC_PLUG), currentAmountOfPlugs + 2)
     }
 
     @Test
     fun testTakeItemRemovesItemFromInventory() {
-        event.addItem(Item.COCA)
+        event.setItemAmount(Item.COCA, 1)
         event.takeItem(Item.COCA)
         assertEquals(event.inventory[Item.COCA], 0)
 
-        event.addItem(Item.ELECTRIC_PLUG, 3)
-        val currentAmount = event.inventory[Item.ELECTRIC_PLUG]
+        event.setItemAmount(Item.ELECTRIC_PLUG, 3)
+        val currentAmount = event.inventory.getOrDefault(Item.ELECTRIC_PLUG, 0)
         event.takeItem(Item.ELECTRIC_PLUG, 2)
-        assertEquals(event.inventory[Item.ELECTRIC_PLUG], currentAmount?.minus(2))
+        assertEquals(event.inventory[Item.ELECTRIC_PLUG], currentAmount - 2)
+    }
+
+    @Test(expected=IllegalArgumentException::class)
+    fun settingItemAmountWithNegativeNumberShouldThrowException() {
+        event.setItemAmount(Item.COCA, -3)
     }
 
     @Test(expected = InsufficientAmountException::class)

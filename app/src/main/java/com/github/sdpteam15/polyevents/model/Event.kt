@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import com.github.sdpteam15.polyevents.exceptions.InsufficientAmountException
 import com.google.firebase.firestore.IgnoreExtraProperties
 import com.google.firebase.firestore.ServerTimestamp
+import java.lang.IllegalArgumentException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -55,13 +56,29 @@ data class Event(
     }
 
     /**
+     * Set the amount of a certain item in the inventory of the event
+     * @param item: the item to add
+     * @param amount the amount of the item to add.
+     * @return the old previous amount of that item, or null if the item was not found
+     */
+    fun setItemAmount(item: Item, amount: Int): Int? {
+        if (amount < 0) {
+            throw IllegalArgumentException("Amount of items must >= 0")
+        } else {
+            return inventory.put(item, amount)
+        }
+    }
+
+    /**
      * Add an amount of an item to the inventory of the event
      * @param item: the item to add
      * @param amount the amount of the item to add. By default is 1
      * @return the old previous amount of that item, or null if the item was not found
      */
-    fun addItem(item: Item, amount: Int = 1): Int? =
-        inventory.put(item, amount)
+    fun addItem(item: Item, amount: Int = 1): Int? {
+        val currentAmount = inventory.getOrDefault(item, 0)
+        return inventory.put(item, currentAmount + amount)
+    }
 
     /**
      * Take an amount of some item from the inventory of the event.
