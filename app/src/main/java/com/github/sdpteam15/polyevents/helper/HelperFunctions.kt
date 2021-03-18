@@ -1,5 +1,8 @@
 package com.github.sdpteam15.polyevents.helper
 
+import android.content.Context
+import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
@@ -32,5 +35,12 @@ object HelperFunctions {
         val ft: FragmentTransaction = fragmentManager!!.beginTransaction()
         ft.setReorderingAllowed(false)
         ft.detach(frag).attach(frag).commit()
+    }
+
+    /**
+     * Method that display a message as a Toast
+     */
+    fun showToast(message: String, context: Context) {
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
     }
 }
