@@ -20,16 +20,16 @@ const val EVENT_DEFAULT_DURATION = 1F
  * @property id an id to uniquely identify the event
  * @property tags the tags the event corresponds to
  */
-class Event(
+open class Event(
     var name: String,
     var description: String,
     var start: LocalDateTime,
     durationHours: Float,
     var organizer: String,
     var zone: String,
-    var icon: Bitmap? = null,
     val id: String,
-    val tags: MutableSet<String> = mutableSetOf()
+    val tags: MutableSet<String> = mutableSetOf(),
+    var icon: Bitmap? = null
 ) {
 
     /**
