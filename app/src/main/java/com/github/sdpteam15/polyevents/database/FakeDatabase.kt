@@ -2,10 +2,13 @@ package com.github.sdpteam15.polyevents.database
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.event.Event
 import com.github.sdpteam15.polyevents.user.ProfileInterface
 import com.github.sdpteam15.polyevents.user.UserInterface
 import java.time.LocalDateTime
+import java.util.*
+import kotlin.collections.ArrayList
 
 object FakeDatabase : DatabaseInterface {
     init {
@@ -13,12 +16,12 @@ object FakeDatabase : DatabaseInterface {
             initEvents()
     }
 
-    private var events: ArrayList<Event>? = null
+    var events: ArrayList<Event>? = null
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun initEvents() {
         events = ArrayList()
-        events?.add(
+        events!!.add(
             Event(
                 "Sushi demo",
                 "Super hungry activity !",
@@ -28,7 +31,7 @@ object FakeDatabase : DatabaseInterface {
                 "Kitchen", null, "1", mutableSetOf("sushi", "japan", "cooking")
             )
         )
-        events?.add(
+        events!!.add(
             Event(
                 "Aqua Poney",
                 "Super cool activity !" +
@@ -40,7 +43,7 @@ object FakeDatabase : DatabaseInterface {
                 "Swimming pool", null, "2"
             )
         )
-        events?.add(
+        events!!.add(
             Event(
                 "Saxophone demo",
                 "Super noisy activity !",
@@ -50,7 +53,7 @@ object FakeDatabase : DatabaseInterface {
                 "Concert Hall", null, "3"
             )
         )
-        events?.add(
+        events!!.add(
             Event(
                 "Sushi demo",
                 "Super hungry activity !",
@@ -60,7 +63,7 @@ object FakeDatabase : DatabaseInterface {
                 "Kitchen", null, "4"
             )
         )
-        events?.add(
+        events!!.add(
             Event(
                 "Aqua Poney",
                 "Super cool activity !" +
@@ -72,7 +75,7 @@ object FakeDatabase : DatabaseInterface {
                 "Swimming pool", null, "5"
             )
         )
-        events?.add(
+        events!!.add(
             Event(
                 "Saxophone demo",
                 "Super noisy activity !",
@@ -82,7 +85,7 @@ object FakeDatabase : DatabaseInterface {
                 "Concert Hall", null, "6"
             )
         )
-        events?.add(
+        events!!.add(
             Event(
                 "Sushi demo",
                 "Super hungry activity !",
@@ -92,7 +95,7 @@ object FakeDatabase : DatabaseInterface {
                 "Kitchen", null, "7"
             )
         )
-        events?.add(
+        events!!.add(
             Event(
                 "Aqua Poney",
                 "Super cool activity !" +
@@ -104,7 +107,7 @@ object FakeDatabase : DatabaseInterface {
                 "Swimming pool", null, "8"
             )
         )
-        events?.add(
+        events!!.add(
             Event(
                 "Saxophone demo",
                 "Super noisy activity !",
@@ -114,7 +117,7 @@ object FakeDatabase : DatabaseInterface {
                 "Concert Hall", null, "9"
             )
         )
-        events?.add(
+        events!!.add(
             Event(
                 "Sushi demo",
                 "Super hungry activity !",
@@ -124,7 +127,7 @@ object FakeDatabase : DatabaseInterface {
                 "Kitchen", null, "10"
             )
         )
-        events?.add(
+        events!!.add(
             Event(
                 "Aqua Poney",
                 "Super cool activity !" +
@@ -136,7 +139,7 @@ object FakeDatabase : DatabaseInterface {
                 "Swimming pool", null, "11"
             )
         )
-        events?.add(
+        events!!.add(
             Event(
                 "Saxophone demo",
                 "Super noisy activity !",
@@ -146,7 +149,7 @@ object FakeDatabase : DatabaseInterface {
                 "Concert Hall", null, "12"
             )
         )
-        events?.add(
+        events!!.add(
             Event(
                 "Sushi demo",
                 "Super hungry activity !",
@@ -156,7 +159,7 @@ object FakeDatabase : DatabaseInterface {
                 "Kitchen", null, "13"
             )
         )
-        events?.add(
+        events!!.add(
             Event(
                 "Aqua Poney",
                 "Super cool activity !" +
@@ -168,7 +171,7 @@ object FakeDatabase : DatabaseInterface {
                 "Swimming pool", null, "14"
             )
         )
-        events?.add(
+        events!!.add(
             Event(
                 "Saxophone demo",
                 "Super noisy activity !",
@@ -186,33 +189,61 @@ object FakeDatabase : DatabaseInterface {
     override fun getListProfile(uid: String, user: UserInterface): List<ProfileInterface> =
         emptyList()
 
-    override fun addProfile(profile: ProfileInterface, uid: String, user: UserInterface): Boolean =
-        true
+
+    override fun addProfile(profile: ProfileInterface, uid: String, user: UserInterface): Boolean {
+        return true //TODO
+    }
+
 
     override fun removeProfile(
         profile: ProfileInterface,
         uid: String,
         user: UserInterface
-    ): Boolean = true
+    ): Boolean {
+        return false //TODO
+    }
 
-    override fun updateProfile(profile: ProfileInterface, user: UserInterface): Boolean = true
+
+    override fun updateProfile(profile: ProfileInterface, user: UserInterface): Boolean {
+        return false//TODO
+    }
 
     override fun getListEvent(
         matcher: String?,
         number: Int?,
         profile: ProfileInterface
-    ): List<Event> = events as List<Event>
-
-    override fun getUpcomingEvents(number: Int, profile: ProfileInterface): List<Event> =
-        events as List<Event>
-
-    override fun getEventFromId(id: String, profile: ProfileInterface): Event? = try {
-        events?.single { event -> event.id == id }
-    } catch (e: NoSuchElementException) {
-        null
+    ): List<Event> {
+        return events!!
     }
 
-    override fun updateEvent(event: Event, profile: ProfileInterface): Boolean = true
+    override fun getUpcomingEvents(number: Int, profile: ProfileInterface): List<Event> {
+        return events!!
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun getEventFromId(id: String, profile: ProfileInterface): Event? {
+        initEvents()
+        return events!!.get(id.toInt())
+    }
+
+    override fun updateEvent(Event: Event, profile: ProfileInterface): Boolean {
+        return true
+    }
+
+    override fun updateUserInformation(
+        newValues: HashMap<String, String>,
+        uid: String,
+        userAccess: UserInterface
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun firstConnexion(
+        user: UserInterface,
+        userAccess: UserInterface
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
 
     override fun getAvailableItems(): Map<String, Int> {
         val map = mutableMapOf<String, Int>()
@@ -225,5 +256,20 @@ object FakeDatabase : DatabaseInterface {
         map["Fridge (small)"] = 10
 
         return map
+    }
+    override fun inDatabase(
+        isInDb: Observable<Boolean>,
+        uid: String,
+        userAccess: UserInterface
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getUserInformation(
+        user: Observable<UserInterface>,
+        uid: String,
+        userAccess: UserInterface
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
     }
 }

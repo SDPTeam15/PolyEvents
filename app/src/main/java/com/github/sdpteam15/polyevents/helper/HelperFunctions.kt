@@ -1,5 +1,7 @@
 package com.github.sdpteam15.polyevents.helper
 
+import android.annotation.SuppressLint
+import androidx.arch.core.executor.ArchTaskExecutor
 import android.content.Context
 import android.view.View
 import android.widget.Toast
@@ -7,6 +9,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.OnLifecycleEvent
 import com.github.sdpteam15.polyevents.MainActivity
 import com.github.sdpteam15.polyevents.R
 
@@ -35,6 +41,25 @@ object HelperFunctions {
         val ft: FragmentTransaction = fragmentManager!!.beginTransaction()
         ft.setReorderingAllowed(false)
         ft.detach(frag).attach(frag).commit()
+    }
+
+    @SuppressLint("RestrictedApi")
+    fun run(runnable: Runnable) {
+        try {
+            ArchTaskExecutor.getInstance().postToMainThread(runnable)
+        } catch (e: RuntimeException) {
+            runnable.run()
+        }
+    }
+
+    fun observeOnStop(lifecycle: LifecycleOwner, result: () -> Boolean): () -> Boolean {
+        //Anonymous class to observe the ON_STOP Event ao the Activity/Fragment
+        val lifecycleObserver = object : LifecycleObserver {
+            @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+            fun stopListener() = result()
+        }
+        lifecycle.lifecycle.addObserver(lifecycleObserver)
+        return result
     }
 
     /**
