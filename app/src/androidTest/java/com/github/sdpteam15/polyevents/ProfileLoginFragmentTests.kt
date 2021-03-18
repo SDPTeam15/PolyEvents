@@ -62,6 +62,7 @@ class ProfileLoginFragmentTests {
         testRule = ActivityScenarioRule<MainActivity>(MainActivity::class.java)
         endingRequest = Observable()
 
+        //Create Mock database
         mockedDatabase = mock(DatabaseInterface::class.java)
         When(mockedDatabase.currentUser).thenReturn(null)
         currentDatabase = mockedDatabase
@@ -71,7 +72,7 @@ class ProfileLoginFragmentTests {
      * Helper method that bypass the check if the user is in database and directly return true
      */
     private fun loginDirectly(loginFragment: LoginFragment, id: Int) {
-        //Mock the sign in method
+        //Mock the inDatabase method so that it returns true directly
         val endingRequest2 = Observable<Boolean>()
         When(
             mockedDatabase.inDatabase(loginFragment.inDbObservable, uidTest, user)
@@ -79,7 +80,9 @@ class ProfileLoginFragmentTests {
             loginFragment.inDbObservable.postValue(true)
             endingRequest2
         }
+        //click on the given button to go further in the appliction
         onView(withId(id)).perform(click())
+        //Notify that the in Database
         endingRequest2.postValue(true)
     }
 
@@ -226,16 +229,21 @@ class ProfileLoginFragmentTests {
 
     @Test
     fun ifNotInDbAddIt() {
+        //Make sure we are not connected to Firebase
         FirebaseAuth.getInstance().signOut()
+        //remove current user so that we stay on login fragment
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         loginFragment.currentUser = null
         onView(withId(R.id.ic_login)).perform(click())
+        //make sure we are on login fragment
         onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
 
+        //set the user variable to avoid redirection from Profile Fragment
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
         profileFragment.currentUser = user
         loginFragment.currentUser = user
 
+        //Mock the in database method, to return false
         val endingRequestInDatabase = Observable<Boolean>()
         When(
             mockedDatabase.inDatabase(
@@ -250,7 +258,7 @@ class ProfileLoginFragmentTests {
 
         val endingRequestFirstConnection = Observable<Boolean>()
         var accountCreated = false
-
+        //Mock the firstConnexion method so that it sets the boolean to true if called
         When(
             mockedDatabase.firstConnexion(loginFragment.currentUser!!, loginFragment.currentUser!!)
         ).thenAnswer { _ ->
@@ -270,22 +278,36 @@ class ProfileLoginFragmentTests {
             endingRequest
         }
 
+        //Click on login
         onView(withId(R.id.btnLogin)).perform(click())
+        //Notify that the inDatabase request was successfully performed
         endingRequestInDatabase.postValue(true)
+        //Notify that the firstConnection request was successfully performed
         endingRequestFirstConnection.postValue(true)
+        //Notify that the getUserAInformation request was successfully performed
         endingRequest.postValue(true)
-        Thread.sleep(3000)
+
+        //Wait enough time for the boolean to be set correctly
+        var i = 0
+        while (!accountCreated && i++ < 5) {
+            Thread.sleep(1000)
+        }
         assert(accountCreated)
+        assert(i < 5)
     }
 
     @Test
     fun ifInDbDoNotAddIt() {
+        //Make sure we are not connected to Firebase
         FirebaseAuth.getInstance().signOut()
+        //remove current user so that we stay on login fragment
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         loginFragment.currentUser = null
         onView(withId(R.id.ic_login)).perform(click())
+        //make sure we are on login fragment
         onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
 
+        //set the user variable to avoid redirection from Profile Fragment
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
         profileFragment.currentUser = user
         loginFragment.currentUser = user
@@ -293,6 +315,7 @@ class ProfileLoginFragmentTests {
         val endingRequestFirstConnection = Observable<Boolean>()
         var accountNotCreated = true
 
+        //Mock the firstConnexion method so that it sets the boolean to false if called
         When(
             mockedDatabase.firstConnexion(loginFragment.currentUser!!, loginFragment.currentUser!!)
         ).thenAnswer { _ ->
@@ -312,9 +335,13 @@ class ProfileLoginFragmentTests {
             endingRequest
         }
 
-        loginDirectly(loginFragment,R.id.btnLogin)
+        loginDirectly(loginFragment, R.id.btnLogin)
+        //Notify that the firstConnection request was successfully performed
         endingRequestFirstConnection.postValue(true)
+        //Notify that the getUserAInformation request was successfully performed
         endingRequest.postValue(true)
+
+        //Wait enough time
         Thread.sleep(3000)
         assert(accountNotCreated)
     }
