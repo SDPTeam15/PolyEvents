@@ -125,62 +125,28 @@ class EventActivityTest {
         val eventToTest = mockedUpcomingEventsProvider.getEventFromId("1") as Event
         val scenario = ActivityScenario.launch<EventActivity>(intent)
         Thread.sleep(1000)
-        Espresso.onView(withId(R.id.txt_event_Name)).check(
-            matches(
-                withText(
-                    containsString(
-                        eventToTest.name
-                    )
-                )
-            )
-        )
-        Espresso.onView(withId(R.id.txt_event_description)).check(
-            matches(
-                withText(
-                    containsString(
-                        eventToTest.description
-                    )
-                )
-            )
-        )
-        Espresso.onView(withId(R.id.txt_event_organizer)).check(
-            matches(
-                withText(
-                    containsString(
-                        eventToTest.organizer
-                    )
-                )
-            )
-        )
-        Espresso.onView(withId(R.id.txt_event_zone)).check(
-            matches(
-                withText(
-                    containsString(
-                        eventToTest.zone
-                    )
-                )
-            )
-        )
-        Espresso.onView(withId(R.id.txt_event_date)).check(
-            matches(
-                withText(
-                    containsString(
-                        eventToTest.getTime()
-                    )
-                )
-            )
-        )
-        Espresso.onView(withId(R.id.txt_event_tags)).check(
-            matches(
-                withText(
-                    containsString(
-                        eventToTest.tags.joinToString { s -> s })
-                )
-            )
-        )
+
+        Espresso.onView(withId(R.id.txt_event_Name))
+            .check(matches(withText(containsString(eventToTest.name))))
+
+        Espresso.onView(withId(R.id.txt_event_description))
+            .check(matches(withText(containsString(eventToTest.description))))
+
+
+        Espresso.onView(withId(R.id.txt_event_organizer))
+            .check(matches(withText(containsString(eventToTest.organizer))))
+
+        Espresso.onView(withId(R.id.txt_event_zone))
+            .check(matches(withText(containsString(eventToTest.zone))))
+
+        Espresso.onView(withId(R.id.txt_event_date))
+            .check(matches(withText(containsString(eventToTest.getTime()))))
+
+        Espresso.onView(withId(R.id.txt_event_tags))
+            .check(matches(withText(containsString(eventToTest.tags.joinToString { s -> s }))))
+
         scenario.close()
         //TODO check image is correct
-
     }
 }
 
