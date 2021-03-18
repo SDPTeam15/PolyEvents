@@ -7,17 +7,16 @@ import com.github.sdpteam15.polyevents.user.UserInterface
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.mock
-import java.util.HashMap
 import kotlin.test.assertNotNull
 
 class FakeDatabaseTests {
-    lateinit var mokedUserInterface : UserInterface
-    lateinit var mokedProfileInterface : ProfileInterface
-    lateinit var mokedEvent : Event
+    lateinit var mokedUserInterface: UserInterface
+    lateinit var mokedProfileInterface: ProfileInterface
+    lateinit var mokedEvent: Event
     val uid = "TestUID"
 
     @Before
-    fun setup(){
+    fun setup() {
         mokedUserInterface = mock(UserInterface::class.java)
         mokedProfileInterface = mock(ProfileInterface::class.java)
         mokedEvent = mock(Event::class.java)
@@ -38,28 +37,30 @@ class FakeDatabaseTests {
     }
 
     @Test
-    fun updateUserInformationTest(){
+    fun updateUserInformationTest() {
         val hashMap = hashMapOf<String, String>()
 
         var IsUpdated = false
-        FakeDatabase.updateUserInformation(hashMap, uid, mokedUserInterface).observe { IsUpdated = it!! }
+        FakeDatabase.updateUserInformation(hashMap, uid, mokedUserInterface)
+            .observe { IsUpdated = it!! }
         assert(IsUpdated)
     }
 
     @Test
-    fun firstConnexionTest(){
+    fun firstConnexionTest() {
         var IsUpdated = false
-        FakeDatabase.firstConnexion(mokedUserInterface, mokedUserInterface).observe { IsUpdated = it!! }
+        FakeDatabase.firstConnexion(mokedUserInterface, mokedUserInterface)
+            .observe { IsUpdated = it!! }
         assert(IsUpdated)
     }
 
     @Test
-    fun inDatabaseTest(){
+    fun inDatabaseTest() {
         val isInDb = Observable<Boolean>()
 
         var IsUpdated = false
         var isInDbIsUpdated = false
-        isInDb.observe {  isInDbIsUpdated = it!! }
+        isInDb.observe { isInDbIsUpdated = it!! }
 
         FakeDatabase.inDatabase(isInDb, uid, mokedUserInterface).observe { IsUpdated = it!! }
         assert(IsUpdated)
@@ -67,7 +68,7 @@ class FakeDatabaseTests {
     }
 
     @Test
-    fun getUserInformationTest(){
+    fun getUserInformationTest() {
         val user = Observable<UserInterface>()
 
         var IsUpdated = false

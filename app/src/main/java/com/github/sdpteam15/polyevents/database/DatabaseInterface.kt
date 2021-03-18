@@ -129,7 +129,7 @@ interface DatabaseInterface {
     /**
      * @param item item we want to add in the database
      * @param profile profile for database access
-     * @return A mutable live data that will be set to true if the communication with the DB is over and no error
+     * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun createItem(
         item: Item,
@@ -139,7 +139,7 @@ interface DatabaseInterface {
     /**
      * @param item item we want to remove from the database
      * @param profile profile for database access
-     * @return A mutable live data that will be set to true if the communication with the DB is over and no error
+     * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun removeItem(
         item: Item,
@@ -149,7 +149,7 @@ interface DatabaseInterface {
     /**
      * @param item item we want to update in the database
      * @param profile profile for database access
-     * @return A mutable live data that will be set to true if the communication with the DB is over and no error
+     * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun updateItem(
         item: Item,
@@ -165,7 +165,7 @@ interface DatabaseInterface {
      * @param id: id of the items
      * @param answer true or false depending if we accept the request or not
      * @param profile profile for database access
-     * @return A mutable live data that will be set to true if the communication with the DB is over and no error
+     * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun answerMaterialRequest(
         id:String,
@@ -178,7 +178,7 @@ interface DatabaseInterface {
      * @param materialList list in which the list of all material request will be set after retrieving from database
      * @param matcher: matcher for the search
      * @param profile profile for database access
-     * @return A mutable live data that will be set to true if the communication with the DB is over and no error
+     * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getMaterialRequestList(
         materialList: Observable<MaterialRequest>,
@@ -189,7 +189,7 @@ interface DatabaseInterface {
     /**
      * @param the request we want to add in the database
      * @param profile profile for database access
-     * @return A mutable live data that will be set to true if the communication with the DB is over and no error
+     * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun createMaterialRequest(
         request: MaterialRequest,
@@ -204,7 +204,7 @@ interface DatabaseInterface {
      * Update or request an update for an event
      * @param event: event to create
      * @param profile profile for database access
-     * @return A mutable live data that will be set to true if the communication with the DB is over and no error
+     * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun createEvent(
         event: Event,
@@ -215,7 +215,7 @@ interface DatabaseInterface {
      * Update or request an update for an event
      * @param event: event to update
      * @param profile profile for database access
-     * @return A mutable live data that will be set to true if the communication with the DB is over and no error
+     * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun updateEvents(
         event: Event,
@@ -227,7 +227,7 @@ interface DatabaseInterface {
      * @param id: The id of the event we want to retrieve
      * @param returnEvent : variable in which we will set the retrieve event
      * @param profile: The profile we want to remove
-     * @return A mutable live data that will be set to true if the communication with the DB is over and no error
+     * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getEventFromId(
         id: String,
@@ -241,7 +241,7 @@ interface DatabaseInterface {
      * @param number: maximum of result
      * @param activityList: the list of event that will be set when the DB returns the information
      * @param profile: profile for database access
-     * @return A mutable live data that will be set to true if the communication with the DB is over and no error
+     * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getListEvent(
         matcher: String? = null,
@@ -255,7 +255,7 @@ interface DatabaseInterface {
      * @param number : the number of events to retrieve
      * @param activityList: the list of event that will be set when the DB returns the information
      * @param profile : profile for database access
-     * @return A mutable live data that will be set to true if the communication with the DB is over and no error
+     * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getUpcomingEvents(
         number: Int = NUMBER_UPCOMING_EVENTS,
@@ -273,7 +273,7 @@ interface DatabaseInterface {
      * @param profile profile to add
      * @param uid uid
      * @param user user for database access
-     * @return A mutable live data that will be set to true if the communication with the DB is over and no error
+     * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun addProfile(
         profile: ProfileInterface, uid: String,
@@ -285,7 +285,7 @@ interface DatabaseInterface {
      * @param profile: The profile we want to remove
      * @param uid : the uid of the user from which we want to query the information
      * @param userAccess: the user object to use its permission
-     * @return A mutable live data that will be set to true if the communication with the DB is over and no error
+     * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun removeProfile(
         profile: ProfileInterface,
@@ -297,7 +297,7 @@ interface DatabaseInterface {
      * Update profile
      * @param event event to update
      * @param profile profile for database access
-     * @return A mutable live data that will be set to true if the communication with the DB is over and no error
+     * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun updateProfile(
         profile: ProfileInterface,
@@ -321,9 +321,9 @@ interface DatabaseInterface {
     /**
      * Update the user information in the database
      * @param newValues : a map with the new value to set in the database
-     * @param uid : the uid of the user from which we want to query the informations
+     * @param uid : the uid of the user from which we want to query the information
      * @param userAccess: the user object to use its permission
-     * @return A mutable live data that will be set to true if the communication with the DB is over and no error
+     * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun updateUserInformation(
         newValues: HashMap<String, String>,
@@ -332,10 +332,10 @@ interface DatabaseInterface {
     ): Observable<Boolean>
 
     /**
-     * Register the user in the database with its basic informations (uid, email, name)
-     * @param user : user with all the requested informations
+     * Register the user in the database with its basic information (uid, email, name)
+     * @param user : user with all the requested information
      * @param userAccess: the user object to use its permission
-     * @return A mutable live data that will be set to true if the communication with the DB is over and no error
+     * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun firstConnexion(
         user: UserInterface,
@@ -347,7 +347,7 @@ interface DatabaseInterface {
      * @param isInDb : Will be set to true if in Database or to false otherwise
      * @param uid : user uid we want to check the existence
      * @param userAccess: the user object to use its permission
-     * @return A mutable live data that will be set to true if the communication with the DB is over and no error
+     * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun inDatabase(
         isInDb: Observable<Boolean>,
@@ -358,9 +358,9 @@ interface DatabaseInterface {
     /**
      * Look in the database if the user already exists or not
      * @param user : live data that will be set with the find user value
-     * @param uid : user uid we want to get the informations
+     * @param uid : user uid we want to get the information
      * @param userAccess: the user object to use its permission
-     * @return A mutable live data that will be set to true if the communication with the DB is over and no error
+     * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getUserInformation(
         user: Observable<UserInterface>,

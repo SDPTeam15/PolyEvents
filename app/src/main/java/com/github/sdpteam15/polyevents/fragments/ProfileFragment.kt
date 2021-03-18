@@ -50,18 +50,24 @@ class ProfileFragment : Fragment() {
             changeFragment(activity, MainActivity.fragments[R.id.ic_login])
         }
 
+        //When user Info live data is updated, set the correct value in the textview
         userInfoLiveData.observe(this){ userInfo ->
             viewRoot.findViewById<EditText>(R.id.profileName).setText(userInfo!!.name)
             viewRoot.findViewById<EditText>(R.id.profileEmail).setText(userInfo!!.email)
+            //TODO Line for the future when the user class will have all the attributes
+            //viewRoot.findViewById<EditText>(R.id.profileUsernameET).setText(userInfo!!.username)
+           //viewRoot.findViewById<EditText>(R.id.profileBirthdayET).setText(userInfo!!.birthday)
         }
 
         currentDatabase.getUserInformation(userInfoLiveData, currentUser!!.uid, currentUser!!)
 
         viewRoot.findViewById<Button>(R.id.btnUpdateInfos).setOnClickListener {
-            //Add every field
+            //Clear the previous map and add every field
             hashMapNewInfos.clear()
             hashMapNewInfos["username"] = viewRoot.findViewById<EditText>(R.id.profileUsernameET).text.toString()
             //hashMapNewInfos["birthday"] = viewRoot.findViewById<EditText>(R.id.profileBirthdayET).text.toString()
+
+            //Call the DB to update the user information and getUserInformation once it is done
             currentDatabase.updateUserInformation(hashMapNewInfos, currentUser!!.uid, currentUser!!)
                 .observe(this){ newValue ->
                     if (newValue!!) {

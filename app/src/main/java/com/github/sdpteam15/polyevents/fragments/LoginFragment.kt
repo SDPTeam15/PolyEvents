@@ -47,6 +47,7 @@ class LoginFragment : Fragment() {
             )
         }
 
+        //Sign in options for Google Login.
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
@@ -80,7 +81,7 @@ class LoginFragment : Fragment() {
     }
 
     private fun firebaseAuthWithGoogle(idToken: String) {
-        //Get the credential back and instanciate FirebaseAuth object
+        //Get the credential back and instantiate FirebaseAuth object
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         FirebaseAuth.getInstance().signInWithCredential(credential)
             .addOnCompleteListener(activity as Activity) { task ->
@@ -100,20 +101,24 @@ class LoginFragment : Fragment() {
                         //If already in database redirect
                         HelperFunctions.changeFragment(activity, MainActivity.fragments[R.id.id_fragment_profile])
                     } else {
-                        //If not in DB, first connection: need to register
-                        currentDatabase
-                            .firstConnexion(currentUser!!, currentUser!!)
-                            .observe(this){ newValue2 ->
-                                if (newValue2!!) {
-                                    //If correctly registered, redirect it
-                                    HelperFunctions.changeFragment(activity, MainActivity.fragments[R.id.id_fragment_profile])
-                                } else {
-                                    //otherwise display error
-                                    failedLogin.show()
-                                }
-                            }
+                        //If not in DB, i.e. first connection, need to register
+                       connectAndRedirect()
                     }
                 } else {
+                    failedLogin.show()
+                }
+            }
+    }
+
+    private fun connectAndRedirect(){
+        currentDatabase
+            .firstConnexion(currentUser!!, currentUser!!)
+            .observe(this){ newValue2 ->
+                if (newValue2!!) {
+                    //If correctly registered, redirect it
+                    HelperFunctions.changeFragment(activity, MainActivity.fragments[R.id.id_fragment_profile])
+                } else {
+                    //otherwise display error
                     failedLogin.show()
                 }
             }

@@ -23,6 +23,15 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     const val USER_DOCUMENT_ID = "uid"
     const val EVENT_DOCUMENT = "events"
     const val EVENT_DOCUMENT_ID = "eventId"
+    const val ITEM_DOCUMENT = "items"
+    const val ITEM_DOCUMENT_ID = "itemId"
+    const val AREA_DOCUMENT = "areas"
+    const val AREA_DOCUMENT_ID = "areaId"
+
+    /**
+     * Map used in the firstConnection method. It's public to be able to use it in tests
+     */
+    val firstConnectionMap = HashMap<String, String>()
 
     override val currentUser: DatabaseUserInterface?
         get() =
@@ -33,25 +42,23 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             }
 
     override fun getListProfile(uid: String, user: UserInterface): List<ProfileInterface> {
-        return ArrayList<ProfileInterface>() //TODO
+        return ArrayList<ProfileInterface>()/*TODO*/
     }
-
 
     override fun addProfile(profile: ProfileInterface, uid: String, user: UserInterface): Boolean {
-        return true//TODO
+        return true/*TODO*/
     }
-
 
     override fun removeProfile(
         profile: ProfileInterface,
         uid: String,
         user: UserInterface
     ): Boolean {
-        return true//TODO
+        return true/*TODO*/
     }
 
     override fun updateProfile(profile: ProfileInterface, user: UserInterface): Boolean {
-        return true//TODO
+        return true/*TODO*/
     }
 
     override fun getListEvent(
@@ -59,28 +66,35 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         number: Int?,
         profile: ProfileInterface
     ): List<Event> {
-        return ArrayList<Event>()//TODO
+        return ArrayList<Event>()/*TODO*/
     }
 
     override fun getUpcomingEvents(number: Int, profile: ProfileInterface): List<Event> {
-        return ArrayList<Event>()//TODO
+        return ArrayList<Event>()/*TODO*/
     }
 
     override fun getEventFromId(id: String, profile: ProfileInterface): Event? {
-        return null//TODO
+        return null/*TODO*/
     }
 
     override fun updateEvent(Event: Event, profile: ProfileInterface): Boolean {
-        return true//TODO
+        return true/*TODO*/
     }
+    //Up to here delete
 
-    //Method used to get listener in the task to mock and test the database
+
+    //Method used to get listener in the test set to mock and test the database
     var lastGetSuccessListener: OnSuccessListener<QuerySnapshot>? = null
     var lastSetSuccessListener: OnSuccessListener<Void>? = null
     var lastFailureListener: OnFailureListener? = null
     var lastMultGetSuccessListener: OnSuccessListener<DocumentSnapshot>? = null
 
-
+    /**
+     * After a get request, add on success and on failure listener (and set them into the corresponding variable to be able to test)
+     * @param task: The query that will get document from Firestore
+     * @param onSuccessListener The listener that will be executed if no problem during the request
+     * @return An observable that will be true if no problem during the request false otherwise
+     */
     fun thenDoGet(
         task: Task<QuerySnapshot>,
         onSuccessListener: (QuerySnapshot) -> Unit
@@ -90,12 +104,19 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             onSuccessListener(it)
             ended.postValue(true)
         }
+
         lastFailureListener = OnFailureListener { ended.postValue(false) }
         task.addOnSuccessListener(lastGetSuccessListener!!)
             .addOnFailureListener(lastFailureListener!!)
         return ended
     }
 
+    /**
+     * After a get taht can have multiple document, add on success and on failure listener (and set them into the corresponding variable to be able to test)
+     * @param task: The query that will get documents from Firestore
+     * @param onSuccessListener The listener that will be executed if no problem during the request
+     * @return An observable that will be true if no problem during the request false otherwise
+     */
     fun thenDoMultGet(
         task: Task<DocumentSnapshot>,
         onSuccessListener: (DocumentSnapshot) -> Unit
@@ -111,6 +132,11 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         return ended
     }
 
+    /**
+     * After a request that modify an online document, add on success and on failure listener (and set them into the corresponding variable to be able to test)
+     * @param task: The query that will get documents from Firestore
+     * @return An observable that will be true if no problem during the request false otherwise
+     */
     fun thenDoSet(
         task: Task<Void>
     ): Observable<Boolean> {
@@ -120,10 +146,11 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         lastFailureListener = OnFailureListener { ended.postValue(false) }
         task.addOnSuccessListener(lastSetSuccessListener!!)
             .addOnFailureListener(lastFailureListener!!)
+
         return ended
     }
 
-    //Up to here delete
+
     override fun updateUserInformation(
         newValues: java.util.HashMap<String, String>,
         uid: String,
@@ -139,15 +166,14 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         user: UserInterface,
         userAccess: UserInterface
     ): Observable<Boolean> {
-        val map = HashMap<String, String>()
-        map["uid"] = user.uid
-        map["displayName"] = user.name
-        map["email"] = user.email
+        firstConnectionMap["uid"] = user.uid
+        firstConnectionMap["displayName"] = user.name
+        firstConnectionMap["email"] = user.email
 
         return thenDoSet(
             firestore!!.collection(USER_DOCUMENT)
                 .document(user.uid)
-                .set(map)
+                .set(firstConnectionMap)
         )
     }
 
