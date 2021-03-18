@@ -42,7 +42,6 @@ class ItemsAdminActivityTest {
         `when`(mockedUpcomingEventsProvider.addItem(anyString())).thenAnswer{fakeitems.add(testItem)}
         `when`(mockedUpcomingEventsProvider.removeItem(anyString())).thenAnswer{it ->
             val v = it.arguments[0] as String
-            println("NTM"+ v)
             fakeitems.remove(v)}
         currentDatabase = mockedUpcomingEventsProvider
         itemsAdminActivity.scenario.recreate()

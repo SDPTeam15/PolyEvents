@@ -206,4 +206,19 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         //TODO once the data class User is created, set the user with the correct value
         user.postValue(userAccess)
     }
+
+    override fun getItemsList(): MutableList<String> {
+        //TODO adapt to firebase
+        return FakeDatabase.getItemsList()
+    }
+
+    override fun addItem(item: String): Boolean {
+        //TODO adapt to firebase
+        return FakeDatabase.addItem(item)
+    }
+
+    override fun removeItem(item: String): Boolean {
+        //TODO adapt to firebase
+        return FakeDatabase.removeItem(item)
+    }
 }

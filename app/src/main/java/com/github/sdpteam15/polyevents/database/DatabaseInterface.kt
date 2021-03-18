@@ -362,7 +362,23 @@ interface DatabaseInterface {
         userAccess: UserInterface = User.currentUser as UserInterface
     ): Observable<Boolean>
 
+    /**
+     * Returns the list of items
+     * @return The current mutable list of items
+     */
     fun getItemsList(): MutableList<String>
+
+    /**
+     * Adds an Item to the Item Database
+     * @param item : item to add
+     * @return true if the item is successfully added to the database
+     */
     fun addItem(item : String):Boolean
+
+    /**
+     * Removes an Item from the Item Database
+     * @param item : item to remove
+     * @return true if the item is successfully removed from the database
+     */
     fun removeItem(item: String):Boolean
 }
