@@ -202,8 +202,12 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         firestore!!.collection("users")
             .document(uid)
             .get()
-    ) { document ->
+    ) {
         //TODO once the data class User is created, set the user with the correct value
         user.postValue(userAccess)
+    }
+
+    override fun getAvailableItems(): Map<String, Int> {
+        TODO("Not yet implemented")
     }
 }

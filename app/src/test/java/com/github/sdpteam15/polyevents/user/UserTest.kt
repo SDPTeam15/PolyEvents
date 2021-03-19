@@ -10,6 +10,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
+import org.mockito.Mockito.mock
 import org.mockito.junit.MockitoJUnitRunner
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -17,14 +18,18 @@ import kotlin.test.assertFailsWith
 @RunWith(MockitoJUnitRunner::class)
 class UserTest {
 
+    lateinit var mockedDatabaseUser : DatabaseUserInterface
+    lateinit var mockedDatabaseInterface : DatabaseInterface
+
     @Before
     fun setup() {
-        currentDatabase = FakeDatabase
+        mockedDatabaseUser = mock(DatabaseUserInterface::class.java)
+        mockedDatabaseInterface = mock(DatabaseInterface::class.java)
+        currentDatabase = mockedDatabaseInterface
     }
 
     @Test
     fun invokeTest() {
-        val mockedDatabaseUser = Mockito.mock(DatabaseUserInterface::class.java)
         Mockito.`when`(mockedDatabaseUser.uid).thenReturn("Test UID")
 
         val user = User.invoke(mockedDatabaseUser)
@@ -35,7 +40,6 @@ class UserTest {
 
     @Test
     fun profileListTest() {
-        val mockedDatabaseUser = Mockito.mock(DatabaseUserInterface::class.java)
         Mockito.`when`(mockedDatabaseUser.uid).thenReturn("Test UID")
         Mockito.`when`(mockedDatabaseUser.displayName).thenReturn("Test name")
 
@@ -98,6 +102,5 @@ class UserTest {
         Mockito.`when`(mockedDatabase.currentUser).thenReturn(mockedCurrentUser2)
         Mockito.`when`(mockedCurrentUser2.uid).thenReturn("1")
         assertEquals("1", User.currentUser!!.uid)
-
     }
 }
