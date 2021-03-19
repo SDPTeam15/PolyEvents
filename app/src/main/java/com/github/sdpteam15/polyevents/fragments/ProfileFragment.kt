@@ -10,6 +10,8 @@ import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.MainActivity
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_BIRTHDAY
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_USERNAME
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.changeFragment
 import com.github.sdpteam15.polyevents.user.User
@@ -25,7 +27,7 @@ class ProfileFragment : Fragment() {
     var currentUser: UserInterface? = null
         get() = field ?: User.currentUser
     val userInfoLiveData = Observable<UserInterface>()
-    val hashMapNewInfos = HashMap<String, String>()
+    val hashMapNewInfo = HashMap<String, String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,13 +62,13 @@ class ProfileFragment : Fragment() {
 
         viewRoot.findViewById<Button>(R.id.btnUpdateInfos).setOnClickListener {
             //Clear the previous map and add every field
-            hashMapNewInfos.clear()
-            hashMapNewInfos["username"] =
+            hashMapNewInfo.clear()
+            hashMapNewInfo[USER_USERNAME] =
                 viewRoot.findViewById<EditText>(R.id.profileUsernameET).text.toString()
-            //hashMapNewInfos["birthday"] = viewRoot.findViewById<EditText>(R.id.profileBirthdayET).text.toString()
+            hashMapNewInfo[USER_BIRTHDAY] = viewRoot.findViewById<EditText>(R.id.profileBirthdayET).text.toString()
 
             //Call the DB to update the user information and getUserInformation once it is done
-            currentDatabase.updateUserInformation(hashMapNewInfos, currentUser!!.uid, currentUser!!)
+            currentDatabase.updateUserInformation(hashMapNewInfo, currentUser!!.uid, currentUser!!)
                 .observe(this) { newValue ->
                     if (newValue!!) {
                         currentDatabase.getUserInformation(

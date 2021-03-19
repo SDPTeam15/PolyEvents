@@ -1,5 +1,12 @@
 package com.github.sdpteam15.polyevents.util
 
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_AGE
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_DISPLAY_NAME
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_EMAIL
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_GOOGLE_ID
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_NAME
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_TYPE
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_USERNAME
 import com.github.sdpteam15.polyevents.model.UserEntity
 import kotlin.collections.HashMap
 
@@ -20,13 +27,13 @@ object UserAdapter {
      */
     fun toUserDocument(user: UserEntity): HashMap<String, Any?> {
         return hashMapOf(
-            "googleId" to user.googleId,
-            "userType" to user.userType,
-            "username" to user.username,
-            "name" to user.name,
-            "age" to user.age,
-            "displayName" to user.displayName,
-            "email" to user.email
+            USER_GOOGLE_ID to user.googleId,
+            USER_TYPE to user.userType,
+            USER_USERNAME to user.username,
+            USER_NAME to user.name,
+            USER_AGE to user.age,
+            USER_DISPLAY_NAME to user.displayName,
+            USER_EMAIL to user.email
         )
     }
 
@@ -41,13 +48,13 @@ object UserAdapter {
     fun toUserEntity(documentData: MutableMap<String, Any?>): UserEntity {
 
         return UserEntity(
-            googleId = documentData.get("googleId") as String?,
-            userType = documentData.get("userType") as String?,
-            username = documentData.get("username") as String?,
-            name = documentData.get("name") as String?,
-            age = (documentData.get("age") as Long?)?.toInt(),
-            displayName = documentData.get("displayName") as String?,
-            email = documentData.get("email") as String?
+            googleId = documentData.get(USER_GOOGLE_ID) as String?,
+            userType = documentData.get(USER_TYPE) as String?,
+            username = documentData.get(USER_USERNAME) as String?,
+            name = documentData.get(USER_NAME) as String?,
+            age = (documentData.get(USER_AGE) as Long?)?.toInt(),
+            displayName = documentData.get(USER_DISPLAY_NAME) as String?,
+            email = documentData.get(USER_EMAIL) as String?
         )
     }
 }
