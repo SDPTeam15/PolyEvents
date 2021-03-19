@@ -25,6 +25,13 @@ My time estimates were quite good for the first part, but for the second I over 
 Next week, I'll take a graphical tasks. I have done only backend until there so it will be good to do some UI.
 
 ## Stephane
+This week I've implemented the basic model entities for our application. I've also implemented adapters for each of them to work with the Firebase
+Firestore types.
+
+This took longer than I thought, since I had to test each of the adapters by retrieving test documents from the Firestore and making sure the types are translated correctly.
+
+Next week, I'll merge these entities with the rest of the application and if I have time, continue implementing
+the database interface Alessio and Robin have begun.
 
 ## Overall team
 
