@@ -1,6 +1,5 @@
 package com.github.sdpteam15.polyevents.database
 
-import androidx.lifecycle.MutableLiveData
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_DISPLAY_NAME
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_EMAIL
@@ -97,7 +96,7 @@ class FirestoreDatabaseProviderTest {
         )
         When(
             mockedCollectionReference.whereEqualTo(
-                DatabaseConstant.USER_GOOGLE_ID,
+                DatabaseConstant.USER_DOCUMENT_ID,
                 uidTest
             )
         ).thenReturn(mockedQuery)
@@ -138,7 +137,7 @@ class FirestoreDatabaseProviderTest {
         )
         When(
             mockedCollectionReference.whereEqualTo(
-                DatabaseConstant.USER_GOOGLE_ID,
+                DatabaseConstant.USER_DOCUMENT_ID,
                 uidTest
             )
         ).thenReturn(mockedQuery)
