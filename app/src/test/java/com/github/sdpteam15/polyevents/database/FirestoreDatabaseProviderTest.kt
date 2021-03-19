@@ -1,6 +1,11 @@
 package com.github.sdpteam15.polyevents.database
 
 import androidx.lifecycle.MutableLiveData
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_COLLECTION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_DISPLAY_NAME
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_EMAIL
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_GOOGLE_ID
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_USERNAME
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.event.Event
 import com.github.sdpteam15.polyevents.user.ProfileInterface
@@ -27,8 +32,6 @@ class FirestoreDatabaseProviderTest {
     lateinit var user: UserInterface
     lateinit var mockedDatabaseUser: DatabaseUserInterface
     lateinit var mockedDatabase: FirebaseFirestore
-    lateinit var endingRequest: MutableLiveData<Boolean>
-    val testingID = "TESTINGUSER"
     lateinit var database: DatabaseInterface
 
     @Before
@@ -89,12 +92,12 @@ class FirestoreDatabaseProviderTest {
         val mockedList = mock(List::class.java) as List<DocumentSnapshot>
 
         //Mock all the needed method to perform the query correctly
-        When(mockedDatabase.collection(FirestoreDatabaseProvider.USER_DOCUMENT)).thenReturn(
+        When(mockedDatabase.collection(USER_COLLECTION)).thenReturn(
             mockedCollectionReference
         )
         When(
             mockedCollectionReference.whereEqualTo(
-                FirestoreDatabaseProvider.USER_DOCUMENT_ID,
+                DatabaseConstant.USER_GOOGLE_ID,
                 uidTest
             )
         ).thenReturn(mockedQuery)
@@ -130,12 +133,12 @@ class FirestoreDatabaseProviderTest {
         val mockedList = mock(List::class.java) as List<DocumentSnapshot>
 
         //mock the needed method
-        When(mockedDatabase.collection(FirestoreDatabaseProvider.USER_DOCUMENT)).thenReturn(
+        When(mockedDatabase.collection(DatabaseConstant.USER_COLLECTION)).thenReturn(
             mockedCollectionReference
         )
         When(
             mockedCollectionReference.whereEqualTo(
-                FirestoreDatabaseProvider.USER_DOCUMENT_ID,
+                DatabaseConstant.USER_GOOGLE_ID,
                 uidTest
             )
         ).thenReturn(mockedQuery)
@@ -161,7 +164,7 @@ class FirestoreDatabaseProviderTest {
     }
 
     @Test
-    fun getUserInformationsReturnCorrectInformation() {
+    fun getUserInformationReturnCorrectInformation() {
         //Mock the needed classes
         val mockedCollectionReference = mock(CollectionReference::class.java)
         val mockedDocumentReference = mock(DocumentReference::class.java)
@@ -169,7 +172,7 @@ class FirestoreDatabaseProviderTest {
         val mockedDocument = mock(DocumentSnapshot::class.java)
 
         //mock the needed method
-        When(mockedDatabase.collection(FirestoreDatabaseProvider.USER_DOCUMENT)).thenReturn(
+        When(mockedDatabase.collection(USER_COLLECTION)).thenReturn(
             mockedCollectionReference
         )
         When(mockedCollectionReference.document(uidTest)).thenReturn(mockedDocumentReference)
@@ -199,7 +202,7 @@ class FirestoreDatabaseProviderTest {
     }
 
     @Test
-    fun updateUserInformationSetTheGoodInformations() {
+    fun updateUserInformationSetTheGoodInformation() {
         //mock the required class
         val mockedCollectionReference = mock(CollectionReference::class.java)
         val mockedDocumentReference = mock(DocumentReference::class.java)
@@ -207,10 +210,10 @@ class FirestoreDatabaseProviderTest {
 
         //Create a hashmap with values to update
         val map: HashMap<String, String> = HashMap()
-        map["uid"] = uidTest2
-        map["username"] = username
-        map["displayName"] = displayNameTest2
-        map["email"] = emailTest2
+        map[USER_GOOGLE_ID] = uidTest2
+        map[USER_USERNAME] = username
+        map[USER_DISPLAY_NAME] = displayNameTest2
+        map[USER_EMAIL] = emailTest2
 
         var emailSet = ""
         var nameSet = ""
@@ -218,7 +221,7 @@ class FirestoreDatabaseProviderTest {
         var usernameSet = ""
 
         //mock the needed method
-        When(mockedDatabase.collection(FirestoreDatabaseProvider.USER_DOCUMENT)).thenReturn(
+        When(mockedDatabase.collection(USER_COLLECTION)).thenReturn(
             mockedCollectionReference
         )
         When(mockedCollectionReference.document(uidTest)).thenReturn(mockedDocumentReference)
@@ -249,7 +252,7 @@ class FirestoreDatabaseProviderTest {
     }
 
     @Test
-    fun firstConnectionSetTheGoodInformations() {
+    fun firstConnectionSetTheGoodInformation() {
         //mock the required class
         val mockedCollectionReference = mock(CollectionReference::class.java)
         val mockedDocumentReference = mock(DocumentReference::class.java)
@@ -259,7 +262,7 @@ class FirestoreDatabaseProviderTest {
         var nameSet = ""
         var uidSet = ""
 
-        When(mockedDatabase.collection(FirestoreDatabaseProvider.USER_DOCUMENT)).thenReturn(
+        When(mockedDatabase.collection(USER_COLLECTION)).thenReturn(
             mockedCollectionReference
         )
         When(mockedCollectionReference.document(uidTest)).thenReturn(mockedDocumentReference)
