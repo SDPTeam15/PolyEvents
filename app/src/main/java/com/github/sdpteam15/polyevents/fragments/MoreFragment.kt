@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
+import com.github.sdpteam15.polyevents.EventActivity
+import com.github.sdpteam15.polyevents.ItemsAdminActivity
 import com.github.sdpteam15.polyevents.ItemRequestActivity
 import com.github.sdpteam15.polyevents.R
 
@@ -29,9 +31,12 @@ class MoreFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
+        
         val fragmentView = inflater.inflate(R.layout.fragment_more, container, false)
-
+        fragmentView.findViewById<Button>(R.id.btn_admin_items_list).setOnClickListener {
+            val intent = Intent(inflater.context, ItemsAdminActivity::class.java)
+            startActivity(intent)
+        }
         fragmentView.findViewById<Button>(R.id.id_request_button).setOnClickListener{
             val intent = Intent(activity, ItemRequestActivity::class.java)
             startActivity(intent)

@@ -15,11 +15,18 @@ object FakeDatabase : DatabaseInterface {
     init {
         initEvents()
         initProfiles()
+        initItems()
+    }
+
+    private fun initItems() {
+        items = mutableListOf("Scie-tronconneuse", "Bonnet de bain")
     }
 
     private lateinit var events: MutableList<Event>
     private lateinit var profiles: MutableList<ProfileInterface>
+    private lateinit var items: MutableList<String>
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun initEvents() {
         events = mutableListOf()
         events.add(
@@ -199,6 +206,7 @@ object FakeDatabase : DatabaseInterface {
             )
         )
     }
+
     private fun initProfiles() {
         profiles = mutableListOf()
     }
@@ -230,15 +238,16 @@ object FakeDatabase : DatabaseInterface {
         profile: ProfileInterface
     ): List<Event> {
         val res = mutableListOf<Event>()
-        for(v in events){
+        for (v in events) {
             res.add(v)
-            if(res.size == number)
+            if (res.size == number)
                 break
         }
         return res
     }
 
-    override fun getUpcomingEvents(number: Int, profile: ProfileInterface): List<Event> = getListEvent("", number, profile)
+    override fun getUpcomingEvents(number: Int, profile: ProfileInterface): List<Event> =
+        getListEvent("", number, profile)
 
     override fun getEventFromId(id: String, profile: ProfileInterface): Event =
         events[0]
@@ -270,6 +279,7 @@ object FakeDatabase : DatabaseInterface {
 
         return map
     }
+
     override fun inDatabase(
         isInDb: Observable<Boolean>,
         uid: String,
@@ -287,4 +297,18 @@ object FakeDatabase : DatabaseInterface {
         user.value = User.invoke(currentUser)
         return Observable(true)
     }
+
+    override fun getItemsList(): MutableList<String> {
+        return items
+    }
+
+    override fun addItem(item: String): Boolean {
+        return items.add(item)
+    }
+
+    override fun removeItem(item: String): Boolean {
+        return items.remove(item)
+    }
+
+
 }
