@@ -1,5 +1,13 @@
 package com.github.sdpteam15.polyevents.util
 
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_DESCRIPTION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_END_TIME
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_INVENTORY
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_NAME
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_ORGANIZER
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_START_TIME
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_TAGS
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_ZONE_NAME
 import com.github.sdpteam15.polyevents.model.Event
 import com.github.sdpteam15.polyevents.model.Item
 import com.google.firebase.Timestamp
@@ -23,14 +31,14 @@ object EventAdapter {
          */
         fun toEventDocument(event: Event): HashMap<String, Any?> =
                 hashMapOf(
-                        "eventName" to event.eventName,
-                        "organizer" to event.organizer,
-                        "zoneName" to event.zoneName,
-                        "description" to event.description,
-                        "startTime" to event.startTime,
-                        "endTime" to event.endTime,
-                        "inventory" to event.inventory.mapKeys { it.key.toString() },
-                        "tags" to event.tags.toList()
+                        EVENT_NAME to event.eventName,
+                        EVENT_ORGANIZER to event.organizer,
+                        EVENT_ZONE_NAME to event.zoneName,
+                        EVENT_DESCRIPTION to event.description,
+                        EVENT_START_TIME to event.startTime,
+                        EVENT_END_TIME to event.endTime,
+                        EVENT_INVENTORY to event.inventory.mapKeys { it.key.toString() },
+                        EVENT_TAGS to event.tags.toList()
                 )
 
         /**
@@ -43,14 +51,14 @@ object EventAdapter {
          */
         fun toEventEntity(documentData: MutableMap<String, Any?>): Event =
                 Event(
-                        eventName = documentData["eventName"] as String?,
-                        organizer = documentData["organizer"] as String?,
-                        zoneName = documentData["zoneName"] as String?,
-                        description = documentData["description"] as String?,
-                        startTime = (documentData["startTime"] as Timestamp?)?.toDate(),
-                        endTime = (documentData["endTime"] as Timestamp?)?.toDate(),
-                        inventory = (documentData["inventory"] as MutableMap<String, Int>)
+                        eventName = documentData[EVENT_NAME] as String?,
+                        organizer = documentData[EVENT_ORGANIZER] as String?,
+                        zoneName = documentData[EVENT_ZONE_NAME] as String?,
+                        description = documentData[EVENT_DESCRIPTION] as String?,
+                        startTime = (documentData[EVENT_START_TIME] as Timestamp?)?.toDate(),
+                        endTime = (documentData[EVENT_END_TIME] as Timestamp?)?.toDate(),
+                        inventory = (documentData[EVENT_INVENTORY] as MutableMap<String, Int>)
                                 .mapKeys { Item.valueOf(it.key) }.toMutableMap(),
-                        tags = (documentData["tags"] as List<String>).toMutableSet()
+                        tags = (documentData[EVENT_TAGS] as List<String>).toMutableSet()
                 )
 }
