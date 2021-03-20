@@ -144,7 +144,6 @@ class ItemRequestActivityTest {
         Intents.init()
         onView(withId(R.id.id_button_make_request)).perform(click())
         Intents.intended(IntentMatchers.hasComponent(MainActivity::class.java.name))
-
         Intents.release()
     }
 

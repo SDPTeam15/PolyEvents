@@ -20,6 +20,7 @@ import com.github.sdpteam15.polyevents.event.Event
 import com.github.sdpteam15.polyevents.event.EventItemAdapter
 import com.github.sdpteam15.polyevents.fragments.EXTRA_EVENT_ID
 import org.hamcrest.CoreMatchers.containsString
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -85,6 +86,12 @@ class EventActivityTest {
         `when`(mockedUpcomingEventsProvider.getEventFromId("3")).thenReturn(events[2])
         // go to activities list fragment
         Espresso.onView(withId(R.id.ic_list)).perform(click())
+        Intents.init()
+    }
+
+    @After
+    fun teardown() {
+        Intents.release()
     }
 
 
@@ -96,7 +103,6 @@ class EventActivityTest {
 
     @Test
     fun eventActivityOpensOnClick() {
-        Intents.init()
         Espresso.onView(withId(R.id.recycler_events_list)).perform(
             RecyclerViewActions.actionOnItemAtPosition<EventItemAdapter.ItemViewHolder>(
                 0,
@@ -104,8 +110,6 @@ class EventActivityTest {
             )
         )
         intended(hasComponent(EventActivity::class.java.name))
-
-        Intents.release()
     }
 
     @Test

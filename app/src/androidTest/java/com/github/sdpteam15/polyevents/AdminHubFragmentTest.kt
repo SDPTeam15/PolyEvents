@@ -14,6 +14,7 @@ import com.github.sdpteam15.polyevents.admin.ZoneManagementActivity
 import com.github.sdpteam15.polyevents.database.DatabaseUserInterface
 import com.github.sdpteam15.polyevents.user.User
 import com.google.firebase.auth.FirebaseAuth
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -37,37 +38,37 @@ class AdminHubFragmentTest {
 
         Espresso.onView(ViewMatchers.withId(R.id.id_fragment_admin_hub))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Intents.init()
+    }
+
+    @After
+    fun teardown(){
+        Intents.release()
     }
 
     @Test
     fun clickOnBtnEventDisplayCorrectActivity() {
-        Intents.init()
         Espresso.onView(ViewMatchers.withId(R.id.btnRedirectEventManager)).perform(click())
         Intents.intended(IntentMatchers.hasComponent(EventManagementActivity::class.java.name))
-        Intents.release()
+
     }
 
     @Test
     fun clickOnBtnUserManagementDisplayCorrectActivity() {
-        Intents.init()
         Espresso.onView(ViewMatchers.withId(R.id.btnRedirectUserManagement)).perform(click())
         Intents.intended(IntentMatchers.hasComponent(UserManagementActivity::class.java.name))
-        Intents.release()
+
     }
 
     @Test
     fun clickOnBtnItemRequestManagementDisplayCorrectActivity() {
-        Intents.init()
         Espresso.onView(ViewMatchers.withId(R.id.btnRedirectItemReqManagement)).perform(click())
         Intents.intended(IntentMatchers.hasComponent(ItemRequestManagementActivity::class.java.name))
-        Intents.release()
     }
 
     @Test
     fun clickOnBtnZoneManagementDisplayCorrectActivity() {
-        Intents.init()
         Espresso.onView(ViewMatchers.withId(R.id.btnRedirectZoneManagement)).perform(click())
         Intents.intended(IntentMatchers.hasComponent(ZoneManagementActivity::class.java.name))
-        Intents.release()
     }
 }
