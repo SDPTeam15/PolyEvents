@@ -73,12 +73,13 @@
     <string name="max_item_quantity_text">There are only %1$s %2$s available !</string>
     <string name="go_to_admin_item_list">go to admin item list</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="admin_hub_btn_item_text">Manage Item Request</string>
-    <string name="admin_hub_btn_zone_text">Manage Zone</string>
-    <string name="admin_hub_btn_event_text">Manage event</string>
-    <string name="admin_hub_btn_user_text">Manage User</string>
+    <string name="admin_hub_btn_item_text">Item Request</string>
+    <string name="admin_hub_btn_zone_text">Zone</string>
+    <string name="admin_hub_btn_event_text">Event</string>
+    <string name="admin_hub_btn_user_text">User</string>
     <string name="title_activity_item_request_management">Item Request Management</string>
     <string name="title_activity_zone_management">Zone Management</string>
     <string name="title_activity_user_management">User Management</string>
     <string name="title_activity_event_management">Event Management</string>
+    <string name="admin_hub_title">Admin management options</string>
 </resources>

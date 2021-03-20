@@ -87,6 +87,19 @@
             app:strokeColor="@color/purple_500"
             app:strokeWidth="2dp" />
 
+        <TextView
+            android:id="@+id/adminOptionsText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/admin_hub_button_margin"
+            android:layout_marginBottom="@dimen/admin_hub_margin_between_button"
+            android:text="@string/admin_hub_title"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            app:layout_constraintBottom_toTopOf="@+id/btnRedirectUserManagement"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>
