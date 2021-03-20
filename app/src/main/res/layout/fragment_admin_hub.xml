@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.AdminHubFragment"
+    android:id="@+id/id_fragment_admin_hub">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/btnRedirectZoneManagement"
+            android:layout_width="@dimen/admin_hub_button_size"
+            android:layout_height="@dimen/admin_hub_button_size"
+            android:layout_marginTop="@dimen/admin_hub_margin_between_button"
+            android:layout_marginEnd="@dimen/admin_hub_button_margin"
+            android:layout_marginBottom="192dp"
+            android:backgroundTint="#FFFFFF"
+            android:drawableTop="@drawable/ic_place"
+            android:drawableTint="@color/purple_500"
+            android:text="@string/admin_hub_btn_zone_text"
+            android:textColor="@color/purple_500"
+            app:iconTint="@color/purple_500"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnRedirectItemReqManagement"
+            app:layout_constraintVertical_bias="0.0"
+            app:strokeColor="@color/purple_500"
+            app:strokeWidth="2dp" />
+
+        <Button
+            android:id="@+id/btnRedirectUserManagement"
+            android:layout_width="@dimen/admin_hub_button_size"
+            android:layout_height="@dimen/admin_hub_button_size"
+            android:layout_marginStart="@dimen/admin_hub_button_margin"
+            android:layout_marginTop="92dp"
+            android:backgroundTint="@color/white"
+            android:drawableTop="@drawable/ic_account_circle"
+            android:drawableTint="@color/purple_500"
+            android:text="@string/admin_hub_btn_user_text"
+            android:textColor="@color/purple_500"
+            app:layout_constraintEnd_toStartOf="@+id/btnRedirectItemReqManagement"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:strokeColor="@color/purple_500"
+            app:strokeWidth="2dp" />
+
+        <Button
+            android:id="@+id/btnRedirectItemReqManagement"
+            android:layout_width="@dimen/admin_hub_button_size"
+            android:layout_height="@dimen/admin_hub_button_size"
+            android:layout_marginTop="92dp"
+            android:layout_marginEnd="@dimen/admin_hub_button_margin"
+            android:backgroundTint="#FFFFFF"
+            android:drawableTop="@drawable/ic_pencil"
+            android:drawableTint="@color/purple_500"
+            android:text="@string/admin_hub_btn_item_text"
+            android:textColor="@color/purple_500"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:strokeColor="@color/purple_500"
+            app:strokeWidth="2dp" />
+
+        <Button
+            android:id="@+id/btnRedirectEventManager"
+            android:layout_width="@dimen/admin_hub_button_size"
+            android:layout_height="@dimen/admin_hub_button_size"
+            android:layout_marginStart="@dimen/admin_hub_button_margin"
+            android:layout_marginTop="@dimen/admin_hub_margin_between_button"
+            android:backgroundTint="#FFFFFF"
+            android:drawableTop="@drawable/ic_event"
+            android:drawableTint="@color/purple_500"
+            android:text="@string/admin_hub_btn_event_text"
+            android:textColor="@color/purple_500"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btnRedirectZoneManagement"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnRedirectItemReqManagement"
+            app:layout_constraintVertical_bias="0.0"
+            app:strokeColor="@color/purple_500"
+            app:strokeWidth="2dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>
