@@ -9,6 +9,7 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.github.sdpteam15.polyevents.admin.EventManagementActivity
 import com.github.sdpteam15.polyevents.admin.ItemRequestManagementActivity
+import com.github.sdpteam15.polyevents.admin.UserManagementActivity
 import com.github.sdpteam15.polyevents.admin.ZoneManagementActivity
 import com.github.sdpteam15.polyevents.database.DatabaseUserInterface
 import com.github.sdpteam15.polyevents.user.User
@@ -49,8 +50,8 @@ class AdminHubFragmentTest {
     @Test
     fun clickOnBtnUserManagementDisplayCorrectActivity() {
         Intents.init()
-        Espresso.onView(ViewMatchers.withId(R.id.btnRedirectEventManager)).perform(click())
-        Intents.intended(IntentMatchers.hasComponent(EventManagementActivity::class.java.name))
+        Espresso.onView(ViewMatchers.withId(R.id.btnRedirectUserManagement)).perform(click())
+        Intents.intended(IntentMatchers.hasComponent(UserManagementActivity::class.java.name))
         Intents.release()
     }
 
