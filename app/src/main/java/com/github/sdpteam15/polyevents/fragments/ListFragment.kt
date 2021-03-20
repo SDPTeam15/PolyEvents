@@ -15,6 +15,7 @@ import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.event.Event
 import com.github.sdpteam15.polyevents.event.EventItemAdapter
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.user.User.Companion.currentUser
 
 /**
  * Extra containing the event ID to show on the launched event page
@@ -43,7 +44,7 @@ class ListFragment : Fragment() {
         val fragmentView = inflater.inflate(R.layout.fragment_list, container, false)
         recyclerView = fragmentView.findViewById<RecyclerView>(R.id.recycler_events_list)
 
-        val events = currentDatabase.getUpcomingEvents()
+        val events = currentDatabase.getListEvent("",50,currentUser!!.currentProfile)
 
         val openEvent = { event: Event ->
             val intent = Intent(inflater.context, EventActivity::class.java).apply {
