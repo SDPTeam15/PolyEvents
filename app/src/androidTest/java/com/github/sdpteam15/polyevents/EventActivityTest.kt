@@ -2,29 +2,24 @@ package com.github.sdpteam15.polyevents
 
 
 import android.content.Intent
-import android.view.View
-import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.NoMatchingViewException
-import androidx.test.espresso.ViewAssertion
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.event.Event
 import com.github.sdpteam15.polyevents.event.EventItemAdapter
 import com.github.sdpteam15.polyevents.fragments.EXTRA_EVENT_ID
-import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.containsString
-import org.hamcrest.Matcher
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -82,7 +77,6 @@ class EventActivityTest {
                 "3", mutableSetOf("music", "live", "pogo")
             )
         )
-
         mockedUpcomingEventsProvider = mock(DatabaseInterface::class.java)
         currentDatabase = mockedUpcomingEventsProvider
         `when`(mockedUpcomingEventsProvider.getUpcomingEvents()).thenReturn(events)
@@ -90,7 +84,6 @@ class EventActivityTest {
         `when`(mockedUpcomingEventsProvider.getEventFromId("2")).thenReturn(events[1])
         `when`(mockedUpcomingEventsProvider.getEventFromId("3")).thenReturn(events[2])
         // go to activities list fragment
-        mainActivity = ActivityScenarioRule(MainActivity::class.java)
         Espresso.onView(withId(R.id.ic_list)).perform(click())
     }
 

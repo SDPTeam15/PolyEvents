@@ -36,6 +36,8 @@ class MainActivity : AppCompatActivity() {
         //Return CurrentUser if we are not in test, but we can use a fake user in test this way
         var currentUser: UserInterface? = null
             get() = field ?: User.currentUser
+
+        const val NUMBER_EVENT_TO_DISPLAY = 25
     }
 
     private lateinit var adapter: ArrayAdapter<*>
@@ -46,6 +48,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         //Set the basic fragment to the home one or to admin hub if it is logged in
+        //TODO Add a condition to see if the user is an admin or not and if so, redirect him to the admin hub
         if(currentUser == null) {
             HelperFunctions.changeFragment(this, fragments[R.id.ic_home])
         } else {
@@ -63,7 +66,9 @@ class MainActivity : AppCompatActivity() {
                     HelperFunctions.changeFragment(this, fragments[R.id.id_fragment_profile])
                 }
                 R.id.ic_more -> HelperFunctions.changeFragment(this, fragments[R.id.ic_more])
-                else -> if(currentUser == null) {
+                else ->
+                //TODO Add a condition to see if the user is an admin or not and if so, redirect him to the admin hub
+                    if(currentUser == null) {
                     HelperFunctions.changeFragment(this, fragments[R.id.ic_home])
                 } else {
                     HelperFunctions.changeFragment(this, fragments[R.id.id_fragment_admin_hub])
