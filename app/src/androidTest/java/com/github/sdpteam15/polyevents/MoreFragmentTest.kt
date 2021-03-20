@@ -44,7 +44,6 @@ class MoreFragmentTest {
     @Test
     fun itemsAdminActivity() {
         onView(withId(R.id.ic_more)).perform(click())
-
         onView(withId(R.id.btn_admin_items_list)).perform(click())
         intended(hasComponent(ItemsAdminActivity::class.java.name))
     }
