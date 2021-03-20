@@ -7,7 +7,6 @@
          location permissions for the "MyLocation" functionality.
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -15,11 +14,24 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PolyEvents">
-        <activity android:name=".admin.EventManagementActivity"></activity>
-        <activity android:name=".admin.UserManagementActivity" />
-        <activity android:name=".admin.ZoneManagementActivity" />
-        <activity android:name=".admin.ItemRequestManagementActivity" />
+        <activity
+            android:name=".admin.EventManagementActivity"
+            android:label="@string/title_activity_event_management"
+            android:parentActivityName=".MainActivity" />
+
+        <activity android:name=".admin.UserManagementActivity"
+            android:label="@string/title_activity_user_management"
+            android:parentActivityName=".MainActivity"/>
+
+        <activity android:name=".admin.ZoneManagementActivity"
+            android:label="@string/title_activity_zone_management"
+            android:parentActivityName=".MainActivity"/>
+
+        <activity android:name=".admin.ItemRequestManagementActivity"
+            android:label="@string/title_activity_item_request_management"
+            android:parentActivityName=".MainActivity"/>
         <activity android:name=".ItemsAdminActivity" />
+
         <activity
             android:name=".ItemRequestActivity"
             android:label="@string/title_activity_item_request"

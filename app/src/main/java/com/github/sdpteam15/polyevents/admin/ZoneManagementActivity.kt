@@ -8,5 +8,6 @@ class ZoneManagementActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_zone_management)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
     }
 }
