@@ -8,7 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.fragments.*
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
-import com.github.sdpteam15.polyevents.user.User.Companion.currentUser
+import com.github.sdpteam15.polyevents.user.User
+import com.github.sdpteam15.polyevents.user.UserInterface
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -20,6 +21,7 @@ class MainActivity : AppCompatActivity() {
             get() {
                 if (mapFragment == null) {
                     mapFragment = HashMap()
+                    mapFragment!![R.id.id_fragment_admin_hub] = AdminHubFragment()
                     mapFragment!![R.id.ic_home] = HomeFragment()
                     mapFragment!![R.id.ic_map] = MapsFragment()
                     mapFragment!![R.id.ic_list] = ListFragment()
@@ -30,29 +32,42 @@ class MainActivity : AppCompatActivity() {
                 //return type immutable
                 return HashMap<Int, Fragment>(mapFragment as HashMap)
             }
+
+        //Return CurrentUser if we are not in test, but we can use a fake user in test this way
+        var currentUser: UserInterface? = null
+            get() = field ?: User.currentUser
     }
 
     private lateinit var adapter: ArrayAdapter<*>
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //Set the basic fragment to the home one
-        HelperFunctions.changeFragment(this, fragments[R.id.ic_home])
+        //Set the basic fragment to the home one or to admin hub if it is logged in
+        if(currentUser == null) {
+            HelperFunctions.changeFragment(this, fragments[R.id.ic_home])
+        } else {
+            HelperFunctions.changeFragment(this, fragments[R.id.id_fragment_admin_hub])
+        }
 
         //Add a listener to the menu to switch between fragments
         findViewById<BottomNavigationView>(R.id.navigation_bar).setOnNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.ic_map -> HelperFunctions.changeFragment(this, fragments[R.id.ic_map])
                 R.id.ic_list -> HelperFunctions.changeFragment(this, fragments[R.id.ic_list])
-                R.id.ic_login -> if (currentUser==null) {
+                R.id.ic_login -> if (currentUser == null) {
                     HelperFunctions.changeFragment(this, fragments[R.id.ic_login])
-                }else {
+                } else {
                     HelperFunctions.changeFragment(this, fragments[R.id.id_fragment_profile])
                 }
                 R.id.ic_more -> HelperFunctions.changeFragment(this, fragments[R.id.ic_more])
-                else -> HelperFunctions.changeFragment(this, fragments[R.id.ic_home])
+                else -> if(currentUser == null) {
+                    HelperFunctions.changeFragment(this, fragments[R.id.ic_home])
+                } else {
+                    HelperFunctions.changeFragment(this, fragments[R.id.id_fragment_admin_hub])
+                }
             }
             true
         }
