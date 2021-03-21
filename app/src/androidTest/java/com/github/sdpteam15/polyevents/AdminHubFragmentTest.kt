@@ -50,7 +50,7 @@ class AdminHubFragmentTest {
     fun clickOnBtnEventDisplayCorrectActivity() {
 
         Espresso.onView(ViewMatchers.withId(R.id.btnRedirectEventManager)).perform(click())
-        Thread.sleep(3000)
+        Thread.sleep(10000)
         Intents.intended(IntentMatchers.hasComponent(EventManagementActivity::class.java.name))
     }
 
@@ -58,14 +58,14 @@ class AdminHubFragmentTest {
     fun clickOnBtnUserManagementDisplayCorrectActivity() {
         Espresso.onView(ViewMatchers.withId(R.id.btnRedirectUserManagement)).perform(click())
 
-        Thread.sleep(3000)
+        Thread.sleep(10000)
         Intents.intended(IntentMatchers.hasComponent(UserManagementActivity::class.java.name))
     }
 
     @Test
     fun clickOnBtnItemRequestManagementDisplayCorrectActivity() {
         Espresso.onView(ViewMatchers.withId(R.id.btnRedirectItemReqManagement)).perform(click())
-        Thread.sleep(3000)
+        Thread.sleep(10000)
         Intents.intended(IntentMatchers.hasComponent(ItemRequestManagementActivity::class.java.name))
 
     }
@@ -73,7 +73,7 @@ class AdminHubFragmentTest {
     @Test
     fun clickOnBtnZoneManagementDisplayCorrectActivity() {
         Espresso.onView(ViewMatchers.withId(R.id.btnRedirectZoneManagement)).perform(click())
-        Thread.sleep(3000)
+        Thread.sleep(10000)
         Intents.intended(IntentMatchers.hasComponent(ZoneManagementActivity::class.java.name))
     }
 }
