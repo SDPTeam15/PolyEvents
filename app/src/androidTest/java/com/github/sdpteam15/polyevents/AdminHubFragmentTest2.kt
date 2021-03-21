@@ -23,7 +23,7 @@ import org.mockito.Mockito.mock
 import org.mockito.junit.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)
-class AdminHubFragmentTest {
+class AdminHubFragmentTest2 {
     @Rule
     @JvmField
     var mainActivity = ActivityScenarioRule(MainActivity::class.java)
@@ -43,22 +43,19 @@ class AdminHubFragmentTest {
 
     @After
     fun teardown(){
-
         MainActivity.currentUser = null
         Intents.release()
     }
 
-
     @Test
-    fun clickOnBtnItemRequestManagementDisplayCorrectActivity() {
-        Espresso.onView(ViewMatchers.withId(R.id.btnRedirectItemReqManagement)).perform(click())
-        Intents.intended(IntentMatchers.hasComponent(ItemRequestManagementActivity::class.java.name))
-
+    fun clickOnBtnEventDisplayCorrectActivity() {
+        Espresso.onView(ViewMatchers.withId(R.id.btnRedirectEventManager)).perform(click())
+        Intents.intended(IntentMatchers.hasComponent(EventManagementActivity::class.java.name))
     }
 
     @Test
-    fun clickOnBtnZoneManagementDisplayCorrectActivity() {
-        Espresso.onView(ViewMatchers.withId(R.id.btnRedirectZoneManagement)).perform(click())
-        Intents.intended(IntentMatchers.hasComponent(ZoneManagementActivity::class.java.name))
+    fun clickOnBtnUserManagementDisplayCorrectActivity() {
+        Espresso.onView(ViewMatchers.withId(R.id.btnRedirectUserManagement)).perform(click())
+        Intents.intended(IntentMatchers.hasComponent(UserManagementActivity::class.java.name))
     }
 }
