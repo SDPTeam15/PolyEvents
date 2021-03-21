@@ -12,11 +12,15 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+        <!--
 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintGuide_percent=""-->
         <Button
-            android:id="@+id/btnRedirectZoneManagement"
             android:layout_width="@dimen/admin_hub_button_size"
             android:layout_height="@dimen/admin_hub_button_size"
+            android:id="@+id/btnRedirectZoneManagement"
             android:layout_marginTop="@dimen/admin_hub_margin_between_button"
             android:layout_marginEnd="@dimen/admin_hub_button_margin"
             android:layout_marginBottom="192dp"

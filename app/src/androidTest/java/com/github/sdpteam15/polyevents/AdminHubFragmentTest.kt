@@ -43,7 +43,6 @@ class AdminHubFragmentTest {
 
     @After
     fun teardown(){
-
         MainActivity.currentUser = null
         Intents.release()
     }
