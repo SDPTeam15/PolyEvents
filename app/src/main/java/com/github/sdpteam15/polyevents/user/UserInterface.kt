@@ -32,6 +32,11 @@ interface UserInterface {
     val uid: String
 
     /**
+     * Application user rank
+     */
+    val rank: Rank
+
+    /**
      * Current application user profile
      */
     val currentProfile: ProfileInterface

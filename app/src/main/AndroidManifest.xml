@@ -15,11 +15,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PolyEvents">
-        <activity android:name=".ItemsAdminActivity"></activity>
+        <activity android:name=".EditProfileActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity android:name=".ItemsAdminActivity" />
         <activity
             android:name=".ItemRequestActivity"
             android:label="@string/title_activity_item_request"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".EventActivity"
             android:parentActivityName=".MainActivity" />
@@ -35,7 +37,8 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="TODO" />
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+                android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

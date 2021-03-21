@@ -14,6 +14,13 @@ object DatabaseConstant {
     const val USER_AGE = "age"
     const val USER_TYPE =  "userType"
     const val USER_BIRTHDAY = "birthday"
+    /**
+     * Profile related constants
+     */
+    const val PROFILE_COLLECTION = "Profile"
+    const val PROFILE_ID = "pid"
+    const val PROFILE_NAME = "name"
+    const val PROFILE_RANK = "rank"
 
 
     /**

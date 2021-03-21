@@ -47,6 +47,7 @@ class ProfileLoginFragmentTests {
 
     @Before
     fun setup() {
+        User.currentUser = null
         mockedDatabaseUser = mock(DatabaseUserInterface::class.java)
         When(mockedDatabaseUser.email).thenReturn(emailTest)
         When(mockedDatabaseUser.displayName).thenReturn(displayNameTest)

@@ -3,23 +3,21 @@ package com.github.sdpteam15.polyevents.user
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.DatabaseUserInterface
-import com.github.sdpteam15.polyevents.database.FakeDatabase
-import com.github.sdpteam15.polyevents.database.FirebaseUserAdapter
-import com.google.firebase.auth.FirebaseUser
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.mock
 import org.mockito.junit.MockitoJUnitRunner
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import org.mockito.Mockito.`when` as When
 
 @RunWith(MockitoJUnitRunner::class)
 class UserTest {
 
-    lateinit var mockedDatabaseUser : DatabaseUserInterface
-    lateinit var mockedDatabaseInterface : DatabaseInterface
+    lateinit var mockedDatabaseUser: DatabaseUserInterface
+    lateinit var mockedDatabaseInterface: DatabaseInterface
 
     @Before
     fun setup() {
@@ -30,7 +28,7 @@ class UserTest {
 
     @Test
     fun invokeTest() {
-        Mockito.`when`(mockedDatabaseUser.uid).thenReturn("Test UID")
+        When(mockedDatabaseUser.uid).thenReturn("Test UID")
 
         val user = User.invoke(mockedDatabaseUser)
 
@@ -40,10 +38,12 @@ class UserTest {
 
     @Test
     fun profileListTest() {
-        Mockito.`when`(mockedDatabaseUser.uid).thenReturn("Test UID")
-        Mockito.`when`(mockedDatabaseUser.displayName).thenReturn("Test name")
+        When(mockedDatabaseUser.uid).thenReturn("Test UID")
+        When(mockedDatabaseUser.displayName).thenReturn("Test name")
 
         val user = User.invoke(mockedDatabaseUser)
+
+        When(mockedDatabaseInterface.getListProfile(user.uid, user)).thenReturn(listOf())
 
         assertEquals(1, user.profileList.size)
         assertEquals(mockedDatabaseUser.displayName, user.profileList[0].name)
@@ -73,7 +73,7 @@ class UserTest {
         user.newProfile("New Name")
         user.removeProfile(user.profileList[1])
 
-        val fakeProfile = Mockito.mock(ProfileInterface::class.java)
+        val fakeProfile = mock(ProfileInterface::class.java)
         user.removeProfile(fakeProfile)
 
         user.removeCache()
@@ -88,19 +88,19 @@ class UserTest {
     }
 
     @Test
-    fun currentUserTest(){
-        val mockedDatabase = Mockito.mock(DatabaseInterface::class.java)
-        val mockedCurrentUser1 = Mockito.mock(DatabaseUserInterface ::class.java)
-        val mockedCurrentUser2 = Mockito.mock(DatabaseUserInterface ::class.java)
+    fun currentUserTest() {
+        val mockedDatabase = mock(DatabaseInterface::class.java)
+        val mockedCurrentUser1 = mock(DatabaseUserInterface::class.java)
+        val mockedCurrentUser2 = mock(DatabaseUserInterface::class.java)
         currentDatabase = mockedDatabase;
 
-        Mockito.`when`(mockedDatabase.currentUser).thenReturn(mockedCurrentUser1)
-        Mockito.`when`(mockedCurrentUser1.uid).thenReturn("0")
+        When(mockedDatabase.currentUser).thenReturn(mockedCurrentUser1)
+        When(mockedCurrentUser1.uid).thenReturn("0")
         assertEquals("0", User.currentUser!!.uid)
         assertEquals("0", User.currentUser!!.uid)
 
-        Mockito.`when`(mockedDatabase.currentUser).thenReturn(mockedCurrentUser2)
-        Mockito.`when`(mockedCurrentUser2.uid).thenReturn("1")
+        When(mockedDatabase.currentUser).thenReturn(mockedCurrentUser2)
+        When(mockedCurrentUser2.uid).thenReturn("1")
         assertEquals("1", User.currentUser!!.uid)
     }
 }

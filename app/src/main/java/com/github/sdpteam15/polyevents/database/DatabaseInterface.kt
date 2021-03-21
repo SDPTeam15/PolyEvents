@@ -2,6 +2,7 @@ package com.github.sdpteam15.polyevents.database
 
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.event.Event
+import com.github.sdpteam15.polyevents.user.Profile
 import com.github.sdpteam15.polyevents.user.Profile.Companion.CurrentProfile
 import com.github.sdpteam15.polyevents.user.ProfileInterface
 import com.github.sdpteam15.polyevents.user.User
@@ -29,7 +30,7 @@ interface DatabaseInterface {
     //@Deprecated(message = "Use the asynchronous method")
     fun getListProfile(
         uid: String,
-        user: UserInterface = currentUser as UserInterface
+        user: UserInterface = User.currentUser as UserInterface
     ): List<ProfileInterface>
 
     /**
@@ -41,8 +42,9 @@ interface DatabaseInterface {
      */
     //@Deprecated(message = "Use the asynchronous method")
     fun addProfile(
-        profile: ProfileInterface, uid: String,
-        user: UserInterface = currentUser as UserInterface
+        profile: ProfileInterface,
+        uid: String,
+        user: UserInterface = User.currentUser as UserInterface
     ): Boolean
 
     /**
@@ -54,8 +56,8 @@ interface DatabaseInterface {
      */
     //@Deprecated(message = "Use the asynchronous method")
     fun removeProfile(
-        profile: ProfileInterface, uid: String = (currentUser as UserInterface).uid,
-        user: UserInterface = currentUser as UserInterface
+        profile: ProfileInterface, uid: String = (User.currentUser as UserInterface).uid,
+        user: UserInterface = User.currentUser as UserInterface
     ): Boolean
 
     /**
@@ -67,7 +69,7 @@ interface DatabaseInterface {
     //@Deprecated(message = "Use the asynchronous method")
     fun updateProfile(
         profile: ProfileInterface,
-        user: UserInterface = currentUser as UserInterface
+        user: UserInterface = User.currentUser as UserInterface
     ): Boolean
 
     /**
@@ -293,16 +295,6 @@ interface DatabaseInterface {
         user: UserInterface = User.currentUser as UserInterface
     ): Observable<Boolean>
 
-    /**
-     * Update profile
-     * @param event event to update
-     * @param profile profile for database access
-     * @return An observer that will be set to true if the communication with the DB is over and no error
-     */
-    fun updateProfile(
-        profile: ProfileInterface,
-        user: UserInterface = currentUser as UserInterface
-    ): Observable<Boolean>
 
     /**
      * Get list of profile of a user uid
@@ -326,8 +318,21 @@ interface DatabaseInterface {
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun updateUserInformation(
-        newValues: HashMap<String, String>,
+        newValues: Map<String, String>,
         uid: String,
+        userAccess: UserInterface = User.currentUser as UserInterface
+    ): Observable<Boolean>
+
+    /**
+     * Update profile
+     * @param newValues : a map with the new value to set in the database
+     * @param pid : the uid of the profile from which we want to query the information
+     * @param userAccess: the user object to use its permission
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun updateProfile(
+        newValues: Map<String, String>,
+        pid: String,
         userAccess: UserInterface = User.currentUser as UserInterface
     ): Observable<Boolean>
 
@@ -359,13 +364,26 @@ interface DatabaseInterface {
      * Look in the database if the user already exists or not
      * @param user : live data that will be set with the find user value
      * @param uid : user uid we want to get the information
-     * @param userAccess: the user object to use its permission
+     * @param userAccess : the user object to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getUserInformation(
         user: Observable<UserInterface>,
         uid: String = (User.currentUser as UserInterface).uid,
         userAccess: UserInterface = User.currentUser as UserInterface
+    ): Observable<Boolean>
+
+    /**
+     * Look in the database if the user already exists or not
+     * @param profile : live data that will be set with the find profile value
+     * @param pid : profile id we want to get
+     * @param profileAccess : the profile object to use its permission
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun getProfileById(
+        profile: Observable<ProfileInterface>,
+        pid: String,
+        profileAccess: ProfileInterface = CurrentProfile
     ): Observable<Boolean>
 
     /**

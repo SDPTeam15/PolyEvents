@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.event.Event
 import com.github.sdpteam15.polyevents.user.ProfileInterface
+import com.github.sdpteam15.polyevents.user.Rank
 import com.github.sdpteam15.polyevents.user.User
 import com.github.sdpteam15.polyevents.user.UserInterface
 import java.time.LocalDateTime
@@ -215,6 +216,7 @@ object FakeDatabase : DatabaseInterface {
         override var displayName: String = "FakeName"
         override var uid: String = "FakeUID"
         override var email: String = "Fake@mail.ch"
+        override val rank: Rank = Rank.Admin
     }
 
     override fun getListProfile(uid: String, user: UserInterface): List<ProfileInterface> =
@@ -231,6 +233,12 @@ object FakeDatabase : DatabaseInterface {
     ): Boolean = profiles.remove(profile)
 
     override fun updateProfile(profile: ProfileInterface, user: UserInterface): Boolean = true
+
+    override fun updateProfile(
+        newValues: Map<String, String>,
+        pid: String,
+        userAccess: UserInterface
+    ): Observable<Boolean> = Observable(true)
 
     override fun getListEvent(
         matcher: String?,
@@ -255,7 +263,7 @@ object FakeDatabase : DatabaseInterface {
     override fun updateEvent(Event: Event, profile: ProfileInterface): Boolean = true
 
     override fun updateUserInformation(
-        newValues: HashMap<String, String>,
+        newValues: Map<String, String>,
         uid: String,
         userAccess: UserInterface
     ): Observable<Boolean> =
@@ -296,6 +304,14 @@ object FakeDatabase : DatabaseInterface {
     ): Observable<Boolean> {
         user.value = User.invoke(currentUser)
         return Observable(true)
+    }
+
+    override fun getProfileById(
+        profile: Observable<ProfileInterface>,
+        id: String,
+        profileAccess: ProfileInterface
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
     }
 
     override fun getItemsList(): MutableList<String> {

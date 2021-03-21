@@ -34,8 +34,10 @@ class User private constructor(override val databaseUser: DatabaseUserInterface)
         /**
          * Current user of the application
          */
-        val currentUser: UserInterface?
+        var currentUser: UserInterface? = null
             get() {
+                if(field != null)
+                    return field
                 val currentUser: DatabaseUserInterface = currentDatabase.currentUser ?: return null
                 if(lastCurrentUserUid != null && lastCurrentUserUid != currentUser.uid)
                     invoke(lastCurrentUserUid!!)?.removeCache()
@@ -48,7 +50,7 @@ class User private constructor(override val databaseUser: DatabaseUserInterface)
         get() {
             field = field ?: currentDatabase.getListProfile(uid, this).toMutableList()
             if (field!!.size == 0) {
-                val profile = Profile(name, this)
+                val profile = Profile("$uid:0", name, Rank.RegisteredVisitor, this)
                 field!!.add(profile)
                 currentDatabase.addProfile(profile, uid, this)
             }
@@ -63,6 +65,9 @@ class User private constructor(override val databaseUser: DatabaseUserInterface)
         get() = databaseUser.uid
     override val email: String
         get() = databaseUser.email ?: ""
+    override val rank: Rank
+        get() = databaseUser.rank
+
 
     /**
      * Current application user profile id
@@ -91,7 +96,8 @@ class User private constructor(override val databaseUser: DatabaseUserInterface)
     }
 
     override fun newProfile(name: String) {
-        val profile = Profile(name, this)
+        val pid = mutableProfileList!!.size
+        val profile = Profile("$uid:$pid", name, Rank.RegisteredVisitor, this)
         mutableProfileList!!.add(profile)
         currentDatabase.addProfile(profile, uid, this)
     }

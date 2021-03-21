@@ -4,10 +4,16 @@ import com.github.sdpteam15.polyevents.user.User.Companion.currentUser
 
 /**
  * Application user profile
+ * @property id Profile id
  * @property name Profile name
+ * @property rank Profile rank
  * @property associatedUser Associated user of the profile
  */
-class Profile(override var name: String, override val associatedUser: UserInterface?) :
+class Profile(
+    override var id: String,
+    override var name: String,
+    override var rank: Rank,
+    override val associatedUser: UserInterface? = null) :
     ProfileInterface {
 
     /**
@@ -21,7 +27,7 @@ class Profile(override var name: String, override val associatedUser: UserInterf
          */
         val Default: ProfileInterface
             get() {
-                default = default ?: Profile("default", null)
+                default = default ?: Profile("default", "default", Rank.Visitor)
                 return default as ProfileInterface
             }
 

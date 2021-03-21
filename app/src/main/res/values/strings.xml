@@ -72,4 +72,24 @@
     <string name="item_name_quantity_text">%1$s (%2$d available)</string>
     <string name="max_item_quantity_text">There are only %1$s %2$s available !</string>
     <string name="go_to_admin_item_list">go to admin item list</string>
+
+    <!-- EditProfileActivity -->
+    <string name="EditProfileActivity_Name">Name</string>
+    <string name="EditProfileActivity_ID">ID</string>
+    <string name="EditProfileActivity_Rank">Rank</string>
+    <string name="EditProfileActivity_Save">Save</string>
+    <string name="EditProfileActivity_Cancel">Cancel</string>
+    <string name="EditProfileActivity_DatabaseError">Impossible to update your profile information, please try again.</string>
+
+    <string-array name="EditProfileActivity_Ranks">
+        <item>Admin</item>
+        <item>Activity provider</item>
+        <item>Staff</item>
+        <item>Visitor</item>
+    </string-array>
+    <!-- EditProfileActivity -->
+
+
+
+
 </resources>

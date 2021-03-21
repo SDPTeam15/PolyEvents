@@ -9,6 +9,7 @@ import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_EMAIL
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_GOOGLE_ID
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.event.Event
+import com.github.sdpteam15.polyevents.user.Profile
 import com.github.sdpteam15.polyevents.user.ProfileInterface
 import com.github.sdpteam15.polyevents.user.UserInterface
 import com.google.android.gms.tasks.OnFailureListener
@@ -20,7 +21,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-
 
 object FirestoreDatabaseProvider : DatabaseInterface {
     var firestore: FirebaseFirestore? = null
@@ -59,6 +59,15 @@ object FirestoreDatabaseProvider : DatabaseInterface {
 
     override fun updateProfile(profile: ProfileInterface, user: UserInterface): Boolean {
         return true/*TODO*/
+    }
+
+    override fun updateProfile(
+        newValues: Map<String, String>,
+        pid: String,
+        userAccess: UserInterface
+    ): Observable<Boolean> {
+        //TODO Return the a real profile
+        return Observable<Boolean>(true)
     }
 
     override fun getListEvent(
@@ -152,7 +161,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
 
 
     override fun updateUserInformation(
-        newValues: java.util.HashMap<String, String>,
+        newValues: Map<String, String>,
         uid: String,
         userAccess: UserInterface
     ): Observable<Boolean> = thenDoSet(
@@ -205,6 +214,19 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     ) {
         //TODO once the data class User is created, set the user with the correct value
         user.postValue(userAccess)
+    }
+
+    override fun getProfileById(
+        profile: Observable<ProfileInterface>,
+        pid: String,
+        profileAccess: ProfileInterface
+    ): Observable<Boolean> {
+        val ended = Observable<Boolean>()
+        //TODO Return the a real profile
+        profile.observe { ended.postValue(true) }
+        profile.value = Profile.Default
+
+        return ended
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
