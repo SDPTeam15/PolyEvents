@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.fragments
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -10,16 +11,20 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.isPermissionGranted
-import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
-import com.google.android.gms.maps.*
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.*
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
 class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
@@ -27,6 +32,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     OnMyLocationButtonClickListener {
 
     private var map: GoogleMap? = null
+    private var useUserLocation = false
 
     private var cameraPosition: CameraPosition? = null
 
@@ -41,7 +47,12 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_maps, container, false)
+        val view = inflater.inflate(R.layout.fragment_maps, container, false)
+
+        view.findViewById<FloatingActionButton>(R.id.id_location_button).setOnClickListener{
+            switchLocationOnOff()
+        }
+        return view
     }
 
     override fun onPause() {
@@ -76,8 +87,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         drawPolyline()
         createMarker()
         createMarker2()
-        //setBoundaries()
-        //setMinAndMaxZoom()
+        setBoundaries()
+        setMinAndMaxZoom()
 
         // Set listeners for click events.
         googleMap.setOnPolylineClickListener(this)
@@ -93,7 +104,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
             )
         }
 
-        if (locationPermissionGranted) {
+        if(useUserLocation) {
             activateMyLocation()
         }
 
@@ -144,19 +155,24 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     }
 
     override fun onMyLocationButtonClick(): Boolean {
+
         // Return false to indicate that we did not consume the event. So the default behavior
         // still occurs (which is to move the camera to the current location.
         return false
     }
 
     /**
-     * Activate "my location"
+     * Activate "my location" tracking.
      * (source : https://developers.google.com/maps/documentation/android-sdk/location#kotlin)
      */
     private fun activateMyLocation() {
         if (context?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.ACCESS_FINE_LOCATION) }
         == PackageManager.PERMISSION_GRANTED) {
             map!!.isMyLocationEnabled = true
+
+            // Change the appearance of the location button.
+            setLocationIcon(true)
+            useUserLocation = true
         }
     }
 
@@ -322,6 +338,37 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                 PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
             )
+        }
+    }
+
+    /**
+     * Update the location button icon according to whether the location is on or not
+     * @param locationIsOn : boolean, true if the location is currently used
+     */
+    private fun setLocationIcon(locationIsOn: Boolean) {
+        val idOfResource: Int = if (locationIsOn) {
+            R.drawable.ic_baseline_location_on
+        } else {
+            R.drawable.ic_baseline_location_off
+        }
+        requireView().findViewById<FloatingActionButton>(R.id.id_location_button).setImageResource(idOfResource)
+    }
+
+    /**
+     * Switch the location to on or off according to the current state.
+     * Update accordingly the icon.
+     */
+    @SuppressLint("MissingPermission")
+    private fun switchLocationOnOff() {
+        val locationIsOn = map!!.isMyLocationEnabled
+
+        if (locationIsOn) {
+            // Disable the location
+            map!!.isMyLocationEnabled = false
+            setLocationIcon(false)
+            useUserLocation = false
+        } else {
+            activateMyLocation()
         }
     }
 
