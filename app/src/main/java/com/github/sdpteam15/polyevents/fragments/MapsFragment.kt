@@ -15,16 +15,16 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.isPermissionGranted
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
+import com.google.android.gms.maps.*
 import com.google.android.gms.maps.GoogleMap.*
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 
 
 class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
-    OnPolygonClickListener, OnMarkerClickListener, OnInfoWindowClickListener {
+    OnPolygonClickListener, OnMarkerClickListener, OnInfoWindowClickListener,
+    OnMyLocationButtonClickListener {
 
     private var map: GoogleMap? = null
 
@@ -62,6 +62,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     }
 
     override fun onMapReady(googleMap: GoogleMap?) {
+        Log.d("POSITION", "in onMapReady")
+
         map = googleMap!!
 
         //Restoring the map state
@@ -74,14 +76,14 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         drawPolyline()
         createMarker()
         createMarker2()
-        setBoundaries()
-        setMinAndMaxZoom()
-
+        //setBoundaries()
+        //setMinAndMaxZoom()
 
         // Set listeners for click events.
         googleMap.setOnPolylineClickListener(this)
         googleMap.setOnPolygonClickListener(this)
         googleMap.setOnMarkerClickListener(this)
+        googleMap.setOnMyLocationButtonClickListener(this)
 
         //This is to get easily the coordinates from a position
         map!!.setOnMapClickListener { latLng ->
@@ -91,8 +93,71 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
             )
         }
 
+        if (locationPermissionGranted) {
+            activateMyLocation()
+        }
+
         //To deactivate the 3d buildings
         //map!!.isBuildingsEnabled = false
+    }
+
+    override fun onPolylineClick(polyline: Polyline) {
+        Toast.makeText(context, "Route type " + polyline.tag.toString(), Toast.LENGTH_SHORT).show()
+        //Changes the camera location and parameters
+        //changeCameraLocation()
+    }
+
+    override fun onPolygonClick(polygon: Polygon) {
+        areasPoints.get(polygon.tag)!!.first.showInfoWindow()
+    }
+
+    override fun onMarkerClick(marker: Marker): Boolean {
+        marker.showInfoWindow()
+
+        //Return true to say that we don't want the event to go further (to the usual event when a marker is clicked)
+        return true
+    }
+
+    override fun onInfoWindowClick(p0: Marker) {
+        Toast.makeText(
+            context,
+            "Info Window clicked for marker" + p0.title + ", can lanch activity here",
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int,
+                                            permissions: Array<String>,
+                                            grantResults: IntArray) {
+        when (requestCode) {
+            PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION -> {
+
+                // If request is denied, the result arrays are empty.
+                if (isPermissionGranted(permissions, grantResults, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    locationPermissionGranted = true
+                    activateMyLocation()
+                } else {
+                    locationPermissionGranted = false
+                }
+            }
+        }
+    }
+
+    override fun onMyLocationButtonClick(): Boolean {
+        // Return false to indicate that we did not consume the event. So the default behavior
+        // still occurs (which is to move the camera to the current location.
+        return false
+    }
+
+    /**
+     * Activate "my location"
+     * (source : https://developers.google.com/maps/documentation/android-sdk/location#kotlin)
+     */
+    private fun activateMyLocation() {
+        if (context?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.ACCESS_FINE_LOCATION) }
+        == PackageManager.PERMISSION_GRANTED) {
+            map!!.isMyLocationEnabled = true
+        }
     }
 
     /**
@@ -218,8 +283,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
      * Sets the minimal and the maximal zoom
      */
     private fun setMinAndMaxZoom() {
-        map!!.setMinZoomPreference(18f)
-        map!!.setMaxZoomPreference(20f)
+        map!!.setMinZoomPreference(10f)
+        map!!.setMaxZoomPreference(25f)
     }
 
     /**
@@ -235,30 +300,29 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         map!!.setLatLngBoundsForCameraTarget(bounds)
     }
 
-
-    override fun onPolylineClick(polyline: Polyline) {
-        Toast.makeText(context, "Route type " + polyline.tag.toString(), Toast.LENGTH_SHORT).show()
-        //Changes the camera location and parameters
-        //changeCameraLocation()
-    }
-
-    override fun onPolygonClick(polygon: Polygon) {
-        areasPoints.get(polygon.tag)!!.first.showInfoWindow()
-    }
-
-    override fun onMarkerClick(marker: Marker): Boolean {
-        marker.showInfoWindow()
-
-        //Return true to say that we don't want the event to go further (to the usual event when a marker is clicked)
-        return true
-    }
-
-    override fun onInfoWindowClick(p0: Marker) {
-        Toast.makeText(
-            context,
-            "Info Window clicked for marker" + p0.title + ", can lanch activity here",
-            Toast.LENGTH_SHORT
-        ).show()
+    /**
+     * Asks for permission to use location
+     */
+    private fun getLocationPermission() {
+        /*
+         * Request location permission, so that we can get the location of the
+         * device. The result of the permission request is handled by a callback,
+         * onRequestPermissionsResult.
+         */
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+            locationPermissionGranted = true
+        } else {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
+            )
+        }
     }
 
     //---------------SAMPLE FUNCTIONS-----------------
@@ -357,54 +421,4 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         // Store a data object with the polygon, used here to indicate an arbitrary type.
         polygon1.tag = "beta"
     }
-
-
-    //--------------------------------------------------------------
-
-    /**
-     * Asks for permission to use location
-     */
-    private fun getLocationPermission() {
-        /*
-         * Request location permission, so that we can get the location of the
-         * device. The result of the permission request is handled by a callback,
-         * onRequestPermissionsResult.
-         */
-
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            )
-            == PackageManager.PERMISSION_GRANTED
-        ) {
-            locationPermissionGranted = true
-        } else {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
-            )
-        }
-    }
-
-    /*
-    TODO : May be useful later to display position
-    override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<String>,
-                                            grantResults: IntArray) {
-        locationPermissionGranted = false
-        when (requestCode) {
-            PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION -> {
-
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.isNotEmpty() &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    locationPermissionGranted = true
-                }
-            }
-        }
-    }
-    */
-
-
 }
