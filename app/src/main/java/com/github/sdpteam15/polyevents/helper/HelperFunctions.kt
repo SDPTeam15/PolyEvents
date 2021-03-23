@@ -14,6 +14,11 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import com.github.sdpteam15.polyevents.MainActivity
 import com.github.sdpteam15.polyevents.R
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.Period
+import java.time.ZoneId
+import java.util.*
 
 object HelperFunctions {
     /**
@@ -69,4 +74,36 @@ object HelperFunctions {
     fun showToast(message: String, context: Context) {
         Toast.makeText(context, message, Toast.LENGTH_LONG).show()
     }
+
+    /**
+     * Helper function to convert a Date instance into the corresponding LocalDateTime. Note that
+     * Google Cloud Firestore uses Timestamp which maps to Date and not
+     * LocalDateTime.
+     *
+     * See https://stackoverflow.com/questions/19431234/converting-between-java-time-localdatetime-and-java-util-date
+     * for more details
+     *
+     * @param date the Date instance to convert
+     * @return the corresponding LocalDateTime
+     */
+    fun DateToLocalDateTime(date: Date?): LocalDateTime =
+        LocalDateTime.ofInstant(date?.toInstant(), ZoneId.systemDefault())
+
+    /**
+     * Converts LocalDateTime to Date.
+     * @param ldt the LocalDateTime instance
+     *
+     * @return the corresponding Date
+     */
+    fun LocalDateToTimeToDate(ldt: LocalDateTime?): Date =
+        Date.from(ldt?.atZone(ZoneId.systemDefault())?.toInstant())
+
+    /**
+     * Calculates a person's age based on his birthDate and the current chosen date.
+     * @param birthDate the birth date of a person
+     * @param currentDate the current reference date based upon which we're calculating the age
+     * @return the age of the person
+     */
+    fun calculateAge(birthDate: LocalDate, currentDate: LocalDate): Int =
+        Period.between(birthDate, currentDate).getYears()
 }
