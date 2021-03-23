@@ -11,10 +11,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.isPermissionGranted
@@ -52,7 +52,15 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         view.findViewById<FloatingActionButton>(R.id.id_location_button).setOnClickListener{
             switchLocationOnOff()
         }
+
+        view.findViewById<FloatingActionButton>(R.id.id_locate_me_button).setOnClickListener{
+            moveToMyLocation()
+        }
         return view
+    }
+
+    private fun moveToMyLocation() {
+        getBuiltInLocationButton().performClick()
     }
 
     override fun onPause() {
@@ -169,6 +177,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         if (context?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.ACCESS_FINE_LOCATION) }
         == PackageManager.PERMISSION_GRANTED) {
             map!!.isMyLocationEnabled = true
+
+            // Hide the built-in location button
+            getBuiltInLocationButton().isVisible = false
 
             // Change the appearance of the location button.
             setLocationIcon(true)
@@ -299,8 +310,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
      * Sets the minimal and the maximal zoom
      */
     private fun setMinAndMaxZoom() {
-        map!!.setMinZoomPreference(10f)
-        map!!.setMaxZoomPreference(25f)
+        map!!.setMinZoomPreference(15f)
+        map!!.setMaxZoomPreference(20f)
     }
 
     /**
@@ -347,9 +358,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
      */
     private fun setLocationIcon(locationIsOn: Boolean) {
         val idOfResource: Int = if (locationIsOn) {
-            R.drawable.ic_baseline_location_on
+            R.drawable.ic_location_on
         } else {
-            R.drawable.ic_baseline_location_off
+            R.drawable.ic_location_off
         }
         requireView().findViewById<FloatingActionButton>(R.id.id_location_button).setImageResource(idOfResource)
     }
@@ -370,6 +381,13 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         } else {
             activateMyLocation()
         }
+    }
+
+    private fun getBuiltInLocationButton(): View {
+        val mapFragment =
+            childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
+        return (mapFragment!!.requireView().findViewById<View>(Integer.parseInt("1")).parent as View)
+            .findViewById<View>(Integer.parseInt("2"))
     }
 
     //---------------SAMPLE FUNCTIONS-----------------
