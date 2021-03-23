@@ -10,6 +10,7 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.FakeDatabase
+import com.github.sdpteam15.polyevents.model.Item
 
 /**
  * Adapts items to RecyclerView ItemsViews
@@ -33,21 +34,22 @@ class ItemAdapter(
      * adapted ViewHolder for each item
      * Takes the corresponding event view
      */
-    inner class ItemViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
+    inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
+        // TODO: Consider adding field for itemType
         private val itemName = view.findViewById<TextView>(R.id.id_list_item_name)
         private val btnRemove = view.findViewById<ImageButton>(R.id.id_remove_item)
 
         /**
          * Binds the values of each view of an event to the layout of an event
          */
-        fun bind(item: String) {
+        fun bind(item: Item) {
             btnRemove.setOnClickListener {
-                Database.currentDatabase.removeItem(item)
+                currentDatabase.removeItem(item)
                 // TODO ADD data.postValue(items)
                 notifyDataSetChanged()
             }
-            itemName.text = item
+            itemName.text = item.itemType.itemtype + item.itemId
         }
     }
 
@@ -69,7 +71,7 @@ class ItemAdapter(
     }
 
     override fun getItemCount(): Int {
-        return Database.currentDatabase.getItemsList().size
+        return currentDatabase.getItemsList().size
     }
 }
 
