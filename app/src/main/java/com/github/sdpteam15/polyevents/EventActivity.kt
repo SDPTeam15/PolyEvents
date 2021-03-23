@@ -14,7 +14,6 @@ import com.github.sdpteam15.polyevents.fragments.EXTRA_EVENT_ID
  */
 class EventActivity : AppCompatActivity() {
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onResume() {
         super.onResume()
         updateInfo()
@@ -29,19 +28,18 @@ class EventActivity : AppCompatActivity() {
     /**
      * Updates the event information
      */
-    @RequiresApi(Build.VERSION_CODES.O)
     fun updateInfo() {
         val id = intent.getStringExtra(EXTRA_EVENT_ID)
         val event = currentDatabase.getEventFromId(id!!)!!
         // Capture the layout's TextView and set the string as its text
         findViewById<TextView>(R.id.txt_event_Name).apply {
-            text = event.name
+            text = event.eventName
         }
         findViewById<TextView>(R.id.txt_event_zone).apply {
-            text = event.zone
+            text = event.zoneName
         }
         findViewById<TextView>(R.id.txt_event_date).apply {
-            text = event.getTime()
+            text = event.formattedStartTime()
         }
         findViewById<TextView>(R.id.txt_event_organizer).apply {
             text = event.organizer

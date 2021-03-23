@@ -2,13 +2,9 @@ package com.github.sdpteam15.polyevents
 
 
 import android.content.Intent
-import android.view.View
-import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.NoMatchingViewException
-import androidx.test.espresso.ViewAssertion
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
@@ -19,12 +15,11 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
-import com.github.sdpteam15.polyevents.event.Event
-import com.github.sdpteam15.polyevents.event.EventItemAdapter
+import com.github.sdpteam15.polyevents.adapter.EventItemAdapter
+import com.github.sdpteam15.polyevents.database.FakeDatabase
 import com.github.sdpteam15.polyevents.fragments.EXTRA_EVENT_ID
-import org.hamcrest.CoreMatchers.`is`
+import com.github.sdpteam15.polyevents.model.Event
 import org.hamcrest.CoreMatchers.containsString
-import org.hamcrest.Matcher
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -49,37 +44,34 @@ class EventActivityTest {
         events = ArrayList<Event>()
         events.add(
             Event(
-                "Sushi demo",
-                "Super hungry activity !",
-                LocalDateTime.of(2021, 3, 7, 12, 15),
-                1F,
-                "The fish band",
-                "Kitchen",
-                "1", mutableSetOf("cooking", "sushi", "miam")
+                eventName = "Sushi demo",
+                description = "Super hungry activity !",
+                startTime = LocalDateTime.of(2021, 3, 7, 12, 15),
+                organizer = "The fish band",
+                zoneName = "Kitchen",
+                tags = mutableSetOf("sushi", "japan", "cooking")
+            )
+        )
+        events.add(
+            Event(
+                eventName = "Aqua Poney",
+                description = "Super cool activity !" +
+                        " With a super long description that essentially describes and explains" +
+                        " the content of the activity we are speaking of.",
+                startTime = LocalDateTime.of(2021, 3, 7, 14, 15),
+                organizer = "The Aqua Poney team",
+                zoneName = "Swimming pool"
             )
         )
 
         events.add(
             Event(
-                "Aqua Poney",
-                "Super cool activity !",
-                LocalDateTime.of(2021, 3, 7, 15, 0),
-                1.5F,
-                "The Aqua Poney team",
-                "Swimming pool",
-                "2", mutableSetOf("horse", "swimming", "pony")
-            )
-        )
-
-        events.add(
-            Event(
-                "Concert",
-                "Super noisy activity !",
-                LocalDateTime.of(2021, 3, 7, 21, 15),
-                2.75F,
-                "AcademiC DeCibel",
-                "Concert Hall",
-                "3", mutableSetOf("music", "live", "pogo")
+                eventName = "Concert",
+                description = "Super noisy activity !",
+                startTime = LocalDateTime.of(2021, 3, 7, 21, 15),
+                organizer = "AcademiC DeCibel",
+                zoneName = "Concert Hall",
+                tags = mutableSetOf("music", "live", "pogo")
             )
         )
 
@@ -98,7 +90,7 @@ class EventActivityTest {
     @Test
     fun correctNumberUpcomingEventsDisplayed() {
         Espresso.onView(withId(R.id.recycler_events_list))
-            .check(RecyclerViewItemCountAssertion(mockedUpcomingEventsProvider.getUpcomingEvents().size));
+            .check(RecyclerViewItemCountAssertion(mockedUpcomingEventsProvider.getUpcomingEvents().size))
     }
 
     @Test
@@ -127,7 +119,7 @@ class EventActivityTest {
         Thread.sleep(1000)
 
         Espresso.onView(withId(R.id.txt_event_Name))
-            .check(matches(withText(containsString(eventToTest.name))))
+            .check(matches(withText(containsString(eventToTest.eventName))))
 
         Espresso.onView(withId(R.id.txt_event_description))
             .check(matches(withText(containsString(eventToTest.description))))
@@ -137,10 +129,10 @@ class EventActivityTest {
             .check(matches(withText(containsString(eventToTest.organizer))))
 
         Espresso.onView(withId(R.id.txt_event_zone))
-            .check(matches(withText(containsString(eventToTest.zone))))
+            .check(matches(withText(containsString(eventToTest.zoneName))))
 
         Espresso.onView(withId(R.id.txt_event_date))
-            .check(matches(withText(containsString(eventToTest.getTime()))))
+            .check(matches(withText(containsString(eventToTest.formattedStartTime()))))
 
         Espresso.onView(withId(R.id.txt_event_tags))
             .check(matches(withText(containsString(eventToTest.tags.joinToString { s -> s }))))
