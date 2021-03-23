@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.EventActivity
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
-import com.github.sdpteam15.polyevents.event.Event
-import com.github.sdpteam15.polyevents.event.EventItemAdapter
+import com.github.sdpteam15.polyevents.model.Event
+import com.github.sdpteam15.polyevents.adapter.EventItemAdapter
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 
 /**
@@ -47,7 +47,7 @@ class ListFragment : Fragment() {
 
         val openEvent = { event: Event ->
             val intent = Intent(inflater.context, EventActivity::class.java).apply {
-                putExtra(EXTRA_EVENT_ID, event.id)
+                putExtra(EXTRA_EVENT_ID, event.eventName)
             }
             startActivity(intent)
         }

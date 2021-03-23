@@ -7,11 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
-import com.github.sdpteam15.polyevents.event.Event
+import com.github.sdpteam15.polyevents.model.Event
 
 /**
  * The fragment for the home page.
@@ -25,7 +24,6 @@ class HomeFragment : Fragment() {
         setHasOptionsMenu(true)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -43,7 +41,6 @@ class HomeFragment : Fragment() {
     /**
      * Update the content of the upcoming events
      */
-    @RequiresApi(Build.VERSION_CODES.O)
     fun updateContent() {
         // Remove all the content first
         listUpcomingEventsLayout.removeAllViews()
@@ -59,16 +56,15 @@ class HomeFragment : Fragment() {
      * Setup the layout for an event tab and add it to the layout provided
      * @param event : the event to add as a tab
      */
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun setupEventTab(event: Event) {
         val eventTab = layoutInflater.inflate(R.layout.tab_event, null)
 
-        eventTab.findViewById<TextView>(R.id.id_event_name_text).text = event.name
+        eventTab.findViewById<TextView>(R.id.id_event_name_text).text = event.eventName
 
         eventTab.findViewById<TextView>(R.id.id_event_schedule_text).text =
-            getString(R.string.at_hour_text, event.getTime())
+            getString(R.string.at_hour_text, event.formattedStartTime())
 
-        eventTab.findViewById<TextView>(R.id.id_event_zone).text = event.zone
+        eventTab.findViewById<TextView>(R.id.id_event_zone).text = event.zoneName
 
         eventTab.findViewById<TextView>(R.id.id_event_description).text = event.description
 
