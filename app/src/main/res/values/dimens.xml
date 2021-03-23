@@ -2,11 +2,4 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="app_bar_height">180dp</dimen>
     <dimen name="text_margin">16dp</dimen>
-
-    <dimen name="admin_hub_button_size_perc">.35</dimen>
-    <dimen name="admin_hub_button_margin_perc">.1</dimen>
-
-    <dimen name="admin_hub_button_size">40dp</dimen>
-    <dimen name="admin_hub_button_margin">48dp</dimen>
-    <dimen name="admin_hub_margin_between_button">30dp</dimen>
 </resources>
