@@ -1,19 +1,21 @@
 package com.github.sdpteam15.polyevents.database
 
+/**
+ * Constants of collection names and attribute names.
+ */
 object DatabaseConstant {
     /**
      * User related constants
      */
     const val USER_COLLECTION = "users"
-    const val USER_DOCUMENT_ID = "uid"
-    const val USER_GOOGLE_ID = "googleId"
+    const val USER_UID = "uid"
     const val USER_USERNAME = "username"
     const val USER_NAME = "name"
     const val USER_DISPLAY_NAME = "displayName"
     const val USER_EMAIL = "email"
     const val USER_AGE = "age"
     const val USER_TYPE =  "userType"
-    const val USER_BIRTHDAY = "birthday"
+    const val USER_BIRTH_DATE = "birthDate"
 
 
     /**
@@ -36,7 +38,7 @@ object DatabaseConstant {
      */
     const val ITEM_COLLECTION = "items"
     const val ITEM_DOCUMENT_ID = "itemId"
-    const val ITEM_NAME = "name"
+    const val ITEM_TYPE = "itemType"
 
 
     /**
