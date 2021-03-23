@@ -39,7 +39,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     private val areasPoints: MutableMap<String, Pair<Marker, Polygon>> = mutableMapOf()
 
     private var locationPermissionGranted = false
-    var PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1
+    private var PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1
 
 
     override fun onCreateView(
@@ -49,41 +49,37 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     ): View? {
         val view = inflater.inflate(R.layout.fragment_maps, container, false)
 
-        view.findViewById<FloatingActionButton>(R.id.id_location_button).setOnClickListener{
+        view.findViewById<FloatingActionButton>(R.id.id_location_button).setOnClickListener {
             switchLocationOnOff()
         }
 
-        view.findViewById<FloatingActionButton>(R.id.id_locate_me_button).setOnClickListener{
+        view.findViewById<FloatingActionButton>(R.id.id_locate_me_button).setOnClickListener {
             moveToMyLocation()
         }
         return view
-    }
-
-    private fun moveToMyLocation() {
-        getBuiltInLocationButton().performClick()
     }
 
     override fun onPause() {
         super.onPause()
 
         //Saves the last position of the camera
-        cameraPosition = map!!.cameraPosition
+        cameraPosition = map?.cameraPosition
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val mapFragment =
-            childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
-        mapFragment?.getMapAsync(this)
+            childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment
+        mapFragment.getMapAsync(this)
         if (!locationPermissionGranted) {
             getLocationPermission()
         }
     }
 
-    override fun onMapReady(googleMap: GoogleMap?) {
+    override fun onMapReady(googleMap: GoogleMap) {
         Log.d("POSITION", "in onMapReady")
 
-        map = googleMap!!
+        map = googleMap
 
         //Restoring the map state
         restoreCameraState()
@@ -112,7 +108,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
             )
         }
 
-        if(useUserLocation) {
+        if (useUserLocation) {
             activateMyLocation()
         }
 
@@ -127,7 +123,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     }
 
     override fun onPolygonClick(polygon: Polygon) {
-        areasPoints.get(polygon.tag)!!.first.showInfoWindow()
+        areasPoints[polygon.tag]!!.first.showInfoWindow()
     }
 
     override fun onMarkerClick(marker: Marker): Boolean {
@@ -140,19 +136,51 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     override fun onInfoWindowClick(p0: Marker) {
         Toast.makeText(
             context,
-            "Info Window clicked for marker" + p0.title + ", can lanch activity here",
+            "Info Window clicked for marker" + p0.title + ", can launch activity here",
             Toast.LENGTH_SHORT
         ).show()
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<String>,
-                                            grantResults: IntArray) {
+    /**
+     * Asks for permission to use location
+     */
+    private fun getLocationPermission() {
+        /*
+         * Request location permission, so that we can get the location of the
+         * device. The result of the permission request is handled by a callback,
+         * onRequestPermissionsResult.
+         */
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+            locationPermissionGranted = true
+        } else {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
+            )
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         when (requestCode) {
             PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION -> {
 
                 // If request is denied, the result arrays are empty.
-                if (isPermissionGranted(permissions, grantResults, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                if (isPermissionGranted(
+                        permissions,
+                        grantResults,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    )
+                ) {
                     locationPermissionGranted = true
                     activateMyLocation()
                 } else {
@@ -174,17 +202,76 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
      * (source : https://developers.google.com/maps/documentation/android-sdk/location#kotlin)
      */
     private fun activateMyLocation() {
-        if (context?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.ACCESS_FINE_LOCATION) }
-        == PackageManager.PERMISSION_GRANTED) {
+        if (context?.let {
+                ContextCompat.checkSelfPermission(
+                    it,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                )
+            }
+            == PackageManager.PERMISSION_GRANTED) {
             map!!.isMyLocationEnabled = true
 
-            // Hide the built-in location button
+            // Hide the built-in location button (but DO NOT disable it !)
             getBuiltInLocationButton().isVisible = false
 
             // Change the appearance of the location button.
             setLocationIcon(true)
             useUserLocation = true
         }
+    }
+
+    /**
+     * Update the location button icon according to whether the location is on or not
+     * @param locationIsOn : boolean, true if the location is currently used
+     */
+    private fun setLocationIcon(locationIsOn: Boolean) {
+        val idOfResource: Int = if (locationIsOn) {
+            R.drawable.ic_location_on
+        } else {
+            R.drawable.ic_location_off
+        }
+        requireView().findViewById<FloatingActionButton>(R.id.id_location_button)
+            .setImageResource(idOfResource)
+    }
+
+    /**
+     * Switch the location to on or off according to the current state.
+     * Accordingly update the icon.
+     */
+    @SuppressLint("MissingPermission")
+    private fun switchLocationOnOff() {
+        val locationIsOn = map!!.isMyLocationEnabled
+
+        if (locationIsOn) {
+            // Disable the location
+            map!!.isMyLocationEnabled = false
+            setLocationIcon(false)
+            useUserLocation = false
+        } else {
+            activateMyLocation()
+        }
+    }
+
+    /**
+     * Get and return the built-in "my location" button from map fragment.
+     * @return the view of the built-in location button
+     */
+    private fun getBuiltInLocationButton(): View {
+        val mapFragment =
+            childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
+
+        // Magic : https://stackoverflow.com/questions/36785542/how-to-change-the-position-of-my-location-button-in-google-maps-using-android-st
+        return (mapFragment!!.requireView()
+            .findViewById<View>(Integer.parseInt("1")).parent as View)
+            .findViewById(Integer.parseInt("2"))
+    }
+
+    /**
+     * Click on the built-in my location button so that
+     * the default effect occurs (move camera to current location).
+     */
+    private fun moveToMyLocation() {
+        getBuiltInLocationButton().performClick()
     }
 
     /**
@@ -215,7 +302,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
      * Redraws all areas that were previously drawn before changing fragment or activity, draws some example
      */
     private fun restoreMapState() {
-        if (!areasPoints.isEmpty()) {
+        if (areasPoints.isNotEmpty()) {
             val temp = areasPoints.toMap()
             areasPoints.clear()
             //Draw all areas and points
@@ -262,7 +349,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
      * Helper method to add a area to the map and generate an invisible marker in its center to display the area infos
      */
     private fun addArea(id: String, coords: List<LatLng>, name: String) {
-        if (!coords.isEmpty()) {
+        if (coords.isNotEmpty()) {
             val poly = PolygonOptions()
             poly.addAll(coords).clickable(true)
 
@@ -288,7 +375,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
                     .title(name)
                     .icon(getMarkerIcon())
             )
-            areasPoints.put(id, Pair(marker, polygon))
+            areasPoints[id] = Pair(marker, polygon)
         }
     }
 
@@ -298,7 +385,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
      * TODO : Check if we should make it a singleton to save memory/performance
      */
     private fun getMarkerIcon(): BitmapDescriptor {
-        val vectorDrawable: Drawable? = ContextCompat.getDrawable(requireContext(), R.drawable.ic_location)
+        val vectorDrawable: Drawable? =
+            ContextCompat.getDrawable(requireContext(), R.drawable.ic_location)
         vectorDrawable?.setBounds(0, 0, 0, 0)
         val bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
@@ -325,69 +413,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
 
         // Constrain the camera target to the bounds.
         map!!.setLatLngBoundsForCameraTarget(bounds)
-    }
-
-    /**
-     * Asks for permission to use location
-     */
-    private fun getLocationPermission() {
-        /*
-         * Request location permission, so that we can get the location of the
-         * device. The result of the permission request is handled by a callback,
-         * onRequestPermissionsResult.
-         */
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            )
-            == PackageManager.PERMISSION_GRANTED
-        ) {
-            locationPermissionGranted = true
-        } else {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
-            )
-        }
-    }
-
-    /**
-     * Update the location button icon according to whether the location is on or not
-     * @param locationIsOn : boolean, true if the location is currently used
-     */
-    private fun setLocationIcon(locationIsOn: Boolean) {
-        val idOfResource: Int = if (locationIsOn) {
-            R.drawable.ic_location_on
-        } else {
-            R.drawable.ic_location_off
-        }
-        requireView().findViewById<FloatingActionButton>(R.id.id_location_button).setImageResource(idOfResource)
-    }
-
-    /**
-     * Switch the location to on or off according to the current state.
-     * Update accordingly the icon.
-     */
-    @SuppressLint("MissingPermission")
-    private fun switchLocationOnOff() {
-        val locationIsOn = map!!.isMyLocationEnabled
-
-        if (locationIsOn) {
-            // Disable the location
-            map!!.isMyLocationEnabled = false
-            setLocationIcon(false)
-            useUserLocation = false
-        } else {
-            activateMyLocation()
-        }
-    }
-
-    private fun getBuiltInLocationButton(): View {
-        val mapFragment =
-            childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
-        return (mapFragment!!.requireView().findViewById<View>(Integer.parseInt("1")).parent as View)
-            .findViewById<View>(Integer.parseInt("2"))
     }
 
     //---------------SAMPLE FUNCTIONS-----------------
