@@ -47,16 +47,7 @@ class MapsFragmentTest {
         onView(withTagValue(equalTo(R.drawable.ic_location_on)))
     }
 
-
-    private fun denyPermission() {
-
-    }
-
     private fun givePermission() {
         permissionRule = GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
-    }
-
-    private fun isPermissionGranted() {
-
     }
 }
