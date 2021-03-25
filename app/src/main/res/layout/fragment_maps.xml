@@ -36,6 +36,34 @@ tools:context=".MainActivity" >
         tools:context=".fragments.MapsFragment" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/id_locate_me_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/id_location_button"
+        android:layout_gravity="center_horizontal"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="16dp"
+        android:clickable="true"
+        android:src="@drawable/ic_locate_me"
+        app:layout_constraintBottom_toTopOf="@+id/id_location_button"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/id_location_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/acceptNewArea"
+        android:layout_gravity="center_horizontal"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="16dp"
+        android:clickable="true"
+        android:src="@drawable/ic_location_off"
+        app:layout_constraintBottom_toBottomOf="@+id/acceptNewArea"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addNewArea"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
