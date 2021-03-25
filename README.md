@@ -1,5 +1,3 @@
 # SoftwareProject
-NON
-OUI
 
-[![Build Status](https://api.cirrus-ci.com/github/SDPTeam15/SoftwareProject.svg)](https://cirrus-ci.com/github/SDPTeam15/SoftwareProject)
+[![Build Status](https://api.cirrus-ci.com/github/SDPTeam15/PolyEvents.svg)](https://github.com/SDPTeam15/PolyEvents)
