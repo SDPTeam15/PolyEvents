@@ -9,6 +9,7 @@ This time, my time estimates were really good.
 Next week, I will probably take a mix of backend and graphical tasks so that I can keep the good balance I have between backend and UI.
 
 ## Cyrille
+
 So this week I added a location feature on the map. The user can enable/disable the use of its location and can center the map on the current location. However as it is a feature that is closely related to Google Map, I did not wrote tests for it. This will probably be done in the next sprint.
 
 My time estimate was fairly good.
@@ -26,6 +27,11 @@ My time estimate was too short to write the tests to all these functionality. Bu
 Next week, I will write the tests that are missing this week. I would like also to add a button to modify the shape and position of an area and the rotation of the area.
 
 ## Robin
+This week, I added the ability to edit a profile as administrator or as profile's owner.
+
+I was not able to do the other task I had for this week because my estimate of the time for the implementation was totally wrong due to the fact that this was the first time I have done UI correctly.
+
+Next week, I'll write the rest of the code I had to do for this week.
 
 ## Stephane
 
