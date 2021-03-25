@@ -35,6 +35,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     private var useUserLocation = false
 
     private var cameraPosition: CameraPosition? = null
+    private lateinit var locationButton: FloatingActionButton
 
     private val areasPoints: MutableMap<String, Pair<Marker, Polygon>> = mutableMapOf()
 
@@ -49,13 +50,18 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     ): View? {
         val view = inflater.inflate(R.layout.fragment_maps, container, false)
 
-        view.findViewById<FloatingActionButton>(R.id.id_location_button).setOnClickListener {
+        locationButton = view.findViewById<FloatingActionButton>(R.id.id_location_button)
+        locationButton.setOnClickListener {
             switchLocationOnOff()
         }
+        locationButton.tag = R.drawable.ic_location_on
 
-        view.findViewById<FloatingActionButton>(R.id.id_locate_me_button).setOnClickListener {
+        val locateMeButton = view.findViewById<FloatingActionButton>(R.id.id_locate_me_button)
+        locateMeButton.setOnClickListener {
             moveToMyLocation()
         }
+
+        locateMeButton.tag = R.drawable.ic_locate_me
         return view
     }
 
@@ -232,6 +238,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         }
         requireView().findViewById<FloatingActionButton>(R.id.id_location_button)
             .setImageResource(idOfResource)
+        locationButton.tag = idOfResource
     }
 
     /**
