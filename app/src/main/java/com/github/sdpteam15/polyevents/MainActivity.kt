@@ -1,12 +1,15 @@
 package com.github.sdpteam15.polyevents
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
+import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.fragments.*
+import com.github.sdpteam15.polyevents.helper.GoogleMapHelper
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.user.User
 import com.github.sdpteam15.polyevents.user.UserInterface
