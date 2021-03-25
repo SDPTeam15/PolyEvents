@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents
 
+import android.content.ClipData
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -7,8 +8,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.item_request.ItemRequestAdapter
+import com.github.sdpteam15.polyevents.model.Item
 
 /**
  * An activity containing items available for request
@@ -17,6 +20,8 @@ class ItemRequestActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     lateinit var mapSelectedItems: MutableMap<String, Int>
+    private val obsItems = ObservableList<Item>()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,7 +31,7 @@ class ItemRequestActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.id_recycler_items_request)
         mapSelectedItems = mutableMapOf()
 
-        val availableItems = currentDatabase.getAvailableItems()
+        val availableItems = currentDatabase.get
 
         // Listener that update the map of selected items when the quantity is changed
         val onItemQuantityChangeListener = { item: String, newQuantity: Int ->

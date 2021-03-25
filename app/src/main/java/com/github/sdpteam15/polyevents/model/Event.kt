@@ -1,6 +1,8 @@
 package com.github.sdpteam15.polyevents.model
 
 import android.graphics.Bitmap
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.google.firebase.firestore.IgnoreExtraProperties
 import com.google.firebase.firestore.ServerTimestamp
 import java.time.LocalDateTime
@@ -33,7 +35,8 @@ data class Event(
     @ServerTimestamp val endTime: LocalDateTime? = null,
     val inventory: MutableList<Item> = mutableListOf(),
     // NOTE: Set is not a supported collection in Firebase Firestore so will be stored as list in the db.
-    val tags: MutableSet<String> = mutableSetOf()
+    val tags: MutableSet<String> = mutableSetOf(),
+    val id : String? = null
 ) {
     /**
      * Add a new tag for this activity
@@ -83,6 +86,7 @@ data class Event(
      * hour going between 0-23h.
      * @return string HH:MM
      */
+    @RequiresApi(Build.VERSION_CODES.O)
     fun formattedStartTime(): String {
         if (startTime == null) {
             return ""

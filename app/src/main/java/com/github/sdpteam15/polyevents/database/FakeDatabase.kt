@@ -2,8 +2,12 @@ package com.github.sdpteam15.polyevents.database
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.github.sdpteam15.polyevents.database.observe.Matcher
 import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.event.Event
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
+import com.github.sdpteam15.polyevents.model.Event
+import com.github.sdpteam15.polyevents.model.Item
+import com.github.sdpteam15.polyevents.model.ItemType
 import com.github.sdpteam15.polyevents.user.ProfileInterface
 import com.github.sdpteam15.polyevents.user.User
 import com.github.sdpteam15.polyevents.user.UserInterface
@@ -19,12 +23,14 @@ object FakeDatabase : DatabaseInterface {
     }
 
     private fun initItems() {
-        items = mutableListOf("Scie-tronconneuse", "Bonnet de bain")
+        items = mutableListOf()
+        items.add(Item("Scie-tronconneuse", ItemType.OTHER))
+        items.add(Item("Bonnet de bain", ItemType.OTHER))
     }
 
     private lateinit var events: MutableList<Event>
     private lateinit var profiles: MutableList<ProfileInterface>
-    private lateinit var items: MutableList<String>
+    private lateinit var items: MutableList<Item>
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun initEvents() {
@@ -32,177 +38,42 @@ object FakeDatabase : DatabaseInterface {
         events.add(
             Event(
                 "Sushi demo",
-                "Super hungry activity !",
-                LocalDateTime.of(2021, 3, 7, 12, 15),
-                1F,
                 "The fish band",
                 "Kitchen",
-                "1",
+                "Super hungry activity !",
+                null,
+                LocalDateTime.of(2021, 3, 7, 12, 15),
+                LocalDateTime.of(2021, 3, 7, 13, 15),
+                mutableListOf(),
                 mutableSetOf("sushi", "japan", "cooking")
             )
         )
         events.add(
             Event(
                 "Aqua Poney",
+                "The Aqua Poney team",
+                "Swimming pool",
                 "Super cool activity !" +
                         " With a super long description that essentially describes and explains" +
                         " the content of the activity we are speaking of.",
+                null,
                 LocalDateTime.of(2021, 3, 7, 14, 15),
-                3.5F,
-                "The Aqua Poney team",
-                "Swimming pool",
-                "2"
+                LocalDateTime.of(2021, 3, 7, 17, 45),
+                mutableListOf(),
+                mutableSetOf()
             )
         )
         events.add(
             Event(
                 "Saxophone demo",
-                "Super noisy activity !",
-                LocalDateTime.of(2021, 3, 7, 17, 15),
-                0.75F,
                 "The music band",
                 "Concert Hall",
-                "3"
-            )
-        )
-        events.add(
-            Event(
-                "Sushi demo",
-                "Super hungry activity !",
-                LocalDateTime.of(2021, 3, 7, 12, 15),
-                1F,
-                "The fish band",
-                "Kitchen",
-                "4"
-            )
-        )
-        events.add(
-            Event(
-                "Aqua Poney",
-                "Super cool activity !" +
-                        " With a super long description that essentially describes and explains" +
-                        " the content of the activity we are speaking of.",
-                LocalDateTime.of(2021, 3, 7, 14, 15),
-                3.5F,
-                "The Aqua Poney team",
-                "Swimming pool",
-                "5"
-            )
-        )
-        events.add(
-            Event(
-                "Saxophone demo",
                 "Super noisy activity !",
+                null,
                 LocalDateTime.of(2021, 3, 7, 17, 15),
-                0.75F,
-                "The music band",
-                "Concert Hall",
-                "6"
-            )
-        )
-        events.add(
-            Event(
-                "Sushi demo",
-                "Super hungry activity !",
-                LocalDateTime.of(2021, 3, 7, 12, 15),
-                1F,
-                "The fish band",
-                "Kitchen",
-                "7"
-            )
-        )
-        events.add(
-            Event(
-                "Aqua Poney",
-                "Super cool activity !" +
-                        " With a super long description that essentially describes and explains" +
-                        " the content of the activity we are speaking of.",
-                LocalDateTime.of(2021, 3, 7, 14, 15),
-                3.5F,
-                "The Aqua Poney team",
-                "Swimming pool",
-                "8"
-            )
-        )
-        events.add(
-            Event(
-                "Saxophone demo",
-                "Super noisy activity !",
-                LocalDateTime.of(2021, 3, 7, 17, 15),
-                0.75F,
-                "The music band",
-                "Concert Hall",
-                "9"
-            )
-        )
-        events.add(
-            Event(
-                "Sushi demo",
-                "Super hungry activity !",
-                LocalDateTime.of(2021, 3, 7, 12, 15),
-                1F,
-                "The fish band",
-                "Kitchen",
-                "10"
-            )
-        )
-        events.add(
-            Event(
-                "Aqua Poney",
-                "Super cool activity !" +
-                        " With a super long description that essentially describes and explains" +
-                        " the content of the activity we are speaking of.",
-                LocalDateTime.of(2021, 3, 7, 14, 15),
-                3.5F,
-                "The Aqua Poney team",
-                "Swimming pool",
-                "11"
-            )
-        )
-        events.add(
-            Event(
-                "Saxophone demo",
-                "Super noisy activity !",
-                LocalDateTime.of(2021, 3, 7, 17, 15),
-                0.75F,
-                "The music band",
-                "Concert Hall",
-                "12"
-            )
-        )
-        events.add(
-            Event(
-                "Sushi demo",
-                "Super hungry activity !",
-                LocalDateTime.of(2021, 3, 7, 12, 15),
-                1F,
-                "The fish band",
-                "Kitchen",
-                "13"
-            )
-        )
-        events.add(
-            Event(
-                "Aqua Poney",
-                "Super cool activity !" +
-                        " With a super long description that essentially describes and explains" +
-                        " the content of the activity we are speaking of.",
-                LocalDateTime.of(2021, 3, 7, 14, 15),
-                3.5F,
-                "The Aqua Poney team",
-                "Swimming pool",
-                "14"
-            )
-        )
-        events.add(
-            Event(
-                "Saxophone demo",
-                "Super noisy activity !",
-                LocalDateTime.of(2021, 3, 7, 17, 15),
-                0.75F,
-                "The music band",
-                "Concert Hall",
-                "15"
+                LocalDateTime.of(2021, 3, 7, 18, 0),
+                mutableListOf(),
+                mutableSetOf()
             )
         )
     }
@@ -231,28 +102,88 @@ object FakeDatabase : DatabaseInterface {
     ): Boolean = profiles.remove(profile)
 
     override fun updateProfile(profile: ProfileInterface, user: UserInterface): Boolean = true
-
+/*
     override fun getListEvent(
-        matcher: String?,
-        number: Int?,
-        profile: ProfileInterface
+            matcher: String?,
+            number: Int?,
+            profile: ProfileInterface
     ): List<Event> {
         val res = mutableListOf<Event>()
-        for (v in events) {
-            res.add(v)
+        for (v in events.value) {
+            if (v != null) {
+                res.add(v)
+            }
             if (res.size == number)
                 break
         }
         return res
-    }
+    }*/
 
+    override fun getListEvent(
+        matcher: Matcher?,
+        number: Long?,
+        eventList: ObservableList<Event>,
+        profile: ProfileInterface
+    ): Observable<Boolean> {
+        //request sql returns- task<Document>
+        eventList.clear()
+
+        for (e in events) eventList.add(e)
+        return Observable(true)
+    }
+    /*
     override fun getUpcomingEvents(number: Int, profile: ProfileInterface): List<Event> =
-        getListEvent("", number, profile)
+            getListEvent("", number, profile)
 
     override fun getEventFromId(id: String, profile: ProfileInterface): Event =
-        events[0]
+            events.value[0]
 
     override fun updateEvent(Event: Event, profile: ProfileInterface): Boolean = true
+    */
+
+    override fun createItem(item: Item, profile: ProfileInterface): Observable<Boolean> {
+        items.add(item)
+        return Observable(true)
+    }
+
+    override fun removeItem(item: Item, profile: ProfileInterface): Observable<Boolean> {
+        items.remove(item)
+        return Observable(true)
+    }
+
+    override fun updateItem(item: Item, profile: ProfileInterface): Observable<Boolean> {
+        items[items.indexOfFirst { i -> i.itemId == item.itemId }] = item
+        return Observable(true)
+    }
+
+    override fun getItemsList(
+        itemList: ObservableList<Item>,
+        profile: ProfileInterface
+    ): Observable<Boolean> {
+        itemList.clear()
+        for (item in items)
+            itemList.add(item)
+        return Observable(true)
+    }
+
+    override fun createEvent(event: Event, profile: ProfileInterface): Observable<Boolean> {
+        events.add(event)
+        return Observable(true)
+    }
+
+    override fun updateEvents(event: Event, profile: ProfileInterface): Observable<Boolean> {
+        events[events.indexOfFirst { e -> e.id == event.id }] = event
+        return Observable(true)
+    }
+
+    override fun getEventFromId(
+        id: String,
+        returnEvent: Observable<Event>,
+        profile: ProfileInterface
+    ): Observable<Boolean> {
+        returnEvent.postValue(events.first { e -> e.id == id })
+        return Observable(true)
+    }
 
     override fun updateUserInformation(
         newValues: HashMap<String, String>,
@@ -267,19 +198,20 @@ object FakeDatabase : DatabaseInterface {
     ): Observable<Boolean> =
         Observable(true)
 
-    override fun getAvailableItems(): Map<String, Int> {
-        val map = mutableMapOf<String, Int>()
-        map["230V plug"] = 20
-        map["Cord rewinder (50m)"] = 10
-        map["Cooking plate"] = 5
-        map["Cord rewinder (100m)"] = 1
-        map["Cord rewinder (10m)"] = 30
-        map["Fridge (large)"] = 2
-        map["Fridge (small)"] = 10
+    /*
+        override fun getAvailableItems(): Map<String, Int> {
+            val map = mutableMapOf<String, Int>()
+            map["230V plug"] = 20
+            map["Cord rewinder (50m)"] = 10
+            map["Cooking plate"] = 5
+            map["Cord rewinder (100m)"] = 1
+            map["Cord rewinder (10m)"] = 30
+            map["Fridge (large)"] = 2
+            map["Fridge (small)"] = 10
 
-        return map
-    }
-
+            return map
+        }
+    */
     override fun inDatabase(
         isInDb: Observable<Boolean>,
         uid: String,
@@ -297,7 +229,7 @@ object FakeDatabase : DatabaseInterface {
         user.value = User.invoke(currentUser)
         return Observable(true)
     }
-
+/*
     override fun getItemsList(): MutableList<String> {
         return items
     }
@@ -310,5 +242,5 @@ object FakeDatabase : DatabaseInterface {
         return items.remove(item)
     }
 
-
+*/
 }

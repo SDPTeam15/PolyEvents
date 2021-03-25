@@ -10,24 +10,25 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.FakeDatabase
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
+import com.github.sdpteam15.polyevents.database.observe.Observer
 import com.github.sdpteam15.polyevents.model.Item
 
 /**
  * Adapts items to RecyclerView ItemsViews
  */
 class ItemAdapter(
-    // TODO ADD private var data: MutableLiveData<MutableList<String>>,
+    // TODO ADD private var data: Observable<MutableList<String>>,
     // TODO ADD private val onItemClickListener: (String) -> Unit
 ) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
-    /*TODO ADD
-        private val observer = Observer<MutableList<String>> { t ->
-            items = t!!
+    private val items = ObservableList<Item>()
+
+    init {
+        currentDatabase.getItemsList(items)
+        items.observe {
             notifyDataSetChanged()
         }
-    */
-    init {
-        //TODO ADD data.observeForever(observer)
     }
 
     /**
@@ -46,8 +47,6 @@ class ItemAdapter(
         fun bind(item: Item) {
             btnRemove.setOnClickListener {
                 currentDatabase.removeItem(item)
-                // TODO ADD data.postValue(items)
-                notifyDataSetChanged()
             }
             itemName.text = item.itemType.itemtype + item.itemId
         }
@@ -60,8 +59,7 @@ class ItemAdapter(
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        println("SALE O " + (currentDatabase == FakeDatabase))
-        val item = currentDatabase.getItemsList()[position]
+        val item = items[position]!!
         holder.bind(item)
         /*
         holder.itemView.setOnClickListener {
@@ -71,7 +69,7 @@ class ItemAdapter(
     }
 
     override fun getItemCount(): Int {
-        return currentDatabase.getItemsList().size
+        return items.size
     }
 }
 

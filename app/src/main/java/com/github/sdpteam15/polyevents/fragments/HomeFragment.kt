@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.Event
 
 /**
@@ -18,6 +19,7 @@ import com.github.sdpteam15.polyevents.model.Event
 class HomeFragment : Fragment() {
 
     private lateinit var listUpcomingEventsLayout: LinearLayout
+    val events = ObservableList<Event>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +35,14 @@ class HomeFragment : Fragment() {
         listUpcomingEventsLayout =
             fragmentView.findViewById<LinearLayout>(R.id.id_upcoming_events_list)
 
-        updateContent()
+        currentDatabase.getListEvent(null, 3, events).observe(this) {
+            if (it!!) {
+                updateContent()
+            }
+        }
+        events.observe(this) {
+            updateContent()
+        }
 
         return fragmentView
     }
@@ -45,10 +54,8 @@ class HomeFragment : Fragment() {
         // Remove all the content first
         listUpcomingEventsLayout.removeAllViews()
 
-        val events = currentDatabase.getUpcomingEvents()
-
-        for (event: Event in events) {
-            setupEventTab(event)
+        for (i in 0 until events.size) {
+            setupEventTab(events[i]!!)
         }
     }
 

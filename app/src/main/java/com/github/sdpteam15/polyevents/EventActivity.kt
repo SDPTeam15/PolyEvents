@@ -1,36 +1,43 @@
 package com.github.sdpteam15.polyevents
 
-import android.os.Build
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
+import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.fragments.EXTRA_EVENT_ID
+import com.github.sdpteam15.polyevents.model.Event
 
 /**
  * An activity containing events description
  */
 class EventActivity : AppCompatActivity() {
 
+    var obsEvent = Observable<Event>()
+
     override fun onResume() {
         super.onResume()
-        updateInfo()
+        obsEvent.observe { updateInfo(it!!) }
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_event)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        currentDatabase.getEventFromId(intent.getStringExtra(EXTRA_EVENT_ID)!!, obsEvent)
+            .observe { b ->
+                if (b!!) {
+                    obsEvent.observe { updateInfo(it!!) }
+                }
+                setContentView(R.layout.activity_event)
+                supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+            }
     }
 
     /**
      * Updates the event information
      */
-    fun updateInfo() {
-        val id = intent.getStringExtra(EXTRA_EVENT_ID)
-        val event = currentDatabase.getEventFromId(id!!)!!
+    private fun updateInfo(event: Event) {
         // Capture the layout's TextView and set the string as its text
         findViewById<TextView>(R.id.txt_event_Name).apply {
             text = event.eventName

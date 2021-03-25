@@ -14,6 +14,7 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.Event
 import com.github.sdpteam15.polyevents.adapter.EventItemAdapter
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 
 /**
@@ -27,6 +28,7 @@ const val EXTRA_EVENT_ID = "com.github.sdpteam15.polyevents.event.EVENT_ID"
 class ListFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
+    val events = ObservableList<Event>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,9 +44,11 @@ class ListFragment : Fragment() {
 
         val fragmentView = inflater.inflate(R.layout.fragment_list, container, false)
         recyclerView = fragmentView.findViewById<RecyclerView>(R.id.recycler_events_list)
-
-        val events = currentDatabase.getUpcomingEvents()
-
+        currentDatabase.getListEvent(null,10, events).observe(this) {
+            if (it!!){
+                recyclerView.adapter!!.notifyDataSetChanged()
+            }
+        }
         val openEvent = { event: Event ->
             val intent = Intent(inflater.context, EventActivity::class.java).apply {
                 putExtra(EXTRA_EVENT_ID, event.eventName)
@@ -53,7 +57,7 @@ class ListFragment : Fragment() {
         }
 
         recyclerView.adapter = EventItemAdapter(events, openEvent)
-
+        events.observe(this) { recyclerView.adapter!!.notifyDataSetChanged() }
         recyclerView.setHasFixedSize(false)
         // Inflate the layout for this fragment
         return fragmentView

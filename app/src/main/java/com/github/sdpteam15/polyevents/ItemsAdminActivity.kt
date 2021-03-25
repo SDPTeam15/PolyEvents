@@ -84,7 +84,7 @@ class ItemsAdminActivity : AppCompatActivity() {
             newList!!.add(newItem)
             //items.postValue(newList)*/
 
-            currentDatabase.addItem(Item(itemName.text.toString(), ItemType.OTHER)) // TODO REMOVE
+            currentDatabase.removeItem(Item(itemName.text.toString(), ItemType.OTHER)) // TODO REMOVE
             recyclerView.adapter!!.notifyDataSetChanged()
             // Dismiss the popup window
             popupWindow.dismiss()

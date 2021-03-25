@@ -1,7 +1,10 @@
 package com.github.sdpteam15.polyevents.database
 
+import com.github.sdpteam15.polyevents.database.observe.Matcher
 import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.event.Event
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
+import com.github.sdpteam15.polyevents.model.Event
+import com.github.sdpteam15.polyevents.model.Item
 import com.github.sdpteam15.polyevents.user.Profile.Companion.CurrentProfile
 import com.github.sdpteam15.polyevents.user.ProfileInterface
 import com.github.sdpteam15.polyevents.user.User
@@ -70,62 +73,11 @@ interface DatabaseInterface {
         user: UserInterface = currentUser as UserInterface
     ): Boolean
 
-    /**
-     * Get list of event
-     * @param matcher matcher for the recherche
-     * @param number maximum of result
-     * @param profile profile for database access
-     * @return list of event
-     */
-    //@Deprecated(message = "Use the asynchronous method")
-    fun getListEvent(
-        matcher: String? = null, number: Int? = null,
-        profile: ProfileInterface = CurrentProfile
-    ): List<Event>
-
-    /**
-     * Query the upcoming events
-     * @param number : the number of events to retrieve
-     * @param profile profile for database access
-     * @return List of events in upcoming order (closest first)
-     */
-    //@Deprecated(message = "Use the asynchronous method")
-    fun getUpcomingEvents(
-        number: Int = NUMBER_UPCOMING_EVENTS,
-        profile: ProfileInterface = CurrentProfile
-    ): List<Event>
-
-    /**
-     * Get event from ID
-     * @param id ID of the event
-     * @param profile profile for database access
-     * @return event corresponding to the given ID
-     */
-    //@Deprecated(message = "Use the asynchronous method")
-    fun getEventFromId(
-        id: String,
-        profile: ProfileInterface = CurrentProfile
-    ): Event?
-
-    /**
-     * Update or request an update for an event
-     * @param Event event to update
-     * @param profile profile for database access
-     */
-    //@Deprecated(message = "Use the asynchronous method")
-    fun updateEvent(
-        Event: Event,
-        profile: ProfileInterface = CurrentProfile
-    ): Boolean
-
-    //All the methods above need to be deleted before the end of the project
-
     // Methods that we should use to have asynchronous communication
     /**
      * Items modifier and accessor methods
      */
 
-    /*
     /**
      * @param item item we want to add in the database
      * @param profile profile for database access
@@ -154,7 +106,29 @@ interface DatabaseInterface {
     fun updateItem(
         item: Item,
         profile: ProfileInterface = CurrentProfile
-    ): Observable<Boolean>*/
+    ): Observable<Boolean>
+
+    /**
+     * Get list of items
+     * @param itemList: the list of items that will be set when the DB returns the information
+     * @param profile: profile for database access
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun getItemsList(
+        itemList: ObservableList<Item>,
+        profile: ProfileInterface = CurrentProfile
+    ): Observable<Boolean>
+
+    /**
+     * Get list of available items
+     * @param itemList: the list of items that will be set when the DB returns the information
+     * @param profile: profile for database access
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun getAvailableItems(
+        itemList: ObservableList<Item>,
+        profile: ProfileInterface = CurrentProfile
+    ): Observable<Boolean>
 
     /**
      * Material request modifier and accessor methods
@@ -199,7 +173,7 @@ interface DatabaseInterface {
     /**
      * Event modifier and accessor methods
      */
-    /*
+
     /**
      * Update or request an update for an event
      * @param event: event to create
@@ -239,17 +213,19 @@ interface DatabaseInterface {
      * Get list of event
      * @param matcher: matcher for the search
      * @param number: maximum of result
-     * @param activityList: the list of event that will be set when the DB returns the information
+     * @param eventList: the list of event that will be set when the DB returns the information
      * @param profile: profile for database access
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getListEvent(
-        matcher: String? = null,
-        number: Int? = null,
-        activityList: Observable<List<Event>>,
+        matcher: Matcher? = null,
+        number: Long? = null,
+        eventList: ObservableList<Event>,
         profile: ProfileInterface = CurrentProfile
     ): Observable<Boolean>
 
+
+/*
     /**
      * Query the upcoming events (the closest first)
      * @param number : the number of events to retrieve
@@ -368,6 +344,7 @@ interface DatabaseInterface {
         userAccess: UserInterface = User.currentUser as UserInterface
     ): Observable<Boolean>
 
+    /*
     /**
      * Returns the list of items
      * @return The current mutable list of items
@@ -379,14 +356,14 @@ interface DatabaseInterface {
      * @param item : item to add
      * @return true if the item is successfully added to the database
      */
-    fun addItem(item : String):Boolean
+    fun addItem(item: String): Boolean
 
     /**
      * Removes an Item from the Item Database
      * @param item : item to remove
      * @return true if the item is successfully removed from the database
      */
-    fun removeItem(item: String):Boolean
+    fun removeItem(item: String): Boolean
 
     /**
      * TODO : adapt into asynchronous method
@@ -394,4 +371,6 @@ interface DatabaseInterface {
      * @return (for now) map of pair : <item name, available quantity>
      */
     fun getAvailableItems(): Map<String, Int>
+
+     */
 }
