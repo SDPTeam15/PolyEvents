@@ -43,7 +43,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:drawableStart="@drawable/ic_baseline_contacts_24"
+                        android:drawableStart="@drawable/ic_contact"
                         android:drawablePadding="10dp"
                         android:enabled="false"
                         android:inputType="text"
@@ -74,7 +74,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:backgroundTintMode="add"
-                        android:drawableStart="@drawable/ic_baseline_email_24"
+                        android:drawableStart="@drawable/ic_profile_email"
                         android:drawablePadding="10dp"
                         android:enabled="false"
                         android:inputType="textEmailAddress"
@@ -104,7 +104,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:drawableStart="@drawable/ic_baseline_assignment_ind_24"
+                        android:drawableStart="@drawable/ic_assignment"
                         android:drawablePadding="10dp"
                         android:inputType="text"
                         android:paddingStart="20dp"
@@ -113,7 +113,7 @@
                         android:textStyle="bold" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
-            <!--
+
             Birthday field
             <LinearLayout
                 android:layout_width="match_parent"
@@ -134,7 +134,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:drawableStart="@drawable/ic_baseline_calendar_today_24"
+                        android:drawableStart="@drawable/ic_profile_birthday"
                         android:drawablePadding="10dp"
                         android:inputType="date"
                         android:paddingStart="20dp"
@@ -142,7 +142,7 @@
                         android:text=""
                         android:textStyle="bold" />
                 </com.google.android.material.textfield.TextInputLayout>
-            </LinearLayout>-->
+            </LinearLayout>
         </LinearLayout>
 
         <Button
