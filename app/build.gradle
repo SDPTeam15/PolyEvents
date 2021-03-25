@@ -2,10 +2,8 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'jacoco'
+    id 'com.google.gms.google-services'
 }
-
-apply plugin: 'kotlin-android'
-apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 30
@@ -13,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId "com.github.sdpteam15.polyevents"
-        minSdkVersion 23
+        minSdkVersion 24
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -51,6 +49,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:18.0.0'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.3'
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.3'
+    implementation 'androidx.gridlayout:gridlayout:1.0.0'
 
     testImplementation 'junit:junit:4.13.2'
 
@@ -70,6 +69,9 @@ dependencies {
 
     //Google Firebase dependencies
     implementation platform('com.google.firebase:firebase-bom:26.6.0')
+
+    // Declare the dependency for the Firebase SDK for Google Analytics
+    implementation 'com.google.firebase:firebase-analytics-ktx'
 
     // Add the dependencies for the desired Firebase products
     // https://firebase.google.com/docs/android/setup#available-libraries

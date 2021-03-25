@@ -174,7 +174,7 @@ class ProfileLoginFragmentTests {
         var endingRequestUpdate = Observable<Boolean>()
         var updated = false
         When(
-            mockedDatabase.updateUserInformation(profileFragment.hashMapNewInfos, uidTest, user)
+            mockedDatabase.updateUserInformation(profileFragment.hashMapNewInfo, uidTest, user)
         ).thenAnswer { _ ->
             updated = true
             endingRequestUpdate
