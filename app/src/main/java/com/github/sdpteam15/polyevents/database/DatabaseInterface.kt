@@ -126,7 +126,7 @@ interface DatabaseInterface {
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getAvailableItems(
-        itemList: ObservableList<Item>,
+        itemList: ObservableList<Pair<Item,Int>>,
         profile: ProfileInterface = CurrentProfile
     ): Observable<Boolean>
 

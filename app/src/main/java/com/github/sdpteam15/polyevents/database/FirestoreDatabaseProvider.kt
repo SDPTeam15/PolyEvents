@@ -86,10 +86,10 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     }
 
     override fun getAvailableItems(
-        itemList: ObservableList<Item>,
+        itemList: ObservableList<Pair<Item,Int>>,
         profile: ProfileInterface
     ): Observable<Boolean> {
-        TODO("Not yet implemented")
+        return FakeDatabase.getAvailableItems(itemList, profile)
     }
 
     override fun createEvent(event: Event, profile: ProfileInterface): Observable<Boolean> {

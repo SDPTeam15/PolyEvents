@@ -15,11 +15,11 @@ import com.github.sdpteam15.polyevents.model.Event
 class EventActivity : AppCompatActivity() {
 
     var obsEvent = Observable<Event>()
-
+/*
     override fun onResume() {
         super.onResume()
         obsEvent.observe { updateInfo(it!!) }
-    }
+    }*/
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,6 +29,7 @@ class EventActivity : AppCompatActivity() {
 
         supportActionBar!!.setDisplayShowHomeEnabled(true)
 
+        println("id = " + intent.getStringExtra(EXTRA_EVENT_ID))
         currentDatabase.getEventFromId(intent.getStringExtra(EXTRA_EVENT_ID)!!, obsEvent)
             .observe { b ->
                 if (b!!) {

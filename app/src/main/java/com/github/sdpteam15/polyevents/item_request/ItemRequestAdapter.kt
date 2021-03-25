@@ -24,8 +24,8 @@ import com.github.sdpteam15.polyevents.model.Item
  * - A listener that will be triggered on click on a checkbox of an item view holder
  */
 class ItemRequestAdapter(
-    private val availableItems: ObservableList<Item>,
-    private val onItemQuantityChangeListener: (String, Int) -> Unit
+    private val availableItems: ObservableList<Pair<Item, Int>>,
+    private val onItemQuantityChangeListener: (Item, Int) -> Unit
 ) : RecyclerView.Adapter<ItemRequestAdapter.ItemViewHolder>() {
 
     /**
@@ -41,9 +41,9 @@ class ItemRequestAdapter(
          * Binds the value of the item to the layout of the item tab
          */
         @RequiresApi(Build.VERSION_CODES.O)
-        fun bind(item: Pair<String, Int>) {
+        fun bind(item: Pair<Item, Int>) {
             itemName.text =
-                view.context.getString(R.string.item_name_quantity_text, item.first, item.second)
+                view.context.getString(R.string.item_name_quantity_text, item.first.itemId, item.second)
 
             // Set initial quantity to 0
             itemQuantity.setText("0")
@@ -77,7 +77,7 @@ class ItemRequestAdapter(
                 view.context)
         }
 
-        private fun lowerQuantityToMax(item: Pair<String, Int>) {
+        private fun lowerQuantityToMax(item: Pair<Item, Int>) {
             // The quantity set is too high, set it to the max quantity
             // available and inform the user
             val maxQuantity = item.second
@@ -87,7 +87,7 @@ class ItemRequestAdapter(
             onItemQuantityChangeListener(item.first, maxQuantity)
 
             showToast(view.context.getString(R.string.max_item_quantity_text,
-                item.second.toString(), item.first), view.context)
+                item.second.toString(), item.first.itemId), view.context)
         }
     }
 
@@ -100,7 +100,7 @@ class ItemRequestAdapter(
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val item = availableItems[position]
-        holder.bind(item)
+        holder.bind(item!!)
     }
 
     override fun getItemCount(): Int {

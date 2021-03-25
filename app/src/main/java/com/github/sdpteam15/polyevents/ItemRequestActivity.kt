@@ -19,8 +19,8 @@ import com.github.sdpteam15.polyevents.model.Item
 class ItemRequestActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
-    lateinit var mapSelectedItems: MutableMap<String, Int>
-    private val obsItems = ObservableList<Item>()
+    lateinit var mapSelectedItems: MutableMap<Item, Int>
+    private val obsItems = ObservableList<Pair<Item,Int>>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,10 +31,10 @@ class ItemRequestActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.id_recycler_items_request)
         mapSelectedItems = mutableMapOf()
 
-        val availableItems = currentDatabase.getAvailableItems(obsItems)
+        currentDatabase.getAvailableItems(obsItems)
 
         // Listener that update the map of selected items when the quantity is changed
-        val onItemQuantityChangeListener = { item: String, newQuantity: Int ->
+        val onItemQuantityChangeListener = { item: Item, newQuantity: Int ->
             when {
                 mapSelectedItems.containsKey(item) and (newQuantity == 0) -> {
                     mapSelectedItems.remove(item)
@@ -47,7 +47,7 @@ class ItemRequestActivity : AppCompatActivity() {
         }
 
         recyclerView.adapter =
-            ItemRequestAdapter(availableItems, onItemQuantityChangeListener)
+            ItemRequestAdapter(obsItems, onItemQuantityChangeListener)
 
         recyclerView.setHasFixedSize(false)
     }

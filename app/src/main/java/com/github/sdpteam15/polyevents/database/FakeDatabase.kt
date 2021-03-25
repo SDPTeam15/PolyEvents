@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.database
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import com.github.sdpteam15.polyevents.database.observe.Matcher
 import com.github.sdpteam15.polyevents.database.observe.Observable
@@ -45,7 +46,8 @@ object FakeDatabase : DatabaseInterface {
                 LocalDateTime.of(2021, 3, 7, 12, 15),
                 LocalDateTime.of(2021, 3, 7, 13, 15),
                 mutableListOf(),
-                mutableSetOf("sushi", "japan", "cooking")
+                mutableSetOf("sushi", "japan", "cooking"),
+                "1"
             )
         )
         events.add(
@@ -60,7 +62,8 @@ object FakeDatabase : DatabaseInterface {
                 LocalDateTime.of(2021, 3, 7, 14, 15),
                 LocalDateTime.of(2021, 3, 7, 17, 45),
                 mutableListOf(),
-                mutableSetOf()
+                mutableSetOf(),
+                "2"
             )
         )
         events.add(
@@ -73,7 +76,8 @@ object FakeDatabase : DatabaseInterface {
                 LocalDateTime.of(2021, 3, 7, 17, 15),
                 LocalDateTime.of(2021, 3, 7, 18, 0),
                 mutableListOf(),
-                mutableSetOf()
+                mutableSetOf(),
+                "3"
             )
         )
     }
@@ -147,8 +151,10 @@ object FakeDatabase : DatabaseInterface {
     }
 
     override fun removeItem(item: Item, profile: ProfileInterface): Observable<Boolean> {
-        items.remove(item)
-        return Observable(true)
+        val b = items.remove(item)
+        Log.d("Database", "removed $item = $b")
+        Log.d("Database", "new list = $items")
+        return Observable(b)
     }
 
     override fun updateItem(item: Item, profile: ProfileInterface): Observable<Boolean> {
@@ -167,12 +173,12 @@ object FakeDatabase : DatabaseInterface {
     }
 
     override fun getAvailableItems(
-        itemList: ObservableList<Item>,
+        itemList: ObservableList<Pair<Item,Int>>,
         profile: ProfileInterface
     ): Observable<Boolean> {
         itemList.clear()
         for (item in items)
-            itemList.add(item)
+            itemList.add(Pair(item, 10))
         return Observable(true)
     }
 

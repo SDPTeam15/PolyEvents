@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.transition.Slide
 import android.transition.TransitionManager
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.EditText
@@ -13,6 +14,7 @@ import android.widget.PopupWindow
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.item_request.ItemAdapter
 import com.github.sdpteam15.polyevents.model.Item
 import com.github.sdpteam15.polyevents.model.ItemType
@@ -22,7 +24,7 @@ import com.github.sdpteam15.polyevents.model.ItemType
  */
 class ItemsAdminActivity : AppCompatActivity() {
 
-    //var items: MutableLiveData<MutableList<String>> = MutableLiveData()
+    private val items = ObservableList<Item>()
 
     /**
      * Recycler containing all the items
@@ -37,7 +39,13 @@ class ItemsAdminActivity : AppCompatActivity() {
 
         //val clickListener = { _: String -> } // TODO define what happens when we click on an Item
         recyclerView = findViewById(R.id.id_recycler_items_list)
-        recyclerView.adapter = ItemAdapter(this)
+        recyclerView.adapter = ItemAdapter(this, items)
+        items.observeAdd(this){
+            if (it != null) {
+                Log.d("Recycler", "adding $it")
+                currentDatabase.createItem(it)
+            }
+        }
 
         val btnAdd = findViewById<ImageButton>(R.id.id_add_item_button)
         btnAdd.setOnClickListener { createAddItemPopup() }
@@ -79,13 +87,7 @@ class ItemsAdminActivity : AppCompatActivity() {
         confirmButton.setOnClickListener {
 
 
-            /* TODO ADD val newList = items.value
-            val newItem = itemName.text.toString()
-            newList!!.add(newItem)
-            //items.postValue(newList)*/
-
-            currentDatabase.removeItem(Item(itemName.text.toString(), ItemType.OTHER)) // TODO REMOVE
-            recyclerView.adapter!!.notifyDataSetChanged()
+            items.add(Item(itemName.text.toString(),ItemType.OTHER))
             // Dismiss the popup window
             popupWindow.dismiss()
 

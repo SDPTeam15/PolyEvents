@@ -44,11 +44,7 @@ class ListFragment : Fragment() {
 
         val fragmentView = inflater.inflate(R.layout.fragment_list, container, false)
         recyclerView = fragmentView.findViewById<RecyclerView>(R.id.recycler_events_list)
-        currentDatabase.getListEvent(null,10, events).observe(this) {
-            if (it!!){
-                recyclerView.adapter!!.notifyDataSetChanged()
-            }
-        }
+
         val openEvent = { event: Event ->
             val intent = Intent(inflater.context, EventActivity::class.java).apply {
                 putExtra(EXTRA_EVENT_ID, event.id)
@@ -57,6 +53,11 @@ class ListFragment : Fragment() {
         }
 
         recyclerView.adapter = EventItemAdapter(events, openEvent)
+        currentDatabase.getListEvent(null,10, events).observe(this) {
+            if (it!!){
+                recyclerView.adapter!!.notifyDataSetChanged()
+            }
+        }
         events.observe(this) { recyclerView.adapter!!.notifyDataSetChanged() }
         recyclerView.setHasFixedSize(false)
         // Inflate the layout for this fragment

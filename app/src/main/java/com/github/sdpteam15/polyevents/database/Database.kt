@@ -7,7 +7,7 @@ object Database {
     private var mutableCurrentDatabase: DatabaseInterface? = null
     var currentDatabase: DatabaseInterface
         get() {
-            mutableCurrentDatabase = mutableCurrentDatabase ?: FirestoreDatabaseProvider
+            mutableCurrentDatabase = mutableCurrentDatabase ?: FakeDatabase
             return mutableCurrentDatabase!!
         }
         set(value) {
