@@ -41,44 +41,52 @@ object FirestoreDatabaseProvider : DatabaseInterface {
                 null
             }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun getListProfile(uid: String, user: UserInterface): List<ProfileInterface> {
-        return ArrayList<ProfileInterface>()/*TODO*/
+        return FakeDatabase.getListProfile(uid,user)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun addProfile(profile: ProfileInterface, uid: String, user: UserInterface): Boolean {
-        return true/*TODO*/
+        return FakeDatabase.addProfile(profile,uid,user)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun removeProfile(
         profile: ProfileInterface,
         uid: String,
         user: UserInterface
     ): Boolean {
-        return true/*TODO*/
+        return FakeDatabase.removeProfile(profile,uid,user)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun updateProfile(profile: ProfileInterface, user: UserInterface): Boolean {
-        return true/*TODO*/
+        return FakeDatabase.updateProfile(profile,user)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun getListEvent(
         matcher: String?,
         number: Int?,
         profile: ProfileInterface
     ): List<Event> {
-        return ArrayList<Event>()/*TODO*/
+        return FakeDatabase.getListEvent(matcher,number,profile)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun getUpcomingEvents(number: Int, profile: ProfileInterface): List<Event> {
-        return ArrayList<Event>()/*TODO*/
+        return FakeDatabase.getUpcomingEvents(number, profile)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun getEventFromId(id: String, profile: ProfileInterface): Event? {
-        return null/*TODO*/
+       return FakeDatabase.getEventFromId(id,profile)
     }
 
-    override fun updateEvent(Event: Event, profile: ProfileInterface): Boolean {
-        return true/*TODO*/
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun updateEvent(event: Event, profile: ProfileInterface): Boolean {
+        return FakeDatabase.updateEvent(event,profile)
     }
     //Up to here delete
 

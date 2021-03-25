@@ -7,24 +7,29 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.firebase.auth.FirebaseAuth
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.junit.MockitoJUnitRunner
 
-@RunWith(AndroidJUnit4::class)
+@RunWith(MockitoJUnitRunner::class)
 class NavigationViewFragmentTest {
 
     @Rule
     @JvmField
     var mainActivity = ActivityScenarioRule(MainActivity::class.java)
 
+    @Before
+    fun setup(){
+        //Initial state
+        MainActivity.currentUser = null
+        FirebaseAuth.getInstance().signOut()
+    }
+
     @Test
     fun NavigationBarDisplaysCorrectFragment() {
-        //Initial state
-        Espresso.onView(withId(R.id.id_fragment_home)).check(matches(isDisplayed()))
-
         Espresso.onView(withId(R.id.ic_map)).perform(click())
         Espresso.onView(withId(R.id.id_fragment_map)).check(matches(isDisplayed()))
 
@@ -47,6 +52,8 @@ class NavigationViewFragmentTest {
 
         Espresso.onView(withId(R.id.nav_search)).perform(click())
         Espresso.onView(withId(R.id.id_fragment_home)).check(matches(isDisplayed()))
+
+        //TODO Add a check when the user rank is implemented
     }
 
     @Test

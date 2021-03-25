@@ -7,9 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
-import com.github.sdpteam15.polyevents.EventActivity
-import com.github.sdpteam15.polyevents.ItemsAdminActivity
 import com.github.sdpteam15.polyevents.ItemRequestActivity
+import com.github.sdpteam15.polyevents.ItemsAdminActivity
 import com.github.sdpteam15.polyevents.R
 
 // TODO: Rename parameter arguments, choose names that match
@@ -23,9 +22,6 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class MoreFragment : Fragment() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
