@@ -77,17 +77,6 @@ object GoogleMapHelper {
         //setBoundaries()
         //setMinAndMaxZoom()
 
-        //Sample example from
-        //drawPolygon()
-        //drawPolyline()
-        //createMarker()
-        //createMarker2()
-
-        // Set listeners for click events.
-
-        //This is to get easily the coordinates from a position
-        //map!!.setOnMapClickListener { latLng ->Log.d("POSITION","Position : " + latLng.latitude + "," + latLng.longitude + ", zoom lvl : " + map!!.cameraPosition.zoom)}
-
         //To deactivate the 3d buildings
         //map!!.isBuildingsEnabled = false
     }
@@ -328,9 +317,6 @@ object GoogleMapHelper {
         moveDownMarker!!.position =
             LatLng(moveDownPos!!.latitude + diffLat, moveDownPos!!.longitude + diffLng)
         moveDownPos = moveDownMarker!!.position
-        //TODO
-        //rotationMarker!!.position = LatLng(rotationPos!!.latitude + diffLat, rotationPos!!.longitude + diffLng)
-        //rotationPos = rotationMarker!!.position
     }
 
     /**
