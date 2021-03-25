@@ -6,8 +6,8 @@
          Google Maps Android API v2, but you must specify either coarse or fine
          location permissions for the "MyLocation" functionality.
     -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -15,6 +15,24 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PolyEvents">
+        <activity
+            android:name=".admin.EventManagementActivity"
+            android:label="@string/title_activity_event_management"
+            android:parentActivityName=".MainActivity" />
+
+        <activity android:name=".admin.UserManagementActivity"
+            android:label="@string/title_activity_user_management"
+            android:parentActivityName=".MainActivity"/>
+
+        <activity android:name=".admin.ZoneManagementActivity"
+            android:label="@string/title_activity_zone_management"
+            android:parentActivityName=".MainActivity"/>
+
+        <activity android:name=".admin.ItemRequestManagementActivity"
+            android:label="@string/title_activity_item_request_management"
+            android:parentActivityName=".MainActivity"/>
+        <activity android:name=".ItemsAdminActivity" />
+
         <activity android:name=".EditProfileActivity"
             android:parentActivityName=".MainActivity" />
         <activity android:name=".ItemsAdminActivity" />
@@ -32,16 +50,16 @@
              You need a different API key for each encryption key, including the release key that is used to
              sign the APK for publishing.
              You can define the keys for the debug and release targets in src/debug/ and src/release/.
+             android:value="${MAPS_API_KEY}"
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="TODO" />
+            android:value="@string/google_api_key" />
 
         <activity android:name=".MainActivity"
-                android:launchMode="singleTask">
+            android:launchMode="singleTop"> <!-- the main activity is not recreated when we press the back button. Src: https://stackoverflow.com/questions/16434445/using-actionbar-home-as-up-button-home-activity-saveinstancestate-is-always-nul -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

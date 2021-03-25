@@ -27,6 +27,7 @@ import com.github.sdpteam15.polyevents.item_request.ItemRequestAdapter
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.Description
 import org.hamcrest.TypeSafeMatcher
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -65,6 +66,11 @@ class ItemRequestActivityTest {
         )
     }
 
+    @After
+    fun teardown() {
+        Intents.release()
+    }
+
     @Before
     fun setup() {
         availableItems = mutableMapOf()
@@ -90,6 +96,7 @@ class ItemRequestActivityTest {
 
         // Go to items request activity
         onView(withId(R.id.id_request_button)).perform(click())
+        Intents.init()
     }
 
     @Test
@@ -124,15 +131,12 @@ class ItemRequestActivityTest {
         )
     }
 
+
     @Test
     fun sendingNonEmptyItemRequestGoBackToMainActivity() {
         selectItemQuantity(0, "1")
-
-        Intents.init()
         onView(withId(R.id.id_button_make_request)).perform(click())
         Intents.intended(IntentMatchers.hasComponent(MainActivity::class.java.name))
-
-        Intents.release()
     }
 
     /*
