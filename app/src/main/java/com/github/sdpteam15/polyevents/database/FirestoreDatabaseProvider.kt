@@ -8,7 +8,6 @@ import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_DISPLAY_NAME
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_EMAIL
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_UID
-import com.github.sdpteam15.polyevents.database.observe.Matcher
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.Event

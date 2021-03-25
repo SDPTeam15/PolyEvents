@@ -1,4 +1,4 @@
-package com.github.sdpteam15.polyevents.database.observe
+package com.github.sdpteam15.polyevents.database
 
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.Query
