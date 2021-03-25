@@ -39,9 +39,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
 
     override fun onPause() {
         super.onPause()
+        GoogleMapHelper.saveCamera()
 
-        //Saves the last position of the camera
-        GoogleMapHelper.cameraPosition = GoogleMapHelper.map!!.cameraPosition
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

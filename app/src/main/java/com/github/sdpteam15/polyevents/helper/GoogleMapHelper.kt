@@ -24,7 +24,15 @@ object GoogleMapHelper {
     var context: Context? = null
     var map: GoogleMap? = null
 
-    var cameraPosition: CameraPosition? = null
+    //Attributes that can change
+    var minZoom = 17f
+    var maxZoom = 21f
+
+    var swBound = LatLng(46.519941764550545, 6.564997248351575)  // SW bounds
+    var neBound = LatLng(46.5213428130699, 6.566603220999241)    // NE bounds
+
+    var cameraPosition = LatLng(46.52010210373031, 6.566237434744834)
+    var cameraZoom = 18f
 
     val areasPoints: MutableMap<String, Pair<Marker, Polygon>> = mutableMapOf()
 
@@ -49,6 +57,18 @@ object GoogleMapHelper {
 
     //----------START FUNCTIONS----------------------------------------
 
+    /**
+     * Saves the current camera position and zoom when changing fragment
+     */
+    fun saveCamera() {
+        //Saves the last position of the camera
+        cameraPosition = map!!.cameraPosition.target
+        cameraZoom = map!!.cameraPosition.zoom
+    }
+
+    /**
+     * Setup the map to the desired look
+     */
     fun setUpMap() {
         //Restoring the map state
         restoreCameraState()
@@ -76,31 +96,14 @@ object GoogleMapHelper {
      * Restores the camera to the location it was before changing fragment or activity, goes to a initial position if it is the first time the map is opened
      */
     fun restoreCameraState() {
-        if (cameraPosition != null) {
-            map!!.moveCamera(
-                CameraUpdateFactory.newLatLngZoom(
-                    cameraPosition!!.target,
-                    cameraPosition!!.zoom
-                )
-            )
-        } else {
-            map!!.moveCamera(
-                CameraUpdateFactory.newLatLngZoom(
-                    LatLng(
-                        46.52010210373031,
-                        6.566237434744834
-                    ), 18f
-                )
-            )
-            changeCameraLocation()
-        }
+        map!!.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraPosition,cameraZoom))
     }
 
     /**
      * Redraws all areas that were previously drawn before changing fragment or activity, draws some example
      */
     fun restoreMapState() {
-        if (!areasPoints.isEmpty()) {
+        if (areasPoints.isNotEmpty()) {
             val temp = areasPoints.toMap()
             areasPoints.clear()
             //Draw all areas and points
@@ -195,18 +198,15 @@ object GoogleMapHelper {
      * Sets the minimal and the maximal zoom
      */
     fun setMinAndMaxZoom() {
-        map!!.setMinZoomPreference(10f)
-        map!!.setMaxZoomPreference(22f)
+        map!!.setMinZoomPreference(minZoom)
+        map!!.setMaxZoomPreference(maxZoom)
     }
 
     /**
      * Set the boundaries of the event
      */
     fun setBoundaries() {
-        val bounds = LatLngBounds(
-            LatLng(46.519941764550545, 6.564997248351575),  // SW bounds
-            LatLng(46.5213428130699, 6.566603220999241) // NE bounds
-        )
+        val bounds = LatLngBounds(swBound, neBound)
 
         // Constrain the camera target to the bounds.
         map!!.setLatLngBoundsForCameraTarget(bounds)
@@ -411,37 +411,7 @@ object GoogleMapHelper {
         )
         moveDownPos = moveDownMarker!!.position
 
-        //TODO
-        //rotationMarker!!.position = LatLng(rotationPos!!.latitude + lat2, rotationPos!!.longitude + lng2)
-        //rotationPos = rotationMarker!!.position
     }
-
-    /*
-    /**
-     * TODO: Draw a circle but constraint the positions on meters and not difference in LatLng (it doesn't draw a circle since latlng is not a cartesian space)
-     * Performs a rotation on the rectangle
-     */
-    fun rotatePolygon(pos:Marker){
-
-        val corner = tempLatLng[3]!!
-        val rayonVector = LatLng(rotationPos!!.latitude - movePos!!.latitude, rotationPos!!.longitude - movePos!!.longitude)
-        val rayonVector2 = LatLng(corner.latitude - movePos!!.latitude, corner.longitude - movePos!!.longitude)
-        val r = sqrt(rayonVector.latitude*rayonVector.latitude + rayonVector.longitude*rayonVector.longitude)
-        val r2 = sqrt(rayonVector2.latitude*rayonVector2.latitude + rayonVector2.longitude*rayonVector2.longitude)
-        map!!.addCircle(CircleOptions().center(movePos).radius(r2))
-
-        val vector = LatLng(pos.position.latitude - movePos!!.latitude, pos.position.longitude - movePos!!.longitude)
-        val norm = sqrt(vector.latitude*vector.latitude + vector.longitude*vector.longitude)
-        val v = LatLng(vector.latitude*r/norm, vector.longitude*r/norm)
-        Log.d("AFTER", "Vector : $vector; norm : $norm; final vector : $v")
-        Log.d("RAYON EQUAL", "r1=" + r + ", r2 = " + sqrt(v.longitude*v.longitude + v.latitude*v.latitude))
-
-        rotationMarker!!.position = LatLng(movePos!!.latitude + v.latitude, movePos!!.longitude + v.longitude)
-        rotationPos = rotationMarker!!.position
-        //map!!.addMarker(MarkerOptions().position(rotationPos!!))
-        //val circle = map!!.addCircle(CircleOptions().center(pos.position).radius(10.0).strokeColor(Color.RED).fillColor(Color.BLUE))
-    }
-    */
 
     /**
      * Redirects an interaction with an edition marker to the correct transformation
@@ -452,112 +422,11 @@ object GoogleMapHelper {
             PolygonAction.RIGHT.toString() -> transformPolygon(p0)
             PolygonAction.DOWN.toString() -> transformPolygon(p0)
             PolygonAction.DIAG.toString() -> transformPolygon(p0)
-            //PolygonAction.ROTATE.toString() -> rotatePolygon(p0) TODO
             PolygonAction.ROTATE.toString() -> Log.d("ROTATION", "ROTATION BUTTON CLICKED")
         }
         tempPoly?.points = tempLatLng
     }
 
-    //------------END FUNCTIONS------------------------
 
-    //-------------START PLAYGROUND-------------------------
-
-    /**
-     * Example
-     * Creates a marker in sydney
-     */
-    fun createMarker() {
-        val sydney = LatLng(-33.852, 151.211)
-        val marker: Marker = map!!.addMarker(
-            MarkerOptions()
-                .position(sydney)
-                .title("Salut la fraterie")
-        )
-        marker.showInfoWindow()
-    }
-
-    /**
-     * Example
-     * Creates a marker in Sydney but in an other way
-     */
-    fun createMarker2() {
-        map!!.apply {
-            val sydney = LatLng(-33.852, 151.215)
-            addMarker(MarkerOptions().position(sydney).title("Salut la fraterie2"))
-        }
-
-    }
-
-    /**
-     * Example
-     * Moves the camera to a certain location with a small animation
-     * Could be used after the search of an area is done to move the map to the area
-     */
-    fun changeCameraLocation() {
-        val epfl = LatLng(46.52010210373031, 6.566237434744834)
-        val epfl2 = LatLng(46.52013001884851, 6.565851531922817)
-
-        // Move the camera instantly to Sydney with a zoom of 18
-        map!!.moveCamera(CameraUpdateFactory.newLatLngZoom(epfl, 18f))
-
-        // Zoom in, animating the camera.
-        map!!.animateCamera(CameraUpdateFactory.zoomIn())
-
-        // Zoom out to zoom level 10, animating with a duration of 2 seconds.
-        //map!!.animateCamera(CameraUpdateFactory.zoomTo(17f), 2000, null)
-
-        // Construct a CameraPosition focusing on Mountain View and animate the camera to that position.
-        val cameraPosition = CameraPosition.Builder()
-            .target(epfl2) // Sets the center of the map to Mountain View
-            .zoom(20f)            // Sets the tilt of the camera to 30 degrees
-            .build()              // Creates a CameraPosition from the builder
-        map!!.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
-    }
-
-    /**
-     * Example
-     * Adds a line in Australia
-     */
-    fun drawPolyline() {
-        // Style the polygon.
-        // Add polylines to the map.
-        // Polylines are useful to show a route or some other connection between points.
-        val polyline1 = map!!.addPolyline(
-            PolylineOptions()
-                .clickable(true)
-                .add(
-                    LatLng(-35.016, 143.321),
-                    LatLng(-34.747, 145.592),
-                    LatLng(-34.364, 147.891),
-                    LatLng(-33.501, 150.217),
-                    LatLng(-32.306, 149.248),
-                    LatLng(-32.491, 147.309)
-                )
-        )
-        polyline1.tag = "route 1"
-    }
-
-    /**
-     * Example
-     * Draws a polygon in Australia
-     */
-    fun drawPolygon() {
-        // Add polygons to indicate areas on the map.
-        val polygon1 = map!!.addPolygon(
-            PolygonOptions()
-                .clickable(true)
-                .add(
-                    LatLng(-27.457, 153.040),
-                    LatLng(-33.852, 151.211),
-                    LatLng(-37.813, 144.962),
-                    LatLng(-34.928, 138.599)
-                )
-        )
-        // Store a data object with the polygon, used here to indicate an arbitrary type.
-        polygon1.tag = "beta"
-    }
-
-
-    //--------------------------------------------------------------
 
 }
