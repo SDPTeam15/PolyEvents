@@ -23,7 +23,7 @@ enum class PolygonAction {
 object GoogleMapHelper {
     var context: Context? = null
     var map: GoogleMap? = null
-    var uid = 4
+    var uid = 1
 
     //Attributes that can change
     var minZoom = 17f
@@ -89,15 +89,45 @@ object GoogleMapHelper {
         map!!.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraPosition,cameraZoom))
     }
 
+
+
     /**
      * Redraws all areas that were previously drawn before changing fragment or activity, draws some example
      */
     fun restoreMapState() {
-        val temp = areasPoints.toMap()
-        areasPoints.clear()
-        //Draw all areas and points
-        for ((k, v) in temp) {
-            addArea(k, v.second.points, v.first.title)
+        if (areasPoints.isNotEmpty()) {
+            val temp = areasPoints.toMap()
+            areasPoints.clear()
+            //Draw all areas and points
+            for ((k, v) in temp) {
+                addArea(k, v.second.points, v.first.title)
+            }
+
+        } else {
+            //-----------Create example areas---------------
+            val listEvent1 = arrayListOf<LatLng>()
+            listEvent1.add(LatLng(46.52100506978624, 6.565499156713487))
+            listEvent1.add(LatLng(46.52073238207864, 6.565499156713487))
+            listEvent1.add(LatLng(46.52073238207864, 6.565711721777915))
+            listEvent1.add(LatLng(46.52100506978624, 6.565711721777915))
+            addArea("uid++.toString()", listEvent1, "Sushi Demo")
+
+            val listEvent2 = arrayListOf<LatLng>()
+            listEvent2.add(LatLng(46.52015447340308, 6.5656305849552155))
+            listEvent2.add(LatLng(46.52036049105315, 6.5658414736390105))
+            listEvent2.add(LatLng(46.52013394080612, 6.566103324294089))
+            addArea(uid++.toString(), listEvent2, "Triangle")
+
+            val listEvent3 = arrayListOf<LatLng>()
+            listEvent3.add(LatLng(46.52111073013754, 6.565624214708805))
+            listEvent3.add(LatLng(46.52107750943789, 6.565624214708805))
+            listEvent3.add(LatLng(46.52108443041863, 6.566078178584576))
+            listEvent3.add(LatLng(46.521115113422766, 6.5660761669278145))
+            listEvent3.add(LatLng(46.521115113422766, 6.565871313214302))
+            listEvent3.add(LatLng(46.52115986905187, 6.565871313214302))
+            listEvent3.add(LatLng(46.52115986905187, 6.565824374556541))
+            listEvent3.add(LatLng(46.521115113422766, 6.565824374556541))
+            addArea(uid++.toString(), listEvent3, "La route en T")
         }
     }
 
@@ -396,7 +426,4 @@ object GoogleMapHelper {
         }
         tempPoly?.points = tempLatLng
     }
-
-
-
 }
