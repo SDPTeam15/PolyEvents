@@ -1,4 +1,4 @@
-# Summary for week n
+# Summary for week 3
 
 ## Alessio
 
@@ -18,6 +18,12 @@ Next week, some tests for the location need to be written. If possible, I would 
 ## Florian
 
 ## Mathieu
+
+This week, I added the possibility to add an area to the map, move the area and change its size while creating it. I also added the two buttons to add and save the area. I wasn't able to write the tests for these functionalities due to lack of time and because it is related to Google Map. I refactored the google map code written these two last weeks.
+
+My time estimate was too short to write the tests to all these functionality. But what took a long time(which was not planned) to fix was to find a way to pass the cirrius tests.
+
+Next week, I will write the tests that are missing this week. I would like also to add a button to modify the shape and position of an area and the rotation of the area.
 
 ## Robin
 
