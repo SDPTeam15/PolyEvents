@@ -265,9 +265,6 @@ object GoogleMapHelper {
             )
         )
         movePos = moveMarker!!.position
-        //TODO
-        //rotationMarker = map!!.addMarker(MarkerOptions().position(pos4).icon(getMarkerRessource(R.drawable.ic_rotation)).anchor(0.5f,0.5f).draggable(true).snippet(PolygonAction.ROTATE.toString()))
-        //rotationPos = rotationMarker!!.position
     }
 
     /**
