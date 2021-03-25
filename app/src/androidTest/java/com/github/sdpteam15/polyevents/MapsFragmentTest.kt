@@ -30,7 +30,7 @@ class MapsFragmentTest {
     var mainActivity = ActivityScenarioRule(MainActivity::class.java)
 
     @get:Rule
-    lateinit var permissionRule: GrantPermissionRule
+    var permissionRule: GrantPermissionRule = GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
 
     @Before
     fun goToMapFragment() {
@@ -40,14 +40,8 @@ class MapsFragmentTest {
 
     @Test
     fun enablingLocationChangeIcon() {
-        givePermission()
-
         onView(withTagValue(equalTo(R.drawable.ic_location_off)))
         onView(withId(R.id.id_location_button)).perform(click())
         onView(withTagValue(equalTo(R.drawable.ic_location_on)))
-    }
-
-    private fun givePermission() {
-        permissionRule = GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
     }
 }
