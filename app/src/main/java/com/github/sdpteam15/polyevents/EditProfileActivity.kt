@@ -37,7 +37,7 @@ class EditProfileActivity : AppCompatActivity() {
     private lateinit var profile: ProfileInterface
 
     private var lastRank: Rank = Rank.Visitor
-    private var lastName: String = "defalt"
+    private var lastName: String = "default"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
