@@ -337,8 +337,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         moveDownPos = moveDownMarker!!.position
         moveMarker = map!!.addMarker(MarkerOptions().position(posCenter).icon(getMarkerRessource(R.drawable.ic_move)).anchor(0.5f,0.5f).draggable(true).snippet(PolygonAction.MOVE.toString()))
         movePos = moveMarker!!.position
-        rotationMarker = map!!.addMarker(MarkerOptions().position(pos4).icon(getMarkerRessource(R.drawable.ic_rotation)).anchor(0.5f,0.5f).draggable(true).snippet(PolygonAction.ROTATE.toString()))
-        rotationPos = rotationMarker!!.position
+        //TODO
+        //rotationMarker = map!!.addMarker(MarkerOptions().position(pos4).icon(getMarkerRessource(R.drawable.ic_rotation)).anchor(0.5f,0.5f).draggable(true).snippet(PolygonAction.ROTATE.toString()))
+        //rotationPos = rotationMarker!!.position
     }
 
     /**
@@ -380,7 +381,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     private fun translatePolygon(pos: Marker){
         val diffLat = pos.position.latitude - movePos!!.latitude
         val diffLng = pos.position.longitude - movePos!!.longitude
-        tempLatLng = tempLatLng.map { latLng -> LatLng(latLng!!.latitude + diffLat,latLng!!.longitude + diffLng) }.toMutableList()
+        tempLatLng = tempLatLng.map { latLng -> LatLng(latLng!!.latitude + diffLat,latLng.longitude + diffLng) }.toMutableList()
 
         //Moves the edition markers
         moveMarker!!.position = LatLng(movePos!!.latitude + diffLat, movePos!!.longitude + diffLng)
@@ -394,9 +395,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
 
         moveDownMarker!!.position = LatLng(moveDownPos!!.latitude + diffLat, moveDownPos!!.longitude + diffLng)
         moveDownPos = moveDownMarker!!.position
-
-        rotationMarker!!.position = LatLng(rotationPos!!.latitude + diffLat, rotationPos!!.longitude + diffLng)
-        rotationPos = rotationMarker!!.position
+        //TODO
+        //rotationMarker!!.position = LatLng(rotationPos!!.latitude + diffLat, rotationPos!!.longitude + diffLng)
+        //rotationPos = rotationMarker!!.position
     }
 
     /**
@@ -463,10 +464,12 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         moveDownMarker!!.position = LatLng(moveDownPos!!.latitude + lat1 + lat2/2,moveDownPos!!.longitude + lng1 + lng2/2)
         moveDownPos = moveDownMarker!!.position
 
-        rotationMarker!!.position = LatLng(rotationPos!!.latitude + lat2, rotationPos!!.longitude + lng2)
-        rotationPos = rotationMarker!!.position
+        //TODO
+        //rotationMarker!!.position = LatLng(rotationPos!!.latitude + lat2, rotationPos!!.longitude + lng2)
+        //rotationPos = rotationMarker!!.position
     }
 
+    /*
     /**
      * TODO: Draw a circle but constraint the positions on meters and not difference in LatLng (it doesn't draw a circle since latlng is not a cartesian space)
      * Performs a rotation on the rectangle
@@ -491,6 +494,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         //map!!.addMarker(MarkerOptions().position(rotationPos!!))
         //val circle = map!!.addCircle(CircleOptions().center(pos.position).radius(10.0).strokeColor(Color.RED).fillColor(Color.BLUE))
     }
+    */
 
     /**
      * Redirects an interaction with an edition marker to the correct transformation
@@ -501,7 +505,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
             PolygonAction.RIGHT.toString() -> transformPolygon(p0)
             PolygonAction.DOWN.toString() -> transformPolygon(p0)
             PolygonAction.DIAG.toString() -> transformPolygon(p0)
-            PolygonAction.ROTATE.toString() -> rotatePolygon(p0)
+            //PolygonAction.ROTATE.toString() -> rotatePolygon(p0) TODO
+            PolygonAction.ROTATE.toString() -> Log.d("ROTATION", "ROTATION BUTTON CLICKED")
         }
         tempPoly?.points = tempLatLng
     }
