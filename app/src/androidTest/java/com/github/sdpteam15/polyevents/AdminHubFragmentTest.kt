@@ -7,6 +7,8 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.runner.AndroidJUnitRunner
 import com.github.sdpteam15.polyevents.admin.EventManagementActivity
 import com.github.sdpteam15.polyevents.admin.ItemRequestManagementActivity
 import com.github.sdpteam15.polyevents.admin.UserManagementActivity
@@ -22,7 +24,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mockito.mock
 import org.mockito.junit.MockitoJUnitRunner
 
-@RunWith(MockitoJUnitRunner::class)
+@RunWith(AndroidJUnit4::class)
 class AdminHubFragmentTest {
     @Rule
     @JvmField
