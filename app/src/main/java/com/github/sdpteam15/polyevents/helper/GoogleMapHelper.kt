@@ -23,6 +23,7 @@ enum class PolygonAction {
 object GoogleMapHelper {
     var context: Context? = null
     var map: GoogleMap? = null
+    var uid = 4
 
     //Attributes that can change
     var minZoom = 17f
@@ -92,39 +93,11 @@ object GoogleMapHelper {
      * Redraws all areas that were previously drawn before changing fragment or activity, draws some example
      */
     fun restoreMapState() {
-        if (areasPoints.isNotEmpty()) {
-            val temp = areasPoints.toMap()
-            areasPoints.clear()
-            //Draw all areas and points
-            for ((k, v) in temp) {
-                addArea(k, v.second.points, v.first.title)
-            }
-
-        } else {
-            //-----------Create example areas---------------
-            val listEvent1 = arrayListOf<LatLng>()
-            listEvent1.add(LatLng(46.52100506978624, 6.565499156713487))
-            listEvent1.add(LatLng(46.52073238207864, 6.565499156713487))
-            listEvent1.add(LatLng(46.52073238207864, 6.565711721777915))
-            listEvent1.add(LatLng(46.52100506978624, 6.565711721777915))
-            addArea("1", listEvent1, "Sushi Demo")
-
-            val listEvent2 = arrayListOf<LatLng>()
-            listEvent2.add(LatLng(46.52015447340308, 6.5656305849552155))
-            listEvent2.add(LatLng(46.52036049105315, 6.5658414736390105))
-            listEvent2.add(LatLng(46.52013394080612, 6.566103324294089))
-            addArea("2", listEvent2, "Triangle")
-
-            val listEvent3 = arrayListOf<LatLng>()
-            listEvent3.add(LatLng(46.52111073013754, 6.565624214708805))
-            listEvent3.add(LatLng(46.52107750943789, 6.565624214708805))
-            listEvent3.add(LatLng(46.52108443041863, 6.566078178584576))
-            listEvent3.add(LatLng(46.521115113422766, 6.5660761669278145))
-            listEvent3.add(LatLng(46.521115113422766, 6.565871313214302))
-            listEvent3.add(LatLng(46.52115986905187, 6.565871313214302))
-            listEvent3.add(LatLng(46.52115986905187, 6.565824374556541))
-            listEvent3.add(LatLng(46.521115113422766, 6.565824374556541))
-            addArea("3", listEvent3, "La route en T")
+        val temp = areasPoints.toMap()
+        areasPoints.clear()
+        //Draw all areas and points
+        for ((k, v) in temp) {
+            addArea(k, v.second.points, v.first.title)
         }
     }
 
@@ -201,23 +174,56 @@ object GoogleMapHelper {
         map!!.setLatLngBoundsForCameraTarget(bounds)
     }
 
+    fun createNewArea(){
+        clearTemp()
+        setupEditZone(map!!.cameraPosition.target)
+    }
+
+    fun saveNewArea(){
+        if(tempPoly != null){
+            addArea(uid.toString(), tempPoly!!.points, "Area $uid")
+            uid += 1
+        }
+        clearTemp()
+    }
+
+    /**
+     * Clears the edition markers and temporary data for area edition
+     */
+    fun clearTemp() {
+        tempPoly?.remove()
+        tempLatLng.clear()
+        moveRightMarker?.remove()
+        moveDownMarker?.remove()
+        moveDiagMarker?.remove()
+        moveMarker?.remove()
+        rotationMarker?.remove()
+
+        tempPoly = null
+        moveRightPos = null
+        moveDownPos = null
+        moveDiagPos = null
+        movePos = null
+        rotationPos = null
+    }
+
     /**
      * Add a new area at the coordinates and add the markers to edit the area
      * */
     fun setupEditZone(pos: LatLng) {
         val zoom = map!!.cameraPosition.zoom
         val divisor = 2.0.pow(zoom.toDouble())
-        val longDiff = 188.0 / divisor
+        val longDiff = 188.0 / divisor / 2
         val latDiff = longDiff / 2
-
-        var pos2 = LatLng(pos.latitude - latDiff, pos.longitude)
+        var pos1 = LatLng(pos.latitude + latDiff, pos.longitude - longDiff)
+        var pos2 = LatLng(pos.latitude - latDiff, pos.longitude - longDiff)
         var pos3 = LatLng(pos.latitude - latDiff, pos.longitude + longDiff)
-        var pos4 = LatLng(pos.latitude, pos.longitude + longDiff)
-        tempLatLng.add(pos)
+        var pos4 = LatLng(pos.latitude + latDiff, pos.longitude + longDiff)
+        tempLatLng.add(pos1)
         tempLatLng.add(pos2)
         tempLatLng.add(pos3)
         tempLatLng.add(pos4)
-        tempPoly = map!!.addPolygon(PolygonOptions().add(pos).add(pos2).add(pos3).add(pos4))
+        tempPoly = map!!.addPolygon(PolygonOptions().add(pos1).add(pos2).add(pos3).add(pos4))
         val temp1 = (pos4.latitude + pos3.latitude) / 2
         val temp2 = (pos2.longitude + pos3.longitude) / 2
         val posMidRight = LatLng(temp1, pos4.longitude)
@@ -268,25 +274,6 @@ object GoogleMapHelper {
         val canvas = Canvas(bitmap)
         vectorDrawable?.draw(canvas)
         return BitmapDescriptorFactory.fromBitmap(bitmap)
-    }
-
-    /**
-     * Clears the edition markers and temporary data for area edition
-     */
-    fun clearTemp() {
-        tempPoly = null
-        tempLatLng.clear()
-        moveRightMarker?.remove()
-        moveDownMarker?.remove()
-        moveDiagMarker?.remove()
-        moveMarker?.remove()
-        rotationMarker?.remove()
-
-        moveRightPos = null
-        moveDownPos = null
-        moveDiagPos = null
-        movePos = null
-        rotationPos = null
     }
 
     /**

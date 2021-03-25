@@ -3,9 +3,11 @@ package com.github.sdpteam15.polyevents.fragments
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -23,8 +25,7 @@ import com.google.android.gms.maps.model.Polyline
 
 
 class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
-    OnPolygonClickListener, OnMarkerClickListener, OnInfoWindowClickListener,
-    OnMapLongClickListener, OnMarkerDragListener {
+    OnPolygonClickListener, OnMarkerClickListener, OnInfoWindowClickListener, OnMarkerDragListener {
 
     var locationPermissionGranted = false
     var PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1
@@ -34,7 +35,12 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_maps, container, false)
+        val view = inflater.inflate(R.layout.fragment_maps, container, false)
+        val addNewAreaButton:View = view.findViewById(R.id.addNewArea)
+        val saveNewAreaButton:View = view.findViewById(R.id.acceptNewArea)
+        addNewAreaButton.setOnClickListener(View.OnClickListener { view -> GoogleMapHelper.createNewArea() })
+        saveNewAreaButton.setOnClickListener(View.OnClickListener { view -> GoogleMapHelper.saveNewArea() })
+        return view
     }
 
     override fun onPause() {
@@ -60,7 +66,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         GoogleMapHelper.map!!.setOnPolylineClickListener(this)
         GoogleMapHelper.map!!.setOnPolygonClickListener(this)
         GoogleMapHelper.map!!.setOnMarkerClickListener(this)
-        GoogleMapHelper.map!!.setOnMapLongClickListener(this)
         GoogleMapHelper.map!!.setOnMarkerDragListener(this)
         GoogleMapHelper.map!!.setOnInfoWindowClickListener(this)
         GoogleMapHelper.setUpMap()
@@ -89,12 +94,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         )
     }
 
-
-    override fun onMapLongClick(pos: LatLng) {
-        GoogleMapHelper.clearTemp()
-        GoogleMapHelper.setupEditZone(pos)
-    }
-
     override fun onMarkerDragEnd(p0: Marker) {
         GoogleMapHelper.interactionMarker(p0)
     }
@@ -107,6 +106,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     override fun onMarkerDrag(p0: Marker) {
         GoogleMapHelper.interactionMarker(p0)
     }
+
     //-----------END LISTENER---------------------------------------
 
 

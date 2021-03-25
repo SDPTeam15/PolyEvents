@@ -2,7 +2,6 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'jacoco'
-    id 'com.google.secrets_gradle_plugin' version '0.5'
 }
 
 apply plugin: 'kotlin-android'
