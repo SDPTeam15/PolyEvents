@@ -6,29 +6,25 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.github.sdpteam15.polyevents.ItemsAdminActivity
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
-import com.github.sdpteam15.polyevents.database.FakeDatabase
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
-import com.github.sdpteam15.polyevents.database.observe.Observer
 import com.github.sdpteam15.polyevents.model.Item
 
 /**
  * Adapts items to RecyclerView ItemsViews
  */
-class ItemAdapter(
-    // TODO ADD private var data: Observable<MutableList<String>>,
-    // TODO ADD private val onItemClickListener: (String) -> Unit
-) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
+class ItemAdapter(itemsAdminActivity: ItemsAdminActivity) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
     private val items = ObservableList<Item>()
 
     init {
-        currentDatabase.getItemsList(items)
-        items.observe {
-            notifyDataSetChanged()
+        currentDatabase.getItemsList(items).observe {
+            if (it != true)
+               println("query not satisfied")
         }
+        items.observe(itemsAdminActivity) { notifyDataSetChanged() }
     }
 
     /**

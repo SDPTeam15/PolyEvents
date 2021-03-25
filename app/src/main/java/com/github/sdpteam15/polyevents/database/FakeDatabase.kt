@@ -166,6 +166,16 @@ object FakeDatabase : DatabaseInterface {
         return Observable(true)
     }
 
+    override fun getAvailableItems(
+        itemList: ObservableList<Item>,
+        profile: ProfileInterface
+    ): Observable<Boolean> {
+        itemList.clear()
+        for (item in items)
+            itemList.add(item)
+        return Observable(true)
+    }
+
     override fun createEvent(event: Event, profile: ProfileInterface): Observable<Boolean> {
         events.add(event)
         return Observable(true)

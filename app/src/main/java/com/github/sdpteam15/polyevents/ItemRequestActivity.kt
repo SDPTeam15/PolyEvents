@@ -31,7 +31,7 @@ class ItemRequestActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.id_recycler_items_request)
         mapSelectedItems = mutableMapOf()
 
-        val availableItems = currentDatabase.get
+        val availableItems = currentDatabase.getAvailableItems(obsItems)
 
         // Listener that update the map of selected items when the quantity is changed
         val onItemQuantityChangeListener = { item: String, newQuantity: Int ->
@@ -47,7 +47,7 @@ class ItemRequestActivity : AppCompatActivity() {
         }
 
         recyclerView.adapter =
-            ItemRequestAdapter(availableItems.toList(), onItemQuantityChangeListener)
+            ItemRequestAdapter(availableItems, onItemQuantityChangeListener)
 
         recyclerView.setHasFixedSize(false)
     }

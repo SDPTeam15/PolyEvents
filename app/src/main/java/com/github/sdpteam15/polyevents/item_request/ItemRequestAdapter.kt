@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.item_request
 
+import android.content.ClipData
 import android.os.Build
 import android.text.Editable
 import android.text.TextWatcher
@@ -12,7 +13,9 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
+import com.github.sdpteam15.polyevents.model.Item
 
 /**
  * Adapts items to RecyclerView's ItemViewHolders
@@ -21,7 +24,7 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
  * - A listener that will be triggered on click on a checkbox of an item view holder
  */
 class ItemRequestAdapter(
-    private val availableItems: List<Pair<String, Int>>,
+    private val availableItems: ObservableList<Item>,
     private val onItemQuantityChangeListener: (String, Int) -> Unit
 ) : RecyclerView.Adapter<ItemRequestAdapter.ItemViewHolder>() {
 

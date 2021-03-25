@@ -1,13 +1,13 @@
 package com.github.sdpteam15.polyevents.database
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_DISPLAY_NAME
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_DOCUMENT_ID
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_EMAIL
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_GOOGLE_ID
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_UID
 import com.github.sdpteam15.polyevents.database.observe.Matcher
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
@@ -15,6 +15,7 @@ import com.github.sdpteam15.polyevents.model.Event
 import com.github.sdpteam15.polyevents.model.Item
 import com.github.sdpteam15.polyevents.user.ProfileInterface
 import com.github.sdpteam15.polyevents.user.UserInterface
+import com.github.sdpteam15.polyevents.util.EventAdapter
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
@@ -53,9 +54,9 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     }
 
     override fun removeProfile(
-            profile: ProfileInterface,
-            uid: String,
-            user: UserInterface
+        profile: ProfileInterface,
+        uid: String,
+        user: UserInterface
     ): Boolean {
         return true/*TODO*/
     }
@@ -81,7 +82,14 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         itemList: ObservableList<Item>,
         profile: ProfileInterface
     ): Observable<Boolean> {
-        return FakeDatabase.getItemsList(itemList,profile)
+        return FakeDatabase.getItemsList(itemList, profile)
+    }
+
+    override fun getAvailableItems(
+        itemList: ObservableList<Item>,
+        profile: ProfileInterface
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
     }
 
     override fun createEvent(event: Event, profile: ProfileInterface): Observable<Boolean> {
@@ -92,10 +100,13 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         return FakeDatabase.updateEvents(event, profile)
     }
 
-    override fun getEventFromId(id: String, returnEvent: Observable<Event>, profile: ProfileInterface): Observable<Boolean> {
+    override fun getEventFromId(
+        id: String,
+        returnEvent: Observable<Event>,
+        profile: ProfileInterface
+    ): Observable<Boolean> {
         return FakeDatabase.getEventFromId(id, returnEvent, profile)
     }
-
 
 
     /*
@@ -112,7 +123,13 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         }
     */
 
-    override fun getListEvent(matcher: Matcher?, number: Long?, eventList: ObservableList<Event>, profile: ProfileInterface): Observable<Boolean> {
+    override fun getListEvent(
+        matcher: Matcher?,
+        number: Long?,
+        eventList: ObservableList<Event>,
+        profile: ProfileInterface
+    ): Observable<Boolean> {
+
         val end = Observable<Boolean>()
         val task = firestore!!.collection(EVENT_COLLECTION)
         val query = matcher?.match(task)
@@ -123,14 +140,19 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         }
         v.addOnSuccessListener {
             for (d in it!!.documents) {
-                val e: Event? = null // TODO convert d to event
-                eventList.add(e!!)
+                val data = d.data
+                if (data != null) {
+                    val e: Event = EventAdapter.toEventEntity(data)
+                    eventList.add(e)
+                }
             }
             end.postValue(true)
         }.addOnFailureListener {
+            Log.d("FirestoreDatabaseProvider ", it.message!!)
             end.postValue(false)
         }
         return end
+        //return FakeDatabase.getListEvent(matcher,number,eventList,profile)
     }
     //Up to here delete
 
@@ -148,8 +170,8 @@ object FirestoreDatabaseProvider : DatabaseInterface {
      * @return An observable that will be true if no problem during the request false otherwise
      */
     fun thenDoGet(
-            task: Task<QuerySnapshot>,
-            onSuccessListener: (QuerySnapshot) -> Unit
+        task: Task<QuerySnapshot>,
+        onSuccessListener: (QuerySnapshot) -> Unit
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
         lastGetSuccessListener = OnSuccessListener<QuerySnapshot> {
@@ -159,7 +181,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
 
         lastFailureListener = OnFailureListener { ended.postValue(false) }
         task.addOnSuccessListener(lastGetSuccessListener!!)
-                .addOnFailureListener(lastFailureListener!!)
+            .addOnFailureListener(lastFailureListener!!)
         return ended
     }
 
@@ -170,8 +192,8 @@ object FirestoreDatabaseProvider : DatabaseInterface {
      * @return An observable that will be true if no problem during the request false otherwise
      */
     fun thenDoMultGet(
-            task: Task<DocumentSnapshot>,
-            onSuccessListener: (DocumentSnapshot) -> Unit
+        task: Task<DocumentSnapshot>,
+        onSuccessListener: (DocumentSnapshot) -> Unit
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
         lastMultGetSuccessListener = OnSuccessListener<DocumentSnapshot> {
@@ -180,7 +202,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         }
         lastFailureListener = OnFailureListener { ended.postValue(false) }
         task.addOnSuccessListener(lastMultGetSuccessListener!!)
-                .addOnFailureListener(lastFailureListener!!)
+            .addOnFailureListener(lastFailureListener!!)
         return ended
     }
 
@@ -190,54 +212,54 @@ object FirestoreDatabaseProvider : DatabaseInterface {
      * @return An observable that will be true if no problem during the request false otherwise
      */
     fun thenDoSet(
-            task: Task<Void>
+        task: Task<Void>
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
 
         lastSetSuccessListener = OnSuccessListener<Void> { ended.postValue(true) }
         lastFailureListener = OnFailureListener { ended.postValue(false) }
         task.addOnSuccessListener(lastSetSuccessListener!!)
-                .addOnFailureListener(lastFailureListener!!)
+            .addOnFailureListener(lastFailureListener!!)
 
         return ended
     }
 
 
     override fun updateUserInformation(
-            newValues: java.util.HashMap<String, String>,
-            uid: String,
-            userAccess: UserInterface
+        newValues: java.util.HashMap<String, String>,
+        uid: String,
+        userAccess: UserInterface
     ): Observable<Boolean> = thenDoSet(
-            firestore!!.collection(USER_COLLECTION)
-                    .document(uid)
-                    .update(newValues as Map<String, Any>)
+        firestore!!.collection(USER_COLLECTION)
+            .document(uid)
+            .update(newValues as Map<String, Any>)
     )
 
 
     override fun firstConnexion(
-            user: UserInterface,
-            userAccess: UserInterface
+        user: UserInterface,
+        userAccess: UserInterface
     ): Observable<Boolean> {
-        firstConnectionMap[USER_GOOGLE_ID] = user.uid
+        firstConnectionMap[USER_UID] = user.uid
         firstConnectionMap[USER_DISPLAY_NAME] = user.name
         firstConnectionMap[USER_EMAIL] = user.email
 
         return thenDoSet(
-                firestore!!.collection(USER_COLLECTION)
-                        .document(user.uid)
-                        .set(firstConnectionMap)
+            firestore!!.collection(USER_COLLECTION)
+                .document(user.uid)
+                .set(firstConnectionMap)
         )
     }
 
     override fun inDatabase(
-            isInDb: Observable<Boolean>,
-            uid: String,
-            userAccess: UserInterface
+        isInDb: Observable<Boolean>,
+        uid: String,
+        userAccess: UserInterface
     ): Observable<Boolean> = thenDoGet(
-            firestore!!.collection(USER_COLLECTION)
-                    .whereEqualTo(USER_DOCUMENT_ID, uid)
-                    .limit(1)
-                    .get()
+        firestore!!.collection(USER_COLLECTION)
+            .whereEqualTo(USER_UID, uid)
+            .limit(1)
+            .get()
     ) { doc: QuerySnapshot ->
         if (doc.documents.size == 1) {
             isInDb.postValue(true)
@@ -247,13 +269,13 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     }
 
     override fun getUserInformation(
-            user: Observable<UserInterface>,
-            uid: String,
-            userAccess: UserInterface
+        user: Observable<UserInterface>,
+        uid: String,
+        userAccess: UserInterface
     ): Observable<Boolean> = thenDoMultGet(
-            firestore!!.collection(USER_COLLECTION)
-                    .document(uid)
-                    .get()
+        firestore!!.collection(USER_COLLECTION)
+            .document(uid)
+            .get()
     ) {
         //TODO once the data class User is created, set the user with the correct value
         user.postValue(userAccess)

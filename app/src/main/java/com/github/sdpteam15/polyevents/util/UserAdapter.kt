@@ -3,7 +3,7 @@ package com.github.sdpteam15.polyevents.util
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_AGE
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_DISPLAY_NAME
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_EMAIL
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_GOOGLE_ID
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_UID
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_NAME
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_TYPE
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_USERNAME
@@ -27,7 +27,7 @@ object UserAdapter {
      */
     fun toUserDocument(user: UserEntity): HashMap<String, Any?> {
         return hashMapOf(
-            USER_GOOGLE_ID to user.googleId,
+            USER_UID to user.googleId,
             USER_TYPE to user.userType,
             USER_USERNAME to user.username,
             USER_NAME to user.name,
@@ -48,7 +48,7 @@ object UserAdapter {
     fun toUserEntity(documentData: MutableMap<String, Any?>): UserEntity {
 
         return UserEntity(
-            googleId = documentData.get(USER_GOOGLE_ID) as String?,
+            googleId = documentData.get(USER_UID) as String?,
             userType = documentData.get(USER_TYPE) as String?,
             username = documentData.get(USER_USERNAME) as String?,
             name = documentData.get(USER_NAME) as String?,

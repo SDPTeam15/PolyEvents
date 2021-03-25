@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.MainActivity
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_BIRTHDAY
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_BIRTH_DATE
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_USERNAME
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.changeFragment
@@ -65,7 +65,7 @@ class ProfileFragment : Fragment() {
             hashMapNewInfo.clear()
             hashMapNewInfo[USER_USERNAME] =
                 viewRoot.findViewById<EditText>(R.id.profileUsernameET).text.toString()
-            hashMapNewInfo[USER_BIRTHDAY] = viewRoot.findViewById<EditText>(R.id.profileBirthdayET).text.toString()
+            hashMapNewInfo[USER_BIRTH_DATE] = viewRoot.findViewById<EditText>(R.id.profileBirthdayET).text.toString()
 
             //Call the DB to update the user information and getUserInformation once it is done
             currentDatabase.updateUserInformation(hashMapNewInfo, currentUser!!.uid, currentUser!!)
