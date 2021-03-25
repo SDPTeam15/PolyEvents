@@ -46,11 +46,11 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             }
 
     override fun getListProfile(uid: String, user: UserInterface): List<ProfileInterface> {
-        return ArrayList<ProfileInterface>()/*TODO*/
+        return FakeDatabase.getListProfile(uid,user)
     }
 
     override fun addProfile(profile: ProfileInterface, uid: String, user: UserInterface): Boolean {
-        return true/*TODO*/
+        return FakeDatabase.addProfile(profile,uid,user)
     }
 
     override fun removeProfile(
@@ -58,11 +58,11 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         uid: String,
         user: UserInterface
     ): Boolean {
-        return true/*TODO*/
+        return FakeDatabase.removeProfile(profile,uid,user)
     }
 
     override fun updateProfile(profile: ProfileInterface, user: UserInterface): Boolean {
-        return true/*TODO*/
+        return FakeDatabase.updateProfile(profile,user)
     }
 
 

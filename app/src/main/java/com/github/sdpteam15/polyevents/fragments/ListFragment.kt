@@ -66,8 +66,9 @@ class ListFragment : Fragment() {
     /**
      * Update the content of the upcoming events
      */
+    /*
     fun updateContent() {
         // Remove all the content first
         HelperFunctions.refreshFragment(fragmentManager, this)
-    }
+    }*/
 }

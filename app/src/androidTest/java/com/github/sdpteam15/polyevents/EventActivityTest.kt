@@ -11,7 +11,8 @@ import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
@@ -20,6 +21,7 @@ import com.github.sdpteam15.polyevents.database.FakeDatabase
 import com.github.sdpteam15.polyevents.fragments.EXTRA_EVENT_ID
 import com.github.sdpteam15.polyevents.model.Event
 import org.hamcrest.CoreMatchers.containsString
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -74,7 +76,6 @@ class EventActivityTest {
                 tags = mutableSetOf("music", "live", "pogo")
             )
         )
-
         mockedUpcomingEventsProvider = mock(DatabaseInterface::class.java)
         currentDatabase = mockedUpcomingEventsProvider
         `when`(mockedUpcomingEventsProvider.getUpcomingEvents()).thenReturn(events)
@@ -82,8 +83,13 @@ class EventActivityTest {
         `when`(mockedUpcomingEventsProvider.getEventFromId("2")).thenReturn(events[1])
         `when`(mockedUpcomingEventsProvider.getEventFromId("3")).thenReturn(events[2])
         // go to activities list fragment
-        mainActivity = ActivityScenarioRule(MainActivity::class.java)
         Espresso.onView(withId(R.id.ic_list)).perform(click())
+        Intents.init()
+    }
+
+    @After
+    fun teardown() {
+        Intents.release()
     }
 
 
@@ -95,7 +101,6 @@ class EventActivityTest {
 
     @Test
     fun eventActivityOpensOnClick() {
-        Intents.init()
         Espresso.onView(withId(R.id.recycler_events_list)).perform(
             RecyclerViewActions.actionOnItemAtPosition<EventItemAdapter.ItemViewHolder>(
                 0,
@@ -103,8 +108,6 @@ class EventActivityTest {
             )
         )
         intended(hasComponent(EventActivity::class.java.name))
-
-        Intents.release()
     }
 
     @Test

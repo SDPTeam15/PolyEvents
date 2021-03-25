@@ -2,6 +2,7 @@ package com.github.sdpteam15.polyevents.helper
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.widget.Toast
 import androidx.arch.core.executor.ArchTaskExecutor
 import androidx.fragment.app.Fragment
@@ -36,6 +37,8 @@ object HelperFunctions {
         }
     }
 
+
+
     /**
      * Method that allows to switch the fragment in an event
      * @param newFrag: the fragment we want to display (should be in the fragments app from MainEvent otherwise nothing happen)
@@ -46,6 +49,7 @@ object HelperFunctions {
         ft.setReorderingAllowed(false)
         ft.detach(frag).attach(frag).commit()
     }
+
 
     @SuppressLint("RestrictedApi")
     fun run(runnable: Runnable) {

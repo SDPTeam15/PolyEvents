@@ -24,14 +24,18 @@ class EventActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_event)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+
+        supportActionBar!!.setDisplayShowHomeEnabled(true)
+
         currentDatabase.getEventFromId(intent.getStringExtra(EXTRA_EVENT_ID)!!, obsEvent)
             .observe { b ->
                 if (b!!) {
                     obsEvent.observe { updateInfo(it!!) }
                 }
-                setContentView(R.layout.activity_event)
-                supportActionBar!!.setDisplayHomeAsUpEnabled(true)
             }
+
     }
 
     /**
