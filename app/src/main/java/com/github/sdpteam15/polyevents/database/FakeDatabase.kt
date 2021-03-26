@@ -129,10 +129,10 @@ object FakeDatabase : DatabaseInterface {
         profile: ProfileInterface
     ): Observable<Boolean> {
         //request sql returns- task<Document>
-        eventList.clear()
+        eventList.clear(this)
 
-        for (e in events) eventList.add(e)
-        return Observable(true)
+        eventList.addAll(events, this)
+        return Observable(true, this)
     }
     /*
     override fun getUpcomingEvents(number: Int, profile: ProfileInterface): List<Event> =
@@ -146,49 +146,50 @@ object FakeDatabase : DatabaseInterface {
 
     override fun createItem(item: Item, profile: ProfileInterface): Observable<Boolean> {
         items.add(item)
-        return Observable(true)
+        return Observable(true, this)
     }
 
     override fun removeItem(item: Item, profile: ProfileInterface): Observable<Boolean> {
         val b = items.remove(item)
         Log.d("Database", "removed $item = $b")
         Log.d("Database", "new list = $items")
-        return Observable(b)
+        return Observable(b, this)
     }
 
     override fun updateItem(item: Item, profile: ProfileInterface): Observable<Boolean> {
         items[items.indexOfFirst { i -> i.itemId == item.itemId }] = item
-        return Observable(true)
+        return Observable(true, this)
     }
 
     override fun getItemsList(
         itemList: ObservableList<Item>,
         profile: ProfileInterface
     ): Observable<Boolean> {
-        itemList.clear()
-        for (item in items)
-            itemList.add(item)
-        return Observable(true)
+        itemList.clear(this)
+        itemList.addAll(items, this)
+        return Observable(true, this)
     }
 
     override fun getAvailableItems(
         itemList: ObservableList<Pair<Item,Int>>,
         profile: ProfileInterface
     ): Observable<Boolean> {
-        itemList.clear()
+        itemList.clear(this)
+        val list = mutableListOf<Pair<Item,Int>>() //TODO adapt to new Item
         for (item in items)
-            itemList.add(Pair(item, 10))
-        return Observable(true)
+            list.add(Pair(item, 10))
+        itemList.addAll(list, this)
+        return Observable(true, this)
     }
 
     override fun createEvent(event: Event, profile: ProfileInterface): Observable<Boolean> {
         events.add(event)
-        return Observable(true)
+        return Observable(true, this)
     }
 
     override fun updateEvents(event: Event, profile: ProfileInterface): Observable<Boolean> {
         events[events.indexOfFirst { e -> e.id == event.id }] = event
-        return Observable(true)
+        return Observable(true, this)
     }
 
     override fun getEventFromId(
@@ -196,8 +197,8 @@ object FakeDatabase : DatabaseInterface {
         returnEvent: Observable<Event>,
         profile: ProfileInterface
     ): Observable<Boolean> {
-        returnEvent.postValue(events.first { e -> e.id == id })
-        return Observable(true)
+        returnEvent.postValue(events.first { e -> e.id == id }, this)
+        return Observable(true, this)
     }
 
     override fun updateUserInformation(
@@ -205,13 +206,13 @@ object FakeDatabase : DatabaseInterface {
         uid: String,
         userAccess: UserInterface
     ): Observable<Boolean> =
-        Observable(true)
+        Observable(true, this)
 
     override fun firstConnexion(
         user: UserInterface,
         userAccess: UserInterface
     ): Observable<Boolean> =
-        Observable(true)
+        Observable(true, this)
 
     /*
         override fun getAvailableItems(): Map<String, Int> {
@@ -232,8 +233,8 @@ object FakeDatabase : DatabaseInterface {
         uid: String,
         userAccess: UserInterface
     ): Observable<Boolean> {
-        isInDb.value = true
-        return Observable(true)
+        isInDb.postValue(true, this)
+        return Observable(true, this)
     }
 
     override fun getUserInformation(
@@ -241,8 +242,8 @@ object FakeDatabase : DatabaseInterface {
         uid: String,
         userAccess: UserInterface
     ): Observable<Boolean> {
-        user.value = User.invoke(currentUser)
-        return Observable(true)
+        user.postValue(User.invoke(currentUser), this)
+        return Observable(true, this)
     }
 /*
     override fun getItemsList(): MutableList<String> {

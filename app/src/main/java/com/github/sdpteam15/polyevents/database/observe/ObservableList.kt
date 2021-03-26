@@ -7,7 +7,7 @@ import java.util.*
 
 class IndexedValue<T> (val value :T, val index: Int)
 
-class ObservableList<T>{
+class ObservableList<T> : MutableIterable<T>{
     private val observersAdd = mutableSetOf<(UpdateArgs<T>) -> Unit>()
     private val observersRemove = mutableSetOf<(UpdateArgs<T>) -> Unit>()
     private val observersItemUpdate = mutableSetOf<(UpdateArgs<IndexedValue<T>>) -> Unit>()
@@ -234,4 +234,15 @@ class ObservableList<T>{
                 obs(UpdateArgs(valueList, sender))
         }
     }
+
+    inner class ObservableListIterator(var index : Int) : MutableIterator<T>{
+        override fun hasNext(): Boolean = values.size > index
+        override fun next(): T = get(index++)
+        override fun remove() {
+            if(index > 0)
+                remove(getObservable(--index), this)
+        }
+
+    }
+    override fun iterator(): MutableIterator<T> = ObservableListIterator(0)
 }
