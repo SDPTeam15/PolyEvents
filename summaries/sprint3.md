@@ -18,6 +18,12 @@ Next week, some tests for the location need to be written. If possible, I would 
 
 ## Florian
 
+This week, I updated our code to make the data observable, so that when the database is updated, it's possible to show the new version directly to the user. I finished to write the code, but I didn't have time to write tests.
+
+My time estimates where too low to write the tests. I spent a lot of time understanding how to use the Observable and ObservableList classes correctly. Robin helped me to add more features to theses classes so I can use them more efficiently.
+
+Next week, I'll write the tests corresponding to this week's implementations.
+
 ## Mathieu
 
 This week, I added the possibility to add an area to the map, move the area and change its size while creating it. I also added the two buttons to add and save the area. I wasn't able to write the tests for these functionalities due to lack of time and because it is related to Google Map. I refactored the google map code written these two last weeks.
