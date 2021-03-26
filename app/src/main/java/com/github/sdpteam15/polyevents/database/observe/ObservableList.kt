@@ -1,20 +1,17 @@
 package com.github.sdpteam15.polyevents.database.observe
 
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.OnLifecycleEvent
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.observeOnStop
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.run
 import java.util.*
 
-class ObservableList<T> {
-    private val observersAdd = mutableSetOf<(T?) -> Unit>()
-    private val observersRemove = mutableSetOf<(T?) -> Unit>()
-    private val observersClear = mutableSetOf<() -> Unit>()
-    private val observersItemUpdate = mutableSetOf<(T?, Int) -> Unit>()
-    private val observers = mutableSetOf<(List<T?>) -> Unit>()
+class IndexedValue<T> (val value :T, val index: Int)
 
+class ObservableList<T> {
+    private val observersAdd = mutableSetOf<(UpdateArgs<T>) -> Unit>()
+    private val observersRemove = mutableSetOf<(UpdateArgs<T>) -> Unit>()
+    private val observersItemUpdate = mutableSetOf<(UpdateArgs<IndexedValue<T>>) -> Unit>()
+    private val observers = mutableSetOf<(UpdateArgs<List<T>>) -> Unit>()
 
     private val values: MutableList<Observable<T>> = mutableListOf()
     private val removeItemObserver: MutableMap<Observable<T>, () -> Boolean> = mutableMapOf()
@@ -24,11 +21,11 @@ class ObservableList<T> {
     /**
      * To list of T
      */
-    val value: List<T?>
+    val value: List<T>
         get() {
-            val v: MutableList<T?> = mutableListOf()
+            val v: MutableList<T> = mutableListOf()
             for (observableValue in values)
-                v.add(observableValue.value)
+                v.add(observableValue.value!!)
             return v
         }
 
@@ -36,7 +33,7 @@ class ObservableList<T> {
      * Returns the element at the specified index in the list.
      * @return the element at the specified index in the list.
      */
-    operator fun get(index: Int): T? = values[index].value
+    operator fun get(index: Int): T = values[index].value!!
 
     /**
      * Returns the observable element at the specified index in the list.
@@ -48,77 +45,92 @@ class ObservableList<T> {
      * Replaces the element at the specified position in this list with the specified element.
      * @param index position in this list
      * @param value new value
+     * @param sender The source of the event.
      */
-    operator fun set(index: Int, value: T?) = values[index].postValue(value)
+    fun set(index: Int, value: T, sender : Objects?) = values[index].postValue(value, sender)
 
-    /**
-     * Replaces the element at the specified position in this list with the specified element.
-     * @param index position in this list
-     * @param value new value
-     */
-    operator fun set(index: Int, value: Observable<T>) {
-        removeItemObserver[values[index]]!!()
-        removeItemObserver.remove(values[index])
-        values[index] = value
-        removeItemObserver[value] = value.observe { itemUpdated(it, index) }
-        itemUpdated(value.value, index)
-    }
+    operator fun set(index: Int, value: T) = set(index, value, null)
 
     /**
      * Add an observable.
-     * @param observable observable to add.
-     * @return observable added.
+     * @param observable Observable to add.
+     * @param sender The source of the event.
+     * @return Observable added.
      */
-    fun add(observable: Observable<T>): Observable<T> {
-        values.add(observable)
-        removeItemObserver[observable] =
-            observable.observe { itemUpdated(it, values.indexOf(observable)) }
-        itemAdded(observable.value)
-        return observable
+    fun add(observable: Observable<T>, sender : Objects? = null): Observable<T>? = add(observable, sender, true)
+    private fun add(observable: Observable<T>, sender : Objects? = null, notify : Boolean): Observable<T>? {
+        if (observable.value != null) {
+            values.add(observable)
+            removeItemObserver[observable] =
+                observable.observe { itemUpdated(UpdateArgs(IndexedValue(it.value, values.indexOf(observable)), it.sender)) }
+            itemAdded(UpdateArgs(observable.value!!, sender))
+            notifyUpdate(sender)
+            return observable
+        }
+        return null
     }
 
     /**
      * Add an item.
-     * @param item item to add.
-     * @return observable added.
+     * @param item Item to add.
+     * @param sender The source of the event.
+     * @return Observable added.
      */
-    fun add(item: T): Observable<T> = add(Observable(item))
+    fun add(item: T, sender : Objects? = null): Observable<T> = add(Observable(item), sender)!!
+    private fun add(item: T, sender : Objects? = null, notify : Boolean): Observable<T> = add(Observable(item), sender, notify)!!
+
+    /**
+     * Add all items in the list.
+     * @param items items list.
+     * @param sender The source of the event.
+     */
+    fun addAll(items: List<T>, sender : Objects? = null) {
+        for (item: T in items)
+            add(item, sender, false)
+        notifyUpdate(sender)
+    }
+
 
     /**
      * Remove an item.
-     * @param item item to remove.
+     * @param observable item to remove.
+     * @param sender The source of the event.
      * @return observable removed.
      */
-    fun remove(observable: Observable<T>): Observable<T>? {
+    fun remove(observable: Observable<T>, sender : Objects? = null): Observable<T>? =
+        remove(observable, sender, true)
+    private fun remove(observable: Observable<T>, sender : Objects? = null, notify : Boolean): Observable<T>? {
         if (!values.remove(observable))
             return null
         removeItemObserver[observable]!!()
         removeItemObserver.remove(observable)
-        itemRemoved(observable.value)
+        itemRemoved(UpdateArgs(observable.value!!, sender))
+        if(notify)
+            notifyUpdate(sender)
         return observable
     }
 
     /**
      * Remove an item.
      * @param item item to remove.
+     * @param sender The source of the event.
      * @return observable removed.
      */
-    fun remove(item: T): Observable<T>? {
+    private fun remove(item: T, sender : Objects? = null): Observable<T>? {
         val observable: Observable<T>? = values.find { it.value == item }
         if (observable != null)
-            return remove(observable)
+            return remove(observable, sender)
         return null
     }
 
     /**
      * Clear all items.
+     * @param sender The source of the event.
      */
-    fun clear() {
+    fun clear(sender : Objects? = null) {
         for (item in values)
-            removeItemObserver[item]!!()
-        values.clear()
-        removeItemObserver.clear()
-        itemClear()
+            remove(item, sender, false)
+        notifyUpdate(sender)
     }
 
     /**
@@ -126,7 +138,7 @@ class ObservableList<T> {
      *  @param observer observer for the live data additions
      *  @return a method to remove the observer
      */
-    fun observeAdd(observer: (T?) -> Unit): () -> Boolean {
+    fun observeAdd(observer: (UpdateArgs<T>) -> Unit): () -> Boolean {
         observersAdd.add(observer)
         return { observersAdd.remove(observer) }
     }
@@ -136,7 +148,7 @@ class ObservableList<T> {
      *  @param observer lifecycle of the observer to automatically remove it from the observers when stopped
      *  @return a method to remove the observer
      */
-    fun observeAdd(lifecycle: LifecycleOwner, observer: (T?) -> Unit): () -> Boolean =
+    fun observeAdd(lifecycle: LifecycleOwner, observer: (UpdateArgs<T>) -> Unit): () -> Boolean =
         observeOnStop(lifecycle, observeAdd(observer))
 
     /**
@@ -144,7 +156,7 @@ class ObservableList<T> {
      *  @param observer observer for the live data removals
      *  @return a method to remove the observer
      */
-    fun observeRemove(observer: (T?) -> Unit): () -> Boolean {
+    fun observeRemove(observer: (UpdateArgs<T>) -> Unit): () -> Boolean {
         observersRemove.add(observer)
         return { observersRemove.remove(observer) }
     }
@@ -154,7 +166,7 @@ class ObservableList<T> {
      *  @param observer lifecycle of the observer to automatically remove it from the observers when stopped
      *  @return a method to remove the observer
      */
-    fun observeRemove(lifecycle: LifecycleOwner, observer: (T?) -> Unit): () -> Boolean =
+    fun observeRemove(lifecycle: LifecycleOwner, observer: (UpdateArgs<T>) -> Unit): () -> Boolean =
         observeOnStop(lifecycle, observeRemove(observer))
 
     /**
@@ -162,25 +174,7 @@ class ObservableList<T> {
      *  @param observer observer for the live data clearing
      *  @return a method to remove the observer
      */
-    fun observeClear(observer: () -> Unit): () -> Boolean {
-        observersClear.add(observer)
-        return { observersClear.remove(observer) }
-    }
-
-    /**
-     *  Add an observer for the live data clearing
-     *  @param observer lifecycle of the observer to automatically remove it from the observers when stopped
-     *  @return a method to remove the observer
-     */
-    fun observeClear(lifecycle: LifecycleOwner, observer: () -> Unit): () -> Boolean =
-        observeOnStop(lifecycle, observeClear(observer))
-
-    /**
-     *  Add an observer for the live data clearing
-     *  @param observer observer for the live data clearing
-     *  @return a method to remove the observer
-     */
-    fun observeUpdate(observer: (T?, Int) -> Unit): () -> Boolean {
+    fun observeUpdate(observer: (UpdateArgs<IndexedValue<T>>) -> Unit): () -> Boolean {
         observersItemUpdate.add(observer)
         return { observersItemUpdate.remove(observer) }
     }
@@ -190,7 +184,7 @@ class ObservableList<T> {
      *  @param observer lifecycle of the observer to automatically remove it from the observers when stopped
      *  @return a method to remove the observer
      */
-    fun observeUpdate(lifecycle: LifecycleOwner, observer: (T?, Int) -> Unit): () -> Boolean =
+    fun observeUpdate(lifecycle: LifecycleOwner, observer: (UpdateArgs<IndexedValue<T>>) -> Unit): () -> Boolean =
         observeOnStop(lifecycle, observeUpdate(observer))
 
     /**
@@ -198,7 +192,7 @@ class ObservableList<T> {
      *  @param observer observer for the live data
      *  @return a method to remove the observer
      */
-    fun observe(observer: (List<T?>) -> Unit): () -> Boolean {
+    fun observe(observer: (UpdateArgs<List<T>>) -> Unit): () -> Boolean {
         observers.add(observer)
         return { observers.remove(observer) }
     }
@@ -208,46 +202,36 @@ class ObservableList<T> {
      *  @param observer lifecycle of the observer to automatically remove it from the observers when stopped
      *  @return a method to remove the observer
      */
-    fun observe(lifecycle: LifecycleOwner, observer: (List<T?>) -> Unit): () -> Boolean =
+    fun observe(lifecycle: LifecycleOwner, observer: (UpdateArgs<List<T>>) -> Unit): () -> Boolean =
         observeOnStop(lifecycle, observe(observer))
 
-    private fun itemRemoved(value: T?) {
-        run(Runnable {
-            for (obs in observersRemove)
-                obs(value);
-            notifyUpdate()
-        })
-    }
-
-    private fun itemAdded(value: T?) {
+    private fun itemAdded(value: UpdateArgs<T>) {
         run(Runnable {
             for (obs in observersAdd)
-                obs(value);
-            notifyUpdate()
+                obs(value)
         })
     }
 
-    private fun itemUpdated(value: T?, index: Int) {
+    private fun itemRemoved(value: UpdateArgs<T>) {
+        run(Runnable {
+            for (obs in observersRemove)
+                obs(value)
+        })
+    }
+
+    private fun itemUpdated(value: UpdateArgs<IndexedValue<T>>) {
         run(Runnable {
             for (obs in observersItemUpdate)
-                obs(value, index);
-            notifyUpdate()
+                obs(value)
+            notifyUpdate(value.sender)
         })
     }
 
-    private fun itemClear() {
-        run(Runnable {
-            for (obs in observersClear)
-                obs();
-            notifyUpdate()
-        })
-    }
-
-    private fun notifyUpdate() {
+    private fun notifyUpdate(sender: Objects?) {
         if (observers.isNotEmpty()) {
             val valueList = this.value
             for (obs in observers)
-                obs(valueList)
+                obs(UpdateArgs(valueList, sender))
         }
     }
 }
