@@ -9,7 +9,7 @@ import java.util.*
  * Observable live data of type T
  * @param
  */
-class Observable<T>(value: T? = null, sender: Objects? = null) {
+class Observable<T>(value: T? = null, sender: Any? = null) {
     constructor(value: T? = null) : this(value, null)
     constructor() : this(null)
 
@@ -35,7 +35,7 @@ class Observable<T>(value: T? = null, sender: Objects? = null) {
     /**
      * Current sender
      */
-    val sender: Objects?
+    val sender: Any?
         get() = updateArgs?.sender
 
     /**
@@ -63,7 +63,7 @@ class Observable<T>(value: T? = null, sender: Objects? = null) {
      * @param newValue the new value
      * @param sender The source of the event.
      */
-    fun postValue(newValue: T, sender: Objects? = null) {
+    fun postValue(newValue: T, sender: Any? = null) {
         synchronized(this) { updateArgs = UpdateArgs(newValue, sender); }
         run(Runnable {
             for (obs in observers)

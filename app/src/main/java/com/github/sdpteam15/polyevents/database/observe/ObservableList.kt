@@ -47,7 +47,7 @@ class ObservableList<T>{
      * @param value new value
      * @param sender The source of the event.
      */
-    fun set(index: Int, value: T, sender : Objects?) = values[index].postValue(value, sender)
+    fun set(index: Int, value: T, sender : Any?) = values[index].postValue(value, sender)
 
     operator fun set(index: Int, value: T) = set(index, value, null)
 
@@ -57,8 +57,8 @@ class ObservableList<T>{
      * @param sender The source of the event.
      * @return Observable added.
      */
-    fun add(observable: Observable<T>, sender : Objects? = null): Observable<T>? = add(observable, sender, true)
-    private fun add(observable: Observable<T>, sender : Objects? = null, notify : Boolean): Observable<T>? {
+    fun add(observable: Observable<T>, sender : Any? = null): Observable<T>? = add(observable, sender, true)
+    private fun add(observable: Observable<T>, sender : Any? = null, notify : Boolean): Observable<T>? {
         if (observable.value != null) {
             values.add(observable)
             removeItemObserver[observable] =
@@ -76,15 +76,15 @@ class ObservableList<T>{
      * @param sender The source of the event.
      * @return Observable added.
      */
-    fun add(item: T, sender : Objects? = null): Observable<T> = add(Observable(item), sender)!!
-    private fun add(item: T, sender : Objects? = null, notify : Boolean): Observable<T> = add(Observable(item), sender, notify)!!
+    fun add(item: T, sender : Any? = null): Observable<T> = add(Observable(item), sender)!!
+    private fun add(item: T, sender : Any? = null, notify : Boolean): Observable<T> = add(Observable(item), sender, notify)!!
 
     /**
      * Add all items in the list.
      * @param items items list.
      * @param sender The source of the event.
      */
-    fun addAll(items: List<T>, sender : Objects? = null) {
+    fun addAll(items: List<T>, sender : Any? = null) {
         for (item: T in items)
             add(item, sender, false)
         notifyUpdate(sender)
@@ -97,9 +97,9 @@ class ObservableList<T>{
      * @param sender The source of the event.
      * @return observable removed.
      */
-    fun remove(observable: Observable<T>, sender : Objects? = null): Observable<T>? =
+    fun remove(observable: Observable<T>, sender : Any? = null): Observable<T>? =
         remove(observable, sender, true)
-    private fun remove(observable: Observable<T>, sender : Objects? = null, notify : Boolean): Observable<T>? {
+    private fun remove(observable: Observable<T>, sender : Any? = null, notify : Boolean): Observable<T>? {
         if (!values.remove(observable))
             return null
         removeItemObserver[observable]!!()
@@ -116,7 +116,7 @@ class ObservableList<T>{
      * @param sender The source of the event.
      * @return observable removed.
      */
-    fun remove(item: T, sender : Objects? = null): Observable<T>? {
+    fun remove(item: T, sender : Any? = null): Observable<T>? {
         val observable: Observable<T>? = values.find { it.value == item }
         if (observable != null)
             return remove(observable, sender)
@@ -127,7 +127,7 @@ class ObservableList<T>{
      * Clear all items.
      * @param sender The source of the event.
      */
-    fun clear(sender : Objects? = null) {
+    fun clear(sender : Any? = null) {
         for (item in values)
             remove(item, sender, false)
         notifyUpdate(sender)
@@ -227,7 +227,7 @@ class ObservableList<T>{
         })
     }
 
-    private fun notifyUpdate(sender: Objects?) {
+    private fun notifyUpdate(sender: Any?) {
         if (observers.isNotEmpty()) {
             val valueList = this.value
             for (obs in observers)
