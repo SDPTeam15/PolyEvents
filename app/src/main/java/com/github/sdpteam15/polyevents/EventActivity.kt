@@ -32,8 +32,8 @@ class EventActivity : AppCompatActivity() {
         println("id = " + intent.getStringExtra(EXTRA_EVENT_ID))
         currentDatabase.getEventFromId(intent.getStringExtra(EXTRA_EVENT_ID)!!, obsEvent)
             .observe { b ->
-                if (b!!) {
-                    obsEvent.observe { updateInfo(it!!) }
+                if (b.value) {
+                    obsEvent.observe { updateInfo(it.value) }
                 }
             }
 

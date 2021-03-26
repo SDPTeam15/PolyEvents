@@ -7,7 +7,7 @@ import java.util.*
 
 class IndexedValue<T> (val value :T, val index: Int)
 
-class ObservableList<T> {
+class ObservableList<T>{
     private val observersAdd = mutableSetOf<(UpdateArgs<T>) -> Unit>()
     private val observersRemove = mutableSetOf<(UpdateArgs<T>) -> Unit>()
     private val observersItemUpdate = mutableSetOf<(UpdateArgs<IndexedValue<T>>) -> Unit>()
@@ -116,7 +116,7 @@ class ObservableList<T> {
      * @param sender The source of the event.
      * @return observable removed.
      */
-    private fun remove(item: T, sender : Objects? = null): Observable<T>? {
+    fun remove(item: T, sender : Objects? = null): Observable<T>? {
         val observable: Observable<T>? = values.find { it.value == item }
         if (observable != null)
             return remove(observable, sender)
