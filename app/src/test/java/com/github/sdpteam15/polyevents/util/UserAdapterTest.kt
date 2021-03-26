@@ -27,7 +27,7 @@ class UserAdapterTest {
     fun conversionOfUserEntityToDocumentPreservesData() {
         val document = UserAdapter.toUserDocument(userEntity)
 
-        assertEquals(document[DatabaseConstant.USER_GOOGLE_ID], googleId)
+        assertEquals(document[DatabaseConstant.USER_UID], googleId)
         assertEquals(document[DatabaseConstant.USER_TYPE], userType)
         assertEquals(document[DatabaseConstant.USER_USERNAME], username)
         assertEquals(document[DatabaseConstant.USER_AGE], age)
@@ -39,7 +39,7 @@ class UserAdapterTest {
     @Test
     fun conversionOfDocumentToUserEntityPreservesData() {
         val userDocumentData : HashMap<String, Any?> = hashMapOf(
-            DatabaseConstant.USER_GOOGLE_ID to googleId,
+            DatabaseConstant.USER_UID to googleId,
             DatabaseConstant.USER_TYPE to userType,
             DatabaseConstant.USER_NAME to name,
             DatabaseConstant.USER_DISPLAY_NAME to displayName,
@@ -56,7 +56,7 @@ class UserAdapterTest {
     fun testConversionWithNullValues() {
         val userEntityWithNullProperties = UserEntity(googleId = googleId)
         val document = UserAdapter.toUserDocument(userEntityWithNullProperties)
-        assertEquals(document[DatabaseConstant.USER_GOOGLE_ID], googleId)
+        assertEquals(document[DatabaseConstant.USER_UID], googleId)
         assertNull(document[DatabaseConstant.USER_DISPLAY_NAME])
     }
 }

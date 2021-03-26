@@ -12,6 +12,7 @@ import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.event.Event
 import com.github.sdpteam15.polyevents.fragments.HomeFragment
+import com.github.sdpteam15.polyevents.model.Event
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -39,22 +40,30 @@ class UpcomingEventsHomeFragmentTest {
         events.add(
             Event(
                 "Sushi demo",
-                "Super hungry activity !",
-                LocalDateTime.of(2021, 3, 7, 12, 15),
-                1F,
                 "The fish band",
-                "Kitchen", "1"
+                "Kitchen",
+                "Super hungry activity !",
+                null,
+                LocalDateTime.of(2021, 3, 7, 12, 15),
+                LocalDateTime.of(2021, 3, 7, 13, 15),
+                mutableListOf(),
+                mutableSetOf(),
+                 "1"
             )
         )
 
         events.add(
             Event(
                 "Aqua Poney",
-                "Super cool activity !",
-                LocalDateTime.of(2021, 3, 7, 15, 0),
-                1.5F,
                 "The Aqua Poney team",
-                "Swimming pool", "2"
+                "Swimming pool",
+                "Super cool activity !",
+                null,
+                LocalDateTime.of(2021, 3, 7, 15, 0),
+                LocalDateTime.of(2021, 3, 7, 16, 30),
+                mutableListOf(),
+                mutableSetOf(),
+                "2"
             )
         )
 
@@ -62,10 +71,14 @@ class UpcomingEventsHomeFragmentTest {
             Event(
                 "Concert",
                 "Super noisy activity !",
-                LocalDateTime.of(2021, 3, 7, 17, 15),
-                2.75F,
                 "AcademiC DeCibel",
-                "Concert Hall", "3"
+                "Concert Hall",
+                null,
+                LocalDateTime.of(2021, 3, 7, 17, 15),
+                LocalDateTime.of(2021, 3, 7, 19, 0),
+                mutableListOf(),
+                mutableSetOf(),
+                 "3"
             )
         )
 
@@ -73,10 +86,14 @@ class UpcomingEventsHomeFragmentTest {
             Event(
                 "Cricket",
                 "Outdoor activity !",
-                LocalDateTime.of(2021, 3, 7, 18, 15),
-                1.75F,
                 "Cricket club",
-                "Field", "4"
+                "Field",
+                null,
+                LocalDateTime.of(2021, 3, 7, 18, 15),
+                LocalDateTime.of(2021, 3, 7, 20, 0),
+                mutableListOf(),
+                mutableSetOf(),
+                "4"
             )
         )
 

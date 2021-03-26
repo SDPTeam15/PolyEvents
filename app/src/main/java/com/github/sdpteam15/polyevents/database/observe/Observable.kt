@@ -11,7 +11,7 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions.run
 class Observable<T>(value: T? = null) {
     constructor() : this(null)
 
-    private val observers = mutableSetOf<(T?) -> Unit>()
+    private val observers = mutableSetOf<(T) -> Unit>()
 
     private var tempValue: T? = null
 
@@ -31,10 +31,10 @@ class Observable<T>(value: T? = null) {
      *  @param observer observer for the live data
      *  @return a method to remove the observer
      */
-    fun observe(observer: (T?) -> Unit): () -> Boolean {
+    fun observe(observer: (T) -> Unit): () -> Boolean {
         observers.add(observer)
         if (value != null)
-            observer(value)
+            observer(value!!)
         return { observers.remove(observer) }
     }
 
@@ -54,7 +54,7 @@ class Observable<T>(value: T? = null) {
         synchronized(this) { tempValue = newValue; }
         run(Runnable {
             for (obs in observers)
-                obs(value);
+                obs(value!!);
         })
     }
 }
