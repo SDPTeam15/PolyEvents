@@ -100,7 +100,7 @@ class ItemRequestAdapter(
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val item = availableItems[position]
-        holder.bind(item!!)
+        holder.bind(item)
     }
 
     override fun getItemCount(): Int {

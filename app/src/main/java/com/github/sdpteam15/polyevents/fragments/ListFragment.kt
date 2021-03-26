@@ -54,7 +54,7 @@ class ListFragment : Fragment() {
 
         recyclerView.adapter = EventItemAdapter(events, openEvent)
         currentDatabase.getListEvent(null,10, events).observe(this) {
-            if (it!!){
+            if (it.value){
                 recyclerView.adapter!!.notifyDataSetChanged()
             }
         }

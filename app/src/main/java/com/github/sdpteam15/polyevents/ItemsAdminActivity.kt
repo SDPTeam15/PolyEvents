@@ -18,6 +18,7 @@ import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.item_request.ItemAdapter
 import com.github.sdpteam15.polyevents.model.Item
 import com.github.sdpteam15.polyevents.model.ItemType
+import com.google.firebase.ktx.Firebase
 
 /**
  * Activity displaying Items and supports items creation and deletion
@@ -40,11 +41,10 @@ class ItemsAdminActivity : AppCompatActivity() {
         //val clickListener = { _: String -> } // TODO define what happens when we click on an Item
         recyclerView = findViewById(R.id.id_recycler_items_list)
         recyclerView.adapter = ItemAdapter(this, items)
-        items.observeAdd(this){
-            if (it != null) {
-                Log.d("Recycler", "adding $it")
-                currentDatabase.createItem(it)
-            }
+        items.observeAdd(this) {
+            if (it.sender != currentDatabase)
+                currentDatabase.createItem(it.value)
+
         }
 
         val btnAdd = findViewById<ImageButton>(R.id.id_add_item_button)
@@ -87,7 +87,7 @@ class ItemsAdminActivity : AppCompatActivity() {
         confirmButton.setOnClickListener {
 
 
-            items.add(Item(itemName.text.toString(),ItemType.OTHER))
+            items.add(Item(itemName.text.toString(), ItemType.OTHER), this)
             // Dismiss the popup window
             popupWindow.dismiss()
 

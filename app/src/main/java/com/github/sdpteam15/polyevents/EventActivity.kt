@@ -29,7 +29,6 @@ class EventActivity : AppCompatActivity() {
 
         supportActionBar!!.setDisplayShowHomeEnabled(true)
 
-        println("id = " + intent.getStringExtra(EXTRA_EVENT_ID))
         currentDatabase.getEventFromId(intent.getStringExtra(EXTRA_EVENT_ID)!!, obsEvent)
             .observe { b ->
                 if (b.value) {

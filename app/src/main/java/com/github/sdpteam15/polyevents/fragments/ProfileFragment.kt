@@ -51,8 +51,8 @@ class ProfileFragment : Fragment() {
 
         //When user Info live data is updated, set the correct value in the textview
         userInfoLiveData.observe(this) { userInfo ->
-            viewRoot.findViewById<EditText>(R.id.profileName).setText(userInfo!!.name)
-            viewRoot.findViewById<EditText>(R.id.profileEmail).setText(userInfo!!.email)
+            viewRoot.findViewById<EditText>(R.id.profileName).setText(userInfo.value.name)
+            viewRoot.findViewById<EditText>(R.id.profileEmail).setText(userInfo.value.email)
             //TODO Line for the future when the user class will have all the attributes
             //viewRoot.findViewById<EditText>(R.id.profileUsernameET).setText(userInfo!!.username)
             //viewRoot.findViewById<EditText>(R.id.profileBirthdayET).setText(userInfo!!.birthday)
@@ -70,7 +70,7 @@ class ProfileFragment : Fragment() {
             //Call the DB to update the user information and getUserInformation once it is done
             currentDatabase.updateUserInformation(hashMapNewInfo, currentUser!!.uid, currentUser!!)
                 .observe(this) { newValue ->
-                    if (newValue!!) {
+                    if (newValue.value) {
                         currentDatabase.getUserInformation(
                             userInfoLiveData,
                             currentUser!!.uid,

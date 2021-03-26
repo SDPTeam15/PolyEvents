@@ -36,7 +36,7 @@ class HomeFragment : Fragment() {
             fragmentView.findViewById<LinearLayout>(R.id.id_upcoming_events_list)
 
         currentDatabase.getListEvent(null, 3, events).observe(this) {
-            if (it!!) {
+            if (it.value) {
                 updateContent()
             }
         }
@@ -54,8 +54,8 @@ class HomeFragment : Fragment() {
         // Remove all the content first
         listUpcomingEventsLayout.removeAllViews()
 
-        for (i in 0 until events.size) {
-            setupEventTab(events[i]!!)
+        for (e in events) {
+            setupEventTab(e)
         }
     }
 

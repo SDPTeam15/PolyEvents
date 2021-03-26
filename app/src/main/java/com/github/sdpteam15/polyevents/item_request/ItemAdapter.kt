@@ -22,18 +22,13 @@ class ItemAdapter(itemsAdminActivity: ItemsAdminActivity, items : ObservableList
 
     init {
         currentDatabase.getItemsList(items).observe {
-            if (it != true)
+            if (!it.value)
                println("query not satisfied")
         }
         items.observeRemove(itemsAdminActivity) {
-            Log.d("ItemAdapter","pd")
-            if (it != null) {
-                Log.d("ItemAdapter", "ongjen")
-                currentDatabase.removeItem(it)
-            }
+            currentDatabase.removeItem(it.value)
         }
         items.observe(itemsAdminActivity) {
-            Log.d("ItemAdapter","pd")
             notifyDataSetChanged()
         }
     }
@@ -66,13 +61,8 @@ class ItemAdapter(itemsAdminActivity: ItemsAdminActivity, items : ObservableList
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        val item = items[position]!!
+        val item = items[position]
         holder.bind(item)
-        /*
-        holder.itemView.setOnClickListener {
-
-            onItemClickListener(item)
-        }*/
     }
 
     override fun getItemCount(): Int {

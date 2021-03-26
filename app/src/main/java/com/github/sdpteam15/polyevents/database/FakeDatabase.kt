@@ -151,8 +151,6 @@ object FakeDatabase : DatabaseInterface {
 
     override fun removeItem(item: Item, profile: ProfileInterface): Observable<Boolean> {
         val b = items.remove(item)
-        Log.d("Database", "removed $item = $b")
-        Log.d("Database", "new list = $items")
         return Observable(b, this)
     }
 
