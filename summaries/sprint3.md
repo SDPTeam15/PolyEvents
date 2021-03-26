@@ -40,6 +40,13 @@ I was not able to do the other task I had for this week because my estimate of t
 Next week, I'll write the rest of the code I had to do for this week.
 
 ## Stephane
+This week I merged and updated the Item and Event entities to cope with the rest of the code.
+
+I was not able to merge the the User Entity yet because there was already so much work done on it and a lot had to be changed
+to keep with the last version of the code.
+
+Next week, I'll finish merging the User Entity so that the rest of the code uses only the entities defined
+in the model package. 
 
 ## Overall team
 
