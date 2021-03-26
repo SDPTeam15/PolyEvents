@@ -1,7 +1,8 @@
 package com.github.sdpteam15.polyevents.util
 
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_LOCATION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_NAME
 import com.github.sdpteam15.polyevents.model.Zone
-import com.google.firebase.firestore.DocumentSnapshot
 
 /**
  * A class for converting between zone entities in our code and
@@ -20,8 +21,8 @@ object ZoneAdapter {
      */
     fun toZoneDocument(zone: Zone) : HashMap<String, Any?> =
         hashMapOf(
-            "zoneName" to zone.zoneName,
-            "location" to zone.location
+            ZONE_NAME to zone.zoneName,
+            ZONE_LOCATION to zone.location
         )
 
     /**
@@ -34,7 +35,7 @@ object ZoneAdapter {
      */
     fun toZoneEntity(documentData: MutableMap<String, Any?>): Zone =
         Zone(
-            zoneName = documentData["zoneName"] as String?,
-            location = documentData["location"] as String?
+            zoneName = documentData[ZONE_NAME] as String?,
+            location = documentData[ZONE_LOCATION] as String?
         )
 }

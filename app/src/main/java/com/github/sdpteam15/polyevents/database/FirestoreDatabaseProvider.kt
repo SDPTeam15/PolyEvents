@@ -2,6 +2,11 @@ package com.github.sdpteam15.polyevents.database
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_COLLECTION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_DISPLAY_NAME
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_DOCUMENT_ID
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_EMAIL
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_GOOGLE_ID
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.event.Event
 import com.github.sdpteam15.polyevents.user.ProfileInterface
@@ -21,14 +26,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     var firestore: FirebaseFirestore? = null
         get() = field ?: Firebase.firestore
 
-    const val USER_DOCUMENT = "users"
-    const val USER_DOCUMENT_ID = "uid"
-    const val EVENT_DOCUMENT = "events"
-    const val EVENT_DOCUMENT_ID = "eventId"
-    const val ITEM_DOCUMENT = "items"
-    const val ITEM_DOCUMENT_ID = "itemId"
-    const val AREA_DOCUMENT = "areas"
-    const val AREA_DOCUMENT_ID = "areaId"
+
 
     /**
      * Map used in the firstConnection method. It's public to be able to use it in tests
@@ -43,44 +41,52 @@ object FirestoreDatabaseProvider : DatabaseInterface {
                 null
             }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun getListProfile(uid: String, user: UserInterface): List<ProfileInterface> {
-        return ArrayList<ProfileInterface>()/*TODO*/
+        return FakeDatabase.getListProfile(uid,user)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun addProfile(profile: ProfileInterface, uid: String, user: UserInterface): Boolean {
-        return true/*TODO*/
+        return FakeDatabase.addProfile(profile,uid,user)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun removeProfile(
         profile: ProfileInterface,
         uid: String,
         user: UserInterface
     ): Boolean {
-        return true/*TODO*/
+        return FakeDatabase.removeProfile(profile,uid,user)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun updateProfile(profile: ProfileInterface, user: UserInterface): Boolean {
-        return true/*TODO*/
+        return FakeDatabase.updateProfile(profile,user)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun getListEvent(
         matcher: String?,
         number: Int?,
         profile: ProfileInterface
     ): List<Event> {
-        return ArrayList<Event>()/*TODO*/
+        return FakeDatabase.getListEvent(matcher,number,profile)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun getUpcomingEvents(number: Int, profile: ProfileInterface): List<Event> {
-        return ArrayList<Event>()/*TODO*/
+        return FakeDatabase.getUpcomingEvents(number, profile)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun getEventFromId(id: String, profile: ProfileInterface): Event? {
-        return null/*TODO*/
+       return FakeDatabase.getEventFromId(id,profile)
     }
 
-    override fun updateEvent(Event: Event, profile: ProfileInterface): Boolean {
-        return true/*TODO*/
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun updateEvent(event: Event, profile: ProfileInterface): Boolean {
+        return FakeDatabase.updateEvent(event,profile)
     }
     //Up to here delete
 
@@ -158,7 +164,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         uid: String,
         userAccess: UserInterface
     ): Observable<Boolean> = thenDoSet(
-        firestore!!.collection(USER_DOCUMENT)
+        firestore!!.collection(USER_COLLECTION)
             .document(uid)
             .update(newValues as Map<String, Any>)
     )
@@ -168,12 +174,12 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         user: UserInterface,
         userAccess: UserInterface
     ): Observable<Boolean> {
-        firstConnectionMap["uid"] = user.uid
-        firstConnectionMap["displayName"] = user.name
-        firstConnectionMap["email"] = user.email
+        firstConnectionMap[USER_GOOGLE_ID] = user.uid
+        firstConnectionMap[USER_DISPLAY_NAME] = user.name
+        firstConnectionMap[USER_EMAIL] = user.email
 
         return thenDoSet(
-            firestore!!.collection(USER_DOCUMENT)
+            firestore!!.collection(USER_COLLECTION)
                 .document(user.uid)
                 .set(firstConnectionMap)
         )
@@ -184,7 +190,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         uid: String,
         userAccess: UserInterface
     ): Observable<Boolean> = thenDoGet(
-        firestore!!.collection(USER_DOCUMENT)
+        firestore!!.collection(USER_COLLECTION)
             .whereEqualTo(USER_DOCUMENT_ID, uid)
             .limit(1)
             .get()
@@ -201,7 +207,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         uid: String,
         userAccess: UserInterface
     ): Observable<Boolean> = thenDoMultGet(
-        firestore!!.collection("users")
+        firestore!!.collection(USER_COLLECTION)
             .document(uid)
             .get()
     ) {

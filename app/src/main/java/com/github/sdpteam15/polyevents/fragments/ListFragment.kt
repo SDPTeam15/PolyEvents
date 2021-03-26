@@ -14,7 +14,6 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.event.Event
 import com.github.sdpteam15.polyevents.event.EventItemAdapter
-import com.github.sdpteam15.polyevents.helper.HelperFunctions
 
 /**
  * Extra containing the event ID to show on the launched event page
@@ -24,6 +23,8 @@ const val EXTRA_EVENT_ID = "com.github.sdpteam15.polyevents.event.EVENT_ID"
 /**
  * Shows the list of events and displays them in a new event when we click on one of them
  */
+
+
 class ListFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
@@ -62,8 +63,9 @@ class ListFragment : Fragment() {
     /**
      * Update the content of the upcoming events
      */
+    /*
     fun updateContent() {
         // Remove all the content first
         HelperFunctions.refreshFragment(fragmentManager, this)
-    }
+    }*/
 }

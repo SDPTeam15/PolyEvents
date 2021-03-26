@@ -24,7 +24,7 @@ class EventTest {
     val tag2 = "BAD"
 
     lateinit var event: Event
-
+    lateinit var eventWithNullStartTime: Event
     @Before
     fun setupEvent() {
         event = Event(
@@ -34,6 +34,16 @@ class EventTest {
             description = description,
             icon = icon,
             startTime = startTime,
+            endTime = endTime
+        )
+
+        eventWithNullStartTime =  Event(
+            eventName = eventName,
+            organizer = organizer,
+            zoneName = zoneName,
+            description = description,
+            icon = icon,
+            startTime = null,
             endTime = endTime
         )
     }
@@ -48,6 +58,7 @@ class EventTest {
         assertEquals(event.startTime, startTime)
         assertEquals(event.endTime, endTime)
     }
+
 
     @Test
     fun testEventTags() {
@@ -102,6 +113,8 @@ class EventTest {
     @Test
     fun formattedStartTimeReturnsCorrectTime() {
         assertEquals(event.formattedStartTime(), "18:30")
+        val ret =eventWithNullStartTime.formattedStartTime()
+        assertEquals(ret, "")
     }
 
     private fun localDateTimeToDate(from: LocalDateTime) =
