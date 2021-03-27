@@ -3,6 +3,7 @@ package com.github.sdpteam15.polyevents.helper
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.arch.core.executor.ArchTaskExecutor
 import androidx.fragment.app.Fragment
@@ -70,7 +71,26 @@ object HelperFunctions {
      * @param message : the message to display
      * @param context : the context in which to show the toast
      */
-    fun showToast(message: String, context: Context) {
+    fun showToast(message: String, context: Context?) {
         Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+    }
+
+    /**
+     * Check if a permission was granted
+     * (source : https://github.com/googlemaps/android-samples/blob/29ca74b9a3894121f179b9f36b0a51755e7231b0/ApiDemos/kotlin/app/src/gms/java/com/example/kotlindemos/PermissionUtils.kt)
+     * @param grantPermissions : the permissions that were asked
+     * @param grantResults : the granted permissions
+     * @param permission : the permission we want to know whether it was granted
+     * @return true if the permission was granted
+     */
+    fun isPermissionGranted(grantPermissions: Array<String>,
+                            grantResults: IntArray,
+                            permission: String): Boolean {
+        for (a in grantPermissions.indices) {
+            if (grantPermissions[a] == permission) {
+                return PackageManager.PERMISSION_GRANTED == grantResults[a]
+            }
+        }
+        return false
     }
 }
