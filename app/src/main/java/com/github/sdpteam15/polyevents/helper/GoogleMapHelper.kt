@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.helper
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -11,6 +12,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
 import kotlin.math.pow
+import kotlin.math.sqrt
 
 enum class PolygonAction {
     RIGHT,
@@ -20,7 +22,9 @@ enum class PolygonAction {
     ROTATE
 }
 
+@SuppressLint("StaticFieldLeak")
 object GoogleMapHelper {
+
     var context: Context? = null
     var map: GoogleMap? = null
     var uid = 1
@@ -290,6 +294,11 @@ object GoogleMapHelper {
             )
         )
         movePos = moveMarker!!.position
+
+        rotationMarker = map!!.addMarker(MarkerOptions().position(pos4)
+            .icon(getMarkerRessource(R.drawable.ic_rotation))
+            .anchor(0.5f,0.5f).draggable(true).snippet(PolygonAction.ROTATE.toString()))
+        rotationPos = rotationMarker!!.position
     }
 
     /**
@@ -334,6 +343,9 @@ object GoogleMapHelper {
         moveDownMarker!!.position =
             LatLng(moveDownPos!!.latitude + diffLat, moveDownPos!!.longitude + diffLng)
         moveDownPos = moveDownMarker!!.position
+
+        rotationMarker!!.position = LatLng(rotationPos!!.latitude + diffLat, rotationPos!!.longitude + diffLng)
+        rotationPos = rotationMarker!!.position
     }
 
     /**
@@ -411,6 +423,32 @@ object GoogleMapHelper {
         )
         moveDownPos = moveDownMarker!!.position
 
+        rotationMarker!!.position = LatLng(rotationPos!!.latitude + lat2, rotationPos!!.longitude + lng2)
+        rotationPos = rotationMarker!!.position
+    }
+
+    /**
+    * TODO: Draw a circle but constraint the positions on meters and not difference in LatLng (it doesn't draw a circle since latlng is not a cartesian space)
+    * Performs a rotation on the rectangle
+    */
+    fun rotatePolygon(pos:Marker){
+        val corner = tempLatLng[3]!!
+        val rayonVector = LatLng(rotationPos!!.latitude - movePos!!.latitude, rotationPos!!.longitude - movePos!!.longitude)
+        val rayonVector2 = LatLng(corner.latitude - movePos!!.latitude, corner.longitude - movePos!!.longitude)
+        val r = sqrt(rayonVector.latitude*rayonVector.latitude + rayonVector.longitude*rayonVector.longitude)
+        val r2 = sqrt(rayonVector2.latitude*rayonVector2.latitude + rayonVector2.longitude*rayonVector2.longitude)
+        map!!.addCircle(CircleOptions().center(movePos).radius(r2))
+
+        val vector = LatLng(pos.position.latitude - movePos!!.latitude, pos.position.longitude - movePos!!.longitude)
+        val norm = sqrt(vector.latitude*vector.latitude + vector.longitude*vector.longitude)
+        val v = LatLng(vector.latitude*r/norm, vector.longitude*r/norm)
+        Log.d("AFTER", "Vector : $vector; norm : $norm; final vector : $v")
+        Log.d("RAYON EQUAL", "r1=" + r + ", r2 = " + sqrt(v.longitude*v.longitude + v.latitude*v.latitude))
+
+        rotationMarker!!.position = LatLng(movePos!!.latitude + v.latitude, movePos!!.longitude + v.longitude)
+        rotationPos = rotationMarker!!.position
+        //map!!.addMarker(MarkerOptions().position(rotationPos!!))
+        //val circle = map!!.addCircle(CircleOptions().center(pos.position).radius(10.0).strokeColor(Color.RED).fillColor(Color.BLUE))
     }
 
     /**
@@ -422,7 +460,7 @@ object GoogleMapHelper {
             PolygonAction.RIGHT.toString() -> transformPolygon(p0)
             PolygonAction.DOWN.toString() -> transformPolygon(p0)
             PolygonAction.DIAG.toString() -> transformPolygon(p0)
-            PolygonAction.ROTATE.toString() -> Log.d("ROTATION", "ROTATION BUTTON CLICKED")
+            PolygonAction.ROTATE.toString() -> rotatePolygon(p0)
         }
         tempPoly?.points = tempLatLng
     }
