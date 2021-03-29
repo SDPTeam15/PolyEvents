@@ -321,7 +321,7 @@ object GoogleMapHelper {
         val diffLng = pos.position.longitude - movePos!!.longitude
         tempLatLng = tempLatLng.map { latLng ->
             LatLng(
-                latLng!!.latitude + diffLat,
+                latLng.latitude + diffLat,
                 latLng.longitude + diffLng
             )
         }.toMutableList()
@@ -350,15 +350,20 @@ object GoogleMapHelper {
      * Transforms the size of the rectangle, either by moving the the right wall(right), the down wall(down) or both(diag)
      */
     fun transformPolygon(pos: Marker) {
-        val latlng1 = tempLatLng[1]!!
-        val latlng2 = tempLatLng[2]!!
-        val latlng3 = tempLatLng[3]!!
+        val latlng1 = tempLatLng[1]
+        val latlng2 = tempLatLng[2]
+        val latlng3 = tempLatLng[3]
 
         //Vector of the marker
         val vec = LatLng(
             pos.position.latitude - moveDiagPos!!.latitude,
             pos.position.longitude - moveDiagPos!!.longitude
         )
+        /**
+         * First, find which marker was moved
+         * Second, compute difference in lat/lng
+         * Then apply the translation to the corresponding elements
+         */
 
         //Perpendicular of vector (a,b) is (-b,a)
 
@@ -444,12 +449,6 @@ object GoogleMapHelper {
             tempLatLng[i] = cornersRotatedLatLng[i]
         }
 
-        /*
-        map!!.addCircle(CircleOptions().center(center).radius(computeMeanRadius(cornersProj)).strokeColor(
-            Color.RED).fillColor(Color.argb(100, Color.BLUE.red, Color.BLUE.green, Color.BLUE.blue)))
-
-         */
-
         // Move all the markers on the corresponding corner of the polygon
         rotationMarker!!.position = tempLatLng[INDEX_ROTATION_MARKER]
         rotationPos = rotationMarker!!.position
@@ -465,29 +464,6 @@ object GoogleMapHelper {
 
         moveDownMarker!!.position = applyRotation(moveDownMarker!!.position, rotationAngle, center)
         moveDownPos = moveDownMarker!!.position
-
-
-        /*
-        val corner = tempLatLng[3]
-        val rayonVector = LatLng(rotationPos!!.latitude - movePos!!.latitude, rotationPos!!.longitude - movePos!!.longitude)
-        val rayonVector2 = LatLng(corner.latitude - movePos!!.latitude, corner.longitude - movePos!!.longitude)
-        val r = sqrt(rayonVector.latitude*rayonVector.latitude + rayonVector.longitude*rayonVector.longitude)
-        val r2 = sqrt(rayonVector2.latitude*rayonVector2.latitude + rayonVector2.longitude*rayonVector2.longitude)
-        map!!.addCircle(CircleOptions().center(movePos).radius(r2))
-
-        val vector = LatLng(pos.position.latitude - movePos!!.latitude, pos.position.longitude - movePos!!.longitude)
-        val norm = sqrt(vector.latitude*vector.latitude + vector.longitude*vector.longitude)
-        val v = LatLng(vector.latitude*r/norm, vector.longitude*r/norm)
-        Log.d("AFTER", "Vector : $vector; norm : $norm; final vector : $v")
-        Log.d("RAYON EQUAL", "r1=" + r + ", r2 = " + sqrt(v.longitude*v.longitude + v.latitude*v.latitude))
-
-        rotationMarker!!.position = LatLng(movePos!!.latitude + v.latitude, movePos!!.longitude + v.longitude)
-        rotationPos = rotationMarker!!.position
-        //map!!.addMarker(MarkerOptions().position(rotationPos!!))
-        val circle = map!!.addCircle(CircleOptions().center(center).radius(10.0).strokeColor(
-            Color.RED).fillColor(Color.BLUE))
-
-         */
     }
 
     /**
@@ -565,18 +541,6 @@ object GoogleMapHelper {
      */
     private fun radianToDegree(angle: Double): Double {
         return angle * 360.0 / TOUPIE
-    }
-
-    /**
-     * Compute the Euclidean distance in meters between 2 points in cartesian coordinates
-     * @param p1: first point in cartesian coordinates
-     * @param p2: second point in cartesian coordinates
-     * @return distance between the 2 points in meters
-     */
-    private fun getDistance(p1: Pair<Double, Double>, p2: Pair<Double, Double>): Double {
-        val dx = p1.first - p2.first
-        val dy = p1.second - p2.second
-        return sqrt((dx*dx + dy*dy))
     }
 
     /**
