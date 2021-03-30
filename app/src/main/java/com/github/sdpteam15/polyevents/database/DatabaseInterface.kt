@@ -6,6 +6,7 @@ import com.github.sdpteam15.polyevents.user.Profile.Companion.CurrentProfile
 import com.github.sdpteam15.polyevents.user.ProfileInterface
 import com.github.sdpteam15.polyevents.user.User
 import com.github.sdpteam15.polyevents.user.UserInterface
+import com.google.firebase.firestore.GeoPoint
 import java.util.*
 
 const val NUMBER_UPCOMING_EVENTS = 3
@@ -394,4 +395,18 @@ interface DatabaseInterface {
      * @return (for now) map of pair : <item name, available quantity>
      */
     fun getAvailableItems(): Map<String, Int>
+
+    /**
+     * Update, or add if it was not already in the database, the current location
+     * (provided by the geopoint) of the user in the database.
+     * @param location: current location of the user
+     * @param uid : user uid we want to get the information
+     * @param userAccess: the user object to use its permission
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun updateUserLocation(
+        location: GeoPoint,
+        uid: String = (User.currentUser as UserInterface).uid,
+        userAccess: UserInterface = User.currentUser as UserInterface
+    ): Observable<Boolean>
 }

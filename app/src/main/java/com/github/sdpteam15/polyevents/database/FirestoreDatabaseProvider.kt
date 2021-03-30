@@ -2,6 +2,8 @@ package com.github.sdpteam15.polyevents.database
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_COLLECTION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_POINT
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_DISPLAY_NAME
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_DOCUMENT_ID
@@ -15,9 +17,7 @@ import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -237,5 +237,17 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     override fun getAvailableItems(): Map<String, Int> {
         //TODO adapt to firebase
         return FakeDatabase.getAvailableItems()
+    }
+
+    override fun updateUserLocation(
+        location: GeoPoint,
+        uid: String,
+        userAccess: UserInterface
+    ): Observable<Boolean> {
+        return thenDoSet(
+            firestore!!.collection(LOCATIONS_COLLECTION)
+                .document(uid)
+                .set(hashMapOf(LOCATIONS_POINT to location), SetOptions.merge())
+        )
     }
 }

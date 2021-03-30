@@ -7,6 +7,7 @@ import com.github.sdpteam15.polyevents.event.Event
 import com.github.sdpteam15.polyevents.user.ProfileInterface
 import com.github.sdpteam15.polyevents.user.User
 import com.github.sdpteam15.polyevents.user.UserInterface
+import com.google.firebase.firestore.GeoPoint
 import java.time.LocalDateTime
 import java.util.*
 
@@ -310,5 +311,11 @@ object FakeDatabase : DatabaseInterface {
         return items.remove(item)
     }
 
-
+    override fun updateUserLocation(
+        location: GeoPoint,
+        uid: String,
+        userAccess: UserInterface
+    ): Observable<Boolean> {
+        return Observable(true)
+    }
 }
