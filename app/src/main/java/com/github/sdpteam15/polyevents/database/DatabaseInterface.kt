@@ -1,11 +1,10 @@
 package com.github.sdpteam15.polyevents.database
 
 import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.event.Event
-import com.github.sdpteam15.polyevents.user.Profile.Companion.CurrentProfile
-import com.github.sdpteam15.polyevents.user.ProfileInterface
-import com.github.sdpteam15.polyevents.user.User
-import com.github.sdpteam15.polyevents.user.UserInterface
+import com.github.sdpteam15.polyevents.model.Event
+import com.github.sdpteam15.polyevents.model.Item
+import com.github.sdpteam15.polyevents.model.UserEntity
+import com.github.sdpteam15.polyevents.model.UserProfile
 import java.util.*
 
 const val NUMBER_UPCOMING_EVENTS = 3
@@ -18,7 +17,8 @@ interface DatabaseInterface {
     /**
      * Current user of this database
      */
-    val currentUser: DatabaseUserInterface?
+    val currentUser: UserEntity?
+    val currentProfile: UserProfile?
 
     /**
      * Get list of profile of a user uid
@@ -27,10 +27,10 @@ interface DatabaseInterface {
      * @return list of profile of a user uid
      */
     //@Deprecated(message = "Use the asynchronous method")
-    fun getListProfile(
+    fun getProfilesList(
         uid: String,
-        user: UserInterface = currentUser as UserInterface
-    ): List<ProfileInterface>
+        user: UserEntity? = currentUser
+    ): List<UserProfile>
 
     /**
      * Add profile to a user
@@ -41,8 +41,8 @@ interface DatabaseInterface {
      */
     //@Deprecated(message = "Use the asynchronous method")
     fun addProfile(
-        profile: ProfileInterface, uid: String,
-        user: UserInterface = currentUser as UserInterface
+        profile: UserProfile, uid: String,
+        user: UserEntity? = currentUser
     ): Boolean
 
     /**
@@ -54,8 +54,8 @@ interface DatabaseInterface {
      */
     //@Deprecated(message = "Use the asynchronous method")
     fun removeProfile(
-        profile: ProfileInterface, uid: String = (currentUser as UserInterface).uid,
-        user: UserInterface = currentUser as UserInterface
+        profile: UserProfile, uid: String? = currentUser?.uid,
+        user: UserEntity? = currentUser
     ): Boolean
 
     /**
@@ -66,8 +66,8 @@ interface DatabaseInterface {
      */
     //@Deprecated(message = "Use the asynchronous method")
     fun updateProfile(
-        profile: ProfileInterface,
-        user: UserInterface = currentUser as UserInterface
+        profile: UserProfile,
+        user: UserEntity? = currentUser
     ): Boolean
 
     /**
@@ -80,7 +80,7 @@ interface DatabaseInterface {
     //@Deprecated(message = "Use the asynchronous method")
     fun getListEvent(
         matcher: String? = null, number: Int? = null,
-        profile: ProfileInterface = CurrentProfile
+        profile: UserProfile? = currentProfile
     ): List<Event>
 
     /**
@@ -92,7 +92,7 @@ interface DatabaseInterface {
     //@Deprecated(message = "Use the asynchronous method")
     fun getUpcomingEvents(
         number: Int = NUMBER_UPCOMING_EVENTS,
-        profile: ProfileInterface = CurrentProfile
+        profile: UserProfile? = currentProfile
     ): List<Event>
 
     /**
@@ -104,7 +104,7 @@ interface DatabaseInterface {
     //@Deprecated(message = "Use the asynchronous method")
     fun getEventFromId(
         id: String,
-        profile: ProfileInterface = CurrentProfile
+        profile: UserProfile? = currentProfile
     ): Event?
 
     /**
@@ -115,7 +115,7 @@ interface DatabaseInterface {
     //@Deprecated(message = "Use the asynchronous method")
     fun updateEvent(
         Event: Event,
-        profile: ProfileInterface = CurrentProfile
+        profile: UserProfile? = currentProfile
     ): Boolean
 
     //All the methods above need to be deleted before the end of the project
@@ -318,6 +318,7 @@ interface DatabaseInterface {
     ): Observable<Boolean>
         */
 
+    // TODO: Do we need userAccess for these methods? (Might do these with security rules)
     /**
      * Update the user information in the database
      * @param newValues : a map with the new value to set in the database
@@ -328,7 +329,7 @@ interface DatabaseInterface {
     fun updateUserInformation(
         newValues: HashMap<String, String>,
         uid: String,
-        userAccess: UserInterface = User.currentUser as UserInterface
+        userAccess: UserEntity? = currentUser
     ): Observable<Boolean>
 
     /**
@@ -338,8 +339,8 @@ interface DatabaseInterface {
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun firstConnexion(
-        user: UserInterface,
-        userAccess: UserInterface = User.currentUser as UserInterface
+        user: UserEntity,
+        userAccess: UserEntity? = currentUser
     ): Observable<Boolean>
 
     /**
@@ -352,7 +353,7 @@ interface DatabaseInterface {
     fun inDatabase(
         isInDb: Observable<Boolean>,
         uid: String,
-        userAccess: UserInterface = User.currentUser as UserInterface
+        userAccess: UserEntity? = currentUser
     ): Observable<Boolean>
 
     /**
@@ -363,30 +364,30 @@ interface DatabaseInterface {
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getUserInformation(
-        user: Observable<UserInterface>,
-        uid: String = (User.currentUser as UserInterface).uid,
-        userAccess: UserInterface = User.currentUser as UserInterface
+        user: Observable<UserEntity>,
+        uid: String? = currentUser?.uid,
+        userAccess: UserEntity? = currentUser
     ): Observable<Boolean>
 
     /**
      * Returns the list of items
      * @return The current mutable list of items
      */
-    fun getItemsList(): MutableList<String>
+    fun getItemsList(): MutableList<Item>
 
     /**
      * Adds an Item to the Item Database
      * @param item : item to add
      * @return true if the item is successfully added to the database
      */
-    fun addItem(item : String):Boolean
+    fun addItem(item : Item):Boolean
 
     /**
      * Removes an Item from the Item Database
      * @param item : item to remove
      * @return true if the item is successfully removed from the database
      */
-    fun removeItem(item: String):Boolean
+    fun removeItem(item: Item):Boolean
 
     /**
      * TODO : adapt into asynchronous method
