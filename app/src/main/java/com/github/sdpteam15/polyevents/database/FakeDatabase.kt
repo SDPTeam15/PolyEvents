@@ -33,17 +33,7 @@ object FakeDatabase : DatabaseInterface {
                 tags = mutableSetOf("sushi", "japan", "cooking")
             )
         )
-        events.add(
-            Event(
-                eventName = "Aqua Poney",
-                description = "Super cool activity !" +
-                        " With a super long description that essentially describes and explains" +
-                        " the content of the activity we are speaking of.",
-                startTime = LocalDateTime.of(2021, 3, 7, 14, 15),
-                organizer = "The Aqua Poney team",
-                zoneName = "Swimming pool"
-            )
-        )
+
         events.add(
             Event(
                 eventName = "Saxophone demo",
@@ -53,15 +43,7 @@ object FakeDatabase : DatabaseInterface {
                 zoneName = "Concert Hall"
             )
         )
-        events.add(
-            Event(
-                eventName = "Sushi demo",
-                description = "Super hungry activity !",
-                startTime = LocalDateTime.of(2021, 3, 7, 12, 15),
-                organizer = "The fish band",
-                zoneName = "Kitchen"
-            )
-        )
+
         events.add(
             Event(
                 eventName = "Aqua Poney",
@@ -71,15 +53,6 @@ object FakeDatabase : DatabaseInterface {
                 startTime = LocalDateTime.of(2021, 3, 7, 14, 15),
                 organizer = "The Aqua Poney team",
                 zoneName = "Swimming pool"
-            )
-        )
-        events.add(
-            Event(
-                eventName = "Saxophone demo",
-                description = "Super noisy activity !",
-                startTime = LocalDateTime.of(2021, 3, 7, 17, 15),
-                organizer = "The music band",
-                zoneName = "Concert Hall"
             )
         )
     }
