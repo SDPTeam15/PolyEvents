@@ -35,7 +35,7 @@ object EventAdapter {
                         EVENT_ORGANIZER to event.organizer,
                         EVENT_ZONE_NAME to event.zoneName,
                         EVENT_DESCRIPTION to event.description,
-                        // TODO: check if stored well in Firestore as LocalDateTime
+                        // LocalDateTime instances can be directly stored to Firestore without need of conversion
                         EVENT_START_TIME to event.startTime,
                         EVENT_END_TIME to event.endTime,
                         EVENT_INVENTORY to event.inventory,

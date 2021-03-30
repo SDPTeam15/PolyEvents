@@ -77,19 +77,24 @@ class EventAdapterTest {
     @Test
     fun conversionOfDocumentToEventPreservesData() {
         val tags = event.tags.toList()
+
+        val testEventWithoutTimes = event.copy(
+                startTime = null
+        )
+
         val eventDocumentData: HashMap<String, Any?> = hashMapOf(
-            EVENT_NAME to event.eventName,
-            EVENT_ORGANIZER to event.organizer,
-            EVENT_ZONE_NAME to event.zoneName,
-            EVENT_DESCRIPTION to event.description,
-            EVENT_START_TIME to event.startTime,
-            EVENT_END_TIME to event.endTime,
+            EVENT_NAME to testEventWithoutTimes.eventName,
+            EVENT_ORGANIZER to testEventWithoutTimes.organizer,
+            EVENT_ZONE_NAME to testEventWithoutTimes.zoneName,
+            EVENT_DESCRIPTION to testEventWithoutTimes.description,
+            EVENT_START_TIME to testEventWithoutTimes.startTime,
+            EVENT_END_TIME to testEventWithoutTimes.endTime,
             EVENT_TAGS to tags,
-            EVENT_INVENTORY to event.inventory
+            EVENT_INVENTORY to testEventWithoutTimes.inventory
         )
 
         val obtainedEvent = EventAdapter.toEventEntity(eventDocumentData)
-        assertEquals(event, obtainedEvent)
+        assertEquals(testEventWithoutTimes, obtainedEvent)
         assertTrue(obtainedEvent.hasItem(item1))
         assertTrue(obtainedEvent.tags.contains(tag1))
     }
