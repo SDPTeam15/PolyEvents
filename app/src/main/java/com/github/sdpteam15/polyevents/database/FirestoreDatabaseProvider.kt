@@ -13,6 +13,7 @@ import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.event.Event
 import com.github.sdpteam15.polyevents.user.ProfileInterface
 import com.github.sdpteam15.polyevents.user.UserInterface
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
@@ -25,7 +26,6 @@ import com.google.firebase.ktx.Firebase
 object FirestoreDatabaseProvider : DatabaseInterface {
     var firestore: FirebaseFirestore? = null
         get() = field ?: Firebase.firestore
-
 
 
     /**
@@ -43,12 +43,12 @@ object FirestoreDatabaseProvider : DatabaseInterface {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun getListProfile(uid: String, user: UserInterface): List<ProfileInterface> {
-        return FakeDatabase.getListProfile(uid,user)
+        return FakeDatabase.getListProfile(uid, user)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun addProfile(profile: ProfileInterface, uid: String, user: UserInterface): Boolean {
-        return FakeDatabase.addProfile(profile,uid,user)
+        return FakeDatabase.addProfile(profile, uid, user)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -57,12 +57,12 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         uid: String,
         user: UserInterface
     ): Boolean {
-        return FakeDatabase.removeProfile(profile,uid,user)
+        return FakeDatabase.removeProfile(profile, uid, user)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun updateProfile(profile: ProfileInterface, user: UserInterface): Boolean {
-        return FakeDatabase.updateProfile(profile,user)
+        return FakeDatabase.updateProfile(profile, user)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -71,7 +71,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         number: Int?,
         profile: ProfileInterface
     ): List<Event> {
-        return FakeDatabase.getListEvent(matcher,number,profile)
+        return FakeDatabase.getListEvent(matcher, number, profile)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -81,12 +81,12 @@ object FirestoreDatabaseProvider : DatabaseInterface {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun getEventFromId(id: String, profile: ProfileInterface): Event? {
-       return FakeDatabase.getEventFromId(id,profile)
+        return FakeDatabase.getEventFromId(id, profile)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun updateEvent(event: Event, profile: ProfileInterface): Boolean {
-        return FakeDatabase.updateEvent(event,profile)
+        return FakeDatabase.updateEvent(event, profile)
     }
     //Up to here delete
 
@@ -240,14 +240,38 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     }
 
     override fun updateUserLocation(
-        location: GeoPoint,
+        location: LatLng,
         uid: String,
         userAccess: UserInterface
     ): Observable<Boolean> {
         return thenDoSet(
             firestore!!.collection(LOCATIONS_COLLECTION)
                 .document(uid)
-                .set(hashMapOf(LOCATIONS_POINT to location), SetOptions.merge())
+                .set(
+                    hashMapOf(LOCATIONS_POINT to GeoPoint(location.latitude, location.longitude)),
+                    SetOptions.merge()
+                )
         )
+    }
+
+    override fun getUsersLocations(
+        usersLocations: Observable<List<LatLng>>,
+        userAccess: UserInterface
+    ): Observable<Boolean> {
+        return thenDoGet(
+            firestore!!.collection(LOCATIONS_COLLECTION)
+                .get()
+        ) { querySnapshot ->
+            val locations = mutableListOf<LatLng>()
+            querySnapshot.forEach {
+                locations.add(
+                    LatLng(
+                        (it.data[LOCATIONS_POINT] as GeoPoint).latitude,
+                        (it.data[LOCATIONS_POINT] as GeoPoint).longitude
+                    )
+                )
+            }
+            usersLocations.postValue(locations)
+        }
     }
 }

@@ -6,7 +6,7 @@ import com.github.sdpteam15.polyevents.user.Profile.Companion.CurrentProfile
 import com.github.sdpteam15.polyevents.user.ProfileInterface
 import com.github.sdpteam15.polyevents.user.User
 import com.github.sdpteam15.polyevents.user.UserInterface
-import com.google.firebase.firestore.GeoPoint
+import com.google.android.gms.maps.model.LatLng
 import java.util.*
 
 const val NUMBER_UPCOMING_EVENTS = 3
@@ -380,14 +380,14 @@ interface DatabaseInterface {
      * @param item : item to add
      * @return true if the item is successfully added to the database
      */
-    fun addItem(item : String):Boolean
+    fun addItem(item: String): Boolean
 
     /**
      * Removes an Item from the Item Database
      * @param item : item to remove
      * @return true if the item is successfully removed from the database
      */
-    fun removeItem(item: String):Boolean
+    fun removeItem(item: String): Boolean
 
     /**
      * TODO : adapt into asynchronous method
@@ -398,15 +398,27 @@ interface DatabaseInterface {
 
     /**
      * Update, or add if it was not already in the database, the current location
-     * (provided by the geopoint) of the user in the database.
+     * (provided by the GeoPoint) of the user in the database.
      * @param location: current location of the user
      * @param uid : user uid we want to get the information
      * @param userAccess: the user object to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun updateUserLocation(
-        location: GeoPoint,
+        location: LatLng,
         uid: String = (User.currentUser as UserInterface).uid,
+        userAccess: UserInterface = User.currentUser as UserInterface
+    ): Observable<Boolean>
+
+    /**
+     * Fetch the current users locations.
+     * @param usersLocations: the list of users locations that will be set when
+     * the DB returns the information
+     * @param userAccess: the user object to use its permission
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun getUsersLocations(
+        usersLocations: Observable<List<LatLng>>,
         userAccess: UserInterface = User.currentUser as UserInterface
     ): Observable<Boolean>
 }
