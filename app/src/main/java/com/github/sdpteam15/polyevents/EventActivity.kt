@@ -23,6 +23,8 @@ class EventActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_event)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+
+        supportActionBar!!.setDisplayShowHomeEnabled(true)
     }
 
     /**

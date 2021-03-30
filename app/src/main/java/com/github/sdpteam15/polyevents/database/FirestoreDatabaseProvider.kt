@@ -47,24 +47,26 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         return true/*TODO*/
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun removeProfile(
         profile: UserProfile,
         uid: String?,
         user: UserEntity?
     ): Boolean {
-        return true/*TODO*/
+        return FakeDatabase.removeProfile(profile,uid,user)
     }
 
     override fun updateProfile(profile: UserProfile, user: UserEntity?): Boolean {
         return true/*TODO*/
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun getListEvent(
         matcher: String?,
         number: Int?,
         profile: UserProfile?
     ): List<Event> {
-        return ArrayList<Event>()/*TODO*/
+        return FakeDatabase.getListEvent(matcher,number,profile)
     }
 
     override fun getUpcomingEvents(number: Int, profile: UserProfile?): List<Event> {

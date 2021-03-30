@@ -1,13 +1,16 @@
 package com.github.sdpteam15.polyevents
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
+import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.fragments.*
+import com.github.sdpteam15.polyevents.helper.GoogleMapHelper
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -20,6 +23,7 @@ class MainActivity : AppCompatActivity() {
             get() {
                 if (mapFragment == null) {
                     mapFragment = HashMap()
+                    mapFragment!![R.id.id_fragment_admin_hub] = AdminHubFragment()
                     mapFragment!![R.id.ic_home] = HomeFragment()
                     mapFragment!![R.id.ic_map] = MapsFragment()
                     mapFragment!![R.id.ic_list] = ListFragment()
@@ -30,16 +34,28 @@ class MainActivity : AppCompatActivity() {
                 //return type immutable
                 return HashMap<Int, Fragment>(mapFragment as HashMap)
             }
+
+        //Return CurrentUser if we are not in test, but we can use a fake user in test this way
+        var currentUser: UserInterface? = null
+            get() = field ?: User.currentUser
+
+        const val NUMBER_EVENT_TO_DISPLAY = 25
     }
 
     private lateinit var adapter: ArrayAdapter<*>
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //Set the basic fragment to the home one
-        HelperFunctions.changeFragment(this, fragments[R.id.ic_home])
+        //Set the basic fragment to the home one or to admin hub if it is logged in
+        //TODO Add a condition to see if the user is an admin or not and if so, redirect him to the admin hub
+        if(currentUser == null) {
+            HelperFunctions.changeFragment(this, fragments[R.id.ic_home])
+        } else {
+            HelperFunctions.changeFragment(this, fragments[R.id.id_fragment_admin_hub])
+        }
 
         //Add a listener to the menu to switch between fragments
         findViewById<BottomNavigationView>(R.id.navigation_bar).setOnNavigationItemSelectedListener {
@@ -48,11 +64,17 @@ class MainActivity : AppCompatActivity() {
                 R.id.ic_list -> HelperFunctions.changeFragment(this, fragments[R.id.ic_list])
                 R.id.ic_login -> if (currentDatabase.currentUser==null) {
                     HelperFunctions.changeFragment(this, fragments[R.id.ic_login])
-                }else {
+                } else {
                     HelperFunctions.changeFragment(this, fragments[R.id.id_fragment_profile])
                 }
                 R.id.ic_more -> HelperFunctions.changeFragment(this, fragments[R.id.ic_more])
-                else -> HelperFunctions.changeFragment(this, fragments[R.id.ic_home])
+                else ->
+                //TODO Add a condition to see if the user is an admin or not and if so, redirect him to the admin hub
+                    if(currentUser == null) {
+                    HelperFunctions.changeFragment(this, fragments[R.id.ic_home])
+                } else {
+                    HelperFunctions.changeFragment(this, fragments[R.id.id_fragment_admin_hub])
+                }
             }
             true
         }

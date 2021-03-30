@@ -22,6 +22,8 @@ const val EXTRA_EVENT_ID = "com.github.sdpteam15.polyevents.event.EVENT_ID"
 /**
  * Shows the list of events and displays them in a new event when we click on one of them
  */
+
+
 class ListFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
@@ -59,8 +61,9 @@ class ListFragment : Fragment() {
     /**
      * Update the content of the upcoming events
      */
+    /*
     fun updateContent() {
         // Remove all the content first
         HelperFunctions.refreshFragment(fragmentManager, this)
-    }
+    }*/
 }
