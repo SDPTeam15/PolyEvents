@@ -1,41 +1,76 @@
 package com.github.sdpteam15.polyevents.model
 
+import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import org.junit.Test
+import java.time.LocalDate
 import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class UserEntityTest {
-    lateinit var userEntity: UserEntity
+    lateinit var user: UserEntity
 
     val googleId = "googleId"
-    val userType = UserEntity.ADMIN
     val username = "JohnDoe"
     val name = "John Doe"
-    val age = 29
+    val birthDate = LocalDate.of(1990, 12, 30)
     val displayName = "John"
     val email = "John@email.com"
 
+    val adminProfile = UserProfile(
+            user_uid = googleId,
+            profileName = "adminProfile",
+            userRole = UserRole.ADMIN
+    )
+
+    val currentDate = birthDate
+
+    // TODO: add more profile related tests
+
     @BeforeTest
     fun setupUserEntity() {
-        userEntity = UserEntity(googleId, userType, username,
-        name, age, displayName, email)
+        user = UserEntity(
+            uid = googleId,
+            username = username,
+            birthDate = birthDate,
+            name = name,
+            displayName = displayName,
+            email = email)
+        user.addNewProfile(adminProfile)
+    }
+
+    @Test
+    fun testUserAgeReturnedCorrectly() {
+        val age = user.age
+        assertEquals(HelperFunctions.calculateAge(birthDate, LocalDate.now()),
+                    age)
+    }
+
+    @Test
+    fun testUserAgeWithNullBirthDate() {
+        val userEntityWithoutBirthDate =
+            UserEntity(
+                uid = googleId,
+                username = username,
+                birthDate = null
+            )
+        assertNull(userEntityWithoutBirthDate.age)
     }
 
     @Test
     fun testUserProperties() {
-        assertEquals(googleId, userEntity.googleId)
-        assertEquals(userType, userEntity.userType)
-        assertEquals(username, userEntity.username)
-        assertEquals(name, userEntity.name)
-        assertEquals(age, userEntity.age)
-        assertEquals(displayName, userEntity.displayName)
-        assertEquals(email, userEntity.email)
+        assertEquals(googleId, user.uid)
+        assertEquals(username, user.username)
+        assertEquals(name, user.name)
+        assertEquals(birthDate, user.birthDate)
+        assertEquals(displayName, user.displayName)
+        assertEquals(email, user.email)
     }
 
     @Test
     fun testIfUserIsAdmin() {
-        assertTrue(userEntity.isAdmin())
+        assertTrue(user.isAdmin())
     }
 
 }
