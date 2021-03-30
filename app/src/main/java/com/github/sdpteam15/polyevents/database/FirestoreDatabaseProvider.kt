@@ -47,7 +47,6 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         return true/*TODO*/
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun removeProfile(
         profile: UserProfile,
         uid: String?,
@@ -60,7 +59,6 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         return true/*TODO*/
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun getListEvent(
         matcher: String?,
         number: Int?,

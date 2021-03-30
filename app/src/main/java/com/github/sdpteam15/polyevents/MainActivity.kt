@@ -1,17 +1,15 @@
 package com.github.sdpteam15.polyevents
 
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
-import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.fragments.*
-import com.github.sdpteam15.polyevents.helper.GoogleMapHelper
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.model.UserEntity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -36,8 +34,8 @@ class MainActivity : AppCompatActivity() {
             }
 
         //Return CurrentUser if we are not in test, but we can use a fake user in test this way
-        var currentUser: UserInterface? = null
-            get() = field ?: User.currentUser
+        var currentUser: UserEntity? = null
+            get() = field ?: currentDatabase.currentUser
 
         const val NUMBER_EVENT_TO_DISPLAY = 25
     }
