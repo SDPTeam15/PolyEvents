@@ -49,7 +49,7 @@ class ItemAdapter(
                 // TODO ADD data.postValue(items)
                 notifyDataSetChanged()
             }
-            itemName.text = item.itemType.itemtype + item.itemId
+            itemName.text = item.itemType.itemType + item.itemId
         }
     }
 
