@@ -52,7 +52,7 @@ data class UserEntity (
      */
     fun addNewProfile(name: String): Boolean =
         profiles.add(UserProfile(
-                user_uid = uid,
+                userUid = uid,
                 profileName = name
         ))
 

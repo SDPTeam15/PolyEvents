@@ -19,7 +19,7 @@ class UserEntityTest {
     val email = "John@email.com"
 
     val adminProfile = UserProfile(
-            user_uid = googleId,
+            userUid = googleId,
             profileName = "adminProfile",
             userRole = UserRole.ADMIN
     )
