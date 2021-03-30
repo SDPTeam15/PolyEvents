@@ -6,6 +6,7 @@ package com.github.sdpteam15.polyevents.model
  * @property inventory the current inventory of the depot, keeping track of each
  * item and its availabilities
  */
+// TODO: refactor to database
 object Depot {
     const val DEPOT_NAME: String = "mainDepot"
     // TODO: consider storing the list of items instead of just the number
