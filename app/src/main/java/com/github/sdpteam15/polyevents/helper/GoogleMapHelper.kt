@@ -20,8 +20,6 @@ enum class PolygonAction {
     ROTATE
 }
 
-// TODO : remove this annotation
-@SuppressLint("StaticFieldLeak")
 object GoogleMapHelper {
 
     var context: Context? = null
@@ -431,8 +429,9 @@ object GoogleMapHelper {
     }
 
     /**
-    * TODO: Draw a circle but constraint the positions on meters and not difference in LatLng (it doesn't draw a circle since latlng is not a cartesian space)
-    * Performs a rotation on the rectangle
+     * Rotate the current polygon according to the given Marker. It also aligns this
+     * marker so that it remains on the circle around the center of rotation.
+     * @param pos: the Marker indicating the rotation.
     */
     fun rotatePolygon(pos:Marker){
         // Get the center of the projection
@@ -486,7 +485,7 @@ object GoogleMapHelper {
      * to compute the center of.
      * @return the center of these points
      */
-    private fun getCenter(list: List<LatLng>): LatLng {
+    fun getCenter(list: List<LatLng>): LatLng {
         var lat = 0.0
         var lng = 0.0
         for (coord in list) {
@@ -530,7 +529,7 @@ object GoogleMapHelper {
      * @param angle: angle in degrees to convert
      * @return angle in radians
      */
-    private fun degreeToRadian(angle: Double): Double {
+    fun degreeToRadian(angle: Double): Double {
         return angle * TOUPIE / 360.0
     }
 
@@ -539,7 +538,7 @@ object GoogleMapHelper {
      * @param angle: angle in radians to convert
      * @return angle in degrees
      */
-    private fun radianToDegree(angle: Double): Double {
+    fun radianToDegree(angle: Double): Double {
         return angle * 360.0 / TOUPIE
     }
 
@@ -548,7 +547,7 @@ object GoogleMapHelper {
      * @param point: the point in cartesian coordinates to compute the direction of
      * @return direction in radians
      */
-    private fun getDirection(point: Pair<Double, Double>): Double {
+    fun getDirection(point: Pair<Double, Double>): Double {
         val direction = atan(point.second / point.first)
         return if (point.first < 0) PI + direction else direction
     }
@@ -560,7 +559,7 @@ object GoogleMapHelper {
      * @param angle: rotation angle in radians
      * @return rotated point in cartesian coordinates
      */
-    private fun computeRotation(point: Pair<Double, Double>, angle: Double): Pair<Double, Double> {
+    fun computeRotation(point: Pair<Double, Double>, angle: Double): Pair<Double, Double> {
         val cosA = cos(angle)
         val sinA = sin(angle)
 
@@ -575,7 +574,7 @@ object GoogleMapHelper {
      * @param points: the points forming the polygon
      * @return the mean radius from the center of the polygon
      */
-    private fun computeMeanRadius(points: List<Pair<Double, Double>>): Double {
+    fun computeMeanRadius(points: List<Pair<Double, Double>>): Double {
         var runningRadius = 0.0
         points.forEach {
             runningRadius += sqrt(it.first * it.first + it.second * it.second)
@@ -590,9 +589,11 @@ object GoogleMapHelper {
      * @param center: the center of the rotation in lat/lng coordinates
      * @return the rotated point in lat/lng coordinates
      */
-    private fun applyRotation(point: LatLng, angle: Double, center: LatLng): LatLng {
+    fun applyRotation(point: LatLng, angle: Double, center: LatLng): LatLng {
         val pointCartesian = equirectangularProjection(point, center)
+        println(pointCartesian)
         val rotatedCartesian = computeRotation(pointCartesian, angle)
+        println(rotatedCartesian)
         return inverseEquirectangularProjection(rotatedCartesian, center)
     }
 }
