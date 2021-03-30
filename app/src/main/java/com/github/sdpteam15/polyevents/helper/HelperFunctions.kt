@@ -38,8 +38,8 @@ object HelperFunctions {
 
     /**
      * Method that allows to switch the fragment in an event
-     * @param newFrag: the fragment we want to display (should be in the fragments app from MainEvent otherwise nothing happen)
-     * @param activity: the activity in which a fragment is instantiate
+     * @param frag: the fragment we want to display (should be in the fragments app from MainEvent otherwise nothing happen)
+     * @param fragmentManager: the activity in which a fragment is instantiate
      */
     fun refreshFragment(fragmentManager: FragmentManager?, frag: Fragment) {
         val ft: FragmentTransaction = fragmentManager!!.beginTransaction()
@@ -86,17 +86,18 @@ object HelperFunctions {
      * @param date the Date instance to convert
      * @return the corresponding LocalDateTime
      */
-    fun DateToLocalDateTime(date: Date?): LocalDateTime =
-        LocalDateTime.ofInstant(date?.toInstant(), ZoneId.systemDefault())
+    fun DateToLocalDateTime(date: Date?): LocalDateTime? =
+            date?.let { LocalDateTime.ofInstant(it.toInstant(), ZoneId.systemDefault()) }
 
     /**
-     * Converts LocalDateTime to Date.
+     * Convert
+     * s LocalDateTime to Date.
      * @param ldt the LocalDateTime instance
      *
      * @return the corresponding Date
      */
-    fun LocalDateToTimeToDate(ldt: LocalDateTime?): Date =
-        Date.from(ldt?.atZone(ZoneId.systemDefault())?.toInstant())
+    fun LocalDateToTimeToDate(ldt: LocalDateTime?): Date? =
+            ldt?.let { Date.from(it.atZone(ZoneId.systemDefault()).toInstant()) }
 
     /**
      * Calculates a person's age based on his birthDate and the current chosen date.
@@ -105,5 +106,5 @@ object HelperFunctions {
      * @return the age of the person
      */
     fun calculateAge(birthDate: LocalDate, currentDate: LocalDate): Int =
-        Period.between(birthDate, currentDate).getYears()
+        Period.between(birthDate, currentDate).years
 }
