@@ -37,7 +37,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             }
 
     override val currentProfile: UserProfile?
-        get() = TODO("Not yet implemented")
+        get() = null // TODO("Not yet implemented")
 
     override fun getProfilesList(uid: String, user: UserEntity?): List<UserProfile> {
         return ArrayList()/*TODO*/
@@ -164,11 +164,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         user: UserEntity,
         userAccess: UserEntity?
     ): Observable<Boolean> {
-        firstConnectionUser = UserEntity(
-            uid = user.uid,
-            email = user.email,
-            displayName = user.displayName
-        )
+        firstConnectionUser = user
 
         return thenDoSet(
             firestore!!.collection(USER_COLLECTION)
