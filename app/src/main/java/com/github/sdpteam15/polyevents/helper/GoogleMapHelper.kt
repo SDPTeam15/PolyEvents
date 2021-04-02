@@ -20,6 +20,7 @@ enum class PolygonAction {
     ROTATE
 }
 
+@SuppressLint("StaticFieldLeak")
 object GoogleMapHelper {
 
     var context: Context? = null
@@ -441,6 +442,7 @@ object GoogleMapHelper {
         val oldPosProj = equirectangularProjection(rotationPos, center)
 
         val rotationAngle = getDirection(posProj) - getDirection(oldPosProj)
+        val rotationAngleDegree = radianToDegree(rotationAngle).toFloat()
 
         // Rotate all the points of the polygon
         val cornersRotatedLatLng = tempLatLng.map { applyRotation(it, rotationAngle, center) }
@@ -454,15 +456,18 @@ object GoogleMapHelper {
 
         moveDiagMarker!!.position = applyRotation(moveDiagMarker!!.position, rotationAngle, center)
         moveDiagPos = moveDiagMarker!!.position
+        moveDiagMarker!!.rotation -= rotationAngleDegree
 
         moveMarker!!.position = applyRotation(moveMarker!!.position, rotationAngle, center)
         movePos = moveMarker!!.position
 
         moveRightMarker!!.position = applyRotation(moveRightMarker!!.position, rotationAngle, center)
         moveRightPos = moveRightMarker!!.position
+        moveRightMarker!!.rotation -= rotationAngleDegree
 
         moveDownMarker!!.position = applyRotation(moveDownMarker!!.position, rotationAngle, center)
         moveDownPos = moveDownMarker!!.position
+        moveDownMarker!!.rotation -= rotationAngleDegree
     }
 
     /**
