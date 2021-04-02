@@ -323,6 +323,7 @@ object FakeDatabase : DatabaseInterface {
         userAccess: UserInterface
     ): Observable<Boolean> {
         // TODO : see whether we write a Python script that send fake data to our database
+        usersLocations.postValue(listOf(LatLng(46.548823, 7.017012)))
         return Observable(true)
     }
 }
