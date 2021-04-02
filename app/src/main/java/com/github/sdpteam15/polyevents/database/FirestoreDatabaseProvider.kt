@@ -239,14 +239,13 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         return FakeDatabase.getAvailableItems()
     }
 
-    override fun updateUserLocation(
+    override fun setUserLocation(
         location: LatLng,
-        uid: String,
         userAccess: UserInterface
     ): Observable<Boolean> {
         return thenDoSet(
             firestore!!.collection(LOCATIONS_COLLECTION)
-                .document(uid)
+                .document(userAccess.uid)
                 .set(
                     hashMapOf(LOCATIONS_POINT to GeoPoint(location.latitude, location.longitude)),
                     SetOptions.merge()
@@ -257,21 +256,14 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     override fun getUsersLocations(
         usersLocations: Observable<List<LatLng>>,
         userAccess: UserInterface
-    ): Observable<Boolean> {
-        return thenDoGet(
-            firestore!!.collection(LOCATIONS_COLLECTION)
-                .get()
-        ) { querySnapshot ->
-            val locations = mutableListOf<LatLng>()
-            querySnapshot.forEach {
-                locations.add(
-                    LatLng(
-                        (it.data[LOCATIONS_POINT] as GeoPoint).latitude,
-                        (it.data[LOCATIONS_POINT] as GeoPoint).longitude
-                    )
-                )
-            }
-            usersLocations.postValue(locations)
+    ): Observable<Boolean> = thenDoGet(
+        firestore!!.collection(LOCATIONS_COLLECTION)
+            .get()
+    ) { querySnapshot ->
+        val locations = querySnapshot.documents.map {
+            val geoPoint = it.data!![LOCATIONS_POINT] as GeoPoint
+            LatLng(geoPoint.latitude, geoPoint.longitude)
         }
+        usersLocations.postValue(locations)
     }
 }

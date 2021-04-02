@@ -311,9 +311,8 @@ object FakeDatabase : DatabaseInterface {
         return items.remove(item)
     }
 
-    override fun updateUserLocation(
+    override fun setUserLocation(
         location: LatLng,
-        uid: String,
         userAccess: UserInterface
     ): Observable<Boolean> {
         return Observable(true)

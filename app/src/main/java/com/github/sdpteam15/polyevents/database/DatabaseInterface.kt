@@ -400,13 +400,11 @@ interface DatabaseInterface {
      * Update, or add if it was not already in the database, the current location
      * (provided by the GeoPoint) of the user in the database.
      * @param location: current location of the user
-     * @param uid : user uid we want to get the information
      * @param userAccess: the user object to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
-    fun updateUserLocation(
+    fun setUserLocation(
         location: LatLng,
-        uid: String = (User.currentUser as UserInterface).uid,
         userAccess: UserInterface = User.currentUser as UserInterface
     ): Observable<Boolean>
 
