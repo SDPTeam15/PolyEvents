@@ -46,8 +46,8 @@ class ProfileLoginFragmentTests {
 
     @Before
     fun setup() {
-        user = UserEntity(uid = uidTest, email = emailTest, displayName = displayNameTest)
-        user2 = UserEntity(uid = uidTest2, email = emailTest2, displayName = displayNameTest2)
+        user = UserEntity(uid = uidTest, email = emailTest, name = displayNameTest)
+        user2 = UserEntity(uid = uidTest2, email = emailTest2, name = displayNameTest2)
 
         testRule = ActivityScenarioRule<MainActivity>(MainActivity::class.java)
         endingRequest = Observable()

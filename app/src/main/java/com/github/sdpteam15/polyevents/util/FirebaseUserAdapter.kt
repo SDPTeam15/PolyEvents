@@ -10,7 +10,7 @@ object FirebaseUserAdapter {
     fun toUser(firebaseUser : FirebaseUser): UserEntity {
         return UserEntity(
             uid = firebaseUser.uid,
-            displayName = firebaseUser.displayName,
+            name = firebaseUser.displayName,
             email = firebaseUser.email,
             telephone = firebaseUser.phoneNumber
         )
