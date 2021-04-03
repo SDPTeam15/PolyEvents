@@ -13,8 +13,10 @@ object FakeDatabase : DatabaseInterface {
     }
 
     private fun initItems() {
-        items = mutableListOf(Item("micro1", ItemType.MICROPHONE),
-            Item("plug2", ItemType.PLUG))
+        items = mutableListOf(
+            Item("micro1", ItemType.MICROPHONE),
+            Item("plug2", ItemType.PLUG)
+        )
     }
 
     private lateinit var events: MutableList<Event>
