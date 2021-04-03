@@ -1,8 +1,7 @@
-package com.github.sdpteam15.polyevents.item_request
+package com.github.sdpteam15.polyevents.adapter
 
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
@@ -85,9 +84,9 @@ class ItemRequestAdapter (
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        val adapterLayout = LayoutInflater.from(parent.context)
-            .inflate(R.layout.tab_item, parent, false)
-        return ItemViewHolder(adapterLayout)
+        return ItemViewHolder(HelperAdapterFunctions.createAdapterLayout(
+            parent, R.layout.tab_item
+        ))
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
