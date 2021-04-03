@@ -7,7 +7,6 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.FakeDatabase
 import com.github.sdpteam15.polyevents.model.Item
@@ -15,7 +14,7 @@ import com.github.sdpteam15.polyevents.model.Item
 /**
  * Adapts items to RecyclerView ItemsViews
  */
-class ItemAdapter(
+class ItemAdapter (
     // TODO ADD private var data: MutableLiveData<MutableList<String>>,
     // TODO ADD private val onItemClickListener: (String) -> Unit
 ) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {

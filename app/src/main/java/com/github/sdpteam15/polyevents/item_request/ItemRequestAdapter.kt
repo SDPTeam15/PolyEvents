@@ -1,6 +1,5 @@
 package com.github.sdpteam15.polyevents.item_request
 
-import android.os.Build
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -8,8 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
@@ -20,7 +17,7 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
  * - The list of available items to adapt
  * - A listener that will be triggered on click on a checkbox of an item view holder
  */
-class ItemRequestAdapter(
+class ItemRequestAdapter (
     private val availableItems: List<Pair<String, Int>>,
     private val onItemQuantityChangeListener: (String, Int) -> Unit
 ) : RecyclerView.Adapter<ItemRequestAdapter.ItemViewHolder>() {
@@ -37,7 +34,6 @@ class ItemRequestAdapter(
         /**
          * Binds the value of the item to the layout of the item tab
          */
-        @RequiresApi(Build.VERSION_CODES.O)
         fun bind(item: Pair<String, Int>) {
             itemName.text =
                 view.context.getString(R.string.item_name_quantity_text, item.first, item.second)
@@ -94,7 +90,6 @@ class ItemRequestAdapter(
         return ItemViewHolder(adapterLayout)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val item = availableItems[position]
         holder.bind(item)
