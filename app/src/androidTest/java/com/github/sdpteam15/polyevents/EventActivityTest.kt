@@ -14,10 +14,9 @@ import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.ActivityScenarioRule
+import com.github.sdpteam15.polyevents.adapter.EventItemAdapter
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
-import com.github.sdpteam15.polyevents.adapter.EventItemAdapter
-import com.github.sdpteam15.polyevents.database.FakeDatabase
 import com.github.sdpteam15.polyevents.fragments.EXTRA_EVENT_ID
 import com.github.sdpteam15.polyevents.model.Event
 import org.hamcrest.CoreMatchers.containsString
@@ -82,6 +81,9 @@ class EventActivityTest {
         `when`(mockedUpcomingEventsProvider.getEventFromId("1")).thenReturn(events[0])
         `when`(mockedUpcomingEventsProvider.getEventFromId("2")).thenReturn(events[1])
         `when`(mockedUpcomingEventsProvider.getEventFromId("3")).thenReturn(events[2])
+
+        `when`(mockedUpcomingEventsProvider.getEventFromId("Sushi demo")).thenReturn(events[0])
+
         // go to activities list fragment
         Espresso.onView(withId(R.id.ic_list)).perform(click())
         Intents.init()
@@ -91,7 +93,6 @@ class EventActivityTest {
     fun teardown() {
         Intents.release()
     }
-
 
     @Test
     fun correctNumberUpcomingEventsDisplayed() {
