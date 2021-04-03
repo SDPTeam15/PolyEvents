@@ -275,7 +275,7 @@ class FirestoreDatabaseProviderTest {
             mockedCollectionReference
         )
         When(mockedCollectionReference.document(uidTest)).thenReturn(mockedDocumentReference)
-        When(mockedDocumentReference.set(FirestoreDatabaseProvider.firstConnectionUser)).thenReturn(
+        When(mockedDocumentReference.set(user)).thenReturn(
             mockedTask
         )
 
