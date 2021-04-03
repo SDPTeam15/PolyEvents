@@ -25,6 +25,7 @@ object FakeDatabase : DatabaseInterface {
         events = mutableListOf()
         events.add(
             Event(
+                eventId = "event1",
                 eventName = "Sushi demo",
                 description = "Super hungry activity !",
                 startTime = LocalDateTime.of(2021, 3, 7, 12, 15),
@@ -36,6 +37,7 @@ object FakeDatabase : DatabaseInterface {
 
         events.add(
             Event(
+                eventId = "event2",
                 eventName = "Saxophone demo",
                 description = "Super noisy activity !",
                 startTime = LocalDateTime.of(2021, 3, 7, 17, 15),
@@ -46,6 +48,7 @@ object FakeDatabase : DatabaseInterface {
 
         events.add(
             Event(
+                eventId = "event3",
                 eventName = "Aqua Poney",
                 description = "Super cool activity !" +
                         " With a super long description that essentially describes and explains" +

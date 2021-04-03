@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.util
 
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_DESCRIPTION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_DOCUMENT_ID
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_END_TIME
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_ICON
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_INVENTORY
@@ -21,6 +22,7 @@ import java.util.*
 import kotlin.collections.HashMap
 
 class EventAdapterTest {
+    val eventId = "xxxEventxxx"
     val eventName = "someEvent"
     val organizer = "Student Association"
     val zoneName = "Zone A"
@@ -41,6 +43,7 @@ class EventAdapterTest {
     @Before
     fun setupEvent() {
         event = Event(
+            eventId = eventId,
             eventName = eventName,
             organizer = organizer,
             zoneName = zoneName,
@@ -60,6 +63,7 @@ class EventAdapterTest {
     fun conversionOfEventToDocumentPreservesData() {
         val document = EventAdapter.toEventDocument(event)
 
+        assertEquals(document[EVENT_DOCUMENT_ID], event.eventId)
         assertEquals(document[EVENT_NAME], event.eventName)
         assertEquals(document[EVENT_ORGANIZER], event.organizer)
         assertEquals(document[EVENT_ZONE_NAME], event.zoneName)
@@ -83,6 +87,7 @@ class EventAdapterTest {
         )
 
         val eventDocumentData: HashMap<String, Any?> = hashMapOf(
+            EVENT_DOCUMENT_ID to testEventWithoutTimes.eventId,
             EVENT_NAME to testEventWithoutTimes.eventName,
             EVENT_ORGANIZER to testEventWithoutTimes.organizer,
             EVENT_ZONE_NAME to testEventWithoutTimes.zoneName,

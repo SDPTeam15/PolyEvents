@@ -60,7 +60,8 @@ class FirestoreDatabaseProviderTest {
         )
 
         val testEvent = Event(
-                eventName = "Event A"
+            eventId = "eventA",
+            eventName = "Event A"
         )
 
         assertNotNull(FirestoreDatabaseProvider.getProfilesList("", user))

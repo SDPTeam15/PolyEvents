@@ -20,7 +20,7 @@ class FakeDatabaseTests {
     fun setup() {
         mokedUserInterface = UserEntity(uid = uid)
         mokedUserProfile = UserProfile()
-        mokedEvent = Event()
+        mokedEvent = Event("xxxEventxxx")
     }
 
     @Test

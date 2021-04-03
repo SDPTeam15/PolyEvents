@@ -39,29 +39,32 @@ class UpcomingEventsHomeFragmentTest {
 
         events.add(
                 Event(
-                        eventName = "Sushi demo",
-                        description = "Super hungry activity !",
-                        startTime = LocalDateTime.of(2021, 3, 7, 12, 15),
-                        organizer = "The fish band",
-                        zoneName = "Kitchen",
-                        tags = mutableSetOf("sushi", "japan", "cooking")
+                    eventId = "event1",
+                    eventName = "Sushi demo",
+                    description = "Super hungry activity !",
+                    startTime = LocalDateTime.of(2021, 3, 7, 12, 15),
+                    organizer = "The fish band",
+                    zoneName = "Kitchen",
+                    tags = mutableSetOf("sushi", "japan", "cooking")
                 )
         )
 
         events.add(
                 Event(
-                        eventName = "Aqua Poney",
-                        description = "Super cool activity !" +
-                                " With a super long description that essentially describes and explains" +
-                                " the content of the activity we are speaking of.",
-                        startTime = LocalDateTime.of(2021, 3, 7, 14, 15),
-                        organizer = "The Aqua Poney team",
-                        zoneName = "Swimming pool"
+                    eventId = "event2",
+                    eventName = "Aqua Poney",
+                    description = "Super cool activity !" +
+                            " With a super long description that essentially describes and explains" +
+                            " the content of the activity we are speaking of.",
+                    startTime = LocalDateTime.of(2021, 3, 7, 14, 15),
+                    organizer = "The Aqua Poney team",
+                    zoneName = "Swimming pool"
                 )
         )
 
         events.add(
             Event(
+                eventId = "event3",
                 eventName = "Concert",
                 description = "Super noisy activity !",
                 startTime = LocalDateTime.of(2021, 3, 7, 17, 15),
@@ -72,6 +75,7 @@ class UpcomingEventsHomeFragmentTest {
 
         events.add(
             Event(
+                eventId = "event4",
                 eventName = "Cricket",
                 description = "Outdoor activity !",
                 startTime = LocalDateTime.of(2021, 3, 7, 18, 15),
