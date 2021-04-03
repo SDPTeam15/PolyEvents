@@ -15,7 +15,6 @@ import java.time.LocalDate
  * @property username username of a user to use and identify him in the application
  * @property name fullname of a user
  * @property age the user's age
- * @property displayName the name that will be displayed on a user's profile and other activites
  * @property email the email of the user (by default google's)
  * @property profiles the list of profiles the user has
  */
@@ -25,7 +24,6 @@ data class UserEntity (
     var username: String? = null,
     var name: String? = null,
     var birthDate: LocalDate? = null,
-    var displayName: String? = null,
     var email: String? = null,
     var telephone: String? = null,
     val profiles: MutableList<UserProfile> = mutableListOf()) {

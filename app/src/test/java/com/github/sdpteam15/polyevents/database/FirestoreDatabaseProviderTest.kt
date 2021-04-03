@@ -1,8 +1,8 @@
 package com.github.sdpteam15.polyevents.database
 
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_COLLECTION
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_DISPLAY_NAME
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_EMAIL
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_NAME
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_UID
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_USERNAME
 import com.github.sdpteam15.polyevents.database.observe.Observable
@@ -37,13 +37,13 @@ class FirestoreDatabaseProviderTest {
     fun setup() {
         user = UserEntity(
             uid = uidTest,
-            displayName = displayNameTest,
+            name = displayNameTest,
             email = emailTest
         )
 
         userDocument = hashMapOf(
             USER_UID to uidTest,
-            USER_DISPLAY_NAME to displayNameTest,
+            USER_NAME to displayNameTest,
             USER_EMAIL to emailTest
         )
 
@@ -207,7 +207,7 @@ class FirestoreDatabaseProviderTest {
         //Check that the value indeed corresponds to the correct user
         val userValue = userObs.value!!
         assert(userValue.email == emailTest)
-        assert(userValue.displayName == displayNameTest)
+        assert(userValue.name == displayNameTest)
         assert(userValue.uid == uidTest)
     }
 
@@ -222,7 +222,7 @@ class FirestoreDatabaseProviderTest {
         val map: HashMap<String, String> = HashMap()
         map[USER_UID] = uidTest2
         map[USER_USERNAME] = username
-        map[USER_DISPLAY_NAME] = displayNameTest2
+        map[USER_NAME] = displayNameTest2
         map[USER_EMAIL] = emailTest2
 
         var emailSet = ""

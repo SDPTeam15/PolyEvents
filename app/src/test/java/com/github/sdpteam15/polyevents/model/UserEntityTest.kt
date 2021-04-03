@@ -15,7 +15,6 @@ class UserEntityTest {
     val username = "JohnDoe"
     val name = "John Doe"
     val birthDate = LocalDate.of(1990, 12, 30)
-    val displayName = "John"
     val email = "John@email.com"
 
     val adminProfile = UserProfile(
@@ -35,7 +34,6 @@ class UserEntityTest {
             username = username,
             birthDate = birthDate,
             name = name,
-            displayName = displayName,
             email = email)
         user.addNewProfile(adminProfile)
     }
@@ -64,7 +62,6 @@ class UserEntityTest {
         assertEquals(username, user.username)
         assertEquals(name, user.name)
         assertEquals(birthDate, user.birthDate)
-        assertEquals(displayName, user.displayName)
         assertEquals(email, user.email)
     }
 

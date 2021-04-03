@@ -66,7 +66,7 @@ object FakeDatabase : DatabaseInterface {
 
     val CURRENT_USER: UserEntity = UserEntity(
         uid = "FakeUID",
-        displayName = "FakeName",
+        name = "FakeName",
         email = "Fake@mail.ch"
     )
 

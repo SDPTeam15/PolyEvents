@@ -17,7 +17,6 @@ class UserAdapterTest {
     private val username = "JohnDoe"
     private val name = "John Doe"
     private val birthDate: LocalDate = LocalDate.of(1990, 12, 30)
-    private val displayName = "John"
     private val email = "John@email.com"
     private val telephone = "23456789"
 
@@ -28,7 +27,6 @@ class UserAdapterTest {
             username = username,
             birthDate = birthDate,
             name = name,
-            displayName = displayName,
             email = email,
             telephone = telephone
         )
@@ -42,7 +40,6 @@ class UserAdapterTest {
         assertEquals(document[DatabaseConstant.USER_USERNAME], username)
         assertEquals(document[DatabaseConstant.USER_BIRTH_DATE], birthDate.atStartOfDay())
         assertEquals(document[DatabaseConstant.USER_NAME], name)
-        assertEquals(document[DatabaseConstant.USER_DISPLAY_NAME], displayName)
         assertEquals(document[DatabaseConstant.USER_EMAIL], email)
         assertEquals(document[DatabaseConstant.USER_PHONE], telephone)
     }
@@ -54,7 +51,6 @@ class UserAdapterTest {
         val userDocumentData : HashMap<String, Any?> = hashMapOf(
                 DatabaseConstant.USER_UID to googleId,
                 DatabaseConstant.USER_NAME to name,
-                DatabaseConstant.USER_DISPLAY_NAME to displayName,
                 DatabaseConstant.USER_EMAIL to email,
                 DatabaseConstant.USER_BIRTH_DATE to birthDateTimeStamp,
                 DatabaseConstant.USER_USERNAME to username,
@@ -69,7 +65,6 @@ class UserAdapterTest {
         val userDocumentData : HashMap<String, Any?> = hashMapOf(
                 DatabaseConstant.USER_UID to googleId,
                 DatabaseConstant.USER_NAME to name,
-                DatabaseConstant.USER_DISPLAY_NAME to displayName,
                 DatabaseConstant.USER_EMAIL to email,
                 DatabaseConstant.USER_BIRTH_DATE to null,
                 DatabaseConstant.USER_USERNAME to username,
@@ -84,7 +79,7 @@ class UserAdapterTest {
         val userEntityWithNullProperties = UserEntity(uid = googleId)
         val document = UserAdapter.toUserDocument(userEntityWithNullProperties)
         assertEquals(document[DatabaseConstant.USER_UID], googleId)
-        assertNull(document[DatabaseConstant.USER_DISPLAY_NAME])
+        assertNull(document[DatabaseConstant.USER_NAME])
         assertNull(document[DatabaseConstant.USER_AGE])
     }
 }

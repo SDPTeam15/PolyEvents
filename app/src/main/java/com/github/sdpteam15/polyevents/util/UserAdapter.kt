@@ -1,7 +1,6 @@
 package com.github.sdpteam15.polyevents.util
 
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_BIRTH_DATE
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_DISPLAY_NAME
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_EMAIL
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_NAME
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_PHONE
@@ -35,7 +34,6 @@ object UserAdapter {
                 USER_NAME to user.name,
                 // convert the localdate to LocalDateTime compatible to store in Firestore
                 USER_BIRTH_DATE to user.birthDate?.atStartOfDay(),
-                USER_DISPLAY_NAME to user.displayName,
                 USER_EMAIL to user.email,
                 USER_PHONE to user.telephone
         )
@@ -57,7 +55,6 @@ object UserAdapter {
                 birthDate = HelperFunctions.DateToLocalDateTime(
                         (documentData.get(USER_BIRTH_DATE) as Timestamp?)?.toDate()
                 )?.toLocalDate(),
-                displayName = documentData.get(USER_DISPLAY_NAME) as String?,
                 email = documentData.get(USER_EMAIL) as String?,
                 telephone = documentData.get(USER_PHONE) as String?
         )
