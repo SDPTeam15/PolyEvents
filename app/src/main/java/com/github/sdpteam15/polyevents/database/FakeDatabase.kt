@@ -1,5 +1,7 @@
 package com.github.sdpteam15.polyevents.database
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.model.*
 import java.time.LocalDateTime
@@ -7,7 +9,8 @@ import java.util.*
 
 object FakeDatabase : DatabaseInterface {
     init {
-        initEvents()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            initEvents()
         initProfiles()
         initItems()
     }
@@ -21,6 +24,7 @@ object FakeDatabase : DatabaseInterface {
     private lateinit var profiles: MutableList<UserProfile>
     private lateinit var items: MutableList<Item>
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun initEvents() {
         events = mutableListOf()
         events.add(
