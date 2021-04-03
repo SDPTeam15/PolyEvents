@@ -160,7 +160,6 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             .update(newValues as Map<String, Any>)
     )
 
-    // TODO: First connection is when registering? Because this way we are overwriting data
     override fun firstConnexion(
         user: UserEntity,
         userAccess: UserEntity?
