@@ -46,7 +46,7 @@ class ListFragment : Fragment() {
 
         val openEvent = { event: Event ->
             val intent = Intent(inflater.context, EventActivity::class.java).apply {
-                putExtra(EXTRA_EVENT_ID, event.eventName)
+                putExtra(EXTRA_EVENT_ID, event.eventId)
             }
             startActivity(intent)
         }

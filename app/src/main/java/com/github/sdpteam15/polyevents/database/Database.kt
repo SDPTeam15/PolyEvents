@@ -13,7 +13,6 @@ object Database {
             return mutableCurrentDatabase!!
         }
         set(value) {
-            Log.d("Database", "New DB " + value.toString())
             mutableCurrentDatabase = value
         }
 }
