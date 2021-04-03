@@ -48,7 +48,6 @@ class AdminHubFragmentTest {
         val mockedDatabase = mock(DatabaseInterface::class.java)
         val mockedUserProfile = UserProfile("TestID","TestName")
         When(mockedDatabase.currentProfile).thenReturn(mockedUserProfile)
-        When(mockedDatabase.getUpcomingEvents()).thenReturn(initEvents())
         Database.currentDatabase = mockedDatabase
 
         FirebaseAuth.getInstance().signOut()
@@ -66,44 +65,6 @@ class AdminHubFragmentTest {
         Espresso.onView(ViewMatchers.withId(R.id.id_fragment_admin_hub))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Intents.init()
-    }
-
-    private fun initEvents(): MutableList<Event> {
-        val events: MutableList<Event> = mutableListOf()
-        events.add(
-            Event(
-                eventId = "event1",
-                eventName = "Sushi demo",
-                description = "Super hungry activity !",
-                startTime = LocalDateTime.of(2021, 3, 7, 12, 15),
-                organizer = "The fish band",
-                zoneName = "Kitchen",
-                tags = mutableSetOf("sushi", "japan", "cooking")
-            )
-        )
-        events.add(
-            Event(
-                eventId = "event2",
-                eventName = "Saxophone demo",
-                description = "Super noisy activity !",
-                startTime = LocalDateTime.of(2021, 3, 7, 17, 15),
-                organizer = "The music band",
-                zoneName = "Concert Hall"
-            )
-        )
-        events.add(
-            Event(
-                eventId = "event3",
-                eventName = "Aqua Poney",
-                description = "Super cool activity !" +
-                        " With a super long description that essentially describes and explains" +
-                        " the content of the activity we are speaking of.",
-                startTime = LocalDateTime.of(2021, 3, 7, 14, 15),
-                organizer = "The Aqua Poney team",
-                zoneName = "Swimming pool"
-            )
-        )
-        return events
     }
 
     @After
