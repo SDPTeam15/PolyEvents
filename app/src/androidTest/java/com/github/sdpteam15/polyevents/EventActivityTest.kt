@@ -85,7 +85,7 @@ class EventActivityTest {
         `when`(mockedUpcomingEventsProvider.getEventFromId("2")).thenReturn(events[1])
         `when`(mockedUpcomingEventsProvider.getEventFromId("3")).thenReturn(events[2])
 
-        `when`(mockedUpcomingEventsProvider.getEventFromId("Sushi demo")).thenReturn(events[0])
+        `when`(mockedUpcomingEventsProvider.getEventFromId("event1")).thenReturn(events[0])
 
         // go to activities list fragment
         Espresso.onView(withId(R.id.ic_list)).perform(click())
