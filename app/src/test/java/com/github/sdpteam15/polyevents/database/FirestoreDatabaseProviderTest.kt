@@ -31,12 +31,20 @@ class FirestoreDatabaseProviderTest {
     lateinit var mockedDatabase: FirebaseFirestore
     lateinit var database: DatabaseInterface
 
+    lateinit var userDocument: HashMap<String, Any?>
+
     @Before
     fun setup() {
         user = UserEntity(
             uid = uidTest,
             displayName = displayNameTest,
             email = emailTest
+        )
+
+        userDocument = hashMapOf(
+            USER_UID to uidTest,
+            USER_DISPLAY_NAME to displayNameTest,
+            USER_EMAIL to emailTest
         )
 
         //Mock the database and set it as the default database
@@ -178,7 +186,7 @@ class FirestoreDatabaseProviderTest {
         )
         When(mockedCollectionReference.document(uidTest)).thenReturn(mockedDocumentReference)
         When(mockedDocumentReference.get()).thenReturn(mockedTask)
-        //TODO Mock the result from the database once the data class user is terminated
+        When(mockedDocument.data).thenReturn(userDocument)
 
         When(mockedTask.addOnSuccessListener(any())).thenAnswer {
             //Trigger the last used trigger that will do a callback according to the getUserInformation method

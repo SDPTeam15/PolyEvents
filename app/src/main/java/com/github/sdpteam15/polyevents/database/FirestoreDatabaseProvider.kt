@@ -8,6 +8,7 @@ import com.github.sdpteam15.polyevents.model.Item
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 import com.github.sdpteam15.polyevents.util.FirebaseUserAdapter
+import com.github.sdpteam15.polyevents.util.UserAdapter
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
@@ -199,8 +200,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             .document(uid!!)
             .get()
     ) {
-        //TODO once the data class User is created, set the user with the correct value
-        user.postValue(userAccess)
+        user.postValue(it.data?.let { it1 -> UserAdapter.toUserEntity(it1) })
     }
 
     override fun getItemsList(): MutableList<Item> {

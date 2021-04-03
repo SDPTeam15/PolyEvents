@@ -97,7 +97,6 @@ class LoginFragment : Fragment() {
                 if (newValue!!) {
                     if (inDbObservable.value!!) {
                         //If already in database redirect
-                            // TODO: pass retrieved user value to the profile fragment to pass the user info
                         HelperFunctions.changeFragment(
                             activity,
                             MainActivity.fragments[R.id.id_fragment_profile]

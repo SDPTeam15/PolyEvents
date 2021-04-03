@@ -50,7 +50,7 @@ class ProfileFragment : Fragment() {
 
         //When user Info live data is updated, set the correct value in the textview
         userInfoLiveData.observe(this) { userInfo ->
-            viewRoot.findViewById<EditText>(R.id.profileName).setText(userInfo!!.name)
+            viewRoot.findViewById<EditText>(R.id.profileName).setText(userInfo!!.displayName)
             viewRoot.findViewById<EditText>(R.id.profileEmail).setText(userInfo!!.email)
             viewRoot.findViewById<EditText>(R.id.profileUsernameET).setText(userInfo!!.username)
 
