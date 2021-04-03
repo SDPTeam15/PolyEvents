@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.adapter
 
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -13,7 +14,7 @@ import com.github.sdpteam15.polyevents.model.Event
  * @param events The list of events to adapt
  * @param listener A listener that will be triggered on click of an ItemViewHolder element
  */
-class EventItemAdapter(
+class EventItemAdapter (
     private val events: List<Event>,
     private val listener: (Event) -> Unit
 ) : RecyclerView.Adapter<EventItemAdapter.ItemViewHolder>() {
@@ -45,9 +46,9 @@ class EventItemAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        return ItemViewHolder(HelperAdapterFunctions.createAdapterLayout(
-            parent, R.layout.tab_event
-        ))
+        val adapterLayout = LayoutInflater.from(parent.context)
+            .inflate(R.layout.tab_event, parent, false)
+        return ItemViewHolder(adapterLayout)
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
