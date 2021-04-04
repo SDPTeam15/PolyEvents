@@ -1,40 +1,43 @@
 package com.github.sdpteam15.polyevents.model
 
 import android.graphics.Bitmap
-import com.github.sdpteam15.polyevents.exceptions.InsufficientAmountException
 import com.google.firebase.firestore.IgnoreExtraProperties
 import com.google.firebase.firestore.ServerTimestamp
-import java.lang.IllegalArgumentException
-import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 /**
  * Entity model for an activity during the event. Renamed Event
  * to avoid confusion with the Android Activity class.
  *
+ * @property eventId the uid of the event document in the database.
  * @property eventName the name of the event.
  * @property organizer the username of the organizer of the event
  * @property zoneName the name of the zone where the event is happening
  * @property description a description of the event
  * @property icon a bitmap picture of the icon associated to the event
- * @property inventory a map of items and their availabilities
+ * @property inventory the list of items in the event's inventory
  * @property tags additional set of tags to describe the event
+ * @property startTime the time at which the event begins
+ * @property endTime the time at which the event ends
  */
 // TODO: look into storing instances of LocalDateTime, or Long (for startTime and endTime)
-// TODO: Should the eventName be unique?
+// TODO: Should the eventName be unique? (Important when writing security rules)
 // TODO: keep track of items, or just required items?
 @IgnoreExtraProperties
 data class Event(
-        val eventName: String? = null,
-        val organizer: String? = null,
-        val zoneName: String? = null,
-        val description: String? = null,
-        val icon: Bitmap? = null,
-        @ServerTimestamp val startTime: Date? = null,
-        @ServerTimestamp val endTime: Date? = null,
-        val inventory: MutableMap<Item, Int> = mutableMapOf(),
-        // NOTE: Set is not a supported collection in Firebase Firestore
-        val tags: MutableSet<String> = mutableSetOf()
+    val eventId: String,
+    val eventName: String? = null,
+    val organizer: String? = null,
+    val zoneName: String? = null,
+    var description: String? = null,
+    var icon: Bitmap? = null,
+    val startTime: LocalDateTime? = null,
+    val endTime: LocalDateTime? = null,
+    val inventory: MutableList<Item> = mutableListOf(),
+    // NOTE: Set is not a supported collection in Firebase Firestore so will be stored as list in the db.
+    val tags: MutableSet<String> = mutableSetOf()
 ) {
     /**
      * Add a new tag for this activity
@@ -56,55 +59,41 @@ data class Event(
     }
 
     /**
-     * Set the amount of a certain item in the inventory of the event
-     * @param item: the item to add
-     * @param amount the amount of the item to add.
-     * @return the old previous amount of that item, or null if the item was not found
-     */
-    fun setItemAmount(item: Item, amount: Int): Int? {
-        if (amount < 0) {
-            throw IllegalArgumentException("Amount of items must >= 0")
-        } else {
-            return inventory.put(item, amount)
-        }
-    }
+     * Add an item to the event's inventory
+     * @param item the item to add
+     * @return true if the item was successfully added
+      */
+    fun addItem(item: Item): Boolean =
+        inventory.add(item)
 
     /**
-     * Add an amount of an item to the inventory of the event
-     * @param item: the item to add
-     * @param amount the amount of the item to add. By default is 1
-     * @return the old previous amount of that item, or null if the item was not found
+     * Remove item from the event's inventory
+     * @param item the item to remove
+     * @return true if the item was successfully removed
      */
-    fun addItem(item: Item, amount: Int = 1): Int? {
-        val currentAmount = inventory.getOrDefault(item, 0)
-        return inventory.put(item, currentAmount + amount)
-    }
+    fun removeItem(item: Item): Boolean =
+        inventory.remove(item)
 
     /**
-     * Take an amount of some item from the inventory of the event.
-     *
-     * @param item the item to take
-     * @param amount amount of the item to take. By default is 1
-     * @return the old previous amount of that item, or null if the item was not found
+     * Check if event's inventory has certain item
+     * @param item the item to check
+     * @return true if the item is there
      */
-    fun takeItem(item: Item, amount: Int = 1): Int? {
-        val currentAmount = inventory.getOrDefault(item, 0)
-        if (amount > currentAmount) {
-            throw InsufficientAmountException("There are only $currentAmount of $item available")
-        } else {
-            return inventory.put(item, currentAmount - amount)
-        }
-    }
+    fun hasItem(item: Item): Boolean =
+        inventory.contains(item)
 
     /**
-     * Return the hour (and minutes) at which the activity occurs
+     * Return the hour (and minutes) at which the activity occurs. Uses k:mm pattern, k for
+     * hour going between 0-23h.
      * @return string HH:MM
      */
     fun formattedStartTime(): String {
         if (startTime == null) {
             return ""
         } else {
-            return SimpleDateFormat("k:mm", Locale.getDefault()).format(startTime)
+            //return SimpleDateFormat("k:mm", Locale.getDefault()).format(startTime)
+            val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("k:mm")
+            return startTime.format(formatter)
         }
     }
 

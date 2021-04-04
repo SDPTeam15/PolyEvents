@@ -13,7 +13,9 @@ import android.widget.PopupWindow
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
-import com.github.sdpteam15.polyevents.item_request.ItemAdapter
+import com.github.sdpteam15.polyevents.adapter.ItemAdapter
+import com.github.sdpteam15.polyevents.model.Item
+import com.github.sdpteam15.polyevents.model.ItemType
 
 /**
  * Activity displaying Items and supports items creation and deletion
@@ -82,7 +84,7 @@ class ItemsAdminActivity : AppCompatActivity() {
             newList!!.add(newItem)
             //items.postValue(newList)*/
 
-            currentDatabase.addItem(itemName.text.toString()) // TODO REMOVE
+            currentDatabase.addItem(Item(itemName.text.toString(), ItemType.OTHER)) // TODO REMOVE
             recyclerView.adapter!!.notifyDataSetChanged()
             // Dismiss the popup window
             popupWindow.dismiss()

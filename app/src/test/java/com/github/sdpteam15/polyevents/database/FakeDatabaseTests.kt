@@ -1,39 +1,40 @@
 package com.github.sdpteam15.polyevents.database
 
 import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.event.Event
-import com.github.sdpteam15.polyevents.user.ProfileInterface
-import com.github.sdpteam15.polyevents.user.UserInterface
+import com.github.sdpteam15.polyevents.model.Event
+import com.github.sdpteam15.polyevents.model.UserEntity
+import com.github.sdpteam15.polyevents.model.UserProfile
+import com.google.firebase.firestore.auth.User
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.mock
 import kotlin.test.assertNotNull
 
 class FakeDatabaseTests {
-    lateinit var mokedUserInterface: UserInterface
-    lateinit var mokedProfileInterface: ProfileInterface
+    lateinit var mokedUserInterface: UserEntity
+    lateinit var mokedUserProfile: UserProfile
     lateinit var mokedEvent: Event
     val uid = "TestUID"
 
     @Before
     fun setup() {
-        mokedUserInterface = mock(UserInterface::class.java)
-        mokedProfileInterface = mock(ProfileInterface::class.java)
-        mokedEvent = mock(Event::class.java)
+        mokedUserInterface = UserEntity(uid = uid)
+        mokedUserProfile = UserProfile()
+        mokedEvent = Event("xxxEventxxx")
     }
 
     @Test
     fun toRemoveTest() {
-        assertNotNull(FakeDatabase.currentUser)
-        assertNotNull(FakeDatabase.getListProfile("", mokedUserInterface))
-        assertNotNull(FakeDatabase.addProfile(mokedProfileInterface, "", mokedUserInterface))
-        assertNotNull(FakeDatabase.removeProfile(mokedProfileInterface, "", mokedUserInterface))
-        assertNotNull(FakeDatabase.updateProfile(mokedProfileInterface, mokedUserInterface))
-        assert(FakeDatabase.getListEvent("", 1, mokedProfileInterface).size <= 1)
-        assert(FakeDatabase.getListEvent("", 100, mokedProfileInterface).size <= 100)
-        assert(FakeDatabase.getUpcomingEvents(1, mokedProfileInterface).size <= 1)
-        assert(FakeDatabase.getUpcomingEvents(100, mokedProfileInterface).size <= 100)
-        assert(FakeDatabase.updateEvent(mokedEvent, mokedProfileInterface))
+        assertNotNull(FakeDatabase.CURRENT_USER)
+        assertNotNull(FakeDatabase.getProfilesList("", mokedUserInterface))
+        assertNotNull(FakeDatabase.addProfile(mokedUserProfile, "", mokedUserInterface))
+        assertNotNull(FakeDatabase.removeProfile(mokedUserProfile, "", mokedUserInterface))
+        assertNotNull(FakeDatabase.updateProfile(mokedUserProfile, mokedUserInterface))
+        assert(FakeDatabase.getListEvent("", 1, mokedUserProfile).size <= 1)
+        assert(FakeDatabase.getListEvent("", 100, mokedUserProfile).size <= 100)
+        assert(FakeDatabase.getUpcomingEvents(1, mokedUserProfile).size <= 1)
+        assert(FakeDatabase.getUpcomingEvents(100, mokedUserProfile).size <= 100)
+        assert(FakeDatabase.updateEvent(mokedEvent, mokedUserProfile))
     }
 
     @Test
@@ -69,7 +70,7 @@ class FakeDatabaseTests {
 
     @Test
     fun getUserInformationTest() {
-        val user = Observable<UserInterface>()
+        val user = Observable<UserEntity>()
 
         var IsUpdated = false
         var userIsUpdated = false

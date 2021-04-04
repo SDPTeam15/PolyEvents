@@ -10,8 +10,9 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
-import com.github.sdpteam15.polyevents.event.Event
+import com.github.sdpteam15.polyevents.database.FakeDatabase
 import com.github.sdpteam15.polyevents.fragments.HomeFragment
+import com.github.sdpteam15.polyevents.model.Event
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -37,46 +38,49 @@ class UpcomingEventsHomeFragmentTest {
         events = ArrayList<Event>()
 
         events.add(
+                Event(
+                    eventId = "event1",
+                    eventName = "Sushi demo",
+                    description = "Super hungry activity !",
+                    startTime = LocalDateTime.of(2021, 3, 7, 12, 15),
+                    organizer = "The fish band",
+                    zoneName = "Kitchen",
+                    tags = mutableSetOf("sushi", "japan", "cooking")
+                )
+        )
+
+        events.add(
+                Event(
+                    eventId = "event2",
+                    eventName = "Aqua Poney",
+                    description = "Super cool activity !" +
+                            " With a super long description that essentially describes and explains" +
+                            " the content of the activity we are speaking of.",
+                    startTime = LocalDateTime.of(2021, 3, 7, 14, 15),
+                    organizer = "The Aqua Poney team",
+                    zoneName = "Swimming pool"
+                )
+        )
+
+        events.add(
             Event(
-                "Sushi demo",
-                "Super hungry activity !",
-                LocalDateTime.of(2021, 3, 7, 12, 15),
-                1F,
-                "The fish band",
-                "Kitchen", "1"
+                eventId = "event3",
+                eventName = "Concert",
+                description = "Super noisy activity !",
+                startTime = LocalDateTime.of(2021, 3, 7, 17, 15),
+                organizer = "AcademiC DeCibel",
+                zoneName = "Concert Hall"
             )
         )
 
         events.add(
             Event(
-                "Aqua Poney",
-                "Super cool activity !",
-                LocalDateTime.of(2021, 3, 7, 15, 0),
-                1.5F,
-                "The Aqua Poney team",
-                "Swimming pool", "2"
-            )
-        )
-
-        events.add(
-            Event(
-                "Concert",
-                "Super noisy activity !",
-                LocalDateTime.of(2021, 3, 7, 17, 15),
-                2.75F,
-                "AcademiC DeCibel",
-                "Concert Hall", "3"
-            )
-        )
-
-        events.add(
-            Event(
-                "Cricket",
-                "Outdoor activity !",
-                LocalDateTime.of(2021, 3, 7, 18, 15),
-                1.75F,
-                "Cricket club",
-                "Field", "4"
+                eventId = "event4",
+                eventName = "Cricket",
+                description = "Outdoor activity !",
+                startTime = LocalDateTime.of(2021, 3, 7, 18, 15),
+                organizer = "Cricket club",
+                zoneName = "Field"
             )
         )
 
