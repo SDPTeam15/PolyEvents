@@ -70,11 +70,13 @@ data class UserEntity (
      * @param name the name of the profile to remove
      * @return true if a profile with the given name was found
      */
-    fun removeProfile(name: String): Boolean {
-        for (prof in profiles) {
-            if (prof.profileName == name)
+    fun removeProfile(name: String?): Boolean {
+        if (name != null) {
+            for (prof in profiles) {
+                if (prof.profileName == name)
                 // TODO: do we allow several profiles with the same name? (if so need to remove them all)
-                return profiles.remove(prof)
+                    return profiles.remove(prof)
+            }
         }
         return false
     }

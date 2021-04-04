@@ -3,10 +3,7 @@ package com.github.sdpteam15.polyevents.model
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import org.junit.Test
 import java.time.LocalDate
-import kotlin.test.BeforeTest
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 class UserEntityTest {
     lateinit var user: UserEntity
@@ -68,6 +65,23 @@ class UserEntityTest {
     @Test
     fun testIfUserIsAdmin() {
         assertTrue(user.isAdmin())
+    }
+
+    // TODO: recheck tests if changes in Profile
+    @Test
+    fun testUserProfiles() {
+        val newProfileName = "normalProfile"
+        user.addNewProfile(newProfileName)
+        assertEquals(user.profiles.size, 2)
+        assertTrue(user.removeProfile(newProfileName))
+
+        user.switchRoles(UserRole.ADMIN)
+
+        assertFalse(user.removeProfile(newProfileName))
+
+        // remove admin profile and see if still admin
+        user.removeProfile(adminProfile.profileName)
+        assertFalse(user.isAdmin())
     }
 
 }
