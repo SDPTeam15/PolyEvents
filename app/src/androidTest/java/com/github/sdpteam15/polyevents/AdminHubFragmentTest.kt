@@ -11,10 +11,7 @@ import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.sdpteam15.polyevents.admin.EventManagementActivity
-import com.github.sdpteam15.polyevents.admin.ItemRequestManagementActivity
-import com.github.sdpteam15.polyevents.admin.UserManagementActivity
-import com.github.sdpteam15.polyevents.admin.ZoneManagementActivity
+import com.github.sdpteam15.polyevents.admin.*
 import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
@@ -84,7 +81,7 @@ class AdminHubFragmentTest {
     @Test
     fun clickOnBtnZoneManagementDisplayCorrectActivity() {
         Espresso.onView(ViewMatchers.withId(R.id.btnRedirectZoneManagement)).perform(click())
-        Intents.intended(IntentMatchers.hasComponent(ZoneManagementActivity::class.java.name))
+        Intents.intended(IntentMatchers.hasComponent(ZoneManagementListActivity::class.java.name))
     }
 
     @Test
