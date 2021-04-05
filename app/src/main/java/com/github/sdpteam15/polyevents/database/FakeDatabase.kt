@@ -186,4 +186,25 @@ object FakeDatabase : DatabaseInterface {
         usersLocations.postValue(listOf(LatLng(46.548823, 7.017012)))
         return Observable(true)
     }
+
+    override fun createZone(zone: Zone, userAccess: UserEntity?): Observable<Boolean> {
+        return Observable(true)
+    }
+
+    override fun getZoneInformation(
+        zoneId: String,
+        zone: Observable<Zone>,
+        userAccess: UserEntity?
+    ): Observable<Boolean> {
+        zone.postValue(Zone("ID1", "Esplanade","Espla","a cool zone"))
+        return Observable(true)
+    }
+
+    override fun updateZoneInformation(
+        zoneId: String,
+        newZone: Zone,
+        userAccess: UserEntity?
+    ): Observable<Boolean> {
+        return Observable(true)
+    }
 }

@@ -415,4 +415,7 @@ class FirestoreDatabaseProviderTest {
 
         assertThat(locationsObs.value, Is(locationsLatLng))
     }
+
+
+
 }
