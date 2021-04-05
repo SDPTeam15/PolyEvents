@@ -80,4 +80,10 @@
     <string name="title_activity_user_management">User Management</string>
     <string name="title_activity_event_management">Event Management</string>
     <string name="admin_hub_title">Admin management options</string>
+
+    <!-- String related to the zone management activity-->
+    <string name="btn_create_zone_button_text">Create zone</string>
+    <string name="btn_update_zone_button_text">Update zone</string>
+    <string name="zone_mangement_list_title">Zone Mangement List</string>
+    <string name="btn_new_zone">+</string>
 </resources>
