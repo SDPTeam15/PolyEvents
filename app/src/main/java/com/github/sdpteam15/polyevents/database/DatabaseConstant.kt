@@ -50,4 +50,10 @@ object DatabaseConstant {
     const val ZONE_DOCUMENT_ID = "zoneId"
     const val ZONE_NAME = "zoneName"
     const val ZONE_LOCATION = "location"
+
+    /**
+     * Current locations related constants
+     */
+    const val LOCATIONS_COLLECTION = "locations"
+    const val LOCATIONS_POINT = "point"
 }

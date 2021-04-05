@@ -1,5 +1,7 @@
 package com.github.sdpteam15.polyevents.database
 
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_COLLECTION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_POINT
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_EMAIL
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_NAME
@@ -9,8 +11,11 @@ import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.model.Event
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.*
+import org.hamcrest.CoreMatchers.`is` as Is
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.any
@@ -299,5 +304,115 @@ class FirestoreDatabaseProviderTest {
         assert(emailSet.equals(user.email))
         assert(nameSet.equals(user.name))
         assert(uidSet.equals(user.uid))
+    }
+
+    @Test
+    fun setUserLocationCorrectlySet() {
+        //mock the required class
+        val mockedCollectionReference = mock(CollectionReference::class.java)
+        val mockedDocumentReference = mock(DocumentReference::class.java)
+        val mockedTask = mock(Task::class.java) as Task<Void>
+
+        val lat = 46.548823
+        val lng = 7.017012
+        val pointToAdd = LatLng(lat, lng)
+
+        var latSet = 0.0
+        var lngSet = 0.0
+
+        When(mockedDatabase.collection(LOCATIONS_COLLECTION)).thenReturn(
+            mockedCollectionReference
+        )
+        When(mockedCollectionReference.document(uidTest)).thenReturn(mockedDocumentReference)
+        When(
+            mockedDocumentReference.set(
+                hashMapOf(
+                    DatabaseConstant.LOCATIONS_POINT to GeoPoint(
+                        pointToAdd.latitude,
+                        pointToAdd.longitude
+                    )
+                ),
+                SetOptions.merge()
+            )
+        ).thenReturn(mockedTask)
+
+        When(mockedTask.addOnSuccessListener(any())).thenAnswer {
+            FirestoreDatabaseProvider.lastSetSuccessListener!!.onSuccess(null)
+
+            latSet = lat
+            lngSet = lng
+            mockedTask
+        }
+
+        When(mockedTask.addOnFailureListener(any())).thenAnswer {
+            mockedTask
+        }
+
+        val result = FirestoreDatabaseProvider.setUserLocation(pointToAdd, user)
+        assertThat(result.value, Is(true))
+        assertThat(latSet, Is(lat))
+        assertThat(lngSet, Is(lng))
+    }
+
+    @Test
+    fun getUsersLocationsReturnCorrectNumberOfLocations() {
+        //Mock the needed classes
+        val mockedCollectionReference = mock(CollectionReference::class.java)
+        val mockedTask = mock(Task::class.java) as Task<QuerySnapshot>
+        val mockedDocument = mock(QuerySnapshot::class.java)
+        val mockedList = mock(List::class.java) as List<DocumentSnapshot>
+
+        val mockedDoc1 = mock(DocumentSnapshot::class.java)
+        val mockedDoc2 = mock(DocumentSnapshot::class.java)
+        val listMockedDocs = listOf(mockedDoc1, mockedDoc2)
+
+        val lat1 = 46.548823
+        val lng1 = 7.017012
+        val lat2 = 46.548343
+        val lng2 = 7.017892
+
+        val locations = listOf(
+            GeoPoint(lat1, lng1),
+            GeoPoint(lat2, lng2)
+        )
+        val locationsLatLng = listOf(
+            LatLng(lat1, lng1),
+            LatLng(lat2, lng2)
+        )
+
+        val mapDoc1 = hashMapOf(
+            LOCATIONS_POINT to locations[0],
+            USER_UID to "1"
+        )
+        val mapDoc2 = hashMapOf(
+            LOCATIONS_POINT to locations[1],
+            USER_UID to "2"
+        )
+        When(mockedDoc1.data).thenReturn(mapDoc1 as Map<String, Any>?)
+        When(mockedDoc2.data).thenReturn(mapDoc2 as Map<String, Any>?)
+
+        //mock the needed method
+        When(mockedDatabase.collection(LOCATIONS_COLLECTION)).thenReturn(
+            mockedCollectionReference
+        )
+        When(mockedCollectionReference.get()).thenReturn(mockedTask)
+
+        When(mockedDocument.documents).thenReturn(listMockedDocs)
+
+        When(mockedTask.addOnSuccessListener(any())).thenAnswer {
+            FirestoreDatabaseProvider.lastGetSuccessListener!!.onSuccess(mockedDocument)
+            mockedTask
+        }
+        When(mockedTask.addOnFailureListener(any())).thenAnswer {
+            mockedTask
+        }
+
+        val locationsObs = Observable<List<LatLng>>()
+        val result = FirestoreDatabaseProvider.getUsersLocations(locationsObs, user)
+
+        // Assert that the DB successfully performed the query
+        assertThat(result.value, Is(true))
+
+        assertThat(locationsObs.value, Is(locationsLatLng))
     }
 }

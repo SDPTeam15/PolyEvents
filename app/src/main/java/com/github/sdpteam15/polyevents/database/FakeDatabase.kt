@@ -2,6 +2,7 @@ package com.github.sdpteam15.polyevents.database
 
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.model.*
+import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDateTime
 import java.util.*
 
@@ -170,5 +171,19 @@ object FakeDatabase : DatabaseInterface {
         return items.remove(item)
     }
 
+    override fun setUserLocation(
+        location: LatLng,
+        userAccess: UserEntity?
+    ): Observable<Boolean> {
+        return Observable(true)
+    }
 
+    override fun getUsersLocations(
+        usersLocations: Observable<List<LatLng>>,
+        userAccess: UserEntity?
+    ): Observable<Boolean> {
+        // TODO : see whether we write a Python script that send fake data to our database
+        usersLocations.postValue(listOf(LatLng(46.548823, 7.017012)))
+        return Observable(true)
+    }
 }

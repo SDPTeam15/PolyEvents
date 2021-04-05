@@ -4,11 +4,12 @@ import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.model.Event
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
-import com.google.firebase.firestore.auth.User
+import com.google.android.gms.maps.model.LatLng
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.mock
 import kotlin.test.assertNotNull
+import org.hamcrest.CoreMatchers.`is` as Is
 
 class FakeDatabaseTests {
     lateinit var mokedUserInterface: UserEntity
@@ -79,5 +80,34 @@ class FakeDatabaseTests {
         FakeDatabase.getUserInformation(user, uid, mokedUserInterface).observe { IsUpdated = it!! }
         assert(IsUpdated)
         assert(userIsUpdated)
+    }
+
+    @Test
+    fun setUserLocationTest() {
+        var isUpdated = false
+        val lat = 46.548823
+        val lng = 7.017012
+        val pointToAdd = LatLng(lat, lng)
+        FakeDatabase.setUserLocation(pointToAdd, mokedUserInterface).observe {
+            isUpdated = it!!
+        }
+
+        assertThat(isUpdated, Is(true))
+    }
+
+    @Test
+    fun getUsersLocationsTest() {
+        val locations = Observable<List<LatLng>>()
+
+        var isUpdated = false
+        var locationsAreUpdated = false
+        locations.observe { locationsAreUpdated = true }
+
+        FakeDatabase.getUsersLocations(locations, mokedUserInterface).observe {
+            isUpdated = it!!
+        }
+
+        assertThat(isUpdated, Is(true))
+        assertThat(locationsAreUpdated, Is(true))
     }
 }

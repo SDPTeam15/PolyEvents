@@ -1,5 +1,7 @@
 package com.github.sdpteam15.polyevents.database
 
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_COLLECTION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_POINT
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_UID
 import com.github.sdpteam15.polyevents.database.observe.Observable
@@ -9,13 +11,12 @@ import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 import com.github.sdpteam15.polyevents.util.FirebaseUserAdapter
 import com.github.sdpteam15.polyevents.util.UserAdapter
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -220,5 +221,33 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     override fun getAvailableItems(): Map<String, Int> {
         //TODO adapt to firebase
         return FakeDatabase.getAvailableItems()
+    }
+
+    override fun setUserLocation(
+        location: LatLng,
+        userAccess: UserEntity?
+    ): Observable<Boolean> {
+        return thenDoSet(
+            firestore!!.collection(LOCATIONS_COLLECTION)
+                .document(userAccess!!.uid)
+                .set(
+                    hashMapOf(LOCATIONS_POINT to GeoPoint(location.latitude, location.longitude)),
+                    SetOptions.merge()
+                )
+        )
+    }
+
+    override fun getUsersLocations(
+        usersLocations: Observable<List<LatLng>>,
+        userAccess: UserEntity?
+    ): Observable<Boolean> = thenDoGet(
+        firestore!!.collection(LOCATIONS_COLLECTION)
+            .get()
+    ) { querySnapshot ->
+        val locations = querySnapshot.documents.map {
+            val geoPoint = it.data!![LOCATIONS_POINT] as GeoPoint
+            LatLng(geoPoint.latitude, geoPoint.longitude)
+        }
+        usersLocations.postValue(locations)
     }
 }
