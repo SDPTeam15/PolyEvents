@@ -22,7 +22,7 @@ import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
 import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
-import com.github.sdpteam15.polyevents.item_request.ItemRequestAdapter
+import com.github.sdpteam15.polyevents.adapter.ItemRequestAdapter
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.Description
 import org.hamcrest.TypeSafeMatcher

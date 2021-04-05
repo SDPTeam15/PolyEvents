@@ -1,28 +1,21 @@
 package com.github.sdpteam15.polyevents.database
 
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_COLLECTION
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_POINT
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_COLLECTION
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_DISPLAY_NAME
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_DOCUMENT_ID
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_EMAIL
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_GOOGLE_ID
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_NAME
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_UID
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_USERNAME
 import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.event.Event
-import com.github.sdpteam15.polyevents.user.ProfileInterface
-import com.github.sdpteam15.polyevents.user.User
-import com.github.sdpteam15.polyevents.user.UserInterface
-import com.google.android.gms.maps.model.LatLng
+import com.github.sdpteam15.polyevents.model.Event
+import com.github.sdpteam15.polyevents.model.UserEntity
+import com.github.sdpteam15.polyevents.model.UserProfile
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.*
-import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.mock
 import kotlin.test.assertNotNull
-import org.hamcrest.CoreMatchers.`is` as Is
 import org.mockito.Mockito.`when` as When
 
 private const val displayNameTest = "Test displayName"
@@ -34,19 +27,25 @@ private const val displayNameTest2 = "Test uid2"
 private const val username = "Test username"
 
 class FirestoreDatabaseProviderTest {
-    lateinit var user: UserInterface
-    lateinit var mockedDatabaseUser: DatabaseUserInterface
+    lateinit var user: UserEntity
     lateinit var mockedDatabase: FirebaseFirestore
     lateinit var database: DatabaseInterface
 
+    lateinit var userDocument: HashMap<String, Any?>
+
     @Before
     fun setup() {
-        //Mock an user
-        mockedDatabaseUser = mock(DatabaseUserInterface::class.java)
-        When(mockedDatabaseUser.email).thenReturn(emailTest)
-        When(mockedDatabaseUser.displayName).thenReturn(displayNameTest)
-        When(mockedDatabaseUser.uid).thenReturn(uidTest)
-        user = User.invoke(mockedDatabaseUser)
+        user = UserEntity(
+            uid = uidTest,
+            name = displayNameTest,
+            email = emailTest
+        )
+
+        userDocument = hashMapOf(
+            USER_UID to uidTest,
+            USER_NAME to displayNameTest,
+            USER_EMAIL to emailTest
+        )
 
         //Mock the database and set it as the default database
         mockedDatabase = mock(FirebaseFirestore::class.java)
@@ -55,36 +54,42 @@ class FirestoreDatabaseProviderTest {
 
     @Test
     fun toRemoveTest() {
-        val mokedUserInterface = mock(UserInterface::class.java)
-        val mokedProfileInterface = mock(ProfileInterface::class.java)
-        val mokedEvent = mock(Event::class.java)
+        val testProfile = UserProfile(
+                userUid = user.uid,
+                profileName = "mockProfile"
+        )
 
-        assertNotNull(FirestoreDatabaseProvider.getListProfile("", mokedUserInterface))
+        val testEvent = Event(
+            eventId = "eventA",
+            eventName = "Event A"
+        )
+
+        assertNotNull(FirestoreDatabaseProvider.getProfilesList("", user))
         assertNotNull(
             FirestoreDatabaseProvider.addProfile(
-                mokedProfileInterface,
+                testProfile,
                 "",
-                mokedUserInterface
+                user
             )
         )
         assertNotNull(
             FirestoreDatabaseProvider.removeProfile(
-                mokedProfileInterface,
+                testProfile,
                 "",
-                mokedUserInterface
+                user
             )
         )
         assertNotNull(
             FirestoreDatabaseProvider.updateProfile(
-                mokedProfileInterface,
-                mokedUserInterface
+                testProfile,
+                user
             )
         )
-        assert(FirestoreDatabaseProvider.getListEvent("", 1, mokedProfileInterface).size <= 1)
-        assert(FirestoreDatabaseProvider.getListEvent("", 100, mokedProfileInterface).size <= 100)
-        assert(FirestoreDatabaseProvider.getUpcomingEvents(1, mokedProfileInterface).size <= 1)
-        assert(FirestoreDatabaseProvider.getUpcomingEvents(100, mokedProfileInterface).size <= 100)
-        assert(FirestoreDatabaseProvider.updateEvent(mokedEvent, mokedProfileInterface))
+        assert(FirestoreDatabaseProvider.getListEvent("", 1, testProfile).size <= 1)
+        assert(FirestoreDatabaseProvider.getListEvent("", 100, testProfile).size <= 100)
+        assert(FirestoreDatabaseProvider.getUpcomingEvents(1, testProfile).size <= 1)
+        assert(FirestoreDatabaseProvider.getUpcomingEvents(100, testProfile).size <= 100)
+        assert(FirestoreDatabaseProvider.updateEvent(testEvent, testProfile))
     }
 
     @Test
@@ -102,7 +107,7 @@ class FirestoreDatabaseProviderTest {
         )
         When(
             mockedCollectionReference.whereEqualTo(
-                DatabaseConstant.USER_DOCUMENT_ID,
+                DatabaseConstant.USER_UID,
                 uidTest
             )
         ).thenReturn(mockedQuery)
@@ -143,7 +148,7 @@ class FirestoreDatabaseProviderTest {
         )
         When(
             mockedCollectionReference.whereEqualTo(
-                DatabaseConstant.USER_DOCUMENT_ID,
+                DatabaseConstant.USER_UID,
                 uidTest
             )
         ).thenReturn(mockedQuery)
@@ -182,7 +187,7 @@ class FirestoreDatabaseProviderTest {
         )
         When(mockedCollectionReference.document(uidTest)).thenReturn(mockedDocumentReference)
         When(mockedDocumentReference.get()).thenReturn(mockedTask)
-        //TODO Mock the result from the database once the data class user is terminated
+        When(mockedDocument.data).thenReturn(userDocument)
 
         When(mockedTask.addOnSuccessListener(any())).thenAnswer {
             //Trigger the last used trigger that will do a callback according to the getUserInformation method
@@ -193,7 +198,7 @@ class FirestoreDatabaseProviderTest {
             mockedTask
         }
 
-        val userObs = Observable<UserInterface>()
+        val userObs = Observable<UserEntity>()
         val result = FirestoreDatabaseProvider.getUserInformation(userObs, uidTest, user)
         //Assert that the DB correctly answer with true
         assert(result.value!!)
@@ -215,9 +220,9 @@ class FirestoreDatabaseProviderTest {
 
         //Create a hashmap with values to update
         val map: HashMap<String, String> = HashMap()
-        map[USER_GOOGLE_ID] = uidTest2
+        map[USER_UID] = uidTest2
         map[USER_USERNAME] = username
-        map[USER_DISPLAY_NAME] = displayNameTest2
+        map[USER_NAME] = displayNameTest2
         map[USER_EMAIL] = emailTest2
 
         var emailSet = ""
@@ -263,15 +268,15 @@ class FirestoreDatabaseProviderTest {
         val mockedDocumentReference = mock(DocumentReference::class.java)
         val mockedTask = mock(Task::class.java) as Task<Void>
 
-        var emailSet = ""
-        var nameSet = ""
+        var emailSet: String? = ""
+        var nameSet: String? = ""
         var uidSet = ""
 
         When(mockedDatabase.collection(USER_COLLECTION)).thenReturn(
             mockedCollectionReference
         )
         When(mockedCollectionReference.document(uidTest)).thenReturn(mockedDocumentReference)
-        When(mockedDocumentReference.set(FirestoreDatabaseProvider.firstConnectionMap)).thenReturn(
+        When(mockedDocumentReference.set(user)).thenReturn(
             mockedTask
         )
 

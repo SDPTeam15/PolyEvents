@@ -1,10 +1,18 @@
 package com.github.sdpteam15.polyevents.model
 
 /**
- * Enum of all type of items available for inventory management
- * at the event.
+ * Entity model for an item, used in inventory management
+ * for events.
+ *
+ * TODO: We attribute an id to each item, to keep track. Need to see that id will be formed.
+ * TODO: Queries on Item: - Available items of certain itemType
+ * TODO: Queries on Item: - Find location of certain item
+ * TODO: Queries on Item: - Add item to event's inventory
+ *
+ * @property itemId the uid of the item, generally given by the admin
+ * @property itemType the type of the item
  */
-enum class Item(val itemName: String) {
-    // TODO: To fill
-    COCA("Coca"), ELECTRIC_PLUG("Electric Plug"), ICE("Ice")
-}
+data class Item (
+        val itemId: String,
+        val itemType: ItemType
+)
