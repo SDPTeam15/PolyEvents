@@ -15,6 +15,7 @@ import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_USERNAME
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.changeFragment
 import com.github.sdpteam15.polyevents.model.UserEntity
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import java.time.format.DateTimeFormatter
 
@@ -68,8 +69,8 @@ class ProfileFragment : Fragment() {
             hashMapNewInfo.clear()
             hashMapNewInfo[USER_USERNAME] =
                 viewRoot.findViewById<EditText>(R.id.profileUsernameET).text.toString()
-            // TODO: editText should have birthday input
-            hashMapNewInfo[USER_BIRTH_DATE] = viewRoot.findViewById<EditText>(R.id.profileBirthdayET).text.toString()
+            // TODO: editText should have birthday input and convert it to Timestamp otherwise things crash
+            //hashMapNewInfo[USER_BIRTH_DATE] = viewRoot.findViewById<EditText>(R.id.profileBirthdayET).text.toString()
 
             //Call the DB to update the user information and getUserInformation once it is done
             currentDatabase.updateUserInformation(hashMapNewInfo, currentUser!!.uid, currentUser!!)
