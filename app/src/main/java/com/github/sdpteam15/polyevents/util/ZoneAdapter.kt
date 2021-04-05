@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.util
 
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_DESCRIPTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_LOCATION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_NAME
 import com.github.sdpteam15.polyevents.model.Zone
@@ -22,7 +23,8 @@ object ZoneAdapter {
     fun toZoneDocument(zone: Zone) : HashMap<String, Any?> =
         hashMapOf(
             ZONE_NAME to zone.zoneName,
-            ZONE_LOCATION to zone.location
+            ZONE_LOCATION to zone.location,
+            ZONE_DESCRIPTION to zone.description
         )
 
     /**
@@ -36,6 +38,7 @@ object ZoneAdapter {
     fun toZoneEntity(documentData: MutableMap<String, Any?>): Zone =
         Zone(
             zoneName = documentData[ZONE_NAME] as String?,
-            location = documentData[ZONE_LOCATION] as String?
+            location = documentData[ZONE_LOCATION] as String?,
+            description = documentData[ZONE_DESCRIPTION] as String?
         )
 }

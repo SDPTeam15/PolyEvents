@@ -1,10 +1,7 @@
 package com.github.sdpteam15.polyevents.database
 
 import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.model.Event
-import com.github.sdpteam15.polyevents.model.Item
-import com.github.sdpteam15.polyevents.model.UserEntity
-import com.github.sdpteam15.polyevents.model.UserProfile
+import com.github.sdpteam15.polyevents.model.*
 import com.google.android.gms.maps.model.LatLng
 import java.util.*
 
@@ -420,4 +417,21 @@ interface DatabaseInterface {
         usersLocations: Observable<List<LatLng>>,
         userAccess: UserEntity? = currentUser
     ): Observable<Boolean>
+
+
+    fun createZone(
+        zone: Zone,
+        userAccess: UserEntity? = currentUser
+    ):Observable<Boolean>
+
+    fun getZoneInformation(
+        zone:Observable<Zone>,
+        userAccess: UserEntity?=currentUser
+    ):Observable<Boolean>
+
+    fun updateZoneInformation(
+        zoneId:String,
+        newZone:Zone,
+        userAccess:UserEntity?=currentUser
+    ):Observable<Boolean>
 }

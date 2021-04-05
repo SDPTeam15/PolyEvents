@@ -5,10 +5,7 @@ import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_POINT
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_UID
 import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.model.Event
-import com.github.sdpteam15.polyevents.model.Item
-import com.github.sdpteam15.polyevents.model.UserEntity
-import com.github.sdpteam15.polyevents.model.UserProfile
+import com.github.sdpteam15.polyevents.model.*
 import com.github.sdpteam15.polyevents.util.FirebaseUserAdapter
 import com.github.sdpteam15.polyevents.util.UserAdapter
 import com.google.android.gms.maps.model.LatLng
@@ -249,5 +246,27 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             LatLng(geoPoint.latitude, geoPoint.longitude)
         }
         usersLocations.postValue(locations)
+    }
+
+    /*
+     * Zone related methods  
+     */
+    override fun createZone(zone: Zone, userAccess: UserEntity?): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getZoneInformation(
+        zone: Observable<Zone>,
+        userAccess: UserEntity?
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateZoneInformation(
+        zoneId: String,
+        newZone: Zone,
+        userAccess: UserEntity?
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
     }
 }

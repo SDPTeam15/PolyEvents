@@ -12,5 +12,6 @@ import com.google.firebase.firestore.IgnoreExtraProperties
 @IgnoreExtraProperties
 data class Zone (
     val zoneName: String? = null,
-    val location: String? = null
+    val location: String? = null,
+    val description: String? = null
 )
