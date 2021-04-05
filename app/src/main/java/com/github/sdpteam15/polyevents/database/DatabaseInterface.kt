@@ -425,6 +425,7 @@ interface DatabaseInterface {
     ):Observable<Boolean>
 
     fun getZoneInformation(
+        zoneId: String,
         zone:Observable<Zone>,
         userAccess: UserEntity?=currentUser
     ):Observable<Boolean>

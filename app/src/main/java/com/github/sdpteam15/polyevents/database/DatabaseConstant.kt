@@ -46,7 +46,7 @@ object DatabaseConstant {
     /**
      * Area related constants
      */
-    const val ZONE_COLLECTIOn = "zones"
+    const val ZONE_COLLECTION = "zones"
     const val ZONE_DOCUMENT_ID = "zoneId"
     const val ZONE_NAME = "zoneName"
     const val ZONE_LOCATION = "location"

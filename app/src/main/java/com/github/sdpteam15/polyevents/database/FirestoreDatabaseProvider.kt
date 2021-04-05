@@ -4,10 +4,12 @@ import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_COLLE
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_POINT
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_UID
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_COLLECTION
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.model.*
 import com.github.sdpteam15.polyevents.util.FirebaseUserAdapter
 import com.github.sdpteam15.polyevents.util.UserAdapter
+import com.github.sdpteam15.polyevents.util.ZoneAdapter
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
@@ -249,17 +251,29 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     }
 
     /*
-     * Zone related methods  
+     * Zone related methods
      */
     override fun createZone(zone: Zone, userAccess: UserEntity?): Observable<Boolean> {
-        TODO("Not yet implemented")
+        return thenDoSet(firestore!!
+            .collection(ZONE_COLLECTION)
+            .document("1")
+            .set(ZoneAdapter.toZoneDocument(zone)))
     }
 
+
     override fun getZoneInformation(
+        zoneId: String,
         zone: Observable<Zone>,
         userAccess: UserEntity?
     ): Observable<Boolean> {
-        TODO("Not yet implemented")
+        return thenDoMultGet(
+            firestore!!
+                .collection(ZONE_COLLECTION)
+                .document(zoneId)
+                .get()
+        ){
+            zone.postValue(it.data?.let { it1->ZoneAdapter.toZoneEntity(it1)})
+        }
     }
 
     override fun updateZoneInformation(
@@ -267,6 +281,9 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         newZone: Zone,
         userAccess: UserEntity?
     ): Observable<Boolean> {
-        TODO("Not yet implemented")
+        return thenDoSet(firestore!!
+            .collection(ZONE_COLLECTION)
+            .document(zoneId)
+            .update(ZoneAdapter.toZoneDocument(newZone)))
     }
 }
