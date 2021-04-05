@@ -1,5 +1,7 @@
 package com.github.sdpteam15.polyevents.database
 
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_COLLECTION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_POINT
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_EMAIL
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_NAME
@@ -9,8 +11,11 @@ import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.model.Event
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.*
+import org.hamcrest.CoreMatchers.`is` as Is
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.any
@@ -377,11 +382,11 @@ class FirestoreDatabaseProviderTest {
 
         val mapDoc1 = hashMapOf(
             LOCATIONS_POINT to locations[0],
-            USER_DOCUMENT_ID to "1"
+            USER_UID to "1"
         )
         val mapDoc2 = hashMapOf(
             LOCATIONS_POINT to locations[1],
-            USER_DOCUMENT_ID to "2"
+            USER_UID to "2"
         )
         When(mockedDoc1.data).thenReturn(mapDoc1 as Map<String, Any>?)
         When(mockedDoc2.data).thenReturn(mapDoc2 as Map<String, Any>?)

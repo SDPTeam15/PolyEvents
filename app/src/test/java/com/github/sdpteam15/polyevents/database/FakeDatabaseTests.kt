@@ -4,16 +4,12 @@ import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.model.Event
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
-import com.google.firebase.firestore.auth.User
-import com.github.sdpteam15.polyevents.user.ProfileInterface
-import com.github.sdpteam15.polyevents.user.UserInterface
 import com.google.android.gms.maps.model.LatLng
-import org.hamcrest.CoreMatchers.`is` as Is
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.mock
 import kotlin.test.assertNotNull
+import org.hamcrest.CoreMatchers.`is` as Is
 
 class FakeDatabaseTests {
     lateinit var mokedUserInterface: UserEntity

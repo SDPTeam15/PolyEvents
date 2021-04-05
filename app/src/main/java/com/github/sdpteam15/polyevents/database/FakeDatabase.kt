@@ -2,6 +2,7 @@ package com.github.sdpteam15.polyevents.database
 
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.model.*
+import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDateTime
 import java.util.*
 
