@@ -87,6 +87,20 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     var lastSetSuccessListener: OnSuccessListener<Void>? = null
     var lastFailureListener: OnFailureListener? = null
     var lastMultGetSuccessListener: OnSuccessListener<DocumentSnapshot>? = null
+    var lastAddSuccessListener:OnSuccessListener<DocumentReference>?=null
+
+    fun thenDoAdd(
+        task:Task<DocumentReference>
+    ):Observable<Boolean>{
+        val ended = Observable<Boolean>()
+
+        lastAddSuccessListener = OnSuccessListener<DocumentReference> { ended.postValue(true) }
+        lastFailureListener = OnFailureListener { ended.postValue(false) }
+        task.addOnSuccessListener(lastAddSuccessListener!!)
+            .addOnFailureListener(lastFailureListener!!)
+
+        return ended
+    }
 
     /**
      * After a get request, add on success and on failure listener (and set them into the corresponding variable to be able to test)
@@ -254,10 +268,11 @@ object FirestoreDatabaseProvider : DatabaseInterface {
      * Zone related methods
      */
     override fun createZone(zone: Zone, userAccess: UserEntity?): Observable<Boolean> {
-        return thenDoSet(firestore!!
+        return thenDoAdd(
+            firestore!!
             .collection(ZONE_COLLECTION)
-            .document("1")
-            .set(ZoneAdapter.toZoneDocument(zone)))
+            .add(ZoneAdapter.toZoneDocument(zone))
+        )
     }
 
 
@@ -272,7 +287,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
                 .document(zoneId)
                 .get()
         ){
-            zone.postValue(it.data?.let { it1->ZoneAdapter.toZoneEntity(it1)})
+            zone.postValue(it.data?.let { it1->ZoneAdapter.toZoneEntity(it1, it.id)})
         }
     }
 
