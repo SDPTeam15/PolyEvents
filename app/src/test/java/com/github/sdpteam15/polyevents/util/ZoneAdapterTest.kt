@@ -14,10 +14,11 @@ class ZoneAdapterTest {
 
     val zoneName = "zone A"
     val location = "Esplanade"
+    val zoneId = "idZone"
 
     @Before
     fun setupZone() {
-        zone = Zone(zoneName, location)
+        zone = Zone(zoneId,zoneName, location)
     }
 
     @Test
@@ -35,7 +36,7 @@ class ZoneAdapterTest {
             ZONE_LOCATION to zone.location
         )
 
-        val obtainedZone = ZoneAdapter.toZoneEntity(zoneDocumentData)
+        val obtainedZone = ZoneAdapter.toZoneEntity(zoneDocumentData,zoneId)
         assertEquals(obtainedZone, zone)
     }
 

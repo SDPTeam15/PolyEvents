@@ -22,13 +22,17 @@ object ZoneAdapter {
      * @param zone the entity we're converting
      * @return a hashmap of the entity fields to their values
      */
-    fun toZoneDocument(zone: Zone) : HashMap<String, Any?> =
-        hashMapOf(
-            ZONE_DOCUMENT_ID to zone.zoneId,
+    fun toZoneDocument(zone: Zone) : HashMap<String, Any?>{
+        val hash:HashMap<String,Any?> = hashMapOf(
             ZONE_NAME to zone.zoneName,
             ZONE_LOCATION to zone.location,
             ZONE_DESCRIPTION to zone.description
         )
+        if(zone.zoneId!=null)
+            hash[ZONE_DOCUMENT_ID] = zone.zoneId
+        return hash
+    }
+
 
     /**
      * Convert document data to a zone entity in our model.
@@ -38,9 +42,9 @@ object ZoneAdapter {
      * @param documentData this is the data we retrieve from the document.
      * @return the corresponding userEntity.
      */
-    fun toZoneEntity(documentData: MutableMap<String, Any?>): Zone =
+    fun toZoneEntity(documentData: MutableMap<String, Any?>, id:String): Zone =
         Zone(
-            zoneId = documentData[ZONE_DOCUMENT_ID] as String?,
+            zoneId = id as String?,
             zoneName = documentData[ZONE_NAME] as String?,
             location = documentData[ZONE_LOCATION] as String?,
             description = documentData[ZONE_DESCRIPTION] as String?
