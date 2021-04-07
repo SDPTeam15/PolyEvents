@@ -13,12 +13,11 @@ import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_DOCUMENT_I
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_LOCATION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_NAME
 import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.model.Event
-import com.github.sdpteam15.polyevents.model.UserEntity
-import com.github.sdpteam15.polyevents.model.UserProfile
-import com.github.sdpteam15.polyevents.model.Zone
+import com.github.sdpteam15.polyevents.model.*
 import com.github.sdpteam15.polyevents.util.ZoneAdapter
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.tasks.OnFailureListener
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.*
 import org.hamcrest.MatcherAssert.assertThat
@@ -26,6 +25,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.mock
+import java.time.LocalDate
 import kotlin.test.assertNotNull
 import org.hamcrest.CoreMatchers.`is` as Is
 import org.mockito.Mockito.`when` as When
@@ -41,6 +41,12 @@ private const val zoneID = "ZONEID"
 private const val zoneName = "ZONENAME"
 private const val zoneDesc = "ZONEDESC"
 private const val zoneLoc = "ZONELOCATION"
+
+val googleId = "googleId"
+val usernameEntity = "JohnDoe"
+val name = "John Doe"
+val birthDate = LocalDate.of(1990, 12, 30)
+val email = "John@email.com"
 
 class FirestoreDatabaseProviderTest {
     lateinit var user: UserEntity
@@ -74,6 +80,13 @@ class FirestoreDatabaseProviderTest {
         //Mock the database and set it as the default database
         mockedDatabase = mock(FirebaseFirestore::class.java)
         FirestoreDatabaseProvider.firestore = mockedDatabase
+
+        FirestoreDatabaseProvider.firstConnectionUser=UserEntity(uid = "DEFAULT")
+        FirestoreDatabaseProvider.lastGetSuccessListener= null
+        FirestoreDatabaseProvider.lastSetSuccessListener= null
+        FirestoreDatabaseProvider.lastFailureListener= null
+        FirestoreDatabaseProvider.lastMultGetSuccessListener= null
+        FirestoreDatabaseProvider.lastAddSuccessListener= null
     }
 
     @Test
@@ -109,11 +122,19 @@ class FirestoreDatabaseProviderTest {
                 user
             )
         )
+        val item = Item(itemId = "TestId",itemType = ItemType.MICROPHONE)
+
         assert(FirestoreDatabaseProvider.getListEvent("", 1, testProfile).size <= 1)
         assert(FirestoreDatabaseProvider.getListEvent("", 100, testProfile).size <= 100)
         assert(FirestoreDatabaseProvider.getUpcomingEvents(1, testProfile).size <= 1)
         assert(FirestoreDatabaseProvider.getUpcomingEvents(100, testProfile).size <= 100)
         assert(FirestoreDatabaseProvider.updateEvent(testEvent, testProfile))
+        assert(FirestoreDatabaseProvider.addItem(item))
+        assert(FirestoreDatabaseProvider.removeItem(item))
+        assert(FirestoreDatabaseProvider.getAvailableItems()!=null)
+        assert(FirestoreDatabaseProvider.getItemsList()!=null)
+
+        assert(FirestoreDatabaseProvider.getEventFromId("",UserProfile(userUid="DEFAULT"))==null)
     }
 
     @Test
@@ -371,6 +392,37 @@ class FirestoreDatabaseProviderTest {
         assertThat(result.value, Is(true))
         assertThat(latSet, Is(lat))
         assertThat(lngSet, Is(lng))
+    }
+
+    @Test
+    fun variablesAreCorrectlySet(){
+        val user = UserEntity(
+            uid = googleId,
+            username = usernameEntity,
+            birthDate = birthDate,
+            name = name,
+            email = email)
+        FirestoreDatabaseProvider.firstConnectionUser = user
+        assertThat(FirestoreDatabaseProvider.firstConnectionUser,Is(user))
+
+        var lastGetSuccessListener=OnSuccessListener<QuerySnapshot> { }
+        var lastSetSuccessListener=OnSuccessListener<Void> { }
+        var lastFailureListener= OnFailureListener {  }
+        var lastMultGetSuccessListener=OnSuccessListener<DocumentSnapshot> { }
+        var lastAddSuccessListener=OnSuccessListener<DocumentReference> { }
+
+        FirestoreDatabaseProvider.lastGetSuccessListener= lastGetSuccessListener
+        FirestoreDatabaseProvider.lastSetSuccessListener= lastSetSuccessListener
+        FirestoreDatabaseProvider.lastFailureListener= lastFailureListener
+        FirestoreDatabaseProvider.lastMultGetSuccessListener= lastMultGetSuccessListener
+        FirestoreDatabaseProvider.lastAddSuccessListener= lastAddSuccessListener
+
+        assertThat(FirestoreDatabaseProvider.lastGetSuccessListener,Is(lastGetSuccessListener))
+        assertThat(FirestoreDatabaseProvider.lastSetSuccessListener,Is(lastSetSuccessListener))
+        assertThat(FirestoreDatabaseProvider.lastFailureListener,Is(lastFailureListener))
+        assertThat(FirestoreDatabaseProvider.lastMultGetSuccessListener,Is(lastMultGetSuccessListener))
+        assertThat(FirestoreDatabaseProvider.lastAddSuccessListener,Is(lastAddSuccessListener))
+
     }
 
     @Test

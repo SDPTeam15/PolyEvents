@@ -74,9 +74,9 @@ object FakeDatabase : DatabaseInterface {
     )
 
     override val currentUser: UserEntity?
-        get() = TODO("Not yet implemented")
+        get() = UserEntity(uid="DEFAULT")
     override val currentProfile: UserProfile?
-        get() = TODO("Not yet implemented")
+        get() = null
 
     override fun getProfilesList(uid: String, user: UserEntity?): List<UserProfile> =
         profiles
