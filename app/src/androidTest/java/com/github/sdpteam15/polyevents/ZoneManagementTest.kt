@@ -25,8 +25,6 @@ import org.mockito.Mockito
 import org.mockito.Mockito.`when` as When
 
 class ZoneManagementTest {
-    var mainActivity = ActivityScenarioRule(MainActivity::class.java)
-    var zoneManagement = ActivityScenarioRule(ZoneManagementActivity::class.java)
     lateinit var scenario: ActivityScenario<MainActivity>
     lateinit var scenario2: ActivityScenario<ZoneManagementActivity>
 
