@@ -59,6 +59,8 @@ class ProfileFragment : Fragment() {
                 else userBirthDate.format(DateTimeFormatter.ISO_LOCAL_DATE)
             viewRoot.findViewById<EditText>(R.id.profileBirthdayET).setText(birthDateFormatted)
         }
+        println(currentDatabase)
+        println(currentUser)
 
         currentDatabase.getUserInformation(userInfoLiveData, currentUser!!.uid, currentUser!!)
 
