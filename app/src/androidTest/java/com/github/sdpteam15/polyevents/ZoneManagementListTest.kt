@@ -11,28 +11,24 @@ import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.sdpteam15.polyevents.admin.*
+import com.github.sdpteam15.polyevents.admin.ZoneManagementActivity
 import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
-import com.github.sdpteam15.polyevents.model.Event
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 import com.google.firebase.auth.FirebaseAuth
-import org.hamcrest.CoreMatchers
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.mock
-import java.time.LocalDateTime
-import kotlin.concurrent.thread
 import org.mockito.Mockito.`when` as When
 
 @RunWith(AndroidJUnit4::class)
 class ZoneManagementListTest {
     var mainActivity = ActivityScenarioRule(MainActivity::class.java)
-    lateinit var scenario : ActivityScenario<MainActivity>
+    lateinit var scenario: ActivityScenario<MainActivity>
 
 
     lateinit var testUser: UserEntity
@@ -40,12 +36,14 @@ class ZoneManagementListTest {
     val uid = "testUid"
     val username = "JohnDoe"
     val email = "John@Doe.com"
+    lateinit var mockedDatabase: DatabaseInterface
 
     @Before
     fun setup() {
-        val mockedDatabase = mock(DatabaseInterface::class.java)
-        val mockedUserProfile = UserProfile("TestID","TestName")
+        mockedDatabase = mock(DatabaseInterface::class.java)
+        val mockedUserProfile = UserProfile("TestID", "TestName")
         When(mockedDatabase.currentProfile).thenReturn(mockedUserProfile)
+
         Database.currentDatabase = mockedDatabase
 
         FirebaseAuth.getInstance().signOut()
