@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".admin.ZoneManagementListActivity">
+    tools:context=".admin.ZoneManagementListActivity"
+    android:id="@+id/zone_management_list_activity">
 
     <Button
         android:id="@+id/btnNewZone"

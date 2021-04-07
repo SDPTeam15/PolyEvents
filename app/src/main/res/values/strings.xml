@@ -86,4 +86,11 @@
     <string name="btn_update_zone_button_text">Update zone</string>
     <string name="zone_mangement_list_title">Zone Mangement List</string>
     <string name="btn_new_zone">+</string>
+    <string name="tv_create_zone_text">Create a new zone</string>
+    <string name="tv_update_zone_text">Update an existing zone</string>
+    <string name="missing_field_zone_management">Please fill all the required fields</string>
+    <string name="zone_added_successfully">Your new zone was successfully added</string>
+    <string name="zone_add_fail">Error while creating your new zone, please try again !</string>
+    <string name="zone_management_name_text">Name</string>
+    <string name="zone_management_description_text">Description</string>
 </resources>
