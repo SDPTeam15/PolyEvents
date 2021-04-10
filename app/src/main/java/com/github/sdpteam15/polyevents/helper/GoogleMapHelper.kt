@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 import com.github.sdpteam15.polyevents.R
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.*
+import java.util.function.Consumer
 import kotlin.math.pow
 
 enum class PolygonAction {
@@ -25,6 +26,8 @@ object GoogleMapHelper {
     //var map: GoogleMap? = null
     var map: MapsInterface? = null
     var uid = 1
+
+    var editMode = false
 
     //Attributes that can change
     var minZoom = 17f
@@ -56,6 +59,9 @@ object GoogleMapHelper {
     var moveDiagPos: LatLng? = null
     var rotationPos: LatLng? = null
     var movePos: LatLng? = null
+
+    var tempTitle:String? = null
+    val tempValues: MutableMap<String, Pair<String, LatLng>> = mutableMapOf()
 
     //----------START FUNCTIONS----------------------------------------
 
@@ -195,8 +201,15 @@ object GoogleMapHelper {
 
     fun saveNewArea() {
         if (tempPoly != null) {
-            addArea(uid.toString(), tempPoly!!.points, "Area $uid")
-            uid += 1
+            var name = ""
+            if(tempTitle != null){
+                name = tempTitle!!
+            }else{
+                name = "Area $uid"
+                uid += 1
+            }
+            addArea(uid.toString(), tempPoly!!.points, name)
+
         }
         clearTemp()
     }
@@ -225,6 +238,9 @@ object GoogleMapHelper {
         moveDiagPos = null
         movePos = null
         rotationPos = null
+
+        tempValues.clear()
+        tempTitle = null
     }
 
 
@@ -411,5 +427,57 @@ object GoogleMapHelper {
             PolygonAction.ROTATE.toString() -> Log.d("ROTATION", "ROTATION BUTTON CLICKED")
         }
         tempPoly?.points = tempLatLng
+    }
+
+    fun editMode() {
+        editMode = !editMode
+        Log.d("EDITMODE", "Edit mode = $editMode")
+        if(editMode){
+            for(a in areasPoints){
+                tempValues[a.key] = Pair(a.value.first.title, a.value.first.position)
+                a.value.first.remove()
+            }
+        }else{
+            restoreMarkers()
+        }
+    }
+
+    fun restoreMarkers(){
+        for(value in tempValues){
+            areasPoints[value.key] = Pair(map!!.addMarker(newMarker(value.value.second, 0f,0f,null, value.value.first,false, R.drawable.ic_location, 0, 0, 0, 0, 1, 1)), areasPoints.get(value.key)!!.second)
+        }
+    }
+
+    fun editArea(tag:String){
+        val area = areasPoints.get(tag) ?: return
+        editMode = false
+        tempTitle = tempValues.get(tag)!!.first
+        tempValues.remove(tag)
+        restoreMarkers()
+
+        tempPoly = area.second
+        tempLatLng = area.second.points.dropLast(1).toMutableList()
+
+        var pos2 = tempLatLng[1]!!
+        var pos3 = tempLatLng[2]!!
+        var pos4 = tempLatLng[3]!!
+
+        val temp1 = (pos4.latitude + pos3.latitude) / 2
+        val temp2 = (pos2.longitude + pos3.longitude) / 2
+        val posMidRight = LatLng(temp1, pos4.longitude)
+        val posMidDown = LatLng(pos2.latitude, temp2)
+        val posCenter = LatLng(temp1, temp2)
+
+        moveDiagMarker = map!!.addMarker(newMarker(pos3, 0.5f, 0.5f, PolygonAction.DIAG.toString(), null, true, R.drawable.ic_downleftarrow, 0, 0, 100, 100, 100, 100))
+        moveDiagPos = moveDiagMarker!!.position
+
+        moveRightMarker = map!!.addMarker(newMarker(posMidRight, 0.5f, 0.5f, PolygonAction.RIGHT.toString(), null, true, R.drawable.ic_rightarrow, 0, 0, 100, 100, 100, 100))
+        moveRightPos = moveRightMarker!!.position
+
+        moveDownMarker = map!!.addMarker(newMarker(posMidDown, 0.5f, 0.5f, PolygonAction.DOWN.toString(), null, true, R.drawable.ic_downarrow, 0, 0, 100, 100, 100, 100))
+        moveDownPos = moveDownMarker!!.position
+
+        moveMarker = map!!.addMarker(newMarker(posCenter, 0.5f, 0.5f, PolygonAction.MOVE.toString(), null, true, R.drawable.ic_move, 0, 0, 100, 100, 100, 100))
+        movePos = moveMarker!!.position
     }
 }

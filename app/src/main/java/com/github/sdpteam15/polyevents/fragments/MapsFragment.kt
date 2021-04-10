@@ -44,8 +44,10 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         val view = inflater.inflate(R.layout.fragment_maps, container, false)
         val addNewAreaButton:View = view.findViewById(R.id.addNewArea)
         val saveNewAreaButton:View = view.findViewById(R.id.acceptNewArea)
-        addNewAreaButton.setOnClickListener(View.OnClickListener { view -> GoogleMapHelper.createNewArea() })
-        saveNewAreaButton.setOnClickListener(View.OnClickListener { view -> GoogleMapHelper.saveNewArea() })
+        val editArea:View = view.findViewById(R.id.id_edit_area)
+        addNewAreaButton.setOnClickListener { GoogleMapHelper.createNewArea() }
+        saveNewAreaButton.setOnClickListener { GoogleMapHelper.saveNewArea() }
+        editArea.setOnClickListener { GoogleMapHelper.editMode()}
 
         locationButton = view.findViewById(R.id.id_location_button)
         locationButton.setOnClickListener {
@@ -101,11 +103,19 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     }
 
     override fun onPolygonClick(polygon: Polygon) {
-        //Shows the info window of the marker assigned to the area
-        GoogleMapHelper.areasPoints.get(polygon.tag)!!.first.showInfoWindow()
+        if(GoogleMapHelper.editMode){
+            GoogleMapHelper.editArea(polygon.tag.toString())
+        }else{
+            //Shows the info window of the marker assigned to the area
+            GoogleMapHelper.areasPoints.get(polygon.tag)!!.first.showInfoWindow()
+        }
+
     }
 
     override fun onMarkerClick(marker: Marker): Boolean {
+        if(!GoogleMapHelper.editMode){
+            marker.showInfoWindow()
+        }
         marker.showInfoWindow()
 
         //Return true to say that we don't want the event to go further (to the usual event when a marker is clicked)
