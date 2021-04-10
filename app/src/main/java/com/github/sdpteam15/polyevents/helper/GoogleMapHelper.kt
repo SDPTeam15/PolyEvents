@@ -8,7 +8,6 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import com.github.sdpteam15.polyevents.R
 import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
 import kotlin.math.pow
 
@@ -22,7 +21,9 @@ enum class PolygonAction {
 
 object GoogleMapHelper {
     var context: Context? = null
-    var map: GoogleMap? = null
+
+    //var map: GoogleMap? = null
+    var map: MapsInterface? = null
     var uid = 1
 
     //Attributes that can change
@@ -43,18 +44,18 @@ object GoogleMapHelper {
      * Positions are to remember where the marker was before being moved
      * List of LatLng is to update de area after performing a modification
      * */
-    private var tempPoly: Polygon? = null
-    private var tempLatLng: MutableList<LatLng?> = ArrayList()
-    private var moveRightMarker: Marker? = null
-    private var moveDownMarker: Marker? = null
-    private var moveDiagMarker: Marker? = null
-    private var moveMarker: Marker? = null
-    private var rotationMarker: Marker? = null
-    private var moveRightPos: LatLng? = null
-    private var moveDownPos: LatLng? = null
-    private var moveDiagPos: LatLng? = null
-    private var rotationPos: LatLng? = null
-    private var movePos: LatLng? = null
+    var tempPoly: Polygon? = null
+    var tempLatLng: MutableList<LatLng?> = ArrayList()
+    var moveRightMarker: Marker? = null
+    var moveDownMarker: Marker? = null
+    var moveDiagMarker: Marker? = null
+    var moveMarker: Marker? = null
+    var rotationMarker: Marker? = null
+    var moveRightPos: LatLng? = null
+    var moveDownPos: LatLng? = null
+    var moveDiagPos: LatLng? = null
+    var rotationPos: LatLng? = null
+    var movePos: LatLng? = null
 
     //----------START FUNCTIONS----------------------------------------
 
@@ -63,8 +64,8 @@ object GoogleMapHelper {
      */
     fun saveCamera() {
         //Saves the last position of the camera
-        cameraPosition = map!!.cameraPosition.target
-        cameraZoom = map!!.cameraPosition.zoom
+        cameraPosition = map!!.cameraPosition!!.target
+        cameraZoom = map!!.cameraPosition!!.zoom
     }
 
     /**
@@ -86,9 +87,8 @@ object GoogleMapHelper {
      * Restores the camera to the location it was before changing fragment or activity, goes to a initial position if it is the first time the map is opened
      */
     fun restoreCameraState() {
-        map!!.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraPosition,cameraZoom))
+        map!!.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraPosition, cameraZoom))
     }
-
 
 
     /**
@@ -100,6 +100,8 @@ object GoogleMapHelper {
             areasPoints.clear()
             //Draw all areas and points
             for ((k, v) in temp) {
+                println("second : ${v.second}")
+                println("first : ${v.first}")
                 addArea(k, v.second.points, v.first.title)
             }
 
@@ -147,7 +149,8 @@ object GoogleMapHelper {
             poly.addAll(coords).clickable(true)
 
             val polygon = map!!.addPolygon(poly)
-            polygon.tag = id
+
+            polygon?.tag = id
 
             var list = coords
             var lat = 0.0
@@ -161,29 +164,10 @@ object GoogleMapHelper {
             }
 
             val center = LatLng(lat / list.size, lng / list.size)
+            val marker = map!!.addMarker(newMarker(center, 0f,0f,null, name,false, R.drawable.ic_location, 0, 0, 0, 0, 1, 1))
 
-            val marker: Marker = map!!.addMarker(
-                MarkerOptions()
-                    .position(center)
-                    .title(name)
-                    .icon(getMarkerIcon())
-            )
             areasPoints[id] = Pair(marker, polygon)
         }
-    }
-
-    /**
-     * Generates the icon for the invisible icons
-     * ref : https://stackoverflow.com/questions/35718103/how-to-specify-the-size-of-the-icon-on-the-marker-in-google-maps-v2-android
-     * TODO : Check if we should make it a singleton to save memory/performance
-     */
-    fun getMarkerIcon(): BitmapDescriptor {
-        val vectorDrawable: Drawable? = ContextCompat.getDrawable(context!!, R.drawable.ic_location)
-        vectorDrawable?.setBounds(0, 0, 0, 0)
-        val bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-        vectorDrawable?.draw(canvas)
-        return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 
     /**
@@ -204,13 +188,13 @@ object GoogleMapHelper {
         map!!.setLatLngBoundsForCameraTarget(bounds)
     }
 
-    fun createNewArea(){
+    fun createNewArea() {
         clearTemp()
-        setupEditZone(map!!.cameraPosition.target)
+        setupEditZone(map!!.cameraPosition!!.target)
     }
 
-    fun saveNewArea(){
-        if(tempPoly != null){
+    fun saveNewArea() {
+        if (tempPoly != null) {
             addArea(uid.toString(), tempPoly!!.points, "Area $uid")
             uid += 1
         }
@@ -228,6 +212,12 @@ object GoogleMapHelper {
         moveDiagMarker?.remove()
         moveMarker?.remove()
         rotationMarker?.remove()
+        tempPoly = null
+        moveRightMarker = null
+        moveDownMarker = null
+        moveDiagMarker = null
+        moveMarker = null
+        rotationMarker = null
 
         tempPoly = null
         moveRightPos = null
@@ -237,11 +227,13 @@ object GoogleMapHelper {
         rotationPos = null
     }
 
+
+
     /**
      * Add a new area at the coordinates and add the markers to edit the area
      * */
     fun setupEditZone(pos: LatLng) {
-        val zoom = map!!.cameraPosition.zoom
+        val zoom = map!!.cameraPosition!!.zoom
         val divisor = 2.0.pow(zoom.toDouble())
         val longDiff = 188.0 / divisor / 2
         val latDiff = longDiff / 2
@@ -260,36 +252,29 @@ object GoogleMapHelper {
         val posMidDown = LatLng(pos2.latitude, temp2)
         val posCenter = LatLng(temp1, temp2)
 
-        moveDiagMarker = map!!.addMarker(
-            MarkerOptions().position(pos3).icon(getMarkerRessource(R.drawable.ic_downleftarrow))
-                .anchor(0.5f, 0.5f).draggable(true).snippet(
-                PolygonAction.DIAG.toString()
-            )
-        )
+        moveDiagMarker = map!!.addMarker(newMarker(pos3, 0.5f, 0.5f, PolygonAction.DIAG.toString(), null, true, R.drawable.ic_downleftarrow, 0, 0, 100, 100, 100, 100))
         moveDiagPos = moveDiagMarker!!.position
-        moveRightMarker = map!!.addMarker(
-            MarkerOptions().position(posMidRight).icon(
-                getMarkerRessource(
-                    R.drawable.ic_rightarrow
-                )
-            ).anchor(0.5f, 0.5f).draggable(true).snippet(PolygonAction.RIGHT.toString())
-        )
+
+        moveRightMarker = map!!.addMarker(newMarker(posMidRight, 0.5f, 0.5f, PolygonAction.RIGHT.toString(), null, true, R.drawable.ic_rightarrow, 0, 0, 100, 100, 100, 100))
         moveRightPos = moveRightMarker!!.position
-        moveDownMarker = map!!.addMarker(
-            MarkerOptions().position(posMidDown).icon(
-                getMarkerRessource(
-                    R.drawable.ic_downarrow
-                )
-            ).anchor(0.5f, 0.5f).draggable(true).snippet(PolygonAction.DOWN.toString())
-        )
+
+        moveDownMarker = map!!.addMarker(newMarker(posMidDown, 0.5f, 0.5f, PolygonAction.DOWN.toString(), null, true, R.drawable.ic_downarrow, 0, 0, 100, 100, 100, 100))
         moveDownPos = moveDownMarker!!.position
-        moveMarker = map!!.addMarker(
-            MarkerOptions().position(posCenter).icon(getMarkerRessource(R.drawable.ic_move))
-                .anchor(0.5f, 0.5f).draggable(true).snippet(
-                PolygonAction.MOVE.toString()
-            )
-        )
+
+        moveMarker = map!!.addMarker(newMarker(posCenter, 0.5f, 0.5f, PolygonAction.MOVE.toString(), null, true, R.drawable.ic_move, 0, 0, 100, 100, 100, 100))
         movePos = moveMarker!!.position
+    }
+
+    /**
+     * Sets the values for the markers
+     */
+    fun newMarker(pos: LatLng, hAnchor: Float, vAnchor: Float, snippet: String?, title:String?, draggable: Boolean, idDrawable: Int, leftBound: Int, topBound: Int, rightBound: Int, bottomBound: Int, width: Int, height: Int): MarkerOptions {
+        var mo = MarkerOptions().position(pos).anchor(hAnchor, vAnchor).draggable(draggable).snippet(snippet).title(title)
+        if (context != null) {
+            mo = mo.icon(getMarkerRessource(idDrawable, leftBound, topBound, rightBound, bottomBound, width, height))
+        }
+
+        return mo
     }
 
     /**
@@ -297,10 +282,10 @@ object GoogleMapHelper {
      * ref : https://stackoverflow.com/questions/35718103/how-to-specify-the-size-of-the-icon-on-the-marker-in-google-maps-v2-android
      * TODO : Check if we should make it a singleton to save memory/performance
      */
-    private fun getMarkerRessource(id: Int): BitmapDescriptor {
+    private fun getMarkerRessource(id: Int, leftBound: Int, topBound: Int, rightBound: Int, bottomBound: Int, width: Int, height: Int): BitmapDescriptor {
         val vectorDrawable: Drawable? = ContextCompat.getDrawable(context!!, id)
-        vectorDrawable?.setBounds(0, 0, 100, 100)
-        val bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888)
+        vectorDrawable?.setBounds(leftBound, topBound, rightBound, bottomBound)
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         vectorDrawable?.draw(canvas)
         return BitmapDescriptorFactory.fromBitmap(bitmap)
@@ -312,10 +297,11 @@ object GoogleMapHelper {
     fun translatePolygon(pos: Marker) {
         val diffLat = pos.position.latitude - movePos!!.latitude
         val diffLng = pos.position.longitude - movePos!!.longitude
+
         tempLatLng = tempLatLng.map { latLng ->
             LatLng(
-                latLng!!.latitude + diffLat,
-                latLng.longitude + diffLng
+                    latLng!!.latitude + diffLat,
+                    latLng.longitude + diffLng
             )
         }.toMutableList()
 
@@ -324,15 +310,15 @@ object GoogleMapHelper {
         movePos = moveMarker!!.position
 
         moveDiagMarker!!.position =
-            LatLng(moveDiagPos!!.latitude + diffLat, moveDiagPos!!.longitude + diffLng)
+                LatLng(moveDiagPos!!.latitude + diffLat, moveDiagPos!!.longitude + diffLng)
         moveDiagPos = moveDiagMarker!!.position
 
         moveRightMarker!!.position =
-            LatLng(moveRightPos!!.latitude + diffLat, moveRightPos!!.longitude + diffLng)
+                LatLng(moveRightPos!!.latitude + diffLat, moveRightPos!!.longitude + diffLng)
         moveRightPos = moveRightMarker!!.position
 
         moveDownMarker!!.position =
-            LatLng(moveDownPos!!.latitude + diffLat, moveDownPos!!.longitude + diffLng)
+                LatLng(moveDownPos!!.latitude + diffLat, moveDownPos!!.longitude + diffLng)
         moveDownPos = moveDownMarker!!.position
     }
 
@@ -346,8 +332,8 @@ object GoogleMapHelper {
 
         //Vector of the marker
         val vec = LatLng(
-            pos.position.latitude - moveDiagPos!!.latitude,
-            pos.position.longitude - moveDiagPos!!.longitude
+                pos.position.latitude - moveDiagPos!!.latitude,
+                pos.position.longitude - moveDiagPos!!.longitude
         )
 
         //Perpendicular of vector (a,b) is (-b,a)
@@ -392,22 +378,22 @@ object GoogleMapHelper {
 
         //Moves the edition markers
         moveDiagMarker!!.position =
-            LatLng(moveDiagPos!!.latitude + lat1 + lat2, moveDiagPos!!.longitude + lng1 + lng2)
+                LatLng(moveDiagPos!!.latitude + lat1 + lat2, moveDiagPos!!.longitude + lng1 + lng2)
         moveDiagPos = moveDiagMarker!!.position
 
         moveMarker!!.position =
-            LatLng(movePos!!.latitude + (lat1 + lat2) / 2, movePos!!.longitude + (lng1 + lng2) / 2)
+                LatLng(movePos!!.latitude + (lat1 + lat2) / 2, movePos!!.longitude + (lng1 + lng2) / 2)
         movePos = moveMarker!!.position
 
         moveRightMarker!!.position = LatLng(
-            moveRightPos!!.latitude + lat1 / 2 + lat2,
-            moveRightPos!!.longitude + lng2 + lng1 / 2
+                moveRightPos!!.latitude + lat1 / 2 + lat2,
+                moveRightPos!!.longitude + lng2 + lng1 / 2
         )
         moveRightPos = moveRightMarker!!.position
 
         moveDownMarker!!.position = LatLng(
-            moveDownPos!!.latitude + lat1 + lat2 / 2,
-            moveDownPos!!.longitude + lng1 + lng2 / 2
+                moveDownPos!!.latitude + lat1 + lat2 / 2,
+                moveDownPos!!.longitude + lng1 + lng2 / 2
         )
         moveDownPos = moveDownMarker!!.position
 

@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.helper.GoogleMapAdapter
 import com.github.sdpteam15.polyevents.helper.GoogleMapHelper
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.isPermissionGranted
@@ -79,14 +81,14 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
 
     override fun onMapReady(googleMap: GoogleMap?) {
         GoogleMapHelper.context = context
-        GoogleMapHelper.map = googleMap
-
-        GoogleMapHelper.map!!.setOnPolylineClickListener(this)
-        GoogleMapHelper.map!!.setOnPolygonClickListener(this)
-        GoogleMapHelper.map!!.setOnMarkerClickListener(this)
-        GoogleMapHelper.map!!.setOnMarkerDragListener(this)
-        GoogleMapHelper.map!!.setOnInfoWindowClickListener(this)
-        GoogleMapHelper.map!!.setOnMyLocationButtonClickListener(this)
+        GoogleMapHelper.map = GoogleMapAdapter(googleMap)
+        //GoogleMapHelper.map = googleMap
+        googleMap!!.setOnPolylineClickListener(this)
+        googleMap.setOnPolygonClickListener(this)
+        googleMap.setOnMarkerClickListener(this)
+        googleMap.setOnMarkerDragListener(this)
+        googleMap.setOnInfoWindowClickListener(this)
+        googleMap.setOnMyLocationButtonClickListener(this)
         GoogleMapHelper.setUpMap()
 
         if (useUserLocation) {
@@ -181,7 +183,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     @SuppressLint("MissingPermission")
     private fun switchLocationOnOff() {
         val locationIsOn = GoogleMapHelper.map!!.isMyLocationEnabled
-
+        Log.d("POSITION", "Location is active ? $locationIsOn")
         if (locationIsOn) {
             // Disable the location
             GoogleMapHelper.map!!.isMyLocationEnabled = false
@@ -202,8 +204,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
 
         // Magic : https://stackoverflow.com/questions/36785542/how-to-change-the-position-of-my-location-button-in-google-maps-using-android-st
         return (mapFragment!!.requireView()
-            .findViewById<View>(Integer.parseInt("1")).parent as View)
-            .findViewById(Integer.parseInt("2"))
+                .findViewById<View>(Integer.parseInt("1")).parent as View)
+                .findViewById(Integer.parseInt("2"))
     }
 
     /**
