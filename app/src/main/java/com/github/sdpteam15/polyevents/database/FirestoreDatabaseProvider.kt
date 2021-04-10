@@ -1,24 +1,22 @@
 package com.github.sdpteam15.polyevents.database
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_COLLECTION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_POINT
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_COLLECTION
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_DISPLAY_NAME
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_DOCUMENT_ID
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_EMAIL
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_GOOGLE_ID
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_UID
 import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.event.Event
-import com.github.sdpteam15.polyevents.user.Profile
-import com.github.sdpteam15.polyevents.user.ProfileInterface
-import com.github.sdpteam15.polyevents.user.UserInterface
+import com.github.sdpteam15.polyevents.model.Event
+import com.github.sdpteam15.polyevents.model.Item
+import com.github.sdpteam15.polyevents.model.UserEntity
+import com.github.sdpteam15.polyevents.model.UserProfile
+import com.github.sdpteam15.polyevents.util.FirebaseUserAdapter
+import com.github.sdpteam15.polyevents.util.UserAdapter
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -26,43 +24,40 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     var firestore: FirebaseFirestore? = null
         get() = field ?: Firebase.firestore
 
-
-
     /**
      * Map used in the firstConnection method. It's public to be able to use it in tests
      */
-    val firstConnectionMap = HashMap<String, String>()
+    var firstConnectionUser: UserEntity = UserEntity(uid = "DEFAULT")
 
-    override val currentUser: DatabaseUserInterface?
+    override val currentUser: UserEntity?
         get() =
             if (FirebaseAuth.getInstance().currentUser != null) {
-                FirebaseUserAdapter(FirebaseAuth.getInstance().currentUser!!)
+                FirebaseUserAdapter.toUser(FirebaseAuth.getInstance().currentUser!!)
             } else {
                 null
             }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun getListProfile(uid: String, user: UserInterface): List<ProfileInterface> {
-        return FakeDatabase.getListProfile(uid,user)
+    override val currentProfile: UserProfile?
+        get() = null // TODO("Not yet implemented")
+
+    override fun getProfilesList(uid: String, user: UserEntity?): List<UserProfile> {
+        return ArrayList()/*TODO*/
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun addProfile(profile: ProfileInterface, uid: String, user: UserInterface): Boolean {
-        return FakeDatabase.addProfile(profile,uid,user)
+    override fun addProfile(profile: UserProfile, uid: String, user: UserEntity?): Boolean {
+        return true/*TODO*/
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun removeProfile(
-        profile: ProfileInterface,
-        uid: String,
-        user: UserInterface
+        profile: UserProfile,
+        uid: String?,
+        user: UserEntity?
     ): Boolean {
         return FakeDatabase.removeProfile(profile,uid,user)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun updateProfile(profile: ProfileInterface, user: UserInterface): Boolean {
-        return FakeDatabase.updateProfile(profile,user)
+    override fun updateProfile(profile: UserProfile, user: UserEntity?): Boolean {
+        return true/*TODO*/
     }
 
     override fun updateProfile(
@@ -79,24 +74,21 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     override fun getListEvent(
         matcher: String?,
         number: Int?,
-        profile: ProfileInterface
+        profile: UserProfile?
     ): List<Event> {
         return FakeDatabase.getListEvent(matcher,number,profile)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun getUpcomingEvents(number: Int, profile: ProfileInterface): List<Event> {
-        return FakeDatabase.getUpcomingEvents(number, profile)
+    override fun getUpcomingEvents(number: Int, profile: UserProfile?): List<Event> {
+        return ArrayList<Event>()/*TODO*/
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun getEventFromId(id: String, profile: ProfileInterface): Event? {
-       return FakeDatabase.getEventFromId(id,profile)
+    override fun getEventFromId(id: String, profile: UserProfile?): Event? {
+        return null/*TODO*/
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun updateEvent(event: Event, profile: ProfileInterface): Boolean {
-        return FakeDatabase.updateEvent(event,profile)
+    override fun updateEvent(Event: Event, profile: UserProfile?): Boolean {
+        return true/*TODO*/
     }
     //Up to here delete
 
@@ -172,36 +164,33 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     override fun updateUserInformation(
         newValues: Map<String, String>,
         uid: String,
-        userAccess: UserInterface
+        userAccess: UserEntity?
     ): Observable<Boolean> = thenDoSet(
         firestore!!.collection(USER_COLLECTION)
             .document(uid)
             .update(newValues as Map<String, Any>)
     )
 
-
     override fun firstConnexion(
-        user: UserInterface,
-        userAccess: UserInterface
+        user: UserEntity,
+        userAccess: UserEntity?
     ): Observable<Boolean> {
-        firstConnectionMap[USER_GOOGLE_ID] = user.uid
-        firstConnectionMap[USER_DISPLAY_NAME] = user.name
-        firstConnectionMap[USER_EMAIL] = user.email
+        firstConnectionUser = user
 
         return thenDoSet(
             firestore!!.collection(USER_COLLECTION)
                 .document(user.uid)
-                .set(firstConnectionMap)
+                .set(firstConnectionUser)
         )
     }
 
     override fun inDatabase(
         isInDb: Observable<Boolean>,
         uid: String,
-        userAccess: UserInterface
+        userAccess: UserEntity?
     ): Observable<Boolean> = thenDoGet(
         firestore!!.collection(USER_COLLECTION)
-            .whereEqualTo(USER_DOCUMENT_ID, uid)
+            .whereEqualTo(USER_UID, uid)
             .limit(1)
             .get()
     ) { doc: QuerySnapshot ->
@@ -213,16 +202,15 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     }
 
     override fun getUserInformation(
-        user: Observable<UserInterface>,
-        uid: String,
-        userAccess: UserInterface
+        user: Observable<UserEntity>,
+        uid: String?,
+        userAccess: UserEntity?
     ): Observable<Boolean> = thenDoMultGet(
         firestore!!.collection(USER_COLLECTION)
-            .document(uid)
+            .document(uid!!)
             .get()
     ) {
-        //TODO once the data class User is created, set the user with the correct value
-        user.postValue(userAccess)
+        user.postValue(it.data?.let { it1 -> UserAdapter.toUserEntity(it1) })
     }
 
     override fun getProfileById(
@@ -238,27 +226,51 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         return ended
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun getItemsList(): MutableList<String> {
+    override fun getItemsList(): MutableList<Item> {
         //TODO adapt to firebase
         return FakeDatabase.getItemsList()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun addItem(item: String): Boolean {
+    override fun addItem(item: Item): Boolean {
         //TODO adapt to firebase
         return FakeDatabase.addItem(item)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun removeItem(item: String): Boolean {
+    override fun removeItem(item: Item): Boolean {
         //TODO adapt to firebase
         return FakeDatabase.removeItem(item)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun getAvailableItems(): Map<String, Int> {
         //TODO adapt to firebase
         return FakeDatabase.getAvailableItems()
+    }
+
+    override fun setUserLocation(
+        location: LatLng,
+        userAccess: UserEntity?
+    ): Observable<Boolean> {
+        return thenDoSet(
+            firestore!!.collection(LOCATIONS_COLLECTION)
+                .document(userAccess!!.uid)
+                .set(
+                    hashMapOf(LOCATIONS_POINT to GeoPoint(location.latitude, location.longitude)),
+                    SetOptions.merge()
+                )
+        )
+    }
+
+    override fun getUsersLocations(
+        usersLocations: Observable<List<LatLng>>,
+        userAccess: UserEntity?
+    ): Observable<Boolean> = thenDoGet(
+        firestore!!.collection(LOCATIONS_COLLECTION)
+            .get()
+    ) { querySnapshot ->
+        val locations = querySnapshot.documents.map {
+            val geoPoint = it.data!![LOCATIONS_POINT] as GeoPoint
+            LatLng(geoPoint.latitude, geoPoint.longitude)
+        }
+        usersLocations.postValue(locations)
     }
 }

@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.util
 
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_DESCRIPTION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_DOCUMENT_ID
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_END_TIME
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_INVENTORY
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_NAME
@@ -8,10 +9,10 @@ import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_ORGANIZER
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_START_TIME
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_TAGS
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_ZONE_NAME
+import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.Event
 import com.github.sdpteam15.polyevents.model.Item
 import com.google.firebase.Timestamp
-import com.google.firebase.firestore.DocumentSnapshot
 
 // TODO: Save icon bitmap in Google cloud storage
 /**
@@ -31,13 +32,15 @@ object EventAdapter {
          */
         fun toEventDocument(event: Event): HashMap<String, Any?> =
                 hashMapOf(
+                        EVENT_DOCUMENT_ID to event.eventId,
                         EVENT_NAME to event.eventName,
                         EVENT_ORGANIZER to event.organizer,
                         EVENT_ZONE_NAME to event.zoneName,
                         EVENT_DESCRIPTION to event.description,
+                        // LocalDateTime instances can be directly stored to Firestore without need of conversion
                         EVENT_START_TIME to event.startTime,
                         EVENT_END_TIME to event.endTime,
-                        EVENT_INVENTORY to event.inventory.mapKeys { it.key.toString() },
+                        EVENT_INVENTORY to event.inventory,
                         EVENT_TAGS to event.tags.toList()
                 )
 
@@ -51,14 +54,20 @@ object EventAdapter {
          */
         fun toEventEntity(documentData: MutableMap<String, Any?>): Event =
                 Event(
+                        eventId = documentData[EVENT_DOCUMENT_ID] as String,
                         eventName = documentData[EVENT_NAME] as String?,
                         organizer = documentData[EVENT_ORGANIZER] as String?,
                         zoneName = documentData[EVENT_ZONE_NAME] as String?,
                         description = documentData[EVENT_DESCRIPTION] as String?,
-                        startTime = (documentData[EVENT_START_TIME] as Timestamp?)?.toDate(),
-                        endTime = (documentData[EVENT_END_TIME] as Timestamp?)?.toDate(),
-                        inventory = (documentData[EVENT_INVENTORY] as MutableMap<String, Int>)
-                                .mapKeys { Item.valueOf(it.key) }.toMutableMap(),
+                        startTime = HelperFunctions.DateToLocalDateTime(
+                                (documentData[EVENT_START_TIME] as Timestamp?)?.toDate()
+                        ),
+                        endTime = HelperFunctions.DateToLocalDateTime(
+                                // TODO: test if start time is null (remove ? from Timestamp)
+                                (documentData[EVENT_END_TIME] as Timestamp?)?.toDate()
+                        ),
+                        // TODO: Check how item is stored in Firestore, and check if conversion worked
+                        inventory = (documentData[EVENT_INVENTORY] as List<Item>).toMutableList(),
                         tags = (documentData[EVENT_TAGS] as List<String>).toMutableSet()
                 )
 }
