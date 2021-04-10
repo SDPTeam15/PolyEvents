@@ -11,8 +11,8 @@ import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseConstant
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
-import com.github.sdpteam15.polyevents.user.ProfileInterface
-import com.github.sdpteam15.polyevents.user.Rank
+import com.github.sdpteam15.polyevents.model.UserProfile
+import com.github.sdpteam15.polyevents.model.UserRole
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
@@ -21,7 +21,7 @@ const val EDIT_PROFILE_ID = "com.github.sdpteam15.polyevents.user.EDIT_PROFILE_I
 
 class EditProfileActivity : AppCompatActivity() {
     companion object {
-        val updater = Observable<ProfileInterface>()
+        val updater = Observable<UserProfile>()
         val map = HashMap<String, String>()
     }
 
@@ -32,11 +32,11 @@ class EditProfileActivity : AppCompatActivity() {
     private val name: TextInputEditText get() = findViewById(R.id.EditProfileActivity_Name)
     private val save: Button get() = findViewById(R.id.EditProfileActivity_Save)
     private val cancel: Button get() = findViewById(R.id.EditProfileActivity_Cancel)
-    private val callerRank: Rank get() = Rank.valueOf(intent.getStringExtra(CALLER_RANK)!!)
+    private val callerRank: UserRole get() = UserRole.valueOf(intent.getStringExtra(CALLER_RANK)!!)
     private val pid: String get() = intent.getStringExtra(EDIT_PROFILE_ID)!!
-    private lateinit var profile: ProfileInterface
+    private lateinit var profile: UserProfile
 
-    private var lastRank: Rank = Rank.Visitor
+    private var lastRank: UserRole = UserRole.PARTICIPANT
     private var lastName: String = "default"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,7 +53,7 @@ class EditProfileActivity : AppCompatActivity() {
 
         rank.setAdapter(adapter)
 
-        if (callerRank != Rank.Admin) {
+        if (callerRank != UserRole.ADMIN) {
             idLayout.visibility = View.GONE
             rankLayout.visibility = View.GONE
         }
@@ -67,11 +67,11 @@ class EditProfileActivity : AppCompatActivity() {
 
         updater.observe(this) {
             profile = it!!
-            id.setText(it.id)
-            lastRank = it.rank
-            rank.setText(it.rank.toString())
-            lastName = it.name
-            name.setText(it.name)
+            id.setText(it.userUid)
+            lastRank = it.userRole
+            rank.setText(it.userRole.toString())
+            lastName = it.profileName ?: ""
+            name.setText(it.profileName ?: "")
         }
         currentDatabase.getProfileById(updater, pid)
 
@@ -81,11 +81,11 @@ class EditProfileActivity : AppCompatActivity() {
 
         save.setOnClickListener {
             val newName = name.text.toString()
-            val newRank = Rank.valueOf(rank.text.toString())
+            val newRank = UserRole.valueOf(rank.text.toString())
 
-            if(profile.rank != newRank)
+            if(profile.userRole != newRank)
                 map[DatabaseConstant.PROFILE_RANK] = newRank.toString()
-            if(profile.name != newName)
+            if(profile.profileName != newName)
                 map[DatabaseConstant.PROFILE_NAME] = newName
 
             currentDatabase.updateProfile(map, pid).observe {
@@ -102,7 +102,7 @@ class EditProfileActivity : AppCompatActivity() {
             rank.setText("")
         } else {
             try {
-                lastRank = Rank.valueOf(rank.text.toString())
+                lastRank = UserRole.valueOf(rank.text.toString())
             } catch (e: Exception) {
                 rank.setText(lastRank.toString())
             }

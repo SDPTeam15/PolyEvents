@@ -333,7 +333,7 @@ interface DatabaseInterface {
     fun updateProfile(
         newValues: Map<String, String>,
         pid: String,
-        userAccess: UserInterface = User.currentUser as UserInterface
+        userAccess: UserEntity? = currentUser
     ): Observable<Boolean>
 
     /**
@@ -381,9 +381,9 @@ interface DatabaseInterface {
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getProfileById(
-        profile: Observable<ProfileInterface>,
+        profile: Observable<UserProfile>,
         pid: String,
-        profileAccess: ProfileInterface = CurrentProfile
+        userAccess: UserEntity? = currentUser
     ): Observable<Boolean>
 
     /**

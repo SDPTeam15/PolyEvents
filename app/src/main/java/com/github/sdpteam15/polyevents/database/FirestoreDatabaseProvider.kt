@@ -63,13 +63,11 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     override fun updateProfile(
         newValues: Map<String, String>,
         pid: String,
-        userAccess: UserInterface
+        userAccess: UserEntity?
     ): Observable<Boolean> {
         //TODO Return the a real profile
         return Observable<Boolean>(true)
     }
-
-    @RequiresApi(Build.VERSION_CODES.O)
 
     override fun getListEvent(
         matcher: String?,
@@ -214,16 +212,12 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     }
 
     override fun getProfileById(
-        profile: Observable<ProfileInterface>,
+        profile: Observable<UserProfile>,
         pid: String,
-        profileAccess: ProfileInterface
+        userAccess: UserEntity?
     ): Observable<Boolean> {
-        val ended = Observable<Boolean>()
-        //TODO Return the a real profile
-        profile.observe { ended.postValue(true) }
-        profile.value = Profile.Default
-
-        return ended
+        //TODO adapt to firebase
+        return FakeDatabase.getProfileById(profile, pid, userAccess)
     }
 
     override fun getItemsList(): MutableList<Item> {

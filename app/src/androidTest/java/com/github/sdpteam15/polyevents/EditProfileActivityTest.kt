@@ -17,10 +17,9 @@ import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.user.ProfileInterface
-import com.github.sdpteam15.polyevents.user.Rank
-import com.github.sdpteam15.polyevents.user.User
-import com.github.sdpteam15.polyevents.user.UserInterface
+import com.github.sdpteam15.polyevents.model.UserEntity
+import com.github.sdpteam15.polyevents.model.UserProfile
+import com.github.sdpteam15.polyevents.model.UserRole
 import org.hamcrest.Matchers.not
 import org.junit.After
 import org.junit.Test
@@ -35,8 +34,8 @@ class EditProfileActivityTest {
     val activity: EditProfileActivity get() = getCurrentActivity()
 
     lateinit var mokedDatabaseInterface: DatabaseInterface
-    lateinit var mokedUserInterface: UserInterface
-    lateinit var mokedProfileInterface: ProfileInterface
+    lateinit var mokedUserEntity: UserEntity
+    lateinit var mokedUserProfile: UserProfile
 
     private val id: ViewInteraction get() = Espresso.onView(withId(R.id.EditProfileActivity_ID))
     private val idLayout: ViewInteraction get() = Espresso.onView(withId(R.id.EditProfileActivity_IDLayout))
@@ -46,44 +45,43 @@ class EditProfileActivityTest {
     private val cancel: ViewInteraction get() = Espresso.onView(withId(R.id.EditProfileActivity_Cancel))
     private val save: ViewInteraction get() = Espresso.onView(withId(R.id.EditProfileActivity_Save))
 
-    fun setup(rank: Rank, pid: String) {
+    fun setup(rank: UserRole, pid: String) {
         val intent =
             Intent(ApplicationProvider.getApplicationContext(), EditProfileActivity::class.java)
         intent.putExtra(CALLER_RANK, rank.toString())
         intent.putExtra(EDIT_PROFILE_ID, pid)
 
         mokedDatabaseInterface = mock(DatabaseInterface::class.java)
-        mokedUserInterface = mock(UserInterface::class.java)
-        mokedProfileInterface = mock(ProfileInterface::class.java)
+        mokedUserEntity = UserEntity(
+            uid = "UID",
+            username = "UName",
+            name = "UName"
+        )
+        mokedUserProfile = UserProfile(
+            userUid = "UID",
+            profileName = "PName",
+            userRole = rank
+        )
 
         Database.currentDatabase = mokedDatabaseInterface
-        User.currentUser = mokedUserInterface
 
-        When(mokedUserInterface.uid).thenReturn("UID")
-        When(mokedUserInterface.name).thenReturn("UName")
-        When(mokedUserInterface.email).thenReturn(null)
-        When(mokedUserInterface.rank).thenReturn(rank)
-        When(mokedUserInterface.currentProfile).thenReturn(mokedProfileInterface)
 
-        When(mokedDatabaseInterface.getListProfile(pid)).thenReturn(listOf(mokedProfileInterface))
+        When(mokedDatabaseInterface.currentUser).thenReturn(mokedUserEntity)
+        When(mokedDatabaseInterface.currentProfile).thenReturn(mokedUserProfile)
+
         When(mokedDatabaseInterface.getProfileById(EditProfileActivity.updater, pid)).thenAnswer {
-            EditProfileActivity.updater.postValue(mokedProfileInterface)
+            EditProfileActivity.updater.postValue(mokedUserProfile)
             Observable(true)
         }
         When(mokedDatabaseInterface.updateProfile(EditProfileActivity.map, pid)).thenAnswer {
             Observable(true)
         }
 
-        When(mokedProfileInterface.id).thenReturn(pid)
-        When(mokedProfileInterface.name).thenReturn("PName")
-        When(mokedProfileInterface.rank).thenReturn(rank)
-
         scenario = ActivityScenario.launch(intent)
     }
 
     @After
     fun end() {
-        User.currentUser = null
         Database.currentDatabase = FirestoreDatabaseProvider
     }
 
@@ -93,12 +91,12 @@ class EditProfileActivityTest {
 
     @Test
     fun adminCanEdit() {
-        setup(Rank.Admin, "PID")
+        setup(UserRole.ADMIN, "PID")
 
-        rank.perform(replaceText(Rank.Admin.toString()))
+        rank.perform(replaceText(UserRole.ADMIN.toString()))
         name.perform(click())
         activity.rankOnFocusChangeListener(false)
-        rank.check(matches(ViewMatchers.withText(Rank.Admin.toString())))
+        rank.check(matches(ViewMatchers.withText(UserRole.ADMIN.toString())))
 
         activity.nameOnFocusChangeListener(true)
         name.perform(replaceText("notnull"))
@@ -112,12 +110,12 @@ class EditProfileActivityTest {
 
     @Test
     fun adminCanUpdate() {
-        setup(Rank.Admin, "PID")
+        setup(UserRole.ADMIN, "PID")
 
-        rank.perform(replaceText(Rank.Admin.toString()))
+        rank.perform(replaceText(UserRole.ADMIN.toString()))
         name.perform(click())
         activity.rankOnFocusChangeListener(false)
-        rank.check(matches(ViewMatchers.withText(Rank.Admin.toString())))
+        rank.check(matches(ViewMatchers.withText(UserRole.ADMIN.toString())))
 
         activity.nameOnFocusChangeListener(true)
         name.perform(replaceText("notnull"))
@@ -131,16 +129,16 @@ class EditProfileActivityTest {
 
     @Test
     fun adminCanNotUpdate() {
-        setup(Rank.Admin, "PID")
+        setup(UserRole.ADMIN, "PID")
 
         When(mokedDatabaseInterface.updateProfile(EditProfileActivity.map, "PID")).thenAnswer {
             Observable(false)
         }
 
-        rank.perform(replaceText(Rank.Admin.toString()))
+        rank.perform(replaceText(UserRole.ADMIN.toString()))
         name.perform(click())
         activity.rankOnFocusChangeListener(false)
-        rank.check(matches(ViewMatchers.withText(Rank.Admin.toString())))
+        rank.check(matches(ViewMatchers.withText(UserRole.ADMIN.toString())))
 
         activity.nameOnFocusChangeListener(true)
         name.perform(replaceText("notnull"))
@@ -156,7 +154,7 @@ class EditProfileActivityTest {
 
     @Test
     fun visitorCanNotEdit() {
-        setup(Rank.Visitor, "TestPID")
+        setup(UserRole.PARTICIPANT, "TestPID")
         idLayout.check(matches(not(isDisplayed())))
         rankLayout.check(matches(not(isDisplayed())))
         playoff()
@@ -164,7 +162,7 @@ class EditProfileActivityTest {
 
     @Test
     fun staffCanNotEdit() {
-        setup(Rank.Staff, "TestPID")
+        setup(UserRole.STAFF, "TestPID")
         idLayout.check(matches(not(isDisplayed())))
         rankLayout.check(matches(not(isDisplayed())))
         playoff()
@@ -172,15 +170,7 @@ class EditProfileActivityTest {
 
     @Test
     fun activityProviderCanNotEdit() {
-        setup(Rank.ActivityProvider, "TestPID")
-        idLayout.check(matches(not(isDisplayed())))
-        rankLayout.check(matches(not(isDisplayed())))
-        playoff()
-    }
-
-    @Test
-    fun registeredVisitorProviderCanNotEdit() {
-        setup(Rank.RegisteredVisitor, "TestPID")
+        setup(UserRole.ORGANIZER, "TestPID")
         idLayout.check(matches(not(isDisplayed())))
         rankLayout.check(matches(not(isDisplayed())))
         playoff()
