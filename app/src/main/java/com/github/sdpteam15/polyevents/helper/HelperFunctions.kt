@@ -28,11 +28,10 @@ object HelperFunctions {
      * @param newFrag: the fragment we want to display (should be in the fragments app from Mainevent otherwise nothing happen)
      * @param activity: the activity in which a fragment is instantiate
      */
-    fun changeFragment(activity: FragmentActivity?, newFrag: Fragment?) {
-
-        if (newFrag != null && MainActivity.fragments.containsValue(newFrag)) {
+    fun changeFragment(activity: FragmentActivity?, newFrag: Fragment?, idFrameLayout:Int=R.id.fl_wrapper) {
+        if(newFrag!=null) {
             activity?.supportFragmentManager?.beginTransaction()?.apply {
-                replace(R.id.fl_wrapper, newFrag)
+                replace(idFrameLayout, newFrag)
                 commit()
             }
         }
