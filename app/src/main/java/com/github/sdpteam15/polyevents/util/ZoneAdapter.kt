@@ -19,7 +19,7 @@ object ZoneAdapter {
      * @param zone the entity we're converting
      * @return a hashmap of the entity fields to their values
      */
-    fun toZoneDocument(zone: Zone) : HashMap<String, Any?> =
+    fun toZoneDocument(zone: Zone): HashMap<String, Any?> =
         hashMapOf(
             ZONE_NAME to zone.zoneName,
             ZONE_LOCATION to zone.location

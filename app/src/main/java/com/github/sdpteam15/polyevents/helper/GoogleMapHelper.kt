@@ -86,9 +86,8 @@ object GoogleMapHelper {
      * Restores the camera to the location it was before changing fragment or activity, goes to a initial position if it is the first time the map is opened
      */
     fun restoreCameraState() {
-        map!!.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraPosition,cameraZoom))
+        map!!.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraPosition, cameraZoom))
     }
-
 
 
     /**
@@ -204,13 +203,13 @@ object GoogleMapHelper {
         map!!.setLatLngBoundsForCameraTarget(bounds)
     }
 
-    fun createNewArea(){
+    fun createNewArea() {
         clearTemp()
         setupEditZone(map!!.cameraPosition.target)
     }
 
-    fun saveNewArea(){
-        if(tempPoly != null){
+    fun saveNewArea() {
+        if (tempPoly != null) {
             addArea(uid.toString(), tempPoly!!.points, "Area $uid")
             uid += 1
         }
@@ -263,8 +262,8 @@ object GoogleMapHelper {
         moveDiagMarker = map!!.addMarker(
             MarkerOptions().position(pos3).icon(getMarkerRessource(R.drawable.ic_downleftarrow))
                 .anchor(0.5f, 0.5f).draggable(true).snippet(
-                PolygonAction.DIAG.toString()
-            )
+                    PolygonAction.DIAG.toString()
+                )
         )
         moveDiagPos = moveDiagMarker!!.position
         moveRightMarker = map!!.addMarker(
@@ -286,8 +285,8 @@ object GoogleMapHelper {
         moveMarker = map!!.addMarker(
             MarkerOptions().position(posCenter).icon(getMarkerRessource(R.drawable.ic_move))
                 .anchor(0.5f, 0.5f).draggable(true).snippet(
-                PolygonAction.MOVE.toString()
-            )
+                    PolygonAction.MOVE.toString()
+                )
         )
         movePos = moveMarker!!.position
     }

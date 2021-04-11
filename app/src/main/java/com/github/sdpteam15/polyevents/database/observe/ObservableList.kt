@@ -344,8 +344,12 @@ class ObservableList<T> : MutableList<T> {
             if (hasPrevious())
                 remove(getObservable(--index), this)
         }
-        override fun set(element: T) {  set(index, element) }
+
+        override fun set(element: T) {
+            set(index, element)
+        }
     }
+
     override fun iterator(): MutableIterator<T> = ObservableListIterator(0)
     override fun listIterator(): MutableListIterator<T> = ObservableListIterator(0)
     override fun listIterator(index: Int): MutableListIterator<T> = ObservableListIterator(index)

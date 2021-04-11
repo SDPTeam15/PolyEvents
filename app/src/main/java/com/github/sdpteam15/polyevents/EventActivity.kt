@@ -27,7 +27,7 @@ class EventActivity : AppCompatActivity() {
         currentDatabase.getEventFromId(intent.getStringExtra(EXTRA_EVENT_ID)!!, obsEvent)
             .observe(this) { b ->
                 if (!b.value) {
-                    HelperFunctions.showToast(getString(R.string.event_info_fail),this)
+                    HelperFunctions.showToast(getString(R.string.event_info_fail), this)
                 }
             }
         obsEvent.observe(this) { updateInfo(it.value) }

@@ -10,7 +10,7 @@ import com.google.firebase.firestore.IgnoreExtraProperties
  *
  */
 @IgnoreExtraProperties
-data class Zone (
+data class Zone(
     val zoneName: String? = null,
     val location: String? = null
 )

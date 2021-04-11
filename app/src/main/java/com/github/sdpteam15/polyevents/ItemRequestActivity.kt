@@ -1,17 +1,14 @@
 package com.github.sdpteam15.polyevents
 
-import android.content.ClipData
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.github.sdpteam15.polyevents.adapter.ItemRequestAdapter
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
-import com.github.sdpteam15.polyevents.adapter.ItemRequestAdapter
-import com.github.sdpteam15.polyevents.item_request.ItemRequestAdapter
 import com.github.sdpteam15.polyevents.model.Item
 
 /**
@@ -21,7 +18,7 @@ class ItemRequestActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     lateinit var mapSelectedItems: MutableMap<Item, Int>
-    private val obsItems = ObservableList<Pair<Item,Int>>()
+    private val obsItems = ObservableList<Pair<Item, Int>>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

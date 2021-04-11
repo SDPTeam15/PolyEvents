@@ -4,10 +4,8 @@ import android.graphics.Bitmap
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.google.firebase.firestore.IgnoreExtraProperties
-import com.google.firebase.firestore.ServerTimestamp
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
 
 /**
  * Entity model for an activity during the event. Renamed Event
@@ -40,7 +38,7 @@ data class Event(
     val inventory: MutableList<Item> = mutableListOf(),
     // NOTE: Set is not a supported collection in Firebase Firestore so will be stored as list in the db.
     val tags: MutableSet<String> = mutableSetOf(),
-    val id : String? = null
+    val id: String? = null
 ) {
     /**
      * Add a new tag for this activity
@@ -65,7 +63,7 @@ data class Event(
      * Add an item to the event's inventory
      * @param item the item to add
      * @return true if the item was successfully added
-      */
+     */
     fun addItem(item: Item): Boolean =
         inventory.add(item)
 

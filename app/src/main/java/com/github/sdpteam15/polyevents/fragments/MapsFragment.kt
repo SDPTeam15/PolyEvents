@@ -40,8 +40,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_maps, container, false)
-        val addNewAreaButton:View = view.findViewById(R.id.addNewArea)
-        val saveNewAreaButton:View = view.findViewById(R.id.acceptNewArea)
+        val addNewAreaButton: View = view.findViewById(R.id.addNewArea)
+        val saveNewAreaButton: View = view.findViewById(R.id.acceptNewArea)
         addNewAreaButton.setOnClickListener(View.OnClickListener { view -> GoogleMapHelper.createNewArea() })
         saveNewAreaButton.setOnClickListener(View.OnClickListener { view -> GoogleMapHelper.saveNewArea() })
 

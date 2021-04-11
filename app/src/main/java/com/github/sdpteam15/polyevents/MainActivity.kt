@@ -56,14 +56,14 @@ class MainActivity : AppCompatActivity() {
             when (it.itemId) {
                 R.id.ic_map -> HelperFunctions.changeFragment(this, fragments[R.id.ic_map])
                 R.id.ic_list -> HelperFunctions.changeFragment(this, fragments[R.id.ic_list])
-                R.id.ic_login -> if (currentDatabase.currentUser==null) {
+                R.id.ic_login -> if (currentDatabase.currentUser == null) {
                     HelperFunctions.changeFragment(this, fragments[R.id.ic_login])
                 } else {
                     HelperFunctions.changeFragment(this, fragments[R.id.id_fragment_profile])
                 }
                 R.id.ic_more -> HelperFunctions.changeFragment(this, fragments[R.id.ic_more])
                 else ->
-                //TODO Add a condition to see if the user is an admin or not and if so, redirect him to the admin hub
+                    //TODO Add a condition to see if the user is an admin or not and if so, redirect him to the admin hub
                     redirectAdmin()
             }
             true
@@ -109,7 +109,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun redirectAdmin() {
-        if(currentUser == null) {
+        if (currentUser == null) {
             HelperFunctions.changeFragment(this, fragments[R.id.ic_home])
         } else {
             HelperFunctions.changeFragment(this, fragments[R.id.id_fragment_admin_hub])

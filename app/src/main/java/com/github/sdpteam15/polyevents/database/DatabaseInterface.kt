@@ -2,10 +2,6 @@ package com.github.sdpteam15.polyevents.database
 
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
-import com.github.sdpteam15.polyevents.user.Profile.Companion.CurrentProfile
-import com.github.sdpteam15.polyevents.user.ProfileInterface
-import com.github.sdpteam15.polyevents.user.User
-import com.github.sdpteam15.polyevents.user.UserInterface
 import com.github.sdpteam15.polyevents.model.Event
 import com.github.sdpteam15.polyevents.model.Item
 import com.github.sdpteam15.polyevents.model.UserEntity
@@ -89,7 +85,7 @@ interface DatabaseInterface {
     fun createItem(
         item: Item,
         count: Int,
-        profile: ProfileInterface = CurrentProfile
+        profile: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**
@@ -99,7 +95,7 @@ interface DatabaseInterface {
      */
     fun removeItem(
         item: Item,
-        profile: ProfileInterface = CurrentProfile
+        profile: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**
@@ -110,7 +106,7 @@ interface DatabaseInterface {
     fun updateItem(
         item: Item,
         count: Int,
-        profile: ProfileInterface = CurrentProfile
+        profile: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**
@@ -121,7 +117,7 @@ interface DatabaseInterface {
      */
     fun getItemsList(
         itemList: ObservableList<Pair<Item, Int>>,
-        profile: ProfileInterface = CurrentProfile
+        profile: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**
@@ -132,7 +128,7 @@ interface DatabaseInterface {
      */
     fun getAvailableItems(
         itemList: ObservableList<Pair<Item, Int>>,
-        profile: ProfileInterface = CurrentProfile
+        profile: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**
@@ -187,7 +183,7 @@ interface DatabaseInterface {
      */
     fun createEvent(
         event: Event,
-        profile: ProfileInterface = CurrentProfile
+        profile: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**
@@ -198,7 +194,7 @@ interface DatabaseInterface {
      */
     fun updateEvents(
         event: Event,
-        profile: ProfileInterface = CurrentProfile
+        profile: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**
@@ -211,7 +207,7 @@ interface DatabaseInterface {
     fun getEventFromId(
         id: String,
         returnEvent: Observable<Event>,
-        profile: ProfileInterface = CurrentProfile
+        profile: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**
@@ -226,7 +222,7 @@ interface DatabaseInterface {
         matcher: Matcher? = null,
         number: Long? = null,
         eventList: ObservableList<Event>,
-        profile: ProfileInterface = CurrentProfile
+        profile: UserProfile? = currentProfile
     ): Observable<Boolean>
 
 

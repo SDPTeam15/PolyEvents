@@ -1,16 +1,8 @@
 package com.github.sdpteam15.polyevents.database
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
-import com.github.sdpteam15.polyevents.model.Event
-import com.github.sdpteam15.polyevents.model.Item
-import com.github.sdpteam15.polyevents.model.ItemType
-import com.github.sdpteam15.polyevents.user.ProfileInterface
-import com.github.sdpteam15.polyevents.user.User
-import com.github.sdpteam15.polyevents.user.UserInterface
 import com.github.sdpteam15.polyevents.model.*
 import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDateTime
@@ -43,46 +35,37 @@ object FakeDatabase : DatabaseInterface {
         events = mutableListOf()
         events.add(
             Event(
-                "Sushi demo",
-                "The fish band",
-                "Kitchen",
-                "Super hungry activity !",
-                null,
-                LocalDateTime.of(2021, 3, 7, 12, 15),
-                LocalDateTime.of(2021, 3, 7, 13, 15),
-                mutableListOf(),
-                mutableSetOf("sushi", "japan", "cooking"),
-                "1"
+                eventId = "event1",
+                eventName = "Sushi demo",
+                description = "Super hungry activity !",
+                startTime = LocalDateTime.of(2021, 3, 7, 12, 15),
+                organizer = "The fish band",
+                zoneName = "Kitchen",
+                tags = mutableSetOf("sushi", "japan", "cooking")
             )
         )
+
         events.add(
             Event(
-                "Aqua Poney",
-                "The Aqua Poney team",
-                "Swimming pool",
-                "Super cool activity !" +
+                eventId = "event2",
+                eventName = "Saxophone demo",
+                description = "Super noisy activity !",
+                startTime = LocalDateTime.of(2021, 3, 7, 17, 15),
+                organizer = "The music band",
+                zoneName = "Concert Hall"
+            )
+        )
+
+        events.add(
+            Event(
+                eventId = "event3",
+                eventName = "Aqua Poney",
+                description = "Super cool activity !" +
                         " With a super long description that essentially describes and explains" +
                         " the content of the activity we are speaking of.",
-                null,
-                LocalDateTime.of(2021, 3, 7, 14, 15),
-                LocalDateTime.of(2021, 3, 7, 17, 45),
-                mutableListOf(),
-                mutableSetOf(),
-                "2"
-            )
-        )
-        events.add(
-            Event(
-                "Saxophone demo",
-                "The music band",
-                "Concert Hall",
-                "Super noisy activity !",
-                null,
-                LocalDateTime.of(2021, 3, 7, 17, 15),
-                LocalDateTime.of(2021, 3, 7, 18, 0),
-                mutableListOf(),
-                mutableSetOf(),
-                "3"
+                startTime = LocalDateTime.of(2021, 3, 7, 14, 15),
+                organizer = "The Aqua Poney team",
+                zoneName = "Swimming pool"
             )
         )
     }
@@ -137,7 +120,7 @@ object FakeDatabase : DatabaseInterface {
         matcher: Matcher?,
         number: Long?,
         eventList: ObservableList<Event>,
-        profile: ProfileInterface
+        profile: UserProfile?
     ): Observable<Boolean> {
         //request sql returns- task<Document>
         Log.d("FakeDataBase", "getting")
@@ -159,13 +142,13 @@ object FakeDatabase : DatabaseInterface {
     override fun createItem(
         item: Item,
         count: Int,
-        profile: ProfileInterface
+        profile: UserProfile?
     ): Observable<Boolean> {
         items[item] = count
         return Observable(true, this)
     }
 
-    override fun removeItem(item: Item, profile: ProfileInterface): Observable<Boolean> {
+    override fun removeItem(item: Item, profile: UserProfile?): Observable<Boolean> {
         val b = items.remove(item) != null
         return Observable(b, this)
     }
@@ -173,7 +156,7 @@ object FakeDatabase : DatabaseInterface {
     override fun updateItem(
         item: Item,
         count: Int,
-        profile: ProfileInterface
+        profile: UserProfile?
     ): Observable<Boolean> {
         items.remove(items.keys.first { i -> i.itemId == item.itemId })
         items[item] = count
@@ -182,7 +165,7 @@ object FakeDatabase : DatabaseInterface {
 
     override fun getItemsList(
         itemList: ObservableList<Pair<Item, Int>>,
-        profile: ProfileInterface
+        profile: UserProfile?
     ): Observable<Boolean> {
         itemList.clear(this)
         for (item in items) {
@@ -266,20 +249,21 @@ object FakeDatabase : DatabaseInterface {
         user.value = CURRENT_USER
         return Observable(true)
     }
-/*
-    override fun getItemsList(): MutableList<Item> {
-        return items
-    }
 
-    override fun addItem(item: Item): Boolean {
-        return items.add(item)
-    }
+    /*
+        override fun getItemsList(): MutableList<Item> {
+            return items
+        }
 
-    override fun removeItem(item: Item): Boolean {
-        return items.remove(item)
-    }
+        override fun addItem(item: Item): Boolean {
+            return items.add(item)
+        }
 
-*/
+        override fun removeItem(item: Item): Boolean {
+            return items.remove(item)
+        }
+
+    */
     override fun setUserLocation(
         location: LatLng,
         userAccess: UserEntity?

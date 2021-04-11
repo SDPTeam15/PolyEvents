@@ -14,7 +14,7 @@ object DatabaseConstant {
     const val USER_DISPLAY_NAME = "displayName"
     const val USER_EMAIL = "email"
     const val USER_AGE = "age"
-    const val USER_TYPE =  "userType"
+    const val USER_TYPE = "userType"
     const val USER_BIRTH_DATE = "birthDate"
     const val USER_PHONE = "telephone"
     const val USER_PROFILES = "profiles"

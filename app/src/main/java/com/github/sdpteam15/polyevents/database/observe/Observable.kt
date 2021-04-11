@@ -3,7 +3,6 @@ package com.github.sdpteam15.polyevents.database.observe
 import androidx.lifecycle.LifecycleOwner
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.observeOnStop
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.run
-import java.util.*
 
 /**
  * Observable live data of type T

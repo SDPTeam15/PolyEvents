@@ -1,7 +1,5 @@
 package com.github.sdpteam15.polyevents.adapter
 
-import android.content.ClipData
-import android.os.Build
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -9,8 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
@@ -42,14 +38,30 @@ class ItemRequestAdapter(
          */
         fun bind(item: Pair<Item, Int>) {
             itemName.text =
-                view.context.getString(R.string.item_name_quantity_text, item.first.itemId, item.second)
+                view.context.getString(
+                    R.string.item_name_quantity_text,
+                    item.first.itemId,
+                    item.second
+                )
 
             // Set initial quantity to 0
             itemQuantity.setText("0")
             itemQuantity.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {/* Do nothing */}
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {/* Do nothing */
+                }
 
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {/* Do nothing*/}
+                override fun onTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    before: Int,
+                    count: Int
+                ) {/* Do nothing*/
+                }
 
                 override fun afterTextChanged(s: Editable?) {
                     if (s.toString().isNotEmpty()) {
@@ -72,8 +84,10 @@ class ItemRequestAdapter(
             // and inform the user
             itemQuantity.setText("0")
 
-            showToast(view.context.getString(R.string.item_quantity_positive_text),
-                view.context)
+            showToast(
+                view.context.getString(R.string.item_quantity_positive_text),
+                view.context
+            )
         }
 
         private fun lowerQuantityToMax(item: Pair<Item, Int>) {
@@ -85,8 +99,12 @@ class ItemRequestAdapter(
             // Update the list with the max quantity available
             onItemQuantityChangeListener(item.first, maxQuantity)
 
-            showToast(view.context.getString(R.string.max_item_quantity_text,
-                item.second.toString(), item.first.itemId), view.context)
+            showToast(
+                view.context.getString(
+                    R.string.max_item_quantity_text,
+                    item.second.toString(), item.first.itemId
+                ), view.context
+            )
         }
     }
 

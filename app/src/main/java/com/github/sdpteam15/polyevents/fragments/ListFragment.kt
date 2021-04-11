@@ -6,15 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.EventActivity
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.database.Database.currentDatabase
-import com.github.sdpteam15.polyevents.model.Event
 import com.github.sdpteam15.polyevents.adapter.EventItemAdapter
+import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.model.Event
 
 /**
  * Extra containing the event ID to show on the launched event page
@@ -50,8 +49,8 @@ class ListFragment : Fragment() {
         }
 
         recyclerView.adapter = EventItemAdapter(events, openEvent)
-        currentDatabase.getListEvent(null,10, events).observe(this) {
-            if (!it.value){
+        currentDatabase.getListEvent(null, 10, events).observe(this) {
+            if (!it.value) {
                 HelperFunctions.showToast("Failed to get events information", fragmentView.context)
             }
         }

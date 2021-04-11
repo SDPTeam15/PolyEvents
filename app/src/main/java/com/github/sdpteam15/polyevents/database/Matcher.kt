@@ -4,5 +4,5 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.Query
 
 interface Matcher {
-    fun match(collection : CollectionReference) : Query
+    fun match(collection: CollectionReference): Query
 }

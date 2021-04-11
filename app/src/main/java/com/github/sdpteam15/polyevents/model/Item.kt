@@ -12,7 +12,7 @@ package com.github.sdpteam15.polyevents.model
  * @property itemId the uid of the item, generally given by the admin
  * @property itemType the type of the item
  */
-data class Item (
+data class Item(
         val itemId: String,
         val itemType: ItemType
 )
