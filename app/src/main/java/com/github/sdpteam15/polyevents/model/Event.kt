@@ -13,6 +13,7 @@ import java.util.*
  * Entity model for an activity during the event. Renamed Event
  * to avoid confusion with the Android Activity class.
  *
+ * @property eventId the uid of the event document in the database.
  * @property eventName the name of the event.
  * @property organizer the username of the organizer of the event
  * @property zoneName the name of the zone where the event is happening
@@ -20,19 +21,22 @@ import java.util.*
  * @property icon a bitmap picture of the icon associated to the event
  * @property inventory the list of items in the event's inventory
  * @property tags additional set of tags to describe the event
+ * @property startTime the time at which the event begins
+ * @property endTime the time at which the event ends
  */
 // TODO: look into storing instances of LocalDateTime, or Long (for startTime and endTime)
 // TODO: Should the eventName be unique? (Important when writing security rules)
 // TODO: keep track of items, or just required items?
 @IgnoreExtraProperties
 data class Event(
+    val eventId: String,
     val eventName: String? = null,
     val organizer: String? = null,
     val zoneName: String? = null,
     var description: String? = null,
     var icon: Bitmap? = null,
-    @ServerTimestamp val startTime: LocalDateTime? = null,
-    @ServerTimestamp val endTime: LocalDateTime? = null,
+    val startTime: LocalDateTime? = null,
+    val endTime: LocalDateTime? = null,
     val inventory: MutableList<Item> = mutableListOf(),
     // NOTE: Set is not a supported collection in Firebase Firestore so will be stored as list in the db.
     val tags: MutableSet<String> = mutableSetOf(),

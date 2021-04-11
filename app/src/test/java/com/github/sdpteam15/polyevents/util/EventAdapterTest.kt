@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.util
 
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_DESCRIPTION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_DOCUMENT_ID
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_END_TIME
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_ICON
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_INVENTORY
@@ -21,6 +22,7 @@ import java.util.*
 import kotlin.collections.HashMap
 
 class EventAdapterTest {
+    val eventId = "xxxEventxxx"
     val eventName = "someEvent"
     val organizer = "Student Association"
     val zoneName = "Zone A"
@@ -41,6 +43,7 @@ class EventAdapterTest {
     @Before
     fun setupEvent() {
         event = Event(
+            eventId = eventId,
             eventName = eventName,
             organizer = organizer,
             zoneName = zoneName,
@@ -60,6 +63,7 @@ class EventAdapterTest {
     fun conversionOfEventToDocumentPreservesData() {
         val document = EventAdapter.toEventDocument(event)
 
+        assertEquals(document[EVENT_DOCUMENT_ID], event.eventId)
         assertEquals(document[EVENT_NAME], event.eventName)
         assertEquals(document[EVENT_ORGANIZER], event.organizer)
         assertEquals(document[EVENT_ZONE_NAME], event.zoneName)
@@ -77,19 +81,25 @@ class EventAdapterTest {
     @Test
     fun conversionOfDocumentToEventPreservesData() {
         val tags = event.tags.toList()
+
+        val testEventWithoutTimes = event.copy(
+                startTime = null
+        )
+
         val eventDocumentData: HashMap<String, Any?> = hashMapOf(
-            EVENT_NAME to event.eventName,
-            EVENT_ORGANIZER to event.organizer,
-            EVENT_ZONE_NAME to event.zoneName,
-            EVENT_DESCRIPTION to event.description,
-            EVENT_START_TIME to event.startTime,
-            EVENT_END_TIME to event.endTime,
+            EVENT_DOCUMENT_ID to testEventWithoutTimes.eventId,
+            EVENT_NAME to testEventWithoutTimes.eventName,
+            EVENT_ORGANIZER to testEventWithoutTimes.organizer,
+            EVENT_ZONE_NAME to testEventWithoutTimes.zoneName,
+            EVENT_DESCRIPTION to testEventWithoutTimes.description,
+            EVENT_START_TIME to testEventWithoutTimes.startTime,
+            EVENT_END_TIME to testEventWithoutTimes.endTime,
             EVENT_TAGS to tags,
-            EVENT_INVENTORY to event.inventory
+            EVENT_INVENTORY to testEventWithoutTimes.inventory
         )
 
         val obtainedEvent = EventAdapter.toEventEntity(eventDocumentData)
-        assertEquals(event, obtainedEvent)
+        assertEquals(testEventWithoutTimes, obtainedEvent)
         assertTrue(obtainedEvent.hasItem(item1))
         assertTrue(obtainedEvent.tags.contains(tag1))
     }

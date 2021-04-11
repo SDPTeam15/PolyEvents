@@ -51,8 +51,6 @@
         <item>Switzerland</item>
     </string-array>
 
-    <string name="google_maps_key" />
-
     <!-- All string for Profile Fragment -->
     <string name="logout_button_text">Logout</string>
     <string name="update_infos">Update info</string>

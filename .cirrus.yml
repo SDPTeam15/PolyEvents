@@ -1,10 +1,11 @@
-heck_android_task:
+check_android_task:
   name: Run Android tests
   env:
     API_LEVEL: 29
     TARGET: default
     ARCH: x86
     CC_TEST_REPORTER_ID: ENCRYPTED[9e03c6dc9d91be08462567fbb0d63411eca8663605d489686a78240398b23959cbdda3dc61392e8e9ecf15523ce15468]
+    google_api_key: ENCRYPTED[e070fbfcb3656783c4df2e5eccbfb0e4ce8fa51aead1f2f2ff1bc5cbc27716c54fa537f7c0363fdccda0f19dd7f32698]
   container:
     image: reactivecircus/android-emulator-$API_LEVEL:latest
     kvm: true

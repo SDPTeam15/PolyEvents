@@ -14,9 +14,9 @@ import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_BIRTH_DATE
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_USERNAME
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.changeFragment
-import com.github.sdpteam15.polyevents.user.User
-import com.github.sdpteam15.polyevents.user.UserInterface
+import com.github.sdpteam15.polyevents.model.UserEntity
 import com.google.firebase.auth.FirebaseAuth
+import java.time.format.DateTimeFormatter
 
 /**
  *  [Fragment] subclass that represents the profile page.
@@ -24,9 +24,8 @@ import com.google.firebase.auth.FirebaseAuth
 class ProfileFragment : Fragment() {
     //User that we can set manually for testing
     //Return CurrentUser if we are not in test, but we can use a fake user in test this way
-    var currentUser: UserInterface? = null
-        get() = field ?: User.currentUser
-    val userInfoLiveData = Observable<UserInterface>()
+    var currentUser: UserEntity? = currentDatabase.currentUser
+    val userInfoLiveData = Observable<UserEntity>()
     val hashMapNewInfo = HashMap<String, String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,11 +50,15 @@ class ProfileFragment : Fragment() {
 
         //When user Info live data is updated, set the correct value in the textview
         userInfoLiveData.observe(this) { userInfo ->
-            viewRoot.findViewById<EditText>(R.id.profileName).setText(userInfo.value.name)
-            viewRoot.findViewById<EditText>(R.id.profileEmail).setText(userInfo.value.email)
-            //TODO Line for the future when the user class will have all the attributes
-            //viewRoot.findViewById<EditText>(R.id.profileUsernameET).setText(userInfo!!.username)
-            //viewRoot.findViewById<EditText>(R.id.profileBirthdayET).setText(userInfo!!.birthday)
+            viewRoot.findViewById<EditText>(R.id.profileName).setText(userInfo!!.name)
+            viewRoot.findViewById<EditText>(R.id.profileEmail).setText(userInfo!!.email)
+            viewRoot.findViewById<EditText>(R.id.profileUsernameET).setText(userInfo!!.username)
+
+            val userBirthDate = userInfo.birthDate
+            val birthDateFormatted =
+                if (userBirthDate == null) ""
+                else userBirthDate.format(DateTimeFormatter.ISO_LOCAL_DATE)
+            viewRoot.findViewById<EditText>(R.id.profileBirthdayET).setText(birthDateFormatted)
         }
 
         currentDatabase.getUserInformation(userInfoLiveData, currentUser!!.uid, currentUser!!)
@@ -65,12 +68,13 @@ class ProfileFragment : Fragment() {
             hashMapNewInfo.clear()
             hashMapNewInfo[USER_USERNAME] =
                 viewRoot.findViewById<EditText>(R.id.profileUsernameET).text.toString()
+            // TODO: editText should have birthday input
             hashMapNewInfo[USER_BIRTH_DATE] = viewRoot.findViewById<EditText>(R.id.profileBirthdayET).text.toString()
 
             //Call the DB to update the user information and getUserInformation once it is done
             currentDatabase.updateUserInformation(hashMapNewInfo, currentUser!!.uid, currentUser!!)
                 .observe(this) { newValue ->
-                    if (newValue.value) {
+                    if (newValue!!) {
                         currentDatabase.getUserInformation(
                             userInfoLiveData,
                             currentUser!!.uid,

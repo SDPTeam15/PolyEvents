@@ -3,6 +3,7 @@ package com.github.sdpteam15.polyevents.helper
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.arch.core.executor.ArchTaskExecutor
 import androidx.fragment.app.Fragment
@@ -41,8 +42,8 @@ object HelperFunctions {
 
     /**
      * Method that allows to switch the fragment in an event
-     * @param newFrag: the fragment we want to display (should be in the fragments app from MainEvent otherwise nothing happen)
-     * @param activity: the activity in which a fragment is instantiate
+     * @param frag: the fragment we want to display (should be in the fragments app from MainEvent otherwise nothing happen)
+     * @param fragmentManager: the activity in which a fragment is instantiate
      */
     fun refreshFragment(fragmentManager: FragmentManager?, frag: Fragment) {
         val ft: FragmentTransaction = fragmentManager!!.beginTransaction()
@@ -75,7 +76,7 @@ object HelperFunctions {
      * @param message : the message to display
      * @param context : the context in which to show the toast
      */
-    fun showToast(message: String, context: Context) {
+    fun showToast(message: String, context: Context?) {
         Toast.makeText(context, message, Toast.LENGTH_LONG).show()
     }
 
@@ -90,17 +91,18 @@ object HelperFunctions {
      * @param date the Date instance to convert
      * @return the corresponding LocalDateTime
      */
-    fun DateToLocalDateTime(date: Date?): LocalDateTime =
-        LocalDateTime.ofInstant(date?.toInstant(), ZoneId.systemDefault())
+    fun DateToLocalDateTime(date: Date?): LocalDateTime? =
+            date?.let { LocalDateTime.ofInstant(it.toInstant(), ZoneId.systemDefault()) }
 
     /**
-     * Converts LocalDateTime to Date.
+     * Convert
+     * s LocalDateTime to Date.
      * @param ldt the LocalDateTime instance
      *
      * @return the corresponding Date
      */
-    fun LocalDateToTimeToDate(ldt: LocalDateTime?): Date =
-        Date.from(ldt?.atZone(ZoneId.systemDefault())?.toInstant())
+    fun LocalDateToTimeToDate(ldt: LocalDateTime?): Date? =
+            ldt?.let { Date.from(it.atZone(ZoneId.systemDefault()).toInstant()) }
 
     /**
      * Calculates a person's age based on his birthDate and the current chosen date.
@@ -109,5 +111,24 @@ object HelperFunctions {
      * @return the age of the person
      */
     fun calculateAge(birthDate: LocalDate, currentDate: LocalDate): Int =
-        Period.between(birthDate, currentDate).getYears()
+        Period.between(birthDate, currentDate).years
+  
+    /**
+     * Check if a permission was granted
+     * (source : https://github.com/googlemaps/android-samples/blob/29ca74b9a3894121f179b9f36b0a51755e7231b0/ApiDemos/kotlin/app/src/gms/java/com/example/kotlindemos/PermissionUtils.kt)
+     * @param grantPermissions : the permissions that were asked
+     * @param grantResults : the granted permissions
+     * @param permission : the permission we want to know whether it was granted
+     * @return true if the permission was granted
+     */
+    fun isPermissionGranted(grantPermissions: Array<String>,
+                            grantResults: IntArray,
+                            permission: String): Boolean {
+        for (a in grantPermissions.indices) {
+            if (grantPermissions[a] == permission) {
+                return PackageManager.PERMISSION_GRANTED == grantResults[a]
+            }
+        }
+        return false
+    }
 }

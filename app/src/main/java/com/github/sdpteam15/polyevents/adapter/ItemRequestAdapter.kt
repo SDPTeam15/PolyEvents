@@ -1,4 +1,4 @@
-package com.github.sdpteam15.polyevents.item_request
+package com.github.sdpteam15.polyevents.adapter
 
 import android.content.ClipData
 import android.os.Build
@@ -40,7 +40,6 @@ class ItemRequestAdapter(
         /**
          * Binds the value of the item to the layout of the item tab
          */
-        @RequiresApi(Build.VERSION_CODES.O)
         fun bind(item: Pair<Item, Int>) {
             itemName.text =
                 view.context.getString(R.string.item_name_quantity_text, item.first.itemId, item.second)
@@ -97,7 +96,6 @@ class ItemRequestAdapter(
         return ItemViewHolder(adapterLayout)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val item = availableItems[position]
         holder.bind(item)

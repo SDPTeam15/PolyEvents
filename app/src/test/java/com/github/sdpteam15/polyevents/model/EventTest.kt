@@ -6,6 +6,7 @@ import org.junit.Test
 import java.time.LocalDateTime
 
 class EventTest {
+    val eventId = "xxxEventxxx"
     val eventName = "someEvent"
     val organizer = "Student Association"
     val zoneName = "Zone A"
@@ -24,6 +25,7 @@ class EventTest {
     @Before
     fun setupEvent() {
         event = Event(
+            eventId = eventId,
             eventName = eventName,
             organizer = organizer,
             zoneName = zoneName,
@@ -33,19 +35,14 @@ class EventTest {
             endTime = endTime
         )
 
-        eventWithNullStartTime =  Event(
-            eventName = eventName,
-            organizer = organizer,
-            zoneName = zoneName,
-            description = description,
-            icon = icon,
-            startTime = null,
-            endTime = endTime
+        eventWithNullStartTime =  event.copy(
+            startTime = null
         )
     }
 
     @Test
     fun testEventProperties() {
+        assertEquals(event.eventId, eventId)
         assertEquals(event.eventName, eventName)
         assertEquals(event.description, description)
         assertEquals(event.organizer, organizer)

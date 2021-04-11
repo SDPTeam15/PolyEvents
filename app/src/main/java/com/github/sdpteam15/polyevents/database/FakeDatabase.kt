@@ -11,10 +11,11 @@ import com.github.sdpteam15.polyevents.model.ItemType
 import com.github.sdpteam15.polyevents.user.ProfileInterface
 import com.github.sdpteam15.polyevents.user.User
 import com.github.sdpteam15.polyevents.user.UserInterface
+import com.github.sdpteam15.polyevents.model.*
+import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDateTime
 import java.util.*
 
-@RequiresApi(Build.VERSION_CODES.O)
 object FakeDatabase : DatabaseInterface {
     init {
         initEvents()
@@ -35,10 +36,9 @@ object FakeDatabase : DatabaseInterface {
     }
 
     private lateinit var events: MutableList<Event>
-    private lateinit var profiles: MutableList<ProfileInterface>
+    private lateinit var profiles: MutableList<UserProfile>
     private lateinit var items: MutableMap<Item, Int>
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun initEvents() {
         events = mutableListOf()
         events.add(
@@ -91,31 +91,36 @@ object FakeDatabase : DatabaseInterface {
         profiles = mutableListOf()
     }
 
-    override val currentUser: DatabaseUserInterface = object : DatabaseUserInterface {
-        override var displayName: String = "FakeName"
-        override var uid: String = "FakeUID"
-        override var email: String = "Fake@mail.ch"
-    }
+    val CURRENT_USER: UserEntity = UserEntity(
+        uid = "FakeUID",
+        name = "FakeName",
+        email = "Fake@mail.ch"
+    )
 
-    override fun getListProfile(uid: String, user: UserInterface): List<ProfileInterface> =
+    override val currentUser: UserEntity?
+        get() = TODO("Not yet implemented")
+    override val currentProfile: UserProfile?
+        get() = TODO("Not yet implemented")
+
+    override fun getProfilesList(uid: String, user: UserEntity?): List<UserProfile> =
         profiles
 
 
-    override fun addProfile(profile: ProfileInterface, uid: String, user: UserInterface): Boolean =
+    override fun addProfile(profile: UserProfile, uid: String, user: UserEntity?): Boolean =
         profiles.add(profile)
 
     override fun removeProfile(
-        profile: ProfileInterface,
-        uid: String,
-        user: UserInterface
+        profile: UserProfile,
+        uid: String?,
+        user: UserEntity?
     ): Boolean = profiles.remove(profile)
 
-    override fun updateProfile(profile: ProfileInterface, user: UserInterface): Boolean = true
+    override fun updateProfile(profile: UserProfile, user: UserEntity?): Boolean = true
 /*
     override fun getListEvent(
-            matcher: String?,
-            number: Int?,
-            profile: ProfileInterface
+        matcher: String?,
+        number: Int?,
+        profile: UserProfile?
     ): List<Event> {
         val res = mutableListOf<Event>()
         for (v in events.value) {
@@ -142,13 +147,13 @@ object FakeDatabase : DatabaseInterface {
         return Observable(true, this)
     }
     /*
-    override fun getUpcomingEvents(number: Int, profile: ProfileInterface): List<Event> =
+    override fun getUpcomingEvents(number: Int, profile: UserProfile?): List<Event> =
             getListEvent("", number, profile)
 
-    override fun getEventFromId(id: String, profile: ProfileInterface): Event =
+    override fun getEventFromId(id: String, profile: UserProfile?): Event =
             events.value[0]
 
-    override fun updateEvent(Event: Event, profile: ProfileInterface): Boolean = true
+    override fun updateEvent(Event: Event, profile: UserProfile?): Boolean = true
     */
 
     override fun createItem(
@@ -188,7 +193,7 @@ object FakeDatabase : DatabaseInterface {
 
     override fun getAvailableItems(
         itemList: ObservableList<Pair<Item, Int>>,
-        profile: ProfileInterface
+        profile: UserProfile?
     ): Observable<Boolean> {
         itemList.clear(this)
         val list = mutableListOf<Pair<Item, Int>>()
@@ -198,12 +203,12 @@ object FakeDatabase : DatabaseInterface {
         return Observable(true, this)
     }
 
-    override fun createEvent(event: Event, profile: ProfileInterface): Observable<Boolean> {
+    override fun createEvent(event: Event, profile: UserProfile?): Observable<Boolean> {
         events.add(event)
         return Observable(true, this)
     }
 
-    override fun updateEvents(event: Event, profile: ProfileInterface): Observable<Boolean> {
+    override fun updateEvents(event: Event, profile: UserProfile?): Observable<Boolean> {
         events[events.indexOfFirst { e -> e.id == event.id }] = event
         return Observable(true, this)
     }
@@ -211,7 +216,7 @@ object FakeDatabase : DatabaseInterface {
     override fun getEventFromId(
         id: String,
         returnEvent: Observable<Event>,
-        profile: ProfileInterface
+        profile: UserProfile?
     ): Observable<Boolean> {
         returnEvent.postValue(events.first { e -> e.id == id }, this)
         return Observable(true, this)
@@ -220,13 +225,13 @@ object FakeDatabase : DatabaseInterface {
     override fun updateUserInformation(
         newValues: HashMap<String, String>,
         uid: String,
-        userAccess: UserInterface
+        userAccess: UserEntity?
     ): Observable<Boolean> =
         Observable(true, this)
 
     override fun firstConnexion(
-        user: UserInterface,
-        userAccess: UserInterface
+        user: UserEntity,
+        userAccess: UserEntity?
     ): Observable<Boolean> =
         Observable(true, this)
 
@@ -247,32 +252,47 @@ object FakeDatabase : DatabaseInterface {
     override fun inDatabase(
         isInDb: Observable<Boolean>,
         uid: String,
-        userAccess: UserInterface
+        userAccess: UserEntity?
     ): Observable<Boolean> {
         isInDb.postValue(true, this)
         return Observable(true, this)
     }
 
     override fun getUserInformation(
-        user: Observable<UserInterface>,
-        uid: String,
-        userAccess: UserInterface
+        user: Observable<UserEntity>,
+        uid: String?,
+        userAccess: UserEntity?
     ): Observable<Boolean> {
-        user.postValue(User.invoke(currentUser), this)
-        return Observable(true, this)
+        user.value = CURRENT_USER
+        return Observable(true)
     }
 /*
-    override fun getItemsList(): MutableList<String> {
+    override fun getItemsList(): MutableList<Item> {
         return items
     }
 
-    override fun addItem(item: String): Boolean {
+    override fun addItem(item: Item): Boolean {
         return items.add(item)
     }
 
-    override fun removeItem(item: String): Boolean {
+    override fun removeItem(item: Item): Boolean {
         return items.remove(item)
     }
 
 */
+    override fun setUserLocation(
+        location: LatLng,
+        userAccess: UserEntity?
+    ): Observable<Boolean> {
+        return Observable(true)
+    }
+
+    override fun getUsersLocations(
+        usersLocations: Observable<List<LatLng>>,
+        userAccess: UserEntity?
+    ): Observable<Boolean> {
+        // TODO : see whether we write a Python script that send fake data to our database
+        usersLocations.postValue(listOf(LatLng(46.548823, 7.017012)))
+        return Observable(true)
+    }
 }

@@ -1,14 +1,24 @@
 package com.github.sdpteam15.polyevents.database
 
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_COLLECTION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_POINT
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_COLLECTION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_UID
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_DISPLAY_NAME
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_EMAIL
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_UID
 import com.github.sdpteam15.polyevents.database.observe.Observable
+import com.github.sdpteam15.polyevents.model.Event
+import com.github.sdpteam15.polyevents.model.Item
+import com.github.sdpteam15.polyevents.model.UserEntity
+import com.github.sdpteam15.polyevents.model.UserProfile
+import com.github.sdpteam15.polyevents.util.FirebaseUserAdapter
+import com.github.sdpteam15.polyevents.util.UserAdapter
+import com.google.android.gms.maps.model.LatLng
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.Event
 import com.github.sdpteam15.polyevents.model.Item
@@ -19,27 +29,24 @@ import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
-@RequiresApi(Build.VERSION_CODES.O)
+
 object FirestoreDatabaseProvider : DatabaseInterface {
     var firestore: FirebaseFirestore? = null
         get() = field ?: Firebase.firestore
 
-
     /**
      * Map used in the firstConnection method. It's public to be able to use it in tests
      */
-    val firstConnectionMap = HashMap<String, String>()
+    var firstConnectionUser: UserEntity = UserEntity(uid = "DEFAULT")
 
-    override val currentUser: DatabaseUserInterface?
+    override val currentUser: UserEntity?
         get() =
             if (FirebaseAuth.getInstance().currentUser != null) {
-                FirebaseUserAdapter(FirebaseAuth.getInstance().currentUser!!)
+                FirebaseUserAdapter.toUser(FirebaseAuth.getInstance().currentUser!!)
             } else {
                 null
             }
@@ -53,14 +60,14 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     }
 
     override fun removeProfile(
-        profile: ProfileInterface,
-        uid: String,
-        user: UserInterface
+        profile: UserProfile,
+        uid: String?,
+        user: UserEntity?
     ): Boolean {
         return FakeDatabase.removeProfile(profile, uid, user)
     }
 
-    override fun updateProfile(profile: ProfileInterface, user: UserInterface): Boolean {
+    override fun updateProfile(profile: UserProfile, user: UserEntity?): Boolean {
         return FakeDatabase.updateProfile(profile, user)
     }
 
@@ -68,7 +75,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     override fun createItem(
         item: Item,
         count: Int,
-        profile: ProfileInterface
+        profile: UserProfile?
     ): Observable<Boolean> {
         return FakeDatabase.createItem(item, count, profile)
     }
@@ -134,7 +141,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         matcher: Matcher?,
         number: Long?,
         eventList: ObservableList<Event>,
-        profile: ProfileInterface
+        profile: UserProfile?
     ): Observable<Boolean> {
 
         val end = Observable<Boolean>()
@@ -161,7 +168,6 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         return end
         //return FakeDatabase.getListEvent(matcher,number,eventList,profile)
     }
-    //Up to here delete
 
 
     //Method used to get listener in the test set to mock and test the database
@@ -235,33 +241,30 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     override fun updateUserInformation(
         newValues: java.util.HashMap<String, String>,
         uid: String,
-        userAccess: UserInterface
+        userAccess: UserEntity?
     ): Observable<Boolean> = thenDoSet(
         firestore!!.collection(USER_COLLECTION)
             .document(uid)
             .update(newValues as Map<String, Any>)
     )
 
-
     override fun firstConnexion(
-        user: UserInterface,
-        userAccess: UserInterface
+        user: UserEntity,
+        userAccess: UserEntity?
     ): Observable<Boolean> {
-        firstConnectionMap[USER_UID] = user.uid
-        firstConnectionMap[USER_DISPLAY_NAME] = user.name
-        firstConnectionMap[USER_EMAIL] = user.email
+        firstConnectionUser = user
 
         return thenDoSet(
             firestore!!.collection(USER_COLLECTION)
                 .document(user.uid)
-                .set(firstConnectionMap)
+                .set(firstConnectionUser)
         )
     }
 
     override fun inDatabase(
         isInDb: Observable<Boolean>,
         uid: String,
-        userAccess: UserInterface
+        userAccess: UserEntity?
     ): Observable<Boolean> = thenDoGet(
         firestore!!.collection(USER_COLLECTION)
             .whereEqualTo(USER_UID, uid)
@@ -276,41 +279,67 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     }
 
     override fun getUserInformation(
-        user: Observable<UserInterface>,
-        uid: String,
-        userAccess: UserInterface
+        user: Observable<UserEntity>,
+        uid: String?,
+        userAccess: UserEntity?
     ): Observable<Boolean> = thenDoMultGet(
         firestore!!.collection(USER_COLLECTION)
-            .document(uid)
+            .document(uid!!)
             .get()
     ) {
-        //TODO once the data class User is created, set the user with the correct value
-        user.postValue(userAccess)
+        user.postValue(it.data?.let { it1 -> UserAdapter.toUserEntity(it1) })
     }
     /*
     @RequiresApi(Build.VERSION_CODES.O)
     override fun getItemsList(): MutableList<String> {
+
+    override fun getItemsList(): MutableList<Item> {
         //TODO adapt to firebase
         return FakeDatabase.getItemsList()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun addItem(item: String): Boolean {
+    override fun addItem(item: Item): Boolean {
         //TODO adapt to firebase
         return FakeDatabase.addItem(item)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun removeItem(item: String): Boolean {
+    override fun removeItem(item: Item): Boolean {
         //TODO adapt to firebase
         return FakeDatabase.removeItem(item)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun getAvailableItems(): Map<String, Int> {
         //TODO adapt to firebase
         return FakeDatabase.getAvailableItems()
     }
 
      */
+
+    override fun setUserLocation(
+        location: LatLng,
+        userAccess: UserEntity?
+    ): Observable<Boolean> {
+        return thenDoSet(
+            firestore!!.collection(LOCATIONS_COLLECTION)
+                .document(userAccess!!.uid)
+                .set(
+                    hashMapOf(LOCATIONS_POINT to GeoPoint(location.latitude, location.longitude)),
+                    SetOptions.merge()
+                )
+        )
+    }
+
+    override fun getUsersLocations(
+        usersLocations: Observable<List<LatLng>>,
+        userAccess: UserEntity?
+    ): Observable<Boolean> = thenDoGet(
+        firestore!!.collection(LOCATIONS_COLLECTION)
+            .get()
+    ) { querySnapshot ->
+        val locations = querySnapshot.documents.map {
+            val geoPoint = it.data!![LOCATIONS_POINT] as GeoPoint
+            LatLng(geoPoint.latitude, geoPoint.longitude)
+        }
+        usersLocations.postValue(locations)
+    }
 }

@@ -10,9 +10,8 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
-import com.github.sdpteam15.polyevents.event.Event
+import com.github.sdpteam15.polyevents.database.FakeDatabase
 import com.github.sdpteam15.polyevents.fragments.HomeFragment
-import com.github.sdpteam15.polyevents.model.Event
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -38,62 +37,49 @@ class UpcomingEventsHomeFragmentTest {
         events = ArrayList<Event>()
 
         events.add(
+                Event(
+                    eventId = "event1",
+                    eventName = "Sushi demo",
+                    description = "Super hungry activity !",
+                    startTime = LocalDateTime.of(2021, 3, 7, 12, 15),
+                    organizer = "The fish band",
+                    zoneName = "Kitchen",
+                    tags = mutableSetOf("sushi", "japan", "cooking")
+                )
+        )
+
+        events.add(
+                Event(
+                    eventId = "event2",
+                    eventName = "Aqua Poney",
+                    description = "Super cool activity !" +
+                            " With a super long description that essentially describes and explains" +
+                            " the content of the activity we are speaking of.",
+                    startTime = LocalDateTime.of(2021, 3, 7, 14, 15),
+                    organizer = "The Aqua Poney team",
+                    zoneName = "Swimming pool"
+                )
+        )
+
+        events.add(
             Event(
-                "Sushi demo",
-                "The fish band",
-                "Kitchen",
-                "Super hungry activity !",
-                null,
-                LocalDateTime.of(2021, 3, 7, 12, 15),
-                LocalDateTime.of(2021, 3, 7, 13, 15),
-                mutableListOf(),
-                mutableSetOf(),
-                 "1"
+                eventId = "event3",
+                eventName = "Concert",
+                description = "Super noisy activity !",
+                startTime = LocalDateTime.of(2021, 3, 7, 17, 15),
+                organizer = "AcademiC DeCibel",
+                zoneName = "Concert Hall"
             )
         )
 
         events.add(
             Event(
-                "Aqua Poney",
-                "The Aqua Poney team",
-                "Swimming pool",
-                "Super cool activity !",
-                null,
-                LocalDateTime.of(2021, 3, 7, 15, 0),
-                LocalDateTime.of(2021, 3, 7, 16, 30),
-                mutableListOf(),
-                mutableSetOf(),
-                "2"
-            )
-        )
-
-        events.add(
-            Event(
-                "Concert",
-                "Super noisy activity !",
-                "AcademiC DeCibel",
-                "Concert Hall",
-                null,
-                LocalDateTime.of(2021, 3, 7, 17, 15),
-                LocalDateTime.of(2021, 3, 7, 19, 0),
-                mutableListOf(),
-                mutableSetOf(),
-                 "3"
-            )
-        )
-
-        events.add(
-            Event(
-                "Cricket",
-                "Outdoor activity !",
-                "Cricket club",
-                "Field",
-                null,
-                LocalDateTime.of(2021, 3, 7, 18, 15),
-                LocalDateTime.of(2021, 3, 7, 20, 0),
-                mutableListOf(),
-                mutableSetOf(),
-                "4"
+                eventId = "event4",
+                eventName = "Cricket",
+                description = "Outdoor activity !",
+                startTime = LocalDateTime.of(2021, 3, 7, 18, 15),
+                organizer = "Cricket club",
+                zoneName = "Field"
             )
         )
 

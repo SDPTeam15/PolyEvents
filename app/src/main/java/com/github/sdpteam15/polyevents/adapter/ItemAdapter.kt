@@ -1,4 +1,4 @@
-package com.github.sdpteam15.polyevents.item_request
+package com.github.sdpteam15.polyevents.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.ItemsAdminActivity
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.Item

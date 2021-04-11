@@ -16,6 +16,6 @@ object ItemEntityAdapter {
     fun toItemDocument(item: Item): HashMap<String, Any?> =
         hashMapOf(
             DatabaseConstant.ITEM_DOCUMENT_ID to item.itemId,
-            DatabaseConstant.ITEM_TYPE to item.itemType.itemtype
+            DatabaseConstant.ITEM_TYPE to item.itemType.name
         )
 }

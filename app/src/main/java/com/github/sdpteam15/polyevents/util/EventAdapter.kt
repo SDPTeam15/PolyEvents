@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.util
 
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_DESCRIPTION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_DOCUMENT_ID
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_END_TIME
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_INVENTORY
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_NAME
@@ -31,11 +32,12 @@ object EventAdapter {
          */
         fun toEventDocument(event: Event): HashMap<String, Any?> =
                 hashMapOf(
+                        EVENT_DOCUMENT_ID to event.eventId,
                         EVENT_NAME to event.eventName,
                         EVENT_ORGANIZER to event.organizer,
                         EVENT_ZONE_NAME to event.zoneName,
                         EVENT_DESCRIPTION to event.description,
-                        // TODO: check if stored well in Firestore as LocalDateTime
+                        // LocalDateTime instances can be directly stored to Firestore without need of conversion
                         EVENT_START_TIME to event.startTime,
                         EVENT_END_TIME to event.endTime,
                         EVENT_INVENTORY to event.inventory,
@@ -52,6 +54,7 @@ object EventAdapter {
          */
         fun toEventEntity(documentData: MutableMap<String, Any?>): Event =
                 Event(
+                        eventId = documentData[EVENT_DOCUMENT_ID] as String,
                         eventName = documentData[EVENT_NAME] as String?,
                         organizer = documentData[EVENT_ORGANIZER] as String?,
                         zoneName = documentData[EVENT_ZONE_NAME] as String?,

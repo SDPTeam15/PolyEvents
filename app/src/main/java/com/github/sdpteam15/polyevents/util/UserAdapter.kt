@@ -1,13 +1,14 @@
 package com.github.sdpteam15.polyevents.util
 
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_AGE
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_DISPLAY_NAME
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_BIRTH_DATE
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_EMAIL
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_UID
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_NAME
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_TYPE
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_PHONE
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_UID
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_USERNAME
+import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.UserEntity
+import com.google.firebase.Timestamp
 import kotlin.collections.HashMap
 
 /**
@@ -17,6 +18,7 @@ import kotlin.collections.HashMap
  *
  * IMPORTANT: This should be updated whenever we add, remove or update fields of UserEntity.
  */
+// TODO: convert profiles list
 object UserAdapter {
     /**
      * Convert a user entity to an intermediate mapping
@@ -27,13 +29,13 @@ object UserAdapter {
      */
     fun toUserDocument(user: UserEntity): HashMap<String, Any?> {
         return hashMapOf(
-            USER_UID to user.googleId,
-            USER_TYPE to user.userType,
-            USER_USERNAME to user.username,
-            USER_NAME to user.name,
-            USER_AGE to user.age,
-            USER_DISPLAY_NAME to user.displayName,
-            USER_EMAIL to user.email
+                USER_UID to user.uid,
+                USER_USERNAME to user.username,
+                USER_NAME to user.name,
+                // convert the localdate to LocalDateTime compatible to store in Firestore
+                USER_BIRTH_DATE to user.birthDate?.atStartOfDay(),
+                USER_EMAIL to user.email,
+                USER_PHONE to user.telephone
         )
     }
 
@@ -46,15 +48,15 @@ object UserAdapter {
      * @return the corresponding userEntity.
      */
     fun toUserEntity(documentData: MutableMap<String, Any?>): UserEntity {
-
         return UserEntity(
-            googleId = documentData.get(USER_UID) as String?,
-            userType = documentData.get(USER_TYPE) as String?,
-            username = documentData.get(USER_USERNAME) as String?,
-            name = documentData.get(USER_NAME) as String?,
-            age = (documentData.get(USER_AGE) as Long?)?.toInt(),
-            displayName = documentData.get(USER_DISPLAY_NAME) as String?,
-            email = documentData.get(USER_EMAIL) as String?
+                uid = documentData.get(USER_UID) as String,
+                username = documentData.get(USER_USERNAME) as String?,
+                name = documentData.get(USER_NAME) as String?,
+                birthDate = HelperFunctions.DateToLocalDateTime(
+                        (documentData.get(USER_BIRTH_DATE) as Timestamp?)?.toDate()
+                )?.toLocalDate(),
+                email = documentData.get(USER_EMAIL) as String?,
+                telephone = documentData.get(USER_PHONE) as String?
         )
     }
 }
