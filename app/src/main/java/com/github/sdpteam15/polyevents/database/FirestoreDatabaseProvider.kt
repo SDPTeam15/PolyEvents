@@ -20,7 +20,6 @@ import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
-
 object FirestoreDatabaseProvider : DatabaseInterface {
     var firestore: FirebaseFirestore? = null
         get() = field ?: Firebase.firestore
@@ -59,6 +58,15 @@ object FirestoreDatabaseProvider : DatabaseInterface {
 
     override fun updateProfile(profile: UserProfile, user: UserEntity?): Boolean {
         return true/*TODO*/
+    }
+
+    override fun updateProfile(
+        newValues: Map<String, String>,
+        pid: String,
+        userAccess: UserEntity?
+    ): Observable<Boolean> {
+        //TODO Return the a real profile
+        return Observable<Boolean>(true)
     }
 
     override fun getListEvent(
@@ -152,7 +160,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
 
 
     override fun updateUserInformation(
-        newValues: java.util.HashMap<String, String>,
+        newValues: Map<String, String>,
         uid: String,
         userAccess: UserEntity?
     ): Observable<Boolean> = thenDoSet(
@@ -201,6 +209,15 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             .get()
     ) {
         user.postValue(it.data?.let { it1 -> UserAdapter.toUserEntity(it1) })
+    }
+
+    override fun getProfileById(
+        profile: Observable<UserProfile>,
+        pid: String,
+        userAccess: UserEntity?
+    ): Observable<Boolean> {
+        //TODO adapt to firebase
+        return FakeDatabase.getProfileById(profile, pid, userAccess)
     }
 
     override fun getItemsList(): MutableList<Item> {

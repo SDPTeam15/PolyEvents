@@ -50,8 +50,8 @@ data class UserEntity (
      */
     fun addNewProfile(name: String): Boolean =
         profiles.add(UserProfile(
-                userUid = uid,
-                profileName = name
+            userUid = uid,
+            profileName = name
         ))
 
     /**
@@ -60,9 +60,9 @@ data class UserEntity (
      * @return true if newProfile was successfully added
      */
     fun addNewProfile(userProfile: UserProfile): Boolean =
-            profiles.add(
-                    userProfile
-            )
+        profiles.add(
+            userProfile
+        )
 
 
     /**
