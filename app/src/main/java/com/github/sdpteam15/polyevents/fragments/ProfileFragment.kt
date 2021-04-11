@@ -1,17 +1,20 @@
 package com.github.sdpteam15.polyevents.fragments
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.MainActivity
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_USERNAME
 import com.github.sdpteam15.polyevents.database.observe.Observable
+import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.changeFragment
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.google.firebase.auth.FirebaseAuth
@@ -23,7 +26,8 @@ import java.time.format.DateTimeFormatter
 class ProfileFragment : Fragment() {
     //User that we can set manually for testing
     //Return CurrentUser if we are not in test, but we can use a fake user in test this way
-    var currentUser: UserEntity? = currentDatabase.currentUser
+    var currentUser: UserEntity? = null
+        get() = field ?: currentDatabase.currentUser
     val userInfoLiveData = Observable<UserEntity>()
     val hashMapNewInfo = HashMap<String, String>()
 
@@ -35,6 +39,7 @@ class ProfileFragment : Fragment() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -61,6 +66,7 @@ class ProfileFragment : Fragment() {
         }
         println(currentDatabase)
         println(currentUser)
+        println(FirebaseAuth.getInstance().currentUser)
 
         currentDatabase.getUserInformation(userInfoLiveData, currentUser!!.uid, currentUser!!)
 
@@ -82,7 +88,7 @@ class ProfileFragment : Fragment() {
                             currentUser!!
                         )
                     } else {
-                        println("Update impossible")
+                        HelperFunctions.showToast(getString(R.string.fail_to_update), activity)
                     }
                 }
         }

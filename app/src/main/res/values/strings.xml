@@ -58,8 +58,10 @@
     <string name="UsernamePlaceholder">Username</string>
     <string name="FullNamePlaceholder">Full name</string>
     <string name="emailPlaceholder">Email</string>
+    <string name="fail_to_update">A problem occurred while performing your request, please try again</string>
     <string name="profileFragmentTitle">My information</string>
     <string name="title_activity_item_request">Items Request</string>
+
 
     <string name="go_to_items_requests_button_text">Go to items requests</string>
     <string name="action_settings">Settings</string>
@@ -93,4 +95,5 @@
     <string name="zone_add_fail">Error while creating your new zone, please try again !</string>
     <string name="zone_management_name_text">Name</string>
     <string name="zone_management_description_text">Description</string>
+
 </resources>
