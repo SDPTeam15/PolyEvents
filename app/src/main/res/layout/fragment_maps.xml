@@ -42,9 +42,10 @@ tools:context=".MainActivity" >
         android:layout_above="@+id/id_location_button"
         android:layout_gravity="center_horizontal"
         android:layout_alignParentEnd="true"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="@dimen/margin_right_map_btn"
+        android:layout_marginBottom="@dimen/margin_bottom_map_btn"
         android:clickable="true"
+        android:contentDescription="@string/none"
         android:src="@drawable/ic_locate_me"
         app:layout_constraintBottom_toTopOf="@+id/id_location_button"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -53,50 +54,53 @@ tools:context=".MainActivity" >
         android:id="@+id/id_location_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/acceptNewArea"
-        android:layout_gravity="center_horizontal"
+        android:layout_gravity="bottom"
+        android:contentDescription="@string/none"
         android:layout_alignParentEnd="true"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="16dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="@dimen/margin_right_map_btn"
+        android:layout_marginBottom="@dimen/margin_bottom_map_btn"
         android:clickable="true"
-        android:src="@drawable/ic_location_off"
-        app:layout_constraintBottom_toBottomOf="@+id/acceptNewArea"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:src="@drawable/ic_location_off"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/saveAreas"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/id_location_button"
+        android:layout_above="@+id/acceptNewArea"
         android:layout_alignParentEnd="true"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginEnd="15dp"
-        android:layout_marginBottom="0dp"
-        android:clickable="true"
+        android:contentDescription="@string/none"
+        android:layout_gravity="center_horizontal|end"
         android:src="@drawable/ic_save"
+        android:layout_marginEnd="@dimen/margin_right_map_btn"
+        android:layout_marginBottom="@dimen/margin_bottom_map_btn"
         app:layout_constraintBottom_toTopOf="@+id/acceptNewArea"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addNewArea"
         android:layout_width="wrap_content"
+        android:contentDescription="@string/none"
         android:layout_height="wrap_content"
         android:src="@android:drawable/ic_input_add"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_margin="16dp" />
+        android:layout_marginEnd="@dimen/margin_right_map_btn"
+        android:layout_marginBottom="@dimen/margin_bottom_map_btn"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/acceptNewArea"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_marginBottom="80dp"
-        android:layout_marginRight="16dp"
+        android:layout_above="@+id/addNewArea"
+        android:contentDescription="@string/none"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:src="@android:drawable/stat_sys_upload" />
-
+        android:layout_gravity="center_horizontal|end"
+        android:layout_marginEnd="@dimen/margin_right_map_btn"
+        android:layout_marginBottom="@dimen/margin_bottom_map_btn"
+        android:src="@android:drawable/stat_sys_upload"
+        app:layout_constraintBottom_toTopOf="@+id/addNewArea"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
 
 </RelativeLayout>

@@ -102,5 +102,5 @@
     <string name="btn_modify_coord_set_text">Set</string>
     <string name="btn_delete_coord_text">Delete</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="none">None</string>
 </resources>
