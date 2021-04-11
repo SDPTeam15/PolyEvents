@@ -51,6 +51,9 @@ object DatabaseConstant {
     const val ZONE_NAME = "zoneName"
     const val ZONE_LOCATION = "zoneLocation"
     const val ZONE_DESCRIPTION = "zoneDescription"
+    const val LAT_LONG_SEP = "|"
+    const val POINTS_SEP = "!"
+    const val AREAS_SEP = "?"
 
 
     /**
