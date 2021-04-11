@@ -95,5 +95,12 @@
     <string name="zone_add_fail">Error while creating your new zone, please try again !</string>
     <string name="zone_management_name_text">Name</string>
     <string name="zone_management_description_text">Description</string>
-
+    <string name="zone_management_coordinates_text">Zone coordinates</string>
+    <string name="zone_management_coordinates_set">Set</string>
+    <string name="zone_management_coordinates_not_set">Not set</string>
+    <string name="btn_modify_coord_update_text">Update</string>
+    <string name="btn_modify_coord_set_text">Set</string>
+    <string name="btn_delete_coord_text">Delete</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
