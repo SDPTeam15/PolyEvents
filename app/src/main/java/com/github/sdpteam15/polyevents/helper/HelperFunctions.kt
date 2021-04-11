@@ -37,20 +37,6 @@ object HelperFunctions {
         }
     }
 
-
-
-    /**
-     * Method that allows to switch the fragment in an event
-     * @param frag: the fragment we want to display (should be in the fragments app from MainEvent otherwise nothing happen)
-     * @param fragmentManager: the activity in which a fragment is instantiate
-     */
-    fun refreshFragment(fragmentManager: FragmentManager?, frag: Fragment) {
-        val ft: FragmentTransaction = fragmentManager!!.beginTransaction()
-        ft.setReorderingAllowed(false)
-        ft.detach(frag).attach(frag).commit()
-    }
-
-
     @SuppressLint("RestrictedApi")
     fun run(runnable: Runnable) {
         try {
