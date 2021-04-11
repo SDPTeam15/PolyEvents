@@ -1,6 +1,5 @@
 package com.github.sdpteam15.polyevents.item_request
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,17 +15,20 @@ import com.github.sdpteam15.polyevents.model.Item
 /**
  * Adapts items to RecyclerView ItemsViews
  */
-class ItemAdapter(itemsAdminActivity: ItemsAdminActivity, items : ObservableList<Item>) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
+class ItemAdapter(
+    itemsAdminActivity: ItemsAdminActivity,
+    private val items: ObservableList<Pair<Item, Int>>
+) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
-    private val items = items
+    //private val items = items
 
     init {
         currentDatabase.getItemsList(items).observe {
             if (!it.value)
-               println("query not satisfied")
+                println("query not satisfied")
         }
         items.observeRemove(itemsAdminActivity) {
-            currentDatabase.removeItem(it.value)
+            currentDatabase.removeItem(it.value.first)
         }
         items.observe(itemsAdminActivity) {
             notifyDataSetChanged()
@@ -46,11 +48,11 @@ class ItemAdapter(itemsAdminActivity: ItemsAdminActivity, items : ObservableList
         /**
          * Binds the values of each view of an event to the layout of an event
          */
-        fun bind(item: Item) {
+        fun bind(item: Pair<Item, Int>) {
             btnRemove.setOnClickListener {
                 items.remove(item)
             }
-            itemName.text = item.itemType.itemtype + item.itemId
+            itemName.text = item.first.itemId
         }
     }
 

@@ -30,7 +30,9 @@
         <activity android:name=".admin.ItemRequestManagementActivity"
             android:label="@string/title_activity_item_request_management"
             android:parentActivityName=".MainActivity"/>
-        <activity android:name=".ItemsAdminActivity" />
+        <activity android:name=".ItemsAdminActivity"
+            android:label= "@string/title_activity_items_admin"
+            android:parentActivityName=".MainActivity"/>
 
         <activity
             android:name=".ItemRequestActivity"
@@ -38,6 +40,7 @@
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".EventActivity"
+            android:label="@string/title_activity_events"
             android:parentActivityName=".MainActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.

@@ -23,14 +23,20 @@ object FakeDatabase : DatabaseInterface {
     }
 
     private fun initItems() {
-        items = mutableListOf()
-        items.add(Item("Scie-tronconneuse", ItemType.OTHER))
-        items.add(Item("Bonnet de bain", ItemType.OTHER))
+        items = mutableMapOf()
+        items[Item("230V Plug", ItemType.PLUG)] = 20
+        items[Item("Cord rewinder (50m)", ItemType.PLUG)] = 10
+        items[Item("Microphone", ItemType.MICROPHONE)] = 1
+        items[Item("Cooking plate", ItemType.OTHER)] = 5
+        items[Item("Cord rewinder (100m)", ItemType.PLUG)] = 1
+        items[Item("Cord rewinder (10m)", ItemType.PLUG)] = 30
+        items[Item("Fridge(large)", ItemType.OTHER)] = 2
+
     }
 
     private lateinit var events: MutableList<Event>
     private lateinit var profiles: MutableList<ProfileInterface>
-    private lateinit var items: MutableList<Item>
+    private lateinit var items: MutableMap<Item, Int>
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun initEvents() {
@@ -145,38 +151,49 @@ object FakeDatabase : DatabaseInterface {
     override fun updateEvent(Event: Event, profile: ProfileInterface): Boolean = true
     */
 
-    override fun createItem(item: Item, profile: ProfileInterface): Observable<Boolean> {
-        items.add(item)
+    override fun createItem(
+        item: Item,
+        count: Int,
+        profile: ProfileInterface
+    ): Observable<Boolean> {
+        items[item] = count
         return Observable(true, this)
     }
 
     override fun removeItem(item: Item, profile: ProfileInterface): Observable<Boolean> {
-        val b = items.remove(item)
+        val b = items.remove(item) != null
         return Observable(b, this)
     }
 
-    override fun updateItem(item: Item, profile: ProfileInterface): Observable<Boolean> {
-        items[items.indexOfFirst { i -> i.itemId == item.itemId }] = item
+    override fun updateItem(
+        item: Item,
+        count: Int,
+        profile: ProfileInterface
+    ): Observable<Boolean> {
+        items.remove(items.keys.first { i -> i.itemId == item.itemId })
+        items[item] = count
         return Observable(true, this)
     }
 
     override fun getItemsList(
-        itemList: ObservableList<Item>,
+        itemList: ObservableList<Pair<Item, Int>>,
         profile: ProfileInterface
     ): Observable<Boolean> {
         itemList.clear(this)
-        itemList.addAll(items, this)
+        for (item in items) {
+            itemList.add(Pair(item.key, item.value), this)
+        }
         return Observable(true, this)
     }
 
     override fun getAvailableItems(
-        itemList: ObservableList<Pair<Item,Int>>,
+        itemList: ObservableList<Pair<Item, Int>>,
         profile: ProfileInterface
     ): Observable<Boolean> {
         itemList.clear(this)
-        val list = mutableListOf<Pair<Item,Int>>() //TODO adapt to new Item
+        val list = mutableListOf<Pair<Item, Int>>()
         for (item in items)
-            list.add(Pair(item, 10))
+            list.add(Pair(item.key, item.value))
         itemList.addAll(list, this)
         return Observable(true, this)
     }

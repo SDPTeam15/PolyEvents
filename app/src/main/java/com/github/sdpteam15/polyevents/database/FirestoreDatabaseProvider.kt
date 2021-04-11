@@ -45,11 +45,11 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             }
 
     override fun getListProfile(uid: String, user: UserInterface): List<ProfileInterface> {
-        return FakeDatabase.getListProfile(uid,user)
+        return FakeDatabase.getListProfile(uid, user)
     }
 
     override fun addProfile(profile: ProfileInterface, uid: String, user: UserInterface): Boolean {
-        return FakeDatabase.addProfile(profile,uid,user)
+        return FakeDatabase.addProfile(profile, uid, user)
     }
 
     override fun removeProfile(
@@ -57,35 +57,43 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         uid: String,
         user: UserInterface
     ): Boolean {
-        return FakeDatabase.removeProfile(profile,uid,user)
+        return FakeDatabase.removeProfile(profile, uid, user)
     }
 
     override fun updateProfile(profile: ProfileInterface, user: UserInterface): Boolean {
-        return FakeDatabase.updateProfile(profile,user)
+        return FakeDatabase.updateProfile(profile, user)
     }
 
 
-    override fun createItem(item: Item, profile: ProfileInterface): Observable<Boolean> {
-        return FakeDatabase.createItem(item, profile)
+    override fun createItem(
+        item: Item,
+        count: Int,
+        profile: ProfileInterface
+    ): Observable<Boolean> {
+        return FakeDatabase.createItem(item, count, profile)
     }
 
     override fun removeItem(item: Item, profile: ProfileInterface): Observable<Boolean> {
         return FakeDatabase.removeItem(item, profile)
     }
 
-    override fun updateItem(item: Item, profile: ProfileInterface): Observable<Boolean> {
-        return FakeDatabase.updateItem(item, profile)
+    override fun updateItem(
+        item: Item,
+        count: Int,
+        profile: ProfileInterface
+    ): Observable<Boolean> {
+        return FakeDatabase.updateItem(item, count, profile)
     }
 
     override fun getItemsList(
-        itemList: ObservableList<Item>,
+        itemList: ObservableList<Pair<Item, Int>>,
         profile: ProfileInterface
     ): Observable<Boolean> {
         return FakeDatabase.getItemsList(itemList, profile)
     }
 
     override fun getAvailableItems(
-        itemList: ObservableList<Pair<Item,Int>>,
+        itemList: ObservableList<Pair<Item, Int>>,
         profile: ProfileInterface
     ): Observable<Boolean> {
         return FakeDatabase.getAvailableItems(itemList, profile)

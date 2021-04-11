@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.transition.Slide
 import android.transition.TransitionManager
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.EditText
@@ -18,14 +17,13 @@ import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.item_request.ItemAdapter
 import com.github.sdpteam15.polyevents.model.Item
 import com.github.sdpteam15.polyevents.model.ItemType
-import com.google.firebase.ktx.Firebase
 
 /**
  * Activity displaying Items and supports items creation and deletion
  */
 class ItemsAdminActivity : AppCompatActivity() {
 
-    private val items = ObservableList<Item>()
+    private val items = ObservableList<Pair<Item, Int>>()
 
     /**
      * Recycler containing all the items
@@ -36,14 +34,12 @@ class ItemsAdminActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_items_admin)
 
-        // TODO take existing items from the database
-
         //val clickListener = { _: String -> } // TODO define what happens when we click on an Item
         recyclerView = findViewById(R.id.id_recycler_items_list)
         recyclerView.adapter = ItemAdapter(this, items)
         items.observeAdd(this) {
             if (it.sender != currentDatabase)
-                currentDatabase.createItem(it.value)
+                currentDatabase.createItem(it.value.first, it.value.second)
 
         }
 
@@ -87,7 +83,7 @@ class ItemsAdminActivity : AppCompatActivity() {
         confirmButton.setOnClickListener {
 
 
-            items.add(Item(itemName.text.toString(), ItemType.OTHER), this)
+            items.add(Pair(Item(itemName.text.toString(), ItemType.OTHER), 1), this)
             // Dismiss the popup window
             popupWindow.dismiss()
 

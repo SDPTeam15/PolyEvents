@@ -84,6 +84,7 @@ interface DatabaseInterface {
      */
     fun createItem(
         item: Item,
+        count: Int,
         profile: ProfileInterface = CurrentProfile
     ): Observable<Boolean>
 
@@ -104,6 +105,7 @@ interface DatabaseInterface {
      */
     fun updateItem(
         item: Item,
+        count: Int,
         profile: ProfileInterface = CurrentProfile
     ): Observable<Boolean>
 
@@ -114,7 +116,7 @@ interface DatabaseInterface {
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getItemsList(
-        itemList: ObservableList<Item>,
+        itemList: ObservableList<Pair<Item, Int>>,
         profile: ProfileInterface = CurrentProfile
     ): Observable<Boolean>
 
@@ -125,7 +127,7 @@ interface DatabaseInterface {
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getAvailableItems(
-        itemList: ObservableList<Pair<Item,Int>>,
+        itemList: ObservableList<Pair<Item, Int>>,
         profile: ProfileInterface = CurrentProfile
     ): Observable<Boolean>
 
