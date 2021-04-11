@@ -291,16 +291,6 @@ interface DatabaseInterface {
         user: UserInterface = User.currentUser as UserInterface
     ): Observable<Boolean>
 
-    /**
-     * Update profile
-     * @param event event to update
-     * @param profile profile for database access
-     * @return An observer that will be set to true if the communication with the DB is over and no error
-     */
-    fun updateProfile(
-        profile: ProfileInterface,
-        user: UserInterface = currentUser as UserInterface
-    ): Observable<Boolean>
 
     /**
      * Get list of profile of a user uid
@@ -325,8 +315,21 @@ interface DatabaseInterface {
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun updateUserInformation(
-        newValues: HashMap<String, String>,
+        newValues: Map<String, String>,
         uid: String,
+        userAccess: UserEntity? = currentUser
+    ): Observable<Boolean>
+
+    /**
+     * Update profile
+     * @param newValues : a map with the new value to set in the database
+     * @param pid : the uid of the profile from which we want to query the information
+     * @param userAccess: the user object to use its permission
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun updateProfile(
+        newValues: Map<String, String>,
+        pid: String,
         userAccess: UserEntity? = currentUser
     ): Observable<Boolean>
 
@@ -364,6 +367,19 @@ interface DatabaseInterface {
     fun getUserInformation(
         user: Observable<UserEntity>,
         uid: String? = currentUser?.uid,
+        userAccess: UserEntity? = currentUser
+    ): Observable<Boolean>
+
+    /**
+     * Look in the database if the user already exists or not
+     * @param profile : live data that will be set with the find profile value
+     * @param pid : profile id we want to get
+     * @param profileAccess : the profile object to use its permission
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun getProfileById(
+        profile: Observable<UserProfile>,
+        pid: String,
         userAccess: UserEntity? = currentUser
     ): Observable<Boolean>
 

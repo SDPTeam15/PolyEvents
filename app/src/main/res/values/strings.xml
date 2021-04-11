@@ -83,6 +83,26 @@
     <string name="title_activity_event_management">Event Management</string>
     <string name="admin_hub_title">Admin management options</string>
 
+    <!-- EditProfileActivity -->
+    <string name="EditProfileActivity_Name">Name</string>
+    <string name="EditProfileActivity_ID">ID</string>
+    <string name="EditProfileActivity_Rank">Rank</string>
+    <string name="EditProfileActivity_Save">Save</string>
+    <string name="EditProfileActivity_Cancel">Cancel</string>
+    <string name="EditProfileActivity_DatabaseError">Impossible to update your profile information, please try again.</string>
+
+    <string-array name="EditProfileActivity_Ranks">
+        <item>Admin</item>
+        <item>Activity provider</item>
+        <item>Staff</item>
+        <item>Visitor</item>
+    </string-array>
+    <!-- EditProfileActivity -->
+
+
+
+
+
     <!-- String related to the zone management activity-->
     <string name="btn_create_zone_button_text">Create zone</string>
     <string name="btn_update_zone_button_text">Update zone</string>
