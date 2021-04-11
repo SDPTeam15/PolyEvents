@@ -3,11 +3,10 @@ package com.github.sdpteam15.polyevents
 import android.content.Intent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.assertion.ViewAssertions
-import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.ext.junit.rules.ActivityScenarioRule
+import androidx.test.espresso.Espresso.*
+import androidx.test.espresso.action.ViewActions.*
+import androidx.test.espresso.assertion.ViewAssertions.*
+import androidx.test.espresso.matcher.ViewMatchers.*
 import com.github.sdpteam15.polyevents.admin.ZoneManagementActivity
 import com.github.sdpteam15.polyevents.admin.ZoneManagementListActivity
 import com.github.sdpteam15.polyevents.database.Database
@@ -62,18 +61,19 @@ class ZoneManagementTest {
         val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
         scenario = ActivityScenario.launch(intent)
 
-        Espresso.onView(ViewMatchers.withId(R.id.ic_home)).perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withId(R.id.id_fragment_admin_hub))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withId(R.id.btnRedirectZoneManagement))
-            .perform(ViewActions.click())
+        onView(withId(R.id.ic_home)).perform(click())
+        onView(withId(R.id.id_fragment_admin_hub))
+            .check(matches(isDisplayed()))
+        onView(withId(R.id.btnRedirectZoneManagement))
+            .perform(click())
 
-        Espresso.onView(ViewMatchers.withId(R.id.btnNewZone)).perform(ViewActions.click())
+        onView(withId(R.id.btnNewZone)).perform(click())
 
-        Espresso.onView(ViewMatchers.withId(R.id.zoneManagementDescription))
-            .perform(ViewActions.replaceText(""))
-        Espresso.onView(ViewMatchers.withId(R.id.zoneManagementName))
-            .perform(ViewActions.replaceText(""))
+        onView(withId(R.id.zoneManagementDescription))
+            .perform(replaceText(""))
+        onView(withId(R.id.zoneManagementName))
+            .perform(replaceText(""))
+        ZoneManagementActivity.zoneObservable.postValue(Zone(location = "not null"))
     }
 
     @After
@@ -86,22 +86,22 @@ class ZoneManagementTest {
     @Test
     fun pressCreateButtonDoesNothingWhenEmptyFields() {
 
-        Espresso.onView(ViewMatchers.withId(R.id.zoneManagementDescription))
-            .check(ViewAssertions.matches(ViewMatchers.withText("")))
-        Espresso.onView(ViewMatchers.withId(R.id.zoneManagementName))
-            .check(ViewAssertions.matches(ViewMatchers.withText("")))
-        Espresso.onView(ViewMatchers.withId(R.id.btnManage)).perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withId(R.id.zone_management_activity)).check(
-            ViewAssertions.matches(
-                ViewMatchers.isDisplayed()
+        onView(withId(R.id.zoneManagementDescription))
+            .check(matches(withText("")))
+        onView(withId(R.id.zoneManagementName))
+            .check(matches(withText("")))
+        onView(withId(R.id.btnManage)).perform(click())
+        onView(withId(R.id.zone_management_activity)).check(
+            matches(
+                isDisplayed()
             )
         )
-        Espresso.onView(ViewMatchers.withId(R.id.zoneManagementName))
-            .perform(ViewActions.replaceText(zoneName))
+        onView(withId(R.id.zoneManagementName))
+            .perform(replaceText(zoneName))
 
-        Espresso.onView(ViewMatchers.withId(R.id.btnManage)).perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withId(R.id.zone_management_activity))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        onView(withId(R.id.btnManage)).perform(click())
+        onView(withId(R.id.zone_management_activity))
+            .check(matches(isDisplayed()))
     }
 
     @Test
@@ -111,15 +111,15 @@ class ZoneManagementTest {
             obs
         }
 
-        Espresso.onView(ViewMatchers.withId(R.id.zoneManagementName))
-            .perform(ViewActions.replaceText(zoneName))
-        Espresso.onView(ViewMatchers.withId(R.id.zoneManagementDescription))
-            .perform(ViewActions.replaceText(zoneDesc))
-        Espresso.onView(ViewMatchers.withId(R.id.btnManage)).perform(ViewActions.click())
+        onView(withId(R.id.zoneManagementName))
+            .perform(replaceText(zoneName))
+        onView(withId(R.id.zoneManagementDescription))
+            .perform(replaceText(zoneDesc))
+        onView(withId(R.id.btnManage)).perform(click())
         obs.postValue(true)
 
-        Espresso.onView(ViewMatchers.withId(R.id.zone_management_list_activity))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        onView(withId(R.id.zone_management_list_activity))
+            .check(matches(isDisplayed()))
     }
 
     @Test
@@ -151,15 +151,15 @@ class ZoneManagementTest {
                 ZoneManagementActivity.zone
             )
         ).thenReturn(obs)
-        Espresso.onView(ViewMatchers.withId(R.id.zoneManagementName))
-            .perform(ViewActions.replaceText(zoneName))
-        Espresso.onView(ViewMatchers.withId(R.id.zoneManagementDescription))
-            .perform(ViewActions.replaceText(zoneDesc + " 2"))
-        Espresso.onView(ViewMatchers.withId(R.id.btnManage)).perform(ViewActions.click())
+        onView(withId(R.id.zoneManagementName))
+            .perform(replaceText(zoneName))
+        onView(withId(R.id.zoneManagementDescription))
+            .perform(replaceText(zoneDesc + " 2"))
+        onView(withId(R.id.btnManage)).perform(click())
         obs.postValue(true)
 
-        Espresso.onView(ViewMatchers.withId(R.id.zone_management_list_activity))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        onView(withId(R.id.zone_management_list_activity))
+            .check(matches(isDisplayed()))
         scenario2.close()
     }
 
@@ -196,13 +196,13 @@ class ZoneManagementTest {
 
         obs2.postValue(true)
 
-        Espresso.onView(ViewMatchers.withId(R.id.zoneManagementName))
-            .perform(ViewActions.replaceText(zoneName))
-        Espresso.onView(ViewMatchers.withId(R.id.zoneManagementDescription))
-            .perform(ViewActions.replaceText(""))
-        Espresso.onView(ViewMatchers.withId(R.id.btnManage)).perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withId(R.id.zone_management_activity))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        onView(withId(R.id.zoneManagementName))
+            .perform(replaceText(zoneName))
+        onView(withId(R.id.zoneManagementDescription))
+            .perform(replaceText(""))
+        onView(withId(R.id.btnManage)).perform(click())
+        onView(withId(R.id.zone_management_activity))
+            .check(matches(isDisplayed()))
     }
 
     @Test
@@ -212,15 +212,15 @@ class ZoneManagementTest {
             obs
         }
 
-        Espresso.onView(ViewMatchers.withId(R.id.zoneManagementName))
-            .perform(ViewActions.replaceText("Hello"))
-        Espresso.onView(ViewMatchers.withId(R.id.zoneManagementDescription))
-            .perform(ViewActions.replaceText("Hello"))
-        Espresso.onView(ViewMatchers.withId(R.id.btnManage)).perform(ViewActions.click())
+        onView(withId(R.id.zoneManagementName))
+            .perform(replaceText("Hello"))
+        onView(withId(R.id.zoneManagementDescription))
+            .perform(replaceText("Hello"))
+        onView(withId(R.id.btnManage)).perform(click())
         obs.postValue(false)
 
-        Espresso.onView(ViewMatchers.withId(R.id.zone_management_activity))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        onView(withId(R.id.zone_management_activity))
+            .check(matches(isDisplayed()))
     }
 
     @Test
@@ -256,16 +256,54 @@ class ZoneManagementTest {
 
         obs2.postValue(true)
 
-        Espresso.onView(ViewMatchers.withId(R.id.zoneManagementName))
-            .perform(ViewActions.replaceText(zoneName))
-        Espresso.onView(ViewMatchers.withId(R.id.zoneManagementDescription))
-            .perform(ViewActions.replaceText(zoneDesc))
-        Espresso.onView(ViewMatchers.withId(R.id.btnManage)).perform(ViewActions.click())
-        obs.postValue(true)
+        onView(withId(R.id.zoneManagementName))
+            .perform(replaceText(zoneName))
+        onView(withId(R.id.zoneManagementDescription))
+            .perform(replaceText(zoneDesc))
+        onView(withId(R.id.btnManage)).perform(click())
+        obs.postValue(false)
 
-        Espresso.onView(ViewMatchers.withId(R.id.zone_management_list_activity))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        onView(withId(R.id.zone_management_activity))
+            .check(matches(isDisplayed()))
         scenario2.close()
+    }
+
+    @Test
+    fun clickOnDeleteButtonClearLocationAndSetCorrectText() {
+        onView(withId(R.id.btnDeleteZoneCoordinates))
+            .perform(click())
+        assert(ZoneManagementActivity.zone.location=="")
+        onView(withId(R.id.zoneManagementCoordinates))
+            .check(matches(withText("Not set")))
+    }
+
+    @Test
+    fun zoneIdSetterWorksProperly(){
+        ZoneManagementActivity.zoneId=zoneId
+        assert(ZoneManagementActivity.zoneId==zoneId)
+    }
+
+    @Test
+    fun postValueWithNullLocationDisplayCorrectText(){
+        val zoneWithNull = Zone(zoneId=zoneId,zoneName=zoneName,location = null,description = zoneDesc)
+        ZoneManagementActivity.zoneObservable.postValue(zoneWithNull)
+        onView(withId(R.id.zoneManagementCoordinates))
+            .check(matches(withText("Not set")))
+    }
+
+    @Test
+    fun btnManageCoordsCorrectlyActs(){
+        ZoneManagementActivity.inTest=true
+        onView(withId(R.id.zoneManagementDescription))
+            .perform(replaceText(zoneDesc))
+        onView(withId(R.id.zoneManagementName))
+            .perform(replaceText(zoneName))
+        onView(withId(R.id.btnModifyZoneCoordinates))
+            .perform(click())
+        assert(ZoneManagementActivity.zone.zoneName==zoneName)
+        assert(ZoneManagementActivity.zone.description==zoneDesc)
+        onView(withId(R.id.flMapEditZone))
+            .check(matches(isDisplayed()))
     }
 
 }

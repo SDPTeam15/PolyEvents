@@ -110,7 +110,8 @@
                         android:inputType="text"
                         android:paddingStart="20dp"
                         android:paddingEnd="0dp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:enabled="false"/>
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
             <LinearLayout

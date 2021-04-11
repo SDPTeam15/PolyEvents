@@ -26,7 +26,7 @@ class ZoneManagementActivity : AppCompatActivity() {
         val zoneObservable = Observable<Zone>()
         val zone = Zone(location = "")
         var zoneId = ""
-        val PARAM_TO_MAP_FRAGMENT = "CURRENT_ZONE"
+        var inTest = false
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,9 +46,7 @@ class ZoneManagementActivity : AppCompatActivity() {
         val mapFragment = MapsFragment()
         mapFragment.zone = zone
         //By default, set the button as if we create a new zone
-        changeCoordinatesText(etLoc,btnManageCoor,btnDelete,"")
-
-
+        changeCoordinatesText(etLoc, btnManageCoor, btnDelete,"")
 
 
         zoneObservable.observe {
@@ -56,7 +54,7 @@ class ZoneManagementActivity : AppCompatActivity() {
             val zoneInfo = it!!
             etName.setText(zoneInfo.zoneName)
             etDesc.setText(zoneInfo.description)
-            changeCoordinatesText(etLoc, btnManageCoor,btnDelete,zoneInfo.location!!)
+            changeCoordinatesText(etLoc, btnManageCoor, btnDelete, zoneInfo.location)
         }
 
         if (zoneId == NEW_ZONE) {
@@ -64,7 +62,7 @@ class ZoneManagementActivity : AppCompatActivity() {
             btnManage.text = this.getString(R.string.btn_create_zone_button_text)
             tvManage.text = this.getString(R.string.tv_create_zone_text)
             btnManage.setOnClickListener {
-                createZone(etName, etDesc)
+                createZone(etName, etDesc, etLoc)
             }
 
         } else {
@@ -74,21 +72,23 @@ class ZoneManagementActivity : AppCompatActivity() {
             currentDatabase.getZoneInformation(zoneId, zoneObservable)
 
             btnManage.setOnClickListener {
-                updateZoneInfo(etName, etDesc)
+                updateZoneInfo(etName, etDesc,etLoc)
             }
         }
 
         btnDelete.setOnClickListener{
-             zone.location =""
+            zone.location = ""
             changeCoordinatesText(etLoc,btnManageCoor,btnDelete, "")
         }
 
         btnManageCoor.setOnClickListener{
             findViewById<FrameLayout>(R.id.flMapEditZone).visibility= View.VISIBLE
-            this.supportFragmentManager?.beginTransaction()?.apply {
-                replace(R.id.flMapEditZone, mapFragment as Fragment)
-                commit()
-            }
+            zone.description=etDesc.text.toString()
+            zone.zoneName=etName.text.toString()
+            //TODO add the area to be modified (once the zone modifier is implemented
+
+            if(!inTest)
+                HelperFunctions.changeFragment(this,mapFragment,R.id.flMapEditZone)
         }
     }
 
@@ -104,19 +104,17 @@ class ZoneManagementActivity : AppCompatActivity() {
             text= getString(R.string.zone_management_coordinates_set)
         }
 
-
-
         etLoc.setText(text)
     }
 
-    private fun createZone(etName: EditText, etDesc: EditText) {
+    private fun createZone(etName: EditText, etDesc: EditText, etLoc: EditText) {
         //Create a new zone based on the fields
         val name = etName.text.toString()
         val desc = etDesc.text.toString()
-        val loc = " a"
+        val loc = etLoc.text.toString()
         if (checkNotEmpty(name, loc, desc)) {
             zone.description = desc
-            zone.location = loc
+
             zone.zoneName = name
             zone.zoneId = null
 
@@ -135,14 +133,13 @@ class ZoneManagementActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateZoneInfo(etName: EditText, etDesc: EditText) {
+    private fun updateZoneInfo(etName: EditText, etDesc: EditText, etLoc: EditText) {
         //Update zone information based on the fields
         val name = etName.text.toString()
         val desc = etDesc.text.toString()
-        val loc = " a"
+        val loc = etLoc.text.toString()
         if (checkNotEmpty(name, loc, desc)) {
             zone.description = desc
-            zone.location = loc
             zone.zoneName = name
             zone.zoneId = zoneId
 
@@ -161,7 +158,7 @@ class ZoneManagementActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkNotEmpty(name: String, loc: String, desc: String): Boolean {
+    private fun checkNotEmpty(name: String, loc: String?, desc: String): Boolean {
         if (name == "" || desc == "" || loc == getString(R.string.zone_management_coordinates_not_set)) {
             HelperFunctions.showToast(this.getString(R.string.missing_field_zone_management), this)
             return false
