@@ -13,9 +13,11 @@ import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.observe.Observable
+import com.github.sdpteam15.polyevents.helper.GoogleMapHelper
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 import com.github.sdpteam15.polyevents.model.Zone
+import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
 import org.junit.After
 import org.junit.Before
@@ -305,6 +307,47 @@ class ZoneManagementTest {
         assert(ZoneManagementActivity.zone.description==zoneDesc)
         onView(withId(R.id.flMapEditZone))
             .check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun deleteCoordinatesDeleteFromGoogleMapHelper(){
+        val arrayLngLat = arrayOf(4.10, 4.20, 4.30, 4.40, 4.50, 4.60, 4.70, 4.80)
+        val arrayLngLat2 = arrayOf(5.10, 5.20, 5.30, 5.40, 5.50, 5.60, 5.70, 5.80)
+
+        val map:MutableMap<Int,List<LatLng>> = mutableMapOf()
+
+        var listLngLat: ArrayList<LatLng> = ArrayList()
+        listLngLat.add(LatLng(arrayLngLat[0], arrayLngLat[1]))
+        listLngLat.add(LatLng(arrayLngLat[2], arrayLngLat[3]))
+        listLngLat.add(LatLng(arrayLngLat[4], arrayLngLat[5]))
+        listLngLat.add(LatLng(arrayLngLat[6], arrayLngLat[7]))
+
+        var listLngLat2: ArrayList<LatLng> = ArrayList()
+
+        listLngLat2.add(LatLng(arrayLngLat2[0], arrayLngLat2[1]))
+        listLngLat2.add(LatLng(arrayLngLat2[2], arrayLngLat2[3]))
+        listLngLat2.add(LatLng(arrayLngLat2[4], arrayLngLat2[5]))
+        listLngLat2.add(LatLng(arrayLngLat2[6], arrayLngLat2[7]))
+
+        map[0] = listLngLat
+        map[1] = listLngLat2
+        map[2] = listLngLat2
+        map[3] = listLngLat2
+        map[4] = listLngLat2
+
+        val initSize = map.size
+        val nbModified = 3
+
+        GoogleMapHelper.coordinates = map
+        assert(GoogleMapHelper.coordinates.size==initSize)
+
+
+        ZoneManagementActivity.nbModified=nbModified
+        GoogleMapHelper.uid = initSize
+        onView(withId(R.id.btnDeleteZoneCoordinates)).perform(click())
+        assert(GoogleMapHelper.coordinates.size==initSize-nbModified)
+        assert(GoogleMapHelper.uid==initSize-nbModified)
+        assert(ZoneManagementActivity.nbModified==0)
     }
 
 }

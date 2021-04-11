@@ -82,7 +82,7 @@ class GoogleMapHelperTest {
     }
 
     @Test
-    fun areasToFormattedStringLocationsTakesBoundIntoAccount(){
+    fun areasToFormattedStringLocationsTakesLowerBoundIntoAccount(){
         val map2: MutableMap<Int, List<LatLng>> = mutableMapOf()
         map2[id1] = listLngLat
         map2[id2] = listLngLat2
@@ -101,5 +101,32 @@ class GoogleMapHelperTest {
         correctString = tmpString+DatabaseConstant.AREAS_SEP+tmpString
 
         assert(correctString == GoogleMapHelper.areasToFormattedStringLocations(from = 1,points = map2))
+    }
+    @Test
+    fun areasToFormattedStringLocationsTakesUpperBoundIntoAccount(){
+        val map2: MutableMap<Int, List<LatLng>> = mutableMapOf()
+        map2[id1] = listLngLat
+        map2[id2] = listLngLat2
+        map2[id3] = listLngLat2
+
+        var correctString = ""
+        for (i in arrayLngLat.indices) {
+            correctString += arrayLngLat[i].toString()
+            if (i % 2 == 0)
+                correctString += DatabaseConstant.LAT_LONG_SEP
+            else
+                correctString += DatabaseConstant.POINTS_SEP
+        }
+        correctString = correctString.substring(0, correctString.length - DatabaseConstant.POINTS_SEP.length)+DatabaseConstant.AREAS_SEP
+        for (i in arrayLngLat2.indices) {
+            correctString += arrayLngLat2[i].toString()
+            if (i % 2 == 0)
+                correctString += DatabaseConstant.LAT_LONG_SEP
+            else
+                correctString += DatabaseConstant.POINTS_SEP
+        }
+        correctString = correctString.substring(0, correctString.length - DatabaseConstant.POINTS_SEP.length)
+
+        assert(correctString == GoogleMapHelper.areasToFormattedStringLocations(to = 2,points = map2))
     }
 }

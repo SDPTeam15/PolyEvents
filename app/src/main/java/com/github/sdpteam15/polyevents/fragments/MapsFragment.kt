@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -38,6 +37,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     var PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1
     var zone: Zone? = null
     var onEdit: Boolean = false
+    var startId = -1
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,18 +55,32 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         val locateMeButton = view.findViewById<FloatingActionButton>(R.id.id_locate_me_button)
         val saveButton = view.findViewById<FloatingActionButton>(R.id.saveAreas)
 
+        addNewAreaButton.setOnClickListener {
+            GoogleMapHelper.createNewArea()
+        }
+        saveNewAreaButton.setOnClickListener {
+            GoogleMapHelper.saveNewArea()
+        }
+
         if (onEdit) {
             addNewAreaButton.visibility = View.VISIBLE
             saveNewAreaButton.visibility = View.VISIBLE
             saveButton.visibility = View.VISIBLE
             locationButton.visibility = View.INVISIBLE
             locateMeButton.visibility = View.INVISIBLE
-            val startId = GoogleMapHelper.uid
 
-            saveButton.setOnClickListener{
-                val location = GoogleMapHelper.areasToFormattedStringLocations(from=startId)
-                zone!!.location=location
-                ZoneManagementActivity.zoneObservable.postValue(Zone(zoneName = zone?.zoneName,zoneId = zone?.zoneId,location = location,description = zone?.description))
+            saveButton.setOnClickListener {
+                val location = GoogleMapHelper.areasToFormattedStringLocations(from = startId)
+                zone!!.location = location
+                ZoneManagementActivity.nbModified = GoogleMapHelper.uid - startId
+                ZoneManagementActivity.zoneObservable.postValue(
+                    Zone(
+                        zoneName = zone?.zoneName,
+                        zoneId = zone?.zoneId,
+                        location = location,
+                        description = zone?.description
+                    )
+                )
             }
         } else {
             addNewAreaButton.visibility = View.INVISIBLE
@@ -75,15 +89,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
             locationButton.visibility = View.VISIBLE
             locateMeButton.visibility = View.VISIBLE
         }
-
-
-        addNewAreaButton.setOnClickListener{
-            GoogleMapHelper.createNewArea()
-        }
-        saveNewAreaButton.setOnClickListener{
-            GoogleMapHelper.saveNewArea()
-        }
-
 
         locationButton.setOnClickListener {
             switchLocationOnOff()
@@ -105,6 +110,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         GoogleMapHelper.saveCamera()
 
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -131,6 +137,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         if (useUserLocation) {
             activateMyLocation()
         }
+        startId = GoogleMapHelper.uid
+
     }
 
     override fun onPolylineClick(polyline: Polyline) {

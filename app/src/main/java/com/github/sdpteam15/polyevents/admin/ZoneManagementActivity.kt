@@ -14,6 +14,8 @@ import com.github.sdpteam15.polyevents.admin.ZoneManagementListActivity.Companio
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.fragments.MapsFragment
+import com.github.sdpteam15.polyevents.helper.GoogleMapHelper
+import com.github.sdpteam15.polyevents.helper.GoogleMapHelper.removeRangePolygon
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.Zone
 
@@ -24,6 +26,7 @@ class ZoneManagementActivity : AppCompatActivity() {
         val zone = Zone(location = "")
         var zoneId = ""
         var inTest = false
+        var nbModified = 0
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,9 +52,8 @@ class ZoneManagementActivity : AppCompatActivity() {
             changeCoordinatesText(etLoc, btnManageCoor, btnDelete, zoneId)
         }
 
-
-
         zoneObservable.observe {
+            supportActionBar!!.setDisplayHomeAsUpEnabled(false)
             findViewById<FrameLayout>(R.id.flMapEditZone).visibility = View.INVISIBLE
             val zoneInfo = it!!
             etName.setText(zoneInfo.zoneName)
@@ -80,6 +82,13 @@ class ZoneManagementActivity : AppCompatActivity() {
 
         btnDelete.setOnClickListener {
             zone.location = ""
+
+            if(nbModified != 0){
+                removeRangePolygon(GoogleMapHelper.uid- nbModified,GoogleMapHelper.uid)
+                GoogleMapHelper.uid -= nbModified
+                nbModified = 0
+            }
+
             changeCoordinatesText(etLoc, btnManageCoor, btnDelete, "")
         }
 
@@ -89,6 +98,7 @@ class ZoneManagementActivity : AppCompatActivity() {
             zone.zoneName = etName.text.toString()
             //TODO add the area to be modified (once the zone modifier is implemented
 
+            supportActionBar!!.setDisplayHomeAsUpEnabled(false)
             if (!inTest)
                 HelperFunctions.changeFragment(this, mapFragment, R.id.flMapEditZone)
         }
@@ -100,13 +110,13 @@ class ZoneManagementActivity : AppCompatActivity() {
         btnDelete: Button,
         newText: String?
     ) {
-        var text = ""
+        var text:String
         if (newText == null || newText == "") {
             text = getString(R.string.zone_management_coordinates_not_set)
             btnManage.text = getString(R.string.btn_modify_coord_set_text)
             btnDelete.visibility = View.INVISIBLE
         } else {
-            btnManage.text = getString(R.string.btn_modify_coord_set_text)
+            btnManage.text = getString(R.string.btn_modify_coord_update_text)
             btnDelete.visibility = View.VISIBLE
             text = getString(R.string.zone_management_coordinates_set)
         }

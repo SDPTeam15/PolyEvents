@@ -19,6 +19,7 @@ class ZoneManagementListActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.btnNewZone).setOnClickListener {
             val intent = Intent(this, ZoneManagementActivity::class.java)
+            ZoneManagementActivity.zone.location=""
             intent.putExtra(EXTRA_ID, NEW_ZONE)
             startActivity(intent)
         }

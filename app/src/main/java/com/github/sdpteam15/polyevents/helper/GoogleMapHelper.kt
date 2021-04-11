@@ -26,12 +26,12 @@ enum class PolygonAction {
 object GoogleMapHelper {
     var context: Context? = null
     var map: GoogleMap? = null
-    var uid = 1
+    var uid = 0
 
     //Attributes that can change
     var minZoom = 17f
     var maxZoom = 21f
-    
+
 
     var swBound = LatLng(46.519941764550545, 6.564997248351575)  // SW bounds
     var neBound = LatLng(46.5213428130699, 6.566603220999241)    // NE bounds
@@ -40,7 +40,7 @@ object GoogleMapHelper {
     var cameraZoom = 18f
 
     val areasPoints: MutableMap<Int, Pair<Marker, Polygon>> = mutableMapOf()
-    val coordinates: MutableMap<Int, List<LatLng>> = mutableMapOf()
+    var coordinates: MutableMap<Int, List<LatLng>> = mutableMapOf()
 
     /**
      * Temporary variables when adding and editing an area
@@ -439,12 +439,17 @@ object GoogleMapHelper {
         from: Int = 0,
         to: Int = points.size
     ): String {
+        println("Range " + (from until to).toString())
+        println("From $from")
+        println("To $to")
+        println("Map $points")
 
         var s = ""
         for (i in from until to) {
             s += areaToFormattedStringLocation(points[i])
             s += DatabaseConstant.AREAS_SEP
         }
+        println(s)
         return s.substring(0, s.length - DatabaseConstant.AREAS_SEP.length)
     }
 
@@ -458,5 +463,11 @@ object GoogleMapHelper {
             s += c.latitude.toString() + DatabaseConstant.LAT_LONG_SEP + c.longitude + DatabaseConstant.POINTS_SEP
         }
         return s.substring(0, s.length - DatabaseConstant.POINTS_SEP.length)
+    }
+    fun removeRangePolygon(from: Int, to: Int){
+        for(r in (from until to)){
+            areasPoints.remove(r)?.second?.remove()
+            coordinates.remove(r)
+        }
     }
 }
