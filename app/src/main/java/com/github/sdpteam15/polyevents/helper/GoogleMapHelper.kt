@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.helper
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -7,6 +8,7 @@ import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.core.content.ContextCompat
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.database.DatabaseConstant
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
@@ -20,6 +22,7 @@ enum class PolygonAction {
     ROTATE
 }
 
+@SuppressLint("StaticFieldLeak")
 object GoogleMapHelper {
     var context: Context? = null
     var map: GoogleMap? = null
@@ -86,9 +89,8 @@ object GoogleMapHelper {
      * Restores the camera to the location it was before changing fragment or activity, goes to a initial position if it is the first time the map is opened
      */
     fun restoreCameraState() {
-        map!!.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraPosition,cameraZoom))
+        map!!.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraPosition, cameraZoom))
     }
-
 
 
     /**
@@ -204,13 +206,13 @@ object GoogleMapHelper {
         map!!.setLatLngBoundsForCameraTarget(bounds)
     }
 
-    fun createNewArea(){
+    fun createNewArea() {
         clearTemp()
         setupEditZone(map!!.cameraPosition.target)
     }
 
-    fun saveNewArea(){
-        if(tempPoly != null){
+    fun saveNewArea() {
+        if (tempPoly != null) {
             addArea(uid.toString(), tempPoly!!.points, "Area $uid")
             uid += 1
         }
@@ -263,8 +265,8 @@ object GoogleMapHelper {
         moveDiagMarker = map!!.addMarker(
             MarkerOptions().position(pos3).icon(getMarkerRessource(R.drawable.ic_downleftarrow))
                 .anchor(0.5f, 0.5f).draggable(true).snippet(
-                PolygonAction.DIAG.toString()
-            )
+                    PolygonAction.DIAG.toString()
+                )
         )
         moveDiagPos = moveDiagMarker!!.position
         moveRightMarker = map!!.addMarker(
@@ -286,8 +288,8 @@ object GoogleMapHelper {
         moveMarker = map!!.addMarker(
             MarkerOptions().position(posCenter).icon(getMarkerRessource(R.drawable.ic_move))
                 .anchor(0.5f, 0.5f).draggable(true).snippet(
-                PolygonAction.MOVE.toString()
-            )
+                    PolygonAction.MOVE.toString()
+                )
         )
         movePos = moveMarker!!.position
     }
@@ -425,5 +427,34 @@ object GoogleMapHelper {
             PolygonAction.ROTATE.toString() -> Log.d("ROTATION", "ROTATION BUTTON CLICKED")
         }
         tempPoly?.points = tempLatLng
+    }
+
+    fun areasToFormattedStringLocations(
+        from: Int = 0,
+        to: Int = uid,
+        points: MutableMap<String, Pair<Marker, Polygon>> = areasPoints
+    ): String {
+        println(points.toString())
+        var s = ""
+        for (i in from..to) {
+
+            s += areaToFormattedStringLocation(points[i]?.second)
+            s += DatabaseConstant.AREAS_SEP
+
+            println(i.toString() + " " + points[i]?.second?.points.toString())
+        }
+        return s.substring(0, s.length - DatabaseConstant.AREAS_SEP.length)
+    }
+
+    fun areaToFormattedStringLocation(pol: Polygon?): String {
+        if (pol == null) {
+            return ""
+        }
+        var s = ""
+
+        for (c in pol.points) {
+            s += c.latitude.toString() + DatabaseConstant.LAT_LONG_SEP + c.longitude + DatabaseConstant.POINTS_SEP
+        }
+        return s.substring(0, s.length - DatabaseConstant.POINTS_SEP.length)
     }
 }

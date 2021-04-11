@@ -46,7 +46,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     ): View? {
 
         onEdit = zone != null
-        HelperFunctions.showToast(onEdit.toString(), activity)
 
         val view = inflater.inflate(R.layout.fragment_maps, container, false)
 
@@ -62,9 +61,11 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
             saveButton.visibility = View.VISIBLE
             locationButton.visibility = View.INVISIBLE
             locateMeButton.visibility = View.INVISIBLE
+            val startId = GoogleMapHelper.uid
 
             saveButton.setOnClickListener{
-                val location = GoogleMapHelper.newAreasToFormattedStringLocations()
+                val location = GoogleMapHelper.areasToFormattedStringLocations(startId)
+                zone!!.location=location
                 ZoneManagementActivity.zoneObservable.postValue(Zone(zoneName = zone?.zoneName,zoneId = zone?.zoneId,location = location,description = zone?.description))
             }
         } else {
