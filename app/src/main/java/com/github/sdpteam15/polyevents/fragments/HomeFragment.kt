@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
+import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.Event
 
 /**
@@ -36,8 +37,8 @@ class HomeFragment : Fragment() {
             fragmentView.findViewById<LinearLayout>(R.id.id_upcoming_events_list)
 
         currentDatabase.getListEvent(null, 3, events).observe(this) {
-            if (it.value) {
-                updateContent()
+            if (!it.value) {
+                HelperFunctions.showToast("Failed to load events", fragmentView.context)
             }
         }
         events.observe(this) {

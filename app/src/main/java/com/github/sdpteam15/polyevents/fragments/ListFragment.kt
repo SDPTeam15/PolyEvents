@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.EventActivity
 import com.github.sdpteam15.polyevents.R
@@ -29,7 +30,6 @@ class ListFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     val events = ObservableList<Event>()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -54,8 +54,8 @@ class ListFragment : Fragment() {
 
         recyclerView.adapter = EventItemAdapter(events, openEvent)
         currentDatabase.getListEvent(null,10, events).observe(this) {
-            if (it.value){
-                recyclerView.adapter!!.notifyDataSetChanged()
+            if (!it.value){
+                HelperFunctions.showToast("Failed to get events information", fragmentView.context)
             }
         }
         events.observe(this) { recyclerView.adapter!!.notifyDataSetChanged() }

@@ -129,6 +129,7 @@ object FakeDatabase : DatabaseInterface {
         profile: ProfileInterface
     ): Observable<Boolean> {
         //request sql returns- task<Document>
+        Log.d("FakeDataBase", "getting")
         eventList.clear(this)
 
         eventList.addAll(events, this)

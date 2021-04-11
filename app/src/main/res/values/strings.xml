@@ -82,4 +82,5 @@
     <string name="title_activity_user_management">User Management</string>
     <string name="title_activity_event_management">Event Management</string>
     <string name="admin_hub_title">Admin management options</string>
+    <string name="event_info_fail">Failed to get the event information</string>
 </resources>

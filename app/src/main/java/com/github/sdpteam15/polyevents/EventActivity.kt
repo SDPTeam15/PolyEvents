@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.fragments.EXTRA_EVENT_ID
+import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.Event
 
 /**
@@ -15,27 +16,21 @@ import com.github.sdpteam15.polyevents.model.Event
 class EventActivity : AppCompatActivity() {
 
     var obsEvent = Observable<Event>()
-/*
-    override fun onResume() {
-        super.onResume()
-        obsEvent.observe { updateInfo(it!!) }
-    }*/
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_event)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowHomeEnabled(true)
 
         currentDatabase.getEventFromId(intent.getStringExtra(EXTRA_EVENT_ID)!!, obsEvent)
-            .observe { b ->
-                if (b.value) {
-                    obsEvent.observe { updateInfo(it.value) }
+            .observe(this) { b ->
+                if (!b.value) {
+                    HelperFunctions.showToast(getString(R.string.event_info_fail),this)
                 }
             }
-
+        obsEvent.observe(this) { updateInfo(it.value) }
     }
 
     /**
