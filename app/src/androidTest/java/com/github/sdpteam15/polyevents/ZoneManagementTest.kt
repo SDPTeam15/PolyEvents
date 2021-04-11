@@ -60,6 +60,7 @@ class ZoneManagementTest {
 
         val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
         scenario = ActivityScenario.launch(intent)
+        ZoneManagementActivity.inTest = false
 
         onView(withId(R.id.ic_home)).perform(click())
         onView(withId(R.id.id_fragment_admin_hub))

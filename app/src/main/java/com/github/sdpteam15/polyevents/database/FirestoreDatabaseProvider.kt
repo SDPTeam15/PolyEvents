@@ -87,7 +87,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     var lastSetSuccessListener: OnSuccessListener<Void>? = null
     var lastFailureListener: OnFailureListener? = null
     var lastMultGetSuccessListener: OnSuccessListener<DocumentSnapshot>? = null
-    var lastAddSuccessListener:OnSuccessListener<DocumentReference>?=null
+    var lastAddSuccessListener: OnSuccessListener<DocumentReference>?=null
 
     fun thenDoAdd(
         task:Task<DocumentReference>

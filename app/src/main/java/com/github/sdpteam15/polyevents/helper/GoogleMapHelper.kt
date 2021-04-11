@@ -31,6 +31,7 @@ object GoogleMapHelper {
     //Attributes that can change
     var minZoom = 17f
     var maxZoom = 21f
+    
 
     var swBound = LatLng(46.519941764550545, 6.564997248351575)  // SW bounds
     var neBound = LatLng(46.5213428130699, 6.566603220999241)    // NE bounds
@@ -38,7 +39,8 @@ object GoogleMapHelper {
     var cameraPosition = LatLng(46.52010210373031, 6.566237434744834)
     var cameraZoom = 18f
 
-    val areasPoints: MutableMap<String, Pair<Marker, Polygon>> = mutableMapOf()
+    val areasPoints: MutableMap<Int, Pair<Marker, Polygon>> = mutableMapOf()
+    val coordinates: MutableMap<Int, List<LatLng>> = mutableMapOf()
 
     /**
      * Temporary variables when adding and editing an area
@@ -112,13 +114,13 @@ object GoogleMapHelper {
             listEvent1.add(LatLng(46.52073238207864, 6.565499156713487))
             listEvent1.add(LatLng(46.52073238207864, 6.565711721777915))
             listEvent1.add(LatLng(46.52100506978624, 6.565711721777915))
-            addArea("uid++.toString()", listEvent1, "Sushi Demo")
+            addArea(uid++, listEvent1, "Sushi Demo")
 
             val listEvent2 = arrayListOf<LatLng>()
             listEvent2.add(LatLng(46.52015447340308, 6.5656305849552155))
             listEvent2.add(LatLng(46.52036049105315, 6.5658414736390105))
             listEvent2.add(LatLng(46.52013394080612, 6.566103324294089))
-            addArea(uid++.toString(), listEvent2, "Triangle")
+            addArea(uid++, listEvent2, "Triangle")
 
             val listEvent3 = arrayListOf<LatLng>()
             listEvent3.add(LatLng(46.52111073013754, 6.565624214708805))
@@ -129,7 +131,7 @@ object GoogleMapHelper {
             listEvent3.add(LatLng(46.52115986905187, 6.565871313214302))
             listEvent3.add(LatLng(46.52115986905187, 6.565824374556541))
             listEvent3.add(LatLng(46.521115113422766, 6.565824374556541))
-            addArea(uid++.toString(), listEvent3, "La route en T")
+            addArea(uid++, listEvent3, "La route en T")
         }
     }
 
@@ -143,8 +145,10 @@ object GoogleMapHelper {
     /**
      * Helper method to add a area to the map and generate an invisible marker in its center to display the area infos
      */
-    fun addArea(id: String, coords: List<LatLng>, name: String) {
+    fun addArea(id: Int, coords: List<LatLng>, name: String) {
         if (!coords.isEmpty()) {
+            coordinates[id] = coords
+
             val poly = PolygonOptions()
             poly.addAll(coords).clickable(true)
 
@@ -213,7 +217,7 @@ object GoogleMapHelper {
 
     fun saveNewArea() {
         if (tempPoly != null) {
-            addArea(uid.toString(), tempPoly!!.points, "Area $uid")
+            addArea(uid, tempPoly!!.points, "Area $uid")
             uid += 1
         }
         clearTemp()
@@ -429,30 +433,28 @@ object GoogleMapHelper {
         tempPoly?.points = tempLatLng
     }
 
+
     fun areasToFormattedStringLocations(
+        points: MutableMap<Int, List<LatLng>> = coordinates,
         from: Int = 0,
-        to: Int = uid,
-        points: MutableMap<String, Pair<Marker, Polygon>> = areasPoints
+        to: Int = points.size
     ): String {
-        println(points.toString())
+
         var s = ""
-        for (i in from..to) {
-
-            s += areaToFormattedStringLocation(points[i]?.second)
+        for (i in from until to) {
+            s += areaToFormattedStringLocation(points[i])
             s += DatabaseConstant.AREAS_SEP
-
-            println(i.toString() + " " + points[i]?.second?.points.toString())
         }
         return s.substring(0, s.length - DatabaseConstant.AREAS_SEP.length)
     }
 
-    fun areaToFormattedStringLocation(pol: Polygon?): String {
-        if (pol == null) {
+    fun areaToFormattedStringLocation(loc: List<LatLng>?): String {
+        if (loc == null){
             return ""
         }
         var s = ""
 
-        for (c in pol.points) {
+        for (c in loc) {
             s += c.latitude.toString() + DatabaseConstant.LAT_LONG_SEP + c.longitude + DatabaseConstant.POINTS_SEP
         }
         return s.substring(0, s.length - DatabaseConstant.POINTS_SEP.length)

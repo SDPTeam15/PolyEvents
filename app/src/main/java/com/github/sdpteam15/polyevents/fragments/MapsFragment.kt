@@ -64,7 +64,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
             val startId = GoogleMapHelper.uid
 
             saveButton.setOnClickListener{
-                val location = GoogleMapHelper.areasToFormattedStringLocations(startId)
+                val location = GoogleMapHelper.areasToFormattedStringLocations(from=startId)
                 zone!!.location=location
                 ZoneManagementActivity.zoneObservable.postValue(Zone(zoneName = zone?.zoneName,zoneId = zone?.zoneId,location = location,description = zone?.description))
             }

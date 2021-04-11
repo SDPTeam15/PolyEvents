@@ -1,7 +1,6 @@
 package com.github.sdpteam15.polyevents.admin
 
 import android.content.Intent
-import android.opengl.Visibility
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -9,7 +8,6 @@ import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.admin.ZoneManagementListActivity.Companion.EXTRA_ID
 import com.github.sdpteam15.polyevents.admin.ZoneManagementListActivity.Companion.NEW_ZONE
@@ -18,7 +16,6 @@ import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.fragments.MapsFragment
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.Zone
-
 
 
 class ZoneManagementActivity : AppCompatActivity() {
@@ -45,12 +42,17 @@ class ZoneManagementActivity : AppCompatActivity() {
         val etLoc = findViewById<EditText>(R.id.zoneManagementCoordinates)
         val mapFragment = MapsFragment()
         mapFragment.zone = zone
-        //By default, set the button as if we create a new zone
-        changeCoordinatesText(etLoc, btnManageCoor, btnDelete,"")
+
+        if (zoneId == NEW_ZONE) {
+            changeCoordinatesText(etLoc, btnManageCoor, btnDelete, "")
+        } else {
+            changeCoordinatesText(etLoc, btnManageCoor, btnDelete, zoneId)
+        }
+
 
 
         zoneObservable.observe {
-            findViewById<FrameLayout>(R.id.flMapEditZone).visibility= View.INVISIBLE
+            findViewById<FrameLayout>(R.id.flMapEditZone).visibility = View.INVISIBLE
             val zoneInfo = it!!
             etName.setText(zoneInfo.zoneName)
             etDesc.setText(zoneInfo.description)
@@ -72,36 +74,41 @@ class ZoneManagementActivity : AppCompatActivity() {
             currentDatabase.getZoneInformation(zoneId, zoneObservable)
 
             btnManage.setOnClickListener {
-                updateZoneInfo(etName, etDesc,etLoc)
+                updateZoneInfo(etName, etDesc, etLoc)
             }
         }
 
-        btnDelete.setOnClickListener{
+        btnDelete.setOnClickListener {
             zone.location = ""
-            changeCoordinatesText(etLoc,btnManageCoor,btnDelete, "")
+            changeCoordinatesText(etLoc, btnManageCoor, btnDelete, "")
         }
 
-        btnManageCoor.setOnClickListener{
-            findViewById<FrameLayout>(R.id.flMapEditZone).visibility= View.VISIBLE
-            zone.description=etDesc.text.toString()
-            zone.zoneName=etName.text.toString()
+        btnManageCoor.setOnClickListener {
+            findViewById<FrameLayout>(R.id.flMapEditZone).visibility = View.VISIBLE
+            zone.description = etDesc.text.toString()
+            zone.zoneName = etName.text.toString()
             //TODO add the area to be modified (once the zone modifier is implemented
 
-            if(!inTest)
-                HelperFunctions.changeFragment(this,mapFragment,R.id.flMapEditZone)
+            if (!inTest)
+                HelperFunctions.changeFragment(this, mapFragment, R.id.flMapEditZone)
         }
     }
 
-    private fun changeCoordinatesText(etLoc:EditText, btnManage:Button, btnDelete:Button, newText:String?){
+    private fun changeCoordinatesText(
+        etLoc: EditText,
+        btnManage: Button,
+        btnDelete: Button,
+        newText: String?
+    ) {
         var text = ""
-        if(newText == null || newText=="") {
-            text= getString(R.string.zone_management_coordinates_not_set)
+        if (newText == null || newText == "") {
+            text = getString(R.string.zone_management_coordinates_not_set)
             btnManage.text = getString(R.string.btn_modify_coord_set_text)
             btnDelete.visibility = View.INVISIBLE
-        }else{
+        } else {
             btnManage.text = getString(R.string.btn_modify_coord_set_text)
             btnDelete.visibility = View.VISIBLE
-            text= getString(R.string.zone_management_coordinates_set)
+            text = getString(R.string.zone_management_coordinates_set)
         }
 
         etLoc.setText(text)
