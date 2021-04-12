@@ -17,7 +17,9 @@ class ZoneManagementListActivity : AppCompatActivity() {
         setContentView(R.layout.activity_zone_management_list)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
+
         findViewById<Button>(R.id.btnNewZone).setOnClickListener {
+            //redirect to ZoneManagementActivity on button click
             val intent = Intent(this, ZoneManagementActivity::class.java)
             ZoneManagementActivity.zone.location=""
             intent.putExtra(EXTRA_ID, NEW_ZONE)

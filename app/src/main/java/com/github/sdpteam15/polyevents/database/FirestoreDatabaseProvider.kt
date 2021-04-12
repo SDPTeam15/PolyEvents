@@ -97,6 +97,11 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     var lastMultGetSuccessListener: OnSuccessListener<DocumentSnapshot>? = null
     var lastAddSuccessListener: OnSuccessListener<DocumentReference>?=null
 
+    /**
+     * After an add request, add on success and on failure listener (and set them into the corresponding variable to be able to test)
+     * @param task: The query that will get document from Firestore
+      @return An observable that will be true if no problem during the request false otherwise
+     */
     fun thenDoAdd(
         task:Task<DocumentReference>
     ):Observable<Boolean>{
