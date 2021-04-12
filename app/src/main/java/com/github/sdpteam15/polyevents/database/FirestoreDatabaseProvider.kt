@@ -140,7 +140,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         eventList: ObservableList<Event>,
         profile: UserProfile?
     ): Observable<Boolean> {
-        /*
+
         val end = Observable<Boolean>()
         val task = firestore!!.collection(EVENT_COLLECTION)
         val query = matcher?.match(task)
@@ -159,11 +159,10 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             }
             end.postValue(true)
         }.addOnFailureListener {
-            Log.d("FirestoreDatabaseProvider ", it.message!!)
             end.postValue(false)
         }
-        return end*/
-        return FakeDatabase.getListEvent(matcher,number,eventList,profile)
+        return end
+        //return FakeDatabase.getListEvent(matcher,number,eventList,profile)
     }
 
 

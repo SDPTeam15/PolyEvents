@@ -52,22 +52,23 @@ object EventAdapter {
      * @param documentData this is the data we retrieve from the document.
      * @return the corresponding Event entity.
      */
-    fun toEventEntity(documentData: MutableMap<String, Any?>): Event =
-        Event(
-                eventId = documentData[EVENT_DOCUMENT_ID] as String,
-                eventName = documentData[EVENT_NAME] as String?,
-                organizer = documentData[EVENT_ORGANIZER] as String?,
-                zoneName = documentData[EVENT_ZONE_NAME] as String?,
-                description = documentData[EVENT_DESCRIPTION] as String?,
-                startTime = HelperFunctions.DateToLocalDateTime(
-                        (documentData[EVENT_START_TIME] as Timestamp?)?.toDate()
-                ),
-                endTime = HelperFunctions.DateToLocalDateTime(
-                        // TODO: test if start time is null (remove ? from Timestamp)
-                        (documentData[EVENT_END_TIME] as Timestamp?)?.toDate()
-                ),
-                // TODO: Check how item is stored in Firestore, and check if conversion worked
-                inventory = (documentData[EVENT_INVENTORY] as List<Item>).toMutableList(),
-                tags = (documentData[EVENT_TAGS] as List<String>).toMutableSet()
+    fun toEventEntity(documentData: MutableMap<String, Any?>): Event  {
+        return Event(
+            eventId = documentData[EVENT_DOCUMENT_ID] as String,
+            eventName = documentData[EVENT_NAME] as String?,
+            organizer = documentData[EVENT_ORGANIZER] as String?,
+            zoneName = documentData[EVENT_ZONE_NAME] as String?,
+            description = documentData[EVENT_DESCRIPTION] as String?,
+            startTime = HelperFunctions.DateToLocalDateTime(
+                (documentData[EVENT_START_TIME] as Timestamp?)?.toDate()
+            ),
+            endTime = HelperFunctions.DateToLocalDateTime(
+                // TODO: test if start time is null (remove ? from Timestamp)
+                (documentData[EVENT_END_TIME] as Timestamp?)?.toDate()
+            ),
+            // TODO: Check how item is stored in Firestore, and check if conversion worked
+            inventory = (documentData[EVENT_INVENTORY] as List<Item>).toMutableList(),
+            tags = (documentData[EVENT_TAGS] as List<String>).toMutableSet()
         )
+    }
 }
