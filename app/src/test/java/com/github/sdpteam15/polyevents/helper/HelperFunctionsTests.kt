@@ -4,14 +4,15 @@ import android.Manifest
 import android.content.pm.PackageManager
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
-import java.time.LocalDateTime
 import org.junit.Test
+import java.time.LocalDateTime
+import kotlin.test.assertEquals
 
 class HelperFunctionsTests {
 
     // Fake array of location permissions
-    private val grantPermissions = arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION,
-        android.Manifest.permission.ACCESS_COARSE_LOCATION)
+    private val grantPermissions = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION)
 
     @Test
     fun isPermissionGrantedIsTrueWhenGranted() {
@@ -50,12 +51,4 @@ class HelperFunctionsTests {
         assertEquals(ldt.minute, ldtRetrieved.minute)
         assertEquals(ldt.second, ldtRetrieved.second)
     }
-}
-
-import org.junit.Test
-import java.time.LocalDateTime
-import kotlin.test.assertEquals
-
-class HelperFunctionsTests {
-
 }
