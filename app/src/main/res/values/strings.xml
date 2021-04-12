@@ -112,7 +112,9 @@
     <string name="tv_update_zone_text">Update an existing zone</string>
     <string name="missing_field_zone_management">Please fill all the required fields</string>
     <string name="zone_added_successfully">Your new zone was successfully added</string>
+    <string name="zone_updated_successfully">The zone was successfully updated</string>
     <string name="zone_add_fail">Error while creating your new zone, please try again !</string>
+    <string name="zone_update_fail">Error while update your zone, please try again !</string>
     <string name="zone_management_name_text">Name</string>
     <string name="zone_management_description_text">Description</string>
     <string name="zone_management_coordinates_text">Zone coordinates</string>
