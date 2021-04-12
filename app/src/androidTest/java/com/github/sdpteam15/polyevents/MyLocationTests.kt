@@ -1,11 +1,9 @@
 package com.github.sdpteam15.polyevents
 
-import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions
