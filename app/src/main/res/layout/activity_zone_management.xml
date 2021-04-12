@@ -16,8 +16,8 @@
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -88,6 +88,7 @@
                         android:textStyle="bold" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -107,33 +108,39 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
+                        android:enabled="false"
                         android:inputType="text"
                         android:paddingStart="20dp"
                         android:paddingEnd="0dp"
-                        android:textStyle="bold"
-                        android:enabled="false"/>
+                        android:textStyle="bold" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:orientation="horizontal"
                 android:paddingStart="10dp"
                 android:paddingEnd="0dp">
+
                 <Button
                     android:id="@+id/btnModifyZoneCoordinates"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/btn_modify_coord_update_text" />
+                    android:text="@string/btn_modify_coord_update_text"
+                    tools:ignore="ButtonStyle" />
 
                 <Button
                     android:id="@+id/btnDeleteZoneCoordinates"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/btn_delete_coord_text" />
+                    android:text="@string/btn_delete_coord_text"
+                    tools:ignore="ButtonStyle" />
 
 
             </LinearLayout>
+
             <Button
                 android:id="@+id/btnManage"
                 android:layout_width="match_parent"
