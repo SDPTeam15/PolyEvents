@@ -7,13 +7,12 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
-import com.github.sdpteam15.polyevents.database.DatabaseUserInterface
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.fragments.LoginFragment
 import com.github.sdpteam15.polyevents.fragments.ProfileFragment
-import com.github.sdpteam15.polyevents.user.User
-import com.github.sdpteam15.polyevents.user.UserInterface
+import com.github.sdpteam15.polyevents.model.UserEntity
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.auth.User
 import org.hamcrest.Matchers
 import org.junit.Before
 import org.junit.Rule
@@ -38,26 +37,17 @@ class ProfileLoginFragmentTests {
     @JvmField
     var testRule = ActivityScenarioRule<MainActivity>(MainActivity::class.java)
 
-    lateinit var user: UserInterface
-    lateinit var user2: UserInterface
-    lateinit var mockedDatabaseUser: DatabaseUserInterface
-    lateinit var mockedDatabaseUser2: DatabaseUserInterface
+    lateinit var user: UserEntity
+    lateinit var user2: UserEntity
+    lateinit var mockedDatabaseUser: UserEntity
+    lateinit var mockedDatabaseUser2: UserEntity
     lateinit var mockedDatabase: DatabaseInterface
     lateinit var endingRequest: Observable<Boolean>
 
     @Before
     fun setup() {
-        mockedDatabaseUser = mock(DatabaseUserInterface::class.java)
-        When(mockedDatabaseUser.email).thenReturn(emailTest)
-        When(mockedDatabaseUser.displayName).thenReturn(displayNameTest)
-        When(mockedDatabaseUser.uid).thenReturn(uidTest)
-        user = User.invoke(mockedDatabaseUser)
-
-        mockedDatabaseUser2 = mock(DatabaseUserInterface::class.java)
-        When(mockedDatabaseUser2.email).thenReturn(emailTest2)
-        When(mockedDatabaseUser2.displayName).thenReturn(displayNameTest2)
-        When(mockedDatabaseUser2.uid).thenReturn(uidTest2)
-        user2 = User.invoke(mockedDatabaseUser2)
+        user = UserEntity(uid = uidTest, email = emailTest, name = displayNameTest)
+        user2 = UserEntity(uid = uidTest2, email = emailTest2, name = displayNameTest2)
 
         testRule = ActivityScenarioRule<MainActivity>(MainActivity::class.java)
         endingRequest = Observable()

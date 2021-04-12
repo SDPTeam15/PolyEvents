@@ -1,19 +1,18 @@
 package com.github.sdpteam15.polyevents.fragments
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.EventActivity
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
-import com.github.sdpteam15.polyevents.event.Event
-import com.github.sdpteam15.polyevents.event.EventItemAdapter
+import com.github.sdpteam15.polyevents.model.Event
+import com.github.sdpteam15.polyevents.adapter.EventItemAdapter
+import com.github.sdpteam15.polyevents.helper.HelperFunctions
 
 /**
  * Extra containing the event ID to show on the launched event page
@@ -35,7 +34,6 @@ class ListFragment : Fragment() {
 
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -48,7 +46,7 @@ class ListFragment : Fragment() {
 
         val openEvent = { event: Event ->
             val intent = Intent(inflater.context, EventActivity::class.java).apply {
-                putExtra(EXTRA_EVENT_ID, event.id)
+                putExtra(EXTRA_EVENT_ID, event.eventId)
             }
             startActivity(intent)
         }
