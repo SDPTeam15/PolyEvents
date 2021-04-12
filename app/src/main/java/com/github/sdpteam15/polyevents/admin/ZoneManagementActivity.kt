@@ -84,12 +84,12 @@ class ZoneManagementActivity : AppCompatActivity() {
 
     /**
      * Method that will set the listener on the buttons properly
-     * btnDelete: The button handling coordinates deletion
-     * btnManageCoor: The button handling coordinates update or set
-     * etLoc: EditText containing information about the coordinates
-     * etDesc: EditText containing information about the description
-     * etName: EditText containing information about the name
-     * mapFragment: The map fragment object
+     * @param btnDelete: The button handling coordinates deletion
+     * @param btnManageCoor: The button handling coordinates update or set
+     * @param etLoc: EditText containing information about the coordinates
+     * @param etDesc: EditText containing information about the description
+     * @param etName: EditText containing information about the name
+     * @param mapFragment: The map fragment object
      */
     private fun setupListener(
         btnDelete: Button,
@@ -129,10 +129,10 @@ class ZoneManagementActivity : AppCompatActivity() {
 
     /**
      * Change the text of the coordinates  field
-     * etLoc: editText containing the text about coordinates
-     * btnManage: button handling update or create zone
-     * btnDelete: The button handling coordinates deletion
-     * locationText: The location text we should inspect
+     * @param etLoc: editText containing the text about coordinates
+     * @param btnManage: button handling update or create zone
+     * @param btnDelete: The button handling coordinates deletion
+     * @param locationText: The location text we should inspect
      */
     private fun changeCoordinatesText(
         etLoc: EditText,
@@ -158,9 +158,9 @@ class ZoneManagementActivity : AppCompatActivity() {
 
     /**
      * Handle the zone creation event
-     * etName: EditText containing information about the name
-     * etDesc: EditText containing information about the description
-     * etLoc: EditText containing information about the coordinates
+     * @param etName: EditText containing information about the name
+     * @param etDesc: EditText containing information about the description
+     * @param etLoc: EditText containing information about the coordinates
      */
     private fun createZone(etName: EditText, etDesc: EditText, etLoc: EditText) {
         //Create a new zone based on the fields
@@ -186,9 +186,9 @@ class ZoneManagementActivity : AppCompatActivity() {
 
     /**
      * Handle the zone update event
-     * etName: EditText containing information about the name
-     * etDesc: EditText containing information about the description
-     * etLoc: EditText containing information about the coordinates
+     * @param etName: EditText containing information about the name
+     * @param etDesc: EditText containing information about the description
+     * @param etLoc: EditText containing information about the coordinates
      */
     private fun updateZoneInfo(etName: EditText, etDesc: EditText, etLoc: EditText) {
         //Update zone information based on the fields
@@ -213,9 +213,9 @@ class ZoneManagementActivity : AppCompatActivity() {
 
     /**
      * This method handle the callback from the creation and update method of the database
-     * it: The return value from the database
-     * succMess: the message to display in case of success
-     * failMess: The message to display in case of failure
+     * @param it: The return value from the database
+     * @param succMess: the message to display in case of success
+     * @param failMess: The message to display in case of failure
      */
     private fun callbackHandler(it: Boolean?, succMess: String, failMess: String) {
         if (it!!) {
@@ -233,9 +233,10 @@ class ZoneManagementActivity : AppCompatActivity() {
     }
 
     /**
-     * name : the name entered in the zoneName field
-     * loc : text in the zoneCoord text
-     * desc : the description entered in the zoneDesc field
+     * @param name : the name entered in the zoneName field
+     * @param loc : text in the zoneCoord text
+     * @param desc : the description entered in the zoneDesc field
+     * @return true if the string are correctly set, false otherwise
      */
     private fun checkNotEmpty(name: String, loc: String?, desc: String): Boolean {
         if (name == "" || desc == "" || loc == getString(R.string.zone_management_coordinates_not_set)) {
