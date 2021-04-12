@@ -188,10 +188,12 @@ class GoogleMapHelperTest {
         GoogleMapHelper.moveDiagMarker = Marker(mockedzzt)
         GoogleMapHelper.moveRightMarker = Marker(mockedzzt)
         GoogleMapHelper.moveDownMarker = Marker(mockedzzt)
+        GoogleMapHelper.rotationMarker = Marker(mockedzzt)
         GoogleMapHelper.movePos = position
         GoogleMapHelper.moveDiagPos = position
         GoogleMapHelper.moveRightPos = position
         GoogleMapHelper.moveDownPos = position
+        GoogleMapHelper.rotationPos = position
 
         GoogleMapHelper.tempLatLng.add(position)
         GoogleMapHelper.tempLatLng.add(position)
@@ -228,10 +230,12 @@ class GoogleMapHelperTest {
         GoogleMapHelper.moveDiagMarker = Marker(mockedzzt)
         GoogleMapHelper.moveRightMarker = Marker(mockedzzt)
         GoogleMapHelper.moveDownMarker = Marker(mockedzzt)
+        GoogleMapHelper.rotationMarker = Marker(mockedzzt)
         GoogleMapHelper.movePos = position
         GoogleMapHelper.moveDiagPos = position
         GoogleMapHelper.moveRightPos = position
         GoogleMapHelper.moveDownPos = position
+        GoogleMapHelper.rotationPos = position
         GoogleMapHelper.tempLatLng.add(position)
         GoogleMapHelper.tempLatLng.add(position)
         GoogleMapHelper.tempLatLng.add(position)
@@ -284,9 +288,6 @@ class GoogleMapHelperTest {
         GoogleMapHelper.addArea(areaName,list,areaId)
         assertTrue(GoogleMapHelper.areasPoints.isNotEmpty())
         GoogleMapHelper.areasPoints.clear()
-
-
-
     }
 
      @Test
@@ -297,8 +298,6 @@ class GoogleMapHelperTest {
          //To test the second part, we need to find how to mock map.addMarker(any) and map.addPolygon(any)
          //GoogleMapHelper.restoreMapState()
      }
-
-
 
 
 
