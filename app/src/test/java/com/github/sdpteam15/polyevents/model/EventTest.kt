@@ -1,24 +1,21 @@
 package com.github.sdpteam15.polyevents.model
 
-import com.github.sdpteam15.polyevents.exceptions.InsufficientAmountException
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
-import java.lang.IllegalArgumentException
 import java.time.LocalDateTime
-import java.time.ZoneId
-import java.util.*
 
 class EventTest {
+    val eventId = "xxxEventxxx"
     val eventName = "someEvent"
     val organizer = "Student Association"
     val zoneName = "Zone A"
     val description = "A nice little event"
     val icon = null
     val startTime =
-        localDateTimeToDate(LocalDateTime.of(
+        LocalDateTime.of(
             2021, 3, 18, 18, 30
-        ))
+        )
     val endTime = null
     val tag1 = "GOOD"
     val tag2 = "BAD"
@@ -28,6 +25,7 @@ class EventTest {
     @Before
     fun setupEvent() {
         event = Event(
+            eventId = eventId,
             eventName = eventName,
             organizer = organizer,
             zoneName = zoneName,
@@ -37,19 +35,14 @@ class EventTest {
             endTime = endTime
         )
 
-        eventWithNullStartTime =  Event(
-            eventName = eventName,
-            organizer = organizer,
-            zoneName = zoneName,
-            description = description,
-            icon = icon,
-            startTime = null,
-            endTime = endTime
+        eventWithNullStartTime =  event.copy(
+            startTime = null
         )
     }
 
     @Test
     fun testEventProperties() {
+        assertEquals(event.eventId, eventId)
         assertEquals(event.eventName, eventName)
         assertEquals(event.description, description)
         assertEquals(event.organizer, organizer)
@@ -76,38 +69,29 @@ class EventTest {
     }
 
     @Test
-    fun testAddItemToInventory() {
-        val currentAmountOfCoca = event.inventory.getOrDefault(Item.COCA, 0)
-        event.addItem(Item.COCA)
-        assertEquals(event.inventory.get(Item.COCA), currentAmountOfCoca + 1)
-
-        val currentAmountOfPlugs = event.inventory.getOrDefault(Item.ELECTRIC_PLUG, 0)
-        event.addItem(Item.ELECTRIC_PLUG, 2)
-        assertEquals(event.inventory.get(Item.ELECTRIC_PLUG), currentAmountOfPlugs + 2)
+    fun testAddItemToEventInventory() {
+        val item = Item("micro1", ItemType.MICROPHONE)
+        event.addItem(item)
+        assertTrue(event.hasItem(item))
     }
 
     @Test
-    fun testTakeItemRemovesItemFromInventory() {
-        event.setItemAmount(Item.COCA, 1)
-        event.takeItem(Item.COCA)
-        assertEquals(event.inventory[Item.COCA], 0)
-
-        event.setItemAmount(Item.ELECTRIC_PLUG, 3)
-        val currentAmount = event.inventory.getOrDefault(Item.ELECTRIC_PLUG, 0)
-        event.takeItem(Item.ELECTRIC_PLUG, 2)
-        assertEquals(event.inventory[Item.ELECTRIC_PLUG], currentAmount - 2)
+    fun testAddRemoveItem() {
+        val item = Item("micro1", ItemType.MICROPHONE)
+        event.addItem(item)
+        event.removeItem(item)
+        assertFalse(event.hasItem(item))
     }
 
-    @Test(expected=IllegalArgumentException::class)
-    fun settingItemAmountWithNegativeNumberShouldThrowException() {
-        event.setItemAmount(Item.COCA, -3)
-    }
+    @Test
+    fun testRemoveItemBasedOnItemEquality() {
+        val itemId = "micro1"
+        val itemType = ItemType.MICROPHONE
+        val item = Item(itemId, itemType)
+        event.addItem(item)
 
-    @Test(expected = InsufficientAmountException::class)
-    fun takingItemNotAvailableThrowsException() {
-        val currentAmount = 0
-        event.inventory.put(Item.COCA, 0)
-        event.takeItem(Item.COCA, currentAmount + 1)
+        event.removeItem(Item(itemId, itemType))
+        assertFalse(event.hasItem(item))
     }
 
     @Test
@@ -117,7 +101,9 @@ class EventTest {
         assertEquals(ret, "")
     }
 
-    private fun localDateTimeToDate(from: LocalDateTime) =
-        Date.from(from.atZone(ZoneId.systemDefault()).toInstant())
+    @Test
+    fun checkTimeStampToLocalDateTimeConversion() {
+        // TODO
+    }
 
 }
