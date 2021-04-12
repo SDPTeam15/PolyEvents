@@ -14,6 +14,7 @@ import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.Event
+import java.time.LocalDateTime
 
 /**
  * Extra containing the event ID to show on the launched event page
@@ -43,7 +44,7 @@ class ListFragment : Fragment() {
 
         val openEvent = { event: Event ->
             val intent = Intent(inflater.context, EventActivity::class.java).apply {
-                println("putting extra "+ event.eventId)
+                println("putting extra " + event.eventId)
                 putExtra(EXTRA_EVENT_ID, event.eventId)
             }
             startActivity(intent)

@@ -100,7 +100,11 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     }
 
     override fun createEvent(event: Event, profile: UserProfile?): Observable<Boolean> {
-        return FakeDatabase.createEvent(event, profile)
+        return thenDoSet(
+            firestore!!.collection(EVENT_COLLECTION)
+                .document(event.eventId)
+                .set(EventAdapter.toEventDocument(event))
+        )
     }
 
     override fun updateEvents(event: Event, profile: UserProfile?): Observable<Boolean> {
