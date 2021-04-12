@@ -37,8 +37,7 @@ data class Event(
     val endTime: LocalDateTime? = null,
     val inventory: MutableList<Item> = mutableListOf(),
     // NOTE: Set is not a supported collection in Firebase Firestore so will be stored as list in the db.
-    val tags: MutableSet<String> = mutableSetOf(),
-    val id: String? = null
+    val tags: MutableSet<String> = mutableSetOf()
 ) {
     /**
      * Add a new tag for this activity

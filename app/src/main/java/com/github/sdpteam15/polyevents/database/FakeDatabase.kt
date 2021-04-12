@@ -192,7 +192,7 @@ object FakeDatabase : DatabaseInterface {
     }
 
     override fun updateEvents(event: Event, profile: UserProfile?): Observable<Boolean> {
-        events[events.indexOfFirst { e -> e.id == event.id }] = event
+        events[events.indexOfFirst { e -> e.eventId == event.eventId }] = event
         return Observable(true, this)
     }
 
@@ -201,7 +201,7 @@ object FakeDatabase : DatabaseInterface {
         returnEvent: Observable<Event>,
         profile: UserProfile?
     ): Observable<Boolean> {
-        returnEvent.postValue(events.first { e -> e.id == id }, this)
+        returnEvent.postValue(events.first { e -> e.eventId == id }, this)
         return Observable(true, this)
     }
 

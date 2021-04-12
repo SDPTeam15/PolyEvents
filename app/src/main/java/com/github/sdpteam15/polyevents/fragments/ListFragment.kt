@@ -43,7 +43,8 @@ class ListFragment : Fragment() {
 
         val openEvent = { event: Event ->
             val intent = Intent(inflater.context, EventActivity::class.java).apply {
-                putExtra(EXTRA_EVENT_ID, event.id)
+                println("putting extra "+ event.eventId)
+                putExtra(EXTRA_EVENT_ID, event.eventId)
             }
             startActivity(intent)
         }

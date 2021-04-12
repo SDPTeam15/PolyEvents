@@ -61,6 +61,9 @@ class ProfileFragment : Fragment() {
             viewRoot.findViewById<EditText>(R.id.profileBirthdayET).setText(birthDateFormatted)
         }
 
+        println(userInfoLiveData)
+        println(currentUser)
+        println(currentUser!!.uid)
         currentDatabase.getUserInformation(userInfoLiveData, currentUser!!.uid, currentUser!!)
 
         viewRoot.findViewById<Button>(R.id.btnUpdateInfos).setOnClickListener {
