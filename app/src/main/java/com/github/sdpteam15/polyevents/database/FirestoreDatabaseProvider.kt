@@ -1,19 +1,21 @@
 package com.github.sdpteam15.polyevents.database
 
 import android.util.Log
+import com.github.sdpteam15.polyevents.adapter.ItemAdapter
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_COLLECTION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.ITEM_COLLECTION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.ITEM_DOCUMENT_ID
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.ITEM_TYPE
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_POINT
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_UID
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
-import com.github.sdpteam15.polyevents.model.Event
-import com.github.sdpteam15.polyevents.model.Item
-import com.github.sdpteam15.polyevents.model.UserEntity
-import com.github.sdpteam15.polyevents.model.UserProfile
+import com.github.sdpteam15.polyevents.model.*
 import com.github.sdpteam15.polyevents.util.EventAdapter
 import com.github.sdpteam15.polyevents.util.FirebaseUserAdapter
+import com.github.sdpteam15.polyevents.util.ItemEntityAdapter
 import com.github.sdpteam15.polyevents.util.UserAdapter
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.OnFailureListener
@@ -70,7 +72,11 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         count: Int,
         profile: UserProfile?
     ): Observable<Boolean> {
-        return FakeDatabase.createItem(item, count, profile)
+        return thenDoSet(
+            firestore!!.collection(ITEM_COLLECTION)
+                .document(item.itemId)
+                .set(ItemEntityAdapter.toItemDocument(item, count))
+        )
     }
 
     override fun removeItem(item: Item, profile: UserProfile?): Observable<Boolean> {
@@ -89,7 +95,15 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         itemList: ObservableList<Pair<Item, Int>>,
         profile: UserProfile?
     ): Observable<Boolean> {
-        return FakeDatabase.getItemsList(itemList, profile)
+        return thenDoGet(
+            firestore!!.collection(ITEM_COLLECTION).get()
+        ){
+                querySnapshot ->
+            val items = querySnapshot.documents.map {
+                ItemEntityAdapter.toItemEntity(it.data!!)
+            }
+            itemList.addAll(items)
+        }
     }
 
     override fun getAvailableItems(
@@ -108,7 +122,11 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     }
 
     override fun updateEvents(event: Event, profile: UserProfile?): Observable<Boolean> {
-        return FakeDatabase.updateEvents(event, profile)
+        return thenDoSet(
+            firestore!!.collection(EVENT_COLLECTION)
+                .document(event.eventId)
+                .set(EventAdapter.toEventDocument(event))
+        )
     }
 
     override fun getEventFromId(
@@ -162,7 +180,6 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             end.postValue(false)
         }
         return end
-        //return FakeDatabase.getListEvent(matcher,number,eventList,profile)
     }
 
 

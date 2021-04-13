@@ -1,7 +1,9 @@
 package com.github.sdpteam15.polyevents.database
 
 import com.github.sdpteam15.polyevents.database.observe.Observable
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.Event
+import com.github.sdpteam15.polyevents.model.Item
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 import com.google.android.gms.maps.model.LatLng
@@ -15,6 +17,8 @@ class FakeDatabaseTests {
     lateinit var mokedUserInterface: UserEntity
     lateinit var mokedUserProfile: UserProfile
     lateinit var mokedEvent: Event
+    lateinit var mockedEventList: ObservableList<Event>
+    lateinit var mockedItemList: ObservableList<Pair<Item,Int>>
     val uid = "TestUID"
 
     @Before
@@ -22,6 +26,8 @@ class FakeDatabaseTests {
         mokedUserInterface = UserEntity(uid = uid)
         mokedUserProfile = UserProfile()
         mokedEvent = Event("xxxEventxxx")
+        mockedEventList = ObservableList()
+        mockedItemList = ObservableList()
     }
 
     @Test
@@ -31,11 +37,21 @@ class FakeDatabaseTests {
         assertNotNull(FakeDatabase.addProfile(mokedUserProfile, "", mokedUserInterface))
         assertNotNull(FakeDatabase.removeProfile(mokedUserProfile, "", mokedUserInterface))
         assertNotNull(FakeDatabase.updateProfile(mokedUserProfile, mokedUserInterface))
-        assert(FakeDatabase.getListEvent("", 1, mokedUserProfile).size <= 1)
-        assert(FakeDatabase.getListEvent("", 100, mokedUserProfile).size <= 100)
-        assert(FakeDatabase.getUpcomingEvents(1, mokedUserProfile).size <= 1)
-        assert(FakeDatabase.getUpcomingEvents(100, mokedUserProfile).size <= 100)
+        FakeDatabase.getListEvent(null, 1, mockedEventList, mokedUserProfile).observe {
+            if (it.value) assert(mockedEventList.size <= 1)
+        }
+        FakeDatabase.getListEvent(null, 100, mockedEventList, mokedUserProfile).observe {
+            if (it.value) assert(mockedEventList.size <= 100)
+        }
+        FakeDatabase.getAvailableItems(mockedItemList).observe {
+            if (it.value) assert(mockedItemList)
+        }
         assert(FakeDatabase.updateEvent(mokedEvent, mokedUserProfile))
+    }
+
+    @Test
+    fun getAvailableItemsTest(){
+
     }
 
     @Test
@@ -44,7 +60,7 @@ class FakeDatabaseTests {
 
         var IsUpdated = false
         FakeDatabase.updateUserInformation(hashMap, uid, mokedUserInterface)
-            .observe { IsUpdated = it!! }
+            .observe { IsUpdated = it.value }
         assert(IsUpdated)
     }
 

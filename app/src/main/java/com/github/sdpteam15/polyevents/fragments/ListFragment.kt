@@ -38,13 +38,11 @@ class ListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         val fragmentView = inflater.inflate(R.layout.fragment_list, container, false)
         recyclerView = fragmentView.findViewById<RecyclerView>(R.id.recycler_events_list)
 
         val openEvent = { event: Event ->
             val intent = Intent(inflater.context, EventActivity::class.java).apply {
-                println("putting extra " + event.eventId)
                 putExtra(EXTRA_EVENT_ID, event.eventId)
             }
             startActivity(intent)

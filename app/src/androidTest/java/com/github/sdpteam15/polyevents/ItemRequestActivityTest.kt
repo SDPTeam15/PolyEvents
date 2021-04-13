@@ -2,6 +2,7 @@ package com.github.sdpteam15.polyevents
 
 
 import android.app.Activity
+import android.content.ClipData
 import android.view.View
 import android.view.WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
 import android.view.WindowManager.LayoutParams.TYPE_TOAST
@@ -23,6 +24,7 @@ import androidx.test.runner.lifecycle.Stage
 import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.adapter.ItemRequestAdapter
+import com.github.sdpteam15.polyevents.model.Item
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.Description
 import org.hamcrest.TypeSafeMatcher
@@ -38,8 +40,8 @@ import org.mockito.junit.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)
 class ItemRequestActivityTest {
-    private lateinit var availableItems: MutableMap<String, Int>
-    private lateinit var availableItemsList: List<Pair<String, Int>>
+    private lateinit var availableItems: MutableMap<Item, Int>
+    private lateinit var availableItemsList: List<Pair<Item, Int>>
     private lateinit var mockedAvailableItemsProvider: DatabaseInterface
 
     @Rule

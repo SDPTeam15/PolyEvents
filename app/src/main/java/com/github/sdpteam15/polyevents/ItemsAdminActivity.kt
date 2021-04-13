@@ -6,10 +6,7 @@ import android.transition.Slide
 import android.transition.TransitionManager
 import android.view.Gravity
 import android.view.LayoutInflater
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.LinearLayout
-import android.widget.PopupWindow
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.adapter.ItemAdapter
@@ -75,6 +72,7 @@ class ItemsAdminActivity : AppCompatActivity() {
         // Get the widgets reference from custom view
         val itemName = view.findViewById<EditText>(R.id.id_edittext_item_name)
         val confirmButton = view.findViewById<ImageButton>(R.id.id_confirm_add_item_button)
+        val itemQuantity = view.findViewById<EditText>(R.id.id_edittext_item_quantity)
 
         //set focus on the popup
         popupWindow.isFocusable = true
@@ -83,7 +81,7 @@ class ItemsAdminActivity : AppCompatActivity() {
         confirmButton.setOnClickListener {
 
 
-            items.add(Pair(Item(itemName.text.toString(), ItemType.OTHER), 1), this)
+            items.add(Pair(Item(itemName.text.toString(), ItemType.OTHER), itemQuantity.text.toString().toInt()), this)
             // Dismiss the popup window
             popupWindow.dismiss()
 
