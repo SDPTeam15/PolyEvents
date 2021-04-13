@@ -1,19 +1,15 @@
 package com.github.sdpteam15.polyevents
 
 import android.os.Build
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.assertion.ViewAssertions
-import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withTagValue
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
-import androidx.test.uiautomator.UiObjectNotFoundException
 import androidx.test.uiautomator.UiSelector
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.Description
@@ -40,81 +36,66 @@ class MyLocationTests {
         onView(withId(R.id.ic_map)).perform(click())
     }
 
-    @Test
-    fun enablingLocationChangeIcon() {
-        // From off to on
-        onView(withTagValue(equalTo(R.drawable.ic_location_off)))
-        onView(withId(R.id.id_location_button)).perform(click())
-        onView(withTagValue(equalTo(R.drawable.ic_location_on)))
+    // Source : https://stackoverflow.com/questions/43462172/android-revoke-permission-at-start-of-each-test
+    /**
+     * Need to revoke permissions AFTER each test and not before. Otherwise it restarts the app
+     * and this makes the process crash.
+     */
 
-        // From on to off
-        onView(withId(R.id.id_location_button)).perform(click())
-        onView(withTagValue(equalTo(R.drawable.ic_location_off)))
+    /*
+    @After
+    fun tearDown(){
+        //InstrumentationRegistry.getInstrumentation().uiAutomation.
+        //executeShellCommand("pm revoke ${getTargetContext().packageName} android.permission.ACCESS_FINE_LOCATION")
     }
 
-    @Test
-    fun locationButtonsAreDisplayed() {
-        val bottomNavigationItemView = onView(
-            Matchers.allOf(
-                withId(R.id.ic_map), ViewMatchers.withContentDescription("Map"),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.navigation_bar),
-                        0
-                    ),
-                    1
-                ),
-                ViewMatchers.isDisplayed()
-            )
-        )
-        bottomNavigationItemView.perform(click())
-
-        val imageButton = onView(
-            Matchers.allOf(
-                withId(R.id.id_location_button),
-                ViewMatchers.withParent(ViewMatchers.withParent(withId(R.id.fl_wrapper))),
-                ViewMatchers.isDisplayed()
-            )
-        )
-        imageButton.check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-
-        val imageButton2 = onView(
-            Matchers.allOf(
-                withId(R.id.id_locate_me_button),
-                ViewMatchers.withParent(ViewMatchers.withParent(withId(R.id.fl_wrapper))),
-                ViewMatchers.isDisplayed()
-            )
-        )
-        imageButton2.check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-    }
+     */
 
     @Test
     fun denyPermissionKeepsLocationOff() {
-        // Revoke all the permissions
-        //InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand("pm reset-permissions")
-
-        val bottomNavigationItemView = onView(
-            Matchers.allOf(
-                withId(R.id.ic_map), ViewMatchers.withContentDescription("Map"),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.navigation_bar),
-                        0
-                    ),
-                    1
-                ),
-                ViewMatchers.isDisplayed()
-            )
-        )
-        bottomNavigationItemView.perform(click())
-
         denyPermissions()
 
         // Click on the "location" button to try to activate it.
         onView(withId(R.id.id_location_button)).perform(click())
 
         // Check the location is not enabled
-        onView(withTagValue(equalTo(R.drawable.ic_location_off)))
+        onView(withId(R.id.id_location_button)).check(matches(withTagValue(equalTo(R.drawable.ic_location_off))))
+    }
+
+    @Test
+    fun enablingLocationChangeIcon() {
+        grantPermission()
+
+        // From off to on
+        onView(withId(R.id.id_location_button)).perform(click())
+        onView(withId(R.id.id_location_button)).check(matches(withTagValue(equalTo(R.drawable.ic_location_on))))
+
+        // From on to off
+        onView(withId(R.id.id_location_button)).perform(click())
+        onView(withId(R.id.id_location_button)).check(matches(withTagValue(equalTo(R.drawable.ic_location_off))))
+    }
+
+    @Test
+    fun locationButtonsAreDisplayed() {
+        grantPermission()
+
+        val imageButton = onView(
+            Matchers.allOf(
+                withId(R.id.id_location_button),
+                withParent(withParent(withId(R.id.fl_wrapper))),
+                isDisplayed()
+            )
+        )
+        imageButton.check(matches(isDisplayed()))
+
+        val imageButton2 = onView(
+            Matchers.allOf(
+                withId(R.id.id_locate_me_button),
+                withParent(withParent(withId(R.id.fl_wrapper))),
+                isDisplayed()
+            )
+        )
+        imageButton2.check(matches(isDisplayed()))
     }
 
     private fun childAtPosition(
@@ -135,20 +116,42 @@ class MyLocationTests {
         }
     }
 
+    /**
+     * Source : https://alexzh.com/ui-testing-of-android-runtime-permissions/
+     */
     private fun denyPermissions() {
-        if (Build.VERSION.SDK_INT >= 23) {
-            val allowPermissions = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()).findObject(
-                UiSelector().text("Deny")
-            )
-            Log.d("SDP", "Entering")
-            if (allowPermissions.exists()) {
-                try {
-                    allowPermissions.click()
-                    Log.d("SDP", "Permission denied")
-                } catch (e: UiObjectNotFoundException) {
-                    Log.d("SDP", "No permission dialog found.")
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val denyPermission = UiDevice.getInstance(instrumentation).findObject(
+            UiSelector().text(
+                when (Build.VERSION.SDK_INT) {
+                    in 24..28 -> "DENY"
+                    else -> "Deny"
                 }
-            }
+            )
+        )
+        if (denyPermission.exists()) {
+            denyPermission.click()
+        }
+    }
+
+    /**
+     * Source : https://alexzh.com/ui-testing-of-android-runtime-permissions/
+     */
+    private fun grantPermission() {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+
+        val allowPermission = UiDevice.getInstance(instrumentation).findObject(
+            UiSelector().text(
+                when {
+                    Build.VERSION.SDK_INT == 23 -> "Allow"
+                    Build.VERSION.SDK_INT <= 28 -> "ALLOW"
+                    Build.VERSION.SDK_INT == 29 -> "Allow only while using the app"
+                    else -> "While using the app"
+                }
+            )
+        )
+        if (allowPermission.exists()) {
+            allowPermission.click()
         }
     }
 }
