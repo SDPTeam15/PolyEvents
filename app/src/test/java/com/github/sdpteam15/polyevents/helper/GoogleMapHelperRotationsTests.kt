@@ -2,8 +2,8 @@ package com.github.sdpteam15.polyevents.helper
 
 import com.google.android.gms.maps.model.LatLng
 import org.hamcrest.MatcherAssert.assertThat
-import org.junit.Test
 import org.hamcrest.Matchers.closeTo
+import org.junit.Test
 import kotlin.math.PI
 import kotlin.math.sqrt
 import org.hamcrest.core.Is.`is` as Is
@@ -22,7 +22,8 @@ class GoogleMapHelperRotationsTests {
         val projectedPoint = GoogleMapHelper.equirectangularProjection(point, center)
         val transformedPoint = GoogleMapHelper.inverseEquirectangularProjection(
             projectedPoint,
-            center)
+            center
+        )
 
         assertLatLng(transformedPoint, point)
     }
@@ -34,8 +35,10 @@ class GoogleMapHelperRotationsTests {
             LatLng(46.2432100506624, 4.43459156713487)
         )
 
-        var middle = LatLng((points[0].latitude + points[1].latitude) / 2,
-            (points[0].longitude + points[1].longitude) / 2)
+        var middle = LatLng(
+            (points[0].latitude + points[1].latitude) / 2,
+            (points[0].longitude + points[1].longitude) / 2
+        )
 
         var center = GoogleMapHelper.getCenter(points)
 
@@ -59,7 +62,8 @@ class GoogleMapHelperRotationsTests {
         val p0c = GoogleMapHelper.equirectangularProjection(p0, center)
         val p1c = GoogleMapHelper.equirectangularProjection(p1, center)
 
-        val distance = sqrt((p0c.first - p1c.first) * (p0c.first - p1c.first) + (p0c.second- p1c.second) * (p0c.second - p1c.second))
+        val distance =
+            sqrt((p0c.first - p1c.first) * (p0c.first - p1c.first) + (p0c.second - p1c.second) * (p0c.second - p1c.second))
         assertThat(distance, Is(166349.3295962308))
     }
 
@@ -108,8 +112,10 @@ class GoogleMapHelperRotationsTests {
             Pair(-1.0, -0.5)
         )
 
-        assertThat(GoogleMapHelper.computeMeanRadius(points),
-            Is(sqrt(1.25)))
+        assertThat(
+            GoogleMapHelper.computeMeanRadius(points),
+            Is(sqrt(1.25))
+        )
     }
 
     @Test

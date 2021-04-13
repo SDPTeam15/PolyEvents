@@ -12,13 +12,9 @@ import com.google.android.gms.maps.internal.ICameraUpdateFactoryDelegate
 import com.google.android.gms.maps.model.*
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
-import org.mockito.Mockito.any
 import java.io.File
-import kotlin.math.pow
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import org.mockito.Mockito.`when` as When
 
