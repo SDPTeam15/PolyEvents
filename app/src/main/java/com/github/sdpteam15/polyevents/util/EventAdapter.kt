@@ -30,21 +30,26 @@ object EventAdapter {
      * @param event the entity we're converting
      * @return a hashmap of the entity fields to their values
      */
-    fun toEventDocument(event: Event): HashMap<String, Any?> =
-        hashMapOf(
-                EVENT_DOCUMENT_ID to event.eventId,
-                EVENT_NAME to event.eventName,
-                EVENT_ORGANIZER to event.organizer,
-                EVENT_ZONE_NAME to event.zoneName,
-                EVENT_DESCRIPTION to event.description,
-                // LocalDateTime instances can be directly stored to Firestore without need of conversion
-                // UPDATE: LocalDateTime will not be stored as a Timestamp instance, instead it will be
-                // stored as a hashmap representing the LocalDateTime instance
-                EVENT_START_TIME to HelperFunctions.LocalDateToTimeToDate(event.startTime),
-                EVENT_END_TIME to HelperFunctions.LocalDateToTimeToDate(event.endTime),
-                EVENT_INVENTORY to event.inventory,
-                EVENT_TAGS to event.tags.toList()
+    fun toEventDocument(event: Event): HashMap<String, Any?> {
+        val hash : HashMap<String, Any?> = hashMapOf(
+            EVENT_NAME to event.eventName,
+            EVENT_ORGANIZER to event.organizer,
+            EVENT_ZONE_NAME to event.zoneName,
+            EVENT_DESCRIPTION to event.description,
+            // LocalDateTime instances can be directly stored to Firestore without need of conversion
+            // UPDATE: LocalDateTime will not be stored as a Timestamp instance, instead it will be
+            // stored as a hashmap representing the LocalDateTime instance
+            EVENT_START_TIME to HelperFunctions.LocalDateToTimeToDate(event.startTime),
+            EVENT_END_TIME to HelperFunctions.LocalDateToTimeToDate(event.endTime),
+            EVENT_INVENTORY to event.inventory,
+            EVENT_TAGS to event.tags.toList()
         )
+        if(event.eventId != null){
+            hash[EVENT_DOCUMENT_ID] = event.eventId
+        }
+        return hash
+    }
+
 
     /**
      * Convert document data to an event entity in our model.
@@ -54,9 +59,9 @@ object EventAdapter {
      * @param documentData this is the data we retrieve from the document.
      * @return the corresponding Event entity.
      */
-    fun toEventEntity(documentData: MutableMap<String, Any?>): Event  {
+    fun toEventEntity(documentData: MutableMap<String, Any?>, id:String): Event {
         return Event(
-            eventId = documentData[EVENT_DOCUMENT_ID] as String,
+            eventId = id as String?,
             eventName = documentData[EVENT_NAME] as String?,
             organizer = documentData[EVENT_ORGANIZER] as String?,
             zoneName = documentData[EVENT_ZONE_NAME] as String?,

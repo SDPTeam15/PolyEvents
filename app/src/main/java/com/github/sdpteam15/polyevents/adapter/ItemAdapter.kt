@@ -28,7 +28,8 @@ class ItemAdapter(
                 println("query not satisfied")
         }
         items.observeRemove(itemsAdminActivity) {
-            currentDatabase.removeItem(it.value.first)
+            if (it.sender != currentDatabase)
+                currentDatabase.removeItem(it.value.first.itemId!!)
         }
         items.observe(itemsAdminActivity) {
             notifyDataSetChanged()
@@ -52,7 +53,7 @@ class ItemAdapter(
             btnRemove.setOnClickListener {
                 items.remove(item)
             }
-            itemName.text = item.first.itemId
+            itemName.text = item.first.itemName
         }
     }
 

@@ -9,22 +9,18 @@ import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_UID
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_USERNAME
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.model.Event
-import com.github.sdpteam15.polyevents.user.ProfileInterface
-import com.github.sdpteam15.polyevents.user.User
-import com.github.sdpteam15.polyevents.user.UserInterface
-import com.github.sdpteam15.polyevents.model.Event
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.*
-import org.hamcrest.CoreMatchers.`is` as Is
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.mock
 import kotlin.test.assertNotNull
+import org.hamcrest.CoreMatchers.`is` as Is
 import org.mockito.Mockito.`when` as When
 
 private const val displayNameTest = "Test displayName"
@@ -64,8 +60,8 @@ class FirestoreDatabaseProviderTest {
     @Test
     fun toRemoveTest() {
         val testProfile = UserProfile(
-                userUid = user.uid,
-                profileName = "mockProfile"
+            userUid = user.uid,
+            profileName = "mockProfile"
         )
 
         val testEvent = Event(

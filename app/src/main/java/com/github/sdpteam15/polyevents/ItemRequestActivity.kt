@@ -29,7 +29,6 @@ class ItemRequestActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.id_recycler_items_request)
         mapSelectedItems = mutableMapOf()
 
-        currentDatabase.getAvailableItems(obsItems)
 
         // Listener that update the map of selected items when the quantity is changed
         val onItemQuantityChangeListener = { item: Item, newQuantity: Int ->
@@ -43,11 +42,13 @@ class ItemRequestActivity : AppCompatActivity() {
             }
             Unit
         }
-
-        recyclerView.adapter =
-            ItemRequestAdapter(obsItems, onItemQuantityChangeListener)
-
-        recyclerView.setHasFixedSize(false)
+        currentDatabase.getAvailableItems(obsItems).observe {
+            if (it.value) {
+                recyclerView.adapter =
+                    ItemRequestAdapter(obsItems, onItemQuantityChangeListener)
+                recyclerView.setHasFixedSize(false)
+            }
+        }
     }
 
     /**

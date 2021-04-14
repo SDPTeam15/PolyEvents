@@ -4,7 +4,7 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.Query
 
 /**
- * Filters a firebase collection given some conditions and returns the corresponding Query result.git
+ * Filters a firebase collection given some conditions and returns the corresponding Query result
  * For example keep only the first 5 items from the collection.
  */
 interface Matcher {

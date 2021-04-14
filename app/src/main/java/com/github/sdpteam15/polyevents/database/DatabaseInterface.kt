@@ -89,12 +89,12 @@ interface DatabaseInterface {
     ): Observable<Boolean>
 
     /**
-     * @param item item we want to remove from the database
+     * @param itemId id of the item we want to remove from the database
      * @param profile profile for database access
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun removeItem(
-        item: Item,
+        itemId: String,
         profile: UserProfile? = currentProfile
     ): Observable<Boolean>
 

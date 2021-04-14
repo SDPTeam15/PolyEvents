@@ -6,7 +6,10 @@ import android.transition.Slide
 import android.transition.TransitionManager
 import android.view.Gravity
 import android.view.LayoutInflater
-import android.widget.*
+import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.LinearLayout
+import android.widget.PopupWindow
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.adapter.ItemAdapter
@@ -34,9 +37,14 @@ class ItemsAdminActivity : AppCompatActivity() {
         //val clickListener = { _: String -> } // TODO define what happens when we click on an Item
         recyclerView = findViewById(R.id.id_recycler_items_list)
         recyclerView.adapter = ItemAdapter(this, items)
+        // When a new Item is created, add it to the database
         items.observeAdd(this) {
             if (it.sender != currentDatabase)
-                currentDatabase.createItem(it.value.first, it.value.second)
+                currentDatabase.createItem(it.value.first, it.value.second).observe { it1->
+                    if(it1.value){
+                        currentDatabase.getItemsList(items)
+                    }
+                }
 
         }
 
@@ -81,7 +89,12 @@ class ItemsAdminActivity : AppCompatActivity() {
         confirmButton.setOnClickListener {
 
 
-            items.add(Pair(Item(itemName.text.toString(), ItemType.OTHER), itemQuantity.text.toString().toInt()), this)
+            items.add(
+                Pair(
+                    Item(null, itemName.text.toString(), ItemType.OTHER),
+                    itemQuantity.text.toString().toInt()
+                ), this
+            )
             // Dismiss the popup window
             popupWindow.dismiss()
 

@@ -80,7 +80,7 @@ class EventActivityTest {
         )
         mockedUpcomingEventsProvider = mock(DatabaseInterface::class.java)
         currentDatabase = mockedUpcomingEventsProvider
-        `when`(mockedUpcomingEventsProvider.getUpcomingEvents()).thenReturn(events)
+        `when`(mockedUpcomingEventsProvider.getListEvent()).thenReturn(events)
         `when`(mockedUpcomingEventsProvider.getEventFromId("1")).thenReturn(events[0])
         `when`(mockedUpcomingEventsProvider.getEventFromId("2")).thenReturn(events[1])
         `when`(mockedUpcomingEventsProvider.getEventFromId("3")).thenReturn(events[2])

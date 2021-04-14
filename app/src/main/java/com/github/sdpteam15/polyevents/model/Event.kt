@@ -27,7 +27,7 @@ import java.time.format.DateTimeFormatter
 // TODO: keep track of items, or just required items?
 @IgnoreExtraProperties
 data class Event(
-    val eventId: String,
+    val eventId: String? = null,
     val eventName: String? = null,
     val organizer: String? = null,
     val zoneName: String? = null,

@@ -17,19 +17,19 @@ object FakeDatabase : DatabaseInterface {
 
     private fun initItems() {
         items = mutableMapOf()
-        items[Item("230V Plug", ItemType.PLUG)] = 20
-        items[Item("Cord rewinder (50m)", ItemType.PLUG)] = 10
-        items[Item("Microphone", ItemType.MICROPHONE)] = 1
-        items[Item("Cooking plate", ItemType.OTHER)] = 5
-        items[Item("Cord rewinder (100m)", ItemType.PLUG)] = 1
-        items[Item("Cord rewinder (10m)", ItemType.PLUG)] = 30
-        items[Item("Fridge(large)", ItemType.OTHER)] = 2
+        items["item1"] = Pair(Item("item1","230V Plug", ItemType.PLUG),20)
+        items["item2"] = Pair(Item("item2","Cord rewinder (50m)", ItemType.PLUG),10)
+        items["item3"] = Pair(Item("item3","Microphone", ItemType.MICROPHONE),1)
+        items["item4"] = Pair(Item("item4","Cooking plate", ItemType.OTHER),5)
+        items["item5"] = Pair(Item("item5","Cord rewinder (100m)", ItemType.PLUG), 1)
+        items["item6"] = Pair(Item("item6","Cord rewinder (10m)", ItemType.PLUG),30)
+        items["item7"] = Pair(Item("item7","Fridge(large)", ItemType.OTHER),2)
 
     }
 
     private lateinit var events: MutableList<Event>
     private lateinit var profiles: MutableList<UserProfile>
-    private lateinit var items: MutableMap<Item, Int>
+    private lateinit var items: MutableMap<String, Pair<Item,Int>>
 
     private fun initEvents() {
         events = mutableListOf()
@@ -144,12 +144,11 @@ object FakeDatabase : DatabaseInterface {
         count: Int,
         profile: UserProfile?
     ): Observable<Boolean> {
-        items[item] = count
         return Observable(true, this)
     }
 
-    override fun removeItem(item: Item, profile: UserProfile?): Observable<Boolean> {
-        val b = items.remove(item) != null
+    override fun removeItem(itemId: String, profile: UserProfile?): Observable<Boolean> {
+        val b = items.remove(itemId) != null
         return Observable(b, this)
     }
 
@@ -158,8 +157,6 @@ object FakeDatabase : DatabaseInterface {
         count: Int,
         profile: UserProfile?
     ): Observable<Boolean> {
-        items.remove(items.keys.first { i -> i.itemId == item.itemId })
-        items[item] = count
         return Observable(true, this)
     }
 
@@ -169,7 +166,7 @@ object FakeDatabase : DatabaseInterface {
     ): Observable<Boolean> {
         itemList.clear(this)
         for (item in items) {
-            itemList.add(Pair(item.key, item.value), this)
+            itemList.add(item.value, this)
         }
         return Observable(true, this)
     }
@@ -181,7 +178,7 @@ object FakeDatabase : DatabaseInterface {
         itemList.clear(this)
         val list = mutableListOf<Pair<Item, Int>>()
         for (item in items)
-            list.add(Pair(item.key, item.value))
+            list.add(item.value)
         itemList.addAll(list, this)
         return Observable(true, this)
     }

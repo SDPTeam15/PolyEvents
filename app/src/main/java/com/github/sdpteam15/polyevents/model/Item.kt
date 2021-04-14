@@ -13,6 +13,7 @@ package com.github.sdpteam15.polyevents.model
  * @property itemType the type of the item
  */
 data class Item(
-        val itemId: String,
+        val itemId: String?,
+        val itemName: String,
         val itemType: ItemType
 )

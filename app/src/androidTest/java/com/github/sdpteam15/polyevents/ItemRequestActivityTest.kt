@@ -25,6 +25,7 @@ import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.adapter.ItemRequestAdapter
 import com.github.sdpteam15.polyevents.model.Item
+import com.github.sdpteam15.polyevents.model.ItemType
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.Description
 import org.hamcrest.TypeSafeMatcher
@@ -89,13 +90,13 @@ class ItemRequestActivityTest {
     @Before
     fun setup() {
         availableItems = mutableMapOf()
-        availableItems["Bananas"] = 30
-        availableItems["Kiwis"] = 10
-        availableItems["230V plugs"] = 30
-        availableItems["Fridge (large)"] = 5
-        availableItems["Cord rewinder (15m)"] = 30
-        availableItems["Cord rewinder (50m)"] = 10
-        availableItems["Cord rewinder (25m)"] = 20
+        availableItems[Item("Bananas", ItemType.OTHER)] = 30
+        availableItems[Item("Kiwis", ItemType.OTHER)] = 10
+        availableItems[Item("230 Plugs", ItemType.PLUG)] = 30
+        availableItems[Item("Fridge (large)", ItemType.OTHER)] = 5
+        availableItems[Item("Cord rewinder (15m)", ItemType.PLUG)] = 30
+        availableItems[Item("Cord rewinder (50m)",ItemType.PLUG)] = 10
+        availableItems[Item("Cord rewinder (25m)",ItemType.PLUG)] = 20
 
         availableItemsList = availableItems.toList()
 

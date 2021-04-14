@@ -40,6 +40,7 @@ object DatabaseConstant {
      */
     const val ITEM_COLLECTION = "items"
     const val ITEM_DOCUMENT_ID = "itemId"
+    const val ITEM_NAME = "itemName"
     const val ITEM_TYPE = "itemType"
     const val ITEM_COUNT = "count"
 
