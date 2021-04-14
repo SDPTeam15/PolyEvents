@@ -6,9 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.MainActivity
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.adapter.ItemAdapter
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_BIRTH_DATE
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_USERNAME
@@ -27,6 +30,7 @@ class ProfileFragment : Fragment() {
     var currentUser: UserEntity? = currentDatabase.currentUser
     val userInfoLiveData = Observable<UserEntity>()
     val hashMapNewInfo = HashMap<String, String>()
+    lateinit var recyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,5 +91,26 @@ class ProfileFragment : Fragment() {
                 }
         }
         return viewRoot
+    }
+
+    fun initProfileList(viewRoot : View){
+        viewRoot.setContentView(R.layout.activity_items_admin)
+
+        //val clickListener = { _: String -> } // TODO define what happens when we click on an Item
+        recyclerView = viewRoot.findViewById(R.id.id_recycler_items_list)
+        recyclerView.adapter = ItemAdapter(viewRoot, items)
+        // When a new Item is created, add it to the database
+        items.observeAdd(this) {
+            if (it.sender != currentDatabase)
+                currentDatabase.createItem(it.value.first, it.value.second).observe { it1->
+                    if(it1.value){
+                        currentDatabase.getItemsList(items)
+                    }
+                }
+
+        }
+
+        val btnAdd = findViewById<ImageButton>(R.id.id_add_item_button)
+        btnAdd.setOnClickListener { createAddItemPopup() }
     }
 }
