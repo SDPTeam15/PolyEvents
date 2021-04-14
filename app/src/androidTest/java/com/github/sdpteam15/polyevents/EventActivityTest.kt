@@ -18,7 +18,6 @@ import com.github.sdpteam15.polyevents.adapter.EventItemAdapter
 import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
-import com.github.sdpteam15.polyevents.database.FakeDatabase
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.fragments.EXTRA_EVENT_ID
 import com.github.sdpteam15.polyevents.model.Event
@@ -36,7 +35,6 @@ import java.util.*
 
 @RunWith(MockitoJUnitRunner::class)
 class EventActivityTest {
-    lateinit var mockedUpcomingEventsProvider: DatabaseInterface
 
     @Rule
     @JvmField
@@ -79,9 +77,11 @@ class EventActivityTest {
             )
         )
         currentDatabase = FakeDatabase
+        Intents.init()
         // go to activities list fragment
         Espresso.onView(withId(R.id.ic_list)).perform(click())
-        Intents.init()
+        Thread.sleep(1000)
+
     }
 
     @After

@@ -24,7 +24,6 @@ import androidx.test.runner.lifecycle.Stage
 import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.adapter.ItemRequestAdapter
-import com.github.sdpteam15.polyevents.database.FakeDatabase
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.Item
 import com.github.sdpteam15.polyevents.model.ItemType
@@ -44,7 +43,7 @@ import org.mockito.junit.MockitoJUnitRunner
 @RunWith(MockitoJUnitRunner::class)
 class ItemRequestActivityTest {
     private lateinit var availableItems: MutableMap<Item, Int>
-    private lateinit var availableItemsList: ObservableList<Pair<Item, Int>>
+    private var availableItemsList = ObservableList<Pair<Item, Int>>()
     private lateinit var mockedAvailableItemsProvider: DatabaseInterface
 
     @Rule
@@ -117,6 +116,7 @@ class ItemRequestActivityTest {
         // Go to items request activity
         onView(withId(R.id.id_request_button)).perform(click())
         Intents.init()
+        Thread.sleep(1000)
     }
 
     @Test

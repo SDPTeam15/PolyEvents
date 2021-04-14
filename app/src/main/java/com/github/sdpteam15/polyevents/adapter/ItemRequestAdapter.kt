@@ -40,7 +40,7 @@ class ItemRequestAdapter(
             itemName.text =
                 view.context.getString(
                     R.string.item_name_quantity_text,
-                    item.first.itemId,
+                    item.first.itemName,
                     item.second
                 )
 

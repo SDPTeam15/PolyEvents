@@ -1,5 +1,7 @@
-package com.github.sdpteam15.polyevents.database
+package com.github.sdpteam15.polyevents
 
+import com.github.sdpteam15.polyevents.database.DatabaseInterface
+import com.github.sdpteam15.polyevents.database.Matcher
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.*
@@ -81,9 +83,9 @@ object FakeDatabase : DatabaseInterface {
     )
 
     override val currentUser: UserEntity?
-        get() = TODO("Not yet implemented")
+        get() = CURRENT_USER
     override val currentProfile: UserProfile?
-        get() = TODO("Not yet implemented")
+        get() = null
 
     override fun getProfilesList(uid: String, user: UserEntity?): List<UserProfile> =
         profiles

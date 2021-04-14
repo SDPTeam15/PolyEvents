@@ -43,28 +43,28 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             } else {
                 null
             }
+
+    var profiles: MutableList<UserProfile> = mutableListOf()
+
     override val currentProfile: UserProfile?
         get() = null // TODO("Not yet implemented")
 
     override fun getProfilesList(uid: String, user: UserEntity?): List<UserProfile> {
-        return FakeDatabase.getProfilesList(uid, user)
+
+        return profiles // TODO : Not yet Implemented
     }
 
-    override fun addProfile(profile: UserProfile, uid: String, user: UserEntity?): Boolean {
-        return FakeDatabase.addProfile(profile, uid, user)
-    }
+    override fun addProfile(profile: UserProfile, uid: String, user: UserEntity?): Boolean =
+        profiles.add(profile)// TODO : Not yet Implemented
 
     override fun removeProfile(
         profile: UserProfile,
         uid: String?,
         user: UserEntity?
-    ): Boolean {
-        return FakeDatabase.removeProfile(profile, uid, user)
-    }
+    ): Boolean = profiles.remove(profile)// TODO : Not yet Implemented
 
-    override fun updateProfile(profile: UserProfile, user: UserEntity?): Boolean {
-        return FakeDatabase.updateProfile(profile, user)
-    }
+    override fun updateProfile(profile: UserProfile, user: UserEntity?): Boolean =
+        true// TODO : Not yet Implemented
 
 
     override fun createItem(
@@ -86,7 +86,12 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         count: Int,
         profile: UserProfile?
     ): Observable<Boolean> {
-        return FakeDatabase.updateItem(item, count, profile)
+        // TODO should update add item if non existent in database ?
+        // if (item.itemId == null) return createItem(item, count, profile)
+        return thenDoSet(firestore!!
+            .collection(ITEM_COLLECTION)
+            .document(item.itemId!!)
+            .set(ItemEntityAdapter.toItemDocument(item,count)))
     }
 
     override fun getItemsList(
@@ -98,7 +103,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         ) { querySnapshot ->
             itemList.clear(this)
             val items = querySnapshot.documents.map {
-                ItemEntityAdapter.toItemEntity(it.data!!,it.id)
+                ItemEntityAdapter.toItemEntity(it.data!!, it.id)
             }
             itemList.addAll(items, this)
         }
@@ -113,7 +118,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         ) { querySnapshot ->
             itemList.clear(this)
             val items = querySnapshot.documents.map {
-                ItemEntityAdapter.toItemEntity(it.data!!,it.id)
+                ItemEntityAdapter.toItemEntity(it.data!!, it.id)
             }
             itemList.addAll(items, this)
         }
@@ -124,7 +129,9 @@ object FirestoreDatabaseProvider : DatabaseInterface {
 
 
     override fun updateEvents(event: Event, profile: UserProfile?): Observable<Boolean> {
-        return FakeDatabase.updateEvents(event,profile)
+        // TODO should update add item if non existent in database ?
+        // if (event.eventId == null) return createEvent(event, profile)
+        return thenDoSet(firestore!!.collection(EVENT_COLLECTION).document(event.eventId!!).set(event))
     }
 
     override fun getEventFromId(
@@ -136,7 +143,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             .document(id).get()
     ) {
         returnEvent.postValue(
-            it.data?.let { it1 -> EventAdapter.toEventEntity(it1,id) }!!, this
+            it.data?.let { it1 -> EventAdapter.toEventEntity(it1, id) }!!, this
         )
     }
 
@@ -159,7 +166,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             for (d in it.documents) {
                 val data = d.data
                 if (data != null) {
-                    val e: Event = EventAdapter.toEventEntity(data,d.id)
+                    val e: Event = EventAdapter.toEventEntity(data, d.id)
                     eventList.add(e)
                 }
             }
