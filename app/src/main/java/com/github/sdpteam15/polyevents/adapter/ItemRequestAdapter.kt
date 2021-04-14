@@ -102,7 +102,7 @@ class ItemRequestAdapter(
             showToast(
                 view.context.getString(
                     R.string.max_item_quantity_text,
-                    item.second.toString(), item.first.itemId
+                    item.second.toString(), item.first.itemName
                 ), view.context
             )
         }
