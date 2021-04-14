@@ -1,12 +1,12 @@
 package com.github.sdpteam15.polyevents.database
 
-import android.util.Log
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.*
 import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDateTime
 import java.util.*
+import kotlin.random.Random
 
 object FakeDatabase : DatabaseInterface {
     init {
@@ -17,23 +17,23 @@ object FakeDatabase : DatabaseInterface {
 
     private fun initItems() {
         items = mutableMapOf()
-        items["item1"] = Pair(Item("item1","230V Plug", ItemType.PLUG),20)
-        items["item2"] = Pair(Item("item2","Cord rewinder (50m)", ItemType.PLUG),10)
-        items["item3"] = Pair(Item("item3","Microphone", ItemType.MICROPHONE),1)
-        items["item4"] = Pair(Item("item4","Cooking plate", ItemType.OTHER),5)
-        items["item5"] = Pair(Item("item5","Cord rewinder (100m)", ItemType.PLUG), 1)
-        items["item6"] = Pair(Item("item6","Cord rewinder (10m)", ItemType.PLUG),30)
-        items["item7"] = Pair(Item("item7","Fridge(large)", ItemType.OTHER),2)
+        items["item1"] = Pair(Item("item1", "230V Plug", ItemType.PLUG), 20)
+        items["item2"] = Pair(Item("item2", "Cord rewinder (50m)", ItemType.PLUG), 10)
+        items["item3"] = Pair(Item("item3", "Microphone", ItemType.MICROPHONE), 1)
+        items["item4"] = Pair(Item("item4", "Cooking plate", ItemType.OTHER), 5)
+        items["item5"] = Pair(Item("item5", "Cord rewinder (100m)", ItemType.PLUG), 1)
+        items["item6"] = Pair(Item("item6", "Cord rewinder (10m)", ItemType.PLUG), 30)
+        items["item7"] = Pair(Item("item7", "Fridge(large)", ItemType.OTHER), 2)
 
     }
 
-    private lateinit var events: MutableList<Event>
-    private lateinit var profiles: MutableList<UserProfile>
-    private lateinit var items: MutableMap<String, Pair<Item,Int>>
+    lateinit var events: MutableMap<String, Event>
+    lateinit var profiles: MutableList<UserProfile>
+    lateinit var items: MutableMap<String, Pair<Item, Int>>
 
     private fun initEvents() {
-        events = mutableListOf()
-        events.add(
+        events = mutableMapOf()
+        events["event1"] =
             Event(
                 eventId = "event1",
                 eventName = "Sushi demo",
@@ -43,9 +43,9 @@ object FakeDatabase : DatabaseInterface {
                 zoneName = "Kitchen",
                 tags = mutableSetOf("sushi", "japan", "cooking")
             )
-        )
 
-        events.add(
+
+        events["event2"] =
             Event(
                 eventId = "event2",
                 eventName = "Saxophone demo",
@@ -54,9 +54,9 @@ object FakeDatabase : DatabaseInterface {
                 organizer = "The music band",
                 zoneName = "Concert Hall"
             )
-        )
 
-        events.add(
+
+        events["event3"] =
             Event(
                 eventId = "event3",
                 eventName = "Aqua Poney",
@@ -67,7 +67,7 @@ object FakeDatabase : DatabaseInterface {
                 organizer = "The Aqua Poney team",
                 zoneName = "Swimming pool"
             )
-        )
+
     }
 
     private fun initProfiles() {
@@ -99,22 +99,7 @@ object FakeDatabase : DatabaseInterface {
     ): Boolean = profiles.remove(profile)
 
     override fun updateProfile(profile: UserProfile, user: UserEntity?): Boolean = true
-/*
-    override fun getListEvent(
-        matcher: String?,
-        number: Int?,
-        profile: UserProfile?
-    ): List<Event> {
-        val res = mutableListOf<Event>()
-        for (v in events.value) {
-            if (v != null) {
-                res.add(v)
-            }
-            if (res.size == number)
-                break
-        }
-        return res
-    }*/
+
 
     override fun getListEvent(
         matcher: Matcher?,
@@ -122,11 +107,9 @@ object FakeDatabase : DatabaseInterface {
         eventList: ObservableList<Event>,
         profile: UserProfile?
     ): Observable<Boolean> {
-        //request sql returns- task<Document>
-        Log.d("FakeDataBase", "getting")
         eventList.clear(this)
 
-        eventList.addAll(events, this)
+        eventList.addAll(events.values, this)
         return Observable(true, this)
     }
     /*
@@ -144,7 +127,11 @@ object FakeDatabase : DatabaseInterface {
         count: Int,
         profile: UserProfile?
     ): Observable<Boolean> {
-        return Observable(true, this)
+        // generate random document ID like in firebase
+        val itemId = generateRandomKey()
+
+        val b = items.put(itemId, Pair(Item(itemId, item.itemName, item.itemType), count)) == null
+        return Observable(b, this)
     }
 
     override fun removeItem(itemId: String, profile: UserProfile?): Observable<Boolean> {
@@ -157,6 +144,9 @@ object FakeDatabase : DatabaseInterface {
         count: Int,
         profile: UserProfile?
     ): Observable<Boolean> {
+        // TODO should update add item if non existent in database ?
+        // if (item.itemId == null) return createItem(item, count, profile)
+        items[item.itemId!!] = Pair(item, count)
         return Observable(true, this)
     }
 
@@ -184,12 +174,29 @@ object FakeDatabase : DatabaseInterface {
     }
 
     override fun createEvent(event: Event, profile: UserProfile?): Observable<Boolean> {
-        events.add(event)
-        return Observable(true, this)
+        val eventId = generateRandomKey()
+        val b = events.put(
+            eventId,
+            Event(
+                eventId,
+                event.eventName,
+                event.organizer,
+                event.zoneName,
+                event.description,
+                event.icon,
+                event.startTime,
+                event.endTime,
+                event.inventory,
+                event.tags
+            )
+        ) == null
+        return Observable(b, this)
     }
 
     override fun updateEvents(event: Event, profile: UserProfile?): Observable<Boolean> {
-        events[events.indexOfFirst { e -> e.eventId == event.eventId }] = event
+        // TODO should update add item if non existent in database ?
+        // if (event.eventId == null) return createEvent(event, profile)
+        events[event.eventId!!] = event
         return Observable(true, this)
     }
 
@@ -198,8 +205,10 @@ object FakeDatabase : DatabaseInterface {
         returnEvent: Observable<Event>,
         profile: UserProfile?
     ): Observable<Boolean> {
-        returnEvent.postValue(events.first { e -> e.eventId == id }, this)
-        return Observable(true, this)
+        val event = events[id]
+        if(event != null)
+            returnEvent.postValue(event, this)
+        return Observable(event != null, this)
     }
 
     override fun updateUserInformation(
@@ -275,5 +284,16 @@ object FakeDatabase : DatabaseInterface {
         // TODO : see whether we write a Python script that send fake data to our database
         usersLocations.postValue(listOf(LatLng(46.548823, 7.017012)))
         return Observable(true)
+    }
+
+    /**
+     * Generates a random
+     */
+    private fun generateRandomKey(): String {
+        val charPool: List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
+        return (1..20)
+            .map { _ -> Random.nextInt(0, charPool.size) }
+            .map(charPool::get)
+            .joinToString("")
     }
 }

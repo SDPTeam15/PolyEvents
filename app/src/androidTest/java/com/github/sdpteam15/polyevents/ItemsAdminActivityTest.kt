@@ -4,36 +4,30 @@ import androidx.test.espresso.Espresso.closeSoftKeyboard
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.typeText
-import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
-import com.github.sdpteam15.polyevents.adapter.EventItemAdapter
+import com.github.sdpteam15.polyevents.database.FakeDatabase
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.Item
 import com.github.sdpteam15.polyevents.model.ItemType
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers.anyString
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.mock
 import org.mockito.junit.MockitoJUnitRunner
 
 
 @RunWith(MockitoJUnitRunner::class)
 class ItemsAdminActivityTest {
 
-    var fakeitems: MutableList<Item> =
-        mutableListOf(
-            Item("Sushi knife", ItemType.OTHER),
-            Item("Pony saddle", ItemType.OTHER),
-            Item("Electric guitar", ItemType.OTHER)
-        )
+    lateinit var availableItems: MutableMap<Item, Int>
+    var items = ObservableList<Pair<Item, Int>>()
     lateinit var mockedUpcomingEventsProvider: DatabaseInterface
 
-    private val testItem = Item("test item", ItemType.OTHER)
+    private val testItem = Item(null, "test item", ItemType.OTHER)
+    private val testQuantity = 3
 
     @Rule
     @JvmField
@@ -41,15 +35,24 @@ class ItemsAdminActivityTest {
 
     @Before
     fun setup() {
+        availableItems = mutableMapOf()
+        availableItems[Item(null, "Bananas", ItemType.OTHER)] = 30
+        availableItems[Item(null, "Kiwis", ItemType.OTHER)] = 10
+        availableItems[Item(null, "230 Plugs", ItemType.PLUG)] = 30
+        availableItems[Item(null, "Fridge (large)", ItemType.OTHER)] = 5
+        availableItems[Item(null, "Cord rewinder (15m)", ItemType.PLUG)] = 30
+        availableItems[Item(null, "Cord rewinder (50m)", ItemType.PLUG)] = 10
+        availableItems[Item(null, "Cord rewinder (25m)", ItemType.PLUG)] = 20
 
-        mockedUpcomingEventsProvider = mock(DatabaseInterface::class.java)
 
-        `when`(mockedUpcomingEventsProvider.getItemsList()).thenReturn(fakeitems)
-        `when`(mockedUpcomingEventsProvider.addItem(testItem)).thenAnswer{fakeitems.add(testItem)}
-        `when`(mockedUpcomingEventsProvider.removeItem(testItem)).thenAnswer{
-            val v = it.arguments[0]
-            fakeitems.remove(v)}
-        currentDatabase = mockedUpcomingEventsProvider
+        // TODO : replace by the db interface call
+        currentDatabase = FakeDatabase
+        FakeDatabase.items.clear()
+        for ((item, count) in availableItems) {
+            currentDatabase.createItem(item, count)
+        }
+        currentDatabase.getItemsList(items)
+
         itemsAdminActivity.scenario.recreate()
 
     }

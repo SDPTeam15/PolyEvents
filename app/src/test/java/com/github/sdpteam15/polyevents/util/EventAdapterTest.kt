@@ -17,9 +17,6 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import java.time.LocalDateTime
-import java.time.ZoneId
-import java.util.*
-import kotlin.collections.HashMap
 
 class EventAdapterTest {
     val eventId = "xxxEventxxx"
@@ -35,8 +32,8 @@ class EventAdapterTest {
     val tag1 = "GOOD"
     val tag2 = "BAD"
 
-    val item1 = Item("micro1", ItemType.MICROPHONE)
-    val item2 = Item("plug2", ItemType.PLUG)
+    val item1 = Item(null, "micro1", ItemType.MICROPHONE)
+    val item2 = Item(null, "plug2", ItemType.PLUG)
 
     lateinit var event: Event
 
@@ -83,7 +80,7 @@ class EventAdapterTest {
         val tags = event.tags.toList()
 
         val testEventWithoutTimes = event.copy(
-                startTime = null
+            startTime = null
         )
 
         val eventDocumentData: HashMap<String, Any?> = hashMapOf(
@@ -98,7 +95,7 @@ class EventAdapterTest {
             EVENT_INVENTORY to testEventWithoutTimes.inventory
         )
 
-        val obtainedEvent = EventAdapter.toEventEntity(eventDocumentData)
+        val obtainedEvent = EventAdapter.toEventEntity(eventDocumentData, EVENT_DOCUMENT_ID)
         assertEquals(testEventWithoutTimes, obtainedEvent)
         assertTrue(obtainedEvent.hasItem(item1))
         assertTrue(obtainedEvent.tags.contains(tag1))

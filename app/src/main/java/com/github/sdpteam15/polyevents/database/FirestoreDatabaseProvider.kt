@@ -140,21 +140,6 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         )
     }
 
-
-    /*
-        override fun getListEvent(matcher: String?, number: Int?, eventList: ObservableList<Event>, profile: ProfileInterface): Observable<Boolean> {
-            return FakeDatabase.getListEvent(matcher, number, eventList, profile)
-        }
-
-        override fun getListEvent(
-                matcher: String?,
-                number: Int?,
-                profile: ProfileInterface
-        ): List<Event> {
-            return ArrayList<Event>()/*TODO*/
-        }
-    */
-
     override fun getListEvent(
         matcher: Matcher?,
         number: Long?,

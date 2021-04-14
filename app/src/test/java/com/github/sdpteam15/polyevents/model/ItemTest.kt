@@ -12,7 +12,7 @@ class ItemTest {
 
     @Before
     fun setup() {
-        testItem = Item(itemId = itemId, itemType = itemType)
+        testItem = Item(itemId=null, itemName = itemId, itemType = itemType)
     }
 
     @Test

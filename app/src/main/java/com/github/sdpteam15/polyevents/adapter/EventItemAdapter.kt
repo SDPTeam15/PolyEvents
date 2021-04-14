@@ -53,7 +53,7 @@ class EventItemAdapter(
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        val event = events[position]!!
+        val event = events[position]
         holder.bind(event)
         holder.itemView.setOnClickListener {
             listener(event)
