@@ -93,7 +93,7 @@ class ItemRequestActivityTest {
         availableItems = mutableMapOf()
         availableItems[Item(null,"Bananas", ItemType.OTHER)] = 30
         availableItems[Item(null,"Kiwis", ItemType.OTHER)] = 10
-        availableItems[Item(null,"230 Plugs", ItemType.PLUG)] = 30
+        availableItems[Item(null,"230V Plugs", ItemType.PLUG)] = 30
         availableItems[Item(null,"Fridge (large)", ItemType.OTHER)] = 5
         availableItems[Item(null,"Cord rewinder (15m)", ItemType.PLUG)] = 30
         availableItems[Item(null,"Cord rewinder (50m)",ItemType.PLUG)] = 10
