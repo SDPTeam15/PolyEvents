@@ -151,14 +151,14 @@ object GoogleMapHelper {
      * Helper method to add a area to the map and generate an invisible marker in its center to display the area infos
      */
     fun addArea(id: String, coords: List<LatLng>, name: String) {
-        if (!coords.isEmpty()) {
+        if (coords.isNotEmpty()) {
             val poly = PolygonOptions()
             poly.addAll(coords).clickable(true)
 
             val polygon = map!!.addPolygon(poly)
 
             if(context != null){
-                polygon?.tag = id
+                polygon.tag = id
             }
 
             var list = coords
@@ -255,10 +255,10 @@ object GoogleMapHelper {
         val divisor = 2.0.pow(zoom.toDouble())
         val longDiff = 188.0 / divisor / 2
         val latDiff = longDiff / 2
-        var pos1 = LatLng(pos.latitude + latDiff, pos.longitude - longDiff)
-        var pos2 = LatLng(pos.latitude - latDiff, pos.longitude - longDiff)
-        var pos3 = LatLng(pos.latitude - latDiff, pos.longitude + longDiff)
-        var pos4 = LatLng(pos.latitude + latDiff, pos.longitude + longDiff)
+        val pos1 = LatLng(pos.latitude + latDiff, pos.longitude - longDiff)
+        val pos2 = LatLng(pos.latitude - latDiff, pos.longitude - longDiff)
+        val pos3 = LatLng(pos.latitude - latDiff, pos.longitude + longDiff)
+        val pos4 = LatLng(pos.latitude + latDiff, pos.longitude + longDiff)
         tempLatLng.add(pos1)
         tempLatLng.add(pos2)
         tempLatLng.add(pos3)
@@ -269,9 +269,9 @@ object GoogleMapHelper {
     }
 
     fun setupModifyMarkers() {
-        var pos2 = tempLatLng[1]!!
-        var pos3 = tempLatLng[2]!!
-        var pos4 = tempLatLng[3]!!
+        val pos2 = tempLatLng[1]!!
+        val pos3 = tempLatLng[2]!!
+        val pos4 = tempLatLng[3]!!
 
         val temp1 = (pos4.latitude + pos3.latitude) / 2
         val temp2 = (pos2.longitude + pos3.longitude) / 2
