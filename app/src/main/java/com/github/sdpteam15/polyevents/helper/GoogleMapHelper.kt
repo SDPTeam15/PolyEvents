@@ -142,7 +142,9 @@ object GoogleMapHelper {
      * Changes the style of the map
      */
     fun setMapStyle() {
-        map!!.setMapStyle(MapStyleOptions(context!!.resources.getString(R.string.style_test3)))
+        if(context != null){
+            map!!.setMapStyle(MapStyleOptions(context!!.resources.getString(R.string.style_test3)))
+        }
     }
 
     /**
@@ -155,7 +157,9 @@ object GoogleMapHelper {
 
             val polygon = map!!.addPolygon(poly)
 
-            polygon?.tag = id
+            if(context != null){
+                polygon?.tag = id
+            }
 
             var list = coords
             var lat = 0.0
@@ -363,9 +367,12 @@ object GoogleMapHelper {
         val latlng2 = tempLatLng[2]!!
         val latlng3 = tempLatLng[3]!!
 
+        val t1 =  pos.position.latitude
+        val t2 = moveDiagPos!!.latitude
+
         //Vector of the marker
         val vec = LatLng(
-                pos.position.latitude - moveDiagPos!!.latitude,
+                t1 - t2,
                 pos.position.longitude - moveDiagPos!!.longitude
         )
 
@@ -435,14 +442,14 @@ object GoogleMapHelper {
             PolygonAction.RIGHT.toString() -> transformPolygon(p0)
             PolygonAction.DOWN.toString() -> transformPolygon(p0)
             PolygonAction.DIAG.toString() -> transformPolygon(p0)
-            PolygonAction.ROTATE.toString() -> Log.d("ROTATION", "ROTATION BUTTON CLICKED")
+            PolygonAction.ROTATE.toString() -> println("ROTATION ROTATION BUTTON CLICKED")
         }
         tempPoly?.points = tempLatLng
     }
 
     fun editMode() {
         editMode = !editMode
-        Log.d("EDITMODE", "Edit mode = $editMode")
+        //println("EDITMODE Edit mode = $editMode")
         if (editMode) {
             for (a in areasPoints) {
                 tempValues[a.key] = Pair(a.value.first.title, a.value.first.position)

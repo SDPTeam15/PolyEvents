@@ -10,12 +10,14 @@ import com.google.android.gms.maps.CameraUpdate
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.internal.ICameraUpdateFactoryDelegate
 import com.google.android.gms.maps.model.*
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
 import org.mockito.Mockito.any
 import java.io.File
+import kotlin.math.max
 import kotlin.math.pow
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -25,6 +27,8 @@ import org.mockito.Mockito.`when` as When
 private const val lat = 42.52010210373032
 private const val lng = 8.566237434744834
 private const val zoom = 18f
+private const val minZoom = 17f
+private const val maxZoom = 21f
 private const val areaName = "Gunter"
 private const val areaId = "1234"
 
@@ -115,12 +119,6 @@ class GoogleMapHelperTest {
         assertTrue(bound)
     }
 
-    //Cannot be tested?
-    @Test
-    fun setMapStyleTest() {
-
-    }
-
     @Test
     fun clearTempTest() {
         val mockedzzt = Mockito.mock(zzt::class.java)
@@ -197,10 +195,6 @@ class GoogleMapHelperTest {
         GoogleMapHelper.tempLatLng.add(position)
 
         GoogleMapHelper.translatePolygon(Marker(mockedzzt2))
-
-        //Cannot test the values
-        //assertEquals(newlat, GoogleMapHelper.movePos!!.latitude)
-        //assertEquals(newlng, GoogleMapHelper.movePos!!.longitude)
     }
 
     @Test
@@ -240,10 +234,6 @@ class GoogleMapHelperTest {
         GoogleMapHelper.transformPolygon(Marker(mockedzzt1))
         GoogleMapHelper.transformPolygon(Marker(mockedzzt2))
         GoogleMapHelper.transformPolygon(Marker(mockedzzt3))
-
-        //Cannot test the values
-        //assertEquals(newlat, GoogleMapHelper.movePos!!.latitude)
-        //assertEquals(newlng, GoogleMapHelper.movePos!!.longitude)
     }
     //Dependent on addArea
     @Test
@@ -259,10 +249,29 @@ class GoogleMapHelperTest {
         val mockedzzw = Mockito.mock(zzw::class.java)
         When(mockedzzw.points).thenReturn(list)
         GoogleMapHelper.tempPoly = Polygon(mockedzzw)
-
         GoogleMapHelper.saveNewArea()
+        assertTrue(GoogleMapHelper.areasPoints.isNotEmpty())
         GoogleMapHelper.areasPoints.clear()
+        GoogleMapHelper.clearTemp()
 
+        val title = "TITLE"
+        GoogleMapHelper.tempTitle = title
+
+        val list2 = mutableListOf<LatLng>()
+        list2.add(LatLng(lng,lat))
+        list2.add(LatLng(lng,lat))
+        list2.add(LatLng(lng,lat))
+        list2.add(LatLng(lng,lat))
+        val mockedzzw2 = Mockito.mock(zzw::class.java)
+        When(mockedzzw2.points).thenReturn(list2)
+        GoogleMapHelper.tempPoly = Polygon(mockedzzw2)
+        assertTrue(GoogleMapHelper.areasPoints.isEmpty())
+        assertNotNull(GoogleMapHelper.tempPoly)
+        GoogleMapHelper.saveNewArea()
+        assertTrue(GoogleMapHelper.areasPoints.isNotEmpty())
+
+        GoogleMapHelper.areasPoints.clear()
+        GoogleMapHelper.clearTemp()
     }
 
     @Test
@@ -283,96 +292,221 @@ class GoogleMapHelperTest {
         When(mockedMap.addPolygon(poly)).thenReturn(Polygon(mockedzzw))
         GoogleMapHelper.addArea(areaName,list,areaId)
         assertTrue(GoogleMapHelper.areasPoints.isNotEmpty())
+
         GoogleMapHelper.areasPoints.clear()
-
-
-
+        GoogleMapHelper.clearTemp()
     }
 
      @Test
      fun restoreMapState(){
+         val mockedzzt = Mockito.mock(zzt::class.java)
+         val m = Marker(mockedzzt)
+         val title = "Event x"
+         When(mockedMap.addMarker(anyOrNull())).thenReturn(m)
+         When(mockedzzt.title).thenReturn(title)
+
+         val mockedzzw = Mockito.mock(zzw::class.java)
+         val p = Polygon(mockedzzw)
+         val list:MutableList<LatLng> = mutableListOf()
+         list.add(LatLng(lat,lng))
+         list.add(LatLng(lat,lng))
+         list.add(LatLng(lat,lng))
+         list.add(LatLng(lat,lng))
+         When(mockedzzw.points).thenReturn(list)
+
+         When(mockedMap.addPolygon(anyOrNull())).thenReturn(p)
 
          GoogleMapHelper.restoreMapState()
          assertTrue(GoogleMapHelper.areasPoints.isNotEmpty())
          //To test the second part, we need to find how to mock map.addMarker(any) and map.addPolygon(any)
-         //GoogleMapHelper.restoreMapState()
+         GoogleMapHelper.restoreMapState()
+
+         GoogleMapHelper.areasPoints.clear()
+         GoogleMapHelper.clearTemp()
      }
 
     //Depends on setupEditZone or create the edit zone markers by hand
     @Test
     fun interactionMarkerTest() {
-        GoogleMapHelper.setupEditZone(LatLng(lat, lng))
         val mockedzzt = Mockito.mock(zzt::class.java)
-        When(mockedMap.addMarker(any())).thenReturn(Marker(mockedzzt))
-
-        When(mockedzzt.snippet).thenReturn(PolygonAction.DIAG.toString())
-        /*
-        val mockedzzt2 = Mockito.mock(zzt::class.java)
-        When(mockedzzt2.snippet).thenReturn(PolygonAction.DOWN.toString())
-        val mockedzzt3 = Mockito.mock(zzt::class.java)
-        When(mockedzzt3.snippet).thenReturn(PolygonAction.MOVE.toString())
-        val mockedzzt4 = Mockito.mock(zzt::class.java)
-        When(mockedzzt4.snippet).thenReturn(PolygonAction.RIGHT.toString())
-        val mockedzzt5 = Mockito.mock(zzt::class.java)
-        When(mockedzzt5.snippet).thenReturn(PolygonAction.ROTATE.toString())
-        */
         var m = Marker(mockedzzt)
-        /*
-        var m2 = Marker(mockedzzt2)
-        var m3 = Marker(mockedzzt3)
-        var m4 = Marker(mockedzzt4)
-        var m5 = Marker(mockedzzt5)
-        */
-        GoogleMapHelper.interactionMarker(m)
-        /*
-        GoogleMapHelper.interactionMarker(m2)
-        GoogleMapHelper.interactionMarker(m3)
-        GoogleMapHelper.interactionMarker(m4)
-        GoogleMapHelper.interactionMarker(m5)
-        */
-
-    }
-
-
-
-
-
-
-/*
-    @Test
-    fun setUpEditZoneTest(){
-        val zoom = GoogleMapHelper.map!!.cameraPosition!!.zoom
-        val divisor = 2.0.pow(zoom.toDouble())
-        val longDiff = 188.0 / divisor / 2
-        val latDiff = longDiff / 2
-        var pos1 = LatLng(lat + latDiff, lng - longDiff)
-        var pos2 = LatLng(lat - latDiff, lng - longDiff)
-        var pos3 = LatLng(lat - latDiff, lng + longDiff)
-        var pos4 = LatLng(lat + latDiff, lng + longDiff)
-
-        val temp1 = (pos4.latitude + pos3.latitude) / 2
-        val temp2 = (pos2.longitude + pos3.longitude) / 2
-        val posMidRight = LatLng(temp1, pos4.longitude)
-        val posMidDown = LatLng(pos2.latitude, temp2)
-        val posCenter = LatLng(temp1, temp2)
-
-
-        val mockedzzt = Mockito.mock(zzt::class.java)
-        When(mockedMap.addMarker(ArgumentMatchers.any(MarkerOptions::class.java))).thenReturn(Marker(mockedzzt))
+        When(mockedMap.addMarker(anyOrNull())).thenReturn(m)
+        assertEquals(m.hashCode(),mockedMap.addMarker(MarkerOptions()).hashCode())
+        When(mockedzzt.snippet).thenReturn(PolygonAction.DIAG.toString())
+        assertNotNull(position)
+        When(mockedzzt.position).thenReturn(position)
+        assertNotNull(mockedzzt.position)
+        assertNotNull(mockedMap.addMarker(MarkerOptions()).position)
         GoogleMapHelper.setupEditZone(LatLng(lat, lng))
-        assertNotNull(GoogleMapHelper.moveDiagMarker)
+
+        val mockedzzw = Mockito.mock(zzw::class.java)
+        val p = Polygon(mockedzzw)
+        When(mockedzzw.points).thenReturn(listOf())
+
+        GoogleMapHelper.interactionMarker(m)
+
+        When(mockedzzt.snippet).thenReturn(PolygonAction.DOWN.toString())
+        GoogleMapHelper.interactionMarker(m)
+
+        When(mockedzzt.snippet).thenReturn(PolygonAction.MOVE.toString())
+        GoogleMapHelper.interactionMarker(m)
+
+        When(mockedzzt.snippet).thenReturn(PolygonAction.RIGHT.toString())
+        GoogleMapHelper.interactionMarker(m)
+
+        When(mockedzzt.snippet).thenReturn(PolygonAction.ROTATE.toString())
+        GoogleMapHelper.interactionMarker(m)
+
+        GoogleMapHelper.tempPoly = p
+        When(mockedzzt.snippet).thenReturn("TEST")
+        GoogleMapHelper.interactionMarker(m)
+
+        GoogleMapHelper.areasPoints.clear()
+        GoogleMapHelper.clearTemp()
     }
 
-
-
-        //Dependent on setUpEditZone
     @Test
     fun createNewAreaTest(){
+        val mockedzzt = Mockito.mock(zzt::class.java)
+        var m = Marker(mockedzzt)
+        When(mockedMap.addMarker(anyOrNull())).thenReturn(m)
+        When(mockedzzt.position).thenReturn(position)
+
+        val mockedzzw = Mockito.mock(zzw::class.java)
+        val p = Polygon(mockedzzw)
+        When(mockedMap.addPolygon(anyOrNull())).thenReturn(p)
+        GoogleMapHelper.createNewArea()
+        assertNotNull(GoogleMapHelper.tempPoly)
+
+        GoogleMapHelper.areasPoints.clear()
+        GoogleMapHelper.clearTemp()
+    }
+
+
+    @Test
+    fun restoreMarkersTest(){
+        val mockedzzt = Mockito.mock(zzt::class.java)
+        val mockedzzt2 = Mockito.mock(zzt::class.java)
+        var m = Marker(mockedzzt)
+        var m2 = Marker(mockedzzt2)
+        When(mockedMap.addMarker(anyOrNull())).thenReturn(m2)
+        When(mockedzzt.position).thenReturn(position)
+
+        val mockedzzw = Mockito.mock(zzw::class.java)
+        val p = Polygon(mockedzzw)
+        When(mockedMap.addPolygon(anyOrNull())).thenReturn(p)
+        val list:MutableList<LatLng> = mutableListOf()
+        list.add(LatLng(lat,lng))
+        list.add(LatLng(lat,lng))
+        list.add(LatLng(lat,lng))
+        list.add(LatLng(lat,lng))
+        When(mockedzzw.points).thenReturn(list)
+
+        GoogleMapHelper.areasPoints.clear()
+        GoogleMapHelper.tempValues.clear()
+        GoogleMapHelper.restoreMarkers()
+
+        val key1 = "k1"
+        val title = "Title"
+        GoogleMapHelper.areasPoints[key1] = Pair(m, p)
+        GoogleMapHelper.tempValues[key1] = Pair(title, position)
+
+        GoogleMapHelper.restoreMarkers()
+        assertEquals(GoogleMapHelper.areasPoints[key1]!!.first.hashCode(), m2.hashCode())
+
+
+        GoogleMapHelper.areasPoints.clear()
+        GoogleMapHelper.clearTemp()
+    }
+
+
+    @Test
+    fun editModeTest(){
+        val key1 = "k1"
+        val title = "Title"
+        val mockedzzt = Mockito.mock(zzt::class.java)
+        var m = Marker(mockedzzt)
+        When(mockedzzt.title).thenReturn(title)
+        When(mockedzzt.position).thenReturn(position)
+
+        val mockedzzw = Mockito.mock(zzw::class.java)
+        val p = Polygon(mockedzzw)
+        val list:MutableList<LatLng> = mutableListOf()
+        list.add(LatLng(lat,lng))
+        list.add(LatLng(lat,lng))
+        list.add(LatLng(lat,lng))
+        list.add(LatLng(lat,lng))
+        When(mockedzzw.points).thenReturn(list)
+
+        GoogleMapHelper.areasPoints[key1] = Pair(m,p)
+
+        When(mockedMap.addPolygon(anyOrNull())).thenReturn(p)
+        When(mockedMap.addMarker(anyOrNull())).thenReturn(m)
+        GoogleMapHelper.tempValues.clear()
+        GoogleMapHelper.editMode()
+        assertEquals(true, GoogleMapHelper.editMode)
+        assertTrue(GoogleMapHelper.tempValues.isNotEmpty())
+        GoogleMapHelper.editMode()
+        assertEquals(false, GoogleMapHelper.editMode)
+    }
+
+    @Test
+    fun editAreaTest(){
+        GoogleMapHelper.areasPoints.clear()
+        GoogleMapHelper.tempTitle = null
+        val key1 = "k1"
+        val title = "Title"
+        val mockedzzt = Mockito.mock(zzt::class.java)
+        var m = Marker(mockedzzt)
+        When(mockedzzt.title).thenReturn(title)
+        When(mockedzzt.position).thenReturn(position)
+
+        val mockedzzw = Mockito.mock(zzw::class.java)
+        val p = Polygon(mockedzzw)
+        val list:MutableList<LatLng> = mutableListOf()
+        list.add(LatLng(lat,lng))
+        list.add(LatLng(lat,lng))
+        list.add(LatLng(lat,lng))
+        list.add(LatLng(lat,lng))
+        list.add(LatLng(lat,lng))
+        When(mockedzzw.points).thenReturn(list)
+        GoogleMapHelper.areasPoints[key1] = Pair(m,p)
+        GoogleMapHelper.tempValues[key1] = Pair(title, position)
+
+        When(mockedMap.addPolygon(anyOrNull())).thenReturn(p)
+        When(mockedMap.addMarker(anyOrNull())).thenReturn(m)
+
+        GoogleMapHelper.editMode = true
+        GoogleMapHelper.editArea("false")
+        assertEquals(true, GoogleMapHelper.editMode)
+
+        GoogleMapHelper.editArea(key1)
+        assertEquals(title, GoogleMapHelper.tempTitle)
 
     }
 
-    */
+    @Test
+    fun setUpMapTest(){
+        GoogleMapHelper.setUpMap()
+    }
 
+    @Test
+    fun globalVariableTest(){
+        GoogleMapHelper.tempLatLng = mutableListOf()
+        assertTrue(GoogleMapHelper.tempLatLng.isEmpty())
 
+        GoogleMapHelper.rotationPos = position
+        assertEquals(position, GoogleMapHelper.rotationPos)
+
+        GoogleMapHelper.minZoom = minZoom
+        GoogleMapHelper.maxZoom = maxZoom
+        assertEquals(minZoom, GoogleMapHelper.minZoom)
+        assertEquals(maxZoom, GoogleMapHelper.maxZoom)
+
+        val nexUid = 5
+        GoogleMapHelper.uid = 5
+        assertEquals(nexUid, GoogleMapHelper.uid)
+
+    }
 
 }
