@@ -298,12 +298,47 @@ class GoogleMapHelperTest {
          //GoogleMapHelper.restoreMapState()
      }
 
+    //Depends on setupEditZone or create the edit zone markers by hand
+    @Test
+    fun interactionMarkerTest() {
+        GoogleMapHelper.setupEditZone(LatLng(lat, lng))
+        val mockedzzt = Mockito.mock(zzt::class.java)
+        When(mockedMap.addMarker(any())).thenReturn(Marker(mockedzzt))
+
+        When(mockedzzt.snippet).thenReturn(PolygonAction.DIAG.toString())
+        /*
+        val mockedzzt2 = Mockito.mock(zzt::class.java)
+        When(mockedzzt2.snippet).thenReturn(PolygonAction.DOWN.toString())
+        val mockedzzt3 = Mockito.mock(zzt::class.java)
+        When(mockedzzt3.snippet).thenReturn(PolygonAction.MOVE.toString())
+        val mockedzzt4 = Mockito.mock(zzt::class.java)
+        When(mockedzzt4.snippet).thenReturn(PolygonAction.RIGHT.toString())
+        val mockedzzt5 = Mockito.mock(zzt::class.java)
+        When(mockedzzt5.snippet).thenReturn(PolygonAction.ROTATE.toString())
+        */
+        var m = Marker(mockedzzt)
+        /*
+        var m2 = Marker(mockedzzt2)
+        var m3 = Marker(mockedzzt3)
+        var m4 = Marker(mockedzzt4)
+        var m5 = Marker(mockedzzt5)
+        */
+        GoogleMapHelper.interactionMarker(m)
+        /*
+        GoogleMapHelper.interactionMarker(m2)
+        GoogleMapHelper.interactionMarker(m3)
+        GoogleMapHelper.interactionMarker(m4)
+        GoogleMapHelper.interactionMarker(m5)
+        */
+
+    }
 
 
 
 
 
-    /*
+
+/*
     @Test
     fun setUpEditZoneTest(){
         val zoom = GoogleMapHelper.map!!.cameraPosition!!.zoom
@@ -328,36 +363,7 @@ class GoogleMapHelperTest {
         assertNotNull(GoogleMapHelper.moveDiagMarker)
     }
 
-    //Depends on setupEditZone or create the edit zone markers by hand
-        @Test
-    fun interactionMarkerTest() {
-        GoogleMapHelper.setupEditZone(LatLng(lat, lng))
 
-        val mockedzzt = Mockito.mock(zzt::class.java)
-        When(mockedzzt.snippet).thenReturn(PolygonAction.DIAG.toString())
-        val mockedzzt2 = Mockito.mock(zzt::class.java)
-        When(mockedzzt2.snippet).thenReturn(PolygonAction.DOWN.toString())
-        val mockedzzt3 = Mockito.mock(zzt::class.java)
-        When(mockedzzt3.snippet).thenReturn(PolygonAction.MOVE.toString())
-        val mockedzzt4 = Mockito.mock(zzt::class.java)
-        When(mockedzzt4.snippet).thenReturn(PolygonAction.RIGHT.toString())
-        val mockedzzt5 = Mockito.mock(zzt::class.java)
-        When(mockedzzt5.snippet).thenReturn(PolygonAction.ROTATE.toString())
-
-        var m = Marker(mockedzzt)
-        var m2 = Marker(mockedzzt2)
-        var m3 = Marker(mockedzzt3)
-        var m4 = Marker(mockedzzt4)
-        var m5 = Marker(mockedzzt5)
-
-        GoogleMapHelper.interactionMarker(m)
-        GoogleMapHelper.interactionMarker(m2)
-        GoogleMapHelper.interactionMarker(m3)
-        GoogleMapHelper.interactionMarker(m4)
-        GoogleMapHelper.interactionMarker(m5)
-
-
-    }
 
         //Dependent on setUpEditZone
     @Test

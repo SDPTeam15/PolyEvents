@@ -9,7 +9,6 @@ import androidx.core.content.ContextCompat
 import com.github.sdpteam15.polyevents.R
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.*
-import java.util.function.Consumer
 import kotlin.math.pow
 
 enum class PolygonAction {
@@ -60,7 +59,7 @@ object GoogleMapHelper {
     var rotationPos: LatLng? = null
     var movePos: LatLng? = null
 
-    var tempTitle:String? = null
+    var tempTitle: String? = null
     val tempValues: MutableMap<String, Pair<String, LatLng>> = mutableMapOf()
 
     //----------START FUNCTIONS----------------------------------------
@@ -170,7 +169,7 @@ object GoogleMapHelper {
             }
 
             val center = LatLng(lat / list.size, lng / list.size)
-            val marker = map!!.addMarker(newMarker(center, 0f,0f,null, name,false, R.drawable.ic_location, 0, 0, 0, 0, 1, 1))
+            val marker = map!!.addMarker(newMarker(center, 0f, 0f, null, name, false, R.drawable.ic_location, 0, 0, 0, 0, 1, 1))
 
             areasPoints[id] = Pair(marker, polygon)
         }
@@ -202,9 +201,9 @@ object GoogleMapHelper {
     fun saveNewArea() {
         if (tempPoly != null) {
             var name = ""
-            if(tempTitle != null){
+            if (tempTitle != null) {
                 name = tempTitle!!
-            }else{
+            } else {
                 name = "Area $uid"
                 uid += 1
             }
@@ -244,7 +243,6 @@ object GoogleMapHelper {
     }
 
 
-
     /**
      * Add a new area at the coordinates and add the markers to edit the area
      * */
@@ -266,7 +264,7 @@ object GoogleMapHelper {
         setupModifyMarkers()
     }
 
-    fun setupModifyMarkers(){
+    fun setupModifyMarkers() {
         var pos2 = tempLatLng[1]!!
         var pos3 = tempLatLng[2]!!
         var pos4 = tempLatLng[3]!!
@@ -293,7 +291,7 @@ object GoogleMapHelper {
     /**
      * Sets the values for the markers
      */
-    fun newMarker(pos: LatLng, hAnchor: Float, vAnchor: Float, snippet: String?, title:String?, draggable: Boolean, idDrawable: Int, leftBound: Int, topBound: Int, rightBound: Int, bottomBound: Int, width: Int, height: Int): MarkerOptions {
+    fun newMarker(pos: LatLng, hAnchor: Float, vAnchor: Float, snippet: String?, title: String?, draggable: Boolean, idDrawable: Int, leftBound: Int, topBound: Int, rightBound: Int, bottomBound: Int, width: Int, height: Int): MarkerOptions {
         var mo = MarkerOptions().position(pos).anchor(hAnchor, vAnchor).draggable(draggable).snippet(snippet).title(title)
         if (context != null) {
             mo = mo.icon(getMarkerRessource(idDrawable, leftBound, topBound, rightBound, bottomBound, width, height))
@@ -350,7 +348,7 @@ object GoogleMapHelper {
     /**
      * Projection of vector on the perpendicular of the two positions
      */
-    fun projectionVector(vector:LatLng,pos1:LatLng, pos2:LatLng):LatLng{
+    fun projectionVector(vector: LatLng, pos1: LatLng, pos2: LatLng): LatLng {
         val v = LatLng(pos1.longitude - pos2.longitude, pos2.latitude - pos1.latitude)
         val norm = v.latitude * v.latitude + v.longitude * v.longitude
         val scalar = (vector.latitude * v.latitude + vector.longitude * v.longitude) / norm
@@ -445,23 +443,23 @@ object GoogleMapHelper {
     fun editMode() {
         editMode = !editMode
         Log.d("EDITMODE", "Edit mode = $editMode")
-        if(editMode){
-            for(a in areasPoints){
+        if (editMode) {
+            for (a in areasPoints) {
                 tempValues[a.key] = Pair(a.value.first.title, a.value.first.position)
                 a.value.first.remove()
             }
-        }else{
+        } else {
             restoreMarkers()
         }
     }
 
-    fun restoreMarkers(){
-        for(value in tempValues){
-            areasPoints[value.key] = Pair(map!!.addMarker(newMarker(value.value.second, 0f,0f,null, value.value.first,false, R.drawable.ic_location, 0, 0, 0, 0, 1, 1)), areasPoints.get(value.key)!!.second)
+    fun restoreMarkers() {
+        for (value in tempValues) {
+            areasPoints[value.key] = Pair(map!!.addMarker(newMarker(value.value.second, 0f, 0f, null, value.value.first, false, R.drawable.ic_location, 0, 0, 0, 0, 1, 1)), areasPoints.get(value.key)!!.second)
         }
     }
 
-    fun editArea(tag:String){
+    fun editArea(tag: String) {
         val area = areasPoints[tag] ?: return
         editMode = false
         tempTitle = tempValues[tag]!!.first
