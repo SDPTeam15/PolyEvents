@@ -262,6 +262,15 @@ object GoogleMapHelper {
         tempLatLng.add(pos3)
         tempLatLng.add(pos4)
         tempPoly = map!!.addPolygon(PolygonOptions().add(pos1).add(pos2).add(pos3).add(pos4))
+
+        setupModifyMarkers()
+    }
+
+    fun setupModifyMarkers(){
+        var pos2 = tempLatLng[1]!!
+        var pos3 = tempLatLng[2]!!
+        var pos4 = tempLatLng[3]!!
+
         val temp1 = (pos4.latitude + pos3.latitude) / 2
         val temp2 = (pos2.longitude + pos3.longitude) / 2
         val posMidRight = LatLng(temp1, pos4.longitude)
@@ -339,6 +348,16 @@ object GoogleMapHelper {
     }
 
     /**
+     * Projection of vector on the perpendicular of the two positions
+     */
+    fun projectionVector(vector:LatLng,pos1:LatLng, pos2:LatLng):LatLng{
+        val v = LatLng(pos1.longitude - pos2.longitude, pos2.latitude - pos1.latitude)
+        val norm = v.latitude * v.latitude + v.longitude * v.longitude
+        val scalar = (vector.latitude * v.latitude + vector.longitude * v.longitude) / norm
+        return LatLng(scalar * v.latitude, scalar * v.longitude)
+    }
+
+    /**
      * Transforms the size of the rectangle, either by moving the the right wall(right), the down wall(down) or both(diag)
      */
     fun transformPolygon(pos: Marker) {
@@ -355,16 +374,10 @@ object GoogleMapHelper {
         //Perpendicular of vector (a,b) is (-b,a)
 
         //Projection on axis perpendicular to marker 1 and marker 2
-        val v = LatLng(latlng1.longitude - latlng2.longitude, latlng2.latitude - latlng1.latitude)
-        val norm = v.latitude * v.latitude + v.longitude * v.longitude
-        val scalar = (vec.latitude * v.latitude + vec.longitude * v.longitude) / norm
-        val diffCoord = LatLng(scalar * v.latitude, scalar * v.longitude)
+        val diffCoord = projectionVector(vec, latlng1, latlng2)
+        val diffCoord1 = projectionVector(vec, latlng2, latlng3)
 
         //Projection on axis perpendicular to marker 2 and marker 3
-        val v1 = LatLng(latlng2.longitude - latlng3.longitude, latlng3.latitude - latlng2.latitude)
-        val norm1 = v1.latitude * v1.latitude + v1.longitude * v1.longitude
-        val scalar1 = (vec.latitude * v1.latitude + vec.longitude * v1.longitude) / norm1
-        val diffCoord1 = LatLng(scalar1 * v1.latitude, scalar1 * v1.longitude)
 
         var lat1 = diffCoord.latitude
         var lng1 = diffCoord.longitude
@@ -449,35 +462,15 @@ object GoogleMapHelper {
     }
 
     fun editArea(tag:String){
-        val area = areasPoints.get(tag) ?: return
+        val area = areasPoints[tag] ?: return
         editMode = false
-        tempTitle = tempValues.get(tag)!!.first
+        tempTitle = tempValues[tag]!!.first
         tempValues.remove(tag)
         restoreMarkers()
 
         tempPoly = area.second
         tempLatLng = area.second.points.dropLast(1).toMutableList()
 
-        var pos2 = tempLatLng[1]!!
-        var pos3 = tempLatLng[2]!!
-        var pos4 = tempLatLng[3]!!
-
-        val temp1 = (pos4.latitude + pos3.latitude) / 2
-        val temp2 = (pos2.longitude + pos3.longitude) / 2
-        val posMidRight = LatLng(temp1, pos4.longitude)
-        val posMidDown = LatLng(pos2.latitude, temp2)
-        val posCenter = LatLng(temp1, temp2)
-
-        moveDiagMarker = map!!.addMarker(newMarker(pos3, 0.5f, 0.5f, PolygonAction.DIAG.toString(), null, true, R.drawable.ic_downleftarrow, 0, 0, 100, 100, 100, 100))
-        moveDiagPos = moveDiagMarker!!.position
-
-        moveRightMarker = map!!.addMarker(newMarker(posMidRight, 0.5f, 0.5f, PolygonAction.RIGHT.toString(), null, true, R.drawable.ic_rightarrow, 0, 0, 100, 100, 100, 100))
-        moveRightPos = moveRightMarker!!.position
-
-        moveDownMarker = map!!.addMarker(newMarker(posMidDown, 0.5f, 0.5f, PolygonAction.DOWN.toString(), null, true, R.drawable.ic_downarrow, 0, 0, 100, 100, 100, 100))
-        moveDownPos = moveDownMarker!!.position
-
-        moveMarker = map!!.addMarker(newMarker(posCenter, 0.5f, 0.5f, PolygonAction.MOVE.toString(), null, true, R.drawable.ic_move, 0, 0, 100, 100, 100, 100))
-        movePos = moveMarker!!.position
+        setupModifyMarkers()
     }
 }
