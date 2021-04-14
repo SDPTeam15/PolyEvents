@@ -1,7 +1,5 @@
-package com.github.sdpteam15.polyevents
+package com.github.sdpteam15.polyevents.database
 
-import com.github.sdpteam15.polyevents.database.DatabaseInterface
-import com.github.sdpteam15.polyevents.database.Matcher
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.*
@@ -76,14 +74,19 @@ object FakeDatabase : DatabaseInterface {
         profiles = mutableListOf()
     }
 
-    val CURRENT_USER: UserEntity = UserEntity(
+    var CURRENT_USER: UserEntity = UserEntity(
         uid = "FakeUID",
         name = "FakeName",
         email = "Fake@mail.ch"
     )
+    var userToNull = false
 
     override val currentUser: UserEntity?
-        get() = CURRENT_USER
+        get() = if (userToNull) {
+            null
+        } else {
+            CURRENT_USER
+        }
     override val currentProfile: UserProfile?
         get() = null
 
@@ -208,7 +211,7 @@ object FakeDatabase : DatabaseInterface {
         profile: UserProfile?
     ): Observable<Boolean> {
         val event = events[id]
-        if(event != null)
+        if (event != null)
             returnEvent.postValue(event, this)
         return Observable(event != null, this)
     }

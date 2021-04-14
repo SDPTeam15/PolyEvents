@@ -10,6 +10,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.github.sdpteam15.polyevents.adapter.EventItemAdapter
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
+import com.github.sdpteam15.polyevents.database.FakeDatabase
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.Item
@@ -77,9 +78,11 @@ class ItemsAdminActivityTest {
         //TODO fix this test, seems like fakeitems is not updated correctly
         onView(withId(R.id.id_add_item_button)).perform(click())
         onView(withId(R.id.id_edittext_item_name)).perform(typeText(testItem.itemName))
+        closeSoftKeyboard()
         onView(withId(R.id.id_edittext_item_quantity)).perform(typeText(testQuantity.toString()))
         closeSoftKeyboard()
         onView(withId(R.id.id_confirm_add_item_button)).perform(click())
+        Thread.sleep(1000)
         onView(withId(R.id.id_recycler_items_list))
             .check(RecyclerViewItemCountAssertion(availableItems.size+1))
     }

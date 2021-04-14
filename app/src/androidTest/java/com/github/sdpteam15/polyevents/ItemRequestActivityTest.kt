@@ -2,7 +2,6 @@ package com.github.sdpteam15.polyevents
 
 
 import android.app.Activity
-import android.content.ClipData
 import android.view.View
 import android.view.WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
 import android.view.WindowManager.LayoutParams.TYPE_TOAST
@@ -24,6 +23,7 @@ import androidx.test.runner.lifecycle.Stage
 import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.adapter.ItemRequestAdapter
+import com.github.sdpteam15.polyevents.database.FakeDatabase
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.Item
 import com.github.sdpteam15.polyevents.model.ItemType
@@ -35,8 +35,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito
-import org.mockito.Mockito.`when`
 import org.mockito.junit.MockitoJUnitRunner
 
 

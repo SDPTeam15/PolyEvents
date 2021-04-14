@@ -1,6 +1,4 @@
 package com.github.sdpteam15.polyevents.database
-
-import com.github.sdpteam15.polyevents.FakeDatabase
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.Event
@@ -38,13 +36,6 @@ class FakeDatabaseTests {
         assertNotNull(FakeDatabase.addProfile(mockedUserProfile, "", mockedUserInterface))
         assertNotNull(FakeDatabase.removeProfile(mockedUserProfile, "", mockedUserInterface))
         assertNotNull(FakeDatabase.updateProfile(mockedUserProfile, mockedUserInterface))
-        FakeDatabase.getListEvent(null, 1, mockedEventList, mockedUserProfile).observe {
-            if (it.value) assert(mockedEventList.size <= 1)
-        }
-        FakeDatabase.getListEvent(null, 100, mockedEventList, mockedUserProfile).observe {
-            if (it.value) assert(mockedEventList.size <= 100)
-        }
-
 
     }
 

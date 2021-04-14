@@ -95,7 +95,7 @@ class EventAdapterTest {
             EVENT_INVENTORY to testEventWithoutTimes.inventory
         )
 
-        val obtainedEvent = EventAdapter.toEventEntity(eventDocumentData, EVENT_DOCUMENT_ID)
+        val obtainedEvent = EventAdapter.toEventEntity(eventDocumentData, testEventWithoutTimes.eventId!!)
         assertEquals(testEventWithoutTimes, obtainedEvent)
         assertTrue(obtainedEvent.hasItem(item1))
         assertTrue(obtainedEvent.tags.contains(tag1))
