@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
-import android.util.Log
 import androidx.core.content.ContextCompat
 import com.github.sdpteam15.polyevents.R
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -142,7 +141,7 @@ object GoogleMapHelper {
      * Changes the style of the map
      */
     fun setMapStyle() {
-        if(context != null){
+        if (context != null) {
             map!!.setMapStyle(MapStyleOptions(context!!.resources.getString(R.string.style_test3)))
         }
     }
@@ -157,7 +156,7 @@ object GoogleMapHelper {
 
             val polygon = map!!.addPolygon(poly)
 
-            if(context != null){
+            if (context != null) {
                 polygon.tag = id
             }
 
@@ -197,11 +196,17 @@ object GoogleMapHelper {
         map!!.setLatLngBoundsForCameraTarget(bounds)
     }
 
+    /**
+     * Clears the temporary variables to have a clean start for editing the area
+     */
     fun createNewArea() {
         clearTemp()
         setupEditZone(map!!.cameraPosition!!.target)
     }
 
+    /**
+     * Adds an area in the map
+     */
     fun saveNewArea() {
         if (tempPoly != null) {
             var name = ""
@@ -251,6 +256,7 @@ object GoogleMapHelper {
      * Add a new area at the coordinates and add the markers to edit the area
      * */
     fun setupEditZone(pos: LatLng) {
+        //Generate the corners of the area
         val zoom = map!!.cameraPosition!!.zoom
         val divisor = 2.0.pow(zoom.toDouble())
         val longDiff = 188.0 / divisor / 2
@@ -268,6 +274,9 @@ object GoogleMapHelper {
         setupModifyMarkers()
     }
 
+    /**
+     * Creates all the markers used to edit the areas
+     */
     fun setupModifyMarkers() {
         val pos2 = tempLatLng[1]!!
         val pos3 = tempLatLng[2]!!
@@ -367,7 +376,7 @@ object GoogleMapHelper {
         val latlng2 = tempLatLng[2]!!
         val latlng3 = tempLatLng[3]!!
 
-        val t1 =  pos.position.latitude
+        val t1 = pos.position.latitude
         val t2 = moveDiagPos!!.latitude
 
         //Vector of the marker
@@ -447,9 +456,11 @@ object GoogleMapHelper {
         tempPoly?.points = tempLatLng
     }
 
+    /**
+     * Switches the edit mode, and remove/recreates the markers for edition purpose
+     */
     fun editMode() {
         editMode = !editMode
-        //println("EDITMODE Edit mode = $editMode")
         if (editMode) {
             for (a in areasPoints) {
                 tempValues[a.key] = Pair(a.value.first.title, a.value.first.position)
@@ -460,12 +471,18 @@ object GoogleMapHelper {
         }
     }
 
+    /**
+     * Restores all markers to the area they belong
+     */
     fun restoreMarkers() {
         for (value in tempValues) {
             areasPoints[value.key] = Pair(map!!.addMarker(newMarker(value.value.second, 0f, 0f, null, value.value.first, false, R.drawable.ic_location, 0, 0, 0, 0, 1, 1)), areasPoints.get(value.key)!!.second)
         }
     }
 
+    /**
+     * Set up the area with the tag in parameter
+     */
     fun editArea(tag: String) {
         val area = areasPoints[tag] ?: return
         editMode = false

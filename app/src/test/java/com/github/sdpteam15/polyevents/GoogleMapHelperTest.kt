@@ -10,15 +10,10 @@ import com.google.android.gms.maps.CameraUpdate
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.internal.ICameraUpdateFactoryDelegate
 import com.google.android.gms.maps.model.*
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
-import org.mockito.Mockito.any
 import java.io.File
-import kotlin.math.max
-import kotlin.math.pow
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -165,19 +160,19 @@ class GoogleMapHelperTest {
     }
 
     @Test
-    fun newMarkerTest(){
-        GoogleMapHelper.newMarker(LatLng(lat, lng), 0f,0f,null, null, true, R.id.ic_more, 0,0,100,100,100,100)
+    fun newMarkerTest() {
+        GoogleMapHelper.newMarker(LatLng(lat, lng), 0f, 0f, null, null, true, R.id.ic_more, 0, 0, 100, 100, 100, 100)
     }
 
     @Test
-    fun translatePolygonTest(){
+    fun translatePolygonTest() {
         val mockedzzt = Mockito.mock(zzt::class.java)
         val mockedzzt2 = Mockito.mock(zzt::class.java)
 
         val newlat = 40.52010210373032
         val newlng = 10.566237434744834
 
-        val newPos = LatLng(newlat,newlng)
+        val newPos = LatLng(newlat, newlng)
 
         When(mockedzzt.position).thenReturn(position)
         When(mockedzzt2.position).thenReturn(newPos)
@@ -198,16 +193,16 @@ class GoogleMapHelperTest {
     }
 
     @Test
-    fun transformPolygonTest(){
+    fun transformPolygonTest() {
         val newlat = 40.52010210373032
         val newlng = 10.566237434744834
 
-        val newPos = LatLng(newlat,newlng)
+        val newPos = LatLng(newlat, newlng)
 
         val mockedzzt = Mockito.mock(zzt::class.java)
         val mockedzzt1 = Mockito.mock(zzt::class.java)
         val mockedzzt2 = Mockito.mock(zzt::class.java)
-        val mockedzzt3= Mockito.mock(zzt::class.java)
+        val mockedzzt3 = Mockito.mock(zzt::class.java)
 
         When(mockedzzt1.snippet).thenReturn(PolygonAction.RIGHT.toString())
         When(mockedzzt2.snippet).thenReturn(PolygonAction.DOWN.toString())
@@ -235,17 +230,18 @@ class GoogleMapHelperTest {
         GoogleMapHelper.transformPolygon(Marker(mockedzzt2))
         GoogleMapHelper.transformPolygon(Marker(mockedzzt3))
     }
+
     //Dependent on addArea
     @Test
-    fun saveNewAreaTest(){
+    fun saveNewAreaTest() {
         GoogleMapHelper.tempPoly = null
         GoogleMapHelper.saveNewArea()
 
         val list = mutableListOf<LatLng>()
-        list.add(LatLng(lat,lng))
-        list.add(LatLng(lat,lng))
-        list.add(LatLng(lat,lng))
-        list.add(LatLng(lat,lng))
+        list.add(LatLng(lat, lng))
+        list.add(LatLng(lat, lng))
+        list.add(LatLng(lat, lng))
+        list.add(LatLng(lat, lng))
         val mockedzzw = Mockito.mock(zzw::class.java)
         When(mockedzzw.points).thenReturn(list)
         GoogleMapHelper.tempPoly = Polygon(mockedzzw)
@@ -258,10 +254,10 @@ class GoogleMapHelperTest {
         GoogleMapHelper.tempTitle = title
 
         val list2 = mutableListOf<LatLng>()
-        list2.add(LatLng(lng,lat))
-        list2.add(LatLng(lng,lat))
-        list2.add(LatLng(lng,lat))
-        list2.add(LatLng(lng,lat))
+        list2.add(LatLng(lng, lat))
+        list2.add(LatLng(lng, lat))
+        list2.add(LatLng(lng, lat))
+        list2.add(LatLng(lng, lat))
         val mockedzzw2 = Mockito.mock(zzw::class.java)
         When(mockedzzw2.points).thenReturn(list2)
         GoogleMapHelper.tempPoly = Polygon(mockedzzw2)
@@ -275,55 +271,55 @@ class GoogleMapHelperTest {
     }
 
     @Test
-    fun addAreaTest(){
+    fun addAreaTest() {
         val mockedzzw = Mockito.mock(zzw::class.java)
 
-        val list:MutableList<LatLng> = mutableListOf()
-        GoogleMapHelper.addArea(areaName,list,areaId)
+        val list: MutableList<LatLng> = mutableListOf()
+        GoogleMapHelper.addArea(areaName, list, areaId)
         assertTrue(GoogleMapHelper.areasPoints.isEmpty())
 
-        list.add(LatLng(lat,lng))
-        list.add(LatLng(lat,lng))
-        list.add(LatLng(lat,lng))
-        list.add(LatLng(lat,lng))
+        list.add(LatLng(lat, lng))
+        list.add(LatLng(lat, lng))
+        list.add(LatLng(lat, lng))
+        list.add(LatLng(lat, lng))
 
         val poly = PolygonOptions()
         poly.addAll(list).clickable(true)
         When(mockedMap.addPolygon(poly)).thenReturn(Polygon(mockedzzw))
-        GoogleMapHelper.addArea(areaName,list,areaId)
+        GoogleMapHelper.addArea(areaName, list, areaId)
         assertTrue(GoogleMapHelper.areasPoints.isNotEmpty())
 
         GoogleMapHelper.areasPoints.clear()
         GoogleMapHelper.clearTemp()
     }
 
-     @Test
-     fun restoreMapState(){
-         val mockedzzt = Mockito.mock(zzt::class.java)
-         val m = Marker(mockedzzt)
-         val title = "Event x"
-         When(mockedMap.addMarker(anyOrNull())).thenReturn(m)
-         When(mockedzzt.title).thenReturn(title)
+    @Test
+    fun restoreMapState() {
+        val mockedzzt = Mockito.mock(zzt::class.java)
+        val m = Marker(mockedzzt)
+        val title = "Event x"
+        When(mockedMap.addMarker(anyOrNull())).thenReturn(m)
+        When(mockedzzt.title).thenReturn(title)
 
-         val mockedzzw = Mockito.mock(zzw::class.java)
-         val p = Polygon(mockedzzw)
-         val list:MutableList<LatLng> = mutableListOf()
-         list.add(LatLng(lat,lng))
-         list.add(LatLng(lat,lng))
-         list.add(LatLng(lat,lng))
-         list.add(LatLng(lat,lng))
-         When(mockedzzw.points).thenReturn(list)
+        val mockedzzw = Mockito.mock(zzw::class.java)
+        val p = Polygon(mockedzzw)
+        val list: MutableList<LatLng> = mutableListOf()
+        list.add(LatLng(lat, lng))
+        list.add(LatLng(lat, lng))
+        list.add(LatLng(lat, lng))
+        list.add(LatLng(lat, lng))
+        When(mockedzzw.points).thenReturn(list)
 
-         When(mockedMap.addPolygon(anyOrNull())).thenReturn(p)
+        When(mockedMap.addPolygon(anyOrNull())).thenReturn(p)
 
-         GoogleMapHelper.restoreMapState()
-         assertTrue(GoogleMapHelper.areasPoints.isNotEmpty())
-         //To test the second part, we need to find how to mock map.addMarker(any) and map.addPolygon(any)
-         GoogleMapHelper.restoreMapState()
+        GoogleMapHelper.restoreMapState()
+        assertTrue(GoogleMapHelper.areasPoints.isNotEmpty())
+        //To test the second part, we need to find how to mock map.addMarker(any) and map.addPolygon(any)
+        GoogleMapHelper.restoreMapState()
 
-         GoogleMapHelper.areasPoints.clear()
-         GoogleMapHelper.clearTemp()
-     }
+        GoogleMapHelper.areasPoints.clear()
+        GoogleMapHelper.clearTemp()
+    }
 
     //Depends on setupEditZone or create the edit zone markers by hand
     @Test
@@ -331,7 +327,7 @@ class GoogleMapHelperTest {
         val mockedzzt = Mockito.mock(zzt::class.java)
         var m = Marker(mockedzzt)
         When(mockedMap.addMarker(anyOrNull())).thenReturn(m)
-        assertEquals(m.hashCode(),mockedMap.addMarker(MarkerOptions()).hashCode())
+        assertEquals(m.hashCode(), mockedMap.addMarker(MarkerOptions()).hashCode())
         When(mockedzzt.snippet).thenReturn(PolygonAction.DIAG.toString())
         assertNotNull(position)
         When(mockedzzt.position).thenReturn(position)
@@ -366,7 +362,7 @@ class GoogleMapHelperTest {
     }
 
     @Test
-    fun createNewAreaTest(){
+    fun createNewAreaTest() {
         val mockedzzt = Mockito.mock(zzt::class.java)
         var m = Marker(mockedzzt)
         When(mockedMap.addMarker(anyOrNull())).thenReturn(m)
@@ -384,7 +380,7 @@ class GoogleMapHelperTest {
 
 
     @Test
-    fun restoreMarkersTest(){
+    fun restoreMarkersTest() {
         val mockedzzt = Mockito.mock(zzt::class.java)
         val mockedzzt2 = Mockito.mock(zzt::class.java)
         var m = Marker(mockedzzt)
@@ -395,11 +391,11 @@ class GoogleMapHelperTest {
         val mockedzzw = Mockito.mock(zzw::class.java)
         val p = Polygon(mockedzzw)
         When(mockedMap.addPolygon(anyOrNull())).thenReturn(p)
-        val list:MutableList<LatLng> = mutableListOf()
-        list.add(LatLng(lat,lng))
-        list.add(LatLng(lat,lng))
-        list.add(LatLng(lat,lng))
-        list.add(LatLng(lat,lng))
+        val list: MutableList<LatLng> = mutableListOf()
+        list.add(LatLng(lat, lng))
+        list.add(LatLng(lat, lng))
+        list.add(LatLng(lat, lng))
+        list.add(LatLng(lat, lng))
         When(mockedzzw.points).thenReturn(list)
 
         GoogleMapHelper.areasPoints.clear()
@@ -421,7 +417,7 @@ class GoogleMapHelperTest {
 
 
     @Test
-    fun editModeTest(){
+    fun editModeTest() {
         val key1 = "k1"
         val title = "Title"
         val mockedzzt = Mockito.mock(zzt::class.java)
@@ -431,14 +427,14 @@ class GoogleMapHelperTest {
 
         val mockedzzw = Mockito.mock(zzw::class.java)
         val p = Polygon(mockedzzw)
-        val list:MutableList<LatLng> = mutableListOf()
-        list.add(LatLng(lat,lng))
-        list.add(LatLng(lat,lng))
-        list.add(LatLng(lat,lng))
-        list.add(LatLng(lat,lng))
+        val list: MutableList<LatLng> = mutableListOf()
+        list.add(LatLng(lat, lng))
+        list.add(LatLng(lat, lng))
+        list.add(LatLng(lat, lng))
+        list.add(LatLng(lat, lng))
         When(mockedzzw.points).thenReturn(list)
 
-        GoogleMapHelper.areasPoints[key1] = Pair(m,p)
+        GoogleMapHelper.areasPoints[key1] = Pair(m, p)
 
         When(mockedMap.addPolygon(anyOrNull())).thenReturn(p)
         When(mockedMap.addMarker(anyOrNull())).thenReturn(m)
@@ -451,7 +447,7 @@ class GoogleMapHelperTest {
     }
 
     @Test
-    fun editAreaTest(){
+    fun editAreaTest() {
         GoogleMapHelper.areasPoints.clear()
         GoogleMapHelper.tempTitle = null
         val key1 = "k1"
@@ -463,14 +459,14 @@ class GoogleMapHelperTest {
 
         val mockedzzw = Mockito.mock(zzw::class.java)
         val p = Polygon(mockedzzw)
-        val list:MutableList<LatLng> = mutableListOf()
-        list.add(LatLng(lat,lng))
-        list.add(LatLng(lat,lng))
-        list.add(LatLng(lat,lng))
-        list.add(LatLng(lat,lng))
-        list.add(LatLng(lat,lng))
+        val list: MutableList<LatLng> = mutableListOf()
+        list.add(LatLng(lat, lng))
+        list.add(LatLng(lat, lng))
+        list.add(LatLng(lat, lng))
+        list.add(LatLng(lat, lng))
+        list.add(LatLng(lat, lng))
         When(mockedzzw.points).thenReturn(list)
-        GoogleMapHelper.areasPoints[key1] = Pair(m,p)
+        GoogleMapHelper.areasPoints[key1] = Pair(m, p)
         GoogleMapHelper.tempValues[key1] = Pair(title, position)
 
         When(mockedMap.addPolygon(anyOrNull())).thenReturn(p)
@@ -486,12 +482,12 @@ class GoogleMapHelperTest {
     }
 
     @Test
-    fun setUpMapTest(){
+    fun setUpMapTest() {
         GoogleMapHelper.setUpMap()
     }
 
     @Test
-    fun globalVariableTest(){
+    fun globalVariableTest() {
         GoogleMapHelper.tempLatLng = mutableListOf()
         assertTrue(GoogleMapHelper.tempLatLng.isEmpty())
 
