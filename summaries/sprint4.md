@@ -23,6 +23,9 @@ My time estimate was quite ok. The tests took more time than expected because I 
 Next sprint, I will work a bit with the database and go on a bit with google map. 
 
 ## Robin
+During this long sprint, I merging and testing the UserEntity with Stephane, I implemented a ObservableList and add a profiles list editor.
+
+The estimated time was too low for the last part, so I will implemented the test for it next week.
 
 ## Stephane
 
