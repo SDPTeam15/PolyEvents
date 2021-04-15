@@ -94,7 +94,7 @@ class LoginFragment : Fragment() {
     private fun addIfNotInDB() {
         currentDatabase.inDatabase(inDbObservable, currentUser!!.uid, currentUser!!)
             .observe(this) { newValue ->
-                if (newValue.value!!) {
+                if (newValue.value) {
                     if (inDbObservable.value!!) {
                         //If already in database redirect
                         HelperFunctions.changeFragment(
@@ -115,7 +115,7 @@ class LoginFragment : Fragment() {
         currentDatabase
             .firstConnexion(currentUser!!, currentUser!!)
             .observe(this) { newValue2 ->
-                if (newValue2.value!!) {
+                if (newValue2.value) {
                     //If correctly registered, redirect it
                     HelperFunctions.changeFragment(
                         activity,

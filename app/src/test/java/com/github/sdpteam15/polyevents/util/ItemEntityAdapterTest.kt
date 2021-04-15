@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.util
 
 import android.provider.ContactsContract
+import android.util.Log
 import com.github.sdpteam15.polyevents.database.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.Item
 import com.github.sdpteam15.polyevents.model.ItemType
@@ -29,14 +30,16 @@ class ItemEntityAdapterTest {
 
     @Test
     fun conversionOfDocumentToItemEntityPreservesData() {
+
         val itemDocumentData: HashMap<String, Any?> = hashMapOf(
             DatabaseConstant.ITEM_NAME to itemName,
             DatabaseConstant.ITEM_DOCUMENT_ID to itemId,
             DatabaseConstant.ITEM_TYPE to itemType.name
         )
-        val obtainedEvent = ItemEntityAdapter.toItemEntity(itemDocumentData,itemId)
+        val obtainedItem = ItemEntityAdapter.toItemEntity(itemDocumentData,itemId)
 
-        assertEquals(obtainedEvent, itemEntity)
+        assertEquals(obtainedItem.first, itemEntity)
+        assertEquals(obtainedItem.second, itemQuantity)
     }
 
     @Test

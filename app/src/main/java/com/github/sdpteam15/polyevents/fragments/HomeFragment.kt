@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
+import com.github.sdpteam15.polyevents.database.NUMBER_UPCOMING_EVENTS
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.Event
@@ -35,7 +36,7 @@ class HomeFragment : Fragment() {
         listUpcomingEventsLayout =
             fragmentView.findViewById<LinearLayout>(R.id.id_upcoming_events_list)
 
-        currentDatabase.getListEvent(null, 3, events).observe(this) {
+        currentDatabase.getListEvent(null, NUMBER_UPCOMING_EVENTS.toLong(), events).observe(this) {
             if (!it.value) {
                 HelperFunctions.showToast("Failed to load events", fragmentView.context)
             }

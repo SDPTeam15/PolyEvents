@@ -2,7 +2,6 @@ package com.github.sdpteam15.polyevents
 
 
 import android.app.Activity
-import android.content.ClipData
 import android.view.View
 import android.view.WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
 import android.view.WindowManager.LayoutParams.TYPE_TOAST
@@ -24,6 +23,8 @@ import androidx.test.runner.lifecycle.Stage
 import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.adapter.ItemRequestAdapter
+import com.github.sdpteam15.polyevents.database.FakeDatabase
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.Item
 import com.github.sdpteam15.polyevents.model.ItemType
 import org.hamcrest.CoreMatchers.`is`
@@ -34,15 +35,13 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito
-import org.mockito.Mockito.`when`
 import org.mockito.junit.MockitoJUnitRunner
 
 
 @RunWith(MockitoJUnitRunner::class)
 class ItemRequestActivityTest {
     private lateinit var availableItems: MutableMap<Item, Int>
-    private lateinit var availableItemsList: List<Pair<Item, Int>>
+    private var availableItemsList = ObservableList<Pair<Item, Int>>()
     private lateinit var mockedAvailableItemsProvider: DatabaseInterface
 
     @Rule
@@ -90,21 +89,23 @@ class ItemRequestActivityTest {
     @Before
     fun setup() {
         availableItems = mutableMapOf()
-        availableItems[Item("Bananas", ItemType.OTHER)] = 30
-        availableItems[Item("Kiwis", ItemType.OTHER)] = 10
-        availableItems[Item("230 Plugs", ItemType.PLUG)] = 30
-        availableItems[Item("Fridge (large)", ItemType.OTHER)] = 5
-        availableItems[Item("Cord rewinder (15m)", ItemType.PLUG)] = 30
-        availableItems[Item("Cord rewinder (50m)",ItemType.PLUG)] = 10
-        availableItems[Item("Cord rewinder (25m)",ItemType.PLUG)] = 20
+        availableItems[Item(null,"Bananas", ItemType.OTHER)] = 30
+        availableItems[Item(null,"Kiwis", ItemType.OTHER)] = 10
+        availableItems[Item(null,"230V Plugs", ItemType.PLUG)] = 30
+        availableItems[Item(null,"Fridge (large)", ItemType.OTHER)] = 5
+        availableItems[Item(null,"Cord rewinder (15m)", ItemType.PLUG)] = 30
+        availableItems[Item(null,"Cord rewinder (50m)",ItemType.PLUG)] = 10
+        availableItems[Item(null,"Cord rewinder (25m)",ItemType.PLUG)] = 20
 
-        availableItemsList = availableItems.toList()
 
 
         // TODO : replace by the db interface call
-        mockedAvailableItemsProvider = Mockito.mock(DatabaseInterface::class.java)
-        Database.currentDatabase = mockedAvailableItemsProvider
-        `when`(mockedAvailableItemsProvider.getAvailableItems()).thenReturn(availableItems)
+        Database.currentDatabase = FakeDatabase
+        FakeDatabase.items.clear()
+        for ((item,count) in availableItems){
+            Database.currentDatabase.createItem(item,count)
+        }
+        Database.currentDatabase.getItemsList(availableItemsList)
 
         // go to activities more fragment
         mainActivity = ActivityScenarioRule(MainActivity::class.java)
@@ -113,6 +114,7 @@ class ItemRequestActivityTest {
         // Go to items request activity
         onView(withId(R.id.id_request_button)).perform(click())
         Intents.init()
+        Thread.sleep(1000)
     }
 
     @Test
@@ -126,7 +128,7 @@ class ItemRequestActivityTest {
         val itemsToSelect = arrayOf(0, 1, 3)
         val quantityToSelect = arrayOf(30, 3, 5, 2, 40, 4, 20)
         val correctQuantityAfterSelection = arrayOf(30, 3, 5, 2, 30, 4, 20)
-        val itemsSelected = mutableMapOf<String, Int>()
+        val itemsSelected = mutableMapOf<Item, Int>()
 
         for (i in itemsToSelect) {
             // Set the quantity wanted for each item
@@ -176,7 +178,7 @@ class ItemRequestActivityTest {
         selectItemQuantity(0, "-1")
         selectItemQuantity(itemToSelect, quantityToSelect.toString())
 
-        val correctMap = mutableMapOf<String, Int>()
+        val correctMap = mutableMapOf<Item, Int>()
         correctMap[availableItemsList[itemToSelect].first] = quantityToSelect
 
         assertThat(
@@ -192,7 +194,7 @@ class ItemRequestActivityTest {
         val itemToSelect = 1
         selectItemQuantity(itemToSelect, quantityToSelect.toString())
 
-        val correctMap = mutableMapOf<String, Int>()
+        val correctMap = mutableMapOf<Item, Int>()
         correctMap[availableItemsList[itemToSelect].first] = availableItemsList[itemToSelect].second
 
         assertThat(

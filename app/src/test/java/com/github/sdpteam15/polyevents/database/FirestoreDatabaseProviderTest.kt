@@ -1,5 +1,8 @@
 package com.github.sdpteam15.polyevents.database
 
+import com.github.sdpteam15.polyevents.adapter.ItemAdapter
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.ITEM_COLLECTION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.ITEM_DOCUMENT_ID
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_POINT
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_COLLECTION
@@ -8,9 +11,8 @@ import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_NAME
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_UID
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_USERNAME
 import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.model.Event
-import com.github.sdpteam15.polyevents.model.UserEntity
-import com.github.sdpteam15.polyevents.model.UserProfile
+import com.github.sdpteam15.polyevents.model.*
+import com.github.sdpteam15.polyevents.util.ItemEntityAdapter
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.*
@@ -37,6 +39,7 @@ class FirestoreDatabaseProviderTest {
     lateinit var database: DatabaseInterface
 
     lateinit var userDocument: HashMap<String, Any?>
+    lateinit var itemDocument: HashMap<String, Any?>
 
     @Before
     fun setup() {
@@ -54,7 +57,11 @@ class FirestoreDatabaseProviderTest {
 
         //Mock the database and set it as the default database
         mockedDatabase = mock(FirebaseFirestore::class.java)
+
+
+
         FirestoreDatabaseProvider.firestore = mockedDatabase
+
     }
 
     @Test
@@ -90,11 +97,46 @@ class FirestoreDatabaseProviderTest {
                 user
             )
         )
-        assert(FirestoreDatabaseProvider.getListEvent("", 1, testProfile).size <= 1)
-        assert(FirestoreDatabaseProvider.getListEvent("", 100, testProfile).size <= 100)
-        assert(FirestoreDatabaseProvider.getUpcomingEvents(1, testProfile).size <= 1)
-        assert(FirestoreDatabaseProvider.getUpcomingEvents(100, testProfile).size <= 100)
-        assert(FirestoreDatabaseProvider.updateEvent(testEvent, testProfile))
+    }
+
+
+    @Test
+    fun addItemInDatabaseWorks(){
+        val mockedCollectionReference = mock(CollectionReference::class.java)
+        val taskReferenceMock = mock(Task::class.java) as Task<DocumentReference>
+
+        val testItem = Item(null,"banana",ItemType.OTHER)
+        val testQuantity = 3
+
+        When(mockedDatabase.collection(ITEM_COLLECTION)).thenReturn(mockedCollectionReference)
+        When(mockedCollectionReference.add(ItemEntityAdapter.toItemDocument(testItem, testQuantity))).thenReturn(
+            taskReferenceMock
+        )
+
+        var itemNameAdded = ""
+        var itemTypeAdded : ItemType? = null
+        var itemCountAdded = 0
+        var itemIdAdded = ""
+
+        When(taskReferenceMock.addOnSuccessListener(any())).thenAnswer {
+            FirestoreDatabaseProvider.lastAddSuccessListener!!.onSuccess(null)
+            //set method in hard to see if the success listener is successfully called
+            itemNameAdded = testItem.itemName
+            itemTypeAdded = testItem.itemType
+            itemCountAdded = testQuantity
+            itemIdAdded = testItem.itemId!!
+            taskReferenceMock
+        }
+        When(taskReferenceMock.addOnFailureListener(any())).thenAnswer {
+            taskReferenceMock
+        }
+
+        val result = FirestoreDatabaseProvider.createItem(testItem,testQuantity)
+        assert(result.value!!)
+        assert(itemNameAdded == testItem.itemName)
+        assert(itemTypeAdded == testItem.itemType)
+        assert(itemCountAdded == testQuantity)
+        assert(itemIdAdded == testItem.itemId!!)
     }
 
     @Test

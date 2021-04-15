@@ -31,8 +31,8 @@ private const val displayNameTest2 = "Test displayName2"
 private const val emailTest2 = "Test email2"
 private const val uidTest2 = "Test uid2"
 
-@RunWith(MockitoJUnitRunner::class)
-class ProfileLoginFragmentTests {
+/*@RunWith(MockitoJUnitRunner::class)*/
+class ProfileLoginFragmentTests {/*
     @Rule
     @JvmField
     var testRule = ActivityScenarioRule<MainActivity>(MainActivity::class.java)
@@ -332,6 +332,6 @@ class ProfileLoginFragmentTests {
         //Wait enough time
         Thread.sleep(3000)
         assert(accountNotCreated)
-    }
+    }*/
 }
 
