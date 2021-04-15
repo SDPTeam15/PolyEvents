@@ -538,7 +538,7 @@ object GoogleMapHelper {
             PolygonAction.RIGHT.toString() -> transformPolygon(marker)
             PolygonAction.DOWN.toString() -> transformPolygon(marker)
             PolygonAction.DIAG.toString() -> transformPolygon(marker)
-            PolygonAction.ROTATE.toString() -> rotatePolygon(p0)
+            PolygonAction.ROTATE.toString() -> rotatePolygon(marker)
         }
         tempPoly?.points = tempLatLng
     }
