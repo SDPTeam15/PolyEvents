@@ -16,6 +16,12 @@ My time estimates for the queries to the db were good. However the rotation feat
 
 ## Mathieu
 
+During this two-week sprint, I tested the GoogleMapHelper class, and I refactored its methods in order to do the tests. I also added the feature to modify an area after creating it.
+
+My time estimate was quite ok. The tests took more time than expected because I had to do some refactoring to make the tests.
+
+Next sprint, I will work a bit with the database and go on a bit with google map. 
+
 ## Robin
 
 ## Stephane
