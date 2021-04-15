@@ -8,13 +8,14 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.admin.*
+import com.github.sdpteam15.polyevents.admin.EventManagementActivity
+import com.github.sdpteam15.polyevents.admin.ItemRequestManagementActivity
+import com.github.sdpteam15.polyevents.admin.UserManagementActivity
+import com.github.sdpteam15.polyevents.admin.ZoneManagementListActivity
 
 
 /**
- * A simple [Fragment] subclass.
- * Use the [AdminHubFragment.newInstance] factory method to
- * create an instance of this fragment.
+ * AdminHub fragment: the fragment containing all shortcuts to the admin management options
  */
 class AdminHubFragment : Fragment() {
 

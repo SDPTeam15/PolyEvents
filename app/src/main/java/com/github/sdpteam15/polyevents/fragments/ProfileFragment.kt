@@ -18,11 +18,10 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.changeFragment
 import com.github.sdpteam15.polyevents.login.UserLogin
 import com.github.sdpteam15.polyevents.model.UserEntity
-import com.google.firebase.auth.FirebaseAuth
 import java.time.format.DateTimeFormatter
 
 /**
- *  [Fragment] subclass that represents the profile page.
+ *  [Fragment] subclass that represents the profile page allowing the user to modify its private information
  */
 class ProfileFragment : Fragment() {
     //User that we can set manually for testing

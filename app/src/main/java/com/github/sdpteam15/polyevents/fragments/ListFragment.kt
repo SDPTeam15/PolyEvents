@@ -9,10 +9,9 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.EventActivity
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.adapter.EventItemAdapter
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.Event
-import com.github.sdpteam15.polyevents.adapter.EventItemAdapter
-import com.github.sdpteam15.polyevents.helper.HelperFunctions
 
 /**
  * Extra containing the event ID to show on the launched event page

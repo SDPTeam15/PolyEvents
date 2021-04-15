@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.MainActivity
 import com.github.sdpteam15.polyevents.R
@@ -15,13 +14,9 @@ import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.login.UserLogin
 import com.github.sdpteam15.polyevents.model.UserEntity
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.common.api.ApiException
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
 
 /**
- * [Fragment] subclass representing the login page.
+ * [Fragment] subclass representing the login page allowing the user to connect to the application
  */
 private const val SIGN_IN_RC: Int = 200
 
@@ -62,8 +57,7 @@ class LoginFragment : Fragment() {
     }
 
 
-
-    private fun addIfNotInDB(){
+    private fun addIfNotInDB() {
         currentDatabase.inDatabase(inDbObservable, currentUser!!.uid, currentUser!!)
             .observe(this) { newValue ->
                 if (newValue!!) {
@@ -108,7 +102,7 @@ class LoginFragment : Fragment() {
         rootView.findViewById<com.google.android.gms.common.SignInButton>(R.id.btnLogin)
             .setOnClickListener { _ ->
                 if (currentUser == null) {
-                    UserLogin.currentUserLogin.signIn(activity as Activity,this, SIGN_IN_RC)
+                    UserLogin.currentUserLogin.signIn(activity as Activity, this, SIGN_IN_RC)
                 } else {
                     //This branch allow us to test the communication between ProfileFragment and LoginFragment. During a normal execution, it won't be used.
                     addIfNotInDB()
