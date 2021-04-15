@@ -5,15 +5,11 @@ import com.github.sdpteam15.polyevents.database.DatabaseConstant.ITEM_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.ITEM_COUNT
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_POINT
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.PROFILE_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_UID
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
-import com.github.sdpteam15.polyevents.model.Event
-import com.github.sdpteam15.polyevents.model.Item
-import com.github.sdpteam15.polyevents.model.UserEntity
-import com.github.sdpteam15.polyevents.model.UserProfile
+import com.github.sdpteam15.polyevents.model.*
 import com.github.sdpteam15.polyevents.util.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.OnFailureListener
@@ -23,7 +19,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-
 
 object FirestoreDatabaseProvider : DatabaseInterface {
     var firestore: FirebaseFirestore? = null
@@ -54,7 +49,6 @@ object FirestoreDatabaseProvider : DatabaseInterface {
 
     override fun addProfile(profile: UserProfile, uid: String, user: UserEntity?): Boolean =
         profiles.add(profile)// TODO : Not yet Implemented
-
 
 
     override fun createItem(
@@ -137,7 +131,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             .document(id).get()
     ) {
         returnEvent.postValue(
-            it.data?.let { it1 -> EventAdapter.fromDocument(it1, id) }!!, this
+            EventAdapter.fromDocument(it.data!!, it.id)!!, this
         )
     }
 
@@ -257,7 +251,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
 
 
     override fun updateUserInformation(
-        newValues: java.util.HashMap<String, String>,
+        newValues: Map<String, String>,
         uid: String,
         userAccess: UserEntity?
     ): Observable<Boolean> = thenDoSet(
@@ -512,5 +506,45 @@ object FirestoreDatabaseProvider : DatabaseInterface {
                 .addOnFailureListener(lastFailureListener)
         }
         return ended
+    }
+
+    /*
+     * Zone related methods
+     */
+    override fun createZone(zone: Zone, userAccess: UserEntity?): Observable<Boolean> {
+        return thenDoAdd(
+            firestore!!
+                .collection(ZONE_COLLECTION)
+                .add(ZoneAdapter.toZoneDocument(zone))
+        )
+    }
+
+
+    override fun getZoneInformation(
+        zoneId: String,
+        zone: Observable<Zone>,
+        userAccess: UserEntity?
+    ): Observable<Boolean> {
+        return thenDoMultGet(
+            firestore!!
+                .collection(ZONE_COLLECTION)
+                .document(zoneId)
+                .get()
+        ) {
+            zone.postValue(it.data?.let { it1 -> ZoneAdapter.toZoneEntity(it1, it.id) }!!)
+        }
+    }
+
+    override fun updateZoneInformation(
+        zoneId: String,
+        newZone: Zone,
+        userAccess: UserEntity?
+    ): Observable<Boolean> {
+        return thenDoSet(
+            firestore!!
+                .collection(ZONE_COLLECTION)
+                .document(zoneId)
+                .update(ZoneAdapter.toZoneDocument(newZone))
+        )
     }
 }

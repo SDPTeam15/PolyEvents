@@ -46,8 +46,15 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
         observers.add(observer)
         if (updateArgs != null)
             observer(updateArgs!!)
-        return { observers.remove(observer) }
+        return { leave(observer) }
     }
+
+    /**
+     *  remove an observer for the live data
+     *  @param observer observer for the live data
+     *  @return if the observer have been remove
+     */
+    fun leave(observer: (UpdateArgs<T>) -> Unit): Boolean = observers.remove(observer)
 
     /**
      *  Add an observer for the live data

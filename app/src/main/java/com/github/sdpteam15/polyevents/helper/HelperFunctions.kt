@@ -27,28 +27,14 @@ object HelperFunctions {
      * @param newFrag: the fragment we want to display (should be in the fragments app from Mainevent otherwise nothing happen)
      * @param activity: the activity in which a fragment is instantiate
      */
-    fun changeFragment(activity: FragmentActivity?, newFrag: Fragment?) {
-
-        if (newFrag != null && MainActivity.fragments.containsValue(newFrag)) {
+    fun changeFragment(activity: FragmentActivity?, newFrag: Fragment?, idFrameLayout:Int=R.id.fl_wrapper) {
+        if(newFrag!=null) {
             activity?.supportFragmentManager?.beginTransaction()?.apply {
-                replace(R.id.fl_wrapper, newFrag)
+                replace(idFrameLayout, newFrag)
                 commit()
             }
         }
     }
-
-
-    /**
-     * Method that allows to switch the fragment in an event
-     * @param frag: the fragment we want to display (should be in the fragments app from MainEvent otherwise nothing happen)
-     * @param fragmentManager: the activity in which a fragment is instantiate
-     */
-    fun refreshFragment(fragmentManager: FragmentManager?, frag: Fragment) {
-        val ft: FragmentTransaction = fragmentManager!!.beginTransaction()
-        ft.setReorderingAllowed(false)
-        ft.detach(frag).attach(frag).commit()
-    }
-
 
     @SuppressLint("RestrictedApi")
     fun run(runnable: Runnable) {

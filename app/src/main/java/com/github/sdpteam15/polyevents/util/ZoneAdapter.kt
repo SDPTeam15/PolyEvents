@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.util
 
+import com.github.sdpteam15.polyevents.database.DatabaseConstant
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_LOCATION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_NAME
 import com.github.sdpteam15.polyevents.model.Zone
@@ -14,11 +15,14 @@ import com.github.sdpteam15.polyevents.model.Zone
 object ZoneAdapter : AdapterInterface<Zone> {
     override fun toDocument(element: Zone): HashMap<String, Any?> = hashMapOf(
         ZONE_NAME to element.zoneName,
-        ZONE_LOCATION to element.location
+        ZONE_LOCATION to element.location,
+        DatabaseConstant.ZONE_DESCRIPTION to element.description
     )
 
     override fun fromDocument(document: MutableMap<String, Any?>, id: String): Zone = Zone(
+        zoneId = id,
         zoneName = document[ZONE_NAME] as String?,
-        location = document[ZONE_LOCATION] as String?
+        location = document[ZONE_LOCATION] as String?,
+        description = document[DatabaseConstant.ZONE_DESCRIPTION] as String?
     )
 }

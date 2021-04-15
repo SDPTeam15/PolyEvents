@@ -44,14 +44,15 @@ class ItemsAdminActivity : AppCompatActivity() {
                 currentDatabase.removeItem(it.value.first.itemId!!)
         }
         items.observeAdd(this) {
-            if (it.sender != currentDatabase)
-                currentDatabase.createItem(it.value.first, it.value.second).observe { it1 ->
-                    if (it1.value != null)
+            if (it.sender != currentDatabase){
+                currentDatabase.createItem(it.value.first, it.value.second).observe { it1->
+                    if(it1.value){
                         currentDatabase.getItemsList(items)
+                    }
                 }
+            }
         }
 
-        //val clickListener = { _: String -> } // TODO define what happens when we click on an Item
         recyclerView = findViewById(R.id.id_recycler_items_list)
         recyclerView.adapter = ItemAdapter(this, items)
 

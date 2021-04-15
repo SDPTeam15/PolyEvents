@@ -67,7 +67,6 @@ class EditProfileActivity : AppCompatActivity() {
             profile = it.value
             id.setText(profile.pid)
             lastRank = profile.userRole
-
             rank.setText(rankToString(profile.userRole))
             lastName = profile.profileName ?: ""
             name.setText(profile.profileName ?: "")

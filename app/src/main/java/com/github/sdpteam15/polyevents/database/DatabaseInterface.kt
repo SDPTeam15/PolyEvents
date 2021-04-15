@@ -2,10 +2,7 @@ package com.github.sdpteam15.polyevents.database
 
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
-import com.github.sdpteam15.polyevents.model.Event
-import com.github.sdpteam15.polyevents.model.Item
-import com.github.sdpteam15.polyevents.model.UserEntity
-import com.github.sdpteam15.polyevents.model.UserProfile
+import com.github.sdpteam15.polyevents.model.*
 import com.github.sdpteam15.polyevents.util.AdapterInterface
 import com.google.android.gms.maps.model.LatLng
 import java.util.*
@@ -247,16 +244,6 @@ interface DatabaseInterface {
         user: UserInterface = User.currentUser as UserInterface
     ): Observable<Boolean>
 
-    /**
-     * Update profile
-     * @param event event to update
-     * @param profile profile for database access
-     * @return An observer that will be set to true if the communication with the DB is over and no error
-     */
-    fun updateProfile(
-        profile: ProfileInterface,
-        user: UserInterface = currentUser as UserInterface
-    ): Observable<Boolean>
 
     /**
      * Get list of profile of a user uid
@@ -281,10 +268,11 @@ interface DatabaseInterface {
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun updateUserInformation(
-        newValues: HashMap<String, String>,
+        newValues: Map<String, String>,
         uid: String,
         userAccess: UserEntity? = currentUser
     ): Observable<Boolean>
+
 
     /**
      * Register the user in the database with its basic information (uid, email, name)
@@ -312,7 +300,7 @@ interface DatabaseInterface {
 
     /**
      * Look in the database if the user already exists or not
-     * @param user : live data that will be set with the find user value
+     * @param user : live data that will be set with the user information from the database
      * @param uid : user uid we want to get the information
      * @param userAccess: the user object to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
@@ -367,8 +355,7 @@ interface DatabaseInterface {
 
     /**
      * Fetch the current users locations.
-     * @param usersLocations: the list of users locations that will be set when
-     * the DB returns the information
+     * @param usersLocations: the list of users locations that will be set when the DB returns the information
      * @param userAccess: the user object to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
@@ -441,7 +428,6 @@ interface DatabaseInterface {
     ): Observable<Boolean>
 
 
-
     /**
      * Remove profile from a user
      * @param profile profile to remove
@@ -461,11 +447,11 @@ interface DatabaseInterface {
      * @param adapter
      * @return
      */
-    fun <T>addEntity(
-        element : T,
-        collection : String,
-        adapter : AdapterInterface<T>
-    ) : Observable<String>
+    fun <T> addEntity(
+        element: T,
+        collection: String,
+        adapter: AdapterInterface<T>
+    ): Observable<String>
 
     /**
      * Set an Entity to the data base
@@ -475,12 +461,12 @@ interface DatabaseInterface {
      * @param adapter
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
-    fun <T>setEntity(
-        element : T?,
-        id : String,
-        collection : String,
-        adapter : AdapterInterface<T>?
-    ) : Observable<Boolean>
+    fun <T> setEntity(
+        element: T?,
+        id: String,
+        collection: String,
+        adapter: AdapterInterface<T>?
+    ): Observable<Boolean>
 
     /**
      * Set an Entity to the data base
@@ -490,9 +476,9 @@ interface DatabaseInterface {
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun deleteEntity(
-        id : String,
-        collection : String
-    ) : Observable<Boolean>
+        id: String,
+        collection: String
+    ): Observable<Boolean>
 
     /**
      * get an Entity to the data base
@@ -502,12 +488,12 @@ interface DatabaseInterface {
      * @param adapter
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
-    fun <T>getEntity(
-        element : Observable<T>,
-        id : String,
-        collection : String,
-        adapter : AdapterInterface<T>
-    ) : Observable<Boolean>
+    fun <T> getEntity(
+        element: Observable<T>,
+        id: String,
+        collection: String,
+        adapter: AdapterInterface<T>
+    ): Observable<Boolean>
 
     /**
      * get a list Entity to the data base
@@ -517,10 +503,47 @@ interface DatabaseInterface {
      * @param adapter
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
-    fun <T>getListEntity(
-        elements : ObservableList<T>,
-        ids : List<String>,
-        collection : String,
-        adapter : AdapterInterface<T>
-    ) : Observable<Boolean>
+    fun <T> getListEntity(
+        elements: ObservableList<T>,
+        ids: List<String>,
+        collection: String,
+        adapter: AdapterInterface<T>
+    ): Observable<Boolean>
+
+    /**
+     * Store the newly created zone information in the database
+     * @param zone: the zone information we should insert
+     * @param userAccess: the user object to use its permission
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun createZone(
+        zone: Zone,
+        userAccess: UserEntity? = currentUser
+    ): Observable<Boolean>
+
+    /**
+     * Get the zone information from the database
+     * @param zoneId: The id of the zone we want to get the information
+     * @param zone:  live data that will be set with the zone information from the database
+     * @param userAccess: the user object to use its permission
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun getZoneInformation(
+        zoneId: String,
+        zone: Observable<Zone>,
+        userAccess: UserEntity? = currentUser
+    ): Observable<Boolean>
+
+    /**
+     * Update the zone information in the databae
+     * @param zoneId: The id of the zone we want to get the information
+     * @param newZone: The updated zone information we should store in the database
+     * @param userAccess: the user object to use its permission
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun updateZoneInformation(
+        zoneId: String,
+        newZone: Zone,
+        userAccess: UserEntity? = currentUser
+    ): Observable<Boolean>
 }

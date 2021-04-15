@@ -42,7 +42,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var adapter: ArrayAdapter<*>
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -56,7 +55,7 @@ class MainActivity : AppCompatActivity() {
             when (it.itemId) {
                 R.id.ic_map -> HelperFunctions.changeFragment(this, fragments[R.id.ic_map])
                 R.id.ic_list -> HelperFunctions.changeFragment(this, fragments[R.id.ic_list])
-                R.id.ic_login -> if (currentDatabase.currentUser == null) {
+                R.id.ic_login -> if (currentUser==null) {
                     HelperFunctions.changeFragment(this, fragments[R.id.ic_login])
                 } else {
                     HelperFunctions.changeFragment(this, fragments[R.id.id_fragment_profile])

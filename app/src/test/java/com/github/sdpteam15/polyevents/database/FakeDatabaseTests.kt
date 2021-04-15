@@ -5,6 +5,7 @@ import com.github.sdpteam15.polyevents.model.Event
 import com.github.sdpteam15.polyevents.model.Item
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
+import com.github.sdpteam15.polyevents.model.Zone
 import com.google.android.gms.maps.model.LatLng
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
@@ -36,10 +37,10 @@ class FakeDatabaseTests {
         assertNotNull(FakeDatabase.addProfile(mockedUserProfile, "", mockedUserInterface))
         assertNotNull(FakeDatabase.removeProfile(mockedUserProfile, "", mockedUserInterface))
         assertNotNull(FakeDatabase.updateProfile(mockedUserProfile, mockedUserInterface))
-
+        assert(FakeDatabase.getZoneInformation("",Observable(),mockedUserInterface).value!!)
+        assert(FakeDatabase.updateZoneInformation("", Zone(),mockedUserInterface).value!!)
+        assert(FakeDatabase.createZone(Zone(),mockedUserInterface).value!!)
     }
-
-
 
     @Test
     fun updateUserInformationTest() {

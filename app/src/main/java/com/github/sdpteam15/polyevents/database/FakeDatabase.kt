@@ -6,7 +6,6 @@ import com.github.sdpteam15.polyevents.model.*
 import com.github.sdpteam15.polyevents.util.AdapterInterface
 import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDateTime
-import java.util.*
 import kotlin.random.Random
 
 object FakeDatabase : DatabaseInterface {
@@ -127,9 +126,8 @@ object FakeDatabase : DatabaseInterface {
     ): Observable<Boolean> {
         // generate random document ID like in firebase
         val itemId = generateRandomKey()
-
         val b = items.put(itemId, Pair(Item(itemId, item.itemName, item.itemType), count)) == null
-        return Observable(true, this)
+        return Observable(b, this)
     }
 
     override fun removeItem(itemId: String, profile: UserProfile?): Observable<Boolean> {
@@ -210,7 +208,7 @@ object FakeDatabase : DatabaseInterface {
     }
 
     override fun updateUserInformation(
-        newValues: HashMap<String, String>,
+        newValues: Map<String, String>,
         uid: String,
         userAccess: UserEntity?
     ): Observable<Boolean> =
@@ -267,7 +265,7 @@ object FakeDatabase : DatabaseInterface {
             return items.remove(item)
         }
 
-    */
+        */
     override fun setUserLocation(
         location: LatLng,
         userAccess: UserEntity?
@@ -364,6 +362,28 @@ object FakeDatabase : DatabaseInterface {
         adapter: AdapterInterface<T>
     ): Observable<Boolean> {
         TODO("Not yet implemented")
+    }
+
+
+    override fun createZone(zone: Zone, userAccess: UserEntity?): Observable<Boolean> {
+        return Observable(true)
+    }
+
+    override fun getZoneInformation(
+        zoneId: String,
+        zone: Observable<Zone>,
+        userAccess: UserEntity?
+    ): Observable<Boolean> {
+        zone.postValue(Zone("ID1", "Esplanade", "Espla", "a cool zone"), this)
+        return Observable(true)
+    }
+
+    override fun updateZoneInformation(
+        zoneId: String,
+        newZone: Zone,
+        userAccess: UserEntity?
+    ): Observable<Boolean> {
+        return Observable(true)
     }
 
     /**
