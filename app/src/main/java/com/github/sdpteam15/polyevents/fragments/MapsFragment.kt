@@ -2,7 +2,6 @@ package com.github.sdpteam15.polyevents.fragments
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -41,6 +40,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     var zone: Zone? = null
     var onEdit: Boolean = false
     var startId = -1
+    var inTest = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -126,11 +126,13 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val mapFragment =
-            childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
-        mapFragment?.getMapAsync(this)
-        if (!locationPermissionGranted) {
-            getLocationPermission()
+        if (!inTest) {
+            val mapFragment =
+                childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
+            mapFragment?.getMapAsync(this)
+            if (!locationPermissionGranted) {
+                getLocationPermission()
+            }
         }
     }
 
@@ -153,13 +155,11 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
 
     }
 
-    override fun onPolylineClick(polyline: Polyline) {
-
-    }
+    override fun onPolylineClick(polyline: Polyline) {}
 
     override fun onPolygonClick(polygon: Polygon) {
         if (GoogleMapHelper.editMode) {
-            GoogleMapHelper.editArea(requireContext(),polygon.tag.toString())
+            GoogleMapHelper.editArea(requireContext(), polygon.tag.toString())
         } else {
             //Shows the info window of the marker assigned to the area
             GoogleMapHelper.areasPoints.get(polygon.tag)!!.first.showInfoWindow()

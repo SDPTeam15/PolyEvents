@@ -10,6 +10,7 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.*
 import org.hamcrest.CoreMatchers
 import org.hamcrest.MatcherAssert
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers
@@ -32,6 +33,20 @@ class HeatmapDatabaseFirestoreTest {
             email = emailTest
         )
 
+        //Mock the database and set it as the default database
+        mockedDatabase = Mockito.mock(FirebaseFirestore::class.java)
+        FirestoreDatabaseProvider.firestore = mockedDatabase
+
+        FirestoreDatabaseProvider.firstConnectionUser=UserEntity(uid = "DEFAULT")
+        FirestoreDatabaseProvider.lastQuerySuccessListener= null
+        FirestoreDatabaseProvider.lastSetSuccessListener= null
+        FirestoreDatabaseProvider.lastFailureListener= null
+        FirestoreDatabaseProvider.lastGetSuccessListener= null
+        FirestoreDatabaseProvider.lastAddSuccessListener= null
+    }
+    @After
+    fun teardown(){
+        FirestoreDatabaseProvider.firestore = null
     }
 
 
@@ -52,6 +67,7 @@ class HeatmapDatabaseFirestoreTest {
         Mockito.`when`(mockedDatabase.collection(DatabaseConstant.LOCATIONS_COLLECTION)).thenReturn(
             mockedCollectionReference
         )
+
         Mockito.`when`(mockedCollectionReference.document(uidTest))
             .thenReturn(mockedDocumentReference)
         Mockito.`when`(

@@ -7,6 +7,7 @@ import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.*
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers
@@ -46,6 +47,20 @@ class UserDatabaseFirestoreTest {
             DatabaseConstant.USER_NAME to displayNameTest,
             DatabaseConstant.USER_EMAIL to emailTest
         )
+        //Mock the database and set it as the default database
+        mockedDatabase = Mockito.mock(FirebaseFirestore::class.java)
+        FirestoreDatabaseProvider.firestore = mockedDatabase
+
+        FirestoreDatabaseProvider.firstConnectionUser=UserEntity(uid = "DEFAULT")
+        FirestoreDatabaseProvider.lastQuerySuccessListener= null
+        FirestoreDatabaseProvider.lastSetSuccessListener= null
+        FirestoreDatabaseProvider.lastFailureListener= null
+        FirestoreDatabaseProvider.lastGetSuccessListener= null
+        FirestoreDatabaseProvider.lastAddSuccessListener= null
+    }
+    @After
+    fun teardown(){
+        FirestoreDatabaseProvider.firestore = null
     }
 
     @Test
