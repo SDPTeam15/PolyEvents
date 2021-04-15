@@ -334,34 +334,6 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         return FakeDatabase.getProfileById(profile, pid, userAccess)
     }
 
-    /*
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun getItemsList(): MutableList<String> {
-
-
-
-    override fun getItemsList(): MutableList<Item> {
-        //TODO adapt to firebase
-        return FakeDatabase.getItemsList()
-    }
-
-    override fun addItem(item: Item): Boolean {
-        //TODO adapt to firebase
-        return FakeDatabase.addItem(item)
-    }
-
-    override fun removeItem(item: Item): Boolean {
-        //TODO adapt to firebase
-        return FakeDatabase.removeItem(item)
-    }
-
-    override fun getAvailableItems(): Map<String, Int> {
-        //TODO adapt to firebase
-        return FakeDatabase.getAvailableItems()
-    }
-
-     */
-
     override fun setUserLocation(
         location: LatLng,
         userAccess: UserEntity?
