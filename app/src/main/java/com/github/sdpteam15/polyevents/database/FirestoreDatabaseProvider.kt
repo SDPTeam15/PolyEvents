@@ -1,11 +1,13 @@
 package com.github.sdpteam15.polyevents.database
 
+import android.annotation.SuppressLint
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_POINT
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_UID
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_COLLECTION
 import com.github.sdpteam15.polyevents.database.observe.Observable
+import com.github.sdpteam15.polyevents.login.UserLogin
 import com.github.sdpteam15.polyevents.model.*
 import com.github.sdpteam15.polyevents.util.FirebaseUserAdapter
 import com.github.sdpteam15.polyevents.util.UserAdapter
@@ -20,6 +22,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 object FirestoreDatabaseProvider : DatabaseInterface {
+    @SuppressLint("StaticFieldLeak")
     var firestore: FirebaseFirestore? = null
         get() = field ?: Firebase.firestore
 
@@ -29,12 +32,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     var firstConnectionUser: UserEntity = UserEntity(uid = "DEFAULT")
 
     override val currentUser: UserEntity?
-        get() =
-            if (FirebaseAuth.getInstance().currentUser != null) {
-                FirebaseUserAdapter.toUser(FirebaseAuth.getInstance().currentUser!!)
-            } else {
-                null
-            }
+        get() = UserLogin.currentUserLogin.getCurrentUser()
 
     override val currentProfile: UserProfile?
         get() = null // TODO("Not yet implemented")

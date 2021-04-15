@@ -6,7 +6,7 @@ import android.util.Log
  * Database
  */
 object Database {
-    var mutableCurrentDatabase: DatabaseInterface? = null
+    private var mutableCurrentDatabase: DatabaseInterface? = null
     var currentDatabase: DatabaseInterface
         get() {
             mutableCurrentDatabase = mutableCurrentDatabase ?: FirestoreDatabaseProvider
