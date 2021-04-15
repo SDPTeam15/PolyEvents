@@ -11,55 +11,42 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
+import com.github.sdpteam15.polyevents.helper.GoogleMapHelper
+import com.github.sdpteam15.polyevents.helper.MapsInterface
+import com.google.android.gms.maps.internal.ICameraUpdateFactoryDelegate
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import org.hamcrest.*
 import org.hamcrest.CoreMatchers.equalTo
-import org.hamcrest.Description
-import org.hamcrest.Matcher
-import org.hamcrest.Matchers
-import org.hamcrest.TypeSafeMatcher
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mockito
 
+private const val lat = 42.52010210373032
+private const val lng = 8.566237434744834
+private const val zoom = 18f
 
 class MyLocationTests {
+    // Have to take copy code from Mathieu's test in "GoogleMapHelperTest.kt"
+    // (cannot put these tests in this class since they test the UI).
+    lateinit var mockedMap: MapsInterface
+    var position = LatLng(lat, lng)
+    var camera = CameraPosition(position, zoom, 0f, 0f)
 
     @Rule
     @JvmField
     var mainActivity = ActivityScenarioRule(MainActivity::class.java)
 
-    //@get:Rule
-    //var mGrantPermissionRule: GrantPermissionRule = GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
-
     @Before
     fun goToMapFragment() {
+        mockedMap = Mockito.mock(MapsInterface::class.java)
+        GoogleMapHelper.map = mockedMap
+        Mockito.`when`(mockedMap.cameraPosition).thenReturn(camera)
+        Mockito.`when`(mockedMap.setMinZoomPreference(GoogleMapHelper.minZoom)).then {}
+
         // Go to the map fragment
         onView(withId(R.id.ic_map)).perform(click())
-    }
-
-    // Source : https://stackoverflow.com/questions/43462172/android-revoke-permission-at-start-of-each-test
-    /**
-     * Need to revoke permissions AFTER each test and not before. Otherwise it restarts the app
-     * and this makes the process crash.
-     */
-
-    /*
-    @After
-    fun tearDown(){
-        //InstrumentationRegistry.getInstrumentation().uiAutomation.
-        //executeShellCommand("pm revoke ${getTargetContext().packageName} android.permission.ACCESS_FINE_LOCATION")
-    }
-
-     */
-
-    @Test
-    fun denyPermissionKeepsLocationOff() {
-        denyPermissions()
-
-        // Click on the "location" button to try to activate it.
-        onView(withId(R.id.id_location_button)).perform(click())
-
-        // Check the location is not enabled
-        onView(withId(R.id.id_location_button)).check(matches(withTagValue(equalTo(R.drawable.ic_location_off))))
     }
 
     @Test
@@ -73,6 +60,19 @@ class MyLocationTests {
         // From on to off
         onView(withId(R.id.id_location_button)).perform(click())
         onView(withId(R.id.id_location_button)).check(matches(withTagValue(equalTo(R.drawable.ic_location_off))))
+    }
+
+    @Test
+    fun denyPermissionKeepsLocationOff() {
+        // Go to the map fragment
+        denyPermissions()
+
+        // Click on the "location" button to try to activate it.
+        onView(withId(R.id.id_location_button)).perform(click())
+
+        // Check the location is not enabled
+        onView(withId(R.id.id_location_button))
+            .check(matches(withTagValue(equalTo(R.drawable.ic_location_off))))
     }
 
     @Test
@@ -96,24 +96,6 @@ class MyLocationTests {
             )
         )
         imageButton2.check(matches(isDisplayed()))
-    }
-
-    private fun childAtPosition(
-        parentMatcher: Matcher<View>, position: Int
-    ): Matcher<View> {
-
-        return object : TypeSafeMatcher<View>() {
-            override fun describeTo(description: Description) {
-                description.appendText("Child at position $position in parent ")
-                parentMatcher.describeTo(description)
-            }
-
-            public override fun matchesSafely(view: View): Boolean {
-                val parent = view.parent
-                return parent is ViewGroup && parentMatcher.matches(parent)
-                        && view == parent.getChildAt(position)
-            }
-        }
     }
 
     /**
