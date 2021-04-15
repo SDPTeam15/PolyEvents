@@ -412,7 +412,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
                 .document(zoneId)
                 .get()
         ){
-            zone.postValue(it.data?.let { it1->ZoneAdapter.toZoneEntity(it1, it.id)})
+            zone.postValue(it.data?.let { it1->ZoneAdapter.toZoneEntity(it1, it.id)}!!)
         }
     }
 

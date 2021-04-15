@@ -54,9 +54,9 @@ class ProfileFragment : Fragment() {
 
         //When user Info live data is updated, set the correct value in the textview
         userInfoLiveData.observe(this) { userInfo ->
-            viewRoot.findViewById<EditText>(R.id.profileName).setText(userInfo!!.name)
-            viewRoot.findViewById<EditText>(R.id.profileEmail).setText(userInfo.email)
-            viewRoot.findViewById<EditText>(R.id.profileUsernameET).setText(userInfo.username)
+            viewRoot.findViewById<EditText>(R.id.profileName).setText(userInfo.value.name)
+            viewRoot.findViewById<EditText>(R.id.profileEmail).setText(userInfo.value.email)
+            viewRoot.findViewById<EditText>(R.id.profileUsernameET).setText(userInfo.value.username)
 
             val userBirthDate = userInfo.value.birthDate
             val birthDateFormatted =

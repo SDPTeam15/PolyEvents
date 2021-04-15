@@ -328,7 +328,7 @@ object FakeDatabase : DatabaseInterface {
     }
 
     /**
-     * Generates a random
+     * Generates a random key simulating fireBase
      */
     private fun generateRandomKey(): String {
         val charPool: List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')

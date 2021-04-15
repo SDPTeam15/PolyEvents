@@ -45,7 +45,6 @@ class ItemsAdminActivity : AppCompatActivity() {
                         currentDatabase.getItemsList(items)
                     }
                 }
-
         }
 
         val btnAdd = findViewById<ImageButton>(R.id.id_add_item_button)

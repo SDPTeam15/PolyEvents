@@ -33,14 +33,13 @@ class FakeDatabaseTests {
     @Test
     fun toRemoveTest() {
         assertNotNull(FakeDatabase.CURRENT_USER)
-        assertNotNull(FakeDatabase.getProfilesList("", mokedUserInterface))
-        assertNotNull(FakeDatabase.addProfile(mokedUserProfile, "", mokedUserInterface))
-        assertNotNull(FakeDatabase.removeProfile(mokedUserProfile, "", mokedUserInterface))
-        assertNotNull(FakeDatabase.updateProfile(mokedUserProfile, mokedUserInterface))
-        assert(FakeDatabase.getZoneInformation("",Observable(),mokedUserInterface).value!!)
-        assert(FakeDatabase.updateZoneInformation("", Zone(),mokedUserInterface).value!!)
-        assert(FakeDatabase.createZone(Zone(),mokedUserInterface).value!!)
-        assert(FakeDatabase.getEventFromId("",mokedUserProfile)==FakeDatabase.getListEvent()[0])
+        assertNotNull(FakeDatabase.getProfilesList("", mockedUserInterface))
+        assertNotNull(FakeDatabase.addProfile(mockedUserProfile, "", mockedUserInterface))
+        assertNotNull(FakeDatabase.removeProfile(mockedUserProfile, "", mockedUserInterface))
+        assertNotNull(FakeDatabase.updateProfile(mockedUserProfile, mockedUserInterface))
+        assert(FakeDatabase.getZoneInformation("",Observable(),mockedUserInterface).value!!)
+        assert(FakeDatabase.updateZoneInformation("", Zone(),mockedUserInterface).value!!)
+        assert(FakeDatabase.createZone(Zone(),mockedUserInterface).value!!)
     }
 
     @Test

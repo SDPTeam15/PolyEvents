@@ -138,7 +138,7 @@ class FirestoreDatabaseProviderTest {
         val mockedCollectionReference = mock(CollectionReference::class.java)
         val taskReferenceMock = mock(Task::class.java) as Task<DocumentReference>
 
-        val testItem = Item(null,"banana",ItemType.OTHER)
+        val testItem = Item("xxxbananaxxx","banana",ItemType.OTHER)
         val testQuantity = 3
 
         When(mockedDatabase.collection(ITEM_COLLECTION)).thenReturn(mockedCollectionReference)

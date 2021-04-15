@@ -1,7 +1,5 @@
 package com.github.sdpteam15.polyevents.util
 
-import android.provider.ContactsContract
-import android.util.Log
 import com.github.sdpteam15.polyevents.database.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.Item
 import com.github.sdpteam15.polyevents.model.ItemType
@@ -25,7 +23,7 @@ class ItemEntityAdapterTest {
             itemName = itemName,
             itemType = itemType
         )
-        document = ItemEntityAdapter.toItemDocument(itemEntity,itemQuantity)
+        document = ItemEntityAdapter.toItemDocument(itemEntity, itemQuantity)
     }
 
     @Test
@@ -34,9 +32,10 @@ class ItemEntityAdapterTest {
         val itemDocumentData: HashMap<String, Any?> = hashMapOf(
             DatabaseConstant.ITEM_NAME to itemName,
             DatabaseConstant.ITEM_DOCUMENT_ID to itemId,
-            DatabaseConstant.ITEM_TYPE to itemType.name
+            DatabaseConstant.ITEM_TYPE to itemType.name,
+            DatabaseConstant.ITEM_COUNT to itemQuantity.toLong()
         )
-        val obtainedItem = ItemEntityAdapter.toItemEntity(itemDocumentData,itemId)
+        val obtainedItem = ItemEntityAdapter.toItemEntity(itemDocumentData, itemId)
 
         assertEquals(obtainedItem.first, itemEntity)
         assertEquals(obtainedItem.second, itemQuantity)
@@ -50,5 +49,7 @@ class ItemEntityAdapterTest {
             ), itemEntity.itemType
         )
         assertEquals(document[DatabaseConstant.ITEM_DOCUMENT_ID], itemEntity.itemId)
+        assertEquals(document[DatabaseConstant.ITEM_COUNT], itemQuantity)
+        assertEquals(document[DatabaseConstant.ITEM_NAME], itemName)
     }
 }

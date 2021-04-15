@@ -51,7 +51,7 @@ class ZoneManagementActivity : AppCompatActivity() {
             supportActionBar!!.setDisplayHomeAsUpEnabled(true)
             findViewById<FrameLayout>(R.id.flMapEditZone).visibility = View.INVISIBLE
             //Set the retrieve texts in the fields
-            val zoneInfo = it!!
+            val zoneInfo = it.value
             etName.setText(zoneInfo.zoneName)
             etDesc.setText(zoneInfo.description)
             changeCoordinatesText(etLoc, btnManageCoor, btnDelete, zoneInfo.location)
@@ -176,7 +176,7 @@ class ZoneManagementActivity : AppCompatActivity() {
             zone.zoneId = null
             currentDatabase.createZone(zone).observe {
                 callbackHandler(
-                    it,
+                    it.value,
                     this.getString(R.string.zone_added_successfully),
                     this.getString(R.string.zone_add_fail)
                 )
@@ -203,7 +203,7 @@ class ZoneManagementActivity : AppCompatActivity() {
 
             currentDatabase.updateZoneInformation(zoneId, zone).observe {
                 callbackHandler(
-                    it,
+                    it.value,
                     this.getString(R.string.zone_updated_successfully),
                     this.getString(R.string.zone_update_fail)
                 )

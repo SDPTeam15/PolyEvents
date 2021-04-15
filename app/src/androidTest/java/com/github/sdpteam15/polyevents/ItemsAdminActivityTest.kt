@@ -58,11 +58,11 @@ class ItemsAdminActivityTest {
         currentDatabase.getItemsList(items)
 
         itemsAdminActivity.scenario.recreate()
-
+        Thread.sleep(1000)
     }
 
     @After
-    fun tearDown(){
+    fun tearDown() {
         currentDatabase = FirestoreDatabaseProvider
     }
 
@@ -84,7 +84,7 @@ class ItemsAdminActivityTest {
         onView(withId(R.id.id_confirm_add_item_button)).perform(click())
         Thread.sleep(1000)
         onView(withId(R.id.id_recycler_items_list))
-            .check(RecyclerViewItemCountAssertion(availableItems.size+1))
+            .check(RecyclerViewItemCountAssertion(availableItems.size + 1))
     }
 
     //Test passes manually but not with gradle
@@ -96,6 +96,6 @@ class ItemsAdminActivityTest {
             )
         )
         onView(withId(R.id.id_recycler_items_list))
-            .check(RecyclerViewItemCountAssertion(availableItems.size-1))
+            .check(RecyclerViewItemCountAssertion(availableItems.size - 1))
     }
 }
