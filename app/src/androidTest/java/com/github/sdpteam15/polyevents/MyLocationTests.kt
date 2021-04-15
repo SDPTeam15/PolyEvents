@@ -146,7 +146,7 @@ class MyLocationTests {
 
 class ViewActionSuperposed: ViewAction {
     override fun getConstraints(): Matcher<View> {
-        return ViewMatchers.isEnabled()
+        return isEnabled()
     }
 
     override fun getDescription(): String {
