@@ -67,12 +67,12 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
-
+/*
         adapter = ArrayAdapter(
             this,
             android.R.layout.simple_list_item_1,
             resources.getStringArray(R.array.countries_array)
-        )
+        )*/
         /*
         var lv_listView = findViewById<ListView>(R.id.lv_listView)
         lv_listView.adapter = adapter
