@@ -1,10 +1,10 @@
 package com.github.sdpteam15.polyevents.util
 
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_DESCRIPTION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_DOCUMENT_ID
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_LOCATION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_NAME
-import com.github.sdpteam15.polyevents.model.Item
 import com.github.sdpteam15.polyevents.model.Zone
-import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -14,10 +14,12 @@ class ZoneAdapterTest {
 
     val zoneName = "zone A"
     val location = "Esplanade"
+    val zoneId = "idZone"
+    val zoneDescription = "description"
 
     @Before
     fun setupZone() {
-        zone = Zone(zoneName, location)
+        zone = Zone(zoneId, zoneName, location, zoneDescription)
     }
 
     @Test
@@ -26,17 +28,30 @@ class ZoneAdapterTest {
 
         assertEquals(document[ZONE_NAME], zone.zoneName)
         assertEquals(document[ZONE_LOCATION], zone.location)
+        assertEquals(document[ZONE_DESCRIPTION], zone.description)
+        assertEquals(document[ZONE_DOCUMENT_ID], zone.zoneId)
     }
 
     @Test
     fun conversionOfDocumentToZonePreservesData() {
         val zoneDocumentData: HashMap<String, Any?> = hashMapOf(
             ZONE_NAME to zone.zoneName,
-            ZONE_LOCATION to zone.location
+            ZONE_LOCATION to zone.location,
+            ZONE_DESCRIPTION to zone.description,
+            ZONE_DOCUMENT_ID to zone.zoneId
         )
 
-        val obtainedZone = ZoneAdapter.toZoneEntity(zoneDocumentData)
+        val obtainedZone = ZoneAdapter.toZoneEntity(zoneDocumentData, zoneId)
         assertEquals(obtainedZone, zone)
     }
 
+    @Test
+    fun conversionOfZoneToDocumentWithoutIDAddNoId() {
+        val document = ZoneAdapter.toZoneDocument(Zone(null, zoneName, location, zoneDescription))
+
+        assertEquals(document[ZONE_NAME], zone.zoneName)
+        assertEquals(document[ZONE_LOCATION], zone.location)
+        assertEquals(document[ZONE_DESCRIPTION], zone.description)
+        assert(!document.containsKey(ZONE_DOCUMENT_ID))
+    }
 }

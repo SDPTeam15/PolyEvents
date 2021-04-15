@@ -12,9 +12,11 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.admin.ZoneManagementActivity
 import com.github.sdpteam15.polyevents.helper.GoogleMapHelper
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.isPermissionGranted
+import com.github.sdpteam15.polyevents.model.Zone
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.*
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -33,25 +35,67 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     var locationPermissionGranted = false
     private var useUserLocation = false
     var PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1
+    var zone: Zone? = null
+    var onEdit: Boolean = false
+    var startId = -1
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_maps, container, false)
-        val addNewAreaButton:View = view.findViewById(R.id.addNewArea)
-        val saveNewAreaButton:View = view.findViewById(R.id.acceptNewArea)
-        addNewAreaButton.setOnClickListener(View.OnClickListener { view -> GoogleMapHelper.createNewArea() })
-        saveNewAreaButton.setOnClickListener(View.OnClickListener { view -> GoogleMapHelper.saveNewArea() })
 
+        onEdit = zone != null
+
+        val view = inflater.inflate(R.layout.fragment_maps, container, false)
+
+        val addNewAreaButton: View = view.findViewById(R.id.addNewArea)
+        val saveNewAreaButton: View = view.findViewById(R.id.acceptNewArea)
         locationButton = view.findViewById(R.id.id_location_button)
+        val locateMeButton = view.findViewById<FloatingActionButton>(R.id.id_locate_me_button)
+        val saveButton = view.findViewById<FloatingActionButton>(R.id.saveAreas)
+
+        addNewAreaButton.setOnClickListener {
+            GoogleMapHelper.createNewArea()
+        }
+        saveNewAreaButton.setOnClickListener {
+            GoogleMapHelper.saveNewArea()
+        }
+
+        if (onEdit) {
+            addNewAreaButton.visibility = View.VISIBLE
+            saveNewAreaButton.visibility = View.VISIBLE
+            saveButton.visibility = View.VISIBLE
+            locationButton.visibility = View.INVISIBLE
+            locateMeButton.visibility = View.INVISIBLE
+
+            saveButton.setOnClickListener {
+                val location = GoogleMapHelper.areasToFormattedStringLocations(from = startId)
+                zone!!.location = location
+                ZoneManagementActivity.nbModified = GoogleMapHelper.uid - startId
+                ZoneManagementActivity.zoneObservable.postValue(
+                    Zone(
+                        zoneName = zone?.zoneName,
+                        zoneId = zone?.zoneId,
+                        location = location,
+                        description = zone?.description
+                    )
+                )
+            }
+        } else {
+            addNewAreaButton.visibility = View.INVISIBLE
+            saveNewAreaButton.visibility = View.INVISIBLE
+            saveButton.visibility = View.INVISIBLE
+            locationButton.visibility = View.VISIBLE
+            locateMeButton.visibility = View.VISIBLE
+        }
+
         locationButton.setOnClickListener {
             switchLocationOnOff()
         }
         locationButton.tag = R.drawable.ic_location_on
 
-        val locateMeButton = view.findViewById<FloatingActionButton>(R.id.id_locate_me_button)
+
         locateMeButton.setOnClickListener {
             moveToMyLocation()
         }
@@ -66,6 +110,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         GoogleMapHelper.saveCamera()
 
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -92,6 +137,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         if (useUserLocation) {
             activateMyLocation()
         }
+        startId = GoogleMapHelper.uid
+
     }
 
     override fun onPolylineClick(polyline: Polyline) {
