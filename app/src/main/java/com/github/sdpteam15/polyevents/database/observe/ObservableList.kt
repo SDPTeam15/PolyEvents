@@ -23,8 +23,9 @@ class ObservableList<T> : MutableList<T> {
     val value: List<T>
         get() {
             val v: MutableList<T> = mutableListOf()
-            for (observableValue in values)
+            for (observableValue in values) {
                 v.add(observableValue.value!!)
+            }
             return v
         }
 
@@ -71,8 +72,9 @@ class ObservableList<T> : MutableList<T> {
         notify: Boolean
     ): Observable<T>? {
         if (observable.value != null) {
-            if (!values.add(observable))
+            if (!values.add(observable)) {
                 return null
+            }
             removeItemObserver[observable] =
                 observable.observe {
                     itemUpdated(
@@ -110,8 +112,9 @@ class ObservableList<T> : MutableList<T> {
      */
     fun addAll(items: Collection<T>, sender: Any? = null): Boolean {
         var res = true
-        for (item: T in items)
+        for (item: T in items) {
             res = res && (add(item, sender, false) != null)
+        }
         notifyUpdate(sender)
         return res
     }
@@ -132,13 +135,15 @@ class ObservableList<T> : MutableList<T> {
         sender: Any? = null,
         notify: Boolean
     ): Observable<T>? {
-        if (!values.remove(observable))
+        if (!values.remove(observable)) {
             return null
+        }
         removeItemObserver[observable]!!()
         removeItemObserver.remove(observable)
         itemRemoved(UpdateArgs(observable.value!!, sender))
-        if (notify)
+        if (notify) {
             notifyUpdate(sender)
+        }
         return observable
     }
 
@@ -151,8 +156,9 @@ class ObservableList<T> : MutableList<T> {
     fun remove(item: T, sender: Any? = null): Observable<T>? = remove(item, sender, true)
     private fun remove(item: T, sender: Any? = null, notify: Boolean): Observable<T>? {
         val observable: Observable<T>? = find(item)
-        if (observable != null)
+        if (observable != null) {
             return remove(observable, sender, notify)
+        }
         return null
     }
 
@@ -165,8 +171,9 @@ class ObservableList<T> : MutableList<T> {
      */
     fun removeAll(items: Collection<T>, sender: Any? = null): Boolean {
         var res = true
-        for (item: T in items)
+        for (item: T in items) {
             res = res && (remove(item, sender, false) != null)
+        }
         notifyUpdate(sender)
         return res
     }
@@ -180,8 +187,9 @@ class ObservableList<T> : MutableList<T> {
      * @param sender The source of the event.
      */
     fun clear(sender: Any? = null) {
-        for (item in values.toList())
+        for (item in values.toList()) {
             remove(item, sender, false)
+        }
         notifyUpdate(sender)
     }
 
@@ -196,9 +204,11 @@ class ObservableList<T> : MutableList<T> {
     }
 
     override fun containsAll(elements: Collection<T>): Boolean {
-        for (element in elements)
-            if (!this.contains(element))
+        for (element in elements) {
+            if (!this.contains(element)) {
                 return false
+            }
+        }
         return true
     }
 
@@ -300,22 +310,25 @@ class ObservableList<T> : MutableList<T> {
 
     private fun itemAdded(value: UpdateArgs<T>) {
         run(Runnable {
-            for (obs in observersAdd)
+            for (obs in observersAdd) {
                 obs(value)
+            }
         })
     }
 
     private fun itemRemoved(value: UpdateArgs<T>) {
         run(Runnable {
-            for (obs in observersRemove)
+            for (obs in observersRemove) {
                 obs(value)
+            }
         })
     }
 
     private fun itemUpdated(value: UpdateArgs<IndexedValue<T>>) {
         run(Runnable {
-            for (obs in observersItemUpdate)
+            for (obs in observersItemUpdate) {
                 obs(value)
+            }
             notifyUpdate(value.sender)
         })
     }
@@ -323,8 +336,9 @@ class ObservableList<T> : MutableList<T> {
     private fun notifyUpdate(sender: Any?) {
         if (observers.isNotEmpty()) {
             val valueList = this.value
-            for (obs in observers)
+            for (obs in observers) {
                 obs(UpdateArgs(valueList, sender))
+            }
         }
     }
 
@@ -341,8 +355,9 @@ class ObservableList<T> : MutableList<T> {
         override fun add(element: T) = add(index++, element)
 
         override fun remove() {
-            if (hasPrevious())
+            if (hasPrevious()) {
                 remove(getObservable(--index), this)
+            }
         }
 
         override fun set(element: T) {
