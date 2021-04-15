@@ -2,7 +2,6 @@ package com.github.sdpteam15.polyevents.fragments
 
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.transition.Slide
 import android.transition.TransitionManager
@@ -11,15 +10,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import android.widget.Button
-import android.widget.EditText
-import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.*
 import com.github.sdpteam15.polyevents.adapter.ProfileAdapter
-import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_USERNAME
 import com.github.sdpteam15.polyevents.database.observe.Observable
@@ -48,7 +42,7 @@ class ProfileFragment : Fragment() {
      */
     lateinit var recyclerView: RecyclerView
 
-    private val profiles = ObservableList<UserProfile>()
+    val profiles = ObservableList<UserProfile>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -114,22 +108,23 @@ class ProfileFragment : Fragment() {
     }
 
     fun initProfileList(viewRoot: View) {
-        currentDatabase.getUserProfilesList(profiles, currentUser!!).observe {
-            if (!it.value)
-                HelperFunctions.showToast(getString(R.string.fail_to_update), activity)
-        }
-        profiles.observeRemove({ (activity)!!.lifecycle })
-        {
+        profiles.observeRemove {
             if (it.sender != currentDatabase)
                 currentDatabase.removeProfile(it.value)
         }
-        profiles.observeAdd(this) {
+        profiles.observeAdd {
             if (it.sender != currentDatabase)
                 currentDatabase.addUserProfileAndAddToUser(it.value, currentUser!!)
         }
 
         recyclerView = viewRoot.findViewById(R.id.id_recycler_profile_list)
         recyclerView.adapter = ProfileAdapter(this, profiles)
+
+        if(currentUser!!.profiles.size > 0)
+            currentDatabase.getUserProfilesList(profiles, currentUser!!).observe(this) {
+                if (!it.value)
+                    HelperFunctions.showToast(getString(R.string.fail_to_update), activity)
+            }
 
         viewRoot.findViewById<ImageButton>(R.id.id_add_profile_button)
             .setOnClickListener { createProfilePopup() }
@@ -146,7 +141,7 @@ class ProfileFragment : Fragment() {
         // Initialize a new instance of popup window
         val popupWindow = PopupWindow(
             view, // Custom view to show in popup window
-            LinearLayout.LayoutParams.WRAP_CONTENT, // Width of popup window
+            LinearLayout.LayoutParams.MATCH_PARENT, // Width of popup window
             LinearLayout.LayoutParams.WRAP_CONTENT // Window height
         )
 
@@ -184,10 +179,24 @@ class ProfileFragment : Fragment() {
         popupWindow.showAtLocation(this.recyclerView, Gravity.CENTER, 0, 0)
     }
 
+    var remove: () -> Boolean = { true }
+
     fun editProfile(item: UserProfile) {
         val intent = Intent(activity, EditProfileActivity::class.java)
-        intent.putExtra(CALLER_RANK, if(currentUser!!.isAdmin()) UserRole.ADMIN.toString() else UserRole.PARTICIPANT.toString())
+        intent.putExtra(
+            CALLER_RANK,
+            if (currentUser!!.isAdmin()) UserRole.ADMIN.toString() else UserRole.PARTICIPANT.toString()
+        )
         intent.putExtra(EDIT_PROFILE_ID, item.pid)
         startActivity(intent)
+        remove = EditProfileActivity.end.observe {
+            if (it.value) {
+                remove()
+                currentDatabase.getUserProfilesList(profiles, currentUser!!).observe(this) {
+                    if (!it.value)
+                        HelperFunctions.showToast(getString(R.string.fail_to_update), activity)
+                }
+            }
+        }
     }
 }

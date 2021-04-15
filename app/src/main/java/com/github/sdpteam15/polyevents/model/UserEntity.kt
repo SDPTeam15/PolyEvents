@@ -1,5 +1,7 @@
 package com.github.sdpteam15.polyevents.model
 
+import com.github.sdpteam15.polyevents.database.Database
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.google.firebase.firestore.IgnoreExtraProperties
 import java.time.LocalDate

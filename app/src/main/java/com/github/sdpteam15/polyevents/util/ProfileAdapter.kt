@@ -21,7 +21,9 @@ object ProfileAdapter : AdapterInterface<UserProfile> {
     override fun fromDocument(document: MutableMap<String, Any?>, id: String) = UserProfile(
         pid = id as String?,
         profileName = document[DatabaseConstant.PROFILE_NAME] as String,
-        userRole = document[DatabaseConstant.PROFILE_RANK] as UserRole,
-        users = document[DatabaseConstant.PROFILE_USERS] as MutableList<String>
+        userRole = if ((document[DatabaseConstant.PROFILE_RANK] as String) != "")
+            UserRole.valueOf(document[DatabaseConstant.PROFILE_RANK] as String)
+        else UserRole.PARTICIPANT,
+        users = (document[DatabaseConstant.PROFILE_USERS] as List<String>).toMutableList()
     )
 }

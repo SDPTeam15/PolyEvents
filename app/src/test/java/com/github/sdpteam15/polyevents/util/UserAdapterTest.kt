@@ -57,7 +57,7 @@ class UserAdapterTest {
                 DatabaseConstant.USER_PHONE to telephone
         )
 
-        assertEquals(user, UserAdapter.fromDocument(userDocumentData))
+        assertEquals(user, UserAdapter.fromDocument(userDocumentData, googleId))
     }
 
     @Test
@@ -71,7 +71,7 @@ class UserAdapterTest {
                 DatabaseConstant.USER_PHONE to telephone
         )
 
-        assertNull(UserAdapter.fromDocument(userDocumentData).age)
+        assertNull(UserAdapter.fromDocument(userDocumentData, googleId).age)
     }
 
     @Test

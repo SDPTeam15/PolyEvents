@@ -320,7 +320,7 @@ class ObservableList<T> : MutableList<T> {
         })
     }
 
-    private fun notifyUpdate(sender: Any?) {
+    fun notifyUpdate(sender: Any? = null) {
         if (observers.isNotEmpty()) {
             val valueList = this.value
             for (obs in observers)

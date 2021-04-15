@@ -20,7 +20,7 @@ class ProfileAdapter(
 ) : RecyclerView.Adapter<ProfileAdapter.ItemViewHolder>() {
 
     init {
-        items.observe(profileFragment) {
+        items.observe {
             notifyDataSetChanged()
         }
     }

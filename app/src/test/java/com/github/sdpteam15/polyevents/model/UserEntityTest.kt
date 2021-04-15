@@ -15,7 +15,7 @@ class UserEntityTest {
     val email = "John@email.com"
 
     val adminProfile = UserProfile(
-            userUid = googleId,
+            pid = googleId,
             profileName = "adminProfile",
             userRole = UserRole.ADMIN
     )
@@ -65,23 +65,6 @@ class UserEntityTest {
     @Test
     fun testIfUserIsAdmin() {
         assertTrue(user.isAdmin())
-    }
-
-    // TODO: recheck tests if changes in Profile
-    @Test
-    fun testUserProfiles() {
-        val newProfileName = "normalProfile"
-        user.addNewProfile(newProfileName)
-        assertEquals(user.profiles.size, 2)
-        assertTrue(user.removeProfile(newProfileName))
-
-        user.switchRoles(UserRole.ADMIN)
-
-        assertFalse(user.removeProfile(newProfileName))
-
-        // remove admin profile and see if still admin
-        user.removeProfile(adminProfile.profileName)
-        assertFalse(user.isAdmin())
     }
 
 }

@@ -98,42 +98,6 @@ class FirestoreDatabaseProviderTest {
     }
 
     @Test
-    fun toRemoveTest() {
-        val testProfile = UserProfile(
-            userUid = user.uid,
-            profileName = "mockProfile"
-        )
-
-        val testEvent = Event(
-            eventId = "eventA",
-            eventName = "Event A"
-        )
-
-        assertNotNull(FirestoreDatabaseProvider.getProfilesList("", user))
-        assertNotNull(
-            FirestoreDatabaseProvider.addProfile(
-                testProfile,
-                "",
-                user
-            )
-        )
-        assertNotNull(
-            FirestoreDatabaseProvider.removeProfile(
-                testProfile,
-                "",
-                user
-            )
-        )
-        assertNotNull(
-            FirestoreDatabaseProvider.updateProfile(
-                testProfile,
-                user
-            )
-        )
-    }
-
-
-    @Test
     fun addItemInDatabaseWorks(){
         val mockedCollectionReference = mock(CollectionReference::class.java)
         val taskReferenceMock = mock(Task::class.java) as Task<DocumentReference>
@@ -530,7 +494,7 @@ class FirestoreDatabaseProviderTest {
         val testZone = Zone(zoneID, zoneName, zoneLoc, zoneDesc)
 
         When(mockedDatabase.collection(ZONE_COLLECTION)).thenReturn(mockedCollectionReference)
-        When(mockedCollectionReference.add(ZoneAdapter.toZoneDocument(testZone))).thenReturn(
+        When(mockedCollectionReference.add(ZoneAdapter.toDocument(testZone))).thenReturn(
             taskReferenceMock
         )
 
@@ -571,7 +535,7 @@ class FirestoreDatabaseProviderTest {
 
         When(mockedDatabase.collection(ZONE_COLLECTION)).thenReturn(mockedCollectionReference)
         When(mockedCollectionReference.document(zoneID)).thenReturn(mockedDocumentReference)
-        When(mockedDocumentReference.update(ZoneAdapter.toZoneDocument(testZone))).thenReturn(
+        When(mockedDocumentReference.update(ZoneAdapter.toDocument(testZone))).thenReturn(
             mockedTask
         )
 

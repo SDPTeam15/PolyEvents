@@ -5,8 +5,10 @@ import com.github.sdpteam15.polyevents.database.DatabaseConstant.ITEM_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.ITEM_COUNT
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_POINT
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.PROFILE_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_UID
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_COLLECTION
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.*
@@ -19,6 +21,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.selects.whileSelect
+import kotlin.concurrent.thread
 
 object FirestoreDatabaseProvider : DatabaseInterface {
     var firestore: FirebaseFirestore? = null
@@ -29,13 +33,16 @@ object FirestoreDatabaseProvider : DatabaseInterface {
      */
     var firstConnectionUser: UserEntity = UserEntity(uid = "DEFAULT")
 
-    override val currentUser: UserEntity?
-        get() =
+    override var currentUser: UserEntity? = null
+        get() {
             if (FirebaseAuth.getInstance().currentUser != null) {
-                FirebaseUserAdapter.toUser(FirebaseAuth.getInstance().currentUser!!)
-            } else {
-                null
+                firestore!!.collection(USER_COLLECTION)
+                    .document(FirebaseAuth.getInstance().currentUser!!.uid)
+                    .get()
+                    .addOnSuccessListener {field = UserAdapter.fromDocument(it.data!!, it.id)}
             }
+            return field
+        }
 
     var profiles: MutableList<UserProfile> = mutableListOf()
 
@@ -480,7 +487,6 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         val ended = Observable<Boolean>()
 
         val lastFailureListener = OnFailureListener { ended.postValue(false, this) }
-
         val mutableList = mutableListOf<T?>()
         val fsCollection = firestore!!.collection(collection)
         for (id in ids) {
@@ -515,7 +521,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         return thenDoAdd(
             firestore!!
                 .collection(ZONE_COLLECTION)
-                .add(ZoneAdapter.toZoneDocument(zone))
+                .add(ZoneAdapter.toDocument(zone))
         )
     }
 
@@ -531,7 +537,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
                 .document(zoneId)
                 .get()
         ) {
-            zone.postValue(it.data?.let { it1 -> ZoneAdapter.toZoneEntity(it1, it.id) }!!)
+            zone.postValue(ZoneAdapter.fromDocument(it.data!!, it.id), this)
         }
     }
 
@@ -544,7 +550,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             firestore!!
                 .collection(ZONE_COLLECTION)
                 .document(zoneId)
-                .update(ZoneAdapter.toZoneDocument(newZone))
+                .update(ZoneAdapter.toDocument(newZone))
         )
     }
 }

@@ -20,7 +20,7 @@ const val EDIT_PROFILE_ID = "com.github.sdpteam15.polyevents.user.EDIT_PROFILE_I
 class EditProfileActivity : AppCompatActivity() {
     companion object {
         val updater = Observable<UserProfile>()
-        val map = HashMap<String, String>()
+        var end = Observable<Boolean>()
     }
 
     private val id: TextInputEditText get() = findViewById(R.id.EditProfileActivity_ID)
@@ -40,6 +40,8 @@ class EditProfileActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_profile)
+
+        end.postValue(false, this)
 
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
@@ -79,14 +81,16 @@ class EditProfileActivity : AppCompatActivity() {
 
         save.setOnClickListener {
             val newName = name.text.toString()
-            val newRank = UserRole.valueOf(rank.text.toString())
+            val newRank = stringToRank(rank.text.toString())
 
             profile.userRole = newRank
             profile.profileName = newName
 
             currentDatabase.updateProfile(profile).observe {
-                if (it.value)
+                if (it.value) {
+                    end.postValue(true, this)
                     onBackPressed()
+                }
                 else
                     HelperFunctions.showToast(
                         getString(R.string.EditProfileActivity_DatabaseError),
@@ -119,7 +123,7 @@ class EditProfileActivity : AppCompatActivity() {
             UserRole.ADMIN -> return resources.getStringArray(R.array.EditProfileActivity_Ranks)[0]
             UserRole.ORGANIZER -> return resources.getStringArray(R.array.EditProfileActivity_Ranks)[1]
             UserRole.STAFF -> return resources.getStringArray(R.array.EditProfileActivity_Ranks)[2]
-            UserRole.PARTICIPANT -> return resources.getStringArray(R.array.EditProfileActivity_Ranks)[2]
+            UserRole.PARTICIPANT -> return resources.getStringArray(R.array.EditProfileActivity_Ranks)[3]
         }
     }
 
@@ -128,7 +132,7 @@ class EditProfileActivity : AppCompatActivity() {
             resources.getStringArray(R.array.EditProfileActivity_Ranks)[0] -> return UserRole.ADMIN
             resources.getStringArray(R.array.EditProfileActivity_Ranks)[1] -> return UserRole.ORGANIZER
             resources.getStringArray(R.array.EditProfileActivity_Ranks)[2] -> return UserRole.STAFF
-            resources.getStringArray(R.array.EditProfileActivity_Ranks)[2] -> return UserRole.PARTICIPANT
+            resources.getStringArray(R.array.EditProfileActivity_Ranks)[3] -> return UserRole.PARTICIPANT
         }
         return lastRank
     }

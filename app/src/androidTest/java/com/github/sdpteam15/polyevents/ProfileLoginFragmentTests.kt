@@ -30,6 +30,7 @@ import org.mockito.Mockito.`when` as When
 private const val displayNameTest = "Test displayName"
 private const val emailTest = "Test email"
 private const val uidTest = "Test uid"
+private const val pidTest = "Test pid"
 
 private const val displayNameTest2 = "Test displayName2"
 private const val emailTest2 = "Test email2"
@@ -60,6 +61,9 @@ class ProfileLoginFragmentTests {
         mockedDatabase = mock(DatabaseInterface::class.java)
         When(mockedDatabase.currentUser).thenReturn(null)
         val homeFragment = MainActivity.fragments[R.id.ic_home] as HomeFragment
+        When(mockedDatabase.getListEvent(null, NUMBER_UPCOMING_EVENTS.toLong(), homeFragment.events)).thenAnswer {
+            Observable(true)
+        }
         When(mockedDatabase.getListEvent(null, NUMBER_UPCOMING_EVENTS.toLong(), homeFragment.events)).thenAnswer {
             Observable(true)
         }

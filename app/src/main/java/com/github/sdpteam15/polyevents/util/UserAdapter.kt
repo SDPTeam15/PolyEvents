@@ -37,6 +37,6 @@ object UserAdapter : AdapterInterface<UserEntity> {
         )?.toLocalDate(),
         email = document[USER_EMAIL] as String?,
         telephone = document[USER_PHONE] as String?,
-        profiles = document[USER_PROFILES] as MutableList<String>
+        profiles = (document[USER_PROFILES] as List<String>).toMutableList()
     )
 }
