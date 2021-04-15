@@ -320,6 +320,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     ) {
         user.postValue(it.data?.let { it1 -> UserAdapter.toUserEntity(it1) }!!)
     }
+
     override fun getProfileById(
         profile: Observable<UserProfile>,
         pid: String,
@@ -328,6 +329,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         //TODO adapt to firebase
         return FakeDatabase.getProfileById(profile, pid, userAccess)
     }
+
     /*
     @RequiresApi(Build.VERSION_CODES.O)
     override fun getItemsList(): MutableList<String> {

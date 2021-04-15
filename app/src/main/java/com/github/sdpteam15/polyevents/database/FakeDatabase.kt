@@ -268,17 +268,13 @@ object FakeDatabase : DatabaseInterface {
         return Observable(true)
     }
 
-    override fun getProfileById(
-        profile: Observable<UserProfile>,
-        pid: String,
-        userAccess: UserEntity?
-    ): Observable<Boolean> {
-        TODO("Not yet implemented")
-    }
-
-    override fun getItemsList(): MutableList<Item> {
-        return items
-    }
+        override fun getProfileById(
+            profile: Observable<UserProfile>,
+            pid: String,
+            userAccess: UserEntity?
+        ): Observable<Boolean> {
+            TODO("Not yet implemented")
+        }
     /*
         override fun getItemsList(): MutableList<Item> {
             return items
@@ -292,7 +288,7 @@ object FakeDatabase : DatabaseInterface {
             return items.remove(item)
         }
 
-    */
+        */
     override fun setUserLocation(
         location: LatLng,
         userAccess: UserEntity?

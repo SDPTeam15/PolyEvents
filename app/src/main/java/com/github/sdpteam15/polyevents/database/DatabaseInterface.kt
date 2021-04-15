@@ -349,7 +349,7 @@ interface DatabaseInterface {
         userAccess: UserEntity? = currentUser
     ): Observable<Boolean>
 
-    /*
+
     /**
      * Look in the database if the user already exists or not
      * @param profile : live data that will be set with the find profile value
@@ -362,7 +362,7 @@ interface DatabaseInterface {
         pid: String,
         userAccess: UserEntity? = currentUser
     ): Observable<Boolean>
-
+    /*
     /**
      * Returns the list of items
      * @return The current mutable list of items

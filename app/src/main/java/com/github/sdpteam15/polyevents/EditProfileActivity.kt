@@ -66,12 +66,12 @@ class EditProfileActivity : AppCompatActivity() {
         }
 
         updater.observe(this) {
-            profile = it!!
-            id.setText(it.userUid)
-            lastRank = it.userRole
-            rank.setText(it.userRole.toString())
-            lastName = it.profileName ?: ""
-            name.setText(it.profileName ?: "")
+            profile = it.value!!
+            id.setText(it.value.userUid)
+            lastRank = it.value.userRole
+            rank.setText(it.value.userRole.toString())
+            lastName = it.value.profileName ?: ""
+            name.setText(it.value.profileName ?: "")
         }
         currentDatabase.getProfileById(updater, pid)
 
@@ -89,7 +89,7 @@ class EditProfileActivity : AppCompatActivity() {
                 map[DatabaseConstant.PROFILE_NAME] = newName
 
             currentDatabase.updateProfile(map, pid).observe {
-                if(it == true)
+                if(it.value)
                     onBackPressed()
                 else
                     HelperFunctions.showToast(getString(R.string.EditProfileActivity_DatabaseError),this)
