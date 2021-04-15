@@ -8,17 +8,19 @@ import androidx.test.espresso.matcher.ViewMatchers.hasChildCount
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread
+import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
-import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FakeDatabase
+import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
+import com.github.sdpteam15.polyevents.database.NUMBER_UPCOMING_EVENTS
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.fragments.HomeFragment
 import com.github.sdpteam15.polyevents.model.Event
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.mock
 import org.mockito.junit.MockitoJUnitRunner
 import java.time.LocalDateTime
 
@@ -26,8 +28,7 @@ import java.time.LocalDateTime
 @RunWith(MockitoJUnitRunner::class)
 class UpcomingEventsHomeFragmentTest {
 
-    lateinit var events: ArrayList<Event>
-    lateinit var mockedUpcomingActivitiesProvider: DatabaseInterface
+    var events = ObservableList<Event>()
 
     @Rule
     @JvmField
@@ -35,11 +36,11 @@ class UpcomingEventsHomeFragmentTest {
 
     @Before
     fun setup() {
-        events = ArrayList<Event>()
+        val eventsToAdd = ArrayList<Event>()
 
-        events.add(
+        eventsToAdd.add(
                 Event(
-                    eventId = "event1",
+
                     eventName = "Sushi demo",
                     description = "Super hungry activity !",
                     startTime = LocalDateTime.of(2021, 3, 7, 12, 15),
@@ -49,9 +50,9 @@ class UpcomingEventsHomeFragmentTest {
                 )
         )
 
-        events.add(
+        eventsToAdd.add(
                 Event(
-                    eventId = "event2",
+
                     eventName = "Aqua Poney",
                     description = "Super cool activity !" +
                             " With a super long description that essentially describes and explains" +
@@ -62,9 +63,9 @@ class UpcomingEventsHomeFragmentTest {
                 )
         )
 
-        events.add(
+        eventsToAdd.add(
             Event(
-                eventId = "event3",
+
                 eventName = "Concert",
                 description = "Super noisy activity !",
                 startTime = LocalDateTime.of(2021, 3, 7, 17, 15),
@@ -73,9 +74,9 @@ class UpcomingEventsHomeFragmentTest {
             )
         )
 
-        events.add(
+        eventsToAdd.add(
             Event(
-                eventId = "event4",
+
                 eventName = "Cricket",
                 description = "Outdoor activity !",
                 startTime = LocalDateTime.of(2021, 3, 7, 18, 15),
@@ -84,12 +85,16 @@ class UpcomingEventsHomeFragmentTest {
             )
         )
 
-        mockedUpcomingActivitiesProvider = mock(DatabaseInterface::class.java)
-        `when`(mockedUpcomingActivitiesProvider.getUpcomingEvents()).thenReturn(events)
 
         // Set the activities query helper in home fragment
         val homeFragment = MainActivity.fragments[R.id.ic_home] as HomeFragment
-        currentDatabase = mockedUpcomingActivitiesProvider
+        currentDatabase = FakeDatabase
+        FakeDatabase.userToNull = true
+        FakeDatabase.events.clear()
+        for (event in eventsToAdd){
+            currentDatabase.createEvent(event)
+        }
+        currentDatabase.getListEvent(null, null, events)
 
         // Update the content to use the mock activities query helper
         runOnUiThread {
@@ -101,12 +106,18 @@ class UpcomingEventsHomeFragmentTest {
         Espresso.onView(withId(R.id.ic_home)).perform(click())
     }
 
+    @After
+    fun tearDown(){
+        FakeDatabase.userToNull = false
+        currentDatabase = FirestoreDatabaseProvider
+    }
+
     @Test
     fun correctNumberUpcomingActivitiesDisplayed() {
         Espresso.onView(withId(R.id.id_upcoming_events_list)).check(
             matches(
                 hasChildCount(
-                    events.size
+                    NUMBER_UPCOMING_EVENTS
                 )
             )
         )

@@ -5,9 +5,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.github.sdpteam15.polyevents.database.Database.currentDatabase
-import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.adapter.ItemRequestAdapter
+import com.github.sdpteam15.polyevents.database.Database.currentDatabase
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
+import com.github.sdpteam15.polyevents.model.Item
 
 /**
  * An activity containing items available for request
@@ -15,7 +17,9 @@ import com.github.sdpteam15.polyevents.adapter.ItemRequestAdapter
 class ItemRequestActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
-    lateinit var mapSelectedItems: MutableMap<String, Int>
+    lateinit var mapSelectedItems: MutableMap<Item, Int>
+    private val obsItems = ObservableList<Pair<Item, Int>>()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,10 +29,9 @@ class ItemRequestActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.id_recycler_items_request)
         mapSelectedItems = mutableMapOf()
 
-        val availableItems = currentDatabase.getAvailableItems()
 
         // Listener that update the map of selected items when the quantity is changed
-        val onItemQuantityChangeListener = { item: String, newQuantity: Int ->
+        val onItemQuantityChangeListener = { item: Item, newQuantity: Int ->
             when {
                 mapSelectedItems.containsKey(item) and (newQuantity == 0) -> {
                     mapSelectedItems.remove(item)
@@ -39,11 +42,13 @@ class ItemRequestActivity : AppCompatActivity() {
             }
             Unit
         }
-
-        recyclerView.adapter =
-            ItemRequestAdapter(availableItems.toList(), onItemQuantityChangeListener)
-
-        recyclerView.setHasFixedSize(false)
+        currentDatabase.getAvailableItems(obsItems).observe {
+            if (it.value) {
+                recyclerView.adapter =
+                    ItemRequestAdapter(obsItems, onItemQuantityChangeListener)
+                recyclerView.setHasFixedSize(false)
+            }
+        }
     }
 
     /**

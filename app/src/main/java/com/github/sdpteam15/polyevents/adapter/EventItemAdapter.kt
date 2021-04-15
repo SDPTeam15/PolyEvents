@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.Event
 
 /**
@@ -14,8 +15,8 @@ import com.github.sdpteam15.polyevents.model.Event
  * @param events The list of events to adapt
  * @param listener A listener that will be triggered on click of an ItemViewHolder element
  */
-class EventItemAdapter (
-    private val events: List<Event>,
+class EventItemAdapter(
+    private val events: ObservableList<Event>,
     private val listener: (Event) -> Unit
 ) : RecyclerView.Adapter<EventItemAdapter.ItemViewHolder>() {
 

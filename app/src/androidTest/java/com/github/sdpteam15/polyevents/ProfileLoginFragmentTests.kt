@@ -7,7 +7,10 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
+import com.github.sdpteam15.polyevents.database.NUMBER_UPCOMING_EVENTS
 import com.github.sdpteam15.polyevents.database.observe.Observable
+import com.github.sdpteam15.polyevents.database.observe.UpdateArgs
+import com.github.sdpteam15.polyevents.fragments.HomeFragment
 import com.github.sdpteam15.polyevents.fragments.LoginFragment
 import com.github.sdpteam15.polyevents.fragments.ProfileFragment
 import com.github.sdpteam15.polyevents.model.UserEntity
@@ -18,6 +21,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito.any
 import org.mockito.Mockito.mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.Mockito.`when` as When
@@ -55,6 +59,10 @@ class ProfileLoginFragmentTests {
         //Create Mock database
         mockedDatabase = mock(DatabaseInterface::class.java)
         When(mockedDatabase.currentUser).thenReturn(null)
+        val homeFragment = MainActivity.fragments[R.id.ic_home] as HomeFragment
+        When(mockedDatabase.getListEvent(null, NUMBER_UPCOMING_EVENTS.toLong(), homeFragment.events)).thenAnswer {
+            Observable(true)
+        }
         currentDatabase = mockedDatabase
     }
 

@@ -2,7 +2,6 @@ package com.github.sdpteam15.polyevents.helper
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.arch.core.executor.ArchTaskExecutor
@@ -77,7 +76,7 @@ object HelperFunctions {
      * @return the corresponding LocalDateTime
      */
     fun DateToLocalDateTime(date: Date?): LocalDateTime? =
-            date?.let { LocalDateTime.ofInstant(it.toInstant(), ZoneId.systemDefault()) }
+        date?.let { LocalDateTime.ofInstant(it.toInstant(), ZoneId.systemDefault()) }
 
     /**
      * Convert
@@ -87,7 +86,7 @@ object HelperFunctions {
      * @return the corresponding Date
      */
     fun LocalDateToTimeToDate(ldt: LocalDateTime?): Date? =
-            ldt?.let { Date.from(it.atZone(ZoneId.systemDefault()).toInstant()) }
+        ldt?.let { Date.from(it.atZone(ZoneId.systemDefault()).toInstant()) }
 
     /**
      * Calculates a person's age based on his birthDate and the current chosen date.
@@ -97,7 +96,7 @@ object HelperFunctions {
      */
     fun calculateAge(birthDate: LocalDate, currentDate: LocalDate): Int =
         Period.between(birthDate, currentDate).years
-  
+
     /**
      * Check if a permission was granted
      * (source : https://github.com/googlemaps/android-samples/blob/29ca74b9a3894121f179b9f36b0a51755e7231b0/ApiDemos/kotlin/app/src/gms/java/com/example/kotlindemos/PermissionUtils.kt)
@@ -106,9 +105,11 @@ object HelperFunctions {
      * @param permission : the permission we want to know whether it was granted
      * @return true if the permission was granted
      */
-    fun isPermissionGranted(grantPermissions: Array<String>,
-                            grantResults: IntArray,
-                            permission: String): Boolean {
+    fun isPermissionGranted(
+        grantPermissions: Array<String>,
+        grantResults: IntArray,
+        permission: String
+    ): Boolean {
         for (a in grantPermissions.indices) {
             if (grantPermissions[a] == permission) {
                 return PackageManager.PERMISSION_GRANTED == grantResults[a]

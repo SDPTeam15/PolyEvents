@@ -6,7 +6,7 @@ package com.github.sdpteam15.polyevents.model
  * @property userRole the role associated with this user profile. Can be one of admin,
  * staff, event organizer or simply participant.
  */
-data class UserProfile (
+data class UserProfile(
         val userUid: String? = null,
         val profileName: String? = null,
         val userRole: UserRole = UserRole.PARTICIPANT

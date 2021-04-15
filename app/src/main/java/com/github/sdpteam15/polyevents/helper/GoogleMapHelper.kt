@@ -105,8 +105,9 @@ object GoogleMapHelper {
      * Restores the camera to the location it was before changing fragment or activity, goes to a initial position if it is the first time the map is opened
      */
     fun restoreCameraState() {
-        map!!.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraPosition, cameraZoom))
+        map!!.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraPosition,cameraZoom))
     }
+
 
 
     /**
