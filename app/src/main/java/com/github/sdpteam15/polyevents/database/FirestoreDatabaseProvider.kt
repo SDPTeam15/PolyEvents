@@ -9,17 +9,9 @@ import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_UID
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_COLLECTION
 import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.model.*
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
-import com.github.sdpteam15.polyevents.model.Event
-import com.github.sdpteam15.polyevents.model.Item
-import com.github.sdpteam15.polyevents.model.UserEntity
-import com.github.sdpteam15.polyevents.model.UserProfile
-import com.github.sdpteam15.polyevents.util.EventAdapter
-import com.github.sdpteam15.polyevents.util.FirebaseUserAdapter
-import com.github.sdpteam15.polyevents.util.ItemEntityAdapter
-import com.github.sdpteam15.polyevents.util.UserAdapter
-import com.github.sdpteam15.polyevents.util.ZoneAdapter
+import com.github.sdpteam15.polyevents.model.*
+import com.github.sdpteam15.polyevents.util.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
@@ -90,10 +82,12 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     ): Observable<Boolean> {
         // TODO should update add item if non existent in database ?
         // if (item.itemId == null) return createItem(item, count, profile)
-        return thenDoSet(firestore!!
-            .collection(ITEM_COLLECTION)
-            .document(item.itemId!!)
-            .set(ItemEntityAdapter.toItemDocument(item,count)))
+        return thenDoSet(
+            firestore!!
+                .collection(ITEM_COLLECTION)
+                .document(item.itemId!!)
+                .set(ItemEntityAdapter.toItemDocument(item, count))
+        )
     }
 
     override fun getItemsList(
@@ -133,7 +127,9 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     override fun updateEvents(event: Event, profile: UserProfile?): Observable<Boolean> {
         // TODO should update add item if non existent in database ?
         // if (event.eventId == null) return createEvent(event, profile)
-        return thenDoSet(firestore!!.collection(EVENT_COLLECTION).document(event.eventId!!).set(event))
+        return thenDoSet(
+            firestore!!.collection(EVENT_COLLECTION).document(event.eventId!!).set(event)
+        )
     }
 
     override fun getEventFromId(
@@ -202,8 +198,12 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
 
-        lastAddSuccessListener = OnSuccessListener<DocumentReference> { ended.postValue(true) }
-        lastFailureListener = OnFailureListener { ended.postValue(false) }
+        lastAddSuccessListener = OnSuccessListener<DocumentReference> {
+            ended.postValue(
+                true, this
+            )
+        }
+        lastFailureListener = OnFailureListener { ended.postValue(false, this) }
         task.addOnSuccessListener(lastAddSuccessListener!!)
             .addOnFailureListener(lastFailureListener!!)
 
@@ -223,10 +223,10 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         val ended = Observable<Boolean>()
         lastGetSuccessListener = OnSuccessListener<QuerySnapshot> {
             onSuccessListener(it)
-            ended.postValue(true)
+            ended.postValue(true, this)
         }
 
-        lastFailureListener = OnFailureListener { ended.postValue(false) }
+        lastFailureListener = OnFailureListener { ended.postValue(false, this) }
         task.addOnSuccessListener(lastGetSuccessListener!!)
             .addOnFailureListener(lastFailureListener!!)
         return ended
@@ -245,9 +245,9 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         val ended = Observable<Boolean>()
         lastMultGetSuccessListener = OnSuccessListener<DocumentSnapshot> {
             onSuccessListener(it)
-            ended.postValue(true)
+            ended.postValue(true,this)
         }
-        lastFailureListener = OnFailureListener { ended.postValue(false) }
+        lastFailureListener = OnFailureListener { ended.postValue(false,this) }
         task.addOnSuccessListener(lastMultGetSuccessListener!!)
             .addOnFailureListener(lastFailureListener!!)
         return ended
@@ -263,8 +263,8 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
 
-        lastSetSuccessListener = OnSuccessListener<Void> { ended.postValue(true) }
-        lastFailureListener = OnFailureListener { ended.postValue(false) }
+        lastSetSuccessListener = OnSuccessListener<Void> { ended.postValue(true,this) }
+        lastFailureListener = OnFailureListener { ended.postValue(false,this) }
         task.addOnSuccessListener(lastSetSuccessListener!!)
             .addOnFailureListener(lastFailureListener!!)
 
@@ -306,9 +306,9 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             .get()
     ) { doc: QuerySnapshot ->
         if (doc.documents.size == 1) {
-            isInDb.postValue(true)
+            isInDb.postValue(true,this)
         } else {
-            isInDb.postValue(false)
+            isInDb.postValue(false,this)
         }
     }
 
@@ -321,7 +321,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             .document(uid!!)
             .get()
     ) {
-        user.postValue(it.data?.let { it1 -> UserAdapter.toUserEntity(it1) }!!)
+        user.postValue(it.data?.let { it1 -> UserAdapter.toUserEntity(it1) }!!,this)
     }
 
     override fun getProfileById(
@@ -386,7 +386,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             val geoPoint = it.data!![LOCATIONS_POINT] as GeoPoint
             LatLng(geoPoint.latitude, geoPoint.longitude)
         }
-        usersLocations.postValue(locations)
+        usersLocations.postValue(locations,this)
     }
 
     /*
@@ -395,8 +395,8 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     override fun createZone(zone: Zone, userAccess: UserEntity?): Observable<Boolean> {
         return thenDoAdd(
             firestore!!
-            .collection(ZONE_COLLECTION)
-            .add(ZoneAdapter.toZoneDocument(zone))
+                .collection(ZONE_COLLECTION)
+                .add(ZoneAdapter.toZoneDocument(zone))
         )
     }
 
@@ -411,8 +411,8 @@ object FirestoreDatabaseProvider : DatabaseInterface {
                 .collection(ZONE_COLLECTION)
                 .document(zoneId)
                 .get()
-        ){
-            zone.postValue(it.data?.let { it1->ZoneAdapter.toZoneEntity(it1, it.id)}!!)
+        ) {
+            zone.postValue(it.data?.let { it1 -> ZoneAdapter.toZoneEntity(it1, it.id) }!!,this)
         }
     }
 
@@ -421,9 +421,11 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         newZone: Zone,
         userAccess: UserEntity?
     ): Observable<Boolean> {
-        return thenDoSet(firestore!!
-            .collection(ZONE_COLLECTION)
-            .document(zoneId)
-            .update(ZoneAdapter.toZoneDocument(newZone)))
+        return thenDoSet(
+            firestore!!
+                .collection(ZONE_COLLECTION)
+                .document(zoneId)
+                .update(ZoneAdapter.toZoneDocument(newZone))
+        )
     }
 }

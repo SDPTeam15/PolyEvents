@@ -1,8 +1,8 @@
 package com.github.sdpteam15.polyevents.database
 
-import com.github.sdpteam15.polyevents.adapter.ItemAdapter
+import android.graphics.Bitmap
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.ITEM_COLLECTION
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.ITEM_DOCUMENT_ID
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_POINT
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_COLLECTION
@@ -17,8 +17,9 @@ import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_LOCATION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_NAME
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.model.*
-import com.github.sdpteam15.polyevents.util.ZoneAdapter
+import com.github.sdpteam15.polyevents.util.EventAdapter
 import com.github.sdpteam15.polyevents.util.ItemEntityAdapter
+import com.github.sdpteam15.polyevents.util.ZoneAdapter
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
@@ -30,6 +31,7 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.mock
 import java.time.LocalDate
+import java.time.LocalDateTime
 import kotlin.test.assertNotNull
 import org.hamcrest.CoreMatchers.`is` as Is
 import org.mockito.Mockito.`when` as When
@@ -89,12 +91,12 @@ class FirestoreDatabaseProviderTest {
 
         FirestoreDatabaseProvider.firestore = mockedDatabase
 
-        FirestoreDatabaseProvider.firstConnectionUser=UserEntity(uid = "DEFAULT")
-        FirestoreDatabaseProvider.lastGetSuccessListener= null
-        FirestoreDatabaseProvider.lastSetSuccessListener= null
-        FirestoreDatabaseProvider.lastFailureListener= null
-        FirestoreDatabaseProvider.lastMultGetSuccessListener= null
-        FirestoreDatabaseProvider.lastAddSuccessListener= null
+        FirestoreDatabaseProvider.firstConnectionUser = UserEntity(uid = "DEFAULT")
+        FirestoreDatabaseProvider.lastGetSuccessListener = null
+        FirestoreDatabaseProvider.lastSetSuccessListener = null
+        FirestoreDatabaseProvider.lastFailureListener = null
+        FirestoreDatabaseProvider.lastMultGetSuccessListener = null
+        FirestoreDatabaseProvider.lastAddSuccessListener = null
     }
 
     @Test
@@ -134,20 +136,27 @@ class FirestoreDatabaseProviderTest {
 
 
     @Test
-    fun addItemInDatabaseWorks(){
+    fun addItemInDatabaseWorks() {
         val mockedCollectionReference = mock(CollectionReference::class.java)
         val taskReferenceMock = mock(Task::class.java) as Task<DocumentReference>
 
-        val testItem = Item("xxxbananaxxx","banana",ItemType.OTHER)
+        val testItem = Item("xxxbananaxxx", "banana", ItemType.OTHER)
         val testQuantity = 3
 
         When(mockedDatabase.collection(ITEM_COLLECTION)).thenReturn(mockedCollectionReference)
-        When(mockedCollectionReference.add(ItemEntityAdapter.toItemDocument(testItem, testQuantity))).thenReturn(
+        When(
+            mockedCollectionReference.add(
+                ItemEntityAdapter.toItemDocument(
+                    testItem,
+                    testQuantity
+                )
+            )
+        ).thenReturn(
             taskReferenceMock
         )
 
         var itemNameAdded = ""
-        var itemTypeAdded : ItemType? = null
+        var itemTypeAdded: ItemType? = null
         var itemCountAdded = 0
         var itemIdAdded = ""
 
@@ -164,7 +173,112 @@ class FirestoreDatabaseProviderTest {
             taskReferenceMock
         }
 
-        val result = FirestoreDatabaseProvider.createItem(testItem,testQuantity)
+        val result = FirestoreDatabaseProvider.createItem(testItem, testQuantity)
+        assert(result.value!!)
+        assert(itemNameAdded == testItem.itemName)
+        assert(itemTypeAdded == testItem.itemType)
+        assert(itemCountAdded == testQuantity)
+        assert(itemIdAdded == testItem.itemId!!)
+    }
+
+    @Test
+    fun addEventInDatabaseWorks() {
+        val mockedCollectionReference = mock(CollectionReference::class.java)
+        val taskReferenceMock = mock(Task::class.java) as Task<DocumentReference>
+
+        val testEvent = Event(
+            eventId = "event1",
+            eventName = "Sushi demo",
+            organizer = "The fish band",
+            zoneName = "Kitchen",
+            description = "Super hungry activity !",
+            startTime = LocalDateTime.of(2021, 3, 7, 12, 15),
+            endTime = LocalDateTime.of(2021, 3, 7, 12, 45),
+            inventory = mutableListOf(),
+            tags = mutableSetOf("sushi", "japan", "cooking")
+        )
+
+        When(mockedDatabase.collection(EVENT_COLLECTION)).thenReturn(mockedCollectionReference)
+        When(mockedCollectionReference.add(EventAdapter.toEventDocument(testEvent))).thenReturn(
+            taskReferenceMock
+        )
+
+        var eventId: String? = null
+        var eventName: String? = null
+        var organizer: String? = null
+        var zoneName: String? = null
+        var description: String? = null
+        var icon: Bitmap? = null
+        var startTime: LocalDateTime? = null
+        var endTime: LocalDateTime? = null
+        var inventory: MutableList<Item> = mutableListOf()
+        var tags: MutableSet<String> = mutableSetOf()
+
+        When(taskReferenceMock.addOnSuccessListener(any())).thenAnswer {
+            FirestoreDatabaseProvider.lastAddSuccessListener!!.onSuccess(null)
+            //set method in hard to see if the success listener is successfully called
+            eventId = testEvent.eventId
+            eventName = testEvent.eventName
+            organizer = testEvent.organizer
+            zoneName = testEvent.zoneName
+            description = testEvent.description
+            icon = testEvent.icon
+            startTime = testEvent.startTime
+            endTime = testEvent.endTime
+            inventory = testEvent.inventory
+            tags = testEvent.tags
+            taskReferenceMock
+        }
+        When(taskReferenceMock.addOnFailureListener(any())).thenAnswer {
+            taskReferenceMock
+        }
+
+        val result = FirestoreDatabaseProvider.createEvent(testEvent)
+        assert(result.value!!)
+        assert(eventId == testEvent.eventId)
+        assert(eventName == testEvent.eventName)
+        assert(organizer == testEvent.organizer)
+        assert(zoneName == testEvent.zoneName)
+        assert(description == testEvent.description)
+        assert(icon == testEvent.icon)
+        assert(startTime == testEvent.startTime)
+        assert(endTime == testEvent.endTime)
+        assert(inventory == testEvent.inventory)
+        assert(tags == testEvent.tags)
+    }
+
+    @Test
+    fun removeItemFromDatabaseWorks() {
+        val mockedCollectionReference = mock(CollectionReference::class.java)
+        val documentReference = mock(DocumentReference::class.java) as DocumentReference
+        val taskMock = mock(Task::class.java) as Task<Void>
+
+        val testItem = Item("xxxbananaxxx", "banana", ItemType.OTHER)
+        val testQuantity = 3
+
+        When(mockedDatabase.collection(ITEM_COLLECTION)).thenReturn(mockedCollectionReference)
+        When(mockedCollectionReference.document(testItem.itemId!!)).thenReturn(documentReference)
+        When(documentReference.delete()).thenReturn(taskMock)
+
+        var itemNameAdded = ""
+        var itemTypeAdded: ItemType? = null
+        var itemCountAdded = 0
+        var itemIdAdded = ""
+
+        When(taskMock.addOnSuccessListener(any())).thenAnswer {
+            FirestoreDatabaseProvider.lastSetSuccessListener!!.onSuccess(null)
+            //set method in hard to see if the success listener is successfully called
+            itemNameAdded = testItem.itemName
+            itemTypeAdded = testItem.itemType
+            itemCountAdded = testQuantity
+            itemIdAdded = testItem.itemId!!
+            taskMock
+        }
+        When(taskMock.addOnFailureListener(any())).thenAnswer {
+            taskMock
+        }
+
+        val result = FirestoreDatabaseProvider.removeItem(testItem.itemId as String)
         assert(result.value!!)
         assert(itemNameAdded == testItem.itemName)
         assert(itemTypeAdded == testItem.itemType)
@@ -430,33 +544,37 @@ class FirestoreDatabaseProviderTest {
     }
 
     @Test
-    fun variablesAreCorrectlySet(){
+    fun variablesAreCorrectlySet() {
         val user = UserEntity(
             uid = googleId,
             username = usernameEntity,
             birthDate = birthDate,
             name = name,
-            email = email)
+            email = email
+        )
         FirestoreDatabaseProvider.firstConnectionUser = user
-        assertThat(FirestoreDatabaseProvider.firstConnectionUser,Is(user))
+        assertThat(FirestoreDatabaseProvider.firstConnectionUser, Is(user))
 
-        val lastGetSuccessListener=OnSuccessListener<QuerySnapshot> { }
-        val lastSetSuccessListener=OnSuccessListener<Void> { }
-        val lastFailureListener= OnFailureListener {  }
-        val lastMultGetSuccessListener=OnSuccessListener<DocumentSnapshot> { }
-        val lastAddSuccessListener=OnSuccessListener<DocumentReference> { }
+        val lastGetSuccessListener = OnSuccessListener<QuerySnapshot> { }
+        val lastSetSuccessListener = OnSuccessListener<Void> { }
+        val lastFailureListener = OnFailureListener { }
+        val lastMultGetSuccessListener = OnSuccessListener<DocumentSnapshot> { }
+        val lastAddSuccessListener = OnSuccessListener<DocumentReference> { }
 
-        FirestoreDatabaseProvider.lastGetSuccessListener= lastGetSuccessListener
-        FirestoreDatabaseProvider.lastSetSuccessListener= lastSetSuccessListener
-        FirestoreDatabaseProvider.lastFailureListener= lastFailureListener
-        FirestoreDatabaseProvider.lastMultGetSuccessListener= lastMultGetSuccessListener
-        FirestoreDatabaseProvider.lastAddSuccessListener= lastAddSuccessListener
+        FirestoreDatabaseProvider.lastGetSuccessListener = lastGetSuccessListener
+        FirestoreDatabaseProvider.lastSetSuccessListener = lastSetSuccessListener
+        FirestoreDatabaseProvider.lastFailureListener = lastFailureListener
+        FirestoreDatabaseProvider.lastMultGetSuccessListener = lastMultGetSuccessListener
+        FirestoreDatabaseProvider.lastAddSuccessListener = lastAddSuccessListener
 
-        assertThat(FirestoreDatabaseProvider.lastGetSuccessListener,Is(lastGetSuccessListener))
-        assertThat(FirestoreDatabaseProvider.lastSetSuccessListener,Is(lastSetSuccessListener))
-        assertThat(FirestoreDatabaseProvider.lastFailureListener,Is(lastFailureListener))
-        assertThat(FirestoreDatabaseProvider.lastMultGetSuccessListener,Is(lastMultGetSuccessListener))
-        assertThat(FirestoreDatabaseProvider.lastAddSuccessListener,Is(lastAddSuccessListener))
+        assertThat(FirestoreDatabaseProvider.lastGetSuccessListener, Is(lastGetSuccessListener))
+        assertThat(FirestoreDatabaseProvider.lastSetSuccessListener, Is(lastSetSuccessListener))
+        assertThat(FirestoreDatabaseProvider.lastFailureListener, Is(lastFailureListener))
+        assertThat(
+            FirestoreDatabaseProvider.lastMultGetSuccessListener,
+            Is(lastMultGetSuccessListener)
+        )
+        assertThat(FirestoreDatabaseProvider.lastAddSuccessListener, Is(lastAddSuccessListener))
 
     }
 
