@@ -84,4 +84,18 @@
     <string name="title_activity_items_admin">Items Management</string>
     <string name="title_activity_events">Events</string>
     <string name="ProfileList">Profile List</string>
+
+    <string name="EditProfileActivity_Name">Name</string>
+    <string name="EditProfileActivity_ID">ID</string>
+    <string name="EditProfileActivity_Rank">Rank</string>
+    <string name="EditProfileActivity_Save">Save</string>
+    <string name="EditProfileActivity_Cancel">Cancel</string>
+    <string name="EditProfileActivity_DatabaseError">Impossible to update your profile information, please try again.</string>
+
+    <string-array name="EditProfileActivity_Ranks">
+        <item>Admin</item>
+        <item>Activity provider</item>
+        <item>Staff</item>
+        <item>Visitor</item>
+    </string-array>
 </resources>

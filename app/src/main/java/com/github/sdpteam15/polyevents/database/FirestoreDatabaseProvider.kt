@@ -5,6 +5,7 @@ import com.github.sdpteam15.polyevents.database.DatabaseConstant.ITEM_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.ITEM_COUNT
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_POINT
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.PROFILE_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_UID
 import com.github.sdpteam15.polyevents.database.observe.Observable
@@ -13,10 +14,7 @@ import com.github.sdpteam15.polyevents.model.Event
 import com.github.sdpteam15.polyevents.model.Item
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
-import com.github.sdpteam15.polyevents.util.EventAdapter
-import com.github.sdpteam15.polyevents.util.FirebaseUserAdapter
-import com.github.sdpteam15.polyevents.util.ItemEntityAdapter
-import com.github.sdpteam15.polyevents.util.UserAdapter
+import com.github.sdpteam15.polyevents.util.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
@@ -57,14 +55,6 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     override fun addProfile(profile: UserProfile, uid: String, user: UserEntity?): Boolean =
         profiles.add(profile)// TODO : Not yet Implemented
 
-    override fun removeProfile(
-        profile: UserProfile,
-        uid: String?,
-        user: UserEntity?
-    ): Boolean = profiles.remove(profile)// TODO : Not yet Implemented
-
-    override fun updateProfile(profile: UserProfile, user: UserEntity?): Boolean =
-        true// TODO : Not yet Implemented
 
 
     override fun createItem(
@@ -88,10 +78,12 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     ): Observable<Boolean> {
         // TODO should update add item if non existent in database ?
         // if (item.itemId == null) return createItem(item, count, profile)
-        return thenDoSet(firestore!!
-            .collection(ITEM_COLLECTION)
-            .document(item.itemId!!)
-            .set(ItemEntityAdapter.toItemDocument(item,count)))
+        return thenDoSet(
+            firestore!!
+                .collection(ITEM_COLLECTION)
+                .document(item.itemId!!)
+                .set(ItemEntityAdapter.toItemDocument(item, count))
+        )
     }
 
     override fun getItemsList(
@@ -125,13 +117,15 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     }
 
     override fun createEvent(event: Event, profile: UserProfile?): Observable<Boolean> =
-        thenDoAdd(firestore!!.collection(EVENT_COLLECTION).add(EventAdapter.toEventDocument(event)))
+        thenDoAdd(firestore!!.collection(EVENT_COLLECTION).add(EventAdapter.toDocument(event)))
 
 
     override fun updateEvents(event: Event, profile: UserProfile?): Observable<Boolean> {
         // TODO should update add item if non existent in database ?
         // if (event.eventId == null) return createEvent(event, profile)
-        return thenDoSet(firestore!!.collection(EVENT_COLLECTION).document(event.eventId!!).set(event))
+        return thenDoSet(
+            firestore!!.collection(EVENT_COLLECTION).document(event.eventId!!).set(event)
+        )
     }
 
     override fun getEventFromId(
@@ -143,7 +137,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             .document(id).get()
     ) {
         returnEvent.postValue(
-            it.data?.let { it1 -> EventAdapter.toEventEntity(it1, id) }!!, this
+            it.data?.let { it1 -> EventAdapter.fromDocument(it1, id) }!!, this
         )
     }
 
@@ -166,7 +160,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             for (d in it.documents) {
                 val data = d.data
                 if (data != null) {
-                    val e: Event = EventAdapter.toEventEntity(data, d.id)
+                    val e: Event = EventAdapter.fromDocument(data, d.id)
                     eventList.add(e)
                 }
             }
@@ -191,8 +185,9 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
 
-        lastAddSuccessListener = OnSuccessListener<DocumentReference> { ended.postValue(true) }
-        lastFailureListener = OnFailureListener { ended.postValue(false) }
+        lastAddSuccessListener =
+            OnSuccessListener<DocumentReference> { ended.postValue(true, this) }
+        lastFailureListener = OnFailureListener { ended.postValue(false, this) }
         task.addOnSuccessListener(lastAddSuccessListener!!)
             .addOnFailureListener(lastFailureListener!!)
 
@@ -212,10 +207,10 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         val ended = Observable<Boolean>()
         lastGetSuccessListener = OnSuccessListener<QuerySnapshot> {
             onSuccessListener(it)
-            ended.postValue(true)
+            ended.postValue(true, this)
         }
 
-        lastFailureListener = OnFailureListener { ended.postValue(false) }
+        lastFailureListener = OnFailureListener { ended.postValue(false, this) }
         task.addOnSuccessListener(lastGetSuccessListener!!)
             .addOnFailureListener(lastFailureListener!!)
         return ended
@@ -234,9 +229,9 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         val ended = Observable<Boolean>()
         lastMultGetSuccessListener = OnSuccessListener<DocumentSnapshot> {
             onSuccessListener(it)
-            ended.postValue(true)
+            ended.postValue(true, this)
         }
-        lastFailureListener = OnFailureListener { ended.postValue(false) }
+        lastFailureListener = OnFailureListener { ended.postValue(false, this) }
         task.addOnSuccessListener(lastMultGetSuccessListener!!)
             .addOnFailureListener(lastFailureListener!!)
         return ended
@@ -252,8 +247,8 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
 
-        lastSetSuccessListener = OnSuccessListener<Void> { ended.postValue(true) }
-        lastFailureListener = OnFailureListener { ended.postValue(false) }
+        lastSetSuccessListener = OnSuccessListener<Void> { ended.postValue(true, this) }
+        lastFailureListener = OnFailureListener { ended.postValue(false, this) }
         task.addOnSuccessListener(lastSetSuccessListener!!)
             .addOnFailureListener(lastFailureListener!!)
 
@@ -295,9 +290,9 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             .get()
     ) { doc: QuerySnapshot ->
         if (doc.documents.size == 1) {
-            isInDb.postValue(true)
+            isInDb.postValue(true, this)
         } else {
-            isInDb.postValue(false)
+            isInDb.postValue(false, this)
         }
     }
 
@@ -310,33 +305,8 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             .document(uid!!)
             .get()
     ) {
-        user.postValue(it.data?.let { it1 -> UserAdapter.toUserEntity(it1) }!!)
+        user.postValue(UserAdapter.fromDocument(it.data!!, it.id), this)
     }
-    /*
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun getItemsList(): MutableList<String> {
-
-    override fun getItemsList(): MutableList<Item> {
-        //TODO adapt to firebase
-        return FakeDatabase.getItemsList()
-    }
-
-    override fun addItem(item: Item): Boolean {
-        //TODO adapt to firebase
-        return FakeDatabase.addItem(item)
-    }
-
-    override fun removeItem(item: Item): Boolean {
-        //TODO adapt to firebase
-        return FakeDatabase.removeItem(item)
-    }
-
-    override fun getAvailableItems(): Map<String, Int> {
-        //TODO adapt to firebase
-        return FakeDatabase.getAvailableItems()
-    }
-
-     */
 
     override fun setUserLocation(
         location: LatLng,
@@ -363,6 +333,184 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             val geoPoint = it.data!![LOCATIONS_POINT] as GeoPoint
             LatLng(geoPoint.latitude, geoPoint.longitude)
         }
-        usersLocations.postValue(locations)
+        usersLocations.postValue(locations, this)
+    }
+
+    override fun addUserProfileAndAddToUser(
+        profile: UserProfile,
+        user: UserEntity,
+        userAccess: UserEntity?
+    ): Observable<Boolean> {
+        val ended = Observable<Boolean>()
+
+        val lastFailureListener = OnFailureListener { ended.postValue(false, this) }
+
+        val update: () -> Unit = {
+            user.addNewProfile(profile)
+
+            firestore!!.collection(USER_COLLECTION)
+                .document(user.uid)
+                .set(UserAdapter.toDocument(user))
+                .addOnSuccessListener {
+                    firestore!!.collection(PROFILE_COLLECTION)
+                        .document(profile.pid!!)
+                        .set(ProfileAdapter.toDocument(profile))
+                        .addOnSuccessListener { ended.postValue(true, this) }
+                        .addOnFailureListener(lastFailureListener)
+                }
+                .addOnFailureListener(lastFailureListener)
+        }
+
+        if (profile.pid == null)
+            firestore!!.collection(PROFILE_COLLECTION)
+                .add(ProfileAdapter.toDocument(profile))
+                .addOnSuccessListener {
+                    profile.pid = it.id
+                    update()
+                }
+                .addOnFailureListener(lastFailureListener)
+        else
+            update()
+
+        return ended
+    }
+
+    override fun updateProfile(profile: UserProfile, userAccess: UserEntity?): Observable<Boolean> =
+        setEntity(
+            profile,
+            profile.pid!!,
+            PROFILE_COLLECTION,
+            ProfileAdapter
+        )
+
+    override fun getUserProfilesList(
+        profiles: ObservableList<UserProfile>,
+        user: UserEntity,
+        userAccess: UserEntity?
+    ): Observable<Boolean> =
+        getListEntity(
+            profiles,
+            user.profiles,
+            PROFILE_COLLECTION,
+            ProfileAdapter
+        )
+
+    override fun getProfilesUserList(
+        users: ObservableList<UserEntity>,
+        profile: UserProfile,
+        userAccess: UserEntity?
+    ): Observable<Boolean> =
+        getListEntity(
+            users,
+            profile.users,
+            USER_COLLECTION,
+            UserAdapter
+        )
+
+    override fun getProfileById(
+        profile: Observable<UserProfile>,
+        pid: String,
+        userAccess: UserEntity?
+    ): Observable<Boolean> = getEntity(
+        profile,
+        pid,
+        PROFILE_COLLECTION,
+        ProfileAdapter
+    )
+
+    override fun removeProfile(profile: UserProfile, user: UserEntity?) = deleteEntity(
+        profile.pid!!,
+        PROFILE_COLLECTION
+    )
+
+
+    override fun <T> addEntity(
+        element: T,
+        collection: String,
+        adapter: AdapterInterface<T>
+    ): Observable<String> {
+        val ended = Observable<String>()
+        firestore!!.collection(collection)
+            .add(adapter.toDocument(element))
+            .addOnSuccessListener { ended.postValue(it.id, this) }
+            .addOnFailureListener { ended.postValue("", this) }
+        return ended
+    }
+
+    override fun <T> setEntity(
+        element: T?,
+        id: String,
+        collection: String,
+        adapter: AdapterInterface<T>?
+    ): Observable<Boolean> {
+        val ended = Observable<Boolean>()
+        val document = firestore!!.collection(collection).document(id)
+        (if (element == null || adapter == null) document.delete()
+        else document.set(adapter.toDocument(element)))
+            .addOnSuccessListener { ended.postValue(true, this) }
+            .addOnFailureListener { ended.postValue(false, this) }
+        return ended
+    }
+
+    override fun deleteEntity(
+        id: String,
+        collection: String
+    ): Observable<Boolean> = setEntity<Void>(null, id, collection, null)
+
+    override fun <T> getEntity(
+        element: Observable<T>,
+        id: String,
+        collection: String,
+        adapter: AdapterInterface<T>
+    ): Observable<Boolean> {
+        val ended = Observable<Boolean>()
+        firestore!!.collection(collection).document(id)
+            .get()
+            .addOnSuccessListener {
+                if (it.data != null) {
+                    element.postValue(adapter.fromDocument(it.data!!, it.id), this)
+                    ended.postValue(true, this)
+                }
+                ended.postValue(false, this)
+            }
+            .addOnFailureListener { ended.postValue(false, this) }
+        return ended
+    }
+
+    override fun <T> getListEntity(
+        elements: ObservableList<T>,
+        ids: List<String>,
+        collection: String,
+        adapter: AdapterInterface<T>
+    ): Observable<Boolean> {
+        val ended = Observable<Boolean>()
+
+        val lastFailureListener = OnFailureListener { ended.postValue(false, this) }
+
+        val mutableList = mutableListOf<T?>()
+        val fsCollection = firestore!!.collection(collection)
+        for (id in ids) {
+            mutableList.add(null)
+            fsCollection.document(id)
+                .get()
+                .addOnSuccessListener {
+                    val index = ids.indexOf(it.id)
+                    mutableList[index] = adapter.fromDocument(it.data!!, it.id)
+                    var b = true
+                    for (p in mutableList)
+                        if (p == null) {
+                            b = false
+                            break
+                        }
+                    if (b) {
+                        elements.clear(this)
+                        for (p in mutableList)
+                            elements.add(p!!, this)
+                        ended.postValue(true, this)
+                    }
+                }
+                .addOnFailureListener(lastFailureListener)
+        }
+        return ended
     }
 }

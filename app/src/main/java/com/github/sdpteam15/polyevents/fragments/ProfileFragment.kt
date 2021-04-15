@@ -1,6 +1,5 @@
 package com.github.sdpteam15.polyevents.fragments
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -14,8 +13,7 @@ import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
-import com.github.sdpteam15.polyevents.MainActivity
-import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.*
 import com.github.sdpteam15.polyevents.adapter.ProfileAdapter
 import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
@@ -24,10 +22,9 @@ import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_USERNAME
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.changeFragment
-import com.github.sdpteam15.polyevents.model.Item
-import com.github.sdpteam15.polyevents.model.ItemType
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
+import com.github.sdpteam15.polyevents.model.UserRole
 import com.google.firebase.auth.FirebaseAuth
 import java.time.format.DateTimeFormatter
 
@@ -40,6 +37,11 @@ class ProfileFragment : Fragment() {
     var currentUser: UserEntity? = currentDatabase.currentUser
     val userInfoLiveData = Observable<UserEntity>()
     val hashMapNewInfo = HashMap<String, String>()
+
+    /**
+     * Recycler containing all the items
+     */
+    lateinit var recyclerView: RecyclerView
 
     private val profiles = ObservableList<UserProfile>()
 
@@ -113,36 +115,76 @@ class ProfileFragment : Fragment() {
             if (!it.value)
                 println("query not satisfied")
         }
-        profiles.observeRemove(viewRoot as LifecycleOwner) {
-            if (it.sender != Database.currentDatabase)
-                currentDatabase.removeItem(it.value.id!!)
+        profiles.observeRemove({ (activity)!!.lifecycle })
+        {
+            if (it.sender != currentDatabase)
+                currentDatabase.removeProfile(it.value)
         }
         profiles.observeAdd(this) {
             if (it.sender != currentDatabase)
                 currentDatabase.addUserProfileAndAddToUser(it.value, currentUser!!)
         }
 
-        viewRoot.findViewById<RecyclerView>(R.id.id_recycler_items_list).adapter =
-            ProfileAdapter(this, profiles)
+        recyclerView = viewRoot.findViewById(R.id.id_recycler_profile_list)
+        recyclerView.adapter = ProfileAdapter(this, profiles)
 
-        viewRoot.findViewById<ImageButton>(R.id.id_add_profile_button).setOnClickListener { createProfile() }
+        viewRoot.findViewById<ImageButton>(R.id.id_add_profile_button)
+            .setOnClickListener { createProfilePopup() }
     }
 
-    fun createProfile() {
-        val profile = UserProfile()
-        /*
-        val intent = Intent(this, ::class.java)
-        val message = mainName!!.text.toString()
-        intent.putExtra(MainActivityConstants.MAIN_NAME_TEXT_ID, message)
-        startActivity(intent)
+    private fun createProfilePopup() {
+        // Initialize a new layout inflater instance
+        val inflater: LayoutInflater =
+            (activity)!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
+        // Inflate a custom view using layout inflater
+        val view = inflater.inflate(R.layout.popup_profile, null)
 
-        profiles.add(
-            Pair(
-                Item(null, itemName.text.toString(), ItemType.OTHER),
-                itemQuantity.text.toString().toInt()
-            ), this
+        // Initialize a new instance of popup window
+        val popupWindow = PopupWindow(
+            view, // Custom view to show in popup window
+            LinearLayout.LayoutParams.WRAP_CONTENT, // Width of popup window
+            LinearLayout.LayoutParams.WRAP_CONTENT // Window height
         )
-        */
+
+        val slideIn = Slide()
+        slideIn.slideEdge = Gravity.TOP
+        popupWindow.enterTransition = slideIn
+
+        // Slide animation for popup window exit transition
+        val slideOut = Slide()
+        slideOut.slideEdge = Gravity.END
+        popupWindow.exitTransition = slideOut
+
+
+        // Get the widgets reference from custom view
+        val profileName = view.findViewById<EditText>(R.id.id_edittext_profile_name)
+        val confirmButton = view.findViewById<ImageButton>(R.id.id_confirm_add_item_button)
+
+        //set focus on the popup
+        popupWindow.isFocusable = true
+
+        // Set a click listener for popup's button widget
+        confirmButton.setOnClickListener {
+            profiles.add(
+                UserProfile(
+                    profileName = profileName.text.toString()
+                ), this
+            )
+            // Dismiss the popup window
+            popupWindow.dismiss()
+        }
+
+
+        // Finally, show the popup window on app
+        TransitionManager.beginDelayedTransition(this.recyclerView)
+        popupWindow.showAtLocation(this.recyclerView, Gravity.CENTER, 0, 0)
+    }
+
+    fun editProfile(item: UserProfile) {
+        val intent = Intent(activity, EditProfileActivity::class.java)
+        intent.putExtra(CALLER_RANK, if(currentUser!!.isAdmin()) UserRole.ADMIN.toString() else UserRole.PARTICIPANT.toString())
+        intent.putExtra(EDIT_PROFILE_ID, item.pid)
+        startActivity(intent)
     }
 }

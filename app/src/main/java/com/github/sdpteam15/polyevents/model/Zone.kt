@@ -7,8 +7,8 @@ import com.google.firebase.firestore.IgnoreExtraProperties
  *
  * @property zoneName the name of the zone
  * @property location the location of the zone
- *
- */
+*
+*/
 @IgnoreExtraProperties
 data class Zone(
     val zoneName: String? = null,

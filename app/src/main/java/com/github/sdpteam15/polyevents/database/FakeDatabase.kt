@@ -3,6 +3,7 @@ package com.github.sdpteam15.polyevents.database
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.*
+import com.github.sdpteam15.polyevents.util.AdapterInterface
 import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDateTime
 import java.util.*
@@ -97,14 +98,6 @@ object FakeDatabase : DatabaseInterface {
     override fun addProfile(profile: UserProfile, uid: String, user: UserEntity?): Boolean =
         profiles.add(profile)
 
-    override fun removeProfile(
-        profile: UserProfile,
-        uid: String?,
-        user: UserEntity?
-    ): Boolean = profiles.remove(profile)
-
-    override fun updateProfile(profile: UserProfile, user: UserEntity?): Boolean = true
-
 
     override fun getListEvent(
         matcher: Matcher?,
@@ -136,7 +129,7 @@ object FakeDatabase : DatabaseInterface {
         val itemId = generateRandomKey()
 
         val b = items.put(itemId, Pair(Item(itemId, item.itemName, item.itemType), count)) == null
-        return Observable(b, this)
+        return Observable(true, this)
     }
 
     override fun removeItem(itemId: String, profile: UserProfile?): Observable<Boolean> {
@@ -289,6 +282,88 @@ object FakeDatabase : DatabaseInterface {
         // TODO : see whether we write a Python script that send fake data to our database
         usersLocations.postValue(listOf(LatLng(46.548823, 7.017012)))
         return Observable(true)
+    }
+
+    override fun addUserProfileAndAddToUser(
+        profile: UserProfile,
+        user: UserEntity,
+        userAccess: UserEntity?
+    ): Observable<Boolean> {
+        profile.pid = generateRandomKey()
+        user.profiles.add(profile.pid!!)
+        return Observable(profile.pid != null)
+    }
+
+    override fun updateProfile(profile: UserProfile, userAccess: UserEntity?): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getUserProfilesList(
+        profiles: ObservableList<UserProfile>,
+        user: UserEntity,
+        userAccess: UserEntity?
+    ): Observable<Boolean> {
+
+        TODO("Not yet implemented")
+    }
+
+    override fun getProfilesUserList(
+        users: ObservableList<UserEntity>,
+        profile: UserProfile,
+        userAccess: UserEntity?
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getProfileById(
+        profile: Observable<UserProfile>,
+        pid: String,
+        userAccess: UserEntity?
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun removeProfile(profile: UserProfile, user: UserEntity?): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun <T> addEntity(
+        element: T,
+        collection: String,
+        adapter: AdapterInterface<T>
+    ): Observable<String> {
+        TODO("Not yet implemented")
+    }
+
+    override fun <T> setEntity(
+        element: T?,
+        id: String,
+        collection: String,
+        adapter: AdapterInterface<T>?
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteEntity(id: String, collection: String): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun <T> getEntity(
+        element: Observable<T>,
+        id: String,
+        collection: String,
+        adapter: AdapterInterface<T>
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun <T> getListEntity(
+        elements: ObservableList<T>,
+        ids: List<String>,
+        collection: String,
+        adapter: AdapterInterface<T>
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
     }
 
     /**

@@ -22,7 +22,7 @@ import java.time.LocalDate
  */
 @IgnoreExtraProperties
 data class UserEntity(
-    val uid: String,
+    var uid: String,
     var username: String? = null,
     var name: String? = null,
     var birthDate: LocalDate? = null,
@@ -57,8 +57,11 @@ data class UserEntity(
      * @return true if new profile with given was successfully added
      */
     fun addNewProfile(profile: UserProfile): Boolean {
-        if(profile.id != null)
-            return profiles.add(profile.id)
+        if (profile.pid != null) {
+            profiles.add(profile.pid!!)
+            profile.users.add(this.uid)
+            return true
+        }
         return false
     }
 

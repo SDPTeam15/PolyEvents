@@ -22,7 +22,7 @@ class ZoneAdapterTest {
 
     @Test
     fun conversionOfZoneToDocumentPreservesData() {
-        val document = ZoneAdapter.toZoneDocument(zone)
+        val document = ZoneAdapter.toDocument(zone)
 
         assertEquals(document[ZONE_NAME], zone.zoneName)
         assertEquals(document[ZONE_LOCATION], zone.location)
@@ -35,7 +35,7 @@ class ZoneAdapterTest {
             ZONE_LOCATION to zone.location
         )
 
-        val obtainedZone = ZoneAdapter.toZoneEntity(zoneDocumentData)
+        val obtainedZone = ZoneAdapter.fromDocument(zoneDocumentData)
         assertEquals(obtainedZone, zone)
     }
 
