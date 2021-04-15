@@ -50,7 +50,6 @@ class MyLocationTests {
         onView(withId(R.id.ic_map)).perform(click())
     }
 
-    /*
     @Test
     fun enablingLocationChangeIcon() {
         grantPermission()
@@ -77,8 +76,6 @@ class MyLocationTests {
         onView(withId(R.id.id_location_button))
             .check(matches(withTagValue(equalTo(R.drawable.ic_location_off))))
     }
-
-     */
 
     @Test
     fun locationButtonsAreDisplayed() {
