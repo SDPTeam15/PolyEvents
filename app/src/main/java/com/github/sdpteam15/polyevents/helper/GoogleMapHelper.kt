@@ -12,6 +12,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
 import kotlin.math.pow
+import kotlin.math.*
 
 enum class PolygonAction {
     RIGHT,
@@ -27,7 +28,10 @@ data class IconAnchor(var anchorWidth: Float, var anchorHeight: Float)
 
 @SuppressLint("StaticFieldLeak")
 object GoogleMapHelper {
+
     var context: Context? = null
+
+    //var map: GoogleMap? = null
     var map: MapsInterface? = null
     var uid = 0
 
@@ -36,6 +40,9 @@ object GoogleMapHelper {
     //Attributes that can change
     var minZoom = 17f
     var maxZoom = 21f
+    const val EARTH_RADIUS = 6371000
+    const val TOUPIE = 2 * PI
+    private const val INDEX_ROTATION_MARKER = 3
 
     var swBound = LatLng(46.519941764550545, 6.564997248351575)  // SW bounds
     var neBound = LatLng(46.5213428130699, 6.566603220999241)    // NE bounds
@@ -176,15 +183,12 @@ object GoogleMapHelper {
             if (list.first() == list.last()) {
                 list = coords.subList(0, coords.size - 1)
             }
-            for (coord in list) {
-                lat += coord.latitude
-                lng += coord.longitude
-            }
+
             val anchor = IconAnchor(0f, 0f)
             val bound = IconBound(0, 0, 0, 0)
             val dimension = IconDimension(1, 1)
 
-            val center = LatLng(lat / list.size, lng / list.size)
+            val center = getCenter(list)
             val marker = map!!.addMarker(newMarker(center, anchor, null, name, false, R.drawable.ic_location, bound, dimension))
 
             areasPoints[id] = Pair(marker, polygon)
@@ -223,9 +227,9 @@ object GoogleMapHelper {
     fun saveNewArea() {
         if (tempPoly != null) {
             var name = ""
-            if (tempTitle != null) {
+            if(tempTitle != null){
                 name = tempTitle!!
-            } else {
+            }else{
                 name = "Area $uid"
                 uid += 1
             }
@@ -269,7 +273,7 @@ object GoogleMapHelper {
      * @param pos position of the center of the rectangle
      * */
     fun setupEditZone(pos: LatLng) {
-        //Generate the corners of the area
+        // Generate the corners of the area
         val zoom = map!!.cameraPosition!!.zoom
         val divisor = 2.0.pow(zoom.toDouble())
         val longDiff = 188.0 / divisor / 2
@@ -316,6 +320,9 @@ object GoogleMapHelper {
 
         moveMarker = map!!.addMarker(newMarker(posCenter, anchor, PolygonAction.MOVE.toString(), null, true, R.drawable.ic_move,  bound, dimension))
         movePos = moveMarker!!.position
+
+        rotationMarker = map!!.addMarker(newMarker(pos4, anchor, PolygonAction.ROTATE.toString(), null, true, R.drawable.ic_rotation, bound, dimension))
+        rotationPos = rotationMarker!!.position
     }
 
     /**
@@ -365,26 +372,30 @@ object GoogleMapHelper {
 
         tempLatLng = tempLatLng.map { latLng ->
             LatLng(
-                    latLng!!.latitude + diffLat,
-                    latLng.longitude + diffLng
+                latLng!!.latitude + diffLat,
+                latLng.longitude + diffLng
             )
         }.toMutableList()
 
-        //Moves the edition markers
+        // Moves the edition markers
         moveMarker!!.position = LatLng(movePos!!.latitude + diffLat, movePos!!.longitude + diffLng)
         movePos = moveMarker!!.position
 
         moveDiagMarker!!.position =
-                LatLng(moveDiagPos!!.latitude + diffLat, moveDiagPos!!.longitude + diffLng)
+            LatLng(moveDiagPos!!.latitude + diffLat, moveDiagPos!!.longitude + diffLng)
         moveDiagPos = moveDiagMarker!!.position
 
         moveRightMarker!!.position =
-                LatLng(moveRightPos!!.latitude + diffLat, moveRightPos!!.longitude + diffLng)
+            LatLng(moveRightPos!!.latitude + diffLat, moveRightPos!!.longitude + diffLng)
         moveRightPos = moveRightMarker!!.position
 
         moveDownMarker!!.position =
-                LatLng(moveDownPos!!.latitude + diffLat, moveDownPos!!.longitude + diffLng)
+            LatLng(moveDownPos!!.latitude + diffLat, moveDownPos!!.longitude + diffLng)
         moveDownPos = moveDownMarker!!.position
+
+        rotationMarker!!.position =
+            LatLng(rotationPos!!.latitude + diffLat, rotationPos!!.longitude + diffLng)
+        rotationPos = rotationMarker!!.position
     }
 
     /**
@@ -409,10 +420,10 @@ object GoogleMapHelper {
         val latlng2 = tempLatLng[2]!!
         val latlng3 = tempLatLng[3]!!
 
-        //Vector of the marker
+        // Vector of the marker
         val vec = LatLng(
-                pos.position.latitude - moveDiagPos!!.latitude,
-                pos.position.longitude - moveDiagPos!!.longitude
+            pos.position.latitude - moveDiagPos!!.latitude,
+            pos.position.longitude - moveDiagPos!!.longitude
         )
 
         //Perpendicular of vector (a,b) is (-b,a)
@@ -428,7 +439,7 @@ object GoogleMapHelper {
         var lat2 = diffCoord1.latitude
         var lng2 = diffCoord1.longitude
 
-        //Move the corresponding corners of the rectangle
+        // Move the corresponding corners of the rectangle
         when (pos.snippet) {
             PolygonAction.RIGHT.toString() -> {
                 lat1 = 0.0
@@ -449,27 +460,72 @@ object GoogleMapHelper {
             }
         }
 
-        //Moves the edition markers
+        // Moves the edition markers
         moveDiagMarker!!.position =
-                LatLng(moveDiagPos!!.latitude + lat1 + lat2, moveDiagPos!!.longitude + lng1 + lng2)
+            LatLng(moveDiagPos!!.latitude + lat1 + lat2, moveDiagPos!!.longitude + lng1 + lng2)
         moveDiagPos = moveDiagMarker!!.position
 
         moveMarker!!.position =
-                LatLng(movePos!!.latitude + (lat1 + lat2) / 2, movePos!!.longitude + (lng1 + lng2) / 2)
+            LatLng(movePos!!.latitude + (lat1 + lat2) / 2, movePos!!.longitude + (lng1 + lng2) / 2)
         movePos = moveMarker!!.position
 
         moveRightMarker!!.position = LatLng(
-                moveRightPos!!.latitude + lat1 / 2 + lat2,
-                moveRightPos!!.longitude + lng2 + lng1 / 2
+            moveRightPos!!.latitude + lat1 / 2 + lat2,
+            moveRightPos!!.longitude + lng2 + lng1 / 2
         )
         moveRightPos = moveRightMarker!!.position
 
         moveDownMarker!!.position = LatLng(
-                moveDownPos!!.latitude + lat1 + lat2 / 2,
-                moveDownPos!!.longitude + lng1 + lng2 / 2
+            moveDownPos!!.latitude + lat1 + lat2 / 2,
+            moveDownPos!!.longitude + lng1 + lng2 / 2
         )
         moveDownPos = moveDownMarker!!.position
 
+        rotationMarker!!.position =
+            LatLng(rotationPos!!.latitude + lat2, rotationPos!!.longitude + lng2)
+        rotationPos = rotationMarker!!.position
+    }
+
+    /**
+     * Rotate the current polygon according to the given Marker. It also aligns this
+     * marker so that it remains on the circle around the center of rotation.
+     * @param pos: the Marker indicating the rotation.
+     */
+    fun rotatePolygon(pos: Marker) {
+        // Get the center of the projection
+        val center = getCenter(tempLatLng)
+
+        val posProj = equirectangularProjection(pos.position, center)
+        val oldPosProj = equirectangularProjection(rotationPos, center)
+
+        val rotationAngle = getDirection(posProj) - getDirection(oldPosProj)
+        val rotationAngleDegree = radianToDegree(rotationAngle).toFloat()
+
+        // Rotate all the points of the polygon
+        val cornersRotatedLatLng = tempLatLng.map { applyRotation(it, rotationAngle, center) }
+        for (i in cornersRotatedLatLng.indices) {
+            tempLatLng[i] = cornersRotatedLatLng[i]
+        }
+
+        // Move all the markers on the corresponding corner of the polygon
+        rotationMarker!!.position = tempLatLng[INDEX_ROTATION_MARKER]
+        rotationPos = rotationMarker!!.position
+
+        moveDiagMarker!!.position = applyRotation(moveDiagMarker!!.position, rotationAngle, center)
+        moveDiagPos = moveDiagMarker!!.position
+        moveDiagMarker!!.rotation -= rotationAngleDegree
+
+        moveMarker!!.position = applyRotation(moveMarker!!.position, rotationAngle, center)
+        movePos = moveMarker!!.position
+
+        moveRightMarker!!.position =
+            applyRotation(moveRightMarker!!.position, rotationAngle, center)
+        moveRightPos = moveRightMarker!!.position
+        moveRightMarker!!.rotation -= rotationAngleDegree
+
+        moveDownMarker!!.position = applyRotation(moveDownMarker!!.position, rotationAngle, center)
+        moveDownPos = moveDownMarker!!.position
+        moveDownMarker!!.rotation -= rotationAngleDegree
     }
 
     /**
@@ -482,7 +538,7 @@ object GoogleMapHelper {
             PolygonAction.RIGHT.toString() -> transformPolygon(marker)
             PolygonAction.DOWN.toString() -> transformPolygon(marker)
             PolygonAction.DIAG.toString() -> transformPolygon(marker)
-            PolygonAction.ROTATE.toString() -> println("ROTATION ROTATION BUTTON CLICKED")
+            PolygonAction.ROTATE.toString() -> rotatePolygon(marker)
         }
         tempPoly?.points = tempLatLng
     }
@@ -569,5 +625,124 @@ object GoogleMapHelper {
             areasPoints.remove(r)?.second?.remove()
             coordinates.remove(r)
         }
+    }
+
+    /**
+     * Compute the center (mean) of the given points.
+     * @param list: the list of the latitude/longitude pairs of the points
+     * to compute the center of.
+     * @return the center of these points
+     */
+    fun getCenter(list: List<LatLng?>): LatLng {
+        var lat = 0.0
+        var lng = 0.0
+        for (coord in list) {
+            lat += coord!!.latitude
+            lng += coord.longitude
+        }
+
+        return LatLng(lat / list.size, lng / list.size)
+    }
+
+    /**
+     * Projects a point in lat/lng format onto a cartesian coordinates using the
+     * equirectangular projection (approximation).
+     * @param point: the point to project
+     * @param center: the center of the projection
+     * @return the cartesian coordinates of the points in meter wrt to the given center.
+     */
+    fun equirectangularProjection(point: LatLng?, center: LatLng): Pair<Double, Double> {
+        val x = EARTH_RADIUS * (degreeToRadian(point!!.longitude - center.longitude)) * cos(
+            degreeToRadian(center.latitude)
+        )
+        val y = EARTH_RADIUS * (degreeToRadian(point.latitude - center.latitude))
+        return Pair(x, y)
+    }
+
+    /**
+     * Convert cartesian coordinates back to lat/lng coordinates using the
+     * equirectangular transformation.
+     * @param point: the point to convert in cartesian coordinates
+     * @param center: the center of the projection used in lat/lng coordinates
+     * @return point in lat/lng coordinates
+     */
+    fun inverseEquirectangularProjection(point: Pair<Double, Double>, center: LatLng): LatLng {
+        val lng =
+            radianToDegree(point.first / (EARTH_RADIUS * cos(degreeToRadian(center.latitude)))) + center.longitude
+        val lat = radianToDegree(point.second / EARTH_RADIUS) + center.latitude
+
+        return LatLng(lat, lng)
+    }
+
+    /**
+     * Convert an angle in degrees to radians
+     * @param angle: angle in degrees to convert
+     * @return angle in radians
+     */
+    fun degreeToRadian(angle: Double): Double {
+        return angle * TOUPIE / 360.0
+    }
+
+    /**
+     * Convert an angle in radians to degrees
+     * @param angle: angle in radians to convert
+     * @return angle in degrees
+     */
+    fun radianToDegree(angle: Double): Double {
+        return angle * 360.0 / TOUPIE
+    }
+
+    /**
+     * Compute the direction (angle wrt x-axis) of the given point
+     * @param point: the point in cartesian coordinates to compute the direction of
+     * @return direction in radians
+     */
+    fun getDirection(point: Pair<Double, Double>): Double {
+        val direction = atan(point.second / point.first)
+        return if (point.first < 0) PI + direction else direction
+    }
+
+    /**
+     * Compute the rotation of the given point in cartesian coordinates by
+     * the given angle
+     * @param point: point in cartesian coordinates to rotate
+     * @param angle: rotation angle in radians
+     * @return rotated point in cartesian coordinates
+     */
+    fun computeRotation(point: Pair<Double, Double>, angle: Double): Pair<Double, Double> {
+        val cosA = cos(angle)
+        val sinA = sin(angle)
+
+        return Pair(
+            point.first * cosA - point.second * sinA,
+            point.first * sinA + point.second * cosA
+        )
+    }
+
+    /**
+     * Compute the mean radius radius of the given points
+     * forming a polygon wrt its center (implicitely).
+     * @param points: the points forming the polygon
+     * @return the mean radius from the center of the polygon
+     */
+    fun computeMeanRadius(points: List<Pair<Double, Double>>): Double {
+        var runningRadius = 0.0
+        points.forEach {
+            runningRadius += sqrt(it.first * it.first + it.second * it.second)
+        }
+        return runningRadius / points.size
+    }
+
+    /**
+     * Apply the whole transformation needed to rotate a point in lat/lng coordinates.
+     * @param point: the point in lat/lng coordinates to rotate
+     * @param angle: the angle of the rotation
+     * @param center: the center of the rotation in lat/lng coordinates
+     * @return the rotated point in lat/lng coordinates
+     */
+    fun applyRotation(point: LatLng?, angle: Double, center: LatLng): LatLng {
+        val pointCartesian = equirectangularProjection(point, center)
+        val rotatedCartesian = computeRotation(pointCartesian, angle)
+        return inverseEquirectangularProjection(rotatedCartesian, center)
     }
 }
