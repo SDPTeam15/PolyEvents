@@ -104,8 +104,6 @@ object GoogleMapHelper {
             areasPoints.clear()
             //Draw all areas and points
             for ((k, v) in temp) {
-                println("second : ${v.second}")
-                println("first : ${v.first}")
                 addArea(k, v.second.points, v.first.title)
             }
 
@@ -376,12 +374,9 @@ object GoogleMapHelper {
         val latlng2 = tempLatLng[2]!!
         val latlng3 = tempLatLng[3]!!
 
-        val t1 = pos.position.latitude
-        val t2 = moveDiagPos!!.latitude
-
         //Vector of the marker
         val vec = LatLng(
-                t1 - t2,
+                pos.position.latitude - moveDiagPos!!.latitude,
                 pos.position.longitude - moveDiagPos!!.longitude
         )
 
