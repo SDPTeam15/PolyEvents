@@ -1,12 +1,10 @@
 package com.github.sdpteam15.polyevents.database
 
-import android.util.Log
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.*
 import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDateTime
-import java.util.*
 import kotlin.random.Random
 
 object FakeDatabase : DatabaseInterface {
@@ -245,13 +243,13 @@ object FakeDatabase : DatabaseInterface {
         return Observable(true)
     }
 
-        override fun getProfileById(
-            profile: Observable<UserProfile>,
-            pid: String,
-            userAccess: UserEntity?
-        ): Observable<Boolean> {
-            TODO("Not yet implemented")
-        }
+    override fun getProfileById(
+        profile: Observable<UserProfile>,
+        pid: String,
+        userAccess: UserEntity?
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
 
     override fun setUserLocation(
         location: LatLng,
@@ -279,7 +277,7 @@ object FakeDatabase : DatabaseInterface {
         zone: Observable<Zone>,
         userAccess: UserEntity?
     ): Observable<Boolean> {
-        zone.postValue(Zone("ID1", "Esplanade","Espla","a cool zone"))
+        zone.postValue(Zone("ID1", "Esplanade", "Espla", "a cool zone"))
         return Observable(true)
     }
 

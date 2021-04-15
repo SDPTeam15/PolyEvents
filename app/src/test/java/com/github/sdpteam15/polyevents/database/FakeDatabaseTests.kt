@@ -1,4 +1,5 @@
 package com.github.sdpteam15.polyevents.database
+
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.*
@@ -15,7 +16,7 @@ class FakeDatabaseTests {
     lateinit var mockedUserProfile: UserProfile
     lateinit var mockedEvent: Event
     lateinit var mockedEventList: ObservableList<Event>
-    lateinit var mockedItemList: ObservableList<Pair<Item,Int>>
+    lateinit var mockedItemList: ObservableList<Pair<Item, Int>>
     val uid = "TestUID"
 
     @Before
@@ -34,20 +35,21 @@ class FakeDatabaseTests {
         assertNotNull(FakeDatabase.addProfile(mockedUserProfile, "", mockedUserInterface))
         assertNotNull(FakeDatabase.removeProfile(mockedUserProfile, "", mockedUserInterface))
         assertNotNull(FakeDatabase.updateProfile(mockedUserProfile, mockedUserInterface))
-        assert(FakeDatabase.getZoneInformation("",Observable(),mockedUserInterface).value!!)
-        assert(FakeDatabase.updateZoneInformation("", Zone(),mockedUserInterface).value!!)
-        assert(FakeDatabase.createZone(Zone(),mockedUserInterface).value!!)
+        assert(FakeDatabase.getZoneInformation("", Observable(), mockedUserInterface).value!!)
+        assert(FakeDatabase.updateZoneInformation("", Zone(), mockedUserInterface).value!!)
+        assert(FakeDatabase.createZone(Zone(), mockedUserInterface).value!!)
     }
 
     @Test
-    fun updateItemTest(){
+    fun updateItemTest() {
         val testItem = Item("xxxbananaxxx", "banana", ItemType.OTHER)
         val testQuantity = 3
         FakeDatabase.updateItem(testItem, testQuantity)
-        assert(FakeDatabase.items.containsValue(Pair(testItem,testQuantity)))
+        assert(FakeDatabase.items.containsValue(Pair(testItem, testQuantity)))
     }
+
     @Test
-    fun updateEventTest(){
+    fun updateEventTest() {
         val testEvent = Event(
             eventId = "xxxeventxxxx",
             eventName = "Sushi demo",
@@ -102,7 +104,8 @@ class FakeDatabaseTests {
         var userIsUpdated = false
         user.observe { userIsUpdated = true }
 
-        FakeDatabase.getUserInformation(user, uid, mockedUserInterface).observe { IsUpdated = it.value }
+        FakeDatabase.getUserInformation(user, uid, mockedUserInterface)
+            .observe { IsUpdated = it.value }
         assert(IsUpdated)
         assert(userIsUpdated)
     }

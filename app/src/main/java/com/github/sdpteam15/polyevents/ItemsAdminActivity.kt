@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.transition.Slide
 import android.transition.TransitionManager
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.EditText
@@ -40,9 +39,9 @@ class ItemsAdminActivity : AppCompatActivity() {
         recyclerView.adapter = ItemAdapter(this, items)
         // When a new Item is created, add it to the database
         items.observeAdd(this) {
-            if (it.sender != currentDatabase){
-                currentDatabase.createItem(it.value.first, it.value.second).observe { it1->
-                    if(it1.value){
+            if (it.sender != currentDatabase) {
+                currentDatabase.createItem(it.value.first, it.value.second).observe { it1 ->
+                    if (it1.value) {
                         currentDatabase.getItemsList(items)
                     }
                 }

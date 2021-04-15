@@ -223,7 +223,6 @@ interface DatabaseInterface {
     ): Observable<Boolean>
 
 
-
     /**
      * All accessor and modifier methods for users and profiles
      */
@@ -338,7 +337,7 @@ interface DatabaseInterface {
     fun createZone(
         zone: Zone,
         userAccess: UserEntity? = currentUser
-    ):Observable<Boolean>
+    ): Observable<Boolean>
 
     /**
      * Get the zone information from the database
@@ -349,9 +348,9 @@ interface DatabaseInterface {
      */
     fun getZoneInformation(
         zoneId: String,
-        zone:Observable<Zone>,
-        userAccess: UserEntity?=currentUser
-    ):Observable<Boolean>
+        zone: Observable<Zone>,
+        userAccess: UserEntity? = currentUser
+    ): Observable<Boolean>
 
     /**
      * Update the zone information in the databae
@@ -361,8 +360,8 @@ interface DatabaseInterface {
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun updateZoneInformation(
-        zoneId:String,
-        newZone:Zone,
-        userAccess:UserEntity?=currentUser
-    ):Observable<Boolean>
+        zoneId: String,
+        newZone: Zone,
+        userAccess: UserEntity? = currentUser
+    ): Observable<Boolean>
 }
