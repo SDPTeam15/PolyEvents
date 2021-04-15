@@ -2,6 +2,7 @@ package com.github.sdpteam15.polyevents.fragments
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -54,19 +55,19 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         val addNewAreaButton: View = view.findViewById(R.id.addNewArea)
         val saveNewAreaButton: View = view.findViewById(R.id.acceptNewArea)
         val editAreaButton: View = view.findViewById(R.id.id_edit_area)
-        addNewAreaButton.setOnClickListener { GoogleMapHelper.createNewArea() }
-        saveNewAreaButton.setOnClickListener { GoogleMapHelper.saveNewArea() }
-        editAreaButton.setOnClickListener { GoogleMapHelper.editMode() }
+        addNewAreaButton.setOnClickListener { GoogleMapHelper.createNewArea(requireContext()) }
+        saveNewAreaButton.setOnClickListener { GoogleMapHelper.saveNewArea(requireContext()) }
+        editAreaButton.setOnClickListener { GoogleMapHelper.editMode(requireContext()) }
 
         locationButton = view.findViewById(R.id.id_location_button)
         val locateMeButton = view.findViewById<FloatingActionButton>(R.id.id_locate_me_button)
         val saveButton = view.findViewById<FloatingActionButton>(R.id.saveAreas)
 
         addNewAreaButton.setOnClickListener {
-            GoogleMapHelper.createNewArea()
+            GoogleMapHelper.createNewArea(requireContext())
         }
         saveNewAreaButton.setOnClickListener {
-            GoogleMapHelper.saveNewArea()
+            GoogleMapHelper.saveNewArea(requireContext())
         }
 
         if (onEdit) {
@@ -134,7 +135,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     }
 
     override fun onMapReady(googleMap: GoogleMap?) {
-        GoogleMapHelper.context = context
+        //GoogleMapHelper.context = context
         GoogleMapHelper.map = GoogleMapAdapter(googleMap)
         //GoogleMapHelper.map = googleMap
         googleMap!!.setOnPolylineClickListener(this)
@@ -143,7 +144,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         googleMap.setOnMarkerDragListener(this)
         googleMap.setOnInfoWindowClickListener(this)
         googleMap.setOnMyLocationButtonClickListener(this)
-        GoogleMapHelper.setUpMap()
+        GoogleMapHelper.setUpMap(requireContext())
 
         if (useUserLocation) {
             activateMyLocation()
@@ -158,7 +159,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
 
     override fun onPolygonClick(polygon: Polygon) {
         if (GoogleMapHelper.editMode) {
-            GoogleMapHelper.editArea(polygon.tag.toString())
+            GoogleMapHelper.editArea(requireContext(),polygon.tag.toString())
         } else {
             //Shows the info window of the marker assigned to the area
             GoogleMapHelper.areasPoints.get(polygon.tag)!!.first.showInfoWindow()
