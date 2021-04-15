@@ -21,6 +21,7 @@ import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.*
 import org.hamcrest.MatcherAssert.assertThat
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.any
@@ -87,6 +88,10 @@ class FirestoreDatabaseProviderTest {
         FirestoreDatabaseProvider.lastFailureListener= null
         FirestoreDatabaseProvider.lastGetSuccessListener= null
         FirestoreDatabaseProvider.lastAddSuccessListener= null
+    }
+    @After
+    fun teardown(){
+        FirestoreDatabaseProvider.firestore = null
     }
 
     @Test
