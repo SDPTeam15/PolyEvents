@@ -18,6 +18,10 @@ enum class PolygonAction {
     ROTATE
 }
 
+data class IconBound(var leftBound: Int, var topBound: Int, var rightBound: Int, var bottomBound: Int)
+data class IconDimension(var width: Int, var height: Int)
+data class IconAnchor(var anchorWidth: Float, var anchorHeight: Float)
+
 object GoogleMapHelper {
     var context: Context? = null
 
@@ -146,6 +150,9 @@ object GoogleMapHelper {
 
     /**
      * Helper method to add a area to the map and generate an invisible marker in its center to display the area infos
+     * @param id id of the area
+     * @param coords coordinates coordinates of the area
+     * @param name name of the area
      */
     fun addArea(id: String, coords: List<LatLng>, name: String) {
         if (coords.isNotEmpty()) {
@@ -168,9 +175,12 @@ object GoogleMapHelper {
                 lat += coord.latitude
                 lng += coord.longitude
             }
+            val anchor = IconAnchor(0f, 0f)
+            val bound = IconBound(0, 0, 0, 0)
+            val dimension = IconDimension(1, 1)
 
             val center = LatLng(lat / list.size, lng / list.size)
-            val marker = map!!.addMarker(newMarker(center, 0f, 0f, null, name, false, R.drawable.ic_location, 0, 0, 0, 0, 1, 1))
+            val marker = map!!.addMarker(newMarker(center, anchor, null, name, false, R.drawable.ic_location, bound, dimension))
 
             areasPoints[id] = Pair(marker, polygon)
         }
@@ -252,6 +262,7 @@ object GoogleMapHelper {
 
     /**
      * Add a new area at the coordinates and add the markers to edit the area
+     * @param pos position of the center of the rectangle
      * */
     fun setupEditZone(pos: LatLng) {
         //Generate the corners of the area
@@ -286,26 +297,38 @@ object GoogleMapHelper {
         val posMidDown = LatLng(pos2.latitude, temp2)
         val posCenter = LatLng(temp1, temp2)
 
-        moveDiagMarker = map!!.addMarker(newMarker(pos3, 0.5f, 0.5f, PolygonAction.DIAG.toString(), null, true, R.drawable.ic_downleftarrow, 0, 0, 100, 100, 100, 100))
+        val anchor = IconAnchor(0.5f, 0.5f)
+        val bound = IconBound(0, 0, 100, 100)
+        val dimension = IconDimension(100, 100)
+
+        moveDiagMarker = map!!.addMarker(newMarker(pos3, anchor, PolygonAction.DIAG.toString(), null, true, R.drawable.ic_downleftarrow, bound, dimension))
         moveDiagPos = moveDiagMarker!!.position
 
-        moveRightMarker = map!!.addMarker(newMarker(posMidRight, 0.5f, 0.5f, PolygonAction.RIGHT.toString(), null, true, R.drawable.ic_rightarrow, 0, 0, 100, 100, 100, 100))
+        moveRightMarker = map!!.addMarker(newMarker(posMidRight, anchor, PolygonAction.RIGHT.toString(), null, true, R.drawable.ic_rightarrow,  bound, dimension))
         moveRightPos = moveRightMarker!!.position
 
-        moveDownMarker = map!!.addMarker(newMarker(posMidDown, 0.5f, 0.5f, PolygonAction.DOWN.toString(), null, true, R.drawable.ic_downarrow, 0, 0, 100, 100, 100, 100))
+        moveDownMarker = map!!.addMarker(newMarker(posMidDown, anchor, PolygonAction.DOWN.toString(), null, true, R.drawable.ic_downarrow,  bound, dimension))
         moveDownPos = moveDownMarker!!.position
 
-        moveMarker = map!!.addMarker(newMarker(posCenter, 0.5f, 0.5f, PolygonAction.MOVE.toString(), null, true, R.drawable.ic_move, 0, 0, 100, 100, 100, 100))
+        moveMarker = map!!.addMarker(newMarker(posCenter, anchor, PolygonAction.MOVE.toString(), null, true, R.drawable.ic_move,  bound, dimension))
         movePos = moveMarker!!.position
     }
 
     /**
      * Sets the values for the markers
+     * @param pos position of the marker
+     * @param anchor position of the icon with respect to the marker
+     * @param snippet subtitle of the info window
+     * @param title title of the info window
+     * @param draggable is the marker draggable
+     * @param idDrawable id of the icon
+     * @param bound bounds of the icon
+     * @param dim dimensions of the icon
      */
-    fun newMarker(pos: LatLng, hAnchor: Float, vAnchor: Float, snippet: String?, title: String?, draggable: Boolean, idDrawable: Int, leftBound: Int, topBound: Int, rightBound: Int, bottomBound: Int, width: Int, height: Int): MarkerOptions {
-        var mo = MarkerOptions().position(pos).anchor(hAnchor, vAnchor).draggable(draggable).snippet(snippet).title(title)
+    fun newMarker(pos: LatLng, anchor: IconAnchor, snippet: String?, title: String?, draggable: Boolean, idDrawable: Int, bound: IconBound, dim:IconDimension): MarkerOptions {
+        var mo = MarkerOptions().position(pos).anchor(anchor.anchorWidth, anchor.anchorHeight).draggable(draggable).snippet(snippet).title(title)
         if (context != null) {
-            mo = mo.icon(getMarkerRessource(idDrawable, leftBound, topBound, rightBound, bottomBound, width, height))
+            mo = mo.icon(getMarkerRessource(idDrawable, bound, dim))
         }
 
         return mo
@@ -313,13 +336,16 @@ object GoogleMapHelper {
 
     /**
      * Generates the icon for the invisible icons
+     * @param id id of the icon
+     * @param bound bounds of the icon
+     * @param dim dimensions of the icon
      * ref : https://stackoverflow.com/questions/35718103/how-to-specify-the-size-of-the-icon-on-the-marker-in-google-maps-v2-android
      * TODO : Check if we should make it a singleton to save memory/performance
      */
-    private fun getMarkerRessource(id: Int, leftBound: Int, topBound: Int, rightBound: Int, bottomBound: Int, width: Int, height: Int): BitmapDescriptor {
+    private fun getMarkerRessource(id: Int, bound: IconBound, dim:IconDimension): BitmapDescriptor {
         val vectorDrawable: Drawable? = ContextCompat.getDrawable(context!!, id)
-        vectorDrawable?.setBounds(leftBound, topBound, rightBound, bottomBound)
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        vectorDrawable?.setBounds(bound.leftBound, bound.topBound, bound.rightBound, bound.bottomBound)
+        val bitmap = Bitmap.createBitmap(dim.width, dim.height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         vectorDrawable?.draw(canvas)
         return BitmapDescriptorFactory.fromBitmap(bitmap)
@@ -327,6 +353,7 @@ object GoogleMapHelper {
 
     /**
      * Translate all the corners and the edition markers from the rectangle by the same distance the "moveMarker" is moved
+     * @param pos marker that has been dragged : target position for the area
      */
     fun translatePolygon(pos: Marker) {
         val diffLat = pos.position.latitude - movePos!!.latitude
@@ -358,6 +385,9 @@ object GoogleMapHelper {
 
     /**
      * Projection of vector on the perpendicular of the two positions
+     * @param vector vector to project
+     * @param pos1 position of the first point to compute the perpendicular
+     * @param pos2 position of the second point to compute the perpendicular
      */
     fun projectionVector(vector: LatLng, pos1: LatLng, pos2: LatLng): LatLng {
         val v = LatLng(pos1.longitude - pos2.longitude, pos2.latitude - pos1.latitude)
@@ -368,6 +398,7 @@ object GoogleMapHelper {
 
     /**
      * Transforms the size of the rectangle, either by moving the the right wall(right), the down wall(down) or both(diag)
+     * @param pos marker that has been dragged : target position for the area
      */
     fun transformPolygon(pos: Marker) {
         val latlng1 = tempLatLng[1]!!
@@ -439,13 +470,14 @@ object GoogleMapHelper {
 
     /**
      * Redirects an interaction with an edition marker to the correct transformation
+     * @param marker interaction marker that has been dragged
      */
-    fun interactionMarker(p0: Marker) {
-        when (p0.snippet) {
-            PolygonAction.MOVE.toString() -> translatePolygon(p0)
-            PolygonAction.RIGHT.toString() -> transformPolygon(p0)
-            PolygonAction.DOWN.toString() -> transformPolygon(p0)
-            PolygonAction.DIAG.toString() -> transformPolygon(p0)
+    fun interactionMarker(marker: Marker) {
+        when (marker.snippet) {
+            PolygonAction.MOVE.toString() -> translatePolygon(marker)
+            PolygonAction.RIGHT.toString() -> transformPolygon(marker)
+            PolygonAction.DOWN.toString() -> transformPolygon(marker)
+            PolygonAction.DIAG.toString() -> transformPolygon(marker)
             PolygonAction.ROTATE.toString() -> println("ROTATION ROTATION BUTTON CLICKED")
         }
         tempPoly?.points = tempLatLng
@@ -470,13 +502,18 @@ object GoogleMapHelper {
      * Restores all markers to the area they belong
      */
     fun restoreMarkers() {
+        val anchor = IconAnchor(0f, 0f)
+        val bound = IconBound(0, 0, 0, 0)
+        val dimension = IconDimension(1, 1)
+
         for (value in tempValues) {
-            areasPoints[value.key] = Pair(map!!.addMarker(newMarker(value.value.second, 0f, 0f, null, value.value.first, false, R.drawable.ic_location, 0, 0, 0, 0, 1, 1)), areasPoints.get(value.key)!!.second)
+            areasPoints[value.key] = Pair(map!!.addMarker(newMarker(value.value.second, anchor, null, value.value.first, false, R.drawable.ic_location, bound, dimension)), areasPoints.get(value.key)!!.second)
         }
     }
 
     /**
      * Set up the area with the tag in parameter
+     * @param tag of the area to edit
      */
     fun editArea(tag: String) {
         val area = areasPoints[tag] ?: return

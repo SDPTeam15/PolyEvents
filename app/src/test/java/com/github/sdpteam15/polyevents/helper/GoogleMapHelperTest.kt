@@ -1,8 +1,7 @@
-package com.github.sdpteam15.polyevents
+package com.github.sdpteam15.polyevents.helper
 
-import com.github.sdpteam15.polyevents.helper.GoogleMapHelper
-import com.github.sdpteam15.polyevents.helper.MapsInterface
-import com.github.sdpteam15.polyevents.helper.PolygonAction
+import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.anyOrNull
 import com.google.android.gms.dynamic.IObjectWrapper
 import com.google.android.gms.internal.maps.zzt
 import com.google.android.gms.internal.maps.zzw
@@ -40,10 +39,6 @@ class GoogleMapHelperTest {
         GoogleMapHelper.map = mockedMap
         When(mockedMap.cameraPosition).thenReturn(camera)
         When(mockedMap.setMinZoomPreference(GoogleMapHelper.minZoom)).then {}
-        val dir = File("./src/main/res/drawable")
-        val file: Array<File> = dir.listFiles()
-        //Drawable.createFromPath(dir.path + "/" + file[0])
-
     }
 
     @Test
@@ -161,7 +156,10 @@ class GoogleMapHelperTest {
 
     @Test
     fun newMarkerTest() {
-        GoogleMapHelper.newMarker(LatLng(lat, lng), 0f, 0f, null, null, true, R.id.ic_more, 0, 0, 100, 100, 100, 100)
+        val anchor = IconAnchor(0f, 0f)
+        val bound = IconBound(0, 0, 100, 100)
+        val dimension = IconDimension(100, 100)
+        GoogleMapHelper.newMarker(LatLng(lat, lng), anchor, null, null, true, R.id.ic_more, bound, dimension)
     }
 
     @Test
