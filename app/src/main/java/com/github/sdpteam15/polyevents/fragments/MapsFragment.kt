@@ -264,12 +264,12 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
      */
     private fun getBuiltInLocationButton(): View {
         val mapFragment =
-                childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment
+                childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
 
         // Magic : https://stackoverflow.com/questions/36785542/how-to-change-the-position-of-my-location-button-in-google-maps-using-android-st
-        return (mapFragment.requireView()
-            .findViewById<View>(Integer.parseInt("1"))?.parent as View)
-            .findViewById(Integer.parseInt("2"))
+        return (mapFragment!!.requireView()
+                .findViewById<View>(Integer.parseInt("1")).parent as View)
+                .findViewById(Integer.parseInt("2"))
     }
 
     /**
