@@ -4,13 +4,12 @@ import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_COLLE
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_POINT
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_UID
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_COLLECTION
 import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.model.Event
-import com.github.sdpteam15.polyevents.model.Item
-import com.github.sdpteam15.polyevents.model.UserEntity
-import com.github.sdpteam15.polyevents.model.UserProfile
+import com.github.sdpteam15.polyevents.model.*
 import com.github.sdpteam15.polyevents.util.FirebaseUserAdapter
 import com.github.sdpteam15.polyevents.util.UserAdapter
+import com.github.sdpteam15.polyevents.util.ZoneAdapter
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
@@ -96,6 +95,25 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     var lastSetSuccessListener: OnSuccessListener<Void>? = null
     var lastFailureListener: OnFailureListener? = null
     var lastMultGetSuccessListener: OnSuccessListener<DocumentSnapshot>? = null
+    var lastAddSuccessListener: OnSuccessListener<DocumentReference>?=null
+
+    /**
+     * After an add request, add on success and on failure listener (and set them into the corresponding variable to be able to test)
+     * @param task: The query that will get document from Firestore
+      @return An observable that will be true if no problem during the request false otherwise
+     */
+    fun thenDoAdd(
+        task:Task<DocumentReference>
+    ):Observable<Boolean>{
+        val ended = Observable<Boolean>()
+
+        lastAddSuccessListener = OnSuccessListener<DocumentReference> { ended.postValue(true) }
+        lastFailureListener = OnFailureListener { ended.postValue(false) }
+        task.addOnSuccessListener(lastAddSuccessListener!!)
+            .addOnFailureListener(lastFailureListener!!)
+
+        return ended
+    }
 
     /**
      * After a get request, add on success and on failure listener (and set them into the corresponding variable to be able to test)
@@ -266,5 +284,43 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             LatLng(geoPoint.latitude, geoPoint.longitude)
         }
         usersLocations.postValue(locations)
+    }
+
+    /*
+     * Zone related methods
+     */
+    override fun createZone(zone: Zone, userAccess: UserEntity?): Observable<Boolean> {
+        return thenDoAdd(
+            firestore!!
+            .collection(ZONE_COLLECTION)
+            .add(ZoneAdapter.toZoneDocument(zone))
+        )
+    }
+
+
+    override fun getZoneInformation(
+        zoneId: String,
+        zone: Observable<Zone>,
+        userAccess: UserEntity?
+    ): Observable<Boolean> {
+        return thenDoMultGet(
+            firestore!!
+                .collection(ZONE_COLLECTION)
+                .document(zoneId)
+                .get()
+        ){
+            zone.postValue(it.data?.let { it1->ZoneAdapter.toZoneEntity(it1, it.id)})
+        }
+    }
+
+    override fun updateZoneInformation(
+        zoneId: String,
+        newZone: Zone,
+        userAccess: UserEntity?
+    ): Observable<Boolean> {
+        return thenDoSet(firestore!!
+            .collection(ZONE_COLLECTION)
+            .document(zoneId)
+            .update(ZoneAdapter.toZoneDocument(newZone)))
     }
 }
