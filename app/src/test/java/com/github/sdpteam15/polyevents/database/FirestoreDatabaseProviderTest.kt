@@ -405,11 +405,11 @@ class FirestoreDatabaseProviderTest {
         FirestoreDatabaseProvider.firstConnectionUser = user
         assertThat(FirestoreDatabaseProvider.firstConnectionUser,Is(user))
 
-        var lastGetSuccessListener=OnSuccessListener<QuerySnapshot> { }
-        var lastSetSuccessListener=OnSuccessListener<Void> { }
-        var lastFailureListener= OnFailureListener {  }
-        var lastMultGetSuccessListener=OnSuccessListener<DocumentSnapshot> { }
-        var lastAddSuccessListener=OnSuccessListener<DocumentReference> { }
+        val lastGetSuccessListener=OnSuccessListener<QuerySnapshot> { }
+        val lastSetSuccessListener=OnSuccessListener<Void> { }
+        val lastFailureListener= OnFailureListener {  }
+        val lastMultGetSuccessListener=OnSuccessListener<DocumentSnapshot> { }
+        val lastAddSuccessListener=OnSuccessListener<DocumentReference> { }
 
         FirestoreDatabaseProvider.lastGetSuccessListener= lastGetSuccessListener
         FirestoreDatabaseProvider.lastSetSuccessListener= lastSetSuccessListener
@@ -532,7 +532,6 @@ class FirestoreDatabaseProviderTest {
         val mockedCollectionReference = mock(CollectionReference::class.java)
         val mockedTask = mock(Task::class.java) as Task<Void>
         val mockedDocumentReference = mock(DocumentReference::class.java)
-
         val testZone = Zone(zoneID, zoneName, zoneLoc, zoneDesc)
 
         When(mockedDatabase.collection(ZONE_COLLECTION)).thenReturn(mockedCollectionReference)
@@ -565,7 +564,6 @@ class FirestoreDatabaseProviderTest {
         assert(zoneDescUpdated == zoneDesc)
         assert(zoneLocUpdated == zoneLoc)
         assert(zoneIDUpdated == zoneID)
-
     }
 
     @Test

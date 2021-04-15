@@ -460,7 +460,7 @@ object GoogleMapHelper {
         var s = ""
 
         for (c in loc) {
-            s += c.latitude.toString() + DatabaseConstant.LAT_LONG_SEP + c.longitude + DatabaseConstant.POINTS_SEP
+            s += c.latitude.toString() + DatabaseConstant.LAT_LONG_SEP + c.longitude.toString() + DatabaseConstant.POINTS_SEP
         }
         return s.substring(0, s.length - DatabaseConstant.POINTS_SEP.length)
     }
