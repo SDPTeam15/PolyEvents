@@ -2,4 +2,6 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="app_bar_height">180dp</dimen>
     <dimen name="text_margin">16dp</dimen>
+    <dimen name="margin_right_map_btn">16dp</dimen>
+    <dimen name="margin_bottom_map_btn">8dp</dimen>
 </resources>

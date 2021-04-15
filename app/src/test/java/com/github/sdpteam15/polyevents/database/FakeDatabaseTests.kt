@@ -5,6 +5,7 @@ import com.github.sdpteam15.polyevents.model.Event
 import com.github.sdpteam15.polyevents.model.Item
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
+import com.github.sdpteam15.polyevents.model.Zone
 import com.google.android.gms.maps.model.LatLng
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
@@ -32,14 +33,15 @@ class FakeDatabaseTests {
     @Test
     fun toRemoveTest() {
         assertNotNull(FakeDatabase.CURRENT_USER)
-        assertNotNull(FakeDatabase.getProfilesList("", mockedUserInterface))
-        assertNotNull(FakeDatabase.addProfile(mockedUserProfile, "", mockedUserInterface))
-        assertNotNull(FakeDatabase.removeProfile(mockedUserProfile, "", mockedUserInterface))
-        assertNotNull(FakeDatabase.updateProfile(mockedUserProfile, mockedUserInterface))
-
+        assertNotNull(FakeDatabase.getProfilesList("", mokedUserInterface))
+        assertNotNull(FakeDatabase.addProfile(mokedUserProfile, "", mokedUserInterface))
+        assertNotNull(FakeDatabase.removeProfile(mokedUserProfile, "", mokedUserInterface))
+        assertNotNull(FakeDatabase.updateProfile(mokedUserProfile, mokedUserInterface))
+        assert(FakeDatabase.getZoneInformation("",Observable(),mokedUserInterface).value!!)
+        assert(FakeDatabase.updateZoneInformation("", Zone(),mokedUserInterface).value!!)
+        assert(FakeDatabase.createZone(Zone(),mokedUserInterface).value!!)
+        assert(FakeDatabase.getEventFromId("",mokedUserProfile)==FakeDatabase.getListEvent()[0])
     }
-
-
 
     @Test
     fun updateUserInformationTest() {

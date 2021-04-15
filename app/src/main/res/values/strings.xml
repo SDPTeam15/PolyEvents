@@ -51,8 +51,6 @@
         <item>Switzerland</item>
     </string-array>
 
-    <string name="google_maps_key"></string>
-
     <!-- All string for Profile Fragment -->
     <string name="logout_button_text">Logout</string>
     <string name="update_infos">Update info</string>
@@ -60,8 +58,10 @@
     <string name="UsernamePlaceholder">Username</string>
     <string name="FullNamePlaceholder">Full name</string>
     <string name="emailPlaceholder">Email</string>
+    <string name="fail_to_update">A problem occurred while performing your request, please try again</string>
     <string name="profileFragmentTitle">My information</string>
     <string name="title_activity_item_request">Items Request</string>
+
 
     <string name="go_to_items_requests_button_text">Go to items requests</string>
     <string name="action_settings">Settings</string>
@@ -105,4 +105,27 @@
 
 
 
+
+    <!-- String related to the zone management activity-->
+    <string name="btn_create_zone_button_text">Create zone</string>
+    <string name="btn_update_zone_button_text">Update zone</string>
+    <string name="zone_mangement_list_title">Zone Mangement List</string>
+    <string name="btn_new_zone">+</string>
+    <string name="tv_create_zone_text">Create a new zone</string>
+    <string name="tv_update_zone_text">Update an existing zone</string>
+    <string name="missing_field_zone_management">Please fill all the required fields</string>
+    <string name="zone_added_successfully">Your new zone was successfully added</string>
+    <string name="zone_updated_successfully">The zone was successfully updated</string>
+    <string name="zone_add_fail">Error while creating your new zone, please try again !</string>
+    <string name="zone_update_fail">Error while update your zone, please try again !</string>
+    <string name="zone_management_name_text">Name</string>
+    <string name="zone_management_description_text">Description</string>
+    <string name="zone_management_coordinates_text">Zone coordinates</string>
+    <string name="zone_management_coordinates_set">Set</string>
+    <string name="zone_management_coordinates_not_set">Not set</string>
+    <string name="btn_modify_coord_update_text">Update</string>
+    <string name="btn_modify_coord_set_text">Set</string>
+    <string name="btn_delete_coord_text">Delete</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="none">None</string>
 </resources>
