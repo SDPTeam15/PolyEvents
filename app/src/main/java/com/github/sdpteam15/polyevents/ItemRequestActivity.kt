@@ -3,12 +3,11 @@ package com.github.sdpteam15.polyevents
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
-import com.github.sdpteam15.polyevents.item_request.ItemRequestAdapter
+import com.github.sdpteam15.polyevents.adapter.ItemRequestAdapter
 
 /**
  * An activity containing items available for request

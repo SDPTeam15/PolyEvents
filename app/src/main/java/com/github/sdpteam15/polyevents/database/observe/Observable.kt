@@ -35,8 +35,15 @@ class Observable<T>(value: T? = null) {
         observers.add(observer)
         if (value != null)
             observer(value)
-        return { observers.remove(observer) }
+        return { leave(observer) }
     }
+
+    /**
+     *  remove an observer for the live data
+     *  @param observer observer for the live data
+     *  @return if the observer have been remove
+     */
+    fun leave(observer: (T?) -> Unit): Boolean = observers.remove(observer)
 
     /**
      *  Add an observer for the live data
@@ -54,7 +61,7 @@ class Observable<T>(value: T? = null) {
         synchronized(this) { tempValue = newValue; }
         run(Runnable {
             for (obs in observers)
-                obs(value);
+                    obs(value);
         })
     }
 }

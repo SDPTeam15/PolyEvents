@@ -14,11 +14,11 @@ import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.ActivityScenarioRule
+import com.github.sdpteam15.polyevents.adapter.EventItemAdapter
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
-import com.github.sdpteam15.polyevents.event.Event
-import com.github.sdpteam15.polyevents.event.EventItemAdapter
 import com.github.sdpteam15.polyevents.fragments.EXTRA_EVENT_ID
+import com.github.sdpteam15.polyevents.model.Event
 import org.hamcrest.CoreMatchers.containsString
 import org.junit.After
 import org.junit.Before
@@ -45,37 +45,37 @@ class EventActivityTest {
         events = ArrayList<Event>()
         events.add(
             Event(
-                "Sushi demo",
-                "Super hungry activity !",
-                LocalDateTime.of(2021, 3, 7, 12, 15),
-                1F,
-                "The fish band",
-                "Kitchen",
-                "1", mutableSetOf("cooking", "sushi", "miam")
+                eventId = "event1",
+                eventName = "Sushi demo",
+                description = "Super hungry activity !",
+                startTime = LocalDateTime.of(2021, 3, 7, 12, 15),
+                organizer = "The fish band",
+                zoneName = "Kitchen",
+                tags = mutableSetOf("sushi", "japan", "cooking")
+            )
+        )
+        events.add(
+            Event(
+                eventId = "event2",
+                eventName = "Aqua Poney",
+                description = "Super cool activity !" +
+                        " With a super long description that essentially describes and explains" +
+                        " the content of the activity we are speaking of.",
+                startTime = LocalDateTime.of(2021, 3, 7, 14, 15),
+                organizer = "The Aqua Poney team",
+                zoneName = "Swimming pool"
             )
         )
 
         events.add(
             Event(
-                "Aqua Poney",
-                "Super cool activity !",
-                LocalDateTime.of(2021, 3, 7, 15, 0),
-                1.5F,
-                "The Aqua Poney team",
-                "Swimming pool",
-                "2", mutableSetOf("horse", "swimming", "pony")
-            )
-        )
-
-        events.add(
-            Event(
-                "Concert",
-                "Super noisy activity !",
-                LocalDateTime.of(2021, 3, 7, 21, 15),
-                2.75F,
-                "AcademiC DeCibel",
-                "Concert Hall",
-                "3", mutableSetOf("music", "live", "pogo")
+                eventId = "event3",
+                eventName = "Concert",
+                description = "Super noisy activity !",
+                startTime = LocalDateTime.of(2021, 3, 7, 21, 15),
+                organizer = "AcademiC DeCibel",
+                zoneName = "Concert Hall",
+                tags = mutableSetOf("music", "live", "pogo")
             )
         )
         mockedUpcomingEventsProvider = mock(DatabaseInterface::class.java)
@@ -84,6 +84,9 @@ class EventActivityTest {
         `when`(mockedUpcomingEventsProvider.getEventFromId("1")).thenReturn(events[0])
         `when`(mockedUpcomingEventsProvider.getEventFromId("2")).thenReturn(events[1])
         `when`(mockedUpcomingEventsProvider.getEventFromId("3")).thenReturn(events[2])
+
+        `when`(mockedUpcomingEventsProvider.getEventFromId("event1")).thenReturn(events[0])
+
         // go to activities list fragment
         Espresso.onView(withId(R.id.ic_list)).perform(click())
         Intents.init()
@@ -94,11 +97,10 @@ class EventActivityTest {
         Intents.release()
     }
 
-
     @Test
     fun correctNumberUpcomingEventsDisplayed() {
         Espresso.onView(withId(R.id.recycler_events_list))
-            .check(RecyclerViewItemCountAssertion(mockedUpcomingEventsProvider.getUpcomingEvents().size));
+            .check(RecyclerViewItemCountAssertion(mockedUpcomingEventsProvider.getUpcomingEvents().size))
     }
 
     @Test
@@ -124,7 +126,7 @@ class EventActivityTest {
         Thread.sleep(1000)
 
         Espresso.onView(withId(R.id.txt_event_Name))
-            .check(matches(withText(containsString(eventToTest.name))))
+            .check(matches(withText(containsString(eventToTest.eventName))))
 
         Espresso.onView(withId(R.id.txt_event_description))
             .check(matches(withText(containsString(eventToTest.description))))
@@ -134,10 +136,10 @@ class EventActivityTest {
             .check(matches(withText(containsString(eventToTest.organizer))))
 
         Espresso.onView(withId(R.id.txt_event_zone))
-            .check(matches(withText(containsString(eventToTest.zone))))
+            .check(matches(withText(containsString(eventToTest.zoneName))))
 
         Espresso.onView(withId(R.id.txt_event_date))
-            .check(matches(withText(containsString(eventToTest.getTime()))))
+            .check(matches(withText(containsString(eventToTest.formattedStartTime()))))
 
         Espresso.onView(withId(R.id.txt_event_tags))
             .check(matches(withText(containsString(eventToTest.tags.joinToString { s -> s }))))
