@@ -1,4 +1,4 @@
-package com.github.sdpteam15.polyevents.util
+package com.github.sdpteam15.polyevents.login
 
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.google.firebase.auth.FirebaseUser

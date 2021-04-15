@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.util
 
+import com.github.sdpteam15.polyevents.login.FirebaseUserAdapter
 import com.google.firebase.auth.FirebaseUser
 import org.junit.Assert.*
 import org.junit.Before
