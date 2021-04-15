@@ -23,12 +23,9 @@ import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
 
 
-@RunWith(MockitoJUnitRunner::class)
 class ItemsAdminActivityTest {
 
     lateinit var availableItems: MutableMap<Item, Int>
-    var items = ObservableList<Pair<Item, Int>>()
-    lateinit var mockedUpcomingEventsProvider: DatabaseInterface
 
     private val testItem = Item(null, "test item", ItemType.OTHER)
     private val testQuantity = 3
@@ -42,7 +39,7 @@ class ItemsAdminActivityTest {
         availableItems = mutableMapOf()
         availableItems[Item(null, "Bananas", ItemType.OTHER)] = 30
         availableItems[Item(null, "Kiwis", ItemType.OTHER)] = 10
-        availableItems[Item(null, "230 Plugs", ItemType.PLUG)] = 30
+        availableItems[Item(null, "230V Plugs", ItemType.PLUG)] = 30
         availableItems[Item(null, "Fridge (large)", ItemType.OTHER)] = 5
         availableItems[Item(null, "Cord rewinder (15m)", ItemType.PLUG)] = 30
         availableItems[Item(null, "Cord rewinder (50m)", ItemType.PLUG)] = 10
@@ -55,16 +52,16 @@ class ItemsAdminActivityTest {
         for ((item, count) in availableItems) {
             currentDatabase.createItem(item, count)
         }
-        currentDatabase.getItemsList(items)
 
+        Thread.sleep(500)
         itemsAdminActivity.scenario.recreate()
-        Thread.sleep(1000)
+        Thread.sleep(500)
     }
-
     @After
-    fun tearDown() {
+    fun tearDown(){
         currentDatabase = FirestoreDatabaseProvider
     }
+
 
 
     @Test
@@ -75,7 +72,6 @@ class ItemsAdminActivityTest {
 
     @Test
     fun addButtonPopupAddsItemToList() {
-        //TODO fix this test, seems like fakeitems is not updated correctly
         onView(withId(R.id.id_add_item_button)).perform(click())
         onView(withId(R.id.id_edittext_item_name)).perform(typeText(testItem.itemName))
         closeSoftKeyboard()

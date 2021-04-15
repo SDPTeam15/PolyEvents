@@ -1,5 +1,7 @@
 package com.github.sdpteam15.polyevents.database
 
+import android.util.Log
+
 /**
  * Database
  */

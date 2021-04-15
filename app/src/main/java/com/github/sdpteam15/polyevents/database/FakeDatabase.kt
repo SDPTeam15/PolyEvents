@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.database
 
+import android.util.Log
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.*
@@ -141,7 +142,6 @@ object FakeDatabase : DatabaseInterface {
     ): Observable<Boolean> {
         // generate random document ID like in firebase
         val itemId = generateRandomKey()
-
         val b = items.put(itemId, Pair(Item(itemId, item.itemName, item.itemType), count)) == null
         return Observable(b, this)
     }
