@@ -14,9 +14,11 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.GoogleMapAdapter
+import com.github.sdpteam15.polyevents.admin.ZoneManagementActivity
 import com.github.sdpteam15.polyevents.helper.GoogleMapHelper
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.isPermissionGranted
+import com.github.sdpteam15.polyevents.model.Zone
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.*
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -28,34 +30,83 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
 class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
-    OnPolygonClickListener, OnMarkerClickListener, OnInfoWindowClickListener, OnMarkerDragListener,
-    OnMyLocationButtonClickListener {
+        OnPolygonClickListener, OnMarkerClickListener, OnInfoWindowClickListener, OnMarkerDragListener,
+        OnMyLocationButtonClickListener {
 
     private lateinit var locationButton: FloatingActionButton
     var locationPermissionGranted = false
     private var useUserLocation = false
     var PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1
+    var zone: Zone? = null
+    var onEdit: Boolean = false
+    var startId = -1
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
+
+        onEdit = zone != null
+
         val view = inflater.inflate(R.layout.fragment_maps, container, false)
-        val addNewAreaButton:View = view.findViewById(R.id.addNewArea)
-        val saveNewAreaButton:View = view.findViewById(R.id.acceptNewArea)
-        val editArea:View = view.findViewById(R.id.id_edit_area)
+
+        val addNewAreaButton: View = view.findViewById(R.id.addNewArea)
+        val saveNewAreaButton: View = view.findViewById(R.id.acceptNewArea)
+        val editAreaButton: View = view.findViewById(R.id.id_edit_area)
         addNewAreaButton.setOnClickListener { GoogleMapHelper.createNewArea() }
         saveNewAreaButton.setOnClickListener { GoogleMapHelper.saveNewArea() }
-        editArea.setOnClickListener { GoogleMapHelper.editMode()}
+        editAreaButton.setOnClickListener { GoogleMapHelper.editMode() }
 
         locationButton = view.findViewById(R.id.id_location_button)
+        val locateMeButton = view.findViewById<FloatingActionButton>(R.id.id_locate_me_button)
+        val saveButton = view.findViewById<FloatingActionButton>(R.id.saveAreas)
+
+        addNewAreaButton.setOnClickListener {
+            GoogleMapHelper.createNewArea()
+        }
+        saveNewAreaButton.setOnClickListener {
+            GoogleMapHelper.saveNewArea()
+        }
+
+        if (onEdit) {
+            addNewAreaButton.visibility = View.VISIBLE
+            saveNewAreaButton.visibility = View.VISIBLE
+            editAreaButton.visibility = View.VISIBLE
+            saveButton.visibility = View.VISIBLE
+            locationButton.visibility = View.INVISIBLE
+            locateMeButton.visibility = View.INVISIBLE
+
+            saveButton.setOnClickListener {
+                GoogleMapHelper.editMode = false
+                GoogleMapHelper.clearTemp()
+                val location = GoogleMapHelper.areasToFormattedStringLocations(from = startId)
+                zone!!.location = location
+                ZoneManagementActivity.nbModified = GoogleMapHelper.uid - startId
+                ZoneManagementActivity.zoneObservable.postValue(
+                    Zone(
+                        zoneName = zone?.zoneName,
+                        zoneId = zone?.zoneId,
+                        location = location,
+                        description = zone?.description
+                    )
+                )
+            }
+        } else {
+            addNewAreaButton.visibility = View.INVISIBLE
+            saveNewAreaButton.visibility = View.INVISIBLE
+            editAreaButton.visibility = View.INVISIBLE
+            saveButton.visibility = View.INVISIBLE
+            locationButton.visibility = View.VISIBLE
+            locateMeButton.visibility = View.VISIBLE
+        }
+
         locationButton.setOnClickListener {
             switchLocationOnOff()
         }
         locationButton.tag = R.drawable.ic_location_on
 
-        val locateMeButton = view.findViewById<FloatingActionButton>(R.id.id_locate_me_button)
+
         locateMeButton.setOnClickListener {
             moveToMyLocation()
         }
@@ -71,10 +122,11 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
 
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val mapFragment =
-            childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
+                childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
         if (!locationPermissionGranted) {
             getLocationPermission()
@@ -96,6 +148,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         if (useUserLocation) {
             activateMyLocation()
         }
+        startId = GoogleMapHelper.uid
+
     }
 
     override fun onPolylineClick(polyline: Polyline) {
@@ -103,9 +157,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     }
 
     override fun onPolygonClick(polygon: Polygon) {
-        if(GoogleMapHelper.editMode){
+        if (GoogleMapHelper.editMode) {
             GoogleMapHelper.editArea(polygon.tag.toString())
-        }else{
+        } else {
             //Shows the info window of the marker assigned to the area
             GoogleMapHelper.areasPoints.get(polygon.tag)!!.first.showInfoWindow()
         }
@@ -113,7 +167,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     }
 
     override fun onMarkerClick(marker: Marker): Boolean {
-        if(!GoogleMapHelper.editMode){
+        if (!GoogleMapHelper.editMode) {
             marker.showInfoWindow()
         }
         marker.showInfoWindow()
@@ -124,8 +178,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
 
     override fun onInfoWindowClick(p0: Marker) {
         HelperFunctions.showToast(
-            "Info Window clicked for marker" + p0.title + ", can lanch activity here",
-            requireContext()
+                "Info Window clicked for marker" + p0.title + ", can lanch activity here",
+                requireContext()
         )
     }
 
@@ -154,12 +208,12 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
      */
     private fun activateMyLocation() {
         if (context?.let {
-                ContextCompat.checkSelfPermission(
-                    it,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                )
-            }
-            == PackageManager.PERMISSION_GRANTED) {
+                    ContextCompat.checkSelfPermission(
+                            it,
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                    )
+                }
+                == PackageManager.PERMISSION_GRANTED) {
             GoogleMapHelper.map!!.isMyLocationEnabled = true
 
             // Hide the built-in location button (but DO NOT disable it !)
@@ -182,7 +236,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
             R.drawable.ic_location_off
         }
         requireView().findViewById<FloatingActionButton>(R.id.id_location_button)
-            .setImageResource(idOfResource)
+                .setImageResource(idOfResource)
         locationButton.tag = idOfResource
     }
 
@@ -210,7 +264,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
      */
     private fun getBuiltInLocationButton(): View {
         val mapFragment =
-            childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
+                childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
 
         // Magic : https://stackoverflow.com/questions/36785542/how-to-change-the-position-of-my-location-button-in-google-maps-using-android-st
         return (mapFragment!!.requireView()
@@ -240,35 +294,35 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
          */
 
         if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            )
-            == PackageManager.PERMISSION_GRANTED
+                        requireContext(),
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                )
+                == PackageManager.PERMISSION_GRANTED
         ) {
             locationPermissionGranted = true
         } else {
             ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
+                    requireActivity(),
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
             )
         }
     }
 
     override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
+            requestCode: Int,
+            permissions: Array<String>,
+            grantResults: IntArray
     ) {
         when (requestCode) {
             PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION -> {
 
                 // If request is denied, the result arrays are empty.
                 if (isPermissionGranted(
-                        permissions,
-                        grantResults,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                    )
+                                permissions,
+                                grantResults,
+                                Manifest.permission.ACCESS_FINE_LOCATION
+                        )
                 ) {
                     locationPermissionGranted = true
                     activateMyLocation()

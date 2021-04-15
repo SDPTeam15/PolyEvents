@@ -74,9 +74,9 @@ object FakeDatabase : DatabaseInterface {
     )
 
     override val currentUser: UserEntity?
-        get() = TODO("Not yet implemented")
+        get() = UserEntity(uid="DEFAULT")
     override val currentProfile: UserProfile?
-        get() = TODO("Not yet implemented")
+        get() = null
 
     override fun getProfilesList(uid: String, user: UserEntity?): List<UserProfile> =
         profiles
@@ -200,6 +200,27 @@ object FakeDatabase : DatabaseInterface {
     ): Observable<Boolean> {
         // TODO : see whether we write a Python script that send fake data to our database
         usersLocations.postValue(listOf(LatLng(46.548823, 7.017012)))
+        return Observable(true)
+    }
+
+    override fun createZone(zone: Zone, userAccess: UserEntity?): Observable<Boolean> {
+        return Observable(true)
+    }
+
+    override fun getZoneInformation(
+        zoneId: String,
+        zone: Observable<Zone>,
+        userAccess: UserEntity?
+    ): Observable<Boolean> {
+        zone.postValue(Zone("ID1", "Esplanade","Espla","a cool zone"))
+        return Observable(true)
+    }
+
+    override fun updateZoneInformation(
+        zoneId: String,
+        newZone: Zone,
+        userAccess: UserEntity?
+    ): Observable<Boolean> {
         return Observable(true)
     }
 }

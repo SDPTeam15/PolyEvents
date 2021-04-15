@@ -7,8 +7,11 @@ import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.database.DatabaseConstant
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
+import kotlin.math.pow
 import kotlin.math.*
 
 enum class PolygonAction {
@@ -19,6 +22,10 @@ enum class PolygonAction {
     ROTATE
 }
 
+data class IconBound(var leftBound: Int, var topBound: Int, var rightBound: Int, var bottomBound: Int)
+data class IconDimension(var width: Int, var height: Int)
+data class IconAnchor(var anchorWidth: Float, var anchorHeight: Float)
+
 @SuppressLint("StaticFieldLeak")
 object GoogleMapHelper {
 
@@ -26,7 +33,7 @@ object GoogleMapHelper {
 
     //var map: GoogleMap? = null
     var map: MapsInterface? = null
-    var uid = 1
+    var uid = 0
 
     var editMode = false
 
@@ -43,7 +50,8 @@ object GoogleMapHelper {
     var cameraPosition = LatLng(46.52010210373031, 6.566237434744834)
     var cameraZoom = 18f
 
-    val areasPoints: MutableMap<String, Pair<Marker, Polygon>> = mutableMapOf()
+    val areasPoints: MutableMap<Int, Pair<Marker, Polygon>> = mutableMapOf()
+    var coordinates: MutableMap<Int, List<LatLng>> = mutableMapOf()
 
     /**
      * Temporary variables when adding and editing an area
@@ -65,7 +73,7 @@ object GoogleMapHelper {
     var movePos: LatLng? = null
 
     var tempTitle: String? = null
-    val tempValues: MutableMap<String, Pair<String, LatLng>> = mutableMapOf()
+    val tempValues: MutableMap<Int, Pair<String, LatLng>> = mutableMapOf()
 
     //----------START FUNCTIONS----------------------------------------
 
@@ -120,13 +128,13 @@ object GoogleMapHelper {
             listEvent1.add(LatLng(46.52073238207864, 6.565499156713487))
             listEvent1.add(LatLng(46.52073238207864, 6.565711721777915))
             listEvent1.add(LatLng(46.52100506978624, 6.565711721777915))
-            addArea("uid++.toString()", listEvent1, "Sushi Demo")
+            addArea(uid++, listEvent1, "Sushi Demo")
 
             val listEvent2 = arrayListOf<LatLng>()
             listEvent2.add(LatLng(46.52015447340308, 6.5656305849552155))
             listEvent2.add(LatLng(46.52036049105315, 6.5658414736390105))
             listEvent2.add(LatLng(46.52013394080612, 6.566103324294089))
-            addArea(uid++.toString(), listEvent2, "Triangle")
+            addArea(uid++, listEvent2, "Triangle")
 
             val listEvent3 = arrayListOf<LatLng>()
             listEvent3.add(LatLng(46.52111073013754, 6.565624214708805))
@@ -137,7 +145,7 @@ object GoogleMapHelper {
             listEvent3.add(LatLng(46.52115986905187, 6.565871313214302))
             listEvent3.add(LatLng(46.52115986905187, 6.565824374556541))
             listEvent3.add(LatLng(46.521115113422766, 6.565824374556541))
-            addArea(uid++.toString(), listEvent3, "La route en T")
+            addArea(uid++, listEvent3, "La route en T")
         }
     }
 
@@ -145,20 +153,29 @@ object GoogleMapHelper {
      * Changes the style of the map
      */
     fun setMapStyle() {
-        map!!.setMapStyle(MapStyleOptions(context!!.resources.getString(R.string.style_test3)))
+        if (context != null) {
+            map!!.setMapStyle(MapStyleOptions(context!!.resources.getString(R.string.style_test3)))
+        }
     }
 
     /**
      * Helper method to add a area to the map and generate an invisible marker in its center to display the area infos
+     * @param id id of the area
+     * @param coords coordinates coordinates of the area
+     * @param name name of the area
      */
-    fun addArea(id: String, coords: List<LatLng>, name: String) {
+    fun addArea(id: Int, coords: List<LatLng>, name: String) {
         if (coords.isNotEmpty()) {
+            coordinates[id] = coords
+
             val poly = PolygonOptions()
             poly.addAll(coords).clickable(true)
 
             val polygon = map!!.addPolygon(poly)
 
-            polygon.tag = id
+            if (context != null) {
+                polygon.tag = id
+            }
 
             var list = coords
             var lat = 0.0
@@ -167,24 +184,12 @@ object GoogleMapHelper {
                 list = coords.subList(0, coords.size - 1)
             }
 
+            val anchor = IconAnchor(0f, 0f)
+            val bound = IconBound(0, 0, 0, 0)
+            val dimension = IconDimension(1, 1)
+
             val center = getCenter(list)
-            val marker = map!!.addMarker(
-                newMarker(
-                    center,
-                    0f,
-                    0f,
-                    null,
-                    name,
-                    false,
-                    R.drawable.ic_location,
-                    0,
-                    0,
-                    0,
-                    0,
-                    1,
-                    1
-                )
-            )
+            val marker = map!!.addMarker(newMarker(center, anchor, null, name, false, R.drawable.ic_location, bound, dimension))
 
             areasPoints[id] = Pair(marker, polygon)
         }
@@ -208,21 +213,27 @@ object GoogleMapHelper {
         map!!.setLatLngBoundsForCameraTarget(bounds)
     }
 
+    /**
+     * Clears the temporary variables to have a clean start for editing the area
+     */
     fun createNewArea() {
         clearTemp()
         setupEditZone(map!!.cameraPosition!!.target)
     }
 
+    /**
+     * Adds an area in the map
+     */
     fun saveNewArea() {
         if (tempPoly != null) {
             var name = ""
-            if (tempTitle != null) {
+            if(tempTitle != null){
                 name = tempTitle!!
-            } else {
+            }else{
                 name = "Area $uid"
                 uid += 1
             }
-            addArea(uid.toString(), tempPoly!!.points, name)
+            addArea(uid, tempPoly!!.points, name)
 
         }
         clearTemp()
@@ -257,11 +268,12 @@ object GoogleMapHelper {
         tempTitle = null
     }
 
-
     /**
      * Add a new area at the coordinates and add the markers to edit the area
+     * @param pos position of the center of the rectangle
      * */
     fun setupEditZone(pos: LatLng) {
+        // Generate the corners of the area
         val zoom = map!!.cameraPosition!!.zoom
         val divisor = 2.0.pow(zoom.toDouble())
         val longDiff = 188.0 / divisor / 2
@@ -275,140 +287,59 @@ object GoogleMapHelper {
         tempLatLng.add(pos3)
         tempLatLng.add(pos4)
         tempPoly = map!!.addPolygon(PolygonOptions().add(pos1).add(pos2).add(pos3).add(pos4))
+
+        setupModifyMarkers()
+    }
+
+    /**
+     * Creates all the markers used to edit the areas
+     */
+    fun setupModifyMarkers() {
+        val pos2 = tempLatLng[1]!!
+        val pos3 = tempLatLng[2]!!
+        val pos4 = tempLatLng[3]!!
+
         val temp1 = (pos4.latitude + pos3.latitude) / 2
         val temp2 = (pos2.longitude + pos3.longitude) / 2
         val posMidRight = LatLng(temp1, pos4.longitude)
         val posMidDown = LatLng(pos2.latitude, temp2)
         val posCenter = LatLng(temp1, temp2)
 
-        moveDiagMarker = map!!.addMarker(
-            newMarker(
-                pos3,
-                0.5f,
-                0.5f,
-                PolygonAction.DIAG.toString(),
-                null,
-                true,
-                R.drawable.ic_downleftarrow,
-                0,
-                0,
-                100,
-                100,
-                100,
-                100
-            )
-        )
+        val anchor = IconAnchor(0.5f, 0.5f)
+        val bound = IconBound(0, 0, 100, 100)
+        val dimension = IconDimension(100, 100)
+
+        moveDiagMarker = map!!.addMarker(newMarker(pos3, anchor, PolygonAction.DIAG.toString(), null, true, R.drawable.ic_downleftarrow, bound, dimension))
         moveDiagPos = moveDiagMarker!!.position
 
-        moveRightMarker = map!!.addMarker(
-            newMarker(
-                posMidRight,
-                0.5f,
-                0.5f,
-                PolygonAction.RIGHT.toString(),
-                null,
-                true,
-                R.drawable.ic_rightarrow,
-                0,
-                0,
-                100,
-                100,
-                100,
-                100
-            )
-        )
+        moveRightMarker = map!!.addMarker(newMarker(posMidRight, anchor, PolygonAction.RIGHT.toString(), null, true, R.drawable.ic_rightarrow,  bound, dimension))
         moveRightPos = moveRightMarker!!.position
 
-        moveDownMarker = map!!.addMarker(
-            newMarker(
-                posMidDown,
-                0.5f,
-                0.5f,
-                PolygonAction.DOWN.toString(),
-                null,
-                true,
-                R.drawable.ic_downarrow,
-                0,
-                0,
-                100,
-                100,
-                100,
-                100
-            )
-        )
+        moveDownMarker = map!!.addMarker(newMarker(posMidDown, anchor, PolygonAction.DOWN.toString(), null, true, R.drawable.ic_downarrow,  bound, dimension))
         moveDownPos = moveDownMarker!!.position
 
-        moveMarker = map!!.addMarker(
-            newMarker(
-                posCenter,
-                0.5f,
-                0.5f,
-                PolygonAction.MOVE.toString(),
-                null,
-                true,
-                R.drawable.ic_move,
-                0,
-                0,
-                100,
-                100,
-                100,
-                100
-            )
-        )
+        moveMarker = map!!.addMarker(newMarker(posCenter, anchor, PolygonAction.MOVE.toString(), null, true, R.drawable.ic_move,  bound, dimension))
         movePos = moveMarker!!.position
 
-        rotationMarker = map!!.addMarker(
-            newMarker(
-                pos4,
-                0.5f,
-                0.5f,
-                PolygonAction.ROTATE.toString(),
-                null,
-                true,
-                R.drawable.ic_rotation,
-                0,
-                0,
-                100,
-                100,
-                100,
-                100
-            )
-        )
+        rotationMarker = map!!.addMarker(newMarker(pos4, anchor, PolygonAction.ROTATE.toString(), null, true, R.drawable.ic_rotation, bound, dimension))
         rotationPos = rotationMarker!!.position
     }
 
     /**
      * Sets the values for the markers
+     * @param pos position of the marker
+     * @param anchor position of the icon with respect to the marker
+     * @param snippet subtitle of the info window
+     * @param title title of the info window
+     * @param draggable is the marker draggable
+     * @param idDrawable id of the icon
+     * @param bound bounds of the icon
+     * @param dim dimensions of the icon
      */
-    fun newMarker(
-        pos: LatLng,
-        hAnchor: Float,
-        vAnchor: Float,
-        snippet: String?,
-        title: String?,
-        draggable: Boolean,
-        idDrawable: Int,
-        leftBound: Int,
-        topBound: Int,
-        rightBound: Int,
-        bottomBound: Int,
-        width: Int,
-        height: Int
-    ): MarkerOptions {
-        var mo = MarkerOptions().position(pos).anchor(hAnchor, vAnchor).draggable(draggable)
-            .snippet(snippet).title(title)
+    fun newMarker(pos: LatLng, anchor: IconAnchor, snippet: String?, title: String?, draggable: Boolean, idDrawable: Int, bound: IconBound, dim:IconDimension): MarkerOptions {
+        var mo = MarkerOptions().position(pos).anchor(anchor.anchorWidth, anchor.anchorHeight).draggable(draggable).snippet(snippet).title(title)
         if (context != null) {
-            mo = mo.icon(
-                getMarkerRessource(
-                    idDrawable,
-                    leftBound,
-                    topBound,
-                    rightBound,
-                    bottomBound,
-                    width,
-                    height
-                )
-            )
+            mo = mo.icon(getMarkerRessource(idDrawable, bound, dim))
         }
 
         return mo
@@ -416,21 +347,16 @@ object GoogleMapHelper {
 
     /**
      * Generates the icon for the invisible icons
+     * @param id id of the icon
+     * @param bound bounds of the icon
+     * @param dim dimensions of the icon
      * ref : https://stackoverflow.com/questions/35718103/how-to-specify-the-size-of-the-icon-on-the-marker-in-google-maps-v2-android
      * TODO : Check if we should make it a singleton to save memory/performance
      */
-    private fun getMarkerRessource(
-        id: Int,
-        leftBound: Int,
-        topBound: Int,
-        rightBound: Int,
-        bottomBound: Int,
-        width: Int,
-        height: Int
-    ): BitmapDescriptor {
+    private fun getMarkerRessource(id: Int, bound: IconBound, dim:IconDimension): BitmapDescriptor {
         val vectorDrawable: Drawable? = ContextCompat.getDrawable(context!!, id)
-        vectorDrawable?.setBounds(leftBound, topBound, rightBound, bottomBound)
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        vectorDrawable?.setBounds(bound.leftBound, bound.topBound, bound.rightBound, bound.bottomBound)
+        val bitmap = Bitmap.createBitmap(dim.width, dim.height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         vectorDrawable?.draw(canvas)
         return BitmapDescriptorFactory.fromBitmap(bitmap)
@@ -438,6 +364,7 @@ object GoogleMapHelper {
 
     /**
      * Translate all the corners and the edition markers from the rectangle by the same distance the "moveMarker" is moved
+     * @param pos marker that has been dragged : target position for the area
      */
     fun translatePolygon(pos: Marker) {
         val diffLat = pos.position.latitude - movePos!!.latitude
@@ -472,7 +399,21 @@ object GoogleMapHelper {
     }
 
     /**
+     * Projection of vector on the perpendicular of the two positions
+     * @param vector vector to project
+     * @param pos1 position of the first point to compute the perpendicular
+     * @param pos2 position of the second point to compute the perpendicular
+     */
+    fun projectionVector(vector: LatLng, pos1: LatLng, pos2: LatLng): LatLng {
+        val v = LatLng(pos1.longitude - pos2.longitude, pos2.latitude - pos1.latitude)
+        val norm = v.latitude * v.latitude + v.longitude * v.longitude
+        val scalar = (vector.latitude * v.latitude + vector.longitude * v.longitude) / norm
+        return LatLng(scalar * v.latitude, scalar * v.longitude)
+    }
+
+    /**
      * Transforms the size of the rectangle, either by moving the the right wall(right), the down wall(down) or both(diag)
+     * @param pos marker that has been dragged : target position for the area
      */
     fun transformPolygon(pos: Marker) {
         val latlng1 = tempLatLng[1]!!
@@ -485,18 +426,13 @@ object GoogleMapHelper {
             pos.position.longitude - moveDiagPos!!.longitude
         )
 
-        // Perpendicular of vector (a,b) is (-b,a)
-        // Projection on axis perpendicular to marker 1 and marker 2
-        val v = LatLng(latlng1.longitude - latlng2.longitude, latlng2.latitude - latlng1.latitude)
-        val norm = v.latitude * v.latitude + v.longitude * v.longitude
-        val scalar = (vec.latitude * v.latitude + vec.longitude * v.longitude) / norm
-        val diffCoord = LatLng(scalar * v.latitude, scalar * v.longitude)
+        //Perpendicular of vector (a,b) is (-b,a)
 
-        // Projection on axis perpendicular to marker 2 and marker 3
-        val v1 = LatLng(latlng2.longitude - latlng3.longitude, latlng3.latitude - latlng2.latitude)
-        val norm1 = v1.latitude * v1.latitude + v1.longitude * v1.longitude
-        val scalar1 = (vec.latitude * v1.latitude + vec.longitude * v1.longitude) / norm1
-        val diffCoord1 = LatLng(scalar1 * v1.latitude, scalar1 * v1.longitude)
+        //Projection on axis perpendicular to marker 1 and marker 2
+        val diffCoord = projectionVector(vec, latlng1, latlng2)
+        val diffCoord1 = projectionVector(vec, latlng2, latlng3)
+
+        //Projection on axis perpendicular to marker 2 and marker 3
 
         var lat1 = diffCoord.latitude
         var lng1 = diffCoord.longitude
@@ -594,18 +530,22 @@ object GoogleMapHelper {
 
     /**
      * Redirects an interaction with an edition marker to the correct transformation
+     * @param marker interaction marker that has been dragged
      */
-    fun interactionMarker(p0: Marker) {
-        when (p0.snippet) {
-            PolygonAction.MOVE.toString() -> translatePolygon(p0)
-            PolygonAction.RIGHT.toString() -> transformPolygon(p0)
-            PolygonAction.DOWN.toString() -> transformPolygon(p0)
-            PolygonAction.DIAG.toString() -> transformPolygon(p0)
+    fun interactionMarker(marker: Marker) {
+        when (marker.snippet) {
+            PolygonAction.MOVE.toString() -> translatePolygon(marker)
+            PolygonAction.RIGHT.toString() -> transformPolygon(marker)
+            PolygonAction.DOWN.toString() -> transformPolygon(marker)
+            PolygonAction.DIAG.toString() -> transformPolygon(marker)
             PolygonAction.ROTATE.toString() -> rotatePolygon(p0)
         }
         tempPoly?.points = tempLatLng
     }
 
+    /**
+     * Switches the edit mode, and remove/recreates the markers for edition purpose
+     */
     fun editMode() {
         editMode = !editMode
         if (editMode) {
@@ -618,144 +558,73 @@ object GoogleMapHelper {
         }
     }
 
+    /**
+     * Restores all markers to the area they belong
+     */
     fun restoreMarkers() {
+        val anchor = IconAnchor(0f, 0f)
+        val bound = IconBound(0, 0, 0, 0)
+        val dimension = IconDimension(1, 1)
+
         for (value in tempValues) {
-            areasPoints[value.key] = Pair(
-                map!!.addMarker(
-                    newMarker(
-                        value.value.second,
-                        0f,
-                        0f,
-                        null,
-                        value.value.first,
-                        false,
-                        R.drawable.ic_location,
-                        0,
-                        0,
-                        0,
-                        0,
-                        1,
-                        1
-                    )
-                ), areasPoints[value.key]!!.second
-            )
+            areasPoints[value.key] = Pair(map!!.addMarker(newMarker(value.value.second, anchor, null, value.value.first, false, R.drawable.ic_location, bound, dimension)), areasPoints.get(value.key)!!.second)
         }
     }
 
+    /**
+     * Set up the area with the tag in parameter
+     * @param tag of the area to edit
+     */
     fun editArea(tag: String) {
-        val area = areasPoints[tag] ?: return
+        val t = tag.toInt()
+        val area = areasPoints[t] ?: return
         editMode = false
-        tempTitle = tempValues[tag]!!.first
-        tempValues.remove(tag)
+        tempTitle = tempValues[t]!!.first
+        tempValues.remove(t)
         restoreMarkers()
 
         tempPoly = area.second
         tempLatLng = area.second.points.dropLast(1).toMutableList()
 
-        val pos2 = tempLatLng[1]!!
-        val pos3 = tempLatLng[2]!!
-        val pos4 = tempLatLng[3]!!
+        setupModifyMarkers()
+    }
 
-        val temp1 = (pos4.latitude + pos3.latitude) / 2
-        val temp2 = (pos2.longitude + pos3.longitude) / 2
-        val posMidRight = LatLng(temp1, pos4.longitude)
-        val posMidDown = LatLng(pos2.latitude, temp2)
-        val posCenter = LatLng(temp1, temp2)
 
-        moveDiagMarker = map!!.addMarker(
-            newMarker(
-                pos3,
-                0.5f,
-                0.5f,
-                PolygonAction.DIAG.toString(),
-                null,
-                true,
-                R.drawable.ic_downleftarrow,
-                0,
-                0,
-                100,
-                100,
-                100,
-                100
-            )
-        )
-        moveDiagPos = moveDiagMarker!!.position
+    fun areasToFormattedStringLocations(
+        points: MutableMap<Int, List<LatLng>> = coordinates,
+        from: Int = 0,
+        to: Int = points.size
+    ): String {
+        println("Range " + (from until to).toString())
+        println("From $from")
+        println("To $to")
+        println("Map $points")
 
-        moveRightMarker = map!!.addMarker(
-            newMarker(
-                posMidRight,
-                0.5f,
-                0.5f,
-                PolygonAction.RIGHT.toString(),
-                null,
-                true,
-                R.drawable.ic_rightarrow,
-                0,
-                0,
-                100,
-                100,
-                100,
-                100
-            )
-        )
-        moveRightPos = moveRightMarker!!.position
+        var s = ""
+        for (i in from until to) {
+            s += areaToFormattedStringLocation(points[i])
+            s += DatabaseConstant.AREAS_SEP
+        }
+        println(s)
+        return s.substring(0, s.length - DatabaseConstant.AREAS_SEP.length)
+    }
 
-        moveDownMarker = map!!.addMarker(
-            newMarker(
-                posMidDown,
-                0.5f,
-                0.5f,
-                PolygonAction.DOWN.toString(),
-                null,
-                true,
-                R.drawable.ic_downarrow,
-                0,
-                0,
-                100,
-                100,
-                100,
-                100
-            )
-        )
-        moveDownPos = moveDownMarker!!.position
+    fun areaToFormattedStringLocation(loc: List<LatLng>?): String {
+        if (loc == null){
+            return ""
+        }
+        var s = ""
 
-        moveMarker = map!!.addMarker(
-            newMarker(
-                posCenter,
-                0.5f,
-                0.5f,
-                PolygonAction.MOVE.toString(),
-                null,
-                true,
-                R.drawable.ic_move,
-                0,
-                0,
-                100,
-                100,
-                100,
-                100
-            )
-        )
-        movePos = moveMarker!!.position
-
-        rotationMarker = map!!.addMarker(
-            newMarker(
-                pos4,
-                0.5f,
-                0.5f,
-                PolygonAction.ROTATE.toString(),
-                null,
-                true,
-                R.drawable.ic_rotation,
-                0,
-                0,
-                100,
-                100,
-                100,
-                100
-            )
-        )
-        rotationPos = rotationMarker!!.position
+        for (c in loc) {
+            s += c.latitude.toString() + DatabaseConstant.LAT_LONG_SEP + c.longitude.toString() + DatabaseConstant.POINTS_SEP
+        }
+        return s.substring(0, s.length - DatabaseConstant.POINTS_SEP.length)
+    }
+    fun removeRangePolygon(from: Int, to: Int){
+        for(r in (from until to)){
+            areasPoints.remove(r)?.second?.remove()
+            coordinates.remove(r)
+        }
     }
 
     /**
