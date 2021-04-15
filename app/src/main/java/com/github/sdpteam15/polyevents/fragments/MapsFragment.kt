@@ -13,8 +13,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.helper.GoogleMapAdapter
 import com.github.sdpteam15.polyevents.admin.ZoneManagementActivity
+import com.github.sdpteam15.polyevents.helper.GoogleMapAdapter
 import com.github.sdpteam15.polyevents.helper.GoogleMapHelper
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.isPermissionGranted
@@ -30,8 +30,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
 class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
-        OnPolygonClickListener, OnMarkerClickListener, OnInfoWindowClickListener, OnMarkerDragListener,
-        OnMyLocationButtonClickListener {
+    OnPolygonClickListener, OnMarkerClickListener, OnInfoWindowClickListener, OnMarkerDragListener,
+    OnMyLocationButtonClickListener {
 
     private lateinit var locationButton: FloatingActionButton
     var locationPermissionGranted = false
@@ -42,9 +42,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     var startId = -1
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
 
         onEdit = zone != null
@@ -126,7 +126,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val mapFragment =
-                childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
+            childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
         if (!locationPermissionGranted) {
             getLocationPermission()
@@ -178,8 +178,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
 
     override fun onInfoWindowClick(p0: Marker) {
         HelperFunctions.showToast(
-                "Info Window clicked for marker" + p0.title + ", can lanch activity here",
-                requireContext()
+            "Info Window clicked for marker" + p0.title + ", can lanch activity here",
+            requireContext()
         )
     }
 
@@ -208,12 +208,12 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
      */
     private fun activateMyLocation() {
         if (context?.let {
-                    ContextCompat.checkSelfPermission(
-                            it,
-                            Manifest.permission.ACCESS_FINE_LOCATION
-                    )
-                }
-                == PackageManager.PERMISSION_GRANTED) {
+                ContextCompat.checkSelfPermission(
+                    it,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                )
+            }
+            == PackageManager.PERMISSION_GRANTED) {
             GoogleMapHelper.map!!.isMyLocationEnabled = true
 
             // Hide the built-in location button (but DO NOT disable it !)
@@ -236,7 +236,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
             R.drawable.ic_location_off
         }
         requireView().findViewById<FloatingActionButton>(R.id.id_location_button)
-                .setImageResource(idOfResource)
+            .setImageResource(idOfResource)
         locationButton.tag = idOfResource
     }
 
@@ -264,12 +264,12 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
      */
     private fun getBuiltInLocationButton(): View {
         val mapFragment =
-                childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
+            childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
 
         // Magic : https://stackoverflow.com/questions/36785542/how-to-change-the-position-of-my-location-button-in-google-maps-using-android-st
         return (mapFragment!!.requireView()
-                .findViewById<View>(Integer.parseInt("1")).parent as View)
-                .findViewById(Integer.parseInt("2"))
+            .findViewById<View>(Integer.parseInt("1")).parent as View)
+            .findViewById(Integer.parseInt("2"))
     }
 
     /**
@@ -294,35 +294,35 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
          */
 
         if (ContextCompat.checkSelfPermission(
-                        requireContext(),
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                )
-                == PackageManager.PERMISSION_GRANTED
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+            == PackageManager.PERMISSION_GRANTED
         ) {
             locationPermissionGranted = true
         } else {
             ActivityCompat.requestPermissions(
-                    requireActivity(),
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
+                requireActivity(),
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
             )
         }
     }
 
     override fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<String>,
-            grantResults: IntArray
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
     ) {
         when (requestCode) {
             PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION -> {
 
                 // If request is denied, the result arrays are empty.
                 if (isPermissionGranted(
-                                permissions,
-                                grantResults,
-                                Manifest.permission.ACCESS_FINE_LOCATION
-                        )
+                        permissions,
+                        grantResults,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    )
                 ) {
                     locationPermissionGranted = true
                     activateMyLocation()

@@ -227,9 +227,8 @@ object GoogleMapHelper {
                 name = tempTitle!!
             } else {
                 name = "Area $uid"
-                uid += 1
             }
-            addArea(uid, tempPoly!!.points, name)
+            addArea(uid++, tempPoly!!.points, name)
 
         }
         clearTemp()
