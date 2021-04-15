@@ -53,10 +53,10 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
 
         val addNewAreaButton: View = view.findViewById(R.id.addNewArea)
         val saveNewAreaButton: View = view.findViewById(R.id.acceptNewArea)
-        val editArea: View = view.findViewById(R.id.id_edit_area)
+        val editAreaButton: View = view.findViewById(R.id.id_edit_area)
         addNewAreaButton.setOnClickListener { GoogleMapHelper.createNewArea() }
         saveNewAreaButton.setOnClickListener { GoogleMapHelper.saveNewArea() }
-        editArea.setOnClickListener { GoogleMapHelper.editMode() }
+        editAreaButton.setOnClickListener { GoogleMapHelper.editMode() }
 
         locationButton = view.findViewById(R.id.id_location_button)
         val locateMeButton = view.findViewById<FloatingActionButton>(R.id.id_locate_me_button)
@@ -72,11 +72,14 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         if (onEdit) {
             addNewAreaButton.visibility = View.VISIBLE
             saveNewAreaButton.visibility = View.VISIBLE
+            editAreaButton.visibility = View.VISIBLE
             saveButton.visibility = View.VISIBLE
             locationButton.visibility = View.INVISIBLE
             locateMeButton.visibility = View.INVISIBLE
 
             saveButton.setOnClickListener {
+                GoogleMapHelper.editMode = false
+                GoogleMapHelper.clearTemp()
                 val location = GoogleMapHelper.areasToFormattedStringLocations(from = startId)
                 zone!!.location = location
                 ZoneManagementActivity.nbModified = GoogleMapHelper.uid - startId
@@ -92,6 +95,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         } else {
             addNewAreaButton.visibility = View.INVISIBLE
             saveNewAreaButton.visibility = View.INVISIBLE
+            editAreaButton.visibility = View.INVISIBLE
             saveButton.visibility = View.INVISIBLE
             locationButton.visibility = View.VISIBLE
             locateMeButton.visibility = View.VISIBLE

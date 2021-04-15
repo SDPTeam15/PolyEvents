@@ -24,7 +24,7 @@ private const val zoom = 18f
 private const val minZoom = 17f
 private const val maxZoom = 21f
 private const val areaName = "Gunter"
-private const val areaId = "1234"
+private const val areaId = 1234
 
 class GoogleMapHelperTest {
     lateinit var mockedMap: MapsInterface
@@ -273,7 +273,7 @@ class GoogleMapHelperTest {
         val mockedzzw = Mockito.mock(zzw::class.java)
 
         val list: MutableList<LatLng> = mutableListOf()
-        GoogleMapHelper.addArea(areaName, list, areaId)
+        GoogleMapHelper.addArea(areaId, list, areaName)
         assertTrue(GoogleMapHelper.areasPoints.isEmpty())
 
         list.add(LatLng(lat, lng))
@@ -284,7 +284,7 @@ class GoogleMapHelperTest {
         val poly = PolygonOptions()
         poly.addAll(list).clickable(true)
         When(mockedMap.addPolygon(poly)).thenReturn(Polygon(mockedzzw))
-        GoogleMapHelper.addArea(areaName, list, areaId)
+        GoogleMapHelper.addArea(areaId, list, areaName)
         assertTrue(GoogleMapHelper.areasPoints.isNotEmpty())
 
         GoogleMapHelper.areasPoints.clear()
@@ -400,7 +400,7 @@ class GoogleMapHelperTest {
         GoogleMapHelper.tempValues.clear()
         GoogleMapHelper.restoreMarkers()
 
-        val key1 = "k1"
+        val key1 = 1
         val title = "Title"
         GoogleMapHelper.areasPoints[key1] = Pair(m, p)
         GoogleMapHelper.tempValues[key1] = Pair(title, position)
@@ -416,7 +416,7 @@ class GoogleMapHelperTest {
 
     @Test
     fun editModeTest() {
-        val key1 = "k1"
+        val key1 = 1
         val title = "Title"
         val mockedzzt = Mockito.mock(zzt::class.java)
         var m = Marker(mockedzzt)
@@ -448,7 +448,7 @@ class GoogleMapHelperTest {
     fun editAreaTest() {
         GoogleMapHelper.areasPoints.clear()
         GoogleMapHelper.tempTitle = null
-        val key1 = "k1"
+        val key1 = 1
         val title = "Title"
         val mockedzzt = Mockito.mock(zzt::class.java)
         var m = Marker(mockedzzt)
@@ -470,11 +470,12 @@ class GoogleMapHelperTest {
         When(mockedMap.addPolygon(anyOrNull())).thenReturn(p)
         When(mockedMap.addMarker(anyOrNull())).thenReturn(m)
 
+        val fakeKey = 5
         GoogleMapHelper.editMode = true
-        GoogleMapHelper.editArea("false")
+        GoogleMapHelper.editArea(fakeKey.toString())
         assertEquals(true, GoogleMapHelper.editMode)
 
-        GoogleMapHelper.editArea(key1)
+        GoogleMapHelper.editArea(key1.toString())
         assertEquals(title, GoogleMapHelper.tempTitle)
 
     }

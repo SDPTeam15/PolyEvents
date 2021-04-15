@@ -28,7 +28,7 @@ data class IconAnchor(var anchorWidth: Float, var anchorHeight: Float)
 @SuppressLint("StaticFieldLeak")
 object GoogleMapHelper {
     var context: Context? = null
-    var map: GoogleMap? = null
+    var map: MapsInterface? = null
     var uid = 0
 
     var editMode = false
@@ -66,7 +66,7 @@ object GoogleMapHelper {
     var movePos: LatLng? = null
 
     var tempTitle: String? = null
-    val tempValues: MutableMap<String, Pair<String, LatLng>> = mutableMapOf()
+    val tempValues: MutableMap<Int, Pair<String, LatLng>> = mutableMapOf()
 
     //----------START FUNCTIONS----------------------------------------
 
@@ -157,7 +157,7 @@ object GoogleMapHelper {
      * @param coords coordinates coordinates of the area
      * @param name name of the area
      */
-    fun addArea(id: String, coords: List<LatLng>, name: String) {
+    fun addArea(id: Int, coords: List<LatLng>, name: String) {
         if (coords.isNotEmpty()) {
             coordinates[id] = coords
 
@@ -229,7 +229,7 @@ object GoogleMapHelper {
                 name = "Area $uid"
                 uid += 1
             }
-            addArea(uid.toString(), tempPoly!!.points, name)
+            addArea(uid, tempPoly!!.points, name)
 
         }
         clearTemp()
@@ -520,10 +520,11 @@ object GoogleMapHelper {
      * @param tag of the area to edit
      */
     fun editArea(tag: String) {
-        val area = areasPoints[tag] ?: return
+        val t = tag.toInt()
+        val area = areasPoints[t] ?: return
         editMode = false
-        tempTitle = tempValues[tag]!!.first
-        tempValues.remove(tag)
+        tempTitle = tempValues[t]!!.first
+        tempValues.remove(t)
         restoreMarkers()
 
         tempPoly = area.second
