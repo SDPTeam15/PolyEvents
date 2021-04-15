@@ -5,6 +5,7 @@ In this two week sprint, I implemented an activity to create new zone and store 
 
 my time estimates were good. I over estimate a bit (1 hour) the time needed to implement and test the database queries. I also under estimate a bit (2 hours) the time needed for the UI. So overall, 
 
+Next sprint, I will take into account the comments made by the TAs and do a refactoring of our code so that our team can work in a clean code base. 
 
 ## Cyrille
 
