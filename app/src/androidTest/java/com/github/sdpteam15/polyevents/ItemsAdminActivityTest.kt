@@ -54,8 +54,6 @@ class ItemsAdminActivityTest {
 
         FakeDatabase.items.clear()
         for ((item, count) in availableItems) {
-
-            Log.d("TESET", item.itemName)
             currentDatabase.createItem(item, count)
         }
 
