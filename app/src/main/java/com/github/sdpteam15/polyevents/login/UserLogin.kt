@@ -5,6 +5,10 @@ import com.google.firebase.auth.AuthResult
 
 object UserLogin {
     private var mutableCurrentUserLogin: UserLoginInterface<AuthResult>? = null
+
+    /**
+     * Current user login method in the application
+     */
     var currentUserLogin: UserLoginInterface<AuthResult>
         get() {
             mutableCurrentUserLogin = mutableCurrentUserLogin ?: GoogleUserLogin

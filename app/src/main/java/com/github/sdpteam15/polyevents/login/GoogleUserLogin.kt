@@ -7,7 +7,6 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.fragments.LoginFragment
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.UserEntity
-import com.github.sdpteam15.polyevents.util.FirebaseUserAdapter
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -18,8 +17,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 
 object GoogleUserLogin : UserLoginInterface<AuthResult> {
+    /**
+     * The sign option chosen for Google
+     */
     var gso: GoogleSignInOptions? = null
-
 
     @SuppressLint("StaticFieldLeak")
     var signIn: GoogleSignInClient? = null
