@@ -16,6 +16,7 @@ import com.github.sdpteam15.polyevents.helper.MapsInterface
 import com.google.android.gms.maps.internal.ICameraUpdateFactoryDelegate
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.auth.FirebaseAuth
 import org.hamcrest.*
 import org.hamcrest.CoreMatchers.equalTo
 import org.junit.Before
@@ -44,6 +45,11 @@ class MyLocationTests {
         GoogleMapHelper.map = mockedMap
         Mockito.`when`(mockedMap.cameraPosition).thenReturn(camera)
         Mockito.`when`(mockedMap.setMinZoomPreference(GoogleMapHelper.minZoom)).then {}
+
+        // Log out so that we are not in the admin edit zone setup
+        FirebaseAuth.getInstance().signOut()
+        //onView(withId(R.id.ic_login)).perform(click())
+        //onView(withId(R.id.btnLogout)).perform(click())
 
         // Go to the map fragment
         onView(withId(R.id.ic_map)).perform(click())
