@@ -1,5 +1,9 @@
 package com.github.sdpteam15.polyevents
 
+import android.content.Intent
+import android.util.Log
+import androidx.test.core.app.ActivityScenario
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.closeSoftKeyboard
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -30,9 +34,8 @@ class ItemsAdminActivityTest {
     private val testItem = Item(null, "test item", ItemType.OTHER)
     private val testQuantity = 3
 
-    @Rule
-    @JvmField
-    var itemsAdminActivity = ActivityScenarioRule(ItemsAdminActivity::class.java)
+
+    lateinit var itemsAdminActivity : ActivityScenario<ItemsAdminActivity>
 
     @Before
     fun setup() {
@@ -48,14 +51,17 @@ class ItemsAdminActivityTest {
 
         // TODO : replace by the db interface call
         currentDatabase = FakeDatabase
+
         FakeDatabase.items.clear()
         for ((item, count) in availableItems) {
             currentDatabase.createItem(item, count)
         }
 
-        Thread.sleep(500)
-        itemsAdminActivity.scenario.recreate()
-        Thread.sleep(500)
+        val intent  = Intent(ApplicationProvider.getApplicationContext(), ItemsAdminActivity::class.java)
+        itemsAdminActivity = ActivityScenario.launch(intent)
+
+        //itemsAdminActivity.scenario.recreate()
+        Thread.sleep(1000)
     }
     @After
     fun tearDown(){
