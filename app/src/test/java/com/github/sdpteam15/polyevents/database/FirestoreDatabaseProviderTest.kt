@@ -7,20 +7,27 @@ import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_EMAIL
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_NAME
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_UID
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_USERNAME
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_COLLECTION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_DESCRIPTION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_DOCUMENT_ID
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_LOCATION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_NAME
 import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.model.Event
-import com.github.sdpteam15.polyevents.model.UserEntity
-import com.github.sdpteam15.polyevents.model.UserProfile
+import com.github.sdpteam15.polyevents.model.*
+import com.github.sdpteam15.polyevents.util.ZoneAdapter
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.tasks.OnFailureListener
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.*
-import org.hamcrest.CoreMatchers.`is` as Is
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.mock
+import java.time.LocalDate
 import kotlin.test.assertNotNull
+import org.hamcrest.CoreMatchers.`is` as Is
 import org.mockito.Mockito.`when` as When
 
 private const val displayNameTest = "Test displayName"
@@ -30,6 +37,16 @@ private const val uidTest2 = "Test uid2"
 private const val emailTest2 = "Test email"
 private const val displayNameTest2 = "Test uid2"
 private const val username = "Test username"
+private const val zoneID = "ZONEID"
+private const val zoneName = "ZONENAME"
+private const val zoneDesc = "ZONEDESC"
+private const val zoneLoc = "ZONELOCATION"
+
+val googleId = "googleId"
+val usernameEntity = "JohnDoe"
+val name = "John Doe"
+val birthDate = LocalDate.of(1990, 12, 30)
+val email = "John@email.com"
 
 class FirestoreDatabaseProviderTest {
     lateinit var user: UserEntity
@@ -37,6 +54,7 @@ class FirestoreDatabaseProviderTest {
     lateinit var database: DatabaseInterface
 
     lateinit var userDocument: HashMap<String, Any?>
+    lateinit var zoneDocument: HashMap<String, Any?>
 
     @Before
     fun setup() {
@@ -51,17 +69,31 @@ class FirestoreDatabaseProviderTest {
             USER_NAME to displayNameTest,
             USER_EMAIL to emailTest
         )
+        zoneDocument = hashMapOf(
+            ZONE_DOCUMENT_ID to zoneID,
+            ZONE_DESCRIPTION to zoneDesc,
+            ZONE_LOCATION to zoneLoc,
+            ZONE_NAME to zoneName
+        )
+
 
         //Mock the database and set it as the default database
         mockedDatabase = mock(FirebaseFirestore::class.java)
         FirestoreDatabaseProvider.firestore = mockedDatabase
+
+        FirestoreDatabaseProvider.firstConnectionUser=UserEntity(uid = "DEFAULT")
+        FirestoreDatabaseProvider.lastGetSuccessListener= null
+        FirestoreDatabaseProvider.lastSetSuccessListener= null
+        FirestoreDatabaseProvider.lastFailureListener= null
+        FirestoreDatabaseProvider.lastMultGetSuccessListener= null
+        FirestoreDatabaseProvider.lastAddSuccessListener= null
     }
 
     @Test
     fun toRemoveTest() {
         val testProfile = UserProfile(
-                userUid = user.uid,
-                profileName = "mockProfile"
+            userUid = user.uid,
+            profileName = "mockProfile"
         )
 
         val testEvent = Event(
@@ -90,11 +122,19 @@ class FirestoreDatabaseProviderTest {
                 user
             )
         )
+        val item = Item(itemId = "TestId",itemType = ItemType.MICROPHONE)
+
         assert(FirestoreDatabaseProvider.getListEvent("", 1, testProfile).size <= 1)
         assert(FirestoreDatabaseProvider.getListEvent("", 100, testProfile).size <= 100)
         assert(FirestoreDatabaseProvider.getUpcomingEvents(1, testProfile).size <= 1)
         assert(FirestoreDatabaseProvider.getUpcomingEvents(100, testProfile).size <= 100)
         assert(FirestoreDatabaseProvider.updateEvent(testEvent, testProfile))
+        assert(FirestoreDatabaseProvider.addItem(item))
+        assert(FirestoreDatabaseProvider.removeItem(item))
+        assert(FirestoreDatabaseProvider.getAvailableItems()!=null)
+        assert(FirestoreDatabaseProvider.getItemsList()!=null)
+
+        assert(FirestoreDatabaseProvider.getEventFromId("",UserProfile(userUid="DEFAULT"))==null)
     }
 
     @Test
@@ -112,7 +152,7 @@ class FirestoreDatabaseProviderTest {
         )
         When(
             mockedCollectionReference.whereEqualTo(
-                DatabaseConstant.USER_UID,
+                USER_UID,
                 uidTest
             )
         ).thenReturn(mockedQuery)
@@ -148,12 +188,12 @@ class FirestoreDatabaseProviderTest {
         val mockedList = mock(List::class.java) as List<DocumentSnapshot>
 
         //mock the needed method
-        When(mockedDatabase.collection(DatabaseConstant.USER_COLLECTION)).thenReturn(
+        When(mockedDatabase.collection(USER_COLLECTION)).thenReturn(
             mockedCollectionReference
         )
         When(
             mockedCollectionReference.whereEqualTo(
-                DatabaseConstant.USER_UID,
+                USER_UID,
                 uidTest
             )
         ).thenReturn(mockedQuery)
@@ -327,7 +367,7 @@ class FirestoreDatabaseProviderTest {
         When(
             mockedDocumentReference.set(
                 hashMapOf(
-                    DatabaseConstant.LOCATIONS_POINT to GeoPoint(
+                    LOCATIONS_POINT to GeoPoint(
                         pointToAdd.latitude,
                         pointToAdd.longitude
                     )
@@ -355,12 +395,42 @@ class FirestoreDatabaseProviderTest {
     }
 
     @Test
+    fun variablesAreCorrectlySet(){
+        val user = UserEntity(
+            uid = googleId,
+            username = usernameEntity,
+            birthDate = birthDate,
+            name = name,
+            email = email)
+        FirestoreDatabaseProvider.firstConnectionUser = user
+        assertThat(FirestoreDatabaseProvider.firstConnectionUser,Is(user))
+
+        val lastGetSuccessListener=OnSuccessListener<QuerySnapshot> { }
+        val lastSetSuccessListener=OnSuccessListener<Void> { }
+        val lastFailureListener= OnFailureListener {  }
+        val lastMultGetSuccessListener=OnSuccessListener<DocumentSnapshot> { }
+        val lastAddSuccessListener=OnSuccessListener<DocumentReference> { }
+
+        FirestoreDatabaseProvider.lastGetSuccessListener= lastGetSuccessListener
+        FirestoreDatabaseProvider.lastSetSuccessListener= lastSetSuccessListener
+        FirestoreDatabaseProvider.lastFailureListener= lastFailureListener
+        FirestoreDatabaseProvider.lastMultGetSuccessListener= lastMultGetSuccessListener
+        FirestoreDatabaseProvider.lastAddSuccessListener= lastAddSuccessListener
+
+        assertThat(FirestoreDatabaseProvider.lastGetSuccessListener,Is(lastGetSuccessListener))
+        assertThat(FirestoreDatabaseProvider.lastSetSuccessListener,Is(lastSetSuccessListener))
+        assertThat(FirestoreDatabaseProvider.lastFailureListener,Is(lastFailureListener))
+        assertThat(FirestoreDatabaseProvider.lastMultGetSuccessListener,Is(lastMultGetSuccessListener))
+        assertThat(FirestoreDatabaseProvider.lastAddSuccessListener,Is(lastAddSuccessListener))
+
+    }
+
+    @Test
     fun getUsersLocationsReturnCorrectNumberOfLocations() {
         //Mock the needed classes
         val mockedCollectionReference = mock(CollectionReference::class.java)
         val mockedTask = mock(Task::class.java) as Task<QuerySnapshot>
         val mockedDocument = mock(QuerySnapshot::class.java)
-        val mockedList = mock(List::class.java) as List<DocumentSnapshot>
 
         val mockedDoc1 = mock(DocumentSnapshot::class.java)
         val mockedDoc2 = mock(DocumentSnapshot::class.java)
@@ -415,4 +485,118 @@ class FirestoreDatabaseProviderTest {
 
         assertThat(locationsObs.value, Is(locationsLatLng))
     }
+
+    @Test
+    fun createZoneWorksProperly() {
+        //mock the required class
+        val mockedCollectionReference = mock(CollectionReference::class.java)
+        val taskReferenceMock = mock(Task::class.java) as Task<DocumentReference>
+
+        val testZone = Zone(zoneID, zoneName, zoneLoc, zoneDesc)
+
+        When(mockedDatabase.collection(ZONE_COLLECTION)).thenReturn(mockedCollectionReference)
+        When(mockedCollectionReference.add(ZoneAdapter.toZoneDocument(testZone))).thenReturn(
+            taskReferenceMock
+        )
+
+        var zoneNameAdded = ""
+        var zoneDescAdded = ""
+        var zoneLocAdded = ""
+        var zoneIDAdded = ""
+
+        When(taskReferenceMock.addOnSuccessListener(any())).thenAnswer {
+            FirestoreDatabaseProvider.lastAddSuccessListener!!.onSuccess(null)
+            //set method in hard to see if the success listener is successfully called
+            zoneNameAdded = testZone.zoneName!!
+            zoneDescAdded = testZone.description!!
+            zoneLocAdded = testZone.location!!
+            zoneIDAdded = testZone.zoneId!!
+            taskReferenceMock
+        }
+        When(taskReferenceMock.addOnFailureListener(any())).thenAnswer {
+            taskReferenceMock
+        }
+
+        val result = FirestoreDatabaseProvider.createZone(testZone, user)
+        assert(result.value!!)
+        assert(zoneNameAdded == zoneName)
+        assert(zoneDescAdded == zoneDesc)
+        assert(zoneLocAdded == zoneLoc)
+        assert(zoneIDAdded == zoneID)
+
+    }
+
+    @Test
+    fun updateZoneWorksProperly() {
+        //mock the required class
+        val mockedCollectionReference = mock(CollectionReference::class.java)
+        val mockedTask = mock(Task::class.java) as Task<Void>
+        val mockedDocumentReference = mock(DocumentReference::class.java)
+        val testZone = Zone(zoneID, zoneName, zoneLoc, zoneDesc)
+
+        When(mockedDatabase.collection(ZONE_COLLECTION)).thenReturn(mockedCollectionReference)
+        When(mockedCollectionReference.document(zoneID)).thenReturn(mockedDocumentReference)
+        When(mockedDocumentReference.update(ZoneAdapter.toZoneDocument(testZone))).thenReturn(
+            mockedTask
+        )
+
+        var zoneNameUpdated = ""
+        var zoneDescUpdated = ""
+        var zoneLocUpdated = ""
+        var zoneIDUpdated = ""
+
+        When(mockedTask.addOnSuccessListener(any())).thenAnswer {
+            FirestoreDatabaseProvider.lastSetSuccessListener!!.onSuccess(null)
+            //set method in hard to see if the success listener is successfully called
+            zoneNameUpdated = testZone.zoneName!!
+            zoneDescUpdated = testZone.description!!
+            zoneLocUpdated = testZone.location!!
+            zoneIDUpdated = testZone.zoneId!!
+            mockedTask
+        }
+        When(mockedTask.addOnFailureListener(any())).thenAnswer {
+            mockedTask
+        }
+
+        val result = FirestoreDatabaseProvider.updateZoneInformation(zoneID, testZone, user)
+        assert(result.value!!)
+        assert(zoneNameUpdated == zoneName)
+        assert(zoneDescUpdated == zoneDesc)
+        assert(zoneLocUpdated == zoneLoc)
+        assert(zoneIDUpdated == zoneID)
+    }
+
+    @Test
+    fun getZoneInformation() {
+        //mock the required class
+        val mockedCollectionReference = mock(CollectionReference::class.java)
+        val mockedTask = mock(Task::class.java) as Task<DocumentSnapshot>
+        val mockedDocumentReference = mock(DocumentReference::class.java)
+        val mockedDocument = mock(DocumentSnapshot::class.java)
+
+        When(mockedDatabase.collection(ZONE_COLLECTION)).thenReturn(mockedCollectionReference)
+        When(mockedCollectionReference.document(zoneID)).thenReturn(mockedDocumentReference)
+        When(mockedDocumentReference.get()).thenReturn(mockedTask)
+        When(mockedDocument.data).thenReturn(zoneDocument)
+        When(mockedDocument.id).thenReturn(zoneID)
+
+        When(mockedTask.addOnSuccessListener(any())).thenAnswer {
+            FirestoreDatabaseProvider.lastMultGetSuccessListener!!.onSuccess(mockedDocument)
+            //set method in hard to see if the success listener is successfully called
+            mockedTask
+        }
+        When(mockedTask.addOnFailureListener(any())).thenAnswer {
+            mockedTask
+        }
+        val obsZone = Observable<Zone>()
+
+        val result = FirestoreDatabaseProvider.getZoneInformation(zoneID, obsZone, user)
+        val value = obsZone.value!!
+        assert(result.value!!)
+        assert(value.zoneName == zoneName)
+        assert(value.description == zoneDesc)
+        assert(value.location == zoneLoc)
+        assert(value.zoneId == zoneID)
+    }
+
 }
