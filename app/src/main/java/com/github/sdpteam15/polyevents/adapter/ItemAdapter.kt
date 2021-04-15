@@ -5,8 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
-import com.github.sdpteam15.polyevents.ItemsAdminActivity
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
@@ -16,22 +16,12 @@ import com.github.sdpteam15.polyevents.model.Item
  * Adapts items to RecyclerView ItemsViews
  */
 class ItemAdapter(
-    itemsAdminActivity: ItemsAdminActivity,
+    lifecycleOwner: LifecycleOwner,
     private val items: ObservableList<Pair<Item, Int>>
 ) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
-    //private val items = items
-
     init {
-        currentDatabase.getItemsList(items).observe {
-            if (!it.value)
-                println("query not satisfied")
-        }
-        items.observeRemove(itemsAdminActivity) {
-            if (it.sender != currentDatabase)
-                currentDatabase.removeItem(it.value.first.itemId!!)
-        }
-        items.observe(itemsAdminActivity) {
+        items.observe(lifecycleOwner) {
             notifyDataSetChanged()
         }
     }

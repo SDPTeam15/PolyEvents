@@ -78,15 +78,16 @@ interface DatabaseInterface {
      */
 
     /**
+     * create a new Item
      * @param item item we want to add in the database
      * @param profile profile for database access
-     * @return An observer that will be set to true if the communication with the DB is over and no error
+     * @return An observer that will be set to the new Item ID if the communication with the DB is over and no error
      */
     fun createItem(
         item: Item,
         count: Int,
         profile: UserProfile? = currentProfile
-    ): Observable<Boolean>
+    ): Observable<String?>
 
     /**
      * @param itemId id of the item we want to remove from the database
@@ -397,6 +398,45 @@ interface DatabaseInterface {
      */
     fun getUsersLocations(
         usersLocations: Observable<List<LatLng>>,
+        userAccess: UserEntity? = currentUser
+    ): Observable<Boolean>
+
+    /**
+     * add a UserProfile to a UserEntity
+     * @param profile profile we want to add in the database
+     * @param user user to add
+     * @param userAccess user for database access
+     * @return An observer that will be set to the new UserProfile ID if the communication with the DB is over and no error
+     */
+    fun addUserProfileAndAddToUser(
+        profile: UserProfile,
+        user: UserEntity = currentUser!!,
+        userAccess: UserEntity? = currentUser
+    ): Observable<String?>
+
+    /**
+     * Get list of profile of a user
+     * @param profiles profile list
+     * @param user user
+     * @param userAccess user for database access
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun getUserProfilesList(
+        profiles: ObservableList<UserProfile>,
+        user: UserEntity,
+        userAccess: UserEntity? = currentUser
+    ): Observable<Boolean>
+
+    /**
+     * Get list of user of a profile
+     * @param users user list
+     * @param profile profile
+     * @param userAccess user for database access
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun getProfilesUserList(
+        users: ObservableList<UserEntity>,
+        profile: UserProfile,
         userAccess: UserEntity? = currentUser
     ): Observable<Boolean>
 }

@@ -1,23 +1,33 @@
 package com.github.sdpteam15.polyevents.fragments
 
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.transition.Slide
+import android.transition.TransitionManager
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageButton
+import android.widget.*
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.MainActivity
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.adapter.ItemAdapter
+import com.github.sdpteam15.polyevents.adapter.ProfileAdapter
+import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_BIRTH_DATE
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_USERNAME
 import com.github.sdpteam15.polyevents.database.observe.Observable
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.changeFragment
+import com.github.sdpteam15.polyevents.model.Item
+import com.github.sdpteam15.polyevents.model.ItemType
 import com.github.sdpteam15.polyevents.model.UserEntity
+import com.github.sdpteam15.polyevents.model.UserProfile
 import com.google.firebase.auth.FirebaseAuth
 import java.time.format.DateTimeFormatter
 
@@ -30,7 +40,9 @@ class ProfileFragment : Fragment() {
     var currentUser: UserEntity? = currentDatabase.currentUser
     val userInfoLiveData = Observable<UserEntity>()
     val hashMapNewInfo = HashMap<String, String>()
-    lateinit var recyclerView: RecyclerView
+
+    private val profiles = ObservableList<UserProfile>()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,27 +102,47 @@ class ProfileFragment : Fragment() {
                     }
                 }
         }
+
+        initProfileList(viewRoot)
+
         return viewRoot
     }
 
-    fun initProfileList(viewRoot : View){
-        viewRoot.setContentView(R.layout.activity_items_admin)
-
-        //val clickListener = { _: String -> } // TODO define what happens when we click on an Item
-        recyclerView = viewRoot.findViewById(R.id.id_recycler_items_list)
-        recyclerView.adapter = ItemAdapter(viewRoot, items)
-        // When a new Item is created, add it to the database
-        items.observeAdd(this) {
+    fun initProfileList(viewRoot: View) {
+        currentDatabase.getUserProfilesList(profiles, currentUser!!).observe {
+            if (!it.value)
+                println("query not satisfied")
+        }
+        profiles.observeRemove(viewRoot as LifecycleOwner) {
+            if (it.sender != Database.currentDatabase)
+                currentDatabase.removeItem(it.value.id!!)
+        }
+        profiles.observeAdd(this) {
             if (it.sender != currentDatabase)
-                currentDatabase.createItem(it.value.first, it.value.second).observe { it1->
-                    if(it1.value){
-                        currentDatabase.getItemsList(items)
-                    }
-                }
-
+                currentDatabase.addUserProfileAndAddToUser(it.value, currentUser!!)
         }
 
-        val btnAdd = findViewById<ImageButton>(R.id.id_add_item_button)
-        btnAdd.setOnClickListener { createAddItemPopup() }
+        viewRoot.findViewById<RecyclerView>(R.id.id_recycler_items_list).adapter =
+            ProfileAdapter(this, profiles)
+
+        viewRoot.findViewById<ImageButton>(R.id.id_add_profile_button).setOnClickListener { createProfile() }
+    }
+
+    fun createProfile() {
+        val profile = UserProfile()
+        /*
+        val intent = Intent(this, ::class.java)
+        val message = mainName!!.text.toString()
+        intent.putExtra(MainActivityConstants.MAIN_NAME_TEXT_ID, message)
+        startActivity(intent)
+
+
+        profiles.add(
+            Pair(
+                Item(null, itemName.text.toString(), ItemType.OTHER),
+                itemQuantity.text.toString().toInt()
+            ), this
+        )
+        */
     }
 }

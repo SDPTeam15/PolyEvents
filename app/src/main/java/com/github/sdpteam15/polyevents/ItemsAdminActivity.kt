@@ -34,19 +34,26 @@ class ItemsAdminActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_items_admin)
 
+
+        currentDatabase.getItemsList(items).observe(this) {
+            if (!it.value)
+                println("query not satisfied")
+        }
+        items.observeRemove(this) {
+            if (it.sender != currentDatabase)
+                currentDatabase.removeItem(it.value.first.itemId!!)
+        }
+        items.observeAdd(this) {
+            if (it.sender != currentDatabase)
+                currentDatabase.createItem(it.value.first, it.value.second).observe { it1 ->
+                    if (it1.value != null)
+                        currentDatabase.getItemsList(items)
+                }
+        }
+
         //val clickListener = { _: String -> } // TODO define what happens when we click on an Item
         recyclerView = findViewById(R.id.id_recycler_items_list)
         recyclerView.adapter = ItemAdapter(this, items)
-        // When a new Item is created, add it to the database
-        items.observeAdd(this) {
-            if (it.sender != currentDatabase)
-                currentDatabase.createItem(it.value.first, it.value.second).observe { it1->
-                    if(it1.value){
-                        currentDatabase.getItemsList(items)
-                    }
-                }
-
-        }
 
         val btnAdd = findViewById<ImageButton>(R.id.id_add_item_button)
         btnAdd.setOnClickListener { createAddItemPopup() }
