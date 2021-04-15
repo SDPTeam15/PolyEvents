@@ -1,8 +1,6 @@
 package com.github.sdpteam15.polyevents
 
 import android.os.Build
-import android.view.View
-import android.view.ViewGroup
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -13,12 +11,10 @@ import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
 import com.github.sdpteam15.polyevents.helper.GoogleMapHelper
 import com.github.sdpteam15.polyevents.helper.MapsInterface
-import com.google.android.gms.maps.internal.ICameraUpdateFactoryDelegate
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.firebase.auth.FirebaseAuth
-import org.hamcrest.*
 import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.Matchers
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -63,20 +59,6 @@ class MyLocationTests {
         onView(withId(R.id.id_location_button)).check(matches(withTagValue(equalTo(R.drawable.ic_location_off))))
     }
 
-
-    @Test
-    fun denyPermissionKeepsLocationOff() {
-        // Go to the map fragment
-        denyPermissions()
-
-        // Click on the "location" button to try to activate it.
-        onView(withId(R.id.id_location_button)).perform(click())
-
-        // Check the location is not enabled
-        onView(withId(R.id.id_location_button))
-            .check(matches(withTagValue(equalTo(R.drawable.ic_location_off))))
-    }
-
     @Test
     fun locationButtonsAreDisplayed() {
         grantPermission()
@@ -98,24 +80,6 @@ class MyLocationTests {
             )
         )
         imageButton2.check(matches(isDisplayed()))
-    }
-
-    /**
-     * Source : https://alexzh.com/ui-testing-of-android-runtime-permissions/
-     */
-    private fun denyPermissions() {
-        val instrumentation = InstrumentationRegistry.getInstrumentation()
-        val denyPermission = UiDevice.getInstance(instrumentation).findObject(
-            UiSelector().text(
-                when (Build.VERSION.SDK_INT) {
-                    in 24..28 -> "DENY"
-                    else -> "Deny"
-                }
-            )
-        )
-        if (denyPermission.exists()) {
-            denyPermission.click()
-        }
     }
 
     /**
