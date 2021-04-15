@@ -24,12 +24,15 @@ import java.time.format.DateTimeFormatter
  *  [Fragment] subclass that represents the profile page allowing the user to modify its private information
  */
 class ProfileFragment : Fragment() {
-    //User that we can set manually for testing
-    //Return CurrentUser if we are not in test, but we can use a fake user in test this way
+    //Return currentUser if we are not in test, but we can use a fake user in test this way
     var currentUser: UserEntity? = null
         get() = field ?: currentDatabase.currentUser
+
     val userInfoLiveData = Observable<UserEntity>()
     val hashMapNewInfo = HashMap<String, String>()
+    lateinit var profileNameET: EditText
+    lateinit var profileEmailET: EditText
+    lateinit var profileUsernameET: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +48,9 @@ class ProfileFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val viewRoot = inflater.inflate(R.layout.fragment_profile, container, false)
+        profileNameET = viewRoot.findViewById(R.id.profileName)
+        profileEmailET = viewRoot.findViewById(R.id.profileEmail)
+        profileUsernameET = viewRoot.findViewById(R.id.profileUsernameET)
 
         //Logout button handler
         viewRoot.findViewById<Button>(R.id.btnLogout).setOnClickListener { _ ->
@@ -54,9 +60,9 @@ class ProfileFragment : Fragment() {
 
         //When user Info live data is updated, set the correct value in the textview
         userInfoLiveData.observe(this) { userInfo ->
-            viewRoot.findViewById<EditText>(R.id.profileName).setText(userInfo!!.name)
-            viewRoot.findViewById<EditText>(R.id.profileEmail).setText(userInfo.email)
-            viewRoot.findViewById<EditText>(R.id.profileUsernameET).setText(userInfo.username)
+            profileNameET.setText(userInfo!!.name)
+            profileEmailET.setText(userInfo.email)
+            profileUsernameET.setText(userInfo.username)
 
             val userBirthDate = userInfo.birthDate
             val birthDateFormatted =
@@ -69,8 +75,7 @@ class ProfileFragment : Fragment() {
         viewRoot.findViewById<Button>(R.id.btnUpdateInfos).setOnClickListener {
             //Clear the previous map and add every field
             hashMapNewInfo.clear()
-            hashMapNewInfo[USER_USERNAME] =
-                viewRoot.findViewById<EditText>(R.id.profileUsernameET).text.toString()
+            hashMapNewInfo[USER_USERNAME] = profileUsernameET.text.toString()
             // TODO: editText should have birthday input and convert it to Timestamp otherwise things crash
             //hashMapNewInfo[USER_BIRTH_DATE] = viewRoot.findViewById<EditText>(R.id.profileBirthdayET).text.toString()
 

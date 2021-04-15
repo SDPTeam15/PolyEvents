@@ -23,13 +23,13 @@ private const val SIGN_IN_RC: Int = 200
 class LoginFragment : Fragment() {
     val inDbObservable = Observable<Boolean>()
 
-    //Return CurrentUser if we are not in test, but we can use a fake user in test this way
+    // Return CurrentUser if we are not in test, but we can use a fake user in test this way
     var currentUser: UserEntity? = null
         get() = field ?: currentDatabase.currentUser
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //If the user is already logged in, we redirect him to the Profile fragment
+        //If the user is already logged in, we redirect him directly to the Profile fragment
         if (currentUser != null) {
             HelperFunctions.changeFragment(
                 activity,
@@ -40,7 +40,10 @@ class LoginFragment : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        // Requested code is the sign in code
         if (requestCode == SIGN_IN_RC) {
+            //Redirect the data received to the login object
+            // If the task is successful we redirect otherwise we display an error message
             UserLogin.currentUserLogin
                 .getResultFromIntent(
                     data,
@@ -56,39 +59,46 @@ class LoginFragment : Fragment() {
         }
     }
 
-
+    /**
+     * This method will call the inDatabase method to check whether the users has already been registered to the database or not
+     */
     private fun addIfNotInDB() {
         currentDatabase.inDatabase(inDbObservable, currentUser!!.uid, currentUser!!)
-            .observe(this) { newValue ->
-                if (newValue!!) {
+            .observe(this) { success ->
+                if (success!!) {
                     if (inDbObservable.value!!) {
-                        //If already in database redirect
+                        //If already in database, redirect to the profile fragment
                         HelperFunctions.changeFragment(
                             activity,
                             MainActivity.fragments[R.id.id_fragment_profile]
                         )
                     } else {
-                        //If not in DB, i.e. first connection, need to register
-                        connectAndRedirect()
+                        //If not in DB, i.e. first connection, register it
+                        createAccountAndRedirect()
                     }
                 } else {
+                    //if a problem occurs, display an error message
                     HelperFunctions.showToast(getString(R.string.login_failed_text), activity)
                 }
             }
     }
 
-    private fun connectAndRedirect() {
+    /**
+     * This method is called when the user log in for the first item with its account
+     * It registers the users into the database and redirect him to the ProfileFragment if no problem during the communication with the database
+     */
+    private fun createAccountAndRedirect() {
         currentDatabase
             .firstConnexion(currentUser!!, currentUser!!)
-            .observe(this) { newValue2 ->
-                if (newValue2!!) {
+            .observe(this) { success ->
+                if (success!!) {
                     //If correctly registered, redirect it
                     HelperFunctions.changeFragment(
                         activity,
                         MainActivity.fragments[R.id.id_fragment_profile]
                     )
                 } else {
-                    //otherwise display error
+                    //Display error message
                     HelperFunctions.showToast(getString(R.string.login_failed_text), activity)
                 }
             }
@@ -99,6 +109,7 @@ class LoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_login, container, false)
+        //Attach an event to sign-in button
         rootView.findViewById<com.google.android.gms.common.SignInButton>(R.id.btnLogin)
             .setOnClickListener { _ ->
                 if (currentUser == null) {
