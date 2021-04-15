@@ -128,7 +128,8 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         // TODO should update add item if non existent in database ?
         // if (event.eventId == null) return createEvent(event, profile)
         return thenDoSet(
-            firestore!!.collection(EVENT_COLLECTION).document(event.eventId!!).set(event)
+            firestore!!.collection(EVENT_COLLECTION).document(event.eventId!!)
+                .set(EventAdapter.toEventDocument(event))
         )
     }
 
@@ -245,9 +246,9 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         val ended = Observable<Boolean>()
         lastMultGetSuccessListener = OnSuccessListener<DocumentSnapshot> {
             onSuccessListener(it)
-            ended.postValue(true,this)
+            ended.postValue(true, this)
         }
-        lastFailureListener = OnFailureListener { ended.postValue(false,this) }
+        lastFailureListener = OnFailureListener { ended.postValue(false, this) }
         task.addOnSuccessListener(lastMultGetSuccessListener!!)
             .addOnFailureListener(lastFailureListener!!)
         return ended
@@ -263,8 +264,8 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
 
-        lastSetSuccessListener = OnSuccessListener<Void> { ended.postValue(true,this) }
-        lastFailureListener = OnFailureListener { ended.postValue(false,this) }
+        lastSetSuccessListener = OnSuccessListener<Void> { ended.postValue(true, this) }
+        lastFailureListener = OnFailureListener { ended.postValue(false, this) }
         task.addOnSuccessListener(lastSetSuccessListener!!)
             .addOnFailureListener(lastFailureListener!!)
 
@@ -306,9 +307,9 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             .get()
     ) { doc: QuerySnapshot ->
         if (doc.documents.size == 1) {
-            isInDb.postValue(true,this)
+            isInDb.postValue(true, this)
         } else {
-            isInDb.postValue(false,this)
+            isInDb.postValue(false, this)
         }
     }
 
@@ -321,7 +322,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             .document(uid!!)
             .get()
     ) {
-        user.postValue(it.data?.let { it1 -> UserAdapter.toUserEntity(it1) }!!,this)
+        user.postValue(it.data?.let { it1 -> UserAdapter.toUserEntity(it1) }!!, this)
     }
 
     override fun getProfileById(
@@ -386,7 +387,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             val geoPoint = it.data!![LOCATIONS_POINT] as GeoPoint
             LatLng(geoPoint.latitude, geoPoint.longitude)
         }
-        usersLocations.postValue(locations,this)
+        usersLocations.postValue(locations, this)
     }
 
     /*
@@ -412,7 +413,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
                 .document(zoneId)
                 .get()
         ) {
-            zone.postValue(it.data?.let { it1 -> ZoneAdapter.toZoneEntity(it1, it.id) }!!,this)
+            zone.postValue(it.data?.let { it1 -> ZoneAdapter.toZoneEntity(it1, it.id) }!!, this)
         }
     }
 

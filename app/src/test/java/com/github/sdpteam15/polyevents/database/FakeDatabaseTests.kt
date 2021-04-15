@@ -1,15 +1,12 @@
 package com.github.sdpteam15.polyevents.database
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
-import com.github.sdpteam15.polyevents.model.Event
-import com.github.sdpteam15.polyevents.model.Item
-import com.github.sdpteam15.polyevents.model.UserEntity
-import com.github.sdpteam15.polyevents.model.UserProfile
-import com.github.sdpteam15.polyevents.model.Zone
+import com.github.sdpteam15.polyevents.model.*
 import com.google.android.gms.maps.model.LatLng
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Test
+import java.time.LocalDateTime
 import kotlin.test.assertNotNull
 import org.hamcrest.CoreMatchers.`is` as Is
 
@@ -40,6 +37,30 @@ class FakeDatabaseTests {
         assert(FakeDatabase.getZoneInformation("",Observable(),mockedUserInterface).value!!)
         assert(FakeDatabase.updateZoneInformation("", Zone(),mockedUserInterface).value!!)
         assert(FakeDatabase.createZone(Zone(),mockedUserInterface).value!!)
+    }
+
+    @Test
+    fun updateItemTest(){
+        val testItem = Item("xxxbananaxxx", "banana", ItemType.OTHER)
+        val testQuantity = 3
+        FakeDatabase.updateItem(testItem, testQuantity)
+        assert(FakeDatabase.items.containsValue(Pair(testItem,testQuantity)))
+    }
+    @Test
+    fun updateEventTest(){
+        val testEvent = Event(
+            eventId = "xxxeventxxxx",
+            eventName = "Sushi demo",
+            organizer = "The fish band",
+            zoneName = "Kitchen",
+            description = "Super hungry activity !",
+            startTime = LocalDateTime.of(2021, 3, 7, 12, 15),
+            endTime = LocalDateTime.of(2021, 3, 7, 12, 45),
+            inventory = mutableListOf(),
+            tags = mutableSetOf("sushi", "japan", "cooking")
+        )
+        FakeDatabase.updateEvents(testEvent)
+        assert(FakeDatabase.events.containsValue(testEvent))
     }
 
     @Test

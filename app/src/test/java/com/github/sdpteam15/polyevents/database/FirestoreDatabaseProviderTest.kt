@@ -182,6 +182,120 @@ class FirestoreDatabaseProviderTest {
     }
 
     @Test
+    fun updateEventInDatabaseWorks() {
+        val mockedCollectionReference = mock(CollectionReference::class.java)
+        val documentReference = mock(DocumentReference::class.java) as DocumentReference
+        val taskReferenceMock = mock(Task::class.java) as Task<Void>
+
+        val testEvent = Event(
+            eventId = "event1",
+            eventName = "Sushi demo",
+            organizer = "The fish band",
+            zoneName = "Kitchen",
+            description = "Super hungry activity !",
+            startTime = LocalDateTime.of(2021, 3, 7, 12, 15),
+            endTime = LocalDateTime.of(2021, 3, 7, 12, 45),
+            inventory = mutableListOf(),
+            tags = mutableSetOf("sushi", "japan", "cooking")
+        )
+
+        When(mockedDatabase.collection(EVENT_COLLECTION)).thenReturn(mockedCollectionReference)
+        When(mockedCollectionReference.document(testEvent.eventId!!)).thenReturn(documentReference)
+        When(documentReference.set(EventAdapter.toEventDocument(testEvent))).thenReturn(
+            taskReferenceMock
+        )
+
+        var eventId: String? = null
+        var eventName: String? = null
+        var organizer: String? = null
+        var zoneName: String? = null
+        var description: String? = null
+        var icon: Bitmap? = null
+        var startTime: LocalDateTime? = null
+        var endTime: LocalDateTime? = null
+        var inventory: MutableList<Item> = mutableListOf()
+        var tags: MutableSet<String> = mutableSetOf()
+
+        When(taskReferenceMock.addOnSuccessListener(any())).thenAnswer {
+            FirestoreDatabaseProvider.lastSetSuccessListener!!.onSuccess(null)
+            //set method in hard to see if the success listener is successfully called
+            eventId = testEvent.eventId
+            eventName = testEvent.eventName
+            organizer = testEvent.organizer
+            zoneName = testEvent.zoneName
+            description = testEvent.description
+            icon = testEvent.icon
+            startTime = testEvent.startTime
+            endTime = testEvent.endTime
+            inventory = testEvent.inventory
+            tags = testEvent.tags
+            taskReferenceMock
+        }
+        When(taskReferenceMock.addOnFailureListener(any())).thenAnswer {
+            taskReferenceMock
+        }
+
+        val result = FirestoreDatabaseProvider.updateEvents(testEvent)
+        assert(result.value!!)
+        assert(eventId == testEvent.eventId)
+        assert(eventName == testEvent.eventName)
+        assert(organizer == testEvent.organizer)
+        assert(zoneName == testEvent.zoneName)
+        assert(description == testEvent.description)
+        assert(icon == testEvent.icon)
+        assert(startTime == testEvent.startTime)
+        assert(endTime == testEvent.endTime)
+        assert(inventory == testEvent.inventory)
+        assert(tags == testEvent.tags)
+    }
+
+    @Test
+    fun updateItemInDatabaseWorks() {
+        val mockedCollectionReference = mock(CollectionReference::class.java)
+        val documentReference = mock(DocumentReference::class.java) as DocumentReference
+        val taskMock = mock(Task::class.java) as Task<Void>
+
+        val testItem = Item("xxxbananaxxx", "banana", ItemType.OTHER)
+        val testQuantity = 3
+
+        When(mockedDatabase.collection(ITEM_COLLECTION)).thenReturn(mockedCollectionReference)
+        When(mockedCollectionReference.document(testItem.itemId!!)).thenReturn(documentReference)
+        When(
+            documentReference.set(
+                ItemEntityAdapter.toItemDocument(
+                    testItem,
+                    testQuantity
+                )
+            )
+        ).thenReturn(taskMock)
+
+        var itemNameUpdated = ""
+        var itemTypeUpdated: ItemType? = null
+        var itemCountUpdated = 0
+        var itemIdUpdated = ""
+
+        When(taskMock.addOnSuccessListener(any())).thenAnswer {
+            FirestoreDatabaseProvider.lastSetSuccessListener!!.onSuccess(null)
+            //set method in hard to see if the success listener is successfully called
+            itemNameUpdated = testItem.itemName
+            itemTypeUpdated = testItem.itemType
+            itemCountUpdated = testQuantity
+            itemIdUpdated = testItem.itemId!!
+            taskMock
+        }
+        When(taskMock.addOnFailureListener(any())).thenAnswer {
+            taskMock
+        }
+
+        val result = FirestoreDatabaseProvider.updateItem(testItem, testQuantity)
+        assert(result.value!!)
+        assert(itemNameUpdated == testItem.itemName)
+        assert(itemTypeUpdated == testItem.itemType)
+        assert(itemCountUpdated == testQuantity)
+        assert(itemIdUpdated == testItem.itemId!!)
+    }
+
+    @Test
     fun addEventInDatabaseWorks() {
         val mockedCollectionReference = mock(CollectionReference::class.java)
         val taskReferenceMock = mock(Task::class.java) as Task<DocumentReference>
