@@ -16,6 +16,7 @@ import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_USERNAME
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.changeFragment
+import com.github.sdpteam15.polyevents.login.UserLogin
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.google.firebase.auth.FirebaseAuth
 import java.time.format.DateTimeFormatter
@@ -48,7 +49,7 @@ class ProfileFragment : Fragment() {
 
         //Logout button handler
         viewRoot.findViewById<Button>(R.id.btnLogout).setOnClickListener { _ ->
-            FirebaseAuth.getInstance().signOut()
+            UserLogin.currentUserLogin.signOut()
             changeFragment(activity, MainActivity.fragments[R.id.ic_login])
         }
 

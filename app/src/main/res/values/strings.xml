@@ -4,9 +4,7 @@
     <string name="at_hour_text">at %1$s</string>
 
     <!-- Login Fragment strings-->
-    <string name="login_failed_text">Failed to log into your Google account</string>
-    <string name="login_failed_title">Login failed</string>
-    <string name="ok_button_text">OK</string>
+    <string name="login_failed_text">Failed to log into your account</string>
     <string name="login_button_text">Sign in with Google</string>
 
 

@@ -13,10 +13,9 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.login.UserLogin
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
@@ -27,8 +26,6 @@ import com.google.firebase.auth.GoogleAuthProvider
 private const val SIGN_IN_RC: Int = 200
 
 class LoginFragment : Fragment() {
-    private lateinit var signIn: GoogleSignInClient
-    private lateinit var failedLogin: AlertDialog
     val inDbObservable = Observable<Boolean>()
 
     //Return CurrentUser if we are not in test, but we can use a fake user in test this way
@@ -44,54 +41,29 @@ class LoginFragment : Fragment() {
                 MainActivity.fragments[R.id.id_fragment_profile]
             )
         }
-
-        //Sign in options for Google Login.
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build()
-        signIn = GoogleSignIn.getClient(activity as Activity, gso)
-
-        /* Precreate and store the AlertDialog that will be shown any time there is an error*/
-        val builder = AlertDialog.Builder(activity as Activity)
-        builder.setMessage(R.string.login_failed_text)
-            .setTitle(R.string.login_failed_title)
-            .setPositiveButton(R.string.ok_button_text) { _, _ -> }
-        failedLogin = builder.create()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == SIGN_IN_RC) {
-            //get the google account
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            if (task.isSuccessful) {
-                try {
-                    //Google Sign In was successful, authenticate with firebase
-                    firebaseAuthWithGoogle(task.getResult(ApiException::class.java)!!.idToken!!)
-                } catch (e: ApiException) {
-                    failedLogin.show()
+            UserLogin.currentUserLogin
+                .getResultFromIntent(
+                    data,
+                    activity as Activity,
+                    getString(R.string.login_failed_text)
+                )?.addOnCompleteListener(activity as Activity) { task ->
+                    if (task.isSuccessful) {
+                        addIfNotInDB()
+                    } else {
+                        HelperFunctions.showToast(getString(R.string.login_failed_text), activity)
+                    }
                 }
-            } else {
-                failedLogin.show()
-            }
         }
     }
 
-    private fun firebaseAuthWithGoogle(idToken: String) {
-        //Get the credential back and instantiate FirebaseAuth object
-        val credential = GoogleAuthProvider.getCredential(idToken, null)
-        FirebaseAuth.getInstance().signInWithCredential(credential)
-            .addOnCompleteListener(activity as Activity) { task ->
-                if (task.isSuccessful) {
-                    addIfNotInDB()
-                } else {
-                    failedLogin.show()
-                }
-            }
-    }
 
-    private fun addIfNotInDB() {
+
+    private fun addIfNotInDB(){
         currentDatabase.inDatabase(inDbObservable, currentUser!!.uid, currentUser!!)
             .observe(this) { newValue ->
                 if (newValue!!) {
@@ -106,7 +78,7 @@ class LoginFragment : Fragment() {
                         connectAndRedirect()
                     }
                 } else {
-                    failedLogin.show()
+                    HelperFunctions.showToast(getString(R.string.login_failed_text), activity)
                 }
             }
     }
@@ -123,7 +95,7 @@ class LoginFragment : Fragment() {
                     )
                 } else {
                     //otherwise display error
-                    failedLogin.show()
+                    HelperFunctions.showToast(getString(R.string.login_failed_text), activity)
                 }
             }
     }
@@ -136,9 +108,7 @@ class LoginFragment : Fragment() {
         rootView.findViewById<com.google.android.gms.common.SignInButton>(R.id.btnLogin)
             .setOnClickListener { _ ->
                 if (currentUser == null) {
-                    //This "remove" the cache of the chosen user. Without it, google doesn't propose the choice of account anymore and log aumatically into the previously logged one
-                    signIn.signOut()
-                    startActivityForResult(signIn.signInIntent, SIGN_IN_RC)
+                    UserLogin.currentUserLogin.signIn(activity as Activity,this, SIGN_IN_RC)
                 } else {
                     //This branch allow us to test the communication between ProfileFragment and LoginFragment. During a normal execution, it won't be used.
                     addIfNotInDB()
