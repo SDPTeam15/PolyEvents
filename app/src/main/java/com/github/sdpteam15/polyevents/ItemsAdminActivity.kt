@@ -41,7 +41,6 @@ class ItemsAdminActivity : AppCompatActivity() {
         // When a new Item is created, add it to the database
         items.observeAdd(this) {
             if (it.sender != currentDatabase){
-                Log.d("ItemAdmin", "Salut" + it.sender + "is not" + currentDatabase)
                 currentDatabase.createItem(it.value.first, it.value.second).observe { it1->
                     if(it1.value){
                         currentDatabase.getItemsList(items)
