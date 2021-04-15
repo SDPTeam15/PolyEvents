@@ -50,12 +50,10 @@ data class UserEntity(
      * @return true if new profile with given was successfully added
      */
     fun addNewProfile(name: String): Boolean =
-        profiles.add(
-            UserProfile(
-                userUid = uid,
-                profileName = name
-            )
-        )
+        profiles.add(UserProfile(
+            userUid = uid,
+            profileName = name
+        ))
 
     /**
      * Add a new profile to the user's list of profiles

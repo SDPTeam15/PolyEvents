@@ -8,6 +8,7 @@
     -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -20,21 +21,27 @@
             android:label="@string/title_activity_event_management"
             android:parentActivityName=".MainActivity" />
 
-        <activity android:name=".admin.UserManagementActivity"
+        <activity
+            android:name=".admin.UserManagementActivity"
             android:label="@string/title_activity_user_management"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".MainActivity" />
 
-        <activity android:name=".admin.ZoneManagementActivity"
+        <activity
+            android:name=".admin.ZoneManagementActivity"
             android:label="@string/title_activity_zone_management"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".MainActivity" />
 
-        <activity android:name=".admin.ItemRequestManagementActivity"
+        <activity
+            android:name=".admin.ItemRequestManagementActivity"
             android:label="@string/title_activity_item_request_management"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".MainActivity" />
         <activity android:name=".ItemsAdminActivity"
             android:label= "@string/title_activity_items_admin"
             android:parentActivityName=".MainActivity"/>
 
+        <activity
+            android:name=".EditProfileActivity"
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".ItemRequestActivity"
             android:label="@string/title_activity_item_request"
@@ -56,7 +63,8 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_api_key" />
 
-        <activity android:name=".MainActivity"
+        <activity
+            android:name=".MainActivity"
             android:launchMode="singleTop"> <!-- the main activity is not recreated when we press the back button. Src: https://stackoverflow.com/questions/16434445/using-actionbar-home-as-up-button-home-activity-saveinstancestate-is-always-nul -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

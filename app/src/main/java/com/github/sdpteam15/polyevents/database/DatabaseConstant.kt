@@ -19,6 +19,14 @@ object DatabaseConstant {
     const val USER_PHONE = "telephone"
     const val USER_PROFILES = "profiles"
 
+    /**
+     * Profile related constants
+     */
+    const val PROFILE_COLLECTION = "Profile"
+    const val PROFILE_ID = "pid"
+    const val PROFILE_NAME = "name"
+    const val PROFILE_RANK = "rank"
+
 
     /**
      * Event related constants

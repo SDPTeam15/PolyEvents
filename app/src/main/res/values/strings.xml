@@ -51,6 +51,8 @@
         <item>Switzerland</item>
     </string-array>
 
+    <string name="google_maps_key"></string>
+
     <!-- All string for Profile Fragment -->
     <string name="logout_button_text">Logout</string>
     <string name="update_infos">Update info</string>
@@ -83,4 +85,24 @@
     <string name="event_info_fail">Failed to get the event information</string>
     <string name="title_activity_items_admin">Items Management</string>
     <string name="title_activity_events">Events</string>
+
+    <!-- EditProfileActivity -->
+    <string name="EditProfileActivity_Name">Name</string>
+    <string name="EditProfileActivity_ID">ID</string>
+    <string name="EditProfileActivity_Rank">Rank</string>
+    <string name="EditProfileActivity_Save">Save</string>
+    <string name="EditProfileActivity_Cancel">Cancel</string>
+    <string name="EditProfileActivity_DatabaseError">Impossible to update your profile information, please try again.</string>
+
+    <string-array name="EditProfileActivity_Ranks">
+        <item>Admin</item>
+        <item>Activity provider</item>
+        <item>Staff</item>
+        <item>Visitor</item>
+    </string-array>
+    <!-- EditProfileActivity -->
+
+
+
+
 </resources>

@@ -20,6 +20,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
+import com.github.sdpteam15.polyevents.HelperTestFunction.getCurrentActivity
 import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.adapter.ItemRequestAdapter
@@ -56,20 +57,6 @@ class ItemRequestActivityTest {
         override fun perform(uiController: UiController, view: View) = view.findViewById<EditText>(
             viewId
         ).setText(value)
-    }
-
-    // Source : https://stackoverflow.com/questions/38737127/espresso-how-to-get-current-activity-to-test-fragments/58684943#58684943
-    private fun getCurrentActivity(): Activity? {
-        var currentActivity: Activity? = null
-        getInstrumentation().runOnMainSync {
-            run {
-                currentActivity =
-                    ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(
-                        Stage.RESUMED
-                    ).elementAtOrNull(0)
-            }
-        }
-        return currentActivity
     }
 
     private fun selectItemQuantity(item: Int, quantity: String) {
@@ -143,7 +130,7 @@ class ItemRequestActivityTest {
         }
 
         assertThat(
-            (getCurrentActivity() as ItemRequestActivity).mapSelectedItems, `is`(
+            getCurrentActivity<ItemRequestActivity>().mapSelectedItems, `is`(
                 itemsSelected
             )
         )
@@ -182,7 +169,7 @@ class ItemRequestActivityTest {
         correctMap[availableItemsList[itemToSelect].first] = quantityToSelect
 
         assertThat(
-            (getCurrentActivity() as ItemRequestActivity).mapSelectedItems, `is`(
+            getCurrentActivity<ItemRequestActivity>().mapSelectedItems, `is`(
                 correctMap
             )
         )
@@ -198,7 +185,7 @@ class ItemRequestActivityTest {
         correctMap[availableItemsList[itemToSelect].first] = availableItemsList[itemToSelect].second
 
         assertThat(
-            (getCurrentActivity() as ItemRequestActivity).mapSelectedItems, `is`(
+            getCurrentActivity<ItemRequestActivity>().mapSelectedItems, `is`(
                 correctMap
             )
         )
@@ -211,7 +198,7 @@ class ItemRequestActivityTest {
         selectItemQuantity(0, "")
 
         assertThat(
-            (getCurrentActivity() as ItemRequestActivity).mapSelectedItems.size, `is`(
+            getCurrentActivity<ItemRequestActivity>().mapSelectedItems.size, `is`(
                 0
             )
         )

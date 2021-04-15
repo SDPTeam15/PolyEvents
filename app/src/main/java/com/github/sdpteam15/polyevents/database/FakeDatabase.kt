@@ -105,6 +105,13 @@ object FakeDatabase : DatabaseInterface {
 
     override fun updateProfile(profile: UserProfile, user: UserEntity?): Boolean = true
 
+    override fun updateProfile(
+        newValues: Map<String, String>,
+        pid: String,
+        userAccess: UserEntity?
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
 
     override fun getListEvent(
         matcher: Matcher?,
@@ -217,7 +224,7 @@ object FakeDatabase : DatabaseInterface {
     }
 
     override fun updateUserInformation(
-        newValues: HashMap<String, String>,
+        newValues: Map<String, String>,
         uid: String,
         userAccess: UserEntity?
     ): Observable<Boolean> =
@@ -261,6 +268,17 @@ object FakeDatabase : DatabaseInterface {
         return Observable(true)
     }
 
+    override fun getProfileById(
+        profile: Observable<UserProfile>,
+        pid: String,
+        userAccess: UserEntity?
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getItemsList(): MutableList<Item> {
+        return items
+    }
     /*
         override fun getItemsList(): MutableList<Item> {
             return items
