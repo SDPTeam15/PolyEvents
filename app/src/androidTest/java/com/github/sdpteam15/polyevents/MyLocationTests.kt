@@ -1,9 +1,13 @@
 package com.github.sdpteam15.polyevents
 
 import android.os.Build
+import android.view.View
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.UiController
+import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
@@ -14,6 +18,7 @@ import com.github.sdpteam15.polyevents.helper.MapsInterface
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.Matcher
 import org.hamcrest.Matchers
 import org.junit.Before
 import org.junit.Rule
@@ -51,12 +56,25 @@ class MyLocationTests {
         grantPermission()
 
         // From off to on
-        onView(withId(R.id.id_location_button)).perform(click())
+        onView(withId(R.id.id_location_button)).perform(clickSuperposedButton())
         onView(withId(R.id.id_location_button)).check(matches(withTagValue(equalTo(R.drawable.ic_location_on))))
 
         // From on to off
-        onView(withId(R.id.id_location_button)).perform(click())
+        onView(withId(R.id.id_location_button)).perform(clickSuperposedButton())
         onView(withId(R.id.id_location_button)).check(matches(withTagValue(equalTo(R.drawable.ic_location_off))))
+    }
+
+    @Test
+    fun denyPermissionKeepsLocationOff() {
+        // Go to the map fragment
+        denyPermissions()
+
+        // Click on the "location" button to try to activate it.
+        onView(withId(R.id.id_location_button)).perform(clickSuperposedButton())
+
+        // Check the location is not enabled
+        onView(withId(R.id.id_location_button))
+            .check(matches(withTagValue(equalTo(R.drawable.ic_location_off))))
     }
 
     @Test
@@ -102,5 +120,42 @@ class MyLocationTests {
             allowPermission.click()
         }
     }
+
+    /**
+     * Source : https://alexzh.com/ui-testing-of-android-runtime-permissions/
+     */
+    private fun denyPermissions() {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val denyPermission = UiDevice.getInstance(instrumentation).findObject(
+            UiSelector().text(
+                when (Build.VERSION.SDK_INT) {
+                    in 24..28 -> "DENY"
+                    else -> "Deny"
+                }
+            )
+        )
+        if (denyPermission.exists()) {
+            denyPermission.click()
+        }
+    }
+
+    private fun clickSuperposedButton(): ViewActionSuperposed {
+        return ViewActionSuperposed()
+    }
+}
+
+class ViewActionSuperposed: ViewAction {
+    override fun getConstraints(): Matcher<View> {
+        return ViewMatchers.isEnabled()
+    }
+
+    override fun getDescription(): String {
+        return "click location button"
+    }
+
+    override fun perform(uiController: UiController?, view: View?) {
+        view!!.performClick()
+    }
+
 }
 
