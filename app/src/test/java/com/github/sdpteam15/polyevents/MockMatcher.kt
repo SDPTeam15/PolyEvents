@@ -1,15 +1,16 @@
 package com.github.sdpteam15.polyevents
+
 import org.junit.Test
 import org.mockito.Mockito
 import kotlin.reflect.KClass
 import kotlin.test.assertNotNull
 
-class  MockMatcherTest {
+class MockMatcherTest {
 
-    class TestClass (var string: String)
+    class TestClass(var string: String)
 
     interface TestInterface {
-        fun dotest(test : TestClass) : Boolean
+        fun dotest(test: TestClass): Boolean
     }
 
     @Test
@@ -30,6 +31,12 @@ class  MockMatcherTest {
         assert(!testInterface.dotest(testClassFalse))
     }
 }
+
+/*
+source : https://github.com/mockito/mockito-kotlin
+https://github.com/mockito/mockito-kotlin/blob/main/mockito-kotlin/src/main/kotlin/org/mockito/kotlin/Matchers.kt
+https://github.com/mockito/mockito-kotlin/blob/main/mockito-kotlin/src/main/kotlin/org/mockito/kotlin/internal/CreateInstance.kt
+ */
 
 /*
  * The MIT License
@@ -60,6 +67,7 @@ class  MockMatcherTest {
 inline fun <reified T : Any> anyOrNull(): T {
     return org.mockito.ArgumentMatchers.any<T>() ?: createInstance()
 }
+
 inline fun <reified T : Any> createInstance(): T {
     return when (T::class) {
         Boolean::class -> false as T

@@ -4,6 +4,7 @@ import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.model.Event
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
+import com.github.sdpteam15.polyevents.model.Zone
 import com.google.android.gms.maps.model.LatLng
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
@@ -36,6 +37,10 @@ class FakeDatabaseTests {
         assert(FakeDatabase.getUpcomingEvents(1, mokedUserProfile).size <= 1)
         assert(FakeDatabase.getUpcomingEvents(100, mokedUserProfile).size <= 100)
         assert(FakeDatabase.updateEvent(mokedEvent, mokedUserProfile))
+        assert(FakeDatabase.getZoneInformation("",Observable(),mokedUserInterface).value!!)
+        assert(FakeDatabase.updateZoneInformation("", Zone(),mokedUserInterface).value!!)
+        assert(FakeDatabase.createZone(Zone(),mokedUserInterface).value!!)
+        assert(FakeDatabase.getEventFromId("",mokedUserProfile)==FakeDatabase.getListEvent()[0])
     }
 
     @Test

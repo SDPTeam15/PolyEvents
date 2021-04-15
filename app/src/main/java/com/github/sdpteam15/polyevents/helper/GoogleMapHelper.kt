@@ -1,12 +1,15 @@
 package com.github.sdpteam15.polyevents.helper
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.database.DatabaseConstant
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
 import kotlin.math.pow
 
@@ -22,12 +25,11 @@ data class IconBound(var leftBound: Int, var topBound: Int, var rightBound: Int,
 data class IconDimension(var width: Int, var height: Int)
 data class IconAnchor(var anchorWidth: Float, var anchorHeight: Float)
 
+@SuppressLint("StaticFieldLeak")
 object GoogleMapHelper {
     var context: Context? = null
-
-    //var map: GoogleMap? = null
-    var map: MapsInterface? = null
-    var uid = 1
+    var map: GoogleMap? = null
+    var uid = 0
 
     var editMode = false
 
@@ -41,7 +43,8 @@ object GoogleMapHelper {
     var cameraPosition = LatLng(46.52010210373031, 6.566237434744834)
     var cameraZoom = 18f
 
-    val areasPoints: MutableMap<String, Pair<Marker, Polygon>> = mutableMapOf()
+    val areasPoints: MutableMap<Int, Pair<Marker, Polygon>> = mutableMapOf()
+    var coordinates: MutableMap<Int, List<LatLng>> = mutableMapOf()
 
     /**
      * Temporary variables when adding and editing an area
@@ -118,13 +121,13 @@ object GoogleMapHelper {
             listEvent1.add(LatLng(46.52073238207864, 6.565499156713487))
             listEvent1.add(LatLng(46.52073238207864, 6.565711721777915))
             listEvent1.add(LatLng(46.52100506978624, 6.565711721777915))
-            addArea("uid++.toString()", listEvent1, "Sushi Demo")
+            addArea(uid++, listEvent1, "Sushi Demo")
 
             val listEvent2 = arrayListOf<LatLng>()
             listEvent2.add(LatLng(46.52015447340308, 6.5656305849552155))
             listEvent2.add(LatLng(46.52036049105315, 6.5658414736390105))
             listEvent2.add(LatLng(46.52013394080612, 6.566103324294089))
-            addArea(uid++.toString(), listEvent2, "Triangle")
+            addArea(uid++, listEvent2, "Triangle")
 
             val listEvent3 = arrayListOf<LatLng>()
             listEvent3.add(LatLng(46.52111073013754, 6.565624214708805))
@@ -135,7 +138,7 @@ object GoogleMapHelper {
             listEvent3.add(LatLng(46.52115986905187, 6.565871313214302))
             listEvent3.add(LatLng(46.52115986905187, 6.565824374556541))
             listEvent3.add(LatLng(46.521115113422766, 6.565824374556541))
-            addArea(uid++.toString(), listEvent3, "La route en T")
+            addArea(uid++, listEvent3, "La route en T")
         }
     }
 
@@ -156,6 +159,8 @@ object GoogleMapHelper {
      */
     fun addArea(id: String, coords: List<LatLng>, name: String) {
         if (coords.isNotEmpty()) {
+            coordinates[id] = coords
+
             val poly = PolygonOptions()
             poly.addAll(coords).clickable(true)
 
@@ -258,7 +263,6 @@ object GoogleMapHelper {
         tempValues.clear()
         tempTitle = null
     }
-
 
     /**
      * Add a new area at the coordinates and add the markers to edit the area
@@ -526,5 +530,43 @@ object GoogleMapHelper {
         tempLatLng = area.second.points.dropLast(1).toMutableList()
 
         setupModifyMarkers()
+    }
+
+
+    fun areasToFormattedStringLocations(
+        points: MutableMap<Int, List<LatLng>> = coordinates,
+        from: Int = 0,
+        to: Int = points.size
+    ): String {
+        println("Range " + (from until to).toString())
+        println("From $from")
+        println("To $to")
+        println("Map $points")
+
+        var s = ""
+        for (i in from until to) {
+            s += areaToFormattedStringLocation(points[i])
+            s += DatabaseConstant.AREAS_SEP
+        }
+        println(s)
+        return s.substring(0, s.length - DatabaseConstant.AREAS_SEP.length)
+    }
+
+    fun areaToFormattedStringLocation(loc: List<LatLng>?): String {
+        if (loc == null){
+            return ""
+        }
+        var s = ""
+
+        for (c in loc) {
+            s += c.latitude.toString() + DatabaseConstant.LAT_LONG_SEP + c.longitude.toString() + DatabaseConstant.POINTS_SEP
+        }
+        return s.substring(0, s.length - DatabaseConstant.POINTS_SEP.length)
+    }
+    fun removeRangePolygon(from: Int, to: Int){
+        for(r in (from until to)){
+            areasPoints.remove(r)?.second?.remove()
+            coordinates.remove(r)
+        }
     }
 }
