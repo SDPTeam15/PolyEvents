@@ -87,10 +87,10 @@ object FirestoreDatabaseProvider : DatabaseInterface {
 
 
     //Method used to get listener in the test set to mock and test the database
-    var lastGetSuccessListener: OnSuccessListener<QuerySnapshot>? = null
+    var lastQuerySuccessListener: OnSuccessListener<QuerySnapshot>? = null
     var lastSetSuccessListener: OnSuccessListener<Void>? = null
     var lastFailureListener: OnFailureListener? = null
-    var lastMultGetSuccessListener: OnSuccessListener<DocumentSnapshot>? = null
+    var lastGetSuccessListener: OnSuccessListener<DocumentSnapshot>? = null
     var lastAddSuccessListener: OnSuccessListener<DocumentReference>?=null
 
     /**
@@ -122,13 +122,13 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         onSuccessListener: (QuerySnapshot) -> Unit
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
-        lastGetSuccessListener = OnSuccessListener<QuerySnapshot> {
+        lastQuerySuccessListener = OnSuccessListener<QuerySnapshot> {
             onSuccessListener(it)
             ended.postValue(true)
         }
 
         lastFailureListener = OnFailureListener { ended.postValue(false) }
-        task.addOnSuccessListener(lastGetSuccessListener!!)
+        task.addOnSuccessListener(lastQuerySuccessListener!!)
             .addOnFailureListener(lastFailureListener!!)
         return ended
     }
@@ -144,12 +144,12 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         onSuccessListener: (DocumentSnapshot) -> Unit
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
-        lastMultGetSuccessListener = OnSuccessListener<DocumentSnapshot> {
+        lastGetSuccessListener = OnSuccessListener<DocumentSnapshot> {
             onSuccessListener(it)
             ended.postValue(true)
         }
         lastFailureListener = OnFailureListener { ended.postValue(false) }
-        task.addOnSuccessListener(lastMultGetSuccessListener!!)
+        task.addOnSuccessListener(lastGetSuccessListener!!)
             .addOnFailureListener(lastFailureListener!!)
         return ended
     }

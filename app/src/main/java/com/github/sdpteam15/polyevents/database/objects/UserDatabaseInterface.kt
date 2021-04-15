@@ -21,19 +21,6 @@ interface UserDatabaseInterface {
     ): Observable<Boolean>
 
     /**
-     * Update profile
-     * @param newValues : a map with the new value to set in the database
-     * @param pid : the uid of the profile from which we want to query the information
-     * @param userAccess: the user object to use its permission
-     * @return An observer that will be set to true if the communication with the DB is over and no error
-     */
-    fun updateProfile(
-        newValues: Map<String, String>,
-        pid: String,
-        userAccess: UserEntity? = currentUser
-    ): Observable<Boolean>
-
-    /**
      * Register the user in the database with its basic information (uid, email, name)
      * @param user : user with all the requested information
      * @param userAccess: the user object to use its permission

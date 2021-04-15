@@ -82,10 +82,10 @@ class FirestoreDatabaseProviderTest {
         FirestoreDatabaseProvider.firestore = mockedDatabase
 
         FirestoreDatabaseProvider.firstConnectionUser=UserEntity(uid = "DEFAULT")
-        FirestoreDatabaseProvider.lastGetSuccessListener= null
+        FirestoreDatabaseProvider.lastQuerySuccessListener= null
         FirestoreDatabaseProvider.lastSetSuccessListener= null
         FirestoreDatabaseProvider.lastFailureListener= null
-        FirestoreDatabaseProvider.lastMultGetSuccessListener= null
+        FirestoreDatabaseProvider.lastGetSuccessListener= null
         FirestoreDatabaseProvider.lastAddSuccessListener= null
     }
 
@@ -163,7 +163,7 @@ class FirestoreDatabaseProviderTest {
         //mock sets the listerner
         When(mockedTask.addOnSuccessListener(any())).thenAnswer {
             //Trigger the last used trigger that will do a callback according to the inDatabase method
-            FirestoreDatabaseProvider.lastGetSuccessListener!!.onSuccess(mockedDocument)
+            FirestoreDatabaseProvider.lastQuerySuccessListener!!.onSuccess(mockedDocument)
             mockedTask
         }
         When(mockedTask.addOnFailureListener(any())).thenAnswer {
@@ -203,7 +203,7 @@ class FirestoreDatabaseProviderTest {
         When(mockedList.size).thenReturn(0)
         When(mockedTask.addOnSuccessListener(any())).thenAnswer {
             //Trigger the last used trigger that will do a callback according to the inDatabase method
-            FirestoreDatabaseProvider.lastGetSuccessListener!!.onSuccess(mockedDocument)
+            FirestoreDatabaseProvider.lastQuerySuccessListener!!.onSuccess(mockedDocument)
             mockedTask
         }
         When(mockedTask.addOnFailureListener(any())).thenAnswer {
@@ -236,7 +236,7 @@ class FirestoreDatabaseProviderTest {
 
         When(mockedTask.addOnSuccessListener(any())).thenAnswer {
             //Trigger the last used trigger that will do a callback according to the getUserInformation method
-            FirestoreDatabaseProvider.lastMultGetSuccessListener!!.onSuccess(mockedDocument)
+            FirestoreDatabaseProvider.lastGetSuccessListener!!.onSuccess(mockedDocument)
             mockedTask
         }
         When(mockedTask.addOnFailureListener(any())).thenAnswer {
@@ -405,22 +405,22 @@ class FirestoreDatabaseProviderTest {
         FirestoreDatabaseProvider.firstConnectionUser = user
         assertThat(FirestoreDatabaseProvider.firstConnectionUser,Is(user))
 
-        val lastGetSuccessListener=OnSuccessListener<QuerySnapshot> { }
+        val lastQuerySuccessListener=OnSuccessListener<QuerySnapshot> { }
         val lastSetSuccessListener=OnSuccessListener<Void> { }
         val lastFailureListener= OnFailureListener {  }
-        val lastMultGetSuccessListener=OnSuccessListener<DocumentSnapshot> { }
+        val lastGetSuccessListener=OnSuccessListener<DocumentSnapshot> { }
         val lastAddSuccessListener=OnSuccessListener<DocumentReference> { }
 
-        FirestoreDatabaseProvider.lastGetSuccessListener= lastGetSuccessListener
+        FirestoreDatabaseProvider.lastQuerySuccessListener= lastQuerySuccessListener
         FirestoreDatabaseProvider.lastSetSuccessListener= lastSetSuccessListener
         FirestoreDatabaseProvider.lastFailureListener= lastFailureListener
-        FirestoreDatabaseProvider.lastMultGetSuccessListener= lastMultGetSuccessListener
+        FirestoreDatabaseProvider.lastGetSuccessListener= lastGetSuccessListener
         FirestoreDatabaseProvider.lastAddSuccessListener= lastAddSuccessListener
 
-        assertThat(FirestoreDatabaseProvider.lastGetSuccessListener,Is(lastGetSuccessListener))
+        assertThat(FirestoreDatabaseProvider.lastQuerySuccessListener,Is(lastQuerySuccessListener))
         assertThat(FirestoreDatabaseProvider.lastSetSuccessListener,Is(lastSetSuccessListener))
         assertThat(FirestoreDatabaseProvider.lastFailureListener,Is(lastFailureListener))
-        assertThat(FirestoreDatabaseProvider.lastMultGetSuccessListener,Is(lastMultGetSuccessListener))
+        assertThat(FirestoreDatabaseProvider.lastGetSuccessListener,Is(lastGetSuccessListener))
         assertThat(FirestoreDatabaseProvider.lastAddSuccessListener,Is(lastAddSuccessListener))
 
     }
@@ -470,7 +470,7 @@ class FirestoreDatabaseProviderTest {
         When(mockedDocument.documents).thenReturn(listMockedDocs)
 
         When(mockedTask.addOnSuccessListener(any())).thenAnswer {
-            FirestoreDatabaseProvider.lastGetSuccessListener!!.onSuccess(mockedDocument)
+            FirestoreDatabaseProvider.lastQuerySuccessListener!!.onSuccess(mockedDocument)
             mockedTask
         }
         When(mockedTask.addOnFailureListener(any())).thenAnswer {
@@ -581,7 +581,7 @@ class FirestoreDatabaseProviderTest {
         When(mockedDocument.id).thenReturn(zoneID)
 
         When(mockedTask.addOnSuccessListener(any())).thenAnswer {
-            FirestoreDatabaseProvider.lastMultGetSuccessListener!!.onSuccess(mockedDocument)
+            FirestoreDatabaseProvider.lastGetSuccessListener!!.onSuccess(mockedDocument)
             //set method in hard to see if the success listener is successfully called
             mockedTask
         }
