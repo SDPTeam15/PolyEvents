@@ -58,10 +58,10 @@ class EditProfileActivity : AppCompatActivity() {
             rankLayout.visibility = View.GONE
         }
 
-        rank.setOnFocusChangeListener { view, b ->
+        rank.setOnFocusChangeListener { _, b ->
             rankOnFocusChangeListener(b)
         }
-        name.setOnFocusChangeListener { view, b ->
+        name.setOnFocusChangeListener { _, b ->
             nameOnFocusChangeListener(b)
         }
 

@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.*
 import com.github.sdpteam15.polyevents.adapter.ProfileAdapter
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_USERNAME
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.UserConstants.*
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
@@ -90,7 +90,7 @@ class ProfileFragment : Fragment() {
         viewRoot.findViewById<Button>(R.id.btnUpdateInfos).setOnClickListener {
             //Clear the previous map and add every field
             hashMapNewInfo.clear()
-            hashMapNewInfo[USER_USERNAME] = profileUsernameET.text.toString()
+            hashMapNewInfo[USER_USERNAME.value] = profileUsernameET.text.toString()
             // TODO: editText should have birthday input and convert it to Timestamp otherwise things crash
             //hashMapNewInfo[USER_BIRTH_DATE] = viewRoot.findViewById<EditText>(R.id.profileBirthdayET).text.toString()
 

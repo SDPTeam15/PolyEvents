@@ -1,9 +1,6 @@
 package com.github.sdpteam15.polyevents.util
 
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_DESCRIPTION
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_DOCUMENT_ID
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_LOCATION
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_NAME
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZoneConstant.*
 import com.github.sdpteam15.polyevents.model.Zone
 import org.junit.Before
 import org.junit.Test
@@ -26,19 +23,19 @@ class ZoneAdapterTest {
     fun conversionOfZoneToDocumentPreservesData() {
         val document = ZoneAdapter.toDocument(zone)
 
-        assertEquals(document[ZONE_NAME], zone.zoneName)
-        assertEquals(document[ZONE_LOCATION], zone.location)
-        assertEquals(document[ZONE_DESCRIPTION], zone.description)
-        assertEquals(document[ZONE_DOCUMENT_ID], zone.zoneId)
+        assertEquals(document[ZONE_NAME.value], zone.zoneName)
+        assertEquals(document[ZONE_LOCATION.value], zone.location)
+        assertEquals(document[ZONE_DESCRIPTION.value], zone.description)
+        assertEquals(document[ZONE_DOCUMENT_ID.value], zone.zoneId)
     }
 
     @Test
     fun conversionOfDocumentToZonePreservesData() {
         val zoneDocumentData: HashMap<String, Any?> = hashMapOf(
-            ZONE_NAME to zone.zoneName,
-            ZONE_LOCATION to zone.location,
-            ZONE_DESCRIPTION to zone.description,
-            ZONE_DOCUMENT_ID to zone.zoneId
+            ZONE_NAME.value to zone.zoneName,
+            ZONE_LOCATION.value to zone.location,
+            ZONE_DESCRIPTION.value to zone.description,
+            ZONE_DOCUMENT_ID.value to zone.zoneId
         )
         val obtainedZone = ZoneAdapter.fromDocument(zoneDocumentData, zoneId)
         assertEquals(obtainedZone, zone)
@@ -48,11 +45,11 @@ class ZoneAdapterTest {
     fun conversionOfZoneToDocumentWithoutIDAddNoId() {
         val document = ZoneAdapter.toDocument(Zone(null, zoneName, location, zoneDescription))
         print(document)
-        assertEquals(document[ZONE_NAME], zone.zoneName)
-        assertEquals(document[ZONE_LOCATION], zone.location)
-        assertEquals(document[ZONE_DESCRIPTION], zone.description)
-        println(document.containsKey(ZONE_DOCUMENT_ID))
-        println(document[ZONE_DOCUMENT_ID])
-        assert(!document.containsKey(ZONE_DOCUMENT_ID))
+        assertEquals(document[ZONE_NAME.value], zone.zoneName)
+        assertEquals(document[ZONE_LOCATION.value], zone.location)
+        assertEquals(document[ZONE_DESCRIPTION.value], zone.description)
+        println(document.containsKey(ZONE_DOCUMENT_ID.value))
+        println(document[ZONE_DOCUMENT_ID.value])
+        assert(!document.containsKey(ZONE_DOCUMENT_ID.value))
     }
 }

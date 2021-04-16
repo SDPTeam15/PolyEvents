@@ -1,6 +1,6 @@
 package com.github.sdpteam15.polyevents.model
 
-import com.github.sdpteam15.polyevents.database.DatabaseConstant
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZoneConstant.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.IgnoreExtraProperties
 
@@ -25,12 +25,12 @@ data class Zone (
     fun getZoneCoordinates():MutableList<MutableList<LatLng>>{
         val listZoneCoordinates: MutableList<MutableList<LatLng>> = ArrayList()
         if(location!=null) {
-            val arr = location!!.split(DatabaseConstant.AREAS_SEP)
+            val arr = location!!.split(AREAS_SEP.value)
             for(s in arr){
                 val curList = ArrayList<LatLng>()
-                val points = s.split(DatabaseConstant.POINTS_SEP)
+                val points = s.split(POINTS_SEP.value)
                 for(p in points){
-                    val coor = p.split(DatabaseConstant.LAT_LONG_SEP)
+                    val coor = p.split(LAT_LONG_SEP.value)
                     curList.add(LatLng(coor[0].toDouble(), coor[1].toDouble()))
                 }
                 listZoneCoordinates.add(curList)

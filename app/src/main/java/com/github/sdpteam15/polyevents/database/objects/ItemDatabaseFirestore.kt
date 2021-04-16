@@ -1,20 +1,19 @@
 package com.github.sdpteam15.polyevents.database.objects
 
 import android.annotation.SuppressLint
-import com.github.sdpteam15.polyevents.database.Database
-import com.github.sdpteam15.polyevents.database.DatabaseConstant
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.ITEM_COLLECTION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.ItemConstants.ITEM_COUNT
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.Item
-import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 import com.github.sdpteam15.polyevents.util.ItemEntityAdapter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
-object ItemDatabaseFirestore: ItemDatabaseInterface {
+object ItemDatabaseFirestore : ItemDatabaseInterface {
     @SuppressLint("StaticFieldLeak")
     var firestore: FirebaseFirestore? = null
         get() = field ?: Firebase.firestore
@@ -24,14 +23,14 @@ object ItemDatabaseFirestore: ItemDatabaseInterface {
         count: Int,
         profile: UserProfile?
     ): Observable<Boolean> = FirestoreDatabaseProvider.thenDoAdd(
-        FirestoreDatabaseProvider.firestore!!.collection(DatabaseConstant.ITEM_COLLECTION)
+        FirestoreDatabaseProvider.firestore!!.collection(ITEM_COLLECTION.value)
             .add(ItemEntityAdapter.toItemDocument(item, count))
     )
 
 
     override fun removeItem(itemId: String, profile: UserProfile?): Observable<Boolean> =
         FirestoreDatabaseProvider.thenDoSet(
-            FirestoreDatabaseProvider.firestore!!.collection(DatabaseConstant.ITEM_COLLECTION)
+            FirestoreDatabaseProvider.firestore!!.collection(ITEM_COLLECTION.value)
                 .document(itemId).delete()
         )
 
@@ -44,7 +43,7 @@ object ItemDatabaseFirestore: ItemDatabaseInterface {
         // if (item.itemId == null) return createItem(item, count, profile)
         return FirestoreDatabaseProvider.thenDoSet(
             FirestoreDatabaseProvider.firestore!!
-                .collection(DatabaseConstant.ITEM_COLLECTION)
+                .collection(ITEM_COLLECTION.value)
                 .document(item.itemId!!)
                 .set(ItemEntityAdapter.toItemDocument(item, count))
         )
@@ -55,7 +54,7 @@ object ItemDatabaseFirestore: ItemDatabaseInterface {
         profile: UserProfile?
     ): Observable<Boolean> {
         return FirestoreDatabaseProvider.thenDoGet(
-            FirestoreDatabaseProvider.firestore!!.collection(DatabaseConstant.ITEM_COLLECTION).get()
+            FirestoreDatabaseProvider.firestore!!.collection(ITEM_COLLECTION.value).get()
         ) { querySnapshot ->
             itemList.clear(this)
             val items = querySnapshot.documents.map {
@@ -70,8 +69,8 @@ object ItemDatabaseFirestore: ItemDatabaseInterface {
         profile: UserProfile?
     ): Observable<Boolean> {
         return FirestoreDatabaseProvider.thenDoGet(
-            FirestoreDatabaseProvider.firestore!!.collection(DatabaseConstant.ITEM_COLLECTION)
-                .whereGreaterThan(DatabaseConstant.ITEM_COUNT, 0).get()
+            FirestoreDatabaseProvider.firestore!!.collection(ITEM_COLLECTION.value)
+                .whereGreaterThan(ITEM_COUNT.value, 0).get()
         ) { querySnapshot ->
             itemList.clear(this)
             val items = querySnapshot.documents.map {

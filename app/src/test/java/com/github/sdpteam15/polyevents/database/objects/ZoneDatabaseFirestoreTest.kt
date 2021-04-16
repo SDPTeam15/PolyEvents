@@ -1,6 +1,7 @@
 package objects
 
-import com.github.sdpteam15.polyevents.database.DatabaseConstant
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZoneConstant.*
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.*
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.objects.ZoneDatabaseFirestore
@@ -45,10 +46,10 @@ class ZoneDatabaseFirestoreTest {
         )
 
         zoneDocument = hashMapOf(
-            DatabaseConstant.ZONE_DOCUMENT_ID to zoneID,
-            DatabaseConstant.ZONE_DESCRIPTION to zoneDesc,
-            DatabaseConstant.ZONE_LOCATION to zoneLoc,
-            DatabaseConstant.ZONE_NAME to zoneName
+            ZONE_DOCUMENT_ID.value to zoneID,
+            ZONE_DESCRIPTION.value to zoneDesc,
+            ZONE_LOCATION.value to zoneLoc,
+            ZONE_NAME.value to zoneName
         )
 
 
@@ -80,7 +81,7 @@ class ZoneDatabaseFirestoreTest {
 
         val testZone = Zone(zoneID, zoneName, zoneLoc, zoneDesc)
 
-        When(mockedDatabase.collection(DatabaseConstant.ZONE_COLLECTION)).thenReturn(
+        When(mockedDatabase.collection(ZONE_COLLECTION.value)).thenReturn(
             mockedCollectionReference
         )
         When(mockedCollectionReference.add(ZoneAdapter.toDocument(testZone))).thenReturn(
@@ -122,7 +123,7 @@ class ZoneDatabaseFirestoreTest {
         val mockedDocumentReference = Mockito.mock(DocumentReference::class.java)
         val testZone = Zone(zoneID, zoneName, zoneLoc, zoneDesc)
 
-        When(mockedDatabase.collection(DatabaseConstant.ZONE_COLLECTION)).thenReturn(
+        When(mockedDatabase.collection(ZONE_COLLECTION.value)).thenReturn(
             mockedCollectionReference
         )
         When(mockedCollectionReference.document(zoneID))
@@ -166,7 +167,7 @@ class ZoneDatabaseFirestoreTest {
         val mockedDocumentReference = Mockito.mock(DocumentReference::class.java)
         val mockedDocument = Mockito.mock(DocumentSnapshot::class.java)
 
-        When(mockedDatabase.collection(DatabaseConstant.ZONE_COLLECTION)).thenReturn(
+        When(mockedDatabase.collection(ZONE_COLLECTION.value)).thenReturn(
             mockedCollectionReference
         )
         When(mockedCollectionReference.document(zoneID))

@@ -56,10 +56,10 @@ object GoogleUserLogin : UserLoginInterface<AuthResult> {
     }
 
     override fun getCurrentUser(): UserEntity? {
-        if (FirebaseAuth.getInstance().currentUser != null) {
-            return FirebaseUserAdapter.toUser(FirebaseAuth.getInstance().currentUser!!)
+        return if (FirebaseAuth.getInstance().currentUser != null) {
+            FirebaseUserAdapter.toUser(FirebaseAuth.getInstance().currentUser!!)
         } else {
-            return null
+            null
         }
     }
 

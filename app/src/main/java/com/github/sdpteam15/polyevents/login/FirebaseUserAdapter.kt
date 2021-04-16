@@ -12,7 +12,8 @@ object FirebaseUserAdapter {
             uid = firebaseUser.uid,
             name = firebaseUser.displayName,
             email = firebaseUser.email,
-            telephone = firebaseUser.phoneNumber
+            telephone = firebaseUser.phoneNumber,
+            profiles = ArrayList()
         )
     }
 }

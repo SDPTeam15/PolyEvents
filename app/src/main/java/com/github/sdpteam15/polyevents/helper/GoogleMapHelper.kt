@@ -11,6 +11,7 @@ import com.github.sdpteam15.polyevents.database.DatabaseConstant
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.*
 import kotlin.math.*
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZoneConstant.*
 
 enum class PolygonAction {
     RIGHT,
@@ -704,10 +705,10 @@ object GoogleMapHelper {
         var s = ""
         for (i in from until to) {
             s += areaToFormattedStringLocation(points[i])
-            s += DatabaseConstant.AREAS_SEP
+            s += AREAS_SEP.value
         }
         println(s)
-        return s.substring(0, s.length - DatabaseConstant.AREAS_SEP.length)
+        return s.substring(0, s.length - AREAS_SEP.value.length)
     }
 
     fun areaToFormattedStringLocation(loc: List<LatLng>?): String {
@@ -717,9 +718,9 @@ object GoogleMapHelper {
         var s = ""
 
         for (c in loc) {
-            s += c.latitude.toString() + DatabaseConstant.LAT_LONG_SEP + c.longitude.toString() + DatabaseConstant.POINTS_SEP
+            s += c.latitude.toString() + LAT_LONG_SEP.value + c.longitude.toString() + POINTS_SEP.value
         }
-        return s.substring(0, s.length - DatabaseConstant.POINTS_SEP.length)
+        return s.substring(0, s.length - POINTS_SEP.value.length)
     }
 
     fun removeRangePolygon(from: Int, to: Int) {

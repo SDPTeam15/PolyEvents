@@ -11,8 +11,6 @@ import com.github.sdpteam15.polyevents.util.AdapterInterface
 import kotlin.random.Random
 
 object FakeDatabase : DatabaseInterface {
-
-
     var CURRENT_USER: UserEntity = UserEntity(
         uid = "FakeUID",
         name = "FakeName",

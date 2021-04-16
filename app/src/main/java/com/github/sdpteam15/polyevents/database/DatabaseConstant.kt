@@ -4,73 +4,7 @@ package com.github.sdpteam15.polyevents.database
  * Constants of collection names and attribute names.
  */
 object DatabaseConstant {
-    /**
-     * User related constants
-     */
-    const val USER_COLLECTION = "users"
-    const val USER_UID = "uid"
-    const val USER_USERNAME = "username"
-    const val USER_NAME = "name"
-    const val USER_DISPLAY_NAME = "displayName"
-    const val USER_EMAIL = "email"
-    const val USER_AGE = "age"
-    const val USER_TYPE = "userType"
-    const val USER_BIRTH_DATE = "birthDate"
-    const val USER_PHONE = "telephone"
-    const val USER_PROFILES = "profiles"
-
-    /**
-     * Profile related constants
-     */
-    const val PROFILE_COLLECTION = "profile"
-    const val PROFILE_ID = "pid"
-    const val PROFILE_NAME = "name"
-    const val PROFILE_RANK = "rank"
-    const val PROFILE_USERS = "users"
-
-    /**
-     * Event related constants
-     */
-    const val EVENT_COLLECTION = "events"
-    const val EVENT_DOCUMENT_ID = "eventId"
-    const val EVENT_NAME = "eventName"
-    const val EVENT_ZONE_NAME = "zoneName"
-    const val EVENT_DESCRIPTION = "description"
-    const val EVENT_ORGANIZER = "organizer"
-    const val EVENT_START_TIME = "startTime"
-    const val EVENT_END_TIME = "endTime"
-    const val EVENT_INVENTORY = "inventory"
-    const val EVENT_ICON = "icon"
-    const val EVENT_TAGS = "tags"
-
-    /**
-     * Items related constants
-     */
-    const val ITEM_COLLECTION = "items"
-    const val ITEM_DOCUMENT_ID = "itemId"
-    const val ITEM_NAME = "itemName"
-    const val ITEM_TYPE = "itemType"
-    const val ITEM_COUNT = "count"
-
-    /**
-     * Area related constants
-     */
-    const val ZONE_COLLECTION = "zones"
-    const val ZONE_DOCUMENT_ID = "zoneId"
-    const val ZONE_NAME = "zoneName"
-    const val ZONE_LOCATION = "zoneLocation"
-    const val ZONE_DESCRIPTION = "zoneDescription"
-    const val LAT_LONG_SEP = "|"
-    const val POINTS_SEP = "!"
-    const val AREAS_SEP = "?"
-
-    /**
-     * Current locations related constants
-     */
-    const val LOCATIONS_COLLECTION = "locations"
-    const val LOCATIONS_POINT = "point"
-
-    enum class CollectionConstant(val str: String) {
+    enum class CollectionConstant(val value: String) {
         LOCATION_COLLECTION("locations"),
         ZONE_COLLECTION("zones"),
         ITEM_COLLECTION("items"),
@@ -79,8 +13,7 @@ object DatabaseConstant {
         USER_COLLECTION("users")
     }
 
-    enum class EventConstant(val str: String) {
-        EVENT_COLLECTION("events"),
+    enum class EventConstant(val value: String) {
         EVENT_DOCUMENT_ID("eventId"),
         EVENT_NAME("eventName"),
         EVENT_ZONE_NAME("zoneName"),
@@ -93,21 +26,22 @@ object DatabaseConstant {
         EVENT_TAGS("tags")
     }
 
-    enum class ItemConstants(val str: String) {
-        ITEM_COLLECTION("items"),
+    enum class ItemConstants(val value: String) {
         ITEM_DOCUMENT_ID("itemId"),
         ITEM_NAME("name"),
-        ITEM_TYPE("itemType")
+        ITEM_TYPE("itemType"),
+        ITEM_COUNT("itemCount")
     }
 
-    enum class ProfileConstants(val str: String) {
+    enum class ProfileConstants(val value: String) {
         PROFILE_COLLECTION("profile"),
         PROFILE_ID("pid"),
         PROFILE_NAME("name"),
-        PROFILE_RANK("rank")
+        PROFILE_RANK("rank"),
+        PROFILE_USERS("users")
     }
 
-    enum class UserConstants(val str: String) {
+    enum class UserConstants(val value: String) {
         USER_UID("uid"),
         USER_USERNAME("username"),
         USER_NAME("name"),
@@ -120,8 +54,7 @@ object DatabaseConstant {
         USER_PROFILES("profiles")
     }
 
-    enum class ZoneConstant(val str: String) {
-        ZONE_COLLECTION("zones"),
+    enum class ZoneConstant(val value: String) {
         ZONE_DOCUMENT_ID("zoneId"),
         ZONE_NAME("zoneName"),
         ZONE_LOCATION("zoneLocation"),
@@ -131,7 +64,7 @@ object DatabaseConstant {
         AREAS_SEP("?")
     }
 
-    enum class LocationConstant(val str: String) {
+    enum class LocationConstant(val value: String) {
         LOCATIONS_COLLECTION("locations"),
         LOCATIONS_POINT("point")
     }

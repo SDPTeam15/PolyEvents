@@ -2,11 +2,11 @@ package com.github.sdpteam15.polyevents.database.objects
 
 import android.annotation.SuppressLint
 import com.github.sdpteam15.polyevents.database.Database
-import com.github.sdpteam15.polyevents.database.DatabaseConstant
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZoneConstant.*
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.*
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.model.UserEntity
-import com.github.sdpteam15.polyevents.model.UserProfile
 import com.github.sdpteam15.polyevents.model.Zone
 import com.github.sdpteam15.polyevents.util.ZoneAdapter
 import com.google.firebase.firestore.FirebaseFirestore
@@ -21,7 +21,7 @@ object ZoneDatabaseFirestore : ZoneDatabaseInterface {
     override fun createZone(zone: Zone, userAccess: UserEntity?): Observable<Boolean> {
         return FirestoreDatabaseProvider.thenDoAdd(
             firestore!!
-                .collection(DatabaseConstant.ZONE_COLLECTION)
+                .collection(ZONE_COLLECTION.value)
                 .add(ZoneAdapter.toDocument(zone))
         )
     }
@@ -34,11 +34,11 @@ object ZoneDatabaseFirestore : ZoneDatabaseInterface {
     ): Observable<Boolean> {
         return FirestoreDatabaseProvider.thenDoMultGet(
             firestore!!
-                .collection(DatabaseConstant.ZONE_COLLECTION)
+                .collection(ZONE_COLLECTION.value)
                 .document(zoneId)
                 .get()
         ) {
-            it.data?.let { it1 -> zone.postValue(ZoneAdapter.fromDocument(it1, it.id),this) }
+            it.data?.let { it1 -> zone.postValue(ZoneAdapter.fromDocument(it1, it.id), this) }
         }
     }
 
@@ -49,7 +49,7 @@ object ZoneDatabaseFirestore : ZoneDatabaseInterface {
     ): Observable<Boolean> {
         return FirestoreDatabaseProvider.thenDoSet(
             firestore!!
-                .collection(DatabaseConstant.ZONE_COLLECTION)
+                .collection(ZONE_COLLECTION.value)
                 .document(zoneId)
                 .update(ZoneAdapter.toDocument(newZone))
         )

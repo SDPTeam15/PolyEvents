@@ -1,6 +1,6 @@
 package com.github.sdpteam15.polyevents.util
 
-import com.github.sdpteam15.polyevents.database.DatabaseConstant
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.ProfileConstants.*
 import com.github.sdpteam15.polyevents.model.UserProfile
 import com.github.sdpteam15.polyevents.model.UserRole
 
@@ -12,18 +12,18 @@ import com.github.sdpteam15.polyevents.model.UserRole
 object ProfileAdapter : AdapterInterface<UserProfile> {
 
     override fun toDocument(element: UserProfile): HashMap<String, Any?> = hashMapOf(
-        DatabaseConstant.PROFILE_ID to element.pid,
-        DatabaseConstant.PROFILE_NAME to element.profileName,
-        DatabaseConstant.PROFILE_RANK to element.userRole,
-        DatabaseConstant.PROFILE_USERS to element.users
+        PROFILE_ID.value to element.pid,
+        PROFILE_NAME.value to element.profileName,
+        PROFILE_RANK.value to element.userRole,
+        PROFILE_USERS.value to element.users
     )
 
     override fun fromDocument(document: MutableMap<String, Any?>, id: String) = UserProfile(
         pid = id as String?,
-        profileName = document[DatabaseConstant.PROFILE_NAME] as String,
-        userRole = if ((document[DatabaseConstant.PROFILE_RANK] as String) != "")
-            UserRole.valueOf(document[DatabaseConstant.PROFILE_RANK] as String)
+        profileName = document[PROFILE_NAME] as String,
+        userRole = if ((document[PROFILE_RANK] as String) != "")
+            UserRole.valueOf(document[PROFILE_RANK] as String)
         else UserRole.PARTICIPANT,
-        users = (document[DatabaseConstant.PROFILE_USERS] as List<String>).toMutableList()
+        users = (document[PROFILE_USERS.value] as List<String>).toMutableList()
     )
 }

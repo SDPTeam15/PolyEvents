@@ -14,32 +14,26 @@ import com.github.sdpteam15.polyevents.util.EventAdapter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.*
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.EventConstant.*
 
 object EventDatabaseFirestore: EventDatabaseInterface {
     @SuppressLint("StaticFieldLeak")
     var firestore: FirebaseFirestore? = null
         get() = field ?: Firebase.firestore
 
-    override val currentUser: UserEntity?
-        get()= Database.currentDatabase.currentUser
-
-    override val currentProfile: UserProfile?
-        get() = Database.currentDatabase.currentProfile
-
-
     override fun createEvent(event: Event, profile: UserProfile?): Observable<Boolean> =
         FirestoreDatabaseProvider.thenDoAdd(
             FirestoreDatabaseProvider.firestore!!.collection(
-                DatabaseConstant.EVENT_COLLECTION
+                EVENT_COLLECTION.value
             ).add(EventAdapter.toDocument(event))
         )
-
 
     override fun updateEvents(event: Event, profile: UserProfile?): Observable<Boolean> {
         // TODO should update add item if non existent in database ?
         // if (event.eventId == null) return createEvent(event, profile)
         return FirestoreDatabaseProvider.thenDoSet(
-            FirestoreDatabaseProvider.firestore!!.collection(DatabaseConstant.EVENT_COLLECTION)
+            FirestoreDatabaseProvider.firestore!!.collection(EVENT_COLLECTION.value)
                 .document(event.eventId!!).set(EventAdapter.toDocument(event))
         )
     }
@@ -49,7 +43,7 @@ object EventDatabaseFirestore: EventDatabaseInterface {
         returnEvent: Observable<Event>,
         profile: UserProfile?
     ): Observable<Boolean> = FirestoreDatabaseProvider.thenDoMultGet(
-        FirestoreDatabaseProvider.firestore!!.collection(DatabaseConstant.EVENT_COLLECTION)
+        FirestoreDatabaseProvider.firestore!!.collection(EVENT_COLLECTION.value)
             .document(id).get()
     ) {
         returnEvent.postValue(
@@ -63,8 +57,7 @@ object EventDatabaseFirestore: EventDatabaseInterface {
         eventList: ObservableList<Event>,
         profile: UserProfile?
     ): Observable<Boolean> {
-
-        val task = FirestoreDatabaseProvider.firestore!!.collection(DatabaseConstant.EVENT_COLLECTION)
+        val task = FirestoreDatabaseProvider.firestore!!.collection(EVENT_COLLECTION.value)
         val query = matcher?.match(task)
         val v = if (query != null) {
             if (number != null) query.limit(number).get() else query.get()

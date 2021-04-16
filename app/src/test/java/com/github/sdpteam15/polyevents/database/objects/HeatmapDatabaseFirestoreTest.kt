@@ -1,6 +1,8 @@
 package com.github.sdpteam15.polyevents.database.objects
 
 import com.github.sdpteam15.polyevents.database.DatabaseConstant
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.*
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.LocationConstant.*
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.observe.Observable
@@ -66,7 +68,7 @@ class HeatmapDatabaseFirestoreTest {
         var latSet = 0.0
         var lngSet = 0.0
 
-        Mockito.`when`(mockedDatabase.collection(DatabaseConstant.LOCATIONS_COLLECTION)).thenReturn(
+        Mockito.`when`(mockedDatabase.collection(LOCATIONS_COLLECTION.value)).thenReturn(
             mockedCollectionReference
         )
 
@@ -75,7 +77,7 @@ class HeatmapDatabaseFirestoreTest {
         Mockito.`when`(
             mockedDocumentReference.set(
                 hashMapOf(
-                    DatabaseConstant.LOCATIONS_POINT to GeoPoint(
+                    LOCATIONS_POINT.value to GeoPoint(
                         pointToAdd.latitude,
                         pointToAdd.longitude
                     )
@@ -129,18 +131,18 @@ class HeatmapDatabaseFirestoreTest {
         )
 
         val mapDoc1 = hashMapOf(
-            DatabaseConstant.LOCATIONS_POINT to locations[0],
-            DatabaseConstant.USER_UID to "1"
+            LOCATIONS_POINT.value to locations[0],
+            DatabaseConstant.UserConstants.USER_UID.value to "1"
         )
         val mapDoc2 = hashMapOf(
-            DatabaseConstant.LOCATIONS_POINT to locations[1],
-            DatabaseConstant.USER_UID to "2"
+            LOCATIONS_POINT.value to locations[1],
+            DatabaseConstant.UserConstants.USER_UID.value to "2"
         )
         Mockito.`when`(mockedDoc1.data).thenReturn(mapDoc1 as Map<String, Any>?)
         Mockito.`when`(mockedDoc2.data).thenReturn(mapDoc2 as Map<String, Any>?)
 
         //mock the needed method
-        Mockito.`when`(mockedDatabase.collection(DatabaseConstant.LOCATIONS_COLLECTION)).thenReturn(
+        Mockito.`when`(mockedDatabase.collection(LOCATIONS_COLLECTION.value)).thenReturn(
             mockedCollectionReference
         )
         Mockito.`when`(mockedCollectionReference.get()).thenReturn(mockedTask)

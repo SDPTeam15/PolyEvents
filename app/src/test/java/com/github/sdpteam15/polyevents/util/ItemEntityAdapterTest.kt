@@ -1,6 +1,6 @@
 package com.github.sdpteam15.polyevents.util
 
-import com.github.sdpteam15.polyevents.database.DatabaseConstant
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.ItemConstants.*
 import com.github.sdpteam15.polyevents.model.Item
 import com.github.sdpteam15.polyevents.model.ItemType
 import org.junit.Assert.assertEquals
@@ -30,10 +30,10 @@ class ItemEntityAdapterTest {
     fun conversionOfDocumentToItemEntityPreservesData() {
 
         val itemDocumentData: HashMap<String, Any?> = hashMapOf(
-            DatabaseConstant.ITEM_NAME to itemName,
-            DatabaseConstant.ITEM_DOCUMENT_ID to itemId,
-            DatabaseConstant.ITEM_TYPE to itemType.name,
-            DatabaseConstant.ITEM_COUNT to itemQuantity.toLong()
+            ITEM_NAME.value to itemName,
+            ITEM_DOCUMENT_ID.value to itemId,
+            ITEM_TYPE.value to itemType.name,
+            ITEM_COUNT.value to itemQuantity.toLong()
         )
         val obtainedItem = ItemEntityAdapter.toItemEntity(itemDocumentData, itemId)
 
@@ -45,12 +45,12 @@ class ItemEntityAdapterTest {
     fun conversionOfItemEntityToDocumentPreservesData() {
         assertEquals(
             ItemType.valueOf(
-                document[DatabaseConstant.ITEM_TYPE] as String
+                document[ITEM_TYPE.value] as String
             ), itemEntity.itemType
         )
-        assertEquals(document[DatabaseConstant.ITEM_DOCUMENT_ID], itemEntity.itemId)
-        assertEquals(document[DatabaseConstant.ITEM_COUNT], itemQuantity)
-        assertEquals(document[DatabaseConstant.ITEM_NAME], itemName)
+        assertEquals(document[ITEM_DOCUMENT_ID.value], itemEntity.itemId)
+        assertEquals(document[ITEM_COUNT.value], itemQuantity)
+        assertEquals(document[ITEM_NAME.value], itemName)
     }
 
     @Test
@@ -64,11 +64,11 @@ class ItemEntityAdapterTest {
 
         assertEquals(
             ItemType.valueOf(
-                document[DatabaseConstant.ITEM_TYPE] as String
+                document[ITEM_TYPE.value] as String
             ), itemEntity.itemType
         )
-        assertEquals(document[DatabaseConstant.ITEM_COUNT], itemQuantity)
-        assertEquals(document[DatabaseConstant.ITEM_NAME], itemName)
-        assert(!document.containsKey(DatabaseConstant.ITEM_DOCUMENT_ID))
+        assertEquals(document[ITEM_COUNT.value], itemQuantity)
+        assertEquals(document[ITEM_NAME.value], itemName)
+        assert(!document.containsKey(ITEM_DOCUMENT_ID.value))
     }
 }

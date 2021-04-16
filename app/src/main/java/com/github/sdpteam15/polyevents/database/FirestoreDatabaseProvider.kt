@@ -1,7 +1,6 @@
 package com.github.sdpteam15.polyevents.database
 
 import android.annotation.SuppressLint
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.database.objects.*
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
@@ -19,6 +18,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.*
 
 object FirestoreDatabaseProvider : DatabaseInterface {
     @SuppressLint("StaticFieldLeak")
@@ -45,7 +45,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     override var currentUser: UserEntity? = null
         get() {
             if (FirebaseAuth.getInstance().currentUser != null) {
-                firestore!!.collection(USER_COLLECTION)
+                firestore!!.collection(USER_COLLECTION.toString())
                     .document(FirebaseAuth.getInstance().currentUser!!.uid)
                     .get()
                     .addOnSuccessListener { field = UserAdapter.fromDocument(it.data!!, it.id) }

@@ -1,10 +1,6 @@
 package com.github.sdpteam15.polyevents.util
 
-import com.github.sdpteam15.polyevents.database.DatabaseConstant
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_BIRTH_DATE
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_DOCUMENT_ID
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_LOCATION
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_NAME
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZoneConstant.*
 import com.github.sdpteam15.polyevents.model.Zone
 
 /**
@@ -17,21 +13,21 @@ import com.github.sdpteam15.polyevents.model.Zone
 object ZoneAdapter : AdapterInterface<Zone> {
     override fun toDocument(element: Zone): HashMap<String, Any?>{
         val map = hashMapOf(
-            ZONE_NAME to element.zoneName,
-            ZONE_LOCATION to element.location,
-            DatabaseConstant.ZONE_DESCRIPTION to element.description
+            ZONE_NAME.value to element.zoneName,
+            ZONE_LOCATION.value to element.location,
+            ZONE_DESCRIPTION.value to element.description
         ) as HashMap<String, Any?>
 
         if(element.zoneId!=null){
-            map[ZONE_DOCUMENT_ID] = element.zoneId!!
+            map[ZONE_DOCUMENT_ID.value] = element.zoneId!!
         }
         return map
     }
 
     override fun fromDocument(document: MutableMap<String, Any?>, id: String): Zone = Zone(
         zoneId = id,
-        zoneName = document[ZONE_NAME] as String?,
-        location = document[ZONE_LOCATION] as String?,
-        description = document[DatabaseConstant.ZONE_DESCRIPTION] as String?
+        zoneName = document[ZONE_NAME.value] as String?,
+        location = document[ZONE_LOCATION.value] as String?,
+        description = document[ZONE_DESCRIPTION.value] as String?
     )
 }

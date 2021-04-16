@@ -1,8 +1,10 @@
 package com.github.sdpteam15.polyevents.database.objects
 
 import android.annotation.SuppressLint
-import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.DatabaseConstant
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.*
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.ProfileConstants.*
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.UserConstants.*
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
@@ -30,7 +32,7 @@ object UserDatabaseFirestore : UserDatabaseInterface {
         uid: String,
         userAccess: UserEntity?
     ): Observable<Boolean> = FirestoreDatabaseProvider.thenDoSet(
-        firestore!!.collection(DatabaseConstant.USER_COLLECTION)
+        firestore!!.collection(USER_COLLECTION.value)
             .document(uid)
             .update(newValues as Map<String, Any>)
     )
@@ -42,7 +44,7 @@ object UserDatabaseFirestore : UserDatabaseInterface {
         firstConnectionUser = user
 
         return FirestoreDatabaseProvider.thenDoSet(
-            firestore!!.collection(DatabaseConstant.USER_COLLECTION)
+            firestore!!.collection(USER_COLLECTION.value)
                 .document(user.uid)
                 .set(firstConnectionUser)
         )
@@ -53,8 +55,8 @@ object UserDatabaseFirestore : UserDatabaseInterface {
         uid: String,
         userAccess: UserEntity?
     ): Observable<Boolean> = FirestoreDatabaseProvider.thenDoGet(
-        firestore!!.collection(DatabaseConstant.USER_COLLECTION)
-            .whereEqualTo(DatabaseConstant.USER_UID, uid)
+        firestore!!.collection(USER_COLLECTION.value)
+            .whereEqualTo(USER_UID.value, uid)
             .limit(1)
             .get()
     ) { doc: QuerySnapshot ->
@@ -70,7 +72,7 @@ object UserDatabaseFirestore : UserDatabaseInterface {
         uid: String?,
         userAccess: UserEntity?
     ): Observable<Boolean> = FirestoreDatabaseProvider.thenDoMultGet(
-        firestore!!.collection(DatabaseConstant.USER_COLLECTION)
+        firestore!!.collection(USER_COLLECTION.value)
             .document(uid!!)
             .get()
     ) {
@@ -89,11 +91,11 @@ object UserDatabaseFirestore : UserDatabaseInterface {
         val update: () -> Unit = {
             user.addNewProfile(profile)
 
-            FirestoreDatabaseProvider.firestore!!.collection(DatabaseConstant.USER_COLLECTION)
+            FirestoreDatabaseProvider.firestore!!.collection(USER_COLLECTION.value)
                 .document(user.uid)
                 .set(UserAdapter.toDocument(user))
                 .addOnSuccessListener {
-                    FirestoreDatabaseProvider.firestore!!.collection(DatabaseConstant.PROFILE_COLLECTION)
+                    FirestoreDatabaseProvider.firestore!!.collection(DatabaseConstant.CollectionConstant.PROFILE_COLLECTION.value)
                         .document(profile.pid!!)
                         .set(ProfileAdapter.toDocument(profile))
                         .addOnSuccessListener { ended.postValue(true, this) }
@@ -103,7 +105,7 @@ object UserDatabaseFirestore : UserDatabaseInterface {
         }
 
         if (profile.pid == null)
-            FirestoreDatabaseProvider.firestore!!.collection(DatabaseConstant.PROFILE_COLLECTION)
+            FirestoreDatabaseProvider.firestore!!.collection(DatabaseConstant.CollectionConstant.PROFILE_COLLECTION.value)
                 .add(ProfileAdapter.toDocument(profile))
                 .addOnSuccessListener {
                     profile.pid = it.id

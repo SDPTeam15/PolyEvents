@@ -1,12 +1,6 @@
 package com.github.sdpteam15.polyevents.util
 
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_BIRTH_DATE
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_EMAIL
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_NAME
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_PHONE
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_PROFILES
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_UID
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_USERNAME
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.UserConstants.*
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.google.firebase.Timestamp
@@ -18,25 +12,25 @@ import com.google.firebase.Timestamp
  */
 object UserAdapter : AdapterInterface<UserEntity> {
     override fun toDocument(element: UserEntity): HashMap<String, Any?> = hashMapOf(
-        USER_UID to element.uid,
-        USER_USERNAME to element.username,
-        USER_NAME to element.name,
+        USER_UID.value to element.uid,
+        USER_USERNAME.value to element.username,
+        USER_NAME.value to element.name,
         // convert the localdate to LocalDateTime compatible to store in Firestore
-        USER_BIRTH_DATE to element.birthDate?.atStartOfDay(),
-        USER_EMAIL to element.email,
-        USER_PHONE to element.telephone,
-        USER_PROFILES to element.profiles
+        USER_BIRTH_DATE.value to element.birthDate?.atStartOfDay(),
+        USER_EMAIL.value to element.email,
+        USER_PHONE.value to element.telephone,
+        USER_PROFILES.value to  element.profiles
     )
 
     override fun fromDocument(document: MutableMap<String, Any?>, id: String) = UserEntity(
         uid = id,
-        username = document[USER_USERNAME] as String?,
-        name = document[USER_NAME] as String?,
+        username = document[USER_USERNAME.value] as String?,
+        name = document[USER_NAME.value] as String?,
         birthDate = HelperFunctions.DateToLocalDateTime(
-            (document[USER_BIRTH_DATE] as Timestamp?)?.toDate()
+            (document[USER_BIRTH_DATE.value] as Timestamp?)?.toDate()
         )?.toLocalDate(),
-        email = document[USER_EMAIL] as String?,
-        telephone = document[USER_PHONE] as String?,
-        profiles = (document[USER_PROFILES] as List<String>).toMutableList()
+        email = document[USER_EMAIL.value] as String?,
+        telephone = document[USER_PHONE.value] as String?,
+        profiles = (document[USER_PROFILES.value] as List<String>).toMutableList()
     )
 }

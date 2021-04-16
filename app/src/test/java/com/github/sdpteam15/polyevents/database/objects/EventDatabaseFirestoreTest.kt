@@ -1,7 +1,7 @@
 package com.github.sdpteam15.polyevents.database.objects
 
 import android.graphics.Bitmap
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_COLLECTION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.*
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.Event
@@ -28,7 +28,6 @@ private val listProfile = ArrayList<String>()
 class EventDatabaseFirestoreTest {
     lateinit var user: UserEntity
     lateinit var mockedDatabase: FirebaseFirestore
-    lateinit var database: DatabaseInterface
 
     @Before
     fun setup() {
@@ -75,7 +74,7 @@ class EventDatabaseFirestoreTest {
             tags = mutableSetOf("sushi", "japan", "cooking")
         )
 
-        When(mockedDatabase.collection(EVENT_COLLECTION)).thenReturn(mockedCollectionReference)
+        When(mockedDatabase.collection(EVENT_COLLECTION.value)).thenReturn(mockedCollectionReference)
         When(mockedCollectionReference.document(testEvent.eventId!!)).thenReturn(documentReference)
         When(documentReference.set(EventAdapter.toDocument(testEvent))).thenReturn(
             taskReferenceMock
@@ -142,7 +141,7 @@ class EventDatabaseFirestoreTest {
             tags = mutableSetOf("sushi", "japan", "cooking")
         )
 
-        When(mockedDatabase.collection(EVENT_COLLECTION)).thenReturn(mockedCollectionReference)
+        When(mockedDatabase.collection(EVENT_COLLECTION.value)).thenReturn(mockedCollectionReference)
         When(mockedCollectionReference.add(EventAdapter.toDocument(testEvent))).thenReturn(
             taskReferenceMock
         )

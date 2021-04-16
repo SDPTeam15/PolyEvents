@@ -4,6 +4,9 @@ import com.github.sdpteam15.polyevents.database.DatabaseConstant
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.objects.UserDatabaseFirestore
+
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.UserConstants.*
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.*
 import com.github.sdpteam15.polyevents.database.objects.UserDatabaseInterface
 import com.github.sdpteam15.polyevents.database.objects.ZoneDatabaseFirestore
 import com.github.sdpteam15.polyevents.database.observe.Observable
@@ -49,10 +52,10 @@ class UserDatabaseFirestoreTest {
         )
 
         userDocument = hashMapOf(
-            DatabaseConstant.USER_UID to uidTest,
-            DatabaseConstant.USER_NAME to displayNameTest,
-            DatabaseConstant.USER_EMAIL to emailTest,
-            DatabaseConstant.USER_PROFILES to listProfile
+            USER_UID.value to uidTest,
+            USER_NAME.value to displayNameTest,
+            USER_EMAIL.value to emailTest,
+            USER_PROFILES.value to listProfile
         )
         //Mock the database and set it as the default database
         mockedDatabase = Mockito.mock(FirebaseFirestore::class.java)
@@ -83,12 +86,12 @@ class UserDatabaseFirestoreTest {
         val mockedList = Mockito.mock(List::class.java) as List<DocumentSnapshot>
 
         //Mock all the needed method to perform the query correctly
-        Mockito.`when`(mockedDatabase.collection(DatabaseConstant.USER_COLLECTION)).thenReturn(
+        Mockito.`when`(mockedDatabase.collection(USER_COLLECTION.value)).thenReturn(
             mockedCollectionReference
         )
         Mockito.`when`(
             mockedCollectionReference.whereEqualTo(
-                DatabaseConstant.USER_UID,
+                USER_UID.value,
                 uidTest
             )
         ).thenReturn(mockedQuery)
@@ -125,12 +128,12 @@ class UserDatabaseFirestoreTest {
         val mockedList = Mockito.mock(List::class.java) as List<DocumentSnapshot>
 
         //mock the needed method
-        Mockito.`when`(mockedDatabase.collection(DatabaseConstant.USER_COLLECTION)).thenReturn(
+        Mockito.`when`(mockedDatabase.collection(USER_COLLECTION.value)).thenReturn(
             mockedCollectionReference
         )
         Mockito.`when`(
             mockedCollectionReference.whereEqualTo(
-                DatabaseConstant.USER_UID,
+                USER_UID.value,
                 uidTest
             )
         ).thenReturn(mockedQuery)
@@ -165,7 +168,7 @@ class UserDatabaseFirestoreTest {
         val mockedDocument = Mockito.mock(DocumentSnapshot::class.java)
 
         //mock the needed method
-        Mockito.`when`(mockedDatabase.collection(DatabaseConstant.USER_COLLECTION)).thenReturn(
+        Mockito.`when`(mockedDatabase.collection(USER_COLLECTION.value)).thenReturn(
             mockedCollectionReference
         )
         Mockito.`when`(mockedCollectionReference.document(uidTest))
@@ -206,10 +209,10 @@ class UserDatabaseFirestoreTest {
 
         //Create a hashmap with values to update
         val map: HashMap<String, String> = HashMap()
-        map[DatabaseConstant.USER_UID] = uidTest2
-        map[DatabaseConstant.USER_USERNAME] = username
-        map[DatabaseConstant.USER_NAME] = displayNameTest2
-        map[DatabaseConstant.USER_EMAIL] = emailTest2
+        map[USER_UID.value] = uidTest2
+        map[USER_USERNAME.value] = username
+        map[USER_NAME.value] = displayNameTest2
+        map[USER_EMAIL.value] = emailTest2
 
         var emailSet = ""
         var nameSet = ""
@@ -217,7 +220,7 @@ class UserDatabaseFirestoreTest {
         var usernameSet = ""
 
         //mock the needed method
-        Mockito.`when`(mockedDatabase.collection(DatabaseConstant.USER_COLLECTION)).thenReturn(
+        Mockito.`when`(mockedDatabase.collection(USER_COLLECTION.value)).thenReturn(
             mockedCollectionReference
         )
         Mockito.`when`(mockedCollectionReference.document(uidTest))
@@ -260,7 +263,7 @@ class UserDatabaseFirestoreTest {
         var nameSet: String? = ""
         var uidSet = ""
 
-        Mockito.`when`(mockedDatabase.collection(DatabaseConstant.USER_COLLECTION)).thenReturn(
+        Mockito.`when`(mockedDatabase.collection(USER_COLLECTION.value)).thenReturn(
             mockedCollectionReference
         )
         Mockito.`when`(mockedCollectionReference.document(uidTest))

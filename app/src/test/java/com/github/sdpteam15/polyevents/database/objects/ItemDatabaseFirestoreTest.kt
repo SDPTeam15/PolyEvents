@@ -1,6 +1,6 @@
 package com.github.sdpteam15.polyevents.database.objects
 
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.ITEM_COLLECTION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.ITEM_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.Item
@@ -65,7 +65,7 @@ class ItemDatabaseFirestoreTest {
         val testItem = Item("xxxbananaxxx", "banana", ItemType.OTHER)
         val testQuantity = 3
 
-        When(mockedDatabase.collection(ITEM_COLLECTION)).thenReturn(mockedCollectionReference)
+        When(mockedDatabase.collection(ITEM_COLLECTION.value)).thenReturn(mockedCollectionReference)
         When(
             mockedCollectionReference.add(
                 ItemEntityAdapter.toItemDocument(
@@ -113,7 +113,7 @@ class ItemDatabaseFirestoreTest {
         val testItem = Item("xxxbananaxxx", "banana", ItemType.OTHER)
         val testQuantity = 3
 
-        When(mockedDatabase.collection(ITEM_COLLECTION)).thenReturn(mockedCollectionReference)
+        When(mockedDatabase.collection(ITEM_COLLECTION.value)).thenReturn(mockedCollectionReference)
         When(mockedCollectionReference.document(testItem.itemId!!)).thenReturn(documentReference)
         When(
             documentReference.set(
@@ -160,7 +160,7 @@ class ItemDatabaseFirestoreTest {
         val testItem = Item("xxxbananaxxx", "banana", ItemType.OTHER)
         val testQuantity = 3
 
-        When(mockedDatabase.collection(ITEM_COLLECTION)).thenReturn(mockedCollectionReference)
+        When(mockedDatabase.collection(ITEM_COLLECTION.value)).thenReturn(mockedCollectionReference)
         When(mockedCollectionReference.document(testItem.itemId!!)).thenReturn(documentReference)
         When(documentReference.delete()).thenReturn(taskMock)
 

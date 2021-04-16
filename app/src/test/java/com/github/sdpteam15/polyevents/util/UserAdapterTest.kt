@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.util
 
-import com.github.sdpteam15.polyevents.database.DatabaseConstant
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.UserConstants.*
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.*
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.google.firebase.Timestamp
@@ -38,12 +39,12 @@ class UserAdapterTest {
     fun conversionOfUserEntityToDocumentPreservesData() {
         val document = UserAdapter.toDocument(user)
         println(document)
-        assertEquals(document[DatabaseConstant.USER_UID], googleId)
-        assertEquals(document[DatabaseConstant.USER_USERNAME], username)
-        assertEquals(document[DatabaseConstant.USER_BIRTH_DATE], birthDate.atStartOfDay())
-        assertEquals(document[DatabaseConstant.USER_NAME], name)
-        assertEquals(document[DatabaseConstant.USER_EMAIL], email)
-        assertEquals(document[DatabaseConstant.USER_PHONE], telephone)
+        assertEquals(document[USER_UID.value], googleId)
+        assertEquals(document[USER_USERNAME.value], username)
+        assertEquals(document[USER_BIRTH_DATE.value], birthDate.atStartOfDay())
+        assertEquals(document[USER_NAME.value], name)
+        assertEquals(document[USER_EMAIL.value], email)
+        assertEquals(document[USER_PHONE.value], telephone)
     }
 
     @Test
@@ -51,13 +52,13 @@ class UserAdapterTest {
         val birthDateTimeStamp =
             Timestamp(HelperFunctions.LocalDateToTimeToDate(birthDate.atStartOfDay())!!)
         val userDocumentData: HashMap<String, Any?> = hashMapOf(
-            DatabaseConstant.USER_UID to googleId,
-            DatabaseConstant.USER_NAME to name,
-            DatabaseConstant.USER_EMAIL to email,
-            DatabaseConstant.USER_BIRTH_DATE to birthDateTimeStamp,
-            DatabaseConstant.USER_USERNAME to username,
-            DatabaseConstant.USER_PHONE to telephone,
-            DatabaseConstant.USER_PROFILES to listProfile
+            USER_UID.value to googleId,
+            USER_NAME.value to name,
+            USER_EMAIL.value to email,
+            USER_BIRTH_DATE.value to birthDateTimeStamp,
+            USER_USERNAME.value to username,
+            USER_PHONE.value to telephone,
+            USER_PROFILES.value to listProfile
         )
 
         assertEquals(user, UserAdapter.fromDocument(userDocumentData, googleId))
@@ -66,13 +67,13 @@ class UserAdapterTest {
     @Test
     fun testConversionToUserEntityWithNullBirthDate() {
         val userDocumentData: HashMap<String, Any?> = hashMapOf(
-            DatabaseConstant.USER_UID to googleId,
-            DatabaseConstant.USER_NAME to name,
-            DatabaseConstant.USER_EMAIL to email,
-            DatabaseConstant.USER_BIRTH_DATE to null,
-            DatabaseConstant.USER_USERNAME to username,
-            DatabaseConstant.USER_PHONE to telephone,
-            DatabaseConstant.USER_PROFILES to listProfile
+            USER_UID.value to googleId,
+            USER_NAME.value to name,
+            USER_EMAIL.value to email,
+            USER_BIRTH_DATE.value to null,
+            USER_USERNAME.value to username,
+            USER_PHONE.value to telephone,
+            USER_PROFILES.value to listProfile
             )
 
         assertNull(UserAdapter.fromDocument(userDocumentData, googleId).age)
@@ -82,8 +83,8 @@ class UserAdapterTest {
     fun testConversionWithNullValues() {
         val userEntityWithNullProperties = UserEntity(uid = googleId)
         val document = UserAdapter.toDocument(userEntityWithNullProperties)
-        assertEquals(document[DatabaseConstant.USER_UID], googleId)
-        assertNull(document[DatabaseConstant.USER_NAME])
-        assertNull(document[DatabaseConstant.USER_AGE])
+        assertEquals(document[USER_UID.value], googleId)
+        assertNull(document[USER_NAME.value])
+        assertNull(document[USER_AGE.value])
     }
 }
