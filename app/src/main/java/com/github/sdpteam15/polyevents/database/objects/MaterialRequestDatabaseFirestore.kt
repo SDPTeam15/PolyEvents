@@ -16,7 +16,7 @@ object MaterialRequestDatabaseFirestore : MaterialRequestDatabaseInterface {
     override fun answerMaterialRequest(
         id: String,
         answer: Boolean,
-        profile: UserProfile?
+        userAccess: UserProfile?
     ): Observable<Boolean> {
         TODO("Not yet implemented")
     }
@@ -24,12 +24,12 @@ object MaterialRequestDatabaseFirestore : MaterialRequestDatabaseInterface {
     override fun getMaterialRequestList(
         materialList: Observable<MaterialRequest>,
         matcher: String?,
-        profile: UserProfile?
+        userAccess: UserProfile?
     ): Observable<Boolean> {
         TODO("Not yet implemented")
     }
 
-    override fun createMaterialRequest(request: MaterialRequest, profile: UserProfile?) {
+    override fun createMaterialRequest(request: MaterialRequest, userAccess: UserProfile?) {
         TODO("Not yet implemented")
     }
 }

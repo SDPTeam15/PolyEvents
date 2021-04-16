@@ -21,7 +21,7 @@ interface UserDatabaseInterface {
      * Update the user information in the database
      * @param newValues : a map with the new value to set in the database
      * @param uid : the uid of the user from which we want to query the information
-     * @param userAccess: the user object to use its permission
+     * @param userAccess: the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun updateUserInformation(
@@ -33,7 +33,7 @@ interface UserDatabaseInterface {
     /**
      * Register the user in the database with its basic information (uid, email, name)
      * @param user : user with all the requested information
-     * @param userAccess: the user object to use its permission
+     * @param userAccess: the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun firstConnexion(
@@ -45,7 +45,7 @@ interface UserDatabaseInterface {
      * Look in the database if the user already exists or not
      * @param isInDb : Will be set to true if in Database or to false otherwise
      * @param uid : user uid we want to check the existence
-     * @param userAccess: the user object to use its permission
+     * @param userAccess: the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun inDatabase(
@@ -56,9 +56,9 @@ interface UserDatabaseInterface {
 
     /**
      * Look in the database if the user already exists or not
-     * @param user : live data that will be set with the user information from the database
-     * @param uid : user uid we want to get the information
-     * @param userAccess: the user object to use its permission
+     * @param user observable data that will be set with the user information from the database
+     * @param uid user uid we want to get the information
+     * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getUserInformation(
@@ -82,8 +82,8 @@ interface UserDatabaseInterface {
 
     /**
      * Update profile
-     * @param profile : a map with the new value to set in the database
-     * @param userAccess: the user object to use its permission
+     * @param profile a map with the new value to set in the database
+     * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun updateProfile(
@@ -119,9 +119,9 @@ interface UserDatabaseInterface {
 
     /**
      * Look in the database if the user already exists or not
-     * @param profile : live data that will be set with the find profile value
-     * @param pid : profile id we want to get
-     * @param profileAccess : the profile object to use its permission
+     * @param profile live data that will be set with the find profile value
+     * @param pid profile id we want to get
+     * @param userAccess the profile object to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getProfileById(

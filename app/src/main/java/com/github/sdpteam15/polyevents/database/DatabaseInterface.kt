@@ -15,25 +15,57 @@ const val NUMBER_UPCOMING_EVENTS = 3
 interface DatabaseInterface {
 
     /**
-     * Current user of this database
-     */
+     * The current user observable of the database
+      */
     val currentUserObservable: Observable<UserEntity>
+
+    /**
+     * The current user of the database
+     */
     val currentUser: UserEntity?
+
+    /**
+     * The current profile of the database
+     */
     val currentProfile: UserProfile?
+
+    /**
+     * The database used to handle query about items
+     */
     var itemDatabase: ItemDatabaseInterface?
+
+    /**
+     * The database used to handle query about zones
+     */
     var zoneDatabase: ZoneDatabaseInterface?
+
+    /**
+     * The database used to handle query about users
+     */
     var userDatabase: UserDatabaseInterface?
+
+    /**
+     * The database used to handle query about heatmap
+     */
     var heatmapDatabase: HeatmapDatabaseInterface?
+
+    /**
+     * The database used to handle query about events
+     */
     var eventDatabase: EventDatabaseInterface?
+
+    /**
+     * The database used to handle query about material request
+     */
     var materialRequestDatabase: MaterialRequestDatabaseInterface?
 
     /**
      * Add an Entity to the data base
-     * @param element : The element that needs to be added in the database
-     * @param collection
-     * @param adapter: The adapter converting the
-     * @param userAccess:
-     * @return
+     * @param element The element that needs to be added in the database
+     * @param collection The collection to which we want to add the given element
+     * @param adapter The adapter converting the element into a HashMap recognised by the database
+     * @param userAccess the user profile to use its permission
+     * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun <T> addEntityAndGetId(
         element: T,
@@ -44,11 +76,11 @@ interface DatabaseInterface {
 
     /**
      * Add an Entity to the data base
-     * @param element
-     * @param collection
-     * @param adapter
-     * @param userAccess
-     * @return
+     * @param element The element that needs to be added in the database
+     * @param collection The collection to which we want to add the given element
+     * @param adapter The adapter converting the element into a HashMap recognised by the database
+     * @param userAccess the user profile to use its permission
+     * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun <T> addEntity(
         element: T,
@@ -59,11 +91,11 @@ interface DatabaseInterface {
 
     /**
      * Set an Entity to the data base
-     * @param element null for delete
-     * @param id
-     * @param collection
-     * @param adapter
-     * @param userAccess
+     * @param element the element to set or null to delete the element from the database
+     * @param id The id with which we will set the element
+     * @param collection The collection in which we want to set the given element
+     * @param adapter The adapter converting the element into a HashMap recognised by the database
+     * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun <T> setEntity(
@@ -76,9 +108,9 @@ interface DatabaseInterface {
 
     /**
      * Set an Entity to the data base
-     * @param id
-     * @param collection
-     * @param userAccess
+     * @param id The id with which we will delete the element
+     * @param collection The collection from which we want to delete the given id
+     * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun deleteEntity(
@@ -88,13 +120,13 @@ interface DatabaseInterface {
     ): Observable<Boolean>
 
     /**
-     * get an Entity to the data base
-     * @param element
-     * @param id
-     * @param collection
-     * @param adapter
-     * @param userAccess
-     * * @return An observer that will be set to true if the communication with the DB is over and no error
+     * Get an Entity from the database
+     * @param element An observable in which the element will be set once retrieve from the database
+     * @param id The id with which we will get the element
+     * @param collection The collection from which we want to retrieve the entity
+     * @param adapter The adapter converting the element into a HashMap recognised by the database
+     * @param userAccess the user profile to use its permission
+     * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun <T> getEntity(
         element: Observable<T>,
@@ -105,12 +137,12 @@ interface DatabaseInterface {
     ): Observable<Boolean>
 
     /**
-     * get a list Entity to the data base
-     * @param elements
-     * @param ids
-     * @param collection
-     * @param adapter
-     * @param userAccess
+     * Get a list Entity from the database
+     * @param elements An observable list in which the elements will be set once retrieve from the database
+     * @param ids The id at which we need to set the element
+     * @param collection The collection from which we want to retrieve the list of entity
+     * @param adapter The adapter converting the element into a HashMap recognised by the database
+     * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun <T> getListEntity(

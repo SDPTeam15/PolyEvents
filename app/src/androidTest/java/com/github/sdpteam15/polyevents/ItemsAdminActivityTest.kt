@@ -62,6 +62,7 @@ class ItemsAdminActivityTest {
     @After
     fun tearDown() {
         currentDatabase = FirestoreDatabaseProvider
+        currentDatabase = FirestoreDatabaseProvider
     }
 
 

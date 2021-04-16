@@ -21,14 +21,14 @@ object ItemDatabaseFirestore : ItemDatabaseInterface {
     override fun createItem(
         item: Item,
         count: Int,
-        profile: UserProfile?
+        userAccess: UserProfile?
     ): Observable<Boolean> = FirestoreDatabaseProvider.thenDoAdd(
         FirestoreDatabaseProvider.firestore!!.collection(ITEM_COLLECTION.value)
             .add(ItemEntityAdapter.toItemDocument(item, count))
     )
 
 
-    override fun removeItem(itemId: String, profile: UserProfile?): Observable<Boolean> =
+    override fun removeItem(itemId: String, userAccess: UserProfile?): Observable<Boolean> =
         FirestoreDatabaseProvider.thenDoSet(
             FirestoreDatabaseProvider.firestore!!.collection(ITEM_COLLECTION.value)
                 .document(itemId).delete()
@@ -37,7 +37,7 @@ object ItemDatabaseFirestore : ItemDatabaseInterface {
     override fun updateItem(
         item: Item,
         count: Int,
-        profile: UserProfile?
+        userAccess: UserProfile?
     ): Observable<Boolean> {
         // TODO should update add item if non existent in database ?
         // if (item.itemId == null) return createItem(item, count, profile)
@@ -51,7 +51,7 @@ object ItemDatabaseFirestore : ItemDatabaseInterface {
 
     override fun getItemsList(
         itemList: ObservableList<Pair<Item, Int>>,
-        profile: UserProfile?
+        userAccess: UserProfile?
     ): Observable<Boolean> {
         return FirestoreDatabaseProvider.thenDoGet(
             FirestoreDatabaseProvider.firestore!!.collection(ITEM_COLLECTION.value).get()
@@ -66,7 +66,7 @@ object ItemDatabaseFirestore : ItemDatabaseInterface {
 
     override fun getAvailableItems(
         itemList: ObservableList<Pair<Item, Int>>,
-        profile: UserProfile?
+        userAccess: UserProfile?
     ): Observable<Boolean> {
         return FirestoreDatabaseProvider.thenDoGet(
             FirestoreDatabaseProvider.firestore!!.collection(ITEM_COLLECTION.value)

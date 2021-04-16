@@ -9,9 +9,9 @@ import com.google.android.gms.tasks.Task
 interface UserLoginInterface<T> {
     /**
      * Analyse the received data, display error messages or get the account information and terminate
-     * @param data: Data received in the login fragment
-     * @param activity: the current activity to display error messages
-     * @param errorMsg: the error message to display
+     * @param data Data received in the login fragment
+     * @param activity the current activity to display error messages
+     * @param errorMsg the error message to display
      * @return A task that get the information and completes the login
      */
     fun getResultFromIntent(data: Intent?, activity: Activity, errorMsg: String): Task<T>?
@@ -27,7 +27,9 @@ interface UserLoginInterface<T> {
      */
     fun signOut()
 
-
+    /**
+     *
+     */
     fun isConnected(): Boolean
 
     /**

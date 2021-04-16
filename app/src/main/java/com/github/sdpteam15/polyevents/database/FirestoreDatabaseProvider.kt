@@ -47,7 +47,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     override var currentUser: UserEntity?
         get() {
             if(UserLogin.currentUserLogin.isConnected()){
-                if(currentUserObservable.value==null || !loadSuccess) {
+                if(!loadSuccess) {
                     currentUserObservable.postValue(UserLogin.currentUserLogin.getCurrentUser()!!,this)
                     firestore!!.collection(USER_COLLECTION.toString())
                         .document(FirebaseAuth.getInstance().currentUser!!.uid)
@@ -61,9 +61,9 @@ object FirestoreDatabaseProvider : DatabaseInterface {
                 }
                 return currentUserObservable.value
             } else {
+                loadSuccess=false
                 return null
             }
-
         }
         set(value){
             currentUserObservable.value = value

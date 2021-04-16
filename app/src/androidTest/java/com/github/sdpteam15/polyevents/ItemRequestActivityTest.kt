@@ -20,6 +20,7 @@ import com.github.sdpteam15.polyevents.HelperTestFunction.getCurrentActivity
 import com.github.sdpteam15.polyevents.adapter.ItemRequestAdapter
 import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
+import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabase
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabaseItem
@@ -67,6 +68,7 @@ class ItemRequestActivityTest {
 
     @After
     fun teardown() {
+        Database.currentDatabase = FirestoreDatabaseProvider
         Intents.release()
     }
 

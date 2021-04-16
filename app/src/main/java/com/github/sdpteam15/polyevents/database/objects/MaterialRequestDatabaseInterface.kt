@@ -14,38 +14,38 @@ interface MaterialRequestDatabaseInterface {
 
     /**
      * Answer a material request
-     * @param id: id of the items
+     * @param id id of the items
      * @param answer true or false depending if we accept the request or not
-     * @param profile profile for database access
+     * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun answerMaterialRequest(
         id: String,
         answer: Boolean,
-        profile: UserProfile? = currentProfile
+        userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**
      * Get the list of all material request
      * @param materialList list in which the list of all material request will be set after retrieving from database
-     * @param matcher: matcher for the search
-     * @param profile profile for database access
+     * @param matcher matcher for the search
+     * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getMaterialRequestList(
         materialList: Observable<MaterialRequest>,
         matcher: String? = null,
-        profile: UserProfile? = currentProfile
+        userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**
-     * @param the request we want to add in the database
-     * @param profile profile for database access
+     * @param request the request we want to add in the database
+     * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun createMaterialRequest(
         request: MaterialRequest,
-        profile: UserProfile? = currentProfile
+        userAccess: UserProfile? = currentProfile
     )
 
 }

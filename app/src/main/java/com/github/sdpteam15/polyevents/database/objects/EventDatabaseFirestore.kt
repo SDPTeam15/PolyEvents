@@ -18,14 +18,14 @@ object EventDatabaseFirestore : EventDatabaseInterface {
     var firestore: FirebaseFirestore? = null
         get() = field ?: Firebase.firestore
 
-    override fun createEvent(event: Event, profile: UserProfile?): Observable<Boolean> =
+    override fun createEvent(event: Event, userAccess: UserProfile?): Observable<Boolean> =
         FirestoreDatabaseProvider.thenDoAdd(
             FirestoreDatabaseProvider.firestore!!.collection(
                 EVENT_COLLECTION.value
             ).add(EventAdapter.toDocument(event))
         )
 
-    override fun updateEvents(event: Event, profile: UserProfile?): Observable<Boolean> {
+    override fun updateEvents(event: Event, userAccess: UserProfile?): Observable<Boolean> {
         // TODO should update add item if non existent in database ?
         // if (event.eventId == null) return createEvent(event, profile)
         return FirestoreDatabaseProvider.thenDoSet(
@@ -37,7 +37,7 @@ object EventDatabaseFirestore : EventDatabaseInterface {
     override fun getEventFromId(
         id: String,
         returnEvent: Observable<Event>,
-        profile: UserProfile?
+        userAccess: UserProfile?
     ): Observable<Boolean> = FirestoreDatabaseProvider.thenDoMultGet(
         FirestoreDatabaseProvider.firestore!!.collection(EVENT_COLLECTION.value)
             .document(id).get()
@@ -51,7 +51,7 @@ object EventDatabaseFirestore : EventDatabaseInterface {
         matcher: Matcher?,
         number: Long?,
         eventList: ObservableList<Event>,
-        profile: UserProfile?
+        userAccess: UserProfile?
     ): Observable<Boolean> {
         val task = FirestoreDatabaseProvider.firestore!!.collection(EVENT_COLLECTION.value)
         val query = matcher?.match(task)

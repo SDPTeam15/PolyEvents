@@ -14,8 +14,8 @@ interface ZoneDatabaseInterface {
 
     /**
      * Store the newly created zone information in the database
-     * @param zone: the zone information we should insert
-     * @param userAccess: the user object to use its permission
+     * @param zone the zone information we should insert
+     * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun createZone(
@@ -25,9 +25,9 @@ interface ZoneDatabaseInterface {
 
     /**
      * Get the zone information from the database
-     * @param zoneId: The id of the zone we want to get the information
-     * @param zone:  live data that will be set with the zone information from the database
-     * @param userAccess: the user object to use its permission
+     * @param zoneId The id of the zone we want to get the information
+     * @param zone live data that will be set with the zone information from the database
+     * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getZoneInformation(
@@ -38,9 +38,9 @@ interface ZoneDatabaseInterface {
 
     /**
      * Update the zone information in the databae
-     * @param zoneId: The id of the zone we want to get the information
-     * @param newZone: The updated zone information we should store in the database
-     * @param userAccess: the user object to use its permission
+     * @param zoneId The id of the zone we want to get the information
+     * @param newZone The updated zone information we should store in the database
+     * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun updateZoneInformation(
