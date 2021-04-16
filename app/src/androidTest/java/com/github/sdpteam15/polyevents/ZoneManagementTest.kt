@@ -12,6 +12,7 @@ import com.github.sdpteam15.polyevents.admin.ZoneManagementListActivity
 import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
+import com.github.sdpteam15.polyevents.database.objects.ZoneDatabaseInterface
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.helper.GoogleMapHelper
 import com.github.sdpteam15.polyevents.model.UserEntity
@@ -36,6 +37,7 @@ class ZoneManagementTest {
     val username = "JohnDoe"
     val email = "John@Doe.com"
     lateinit var mockedDatabase: DatabaseInterface
+    lateinit var mockedZoneDatabase:ZoneDatabaseInterface
     val zoneId = "IDZone"
     val zoneName = "Cool Zone name"
     val zoneDesc = "Cool zone desc"
@@ -44,6 +46,8 @@ class ZoneManagementTest {
     @Before
     fun setup() {
         mockedDatabase = Mockito.mock(DatabaseInterface::class.java)
+        mockedZoneDatabase = Mockito.mock(ZoneDatabaseInterface::class.java)
+        mockedDatabase.zoneDatabase = mockedZoneDatabase
         val mockedUserProfile = UserProfile("TestID", "TestName")
         When(mockedDatabase.currentProfile).thenReturn(mockedUserProfile)
 
@@ -110,7 +114,7 @@ class ZoneManagementTest {
     @Test
     fun createWithCorrectInfoRedirectToCorrectActivity() {
         val obs = Observable<Boolean>()
-        When(mockedDatabase.createZone(ZoneManagementActivity.zone)).thenAnswer { _ ->
+        When(mockedDatabase.zoneDatabase!!.createZone(ZoneManagementActivity.zone)).thenAnswer { _ ->
             obs
         }
 
@@ -132,7 +136,7 @@ class ZoneManagementTest {
         val obs = Observable<Boolean>()
         val obs2 = Observable<Boolean>()
         When(
-            mockedDatabase.getZoneInformation(
+            mockedDatabase.zoneDatabase!!.getZoneInformation(
                 ZoneManagementActivity.zoneId,
                 ZoneManagementActivity.zoneObservable
             )
@@ -149,7 +153,7 @@ class ZoneManagementTest {
 
         obs2.postValue(true)
         When(
-            mockedDatabase.updateZoneInformation(
+            mockedDatabase.zoneDatabase!!.updateZoneInformation(
                 ZoneManagementActivity.zoneId,
                 ZoneManagementActivity.zone
             )
@@ -173,7 +177,7 @@ class ZoneManagementTest {
         val obs = Observable<Boolean>()
         val obs2 = Observable<Boolean>()
         When(
-            mockedDatabase.getZoneInformation(
+            mockedDatabase.zoneDatabase!!.getZoneInformation(
                 ZoneManagementActivity.zoneId,
                 ZoneManagementActivity.zoneObservable
             )
@@ -189,7 +193,7 @@ class ZoneManagementTest {
 
 
         When(
-            mockedDatabase.updateZoneInformation(
+            mockedDatabase.zoneDatabase!!.updateZoneInformation(
                 ZoneManagementActivity.zoneId,
                 ZoneManagementActivity.zone
             )
@@ -211,7 +215,7 @@ class ZoneManagementTest {
     @Test
     fun failToCreateStayOnActivity() {
         val obs = Observable<Boolean>()
-        When(mockedDatabase.createZone(ZoneManagementActivity.zone)).thenAnswer { _ ->
+        When(mockedDatabase.zoneDatabase!!.createZone(ZoneManagementActivity.zone)).thenAnswer { _ ->
             obs
         }
 
@@ -233,7 +237,7 @@ class ZoneManagementTest {
         val obs = Observable<Boolean>()
         val obs2 = Observable<Boolean>()
         When(
-            mockedDatabase.getZoneInformation(
+            mockedDatabase.zoneDatabase!!.getZoneInformation(
                 ZoneManagementActivity.zoneId,
                 ZoneManagementActivity.zoneObservable
             )
@@ -249,7 +253,7 @@ class ZoneManagementTest {
 
 
         When(
-            mockedDatabase.updateZoneInformation(
+            mockedDatabase.zoneDatabase!!.updateZoneInformation(
                 ZoneManagementActivity.zoneId,
                 ZoneManagementActivity.zone
             )
@@ -316,13 +320,13 @@ class ZoneManagementTest {
 
         val map:MutableMap<Int,List<LatLng>> = mutableMapOf()
 
-        var listLngLat: ArrayList<LatLng> = ArrayList()
+        val listLngLat: ArrayList<LatLng> = ArrayList()
         listLngLat.add(LatLng(arrayLngLat[0], arrayLngLat[1]))
         listLngLat.add(LatLng(arrayLngLat[2], arrayLngLat[3]))
         listLngLat.add(LatLng(arrayLngLat[4], arrayLngLat[5]))
         listLngLat.add(LatLng(arrayLngLat[6], arrayLngLat[7]))
 
-        var listLngLat2: ArrayList<LatLng> = ArrayList()
+        val listLngLat2: ArrayList<LatLng> = ArrayList()
 
         listLngLat2.add(LatLng(arrayLngLat2[0], arrayLngLat2[1]))
         listLngLat2.add(LatLng(arrayLngLat2[2], arrayLngLat2[3]))

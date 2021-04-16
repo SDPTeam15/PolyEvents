@@ -4,6 +4,7 @@ import com.github.sdpteam15.polyevents.database.DatabaseConstant
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.objects.ZoneDatabaseFirestore
+import com.github.sdpteam15.polyevents.database.objects.ZoneDatabaseInterface
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.Zone
@@ -33,7 +34,7 @@ class ZoneDatabaseFirestoreTest {
     lateinit var mockedDatabase: FirebaseFirestore
     lateinit var database: DatabaseInterface
     lateinit var zoneDocument: HashMap<String, Any?>
-    lateinit var mockedZoneDatabase: ZoneDatabaseFirestore
+    lateinit var mockedZoneDatabase: ZoneDatabaseInterface
 
     @Before
     fun setup() {
@@ -54,8 +55,8 @@ class ZoneDatabaseFirestoreTest {
         //Mock the database and set it as the default database
         mockedDatabase = Mockito.mock(FirebaseFirestore::class.java)
         FirestoreDatabaseProvider.firestore = mockedDatabase
-        mockedZoneDatabase = Mockito.mock(ZoneDatabaseFirestore::class.java)
-        FirestoreDatabaseProvider.zoneDatabase = mockedZoneDatabase
+        ZoneDatabaseFirestore.firestore = mockedDatabase
+        mockedZoneDatabase = Mockito.mock(ZoneDatabaseInterface::class.java)
         
         
         FirestoreDatabaseProvider.lastQuerySuccessListener= null
@@ -67,6 +68,7 @@ class ZoneDatabaseFirestoreTest {
     @After
     fun teardown(){
         FirestoreDatabaseProvider.firestore = null
+        ZoneDatabaseFirestore.firestore = null
     }
 
     @Test

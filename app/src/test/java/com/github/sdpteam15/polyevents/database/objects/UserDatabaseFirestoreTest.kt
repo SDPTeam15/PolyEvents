@@ -5,6 +5,7 @@ import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.objects.UserDatabaseFirestore
 import com.github.sdpteam15.polyevents.database.objects.UserDatabaseInterface
+import com.github.sdpteam15.polyevents.database.objects.ZoneDatabaseFirestore
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.google.android.gms.tasks.Task
@@ -25,18 +26,18 @@ val email = "John@email.com"
 private const val displayNameTest = "Test displayName"
 private const val emailTest = "Test email"
 private const val uidTest = "Test uid"
+private val listProfile = ArrayList<String>()
 private const val uidTest2 = "Test uid2"
 private const val emailTest2 = "Test email"
 private const val displayNameTest2 = "Test uid2"
 private const val username = "Test username"
-private val listProfile = ArrayList<String>()
+
 
 class UserDatabaseFirestoreTest {
     lateinit var user: UserEntity
     lateinit var mockedDatabase: FirebaseFirestore
     lateinit var database: DatabaseInterface
     lateinit var userDocument: HashMap<String, Any?>
-    lateinit var mockedDatabaseUser: UserDatabaseFirestore
 
     @Before
     fun setup() {
@@ -55,11 +56,11 @@ class UserDatabaseFirestoreTest {
         )
         //Mock the database and set it as the default database
         mockedDatabase = Mockito.mock(FirebaseFirestore::class.java)
-        mockedDatabaseUser = Mockito.mock(UserDatabaseFirestore::class.java)
         FirestoreDatabaseProvider.firestore = mockedDatabase
-        FirestoreDatabaseProvider.userDatabase =  mockedDatabaseUser
+        //FirestoreDatabaseProvider.userDatabase =  mockedDatabaseUser
+        UserDatabaseFirestore.firestore = mockedDatabase
 
-        mockedDatabaseUser.firstConnectionUser = UserEntity(uid = "DEFAULT")
+        UserDatabaseFirestore.firstConnectionUser = UserEntity(uid = "DEFAULT")
         FirestoreDatabaseProvider.lastQuerySuccessListener= null
         FirestoreDatabaseProvider.lastSetSuccessListener= null
         FirestoreDatabaseProvider.lastFailureListener= null
@@ -69,6 +70,7 @@ class UserDatabaseFirestoreTest {
     @After
     fun teardown(){
         FirestoreDatabaseProvider.firestore = null
+        UserDatabaseFirestore.firestore = null
     }
 
     @Test

@@ -24,7 +24,6 @@ class HeatmapDatabaseFirestoreTest {
     lateinit var user: UserEntity
     lateinit var mockedDatabase: FirebaseFirestore
     lateinit var database: DatabaseInterface
-    lateinit var mockedHeatmapDatabase: HeatmapDatabaseInterface
 
     @Before
     fun setup() {
@@ -36,9 +35,8 @@ class HeatmapDatabaseFirestoreTest {
 
         //Mock the database and set it as the default database
         mockedDatabase = Mockito.mock(FirebaseFirestore::class.java)
-        mockedHeatmapDatabase = Mockito.mock(HeatmapDatabaseInterface::class.java)
         FirestoreDatabaseProvider.firestore = mockedDatabase
-        FirestoreDatabaseProvider.heatmapDatabase = mockedHeatmapDatabase
+        HeatmapDatabaseFirestore.firestore = mockedDatabase
 
         FirestoreDatabaseProvider.lastQuerySuccessListener= null
         FirestoreDatabaseProvider.lastSetSuccessListener= null
@@ -49,6 +47,7 @@ class HeatmapDatabaseFirestoreTest {
     @After
     fun teardown(){
         FirestoreDatabaseProvider.firestore = null
+        HeatmapDatabaseFirestore.firestore = null
     }
 
 
