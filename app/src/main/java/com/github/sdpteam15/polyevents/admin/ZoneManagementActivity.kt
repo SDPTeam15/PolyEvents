@@ -2,6 +2,7 @@ package com.github.sdpteam15.polyevents.admin
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -22,7 +23,7 @@ import com.github.sdpteam15.polyevents.model.Zone
 
 class ZoneManagementActivity : AppCompatActivity() {
     companion object {
-        val zoneObservable = Observable<Zone>()
+        var zoneObservable = Observable<Zone>()
         val zone = Zone(location = "")
         var zoneId = ""
         var inTest = false
@@ -35,7 +36,7 @@ class ZoneManagementActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         //Get the views needed in the code
         val int = intent
-        zoneId = int.getStringExtra(EXTRA_ID).toString()
+        zoneId = int.getStringExtra(EXTRA_ID)!!
         val btnManage = findViewById<Button>(R.id.btnManage)
         val btnManageCoor = findViewById<Button>(R.id.btnModifyZoneCoordinates)
         val btnDelete = findViewById<Button>(R.id.btnDeleteZoneCoordinates)
@@ -45,8 +46,9 @@ class ZoneManagementActivity : AppCompatActivity() {
         val etLoc = findViewById<EditText>(R.id.zoneManagementCoordinates)
         val mapFragment = MapsFragment()
         mapFragment.zone = zone
-
-        zoneObservable.observe {
+        zoneObservable = Observable()
+        Log.d("AAAAAAAAAAA", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA ${zoneId} bb")
+        zoneObservable.observe(this) {
             //Reactive the back button and make the map fragment invisible
             supportActionBar!!.setDisplayHomeAsUpEnabled(true)
             findViewById<FrameLayout>(R.id.flMapEditZone).visibility = View.INVISIBLE
@@ -55,9 +57,15 @@ class ZoneManagementActivity : AppCompatActivity() {
             etName.setText(zoneInfo.zoneName)
             etDesc.setText(zoneInfo.description)
             changeCoordinatesText(etLoc, btnManageCoor, btnDelete, zoneInfo.location)
+
+            GoogleMapHelper.setZone(it)
         }
 
         if (zoneId == NEW_ZONE) {
+            zoneId = GoogleMapHelper.uidZone++.toString()
+            Log.d("NEW ZONE", "New zone with ID $zoneId")
+            //mapFragment.startId = GoogleMapHelper.uidArea
+            GoogleMapHelper.zonesToArea[zoneId.toInt()] = Pair(null, mutableListOf())
             // Create a new zone, setup the text of the button consequently
             changeCoordinatesText(etLoc, btnManageCoor, btnDelete, "")
             btnManage.text = this.getString(R.string.btn_create_zone_button_text)
@@ -79,6 +87,7 @@ class ZoneManagementActivity : AppCompatActivity() {
                 updateZoneInfo(etName, etDesc, etLoc)
             }
         }
+        GoogleMapHelper.editingZone = zoneId.toInt()
         setupListener(btnDelete, btnManageCoor, etLoc, etDesc, etName, mapFragment)
     }
 
@@ -104,8 +113,8 @@ class ZoneManagementActivity : AppCompatActivity() {
             zone.location = ""
             //If some area has been added on the map, remove them
             if (nbModified != 0) {
-                removeRangePolygon(GoogleMapHelper.uid - nbModified, GoogleMapHelper.uid)
-                GoogleMapHelper.uid -= nbModified
+                removeRangePolygon(GoogleMapHelper.uidArea - nbModified, GoogleMapHelper.uidArea)
+                GoogleMapHelper.uidArea -= nbModified
                 nbModified = 0
             }
             //Set the correct text and visibility on the buttons

@@ -3,6 +3,7 @@ package com.github.sdpteam15.polyevents.fragments
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -82,13 +83,13 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
                 GoogleMapHelper.clearTemp()
                 val location = GoogleMapHelper.areasToFormattedStringLocations(from = startId)
                 zone!!.location = location
-                ZoneManagementActivity.nbModified = GoogleMapHelper.uid - startId
+                ZoneManagementActivity.nbModified = GoogleMapHelper.uidArea - startId
                 ZoneManagementActivity.zoneObservable.postValue(
                     Zone(
-                        zoneName = zone?.zoneName,
-                        zoneId = zone?.zoneId,
+                        zoneName = zone!!.zoneName,
+                        zoneId = zone!!.zoneId,
                         location = location,
-                        description = zone?.description
+                        description = zone!!.description
                     )
                 )
             }
@@ -148,7 +149,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         if (useUserLocation) {
             activateMyLocation()
         }
-        startId = GoogleMapHelper.uid
+        startId = GoogleMapHelper.uidArea
 
     }
 
@@ -157,11 +158,12 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     }
 
     override fun onPolygonClick(polygon: Polygon) {
-        if (GoogleMapHelper.editMode) {
+        if (GoogleMapHelper.editMode && GoogleMapHelper.canEdit(polygon.tag.toString())) {
             GoogleMapHelper.editArea(polygon.tag.toString())
         } else {
+            GoogleMapHelper.colorAreas(GoogleMapHelper.areasPoints[polygon.tag.toString().toInt()]!!.first, Color.BLUE)
             //Shows the info window of the marker assigned to the area
-            GoogleMapHelper.areasPoints.get(polygon.tag)!!.first.showInfoWindow()
+            GoogleMapHelper.areasPoints.get(polygon.tag)!!.second.showInfoWindow()
         }
 
     }
