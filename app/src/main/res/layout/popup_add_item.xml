@@ -52,10 +52,30 @@
                 android:ems="10"
                 android:hint="Item name"
                 android:inputType="textPersonName"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/id_confirm_add_item_button"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+            <EditText
+                android:id="@+id/id_edittext_item_quantity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Quantity"
+                android:inputType="numberSigned"
+                app:layout_constraintEnd_toStartOf="@+id/id_confirm_add_item_button"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/id_edittext_item_name" />
+
+            <Spinner
+                android:id="@+id/id_spinner_item_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/id_edittext_item_quantity"
+                app:layout_constraintStart_toStartOf="@+id/id_edittext_item_quantity"
+                app:layout_constraintTop_toBottomOf="@+id/id_edittext_item_quantity"
+                app:layout_constraintVertical_bias="0.0" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

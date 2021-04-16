@@ -64,7 +64,7 @@ class ProfileFragment : Fragment() {
             profileEmailET.setText(userInfo.email)
             profileUsernameET.setText(userInfo.username)
 
-            val userBirthDate = userInfo.birthDate
+            val userBirthDate = userInfo.value.birthDate
             val birthDateFormatted =
                 if (userBirthDate == null) ""
                 else userBirthDate.format(DateTimeFormatter.ISO_LOCAL_DATE)
@@ -82,7 +82,7 @@ class ProfileFragment : Fragment() {
             //Call the DB to update the user information and getUserInformation once it is done
             currentDatabase.updateUserInformation(hashMapNewInfo, currentUser!!.uid, currentUser!!)
                 .observe(this) { newValue ->
-                    if (newValue!!) {
+                    if (newValue.value) {
                         currentDatabase.getUserInformation(
                             userInfoLiveData,
                             currentUser!!.uid,

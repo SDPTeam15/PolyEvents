@@ -12,8 +12,9 @@ import android.widget.LinearLayout
 import android.widget.PopupWindow
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.adapter.ItemAdapter
+import com.github.sdpteam15.polyevents.database.Database.currentDatabase
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.Item
 import com.github.sdpteam15.polyevents.model.ItemType
 
@@ -22,7 +23,7 @@ import com.github.sdpteam15.polyevents.model.ItemType
  */
 class ItemsAdminActivity : AppCompatActivity() {
 
-    //var items: MutableLiveData<MutableList<String>> = MutableLiveData()
+    private val items = ObservableList<Pair<Item, Int>>()
 
     /**
      * Recycler containing all the items
@@ -33,11 +34,19 @@ class ItemsAdminActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_items_admin)
 
-        // TODO take existing items from the database
-
         //val clickListener = { _: String -> } // TODO define what happens when we click on an Item
         recyclerView = findViewById(R.id.id_recycler_items_list)
-        recyclerView.adapter = ItemAdapter(/*clickListener*/)
+        recyclerView.adapter = ItemAdapter(this, items)
+        // When a new Item is created, add it to the database
+        items.observeAdd(this) {
+            if (it.sender != currentDatabase) {
+                currentDatabase.createItem(it.value.first, it.value.second).observe { it1 ->
+                    if (it1.value) {
+                        currentDatabase.getItemsList(items)
+                    }
+                }
+            }
+        }
 
         val btnAdd = findViewById<ImageButton>(R.id.id_add_item_button)
         btnAdd.setOnClickListener { createAddItemPopup() }
@@ -71,6 +80,7 @@ class ItemsAdminActivity : AppCompatActivity() {
         // Get the widgets reference from custom view
         val itemName = view.findViewById<EditText>(R.id.id_edittext_item_name)
         val confirmButton = view.findViewById<ImageButton>(R.id.id_confirm_add_item_button)
+        val itemQuantity = view.findViewById<EditText>(R.id.id_edittext_item_quantity)
 
         //set focus on the popup
         popupWindow.isFocusable = true
@@ -79,13 +89,12 @@ class ItemsAdminActivity : AppCompatActivity() {
         confirmButton.setOnClickListener {
 
 
-            /* TODO ADD val newList = items.value
-            val newItem = itemName.text.toString()
-            newList!!.add(newItem)
-            //items.postValue(newList)*/
-
-            currentDatabase.addItem(Item(itemName.text.toString(), ItemType.OTHER)) // TODO REMOVE
-            recyclerView.adapter!!.notifyDataSetChanged()
+            items.add(
+                Pair(
+                    Item(null, itemName.text.toString(), ItemType.OTHER),
+                    itemQuantity.text.toString().toInt()
+                ), this
+            )
             // Dismiss the popup window
             popupWindow.dismiss()
 

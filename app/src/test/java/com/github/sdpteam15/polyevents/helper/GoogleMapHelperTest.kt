@@ -200,10 +200,12 @@ class GoogleMapHelperTest {
         GoogleMapHelper.moveDiagMarker = Marker(mockedzzt)
         GoogleMapHelper.moveRightMarker = Marker(mockedzzt)
         GoogleMapHelper.moveDownMarker = Marker(mockedzzt)
+        GoogleMapHelper.rotationMarker = Marker(mockedzzt)
         GoogleMapHelper.movePos = position
         GoogleMapHelper.moveDiagPos = position
         GoogleMapHelper.moveRightPos = position
         GoogleMapHelper.moveDownPos = position
+        GoogleMapHelper.rotationPos = position
 
         GoogleMapHelper.tempLatLng.add(position)
         GoogleMapHelper.tempLatLng.add(position)
@@ -236,10 +238,12 @@ class GoogleMapHelperTest {
         GoogleMapHelper.moveDiagMarker = Marker(mockedzzt)
         GoogleMapHelper.moveRightMarker = Marker(mockedzzt)
         GoogleMapHelper.moveDownMarker = Marker(mockedzzt)
+        GoogleMapHelper.rotationMarker = Marker(mockedzzt)
         GoogleMapHelper.movePos = position
         GoogleMapHelper.moveDiagPos = position
         GoogleMapHelper.moveRightPos = position
         GoogleMapHelper.moveDownPos = position
+        GoogleMapHelper.rotationPos = position
         GoogleMapHelper.tempLatLng.add(position)
         GoogleMapHelper.tempLatLng.add(position)
         GoogleMapHelper.tempLatLng.add(position)

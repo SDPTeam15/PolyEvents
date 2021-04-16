@@ -19,14 +19,15 @@ import java.time.LocalDate
  * @property profiles the list of profiles the user has
  */
 @IgnoreExtraProperties
-data class UserEntity (
+data class UserEntity(
     val uid: String,
     var username: String? = null,
     var name: String? = null,
     var birthDate: LocalDate? = null,
     var email: String? = null,
     var telephone: String? = null,
-    val profiles: MutableList<UserProfile> = mutableListOf()) {
+    val profiles: MutableList<UserProfile> = mutableListOf()
+) {
 
     val age: Int?
         get() =

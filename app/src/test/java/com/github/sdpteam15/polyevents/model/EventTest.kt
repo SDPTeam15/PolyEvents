@@ -70,14 +70,14 @@ class EventTest {
 
     @Test
     fun testAddItemToEventInventory() {
-        val item = Item("micro1", ItemType.MICROPHONE)
+        val item = Item(null,"micro1", ItemType.MICROPHONE)
         event.addItem(item)
         assertTrue(event.hasItem(item))
     }
 
     @Test
     fun testAddRemoveItem() {
-        val item = Item("micro1", ItemType.MICROPHONE)
+        val item = Item(null,"micro1", ItemType.MICROPHONE)
         event.addItem(item)
         event.removeItem(item)
         assertFalse(event.hasItem(item))
@@ -87,10 +87,10 @@ class EventTest {
     fun testRemoveItemBasedOnItemEquality() {
         val itemId = "micro1"
         val itemType = ItemType.MICROPHONE
-        val item = Item(itemId, itemType)
+        val item = Item(null,itemId, itemType)
         event.addItem(item)
 
-        event.removeItem(Item(itemId, itemType))
+        event.removeItem(Item(null,itemId, itemType))
         assertFalse(event.hasItem(item))
     }
 

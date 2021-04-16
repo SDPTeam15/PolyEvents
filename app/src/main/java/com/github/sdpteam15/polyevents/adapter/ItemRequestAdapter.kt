@@ -9,7 +9,9 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
+import com.github.sdpteam15.polyevents.model.Item
 
 /**
  * Adapts items to RecyclerView's ItemViewHolders
@@ -17,9 +19,9 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
  * - The list of available items to adapt
  * - A listener that will be triggered on click on a checkbox of an item view holder
  */
-class ItemRequestAdapter (
-    private val availableItems: List<Pair<String, Int>>,
-    private val onItemQuantityChangeListener: (String, Int) -> Unit
+class ItemRequestAdapter(
+    private val availableItems: ObservableList<Pair<Item, Int>>,
+    private val onItemQuantityChangeListener: (Item, Int) -> Unit
 ) : RecyclerView.Adapter<ItemRequestAdapter.ItemViewHolder>() {
 
     /**
@@ -34,16 +36,32 @@ class ItemRequestAdapter (
         /**
          * Binds the value of the item to the layout of the item tab
          */
-        fun bind(item: Pair<String, Int>) {
+        fun bind(item: Pair<Item, Int>) {
             itemName.text =
-                view.context.getString(R.string.item_name_quantity_text, item.first, item.second)
+                view.context.getString(
+                    R.string.item_name_quantity_text,
+                    item.first.itemName,
+                    item.second
+                )
 
             // Set initial quantity to 0
             itemQuantity.setText("0")
             itemQuantity.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {/* Do nothing */}
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {/* Do nothing */
+                }
 
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {/* Do nothing*/}
+                override fun onTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    before: Int,
+                    count: Int
+                ) {/* Do nothing*/
+                }
 
                 override fun afterTextChanged(s: Editable?) {
                     if (s.toString().isNotEmpty()) {
@@ -66,11 +84,13 @@ class ItemRequestAdapter (
             // and inform the user
             itemQuantity.setText("0")
 
-            showToast(view.context.getString(R.string.item_quantity_positive_text),
-                view.context)
+            showToast(
+                view.context.getString(R.string.item_quantity_positive_text),
+                view.context
+            )
         }
 
-        private fun lowerQuantityToMax(item: Pair<String, Int>) {
+        private fun lowerQuantityToMax(item: Pair<Item, Int>) {
             // The quantity set is too high, set it to the max quantity
             // available and inform the user
             val maxQuantity = item.second
@@ -79,8 +99,12 @@ class ItemRequestAdapter (
             // Update the list with the max quantity available
             onItemQuantityChangeListener(item.first, maxQuantity)
 
-            showToast(view.context.getString(R.string.max_item_quantity_text,
-                item.second.toString(), item.first), view.context)
+            showToast(
+                view.context.getString(
+                    R.string.max_item_quantity_text,
+                    item.second.toString(), item.first.itemName
+                ), view.context
+            )
         }
     }
 

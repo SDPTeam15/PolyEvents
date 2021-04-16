@@ -72,39 +72,6 @@ class ObservableListTest {
     }
 
     @Test
-    fun lambdaIsUpdatedOnClearTest() {
-        var isUpdateClear = false
-        var isUpdate = false
-        val observable = ObservableList<Int>()
-
-        observable.add(0)
-        observable.add(1)
-
-        val suppressorClear = observable.observeClear { isUpdateClear = true }
-        val suppressor = observable.observe { isUpdate = true }
-
-        observable.clear()
-
-        assertEquals(true, isUpdateClear)
-        assertEquals(true, isUpdate)
-        assertEquals(0, observable.size)
-
-        isUpdateClear = false
-        isUpdate = false
-
-        suppressorClear()
-        suppressor()
-
-        observable.add(0)
-        observable.add(1)
-        observable.clear()
-
-        assertEquals(false, isUpdateClear)
-        assertEquals(false, isUpdate)
-        assertEquals(0, observable.size)
-    }
-
-    @Test
     fun lambdaIsUpdatedOnItemUpdatedWithValueTest() {
         var isUpdateUpdate = false
         var isUpdate = false
@@ -112,7 +79,7 @@ class ObservableListTest {
 
         observable.add(0)
 
-        val suppressorUpdate = observable.observeUpdate { _, _ -> isUpdateUpdate = true }
+        val suppressorUpdate = observable.observeUpdate { isUpdateUpdate = true }
         val suppressor = observable.observe { isUpdate = true }
 
         observable[0] = 1
@@ -144,10 +111,10 @@ class ObservableListTest {
 
         observable.add(0)
 
-        val suppressorUpdate = observable.observeUpdate { _, _ -> isUpdateUpdate = true }
+        val suppressorUpdate = observable.observeUpdate { isUpdateUpdate = true }
         val suppressor = observable.observe { isUpdate = true }
 
-        observable[0] = Observable(1)
+        observable[0] = 1
 
         assertEquals(true, isUpdateUpdate)
         assertEquals(true, isUpdate)
@@ -160,7 +127,7 @@ class ObservableListTest {
         suppressorUpdate()
         suppressor()
 
-        observable[0] = Observable(0)
+        observable[0] = 0
 
         assertEquals(false, isUpdateUpdate)
         assertEquals(false, isUpdate)

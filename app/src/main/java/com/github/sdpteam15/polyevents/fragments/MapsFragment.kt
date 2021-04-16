@@ -139,7 +139,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     override fun onMapReady(googleMap: GoogleMap?) {
         //GoogleMapHelper.context = context
         GoogleMapHelper.map = GoogleMapAdapter(googleMap)
-        //GoogleMapHelper.map = googleMap
+
         googleMap!!.setOnPolylineClickListener(this)
         googleMap.setOnPolygonClickListener(this)
         googleMap.setOnMarkerClickListener(this)

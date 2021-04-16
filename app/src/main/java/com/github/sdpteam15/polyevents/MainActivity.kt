@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.ic_more -> HelperFunctions.changeFragment(this, fragments[R.id.ic_more])
                 else ->
-                //TODO Add a condition to see if the user is an admin or not and if so, redirect him to the admin hub
+                    //TODO Add a condition to see if the user is an admin or not and if so, redirect him to the admin hub
                     redirectAdmin()
             }
             true
@@ -108,7 +108,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun redirectAdmin() {
-        if(currentUser == null) {
+        if (currentUser == null) {
             HelperFunctions.changeFragment(this, fragments[R.id.ic_home])
         } else {
             HelperFunctions.changeFragment(this, fragments[R.id.id_fragment_admin_hub])

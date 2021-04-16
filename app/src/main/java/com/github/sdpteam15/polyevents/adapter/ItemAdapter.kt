@@ -6,27 +6,34 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.github.sdpteam15.polyevents.ItemsAdminActivity
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
-import com.github.sdpteam15.polyevents.database.FakeDatabase
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.Item
 
 /**
  * Adapts items to RecyclerView ItemsViews
  */
-class ItemAdapter (
-    // TODO ADD private var data: MutableLiveData<MutableList<String>>,
-    // TODO ADD private val onItemClickListener: (String) -> Unit
+class ItemAdapter(
+    itemsAdminActivity: ItemsAdminActivity,
+    private val items: ObservableList<Pair<Item, Int>>
 ) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
-    /*TODO ADD
-        private val observer = Observer<MutableList<String>> { t ->
-            items = t!!
+    //private val items = items
+
+    init {
+        currentDatabase.getItemsList(items).observe {
+            if (!it.value)
+                println("query not satisfied")
+        }
+        items.observeRemove(itemsAdminActivity) {
+            if (it.sender != currentDatabase)
+                currentDatabase.removeItem(it.value.first.itemId!!)
+        }
+        items.observe(itemsAdminActivity) {
             notifyDataSetChanged()
         }
-    */
-    init {
-        //TODO ADD data.observeForever(observer)
     }
 
     /**
@@ -42,13 +49,11 @@ class ItemAdapter (
         /**
          * Binds the values of each view of an event to the layout of an event
          */
-        fun bind(item: Item) {
+        fun bind(item: Pair<Item, Int>) {
             btnRemove.setOnClickListener {
-                currentDatabase.removeItem(item)
-                // TODO ADD data.postValue(items)
-                notifyDataSetChanged()
+                items.remove(item)
             }
-            itemName.text = item.itemType.itemType + item.itemId
+            itemName.text = item.first.itemName
         }
     }
 
@@ -59,18 +64,12 @@ class ItemAdapter (
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        println("SALE O " + (currentDatabase == FakeDatabase))
-        val item = currentDatabase.getItemsList()[position]
+        val item = items[position]
         holder.bind(item)
-        /*
-        holder.itemView.setOnClickListener {
-
-            onItemClickListener(item)
-        }*/
     }
 
     override fun getItemCount(): Int {
-        return currentDatabase.getItemsList().size
+        return items.size
     }
 }
 
