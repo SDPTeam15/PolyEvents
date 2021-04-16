@@ -14,10 +14,6 @@ object FakeDatabaseEvent:EventDatabaseInterface {
     init {
         initEvents()
     }
-    override val currentUser: UserEntity?
-        get() = TODO("Not yet implemented")
-    override val currentProfile: UserProfile?
-        get() = Database.currentDatabase.currentProfile
 
     lateinit var events: MutableMap<String, Event>
     private fun initEvents() {

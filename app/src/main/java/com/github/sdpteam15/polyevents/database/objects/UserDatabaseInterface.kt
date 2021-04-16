@@ -7,6 +7,11 @@ import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 
 interface UserDatabaseInterface {
+    /**
+     * Map used in the firstConnection method. It's public to be able to use it in tests
+     */
+    var firstConnectionUser: UserEntity
+
     val currentUser: UserEntity?
         get() = Database.currentDatabase.currentUser
     val currentProfile: UserProfile?

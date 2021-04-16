@@ -116,11 +116,11 @@ class ProfileFragment : Fragment() {
 
     fun initProfileList(viewRoot: View) {
         profiles.observeRemove {
-            if (it.sender != currentDatabase)
+            if (it.sender != currentDatabase.userDatabase!!)
                 currentDatabase.userDatabase!!.removeProfile(it.value)
         }
         profiles.observeAdd {
-            if (it.sender != currentDatabase)
+            if (it.sender != currentDatabase.userDatabase!!)
                 currentDatabase.userDatabase!!.addUserProfileAndAddToUser(it.value, currentUser!!)
         }
 

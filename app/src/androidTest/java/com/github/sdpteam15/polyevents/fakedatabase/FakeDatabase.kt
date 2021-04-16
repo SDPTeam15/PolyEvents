@@ -2,18 +2,16 @@ package com.github.sdpteam15.polyevents.fakedatabase
 
 import com.github.sdpteam15.polyevents.database.DatabaseConstant
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
-import com.github.sdpteam15.polyevents.database.Matcher
 import com.github.sdpteam15.polyevents.database.objects.*
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
-import com.github.sdpteam15.polyevents.model.*
+import com.github.sdpteam15.polyevents.model.UserEntity
+import com.github.sdpteam15.polyevents.model.UserProfile
 import com.github.sdpteam15.polyevents.util.AdapterInterface
-import com.google.android.gms.maps.model.LatLng
-import java.time.LocalDateTime
 import kotlin.random.Random
 
-object FakeDatabase:DatabaseInterface {
-    lateinit var items: MutableMap<String, Pair<Item, Int>>
+object FakeDatabase : DatabaseInterface {
+
 
     var CURRENT_USER: UserEntity = UserEntity(
         uid = "FakeUID",
@@ -32,17 +30,22 @@ object FakeDatabase:DatabaseInterface {
         get() = null
 
     override var itemDatabase: ItemDatabaseInterface? = null
-        get() = field?: FakeDatabaseItem
+        get() = field ?: FakeDatabaseItem
+
     override var zoneDatabase: ZoneDatabaseInterface? = null
-        get() = field?:FakeDatabaseZone
+        get() = field ?: FakeDatabaseZone
+
     override var userDatabase: UserDatabaseInterface? = null
-        get() = field?:FakeDatabaseUser
+        get() = field ?: FakeDatabaseUser
+
     override var heatmapDatabase: HeatmapDatabaseInterface? = null
-        get() = field?:FakeDatabaseHeatmap
+        get() = field ?: FakeDatabaseHeatmap
+
     override var eventDatabase: EventDatabaseInterface? = null
-        get() = field?:FakeDatabaseEvent
+        get() = field ?: FakeDatabaseEvent
+
     override var materialRequestDatabase: MaterialRequestDatabaseInterface? = null
-        get() = field?: FakeDatabaseMaterialRequest
+        get() = field ?: FakeDatabaseMaterialRequest
 
     override fun <T> addEntityAndGetId(
         element: T,

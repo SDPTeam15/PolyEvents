@@ -21,6 +21,8 @@ object FakeDatabaseUser:UserDatabaseInterface {
     fun addProfile(profile: UserProfile, uid: String, user: UserEntity?): Boolean =
         profiles.add(profile)
 
+    override var firstConnectionUser: UserEntity = UserEntity(uid = "DEFAULT")
+
 
     override fun updateUserInformation(
         newValues: Map<String, String>,

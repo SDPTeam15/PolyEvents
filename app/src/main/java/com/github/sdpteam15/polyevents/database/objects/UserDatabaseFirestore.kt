@@ -21,10 +21,7 @@ object UserDatabaseFirestore : UserDatabaseInterface {
     var firestore: FirebaseFirestore? = null
         get() = field ?: Firebase.firestore
 
-    /**
-     * Map used in the firstConnection method. It's public to be able to use it in tests
-     */
-    var firstConnectionUser: UserEntity = UserEntity(uid = "DEFAULT")
+    override var firstConnectionUser: UserEntity = UserEntity(uid = "DEFAULT")
 
     var profiles: MutableList<UserProfile> = mutableListOf()
 

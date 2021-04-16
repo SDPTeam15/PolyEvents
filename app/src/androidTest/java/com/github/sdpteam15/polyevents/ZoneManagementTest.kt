@@ -47,7 +47,8 @@ class ZoneManagementTest {
     fun setup() {
         mockedDatabase = Mockito.mock(DatabaseInterface::class.java)
         mockedZoneDatabase = Mockito.mock(ZoneDatabaseInterface::class.java)
-        mockedDatabase.zoneDatabase = mockedZoneDatabase
+        When(mockedDatabase.zoneDatabase).thenReturn(mockedZoneDatabase)
+        
         val mockedUserProfile = UserProfile("TestID", "TestName")
         When(mockedDatabase.currentProfile).thenReturn(mockedUserProfile)
 
@@ -114,7 +115,7 @@ class ZoneManagementTest {
     @Test
     fun createWithCorrectInfoRedirectToCorrectActivity() {
         val obs = Observable<Boolean>()
-        When(mockedDatabase.zoneDatabase!!.createZone(ZoneManagementActivity.zone)).thenAnswer { _ ->
+        When(mockedZoneDatabase.createZone(ZoneManagementActivity.zone)).thenAnswer { _ ->
             obs
         }
 
@@ -136,7 +137,7 @@ class ZoneManagementTest {
         val obs = Observable<Boolean>()
         val obs2 = Observable<Boolean>()
         When(
-            mockedDatabase.zoneDatabase!!.getZoneInformation(
+            mockedZoneDatabase.getZoneInformation(
                 ZoneManagementActivity.zoneId,
                 ZoneManagementActivity.zoneObservable
             )
@@ -153,7 +154,7 @@ class ZoneManagementTest {
 
         obs2.postValue(true)
         When(
-            mockedDatabase.zoneDatabase!!.updateZoneInformation(
+            mockedZoneDatabase.updateZoneInformation(
                 ZoneManagementActivity.zoneId,
                 ZoneManagementActivity.zone
             )
@@ -177,7 +178,7 @@ class ZoneManagementTest {
         val obs = Observable<Boolean>()
         val obs2 = Observable<Boolean>()
         When(
-            mockedDatabase.zoneDatabase!!.getZoneInformation(
+            mockedZoneDatabase.getZoneInformation(
                 ZoneManagementActivity.zoneId,
                 ZoneManagementActivity.zoneObservable
             )
@@ -193,7 +194,7 @@ class ZoneManagementTest {
 
 
         When(
-            mockedDatabase.zoneDatabase!!.updateZoneInformation(
+            mockedZoneDatabase.updateZoneInformation(
                 ZoneManagementActivity.zoneId,
                 ZoneManagementActivity.zone
             )
@@ -215,7 +216,7 @@ class ZoneManagementTest {
     @Test
     fun failToCreateStayOnActivity() {
         val obs = Observable<Boolean>()
-        When(mockedDatabase.zoneDatabase!!.createZone(ZoneManagementActivity.zone)).thenAnswer { _ ->
+        When(mockedZoneDatabase.createZone(ZoneManagementActivity.zone)).thenAnswer { _ ->
             obs
         }
 
@@ -237,7 +238,7 @@ class ZoneManagementTest {
         val obs = Observable<Boolean>()
         val obs2 = Observable<Boolean>()
         When(
-            mockedDatabase.zoneDatabase!!.getZoneInformation(
+            mockedZoneDatabase.getZoneInformation(
                 ZoneManagementActivity.zoneId,
                 ZoneManagementActivity.zoneObservable
             )
@@ -253,7 +254,7 @@ class ZoneManagementTest {
 
 
         When(
-            mockedDatabase.zoneDatabase!!.updateZoneInformation(
+            mockedZoneDatabase.updateZoneInformation(
                 ZoneManagementActivity.zoneId,
                 ZoneManagementActivity.zone
             )

@@ -22,6 +22,7 @@ import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.adapter.ItemRequestAdapter
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabase
+import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabaseItem
 import com.github.sdpteam15.polyevents.model.Item
 import com.github.sdpteam15.polyevents.model.ItemType
 import org.hamcrest.CoreMatchers.`is`
@@ -84,7 +85,7 @@ class ItemRequestActivityTest {
 
         // TODO : replace by the db interface call
         Database.currentDatabase = FakeDatabase
-        FakeDatabase.items.clear()
+        FakeDatabaseItem.items.clear()
         for ((item,count) in availableItems){
             Database.currentDatabase.itemDatabase!!.createItem(item,count)
         }

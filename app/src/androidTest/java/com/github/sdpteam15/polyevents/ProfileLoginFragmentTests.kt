@@ -11,6 +11,7 @@ import com.github.sdpteam15.polyevents.database.NUMBER_UPCOMING_EVENTS
 import com.github.sdpteam15.polyevents.database.objects.EventDatabaseFirestore
 import com.github.sdpteam15.polyevents.database.objects.EventDatabaseInterface
 import com.github.sdpteam15.polyevents.database.objects.UserDatabaseFirestore
+import com.github.sdpteam15.polyevents.database.objects.UserDatabaseInterface
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.UpdateArgs
 import com.github.sdpteam15.polyevents.fragments.HomeFragment
@@ -49,7 +50,8 @@ class ProfileLoginFragmentTests {
     lateinit var user2: UserEntity
     lateinit var mockedDatabaseUser: UserEntity
     lateinit var mockedDatabaseUser2: UserEntity
-    lateinit var mockedUserDatabase: UserDatabaseFirestore
+
+    lateinit var mockedUserDatabase: UserDatabaseInterface
     lateinit var mockedEventDatabase: EventDatabaseInterface
     lateinit var mockedDatabase: DatabaseInterface
     lateinit var endingRequest: Observable<Boolean>
@@ -63,18 +65,20 @@ class ProfileLoginFragmentTests {
         endingRequest = Observable()
 
         //Create Mock database
-        mockedUserDatabase = mock(UserDatabaseFirestore::class.java)
+        mockedUserDatabase = mock(UserDatabaseInterface::class.java)
+
         mockedDatabase = mock(DatabaseInterface::class.java)
         mockedEventDatabase = mock(EventDatabaseInterface::class.java)
-        mockedDatabase.userDatabase = mockedUserDatabase
-        mockedDatabase.eventDatabase = mockedEventDatabase
 
+        When(mockedDatabase.eventDatabase).thenReturn(mockedEventDatabase)
+        When(mockedDatabase.userDatabase).thenReturn(mockedUserDatabase)
+        
         When(mockedDatabase.currentUser).thenReturn(null)
         val homeFragment = MainActivity.fragments[R.id.ic_home] as HomeFragment
-        When(mockedDatabase.eventDatabase!!.getListEvent(null, NUMBER_UPCOMING_EVENTS.toLong(), homeFragment.events)).thenAnswer {
+        When(mockedEventDatabase.getListEvent(null, NUMBER_UPCOMING_EVENTS.toLong(), homeFragment.events)).thenAnswer {
             Observable(true)
         }
-        When(mockedDatabase.eventDatabase!!.getListEvent(null, NUMBER_UPCOMING_EVENTS.toLong(), homeFragment.events)).thenAnswer {
+        When(mockedEventDatabase.getListEvent(null, NUMBER_UPCOMING_EVENTS.toLong(), homeFragment.events)).thenAnswer {
             Observable(true)
         }
         currentDatabase = mockedDatabase
@@ -87,7 +91,7 @@ class ProfileLoginFragmentTests {
         //Mock the inDatabase method so that it returns true directly
         val endingRequest2 = Observable<Boolean>()
         When(
-            mockedDatabase.userDatabase!!.inDatabase(loginFragment.inDbObservable, uidTest, user)
+            mockedUserDatabase.inDatabase(loginFragment.inDbObservable, uidTest, user)
         ).thenAnswer { _ ->
             loginFragment.inDbObservable.postValue(true)
             endingRequest2
@@ -152,7 +156,7 @@ class ProfileLoginFragmentTests {
 
         //Mock the get user information method
         When(
-            mockedDatabase.userDatabase!!.getUserInformation(
+            mockedUserDatabase.getUserInformation(
                 profileFragment.userInfoLiveData,
                 uidTest,
                 user
@@ -186,7 +190,7 @@ class ProfileLoginFragmentTests {
         var endingRequestUpdate = Observable<Boolean>()
         var updated = false
         When(
-            mockedDatabase.userDatabase!!.updateUserInformation(profileFragment.hashMapNewInfo, uidTest, user)
+            mockedUserDatabase.updateUserInformation(profileFragment.hashMapNewInfo, uidTest, user)
         ).thenAnswer { _ ->
             updated = true
             endingRequestUpdate
@@ -194,7 +198,7 @@ class ProfileLoginFragmentTests {
 
         //Mock the getInformations
         When(
-            mockedDatabase.userDatabase!!.getUserInformation(
+            mockedUserDatabase.getUserInformation(
                 profileFragment.userInfoLiveData,
                 uidTest,
                 user
@@ -219,7 +223,7 @@ class ProfileLoginFragmentTests {
         //Mock the getUserInformation method to post a user with other values than previously
         //So that we can see if the getUserInformation() has been called (it shouldn't)
         When(
-            mockedDatabase.userDatabase!!.getUserInformation(
+            mockedUserDatabase.getUserInformation(
                 profileFragment.userInfoLiveData,
                 uidTest,
                 user
@@ -266,7 +270,7 @@ class ProfileLoginFragmentTests {
         //Mock the in database method, to return false
         val endingRequestInDatabase = Observable<Boolean>()
         When(
-            mockedDatabase.userDatabase!!.inDatabase(
+            mockedUserDatabase.inDatabase(
                 loginFragment.inDbObservable,
                 uidTest,
                 loginFragment.currentUser!!
@@ -280,7 +284,7 @@ class ProfileLoginFragmentTests {
         var accountCreated = false
         //Mock the firstConnexion method so that it sets the boolean to true if called
         When(
-            mockedDatabase.userDatabase!!.firstConnexion(loginFragment.currentUser!!, loginFragment.currentUser!!)
+            mockedUserDatabase.firstConnexion(loginFragment.currentUser!!, loginFragment.currentUser!!)
         ).thenAnswer { _ ->
             accountCreated = true
             endingRequestFirstConnection
@@ -288,7 +292,7 @@ class ProfileLoginFragmentTests {
 
         //Mock the getInformation method to be able to launch the Profile Fragment
         When(
-            mockedDatabase.userDatabase!!.getUserInformation(
+            mockedUserDatabase.getUserInformation(
                 profileFragment.userInfoLiveData,
                 uidTest,
                 user
@@ -327,7 +331,7 @@ class ProfileLoginFragmentTests {
 
         //Mock the firstConnexion method so that it sets the boolean to false if called
         When(
-            mockedDatabase.userDatabase!!.firstConnexion(loginFragment.currentUser!!, loginFragment.currentUser!!)
+            mockedUserDatabase.firstConnexion(loginFragment.currentUser!!, loginFragment.currentUser!!)
         ).thenAnswer { _ ->
             accountNotCreated = false
             endingRequestFirstConnection
@@ -335,7 +339,7 @@ class ProfileLoginFragmentTests {
 
         //Mock the getInformation method to be able to launch the Profile Fragment
         When(
-            mockedDatabase.userDatabase!!.getUserInformation(
+            mockedUserDatabase.getUserInformation(
                 profileFragment.userInfoLiveData,
                 uidTest,
                 user
