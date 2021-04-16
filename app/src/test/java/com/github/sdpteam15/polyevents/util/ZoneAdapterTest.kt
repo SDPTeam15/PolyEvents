@@ -47,10 +47,12 @@ class ZoneAdapterTest {
     @Test
     fun conversionOfZoneToDocumentWithoutIDAddNoId() {
         val document = ZoneAdapter.toDocument(Zone(null, zoneName, location, zoneDescription))
-
+        print(document)
         assertEquals(document[ZONE_NAME], zone.zoneName)
         assertEquals(document[ZONE_LOCATION], zone.location)
         assertEquals(document[ZONE_DESCRIPTION], zone.description)
+        println(document.containsKey(ZONE_DOCUMENT_ID))
+        println(document[ZONE_DOCUMENT_ID])
         assert(!document.containsKey(ZONE_DOCUMENT_ID))
     }
 }

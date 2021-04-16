@@ -15,12 +15,18 @@ import com.github.sdpteam15.polyevents.model.Zone
  * IMPORTANT: This should be updated whenever we add, remove or update fields of UserEntity.
  */
 object ZoneAdapter : AdapterInterface<Zone> {
-    override fun toDocument(element: Zone): HashMap<String, Any?> = hashMapOf(
-        ZONE_DOCUMENT_ID to element.zoneId,
-        ZONE_NAME to element.zoneName,
-        ZONE_LOCATION to element.location,
-        DatabaseConstant.ZONE_DESCRIPTION to element.description
-    )
+    override fun toDocument(element: Zone): HashMap<String, Any?>{
+        val map = hashMapOf(
+            ZONE_NAME to element.zoneName,
+            ZONE_LOCATION to element.location,
+            DatabaseConstant.ZONE_DESCRIPTION to element.description
+        ) as HashMap<String, Any?>
+
+        if(element.zoneId!=null){
+            map[ZONE_DOCUMENT_ID] = element.zoneId!!
+        }
+        return map
+    }
 
     override fun fromDocument(document: MutableMap<String, Any?>, id: String): Zone = Zone(
         zoneId = id,
