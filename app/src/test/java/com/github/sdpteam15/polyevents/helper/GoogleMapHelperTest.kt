@@ -1,7 +1,7 @@
 package com.github.sdpteam15.polyevents.helper
 
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.anyOrNull
+import org.mockito.kotlin.anyOrNull
 import com.google.android.gms.dynamic.IObjectWrapper
 import com.google.android.gms.internal.maps.zzt
 import com.google.android.gms.internal.maps.zzw
