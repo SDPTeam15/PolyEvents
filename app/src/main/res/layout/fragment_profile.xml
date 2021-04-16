@@ -147,14 +147,16 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="240dp"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:paddingStart="10dp"
                 android:paddingEnd="0dp">
+
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     tools:context=".ItemsAdminActivity">
+
                     <ImageButton
                         android:id="@+id/id_add_profile_button"
                         android:layout_width="wrap_content"
@@ -198,7 +200,7 @@
 
         <Button
             android:id="@+id/btnLogout"
-            android:layout_width="160dp"
+            android:layout_width="120dp"
             android:layout_height="53dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true"
@@ -209,11 +211,12 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.919"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
         <Button
             android:id="@+id/btnUpdateInfos"
-            android:layout_width="160dp"
+            android:layout_width="120dp"
             android:layout_height="53dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true"
