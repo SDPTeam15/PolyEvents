@@ -25,6 +25,9 @@ object GoogleUserLogin : UserLoginInterface<AuthResult> {
     @SuppressLint("StaticFieldLeak")
     var signIn: GoogleSignInClient? = null
 
+    var firebaseAuth:FirebaseAuth? = null
+        get()= field?: FirebaseAuth.getInstance()
+
     override fun getResultFromIntent(
         data: Intent?,
         activity: Activity,
@@ -52,19 +55,19 @@ object GoogleUserLogin : UserLoginInterface<AuthResult> {
     ): Task<AuthResult> {
         //Get the credential back and instantiate FirebaseAuth object
         val credential = GoogleAuthProvider.getCredential(idToken, null)
-        return FirebaseAuth.getInstance().signInWithCredential(credential)
+        return firebaseAuth!!.signInWithCredential(credential)
     }
 
     override fun getCurrentUser(): UserEntity? {
-        return if (FirebaseAuth.getInstance().currentUser != null) {
-            FirebaseUserAdapter.toUser(FirebaseAuth.getInstance().currentUser!!)
+        return if (firebaseAuth!!.currentUser != null) {
+            FirebaseUserAdapter.toUser(firebaseAuth!!.currentUser!!)
         } else {
             null
         }
     }
 
     override fun signOut() {
-        FirebaseAuth.getInstance().signOut()
+        firebaseAuth!!.signOut()
     }
 
     override fun signIn(activity: Activity, fragment: LoginFragment, reqCode: Int) {
@@ -80,11 +83,11 @@ object GoogleUserLogin : UserLoginInterface<AuthResult> {
         }
         //This "remove" the cache of the chosen user. Without it, google doesn't propose the choice of account anymore and log automatically into the previously logged one
         signIn!!.signOut()
-
         fragment.startActivityForResult(signIn!!.signInIntent, reqCode)
     }
 
     override fun isConnected(): Boolean {
-        return FirebaseAuth.getInstance().currentUser!=null
+        return firebaseAuth!!.currentUser!=null
     }
+
 }

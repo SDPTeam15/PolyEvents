@@ -22,7 +22,10 @@ import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import org.hamcrest.Matchers
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -99,6 +102,25 @@ class ProfileLoginFragmentTests {
             Observable(true)
         }
         currentDatabase = mockedDatabase
+    }
+
+
+    @Test
+    fun signInCalledTheCorrectMethod() {
+        val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
+        loginFragment.currentUser = null
+        val mockFirebaseAuth = mock(FirebaseAuth::class.java)
+        GoogleUserLogin.firebaseAuth = mockFirebaseAuth
+        When(mockFirebaseAuth.currentUser).thenReturn(null)
+
+        onView(withId(R.id.ic_login)).perform(click())
+        onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
+
+        onView(withId(R.id.btnLogin)).perform(click())
+
+        assert(GoogleUserLogin.gso!=null)
+        assert(GoogleUserLogin.signIn!=null)
+        GoogleUserLogin.firebaseAuth = null
     }
 
     /**
@@ -456,6 +478,7 @@ class ProfileLoginFragmentTests {
         endingRequestFirstConnection.postValue(false)
         //Notify that the getUserAInformation request was successfully performed
         endingRequest.postValue(false)
+        Thread.sleep(2000)
         onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
 
     }
