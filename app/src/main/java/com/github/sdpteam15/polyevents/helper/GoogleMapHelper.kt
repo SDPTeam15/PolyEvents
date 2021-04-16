@@ -307,8 +307,6 @@ object GoogleMapHelper {
         val pos3 = tempLatLng[2]!!
         val pos4 = tempLatLng[3]!!
 
-        val temp1 = (pos4.latitude + pos3.latitude) / 2
-        val temp2 = (pos2.longitude + pos3.longitude) / 2
         val posMidRight = LatLng(0.5 * (pos3.latitude + pos4.latitude), 0.5 * (pos3.longitude + pos4.longitude))
         val posMidDown = LatLng(0.5 * (pos3.latitude + pos2.latitude), 0.5 * (pos3.longitude + pos2.longitude))
         val posCenter = LatLng(0.5 * (pos4.latitude + pos2.latitude), 0.5 * (pos4.longitude + pos2.longitude))

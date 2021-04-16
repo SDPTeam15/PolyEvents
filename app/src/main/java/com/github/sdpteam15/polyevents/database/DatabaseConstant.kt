@@ -27,7 +27,6 @@ object DatabaseConstant {
     const val PROFILE_NAME = "name"
     const val PROFILE_RANK = "rank"
 
-
     /**
      * Event related constants
      */
@@ -52,7 +51,6 @@ object DatabaseConstant {
     const val ITEM_TYPE = "itemType"
     const val ITEM_COUNT = "count"
 
-
     /**
      * Area related constants
      */
@@ -65,14 +63,13 @@ object DatabaseConstant {
     const val POINTS_SEP = "!"
     const val AREAS_SEP = "?"
 
-
     /**
      * Current locations related constants
      */
     const val LOCATIONS_COLLECTION = "locations"
     const val LOCATIONS_POINT = "point"
 
-    enum class CollectionConstant(val str:String){
+    enum class CollectionConstant(val str: String) {
         LOCATION_COLLECTION("locations"),
         ZONE_COLLECTION("zones"),
         ITEM_COLLECTION("items"),
@@ -81,7 +78,7 @@ object DatabaseConstant {
         USER_COLLECTION("users")
     }
 
-    enum class EventConstant(val str:String){
+    enum class EventConstant(val str: String) {
         EVENT_COLLECTION("events"),
         EVENT_DOCUMENT_ID("eventId"),
         EVENT_NAME("eventName"),
@@ -95,21 +92,21 @@ object DatabaseConstant {
         EVENT_TAGS("tags")
     }
 
-    enum class ItemConstants(val str:String){
+    enum class ItemConstants(val str: String) {
         ITEM_COLLECTION("items"),
         ITEM_DOCUMENT_ID("itemId"),
         ITEM_NAME("name"),
         ITEM_TYPE("itemType")
     }
 
-    enum class ProfileConstants(val str: String){
+    enum class ProfileConstants(val str: String) {
         PROFILE_COLLECTION("Profile"),
         PROFILE_ID("pid"),
         PROFILE_NAME("name"),
         PROFILE_RANK("rank")
     }
 
-    enum class UserConstants(val str: String){
+    enum class UserConstants(val str: String) {
         USER_UID("uid"),
         USER_USERNAME("username"),
         USER_NAME("name"),
@@ -122,7 +119,7 @@ object DatabaseConstant {
         USER_PROFILES("profiles")
     }
 
-    enum class ZoneConstant(val str:String){
+    enum class ZoneConstant(val str: String) {
         ZONE_COLLECTION("zones"),
         ZONE_DOCUMENT_ID("zoneId"),
         ZONE_NAME("zoneName"),
@@ -133,9 +130,8 @@ object DatabaseConstant {
         AREAS_SEP("?")
     }
 
-    enum class LocationConstant(val str:String){
+    enum class LocationConstant(val str: String) {
         LOCATIONS_COLLECTION("locations"),
         LOCATIONS_POINT("point")
-
     }
 }
