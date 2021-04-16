@@ -38,14 +38,15 @@ class HeatmapDatabaseFirestoreTest {
         FirestoreDatabaseProvider.firestore = mockedDatabase
         HeatmapDatabaseFirestore.firestore = mockedDatabase
 
-        FirestoreDatabaseProvider.lastQuerySuccessListener= null
-        FirestoreDatabaseProvider.lastSetSuccessListener= null
-        FirestoreDatabaseProvider.lastFailureListener= null
-        FirestoreDatabaseProvider.lastGetSuccessListener= null
-        FirestoreDatabaseProvider.lastAddSuccessListener= null
+        FirestoreDatabaseProvider.lastQuerySuccessListener = null
+        FirestoreDatabaseProvider.lastSetSuccessListener = null
+        FirestoreDatabaseProvider.lastFailureListener = null
+        FirestoreDatabaseProvider.lastGetSuccessListener = null
+        FirestoreDatabaseProvider.lastAddSuccessListener = null
     }
+
     @After
-    fun teardown(){
+    fun teardown() {
         FirestoreDatabaseProvider.firestore = null
         HeatmapDatabaseFirestore.firestore = null
     }
@@ -155,7 +156,8 @@ class HeatmapDatabaseFirestoreTest {
         }
 
         val locationsObs = Observable<List<LatLng>>()
-        val result = FirestoreDatabaseProvider.heatmapDatabase!!.getUsersLocations(locationsObs, user)
+        val result =
+            FirestoreDatabaseProvider.heatmapDatabase!!.getUsersLocations(locationsObs, user)
 
         // Assert that the DB successfully performed the query
         MatcherAssert.assertThat(result.value, CoreMatchers.`is`(true))

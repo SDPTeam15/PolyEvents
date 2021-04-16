@@ -1,6 +1,5 @@
 package com.github.sdpteam15.polyevents.database.objects
 
-import com.github.sdpteam15.polyevents.database.DatabaseConstant
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.ITEM_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
@@ -16,7 +15,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when` as When
 
@@ -29,6 +27,7 @@ class ItemDatabaseFirestoreTest {
     lateinit var user: UserEntity
     lateinit var mockedDatabase: FirebaseFirestore
     lateinit var database: DatabaseInterface
+
     @Before
     fun setup() {
         user = UserEntity(
@@ -44,14 +43,15 @@ class ItemDatabaseFirestoreTest {
         //FirestoreDatabaseProvider.userDatabase =  mockedDatabaseUser
         ItemDatabaseFirestore.firestore = mockedDatabase
 
-        FirestoreDatabaseProvider.lastQuerySuccessListener= null
-        FirestoreDatabaseProvider.lastSetSuccessListener= null
-        FirestoreDatabaseProvider.lastFailureListener= null
-        FirestoreDatabaseProvider.lastGetSuccessListener= null
-        FirestoreDatabaseProvider.lastAddSuccessListener= null
+        FirestoreDatabaseProvider.lastQuerySuccessListener = null
+        FirestoreDatabaseProvider.lastSetSuccessListener = null
+        FirestoreDatabaseProvider.lastFailureListener = null
+        FirestoreDatabaseProvider.lastGetSuccessListener = null
+        FirestoreDatabaseProvider.lastAddSuccessListener = null
     }
+
     @After
-    fun teardown(){
+    fun teardown() {
         FirestoreDatabaseProvider.firestore = null
         ItemDatabaseFirestore.firestore = null
     }

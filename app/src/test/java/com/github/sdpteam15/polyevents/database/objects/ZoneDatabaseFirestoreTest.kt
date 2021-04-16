@@ -57,16 +57,17 @@ class ZoneDatabaseFirestoreTest {
         FirestoreDatabaseProvider.firestore = mockedDatabase
         ZoneDatabaseFirestore.firestore = mockedDatabase
         mockedZoneDatabase = Mockito.mock(ZoneDatabaseInterface::class.java)
-        
-        
-        FirestoreDatabaseProvider.lastQuerySuccessListener= null
-        FirestoreDatabaseProvider.lastSetSuccessListener= null
-        FirestoreDatabaseProvider.lastFailureListener= null
-        FirestoreDatabaseProvider.lastGetSuccessListener= null
-        FirestoreDatabaseProvider.lastAddSuccessListener= null
+
+
+        FirestoreDatabaseProvider.lastQuerySuccessListener = null
+        FirestoreDatabaseProvider.lastSetSuccessListener = null
+        FirestoreDatabaseProvider.lastFailureListener = null
+        FirestoreDatabaseProvider.lastGetSuccessListener = null
+        FirestoreDatabaseProvider.lastAddSuccessListener = null
     }
+
     @After
-    fun teardown(){
+    fun teardown() {
         FirestoreDatabaseProvider.firestore = null
         ZoneDatabaseFirestore.firestore = null
     }
@@ -79,7 +80,9 @@ class ZoneDatabaseFirestoreTest {
 
         val testZone = Zone(zoneID, zoneName, zoneLoc, zoneDesc)
 
-        When(mockedDatabase.collection(DatabaseConstant.ZONE_COLLECTION)).thenReturn(mockedCollectionReference)
+        When(mockedDatabase.collection(DatabaseConstant.ZONE_COLLECTION)).thenReturn(
+            mockedCollectionReference
+        )
         When(mockedCollectionReference.add(ZoneAdapter.toDocument(testZone))).thenReturn(
             taskReferenceMock
         )
@@ -102,7 +105,7 @@ class ZoneDatabaseFirestoreTest {
             taskReferenceMock
         }
 
-        val result =  FirestoreDatabaseProvider.zoneDatabase!!.createZone(testZone, user)
+        val result = FirestoreDatabaseProvider.zoneDatabase!!.createZone(testZone, user)
         assert(result.value!!)
         assert(zoneNameAdded == zoneName)
         assert(zoneDescAdded == zoneDesc)
@@ -119,7 +122,9 @@ class ZoneDatabaseFirestoreTest {
         val mockedDocumentReference = Mockito.mock(DocumentReference::class.java)
         val testZone = Zone(zoneID, zoneName, zoneLoc, zoneDesc)
 
-        When(mockedDatabase.collection(DatabaseConstant.ZONE_COLLECTION)).thenReturn(mockedCollectionReference)
+        When(mockedDatabase.collection(DatabaseConstant.ZONE_COLLECTION)).thenReturn(
+            mockedCollectionReference
+        )
         When(mockedCollectionReference.document(zoneID))
             .thenReturn(mockedDocumentReference)
         When(mockedDocumentReference.update(ZoneAdapter.toDocument(testZone))).thenReturn(
@@ -144,7 +149,8 @@ class ZoneDatabaseFirestoreTest {
             mockedTask
         }
 
-        val result =  FirestoreDatabaseProvider.zoneDatabase!!.updateZoneInformation(zoneID, testZone, user)
+        val result =
+            FirestoreDatabaseProvider.zoneDatabase!!.updateZoneInformation(zoneID, testZone, user)
         assert(result.value!!)
         assert(zoneNameUpdated == zoneName)
         assert(zoneDescUpdated == zoneDesc)
@@ -160,7 +166,9 @@ class ZoneDatabaseFirestoreTest {
         val mockedDocumentReference = Mockito.mock(DocumentReference::class.java)
         val mockedDocument = Mockito.mock(DocumentSnapshot::class.java)
 
-        When(mockedDatabase.collection(DatabaseConstant.ZONE_COLLECTION)).thenReturn(mockedCollectionReference)
+        When(mockedDatabase.collection(DatabaseConstant.ZONE_COLLECTION)).thenReturn(
+            mockedCollectionReference
+        )
         When(mockedCollectionReference.document(zoneID))
             .thenReturn(mockedDocumentReference)
         When(mockedDocumentReference.get()).thenReturn(mockedTask)
@@ -178,7 +186,8 @@ class ZoneDatabaseFirestoreTest {
         }
         val obsZone = Observable<Zone>()
 
-        val result = FirestoreDatabaseProvider.zoneDatabase!!.getZoneInformation(zoneID, obsZone, user)
+        val result =
+            FirestoreDatabaseProvider.zoneDatabase!!.getZoneInformation(zoneID, obsZone, user)
         val value = obsZone.value!!
         assert(result.value!!)
         assert(value.zoneName == zoneName)

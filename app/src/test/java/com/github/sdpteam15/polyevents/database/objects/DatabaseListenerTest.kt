@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.database.objects
 
-import com.github.sdpteam15.polyevents.database.*
+import com.github.sdpteam15.polyevents.database.DatabaseInterface
+import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
@@ -20,7 +21,7 @@ class DatabaseListenerTest {
     lateinit var database: DatabaseInterface
 
     @After
-    fun tearDown(){
+    fun tearDown() {
         FirestoreDatabaseProvider.heatmapDatabase = null
         FirestoreDatabaseProvider.userDatabase = null
         FirestoreDatabaseProvider.itemDatabase = null
@@ -30,11 +31,13 @@ class DatabaseListenerTest {
     }
 
     @Test
-    fun databaseCorrectlySet(){
-        val mockedHeatmap: HeatmapDatabaseInterface = Mockito.mock(HeatmapDatabaseInterface::class.java)
+    fun databaseCorrectlySet() {
+        val mockedHeatmap: HeatmapDatabaseInterface =
+            Mockito.mock(HeatmapDatabaseInterface::class.java)
         val mockedUser: UserDatabaseInterface = Mockito.mock(UserDatabaseInterface::class.java)
         val mockedItem: ItemDatabaseInterface = Mockito.mock(ItemDatabaseInterface::class.java)
-        val mockedMaterialRequest: MaterialRequestDatabaseInterface = Mockito.mock(MaterialRequestDatabaseInterface::class.java)
+        val mockedMaterialRequest: MaterialRequestDatabaseInterface =
+            Mockito.mock(MaterialRequestDatabaseInterface::class.java)
         val mockedZone: ZoneDatabaseInterface = Mockito.mock(ZoneDatabaseInterface::class.java)
         val mockedEvent: EventDatabaseInterface = Mockito.mock(EventDatabaseInterface::class.java)
 
@@ -70,21 +73,22 @@ class DatabaseListenerTest {
             CoreMatchers.`is`(mockedEvent)
         )
     }
+
     @Test
-    fun listenersAreCorrectlySet(){
+    fun listenersAreCorrectlySet() {
 
 
-        val lastQuerySuccessListener= OnSuccessListener<QuerySnapshot> { }
-        val lastSetSuccessListener= OnSuccessListener<Void> { }
-        val lastFailureListener= OnFailureListener {  }
-        val lastGetSuccessListener= OnSuccessListener<DocumentSnapshot> { }
-        val lastAddSuccessListener= OnSuccessListener<DocumentReference> { }
+        val lastQuerySuccessListener = OnSuccessListener<QuerySnapshot> { }
+        val lastSetSuccessListener = OnSuccessListener<Void> { }
+        val lastFailureListener = OnFailureListener { }
+        val lastGetSuccessListener = OnSuccessListener<DocumentSnapshot> { }
+        val lastAddSuccessListener = OnSuccessListener<DocumentReference> { }
 
-        FirestoreDatabaseProvider.lastQuerySuccessListener= lastQuerySuccessListener
-        FirestoreDatabaseProvider.lastSetSuccessListener= lastSetSuccessListener
-        FirestoreDatabaseProvider.lastFailureListener= lastFailureListener
-        FirestoreDatabaseProvider.lastGetSuccessListener= lastGetSuccessListener
-        FirestoreDatabaseProvider.lastAddSuccessListener= lastAddSuccessListener
+        FirestoreDatabaseProvider.lastQuerySuccessListener = lastQuerySuccessListener
+        FirestoreDatabaseProvider.lastSetSuccessListener = lastSetSuccessListener
+        FirestoreDatabaseProvider.lastFailureListener = lastFailureListener
+        FirestoreDatabaseProvider.lastGetSuccessListener = lastGetSuccessListener
+        FirestoreDatabaseProvider.lastAddSuccessListener = lastAddSuccessListener
 
         MatcherAssert.assertThat(
             FirestoreDatabaseProvider.lastQuerySuccessListener,

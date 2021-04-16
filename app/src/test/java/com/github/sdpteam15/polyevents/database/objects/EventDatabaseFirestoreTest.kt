@@ -1,7 +1,6 @@
 package com.github.sdpteam15.polyevents.database.objects
 
 import android.graphics.Bitmap
-import com.github.sdpteam15.polyevents.database.DatabaseConstant
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
@@ -13,19 +12,19 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
-import org.mockito.Mockito.`when` as When
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito
 import org.mockito.Mockito.mock
 import java.time.LocalDateTime
+import org.mockito.Mockito.`when` as When
 
 private const val displayNameTest = "Test displayName"
 private const val emailTest = "Test email"
 private const val uidTest = "Test uid"
 private val listProfile = ArrayList<String>()
+
 class EventDatabaseFirestoreTest {
     lateinit var user: UserEntity
     lateinit var mockedDatabase: FirebaseFirestore
@@ -45,14 +44,15 @@ class EventDatabaseFirestoreTest {
         FirestoreDatabaseProvider.firestore = mockedDatabase
         EventDatabaseFirestore.firestore = mockedDatabase
 
-        FirestoreDatabaseProvider.lastQuerySuccessListener= null
-        FirestoreDatabaseProvider.lastSetSuccessListener= null
-        FirestoreDatabaseProvider.lastFailureListener= null
-        FirestoreDatabaseProvider.lastGetSuccessListener= null
-        FirestoreDatabaseProvider.lastAddSuccessListener= null
+        FirestoreDatabaseProvider.lastQuerySuccessListener = null
+        FirestoreDatabaseProvider.lastSetSuccessListener = null
+        FirestoreDatabaseProvider.lastFailureListener = null
+        FirestoreDatabaseProvider.lastGetSuccessListener = null
+        FirestoreDatabaseProvider.lastAddSuccessListener = null
     }
+
     @After
-    fun teardown(){
+    fun teardown() {
         FirestoreDatabaseProvider.firestore = null
         EventDatabaseFirestore.firestore = null
     }
