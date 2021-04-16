@@ -155,9 +155,9 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         return Observable<Boolean>(true)
     }
 
-    override fun getListEvent(
+    override fun getEvents(
         matcher: Matcher?,
-        number: Long?,
+        limit: Long?,
         eventList: ObservableList<Event>,
         profile: UserProfile?
     ): Observable<Boolean> {
@@ -165,9 +165,9 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         val task = firestore!!.collection(EVENT_COLLECTION)
         val query = matcher?.match(task)
         val v = if (query != null) {
-            if (number != null) query.limit(number).get() else query.get()
+            if (limit != null) query.limit(limit).get() else query.get()
         } else {
-            if (number != null) task.limit(number).get() else task.get()
+            if (limit != null) task.limit(limit).get() else task.get()
         }
         return thenDoGet(v) {
             eventList.clear(this)
@@ -179,6 +179,15 @@ object FirestoreDatabaseProvider : DatabaseInterface {
                 }
             }
         }
+    }
+
+    override fun getEventsSortedByStartTime(
+        matcher: Matcher?,
+        limit: Long?,
+        eventList: ObservableList<Event>,
+        profile: UserProfile?
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
     }
 
 

@@ -210,14 +210,30 @@ interface DatabaseInterface {
     /**
      * Get list of event
      * @param matcher: matcher for the search
-     * @param number: maximum of result
+     * @param limit: maximum number of results
      * @param eventList: the list of event that will be set when the DB returns the information
      * @param profile: profile for database access
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
-    fun getListEvent(
+    fun getEvents(
         matcher: Matcher? = null,
-        number: Long? = null,
+        limit: Long? = null,
+        eventList: ObservableList<Event>,
+        profile: UserProfile? = currentProfile
+    ): Observable<Boolean>
+
+    /**
+     * Get list of events sorted by their start times.
+     *
+     * @param matcher a custom matcher for the search
+     * @param limit maximum number of resukts
+     * @param eventList list of events that will be set when the DB returns the info
+     * @param profile profile of the user for database access
+     * @return an observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun getEventsSortedByStartTime(
+        matcher: Matcher? = null,
+        limit: Long? = null,
         eventList: ObservableList<Event>,
         profile: UserProfile? = currentProfile
     ): Observable<Boolean>
@@ -296,7 +312,7 @@ interface DatabaseInterface {
      * Look in the database if the user already exists or not
      * @param profile : live data that will be set with the find profile value
      * @param pid : profile id we want to get
-     * @param profileAccess : the profile object to use its permission
+     * @param userAccess : the profile object to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getProfileById(

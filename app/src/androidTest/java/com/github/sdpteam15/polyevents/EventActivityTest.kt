@@ -110,7 +110,7 @@ class EventActivityTest {
             EventActivity::class.java
         )
         val events = ObservableList<Event>()
-        currentDatabase.getListEvent(null, 1, events)
+        currentDatabase.getEvents(null, 1, events)
 
         val eventToTest = events[0]
         intent.putExtra(EXTRA_EVENT_ID, eventToTest.eventId!!)

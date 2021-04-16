@@ -112,15 +112,25 @@ object FakeDatabase : DatabaseInterface {
         TODO("Not yet implemented")
     }
 
-    override fun getListEvent(
+    override fun getEvents(
         matcher: Matcher?,
-        number: Long?,
+        limit: Long?,
         eventList: ObservableList<Event>,
         profile: UserProfile?
     ): Observable<Boolean> {
         eventList.clear(this)
 
         eventList.addAll(events.values, this)
+        return Observable(true, this)
+    }
+
+    override fun getEventsSortedByStartTime(
+        matcher: Matcher?,
+        limit: Long?,
+        eventList: ObservableList<Event>,
+        profile: UserProfile?
+    ): Observable<Boolean> {
+        eventList.addAll(events.values.sortedBy { event -> event.startTime })
         return Observable(true, this)
     }
 

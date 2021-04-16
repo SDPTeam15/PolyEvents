@@ -8,7 +8,6 @@ import androidx.test.espresso.matcher.ViewMatchers.hasChildCount
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread
-import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.FakeDatabase
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
@@ -94,7 +93,7 @@ class UpcomingEventsHomeFragmentTest {
         for (event in eventsToAdd){
             currentDatabase.createEvent(event)
         }
-        currentDatabase.getListEvent(null, null, events)
+        currentDatabase.getEvents(null, null, events)
 
         // Update the content to use the mock activities query helper
         runOnUiThread {

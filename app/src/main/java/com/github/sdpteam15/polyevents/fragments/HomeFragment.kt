@@ -36,7 +36,7 @@ class HomeFragment : Fragment() {
         listUpcomingEventsLayout =
             fragmentView.findViewById<LinearLayout>(R.id.id_upcoming_events_list)
 
-        currentDatabase.getListEvent(null, NUMBER_UPCOMING_EVENTS.toLong(), events).observe(this) {
+        currentDatabase.getEvents(null, NUMBER_UPCOMING_EVENTS.toLong(), events).observe(this) {
             if (!it.value) {
                 HelperFunctions.showToast("Failed to load events", fragmentView.context)
             }
