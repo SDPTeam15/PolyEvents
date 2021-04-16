@@ -21,12 +21,6 @@ object UserDatabaseFirestore : UserDatabaseInterface {
     var firestore: FirebaseFirestore? = null
         get() = field ?: Firebase.firestore
 
-    override val currentUser: UserEntity?
-        get()= Database.currentDatabase.currentUser
-
-    override val currentProfile: UserProfile?
-        get() = Database.currentDatabase.currentProfile
-
     /**
      * Map used in the firstConnection method. It's public to be able to use it in tests
      */

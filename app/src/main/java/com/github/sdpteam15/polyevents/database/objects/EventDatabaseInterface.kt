@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.database.objects
 
+import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.Matcher
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
@@ -9,7 +10,9 @@ import com.github.sdpteam15.polyevents.model.UserProfile
 
 interface EventDatabaseInterface {
     val currentUser: UserEntity?
+        get() = Database.currentDatabase.currentUser
     val currentProfile: UserProfile?
+        get() = Database.currentDatabase.currentProfile
 
     /**
      * Update or request an update for an event

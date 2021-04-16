@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.database.objects
 
+import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
@@ -7,7 +8,9 @@ import com.google.android.gms.maps.model.LatLng
 
 interface HeatmapDatabaseInterface {
     val currentUser: UserEntity?
+        get() = Database.currentDatabase.currentUser
     val currentProfile: UserProfile?
+        get() = Database.currentDatabase.currentProfile
 
     /**
      * Update, or add if it was not already in the database, the current location

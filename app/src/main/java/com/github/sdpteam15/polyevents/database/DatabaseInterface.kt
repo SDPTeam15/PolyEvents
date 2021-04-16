@@ -21,12 +21,12 @@ interface DatabaseInterface {
      */
     val currentUser: UserEntity?
     val currentProfile: UserProfile?
-    val itemDatabase: ItemDatabaseInterface?
-    val zoneDatabase: ZoneDatabaseInterface?
-    val userDatabase: UserDatabaseInterface?
-    val heatmapDatabase: HeatmapDatabaseInterface?
-    val eventDatabase: EventDatabaseInterface?
-    val materialRequestDatabase: MaterialRequestDatabaseInterface?
+    var itemDatabase: ItemDatabaseInterface?
+    var zoneDatabase: ZoneDatabaseInterface?
+    var userDatabase: UserDatabaseInterface?
+    var heatmapDatabase: HeatmapDatabaseInterface?
+    var eventDatabase: EventDatabaseInterface?
+    var materialRequestDatabase: MaterialRequestDatabaseInterface?
 
     /**
      * Add an Entity to the data base
@@ -38,7 +38,8 @@ interface DatabaseInterface {
     fun <T> addEntityAndGetId(
         element: T,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>
+        adapter: AdapterInterface<T>,
+        userAccess: UserProfile?=currentProfile
     ): Observable<String>
 
     /**
@@ -51,7 +52,8 @@ interface DatabaseInterface {
     fun <T> addEntity(
         element: T,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>
+        adapter: AdapterInterface<T>,
+        userAccess: UserProfile?=currentProfile
     ): Observable<Boolean>
 
     /**
@@ -66,7 +68,8 @@ interface DatabaseInterface {
         element: T?,
         id: String,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>?
+        adapter: AdapterInterface<T>?,
+        userAccess: UserProfile?=currentProfile
     ): Observable<Boolean>
 
     /**
@@ -78,7 +81,8 @@ interface DatabaseInterface {
      */
     fun deleteEntity(
         id: String,
-        collection: DatabaseConstant.CollectionConstant
+        collection: DatabaseConstant.CollectionConstant,
+        userAccess: UserProfile?=currentProfile
     ): Observable<Boolean>
 
     /**
@@ -93,7 +97,8 @@ interface DatabaseInterface {
         element: Observable<T>,
         id: String,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>
+        adapter: AdapterInterface<T>,
+        userAccess: UserProfile?=currentProfile
     ): Observable<Boolean>
 
     /**
@@ -108,6 +113,7 @@ interface DatabaseInterface {
         elements: ObservableList<T>,
         ids: List<String>,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>
+        adapter: AdapterInterface<T>,
+        userAccess: UserProfile?=currentProfile
     ): Observable<Boolean>
 }

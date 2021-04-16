@@ -19,12 +19,6 @@ object ItemDatabaseFirestore: ItemDatabaseInterface {
     var firestore: FirebaseFirestore? = null
         get() = field ?: Firebase.firestore
 
-    override val currentUser: UserEntity?
-        get()= Database.currentDatabase.currentUser
-
-    override val currentProfile: UserProfile?
-        get() = Database.currentDatabase.currentProfile
-
     override fun createItem(
         item: Item,
         count: Int,

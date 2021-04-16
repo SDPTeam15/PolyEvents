@@ -18,12 +18,6 @@ object ZoneDatabaseFirestore : ZoneDatabaseInterface {
     var firestore: FirebaseFirestore? = null
         get() = field ?: Firebase.firestore
 
-    override val currentUser: UserEntity?
-        get()= Database.currentDatabase.currentUser
-
-    override val currentProfile: UserProfile?
-        get() = Database.currentDatabase.currentProfile
-
     override fun createZone(zone: Zone, userAccess: UserEntity?): Observable<Boolean> {
         return FirestoreDatabaseProvider.thenDoAdd(
             firestore!!

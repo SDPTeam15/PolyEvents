@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.database.objects
 
+import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
@@ -7,7 +8,9 @@ import com.github.sdpteam15.polyevents.model.Zone
 
 interface ZoneDatabaseInterface {
     val currentUser: UserEntity?
+        get() = Database.currentDatabase.currentUser
     val currentProfile: UserProfile?
+        get() = Database.currentDatabase.currentProfile
 
     /**
      * Store the newly created zone information in the database

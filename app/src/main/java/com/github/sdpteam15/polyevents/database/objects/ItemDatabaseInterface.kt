@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.database.objects
 
+import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.Item
@@ -8,7 +9,9 @@ import com.github.sdpteam15.polyevents.model.UserProfile
 
 interface ItemDatabaseInterface {
     val currentUser: UserEntity?
+        get() = Database.currentDatabase.currentUser
     val currentProfile: UserProfile?
+        get() = Database.currentDatabase.currentProfile
 
     /**
      * create a new Item
