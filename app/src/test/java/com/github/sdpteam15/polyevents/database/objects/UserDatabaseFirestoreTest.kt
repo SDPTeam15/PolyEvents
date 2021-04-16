@@ -66,13 +66,7 @@ class UserDatabaseFirestoreTest {
         //FirestoreDatabaseProvider.userDatabase =  mockedDatabaseUser
         UserDatabaseFirestore.firestore = mockedDatabase
 
-        val mockedUserLogin = Mockito.mock(UserLoginInterface::class.java) as UserLoginInterface<AuthResult>
-        UserLogin.currentUserLogin = mockedUserLogin
-        FirestoreDatabaseProvider.currentUser = user
-        Mockito.`when`(mockedUserLogin.isConnected()).thenReturn(true)
-        FirestoreDatabaseProvider.currentProfile = UserProfile()
-        assert(UserDatabaseFirestore.currentUser==FirestoreDatabaseProvider.currentUser)
-        assert(UserDatabaseFirestore.currentProfile==FirestoreDatabaseProvider.currentProfile)
+
 
         UserDatabaseFirestore.firstConnectionUser = UserEntity(uid = "DEFAULT")
         FirestoreDatabaseProvider.lastQuerySuccessListener = null
@@ -87,6 +81,18 @@ class UserDatabaseFirestoreTest {
         FirestoreDatabaseProvider.firestore = null
         UserDatabaseFirestore.firestore = null
         UserLogin.currentUserLogin = GoogleUserLogin
+    }
+
+    @Test
+    fun variableCorrectlySet(){
+        val mockedUserLogin = Mockito.mock(UserLoginInterface::class.java) as UserLoginInterface<AuthResult>
+        UserLogin.currentUserLogin = mockedUserLogin
+        FirestoreDatabaseProvider.currentUser = user
+        Mockito.`when`(mockedUserLogin.isConnected()).thenReturn(true)
+        FirestoreDatabaseProvider.currentProfile = UserProfile()
+        assert(UserDatabaseFirestore.currentUser==FirestoreDatabaseProvider.currentUser)
+        assert(UserDatabaseFirestore.currentProfile==FirestoreDatabaseProvider.currentProfile)
+        assert(UserDatabaseFirestore.firestore==mockedDatabase)
     }
 
     @Test

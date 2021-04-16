@@ -54,7 +54,10 @@ class ItemDatabaseFirestoreTest {
         FirestoreDatabaseProvider.lastFailureListener = null
         FirestoreDatabaseProvider.lastGetSuccessListener = null
         FirestoreDatabaseProvider.lastAddSuccessListener = null
+    }
 
+    @Test
+    fun variableCorrectlySet(){
         val mockedUserLogin = Mockito.mock(UserLoginInterface::class.java) as UserLoginInterface<AuthResult>
         UserLogin.currentUserLogin = mockedUserLogin
         FirestoreDatabaseProvider.currentUser = user
@@ -62,6 +65,7 @@ class ItemDatabaseFirestoreTest {
         FirestoreDatabaseProvider.currentProfile = UserProfile()
         assert(ItemDatabaseFirestore.currentUser==FirestoreDatabaseProvider.currentUser)
         assert(ItemDatabaseFirestore.currentProfile==FirestoreDatabaseProvider.currentProfile)
+        assert(ItemDatabaseFirestore.firestore==mockedDatabase)
     }
 
     @After

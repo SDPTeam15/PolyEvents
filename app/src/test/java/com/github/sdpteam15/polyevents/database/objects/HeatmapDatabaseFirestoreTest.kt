@@ -51,13 +51,7 @@ class HeatmapDatabaseFirestoreTest {
         FirestoreDatabaseProvider.lastGetSuccessListener = null
         FirestoreDatabaseProvider.lastAddSuccessListener = null
 
-        val mockedUserLogin = Mockito.mock(UserLoginInterface::class.java) as UserLoginInterface<AuthResult>
-        UserLogin.currentUserLogin = mockedUserLogin
-        FirestoreDatabaseProvider.currentUser = user
-        Mockito.`when`(mockedUserLogin.isConnected()).thenReturn(true)
-        FirestoreDatabaseProvider.currentProfile = UserProfile()
-        assert(HeatmapDatabaseFirestore.currentUser==FirestoreDatabaseProvider.currentUser)
-        assert(HeatmapDatabaseFirestore.currentProfile==FirestoreDatabaseProvider.currentProfile)
+
     }
 
     @After
@@ -67,6 +61,17 @@ class HeatmapDatabaseFirestoreTest {
         UserLogin.currentUserLogin = GoogleUserLogin
     }
 
+    @Test
+    fun variableCorrectlySet(){
+        val mockedUserLogin = Mockito.mock(UserLoginInterface::class.java) as UserLoginInterface<AuthResult>
+        UserLogin.currentUserLogin = mockedUserLogin
+        FirestoreDatabaseProvider.currentUser = user
+        Mockito.`when`(mockedUserLogin.isConnected()).thenReturn(true)
+        FirestoreDatabaseProvider.currentProfile = UserProfile()
+        assert(HeatmapDatabaseFirestore.currentUser==FirestoreDatabaseProvider.currentUser)
+        assert(HeatmapDatabaseFirestore.currentProfile==FirestoreDatabaseProvider.currentProfile)
+        assert(HeatmapDatabaseFirestore.firestore==mockedDatabase)
+    }
 
     @Test
     fun setUserLocationCorrectlySet() {

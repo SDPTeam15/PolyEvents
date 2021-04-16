@@ -54,13 +54,7 @@ class EventDatabaseFirestoreTest {
         FirestoreDatabaseProvider.lastGetSuccessListener = null
         FirestoreDatabaseProvider.lastAddSuccessListener = null
 
-        val mockedUserLogin = Mockito.mock(UserLoginInterface::class.java) as UserLoginInterface<AuthResult>
-        UserLogin.currentUserLogin = mockedUserLogin
-        FirestoreDatabaseProvider.currentUser = user
-        Mockito.`when`(mockedUserLogin.isConnected()).thenReturn(true)
-        FirestoreDatabaseProvider.currentProfile = UserProfile()
-        assert(EventDatabaseFirestore.currentUser==FirestoreDatabaseProvider.currentUser)
-        assert(EventDatabaseFirestore.currentProfile==FirestoreDatabaseProvider.currentProfile)
+
     }
 
     @After
@@ -68,6 +62,18 @@ class EventDatabaseFirestoreTest {
         FirestoreDatabaseProvider.firestore = null
         EventDatabaseFirestore.firestore = null
         UserLogin.currentUserLogin = GoogleUserLogin
+    }
+
+    @Test
+    fun variableCorrectlySet(){
+        val mockedUserLogin = Mockito.mock(UserLoginInterface::class.java) as UserLoginInterface<AuthResult>
+        UserLogin.currentUserLogin = mockedUserLogin
+        FirestoreDatabaseProvider.currentUser = user
+        Mockito.`when`(mockedUserLogin.isConnected()).thenReturn(true)
+        FirestoreDatabaseProvider.currentProfile = UserProfile()
+        assert(EventDatabaseFirestore.currentUser==FirestoreDatabaseProvider.currentUser)
+        assert(EventDatabaseFirestore.currentProfile==FirestoreDatabaseProvider.currentProfile)
+        assert(EventDatabaseFirestore.firestore==mockedDatabase)
     }
 
     @Test

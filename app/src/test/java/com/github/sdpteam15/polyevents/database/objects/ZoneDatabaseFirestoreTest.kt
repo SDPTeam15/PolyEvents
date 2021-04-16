@@ -4,7 +4,6 @@ import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConst
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZoneConstant.*
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
-import com.github.sdpteam15.polyevents.database.objects.UserDatabaseFirestore
 import com.github.sdpteam15.polyevents.database.objects.ZoneDatabaseFirestore
 import com.github.sdpteam15.polyevents.database.objects.ZoneDatabaseInterface
 import com.github.sdpteam15.polyevents.database.observe.Observable
@@ -65,13 +64,7 @@ class ZoneDatabaseFirestoreTest {
         ZoneDatabaseFirestore.firestore = mockedDatabase
         mockedZoneDatabase = Mockito.mock(ZoneDatabaseInterface::class.java)
 
-        val mockedUserLogin = Mockito.mock(UserLoginInterface::class.java) as UserLoginInterface<AuthResult>
-        UserLogin.currentUserLogin = mockedUserLogin
-        FirestoreDatabaseProvider.currentUser = user
-        Mockito.`when`(mockedUserLogin.isConnected()).thenReturn(true)
-        FirestoreDatabaseProvider.currentProfile = UserProfile()
-        assert(ZoneDatabaseFirestore.currentUser==FirestoreDatabaseProvider.currentUser)
-        assert(ZoneDatabaseFirestore.currentProfile==FirestoreDatabaseProvider.currentProfile)
+
 
 
 
@@ -87,6 +80,18 @@ class ZoneDatabaseFirestoreTest {
         FirestoreDatabaseProvider.firestore = null
         ZoneDatabaseFirestore.firestore = null
         UserLogin.currentUserLogin = GoogleUserLogin
+    }
+
+    @Test
+    fun variableCorrectlySet(){
+        val mockedUserLogin = Mockito.mock(UserLoginInterface::class.java) as UserLoginInterface<AuthResult>
+        UserLogin.currentUserLogin = mockedUserLogin
+        FirestoreDatabaseProvider.currentUser = user
+        Mockito.`when`(mockedUserLogin.isConnected()).thenReturn(true)
+        FirestoreDatabaseProvider.currentProfile = UserProfile()
+        assert(ZoneDatabaseFirestore.currentUser==FirestoreDatabaseProvider.currentUser)
+        assert(ZoneDatabaseFirestore.currentProfile==FirestoreDatabaseProvider.currentProfile)
+        assert(ZoneDatabaseFirestore.firestore==mockedDatabase)
     }
 
     @Test
