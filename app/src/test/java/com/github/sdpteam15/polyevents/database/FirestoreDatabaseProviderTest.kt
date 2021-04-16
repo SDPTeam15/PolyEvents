@@ -165,7 +165,7 @@ class FirestoreDatabaseProviderTest {
 
         When(mockedDatabase.collection(EVENT_COLLECTION)).thenReturn(mockedCollectionReference)
         When(mockedCollectionReference.document(testEvent.eventId!!)).thenReturn(documentReference)
-        When(documentReference.set(EventAdapter.toEventDocument(testEvent))).thenReturn(
+        When(documentReference.set(EventAdapter.toDocument(testEvent))).thenReturn(
             taskReferenceMock
         )
 
@@ -277,7 +277,7 @@ class FirestoreDatabaseProviderTest {
         )
 
         When(mockedDatabase.collection(EVENT_COLLECTION)).thenReturn(mockedCollectionReference)
-        When(mockedCollectionReference.add(EventAdapter.toEventDocument(testEvent))).thenReturn(
+        When(mockedCollectionReference.add(EventAdapter.toDocument(testEvent))).thenReturn(
             taskReferenceMock
         )
 

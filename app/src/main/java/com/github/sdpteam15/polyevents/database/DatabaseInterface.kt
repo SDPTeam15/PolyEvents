@@ -337,19 +337,6 @@ interface DatabaseInterface {
         userAccess: UserEntity? = currentUser
     ): Observable<Boolean>
 
-    /**
-     * Look in the database if the user already exists or not
-     * @param profile : live data that will be set with the find profile value
-     * @param pid : profile id we want to get
-     * @param profileAccess : the profile object to use its permission
-     * @return An observer that will be set to true if the communication with the DB is over and no error
-     */
-    fun getProfileById(
-        profile: Observable<UserProfile>,
-        pid: String,
-        userAccess: UserEntity? = currentUser
-    ): Observable<Boolean>
-
 
     /**
      * Remove profile from a user

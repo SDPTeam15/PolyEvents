@@ -219,6 +219,14 @@ object FakeDatabase : DatabaseInterface {
         return Observable(true, this)
     }
 
+    override fun getUserInformation(
+        user: Observable<UserEntity>,
+        uid: String?,
+        userAccess: UserEntity?
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
     override fun setUserLocation(
         location: LatLng,
         userAccess: UserEntity?
