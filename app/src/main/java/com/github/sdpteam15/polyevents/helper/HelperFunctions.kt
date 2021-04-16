@@ -75,7 +75,7 @@ object HelperFunctions {
      * @param date the Date instance to convert
      * @return the corresponding LocalDateTime
      */
-    fun DateToLocalDateTime(date: Date?): LocalDateTime? =
+    fun dateToLocalDateTime(date: Date?): LocalDateTime? =
         date?.let { LocalDateTime.ofInstant(it.toInstant(), ZoneId.systemDefault()) }
 
     /**
@@ -85,7 +85,7 @@ object HelperFunctions {
      *
      * @return the corresponding Date
      */
-    fun LocalDateToTimeToDate(ldt: LocalDateTime?): Date? =
+    fun localDateTimeToDate(ldt: LocalDateTime?): Date? =
         ldt?.let { Date.from(it.atZone(ZoneId.systemDefault()).toInstant()) }
 
     /**

@@ -39,8 +39,8 @@ object EventAdapter {
             // LocalDateTime instances can be directly stored to Firestore without need of conversion
             // UPDATE: LocalDateTime will not be stored as a Timestamp instance, instead it will be
             // stored as a hashmap representing the LocalDateTime instance
-            EVENT_START_TIME to HelperFunctions.LocalDateToTimeToDate(event.startTime),
-            EVENT_END_TIME to HelperFunctions.LocalDateToTimeToDate(event.endTime),
+            EVENT_START_TIME to HelperFunctions.localDateTimeToDate(event.startTime),
+            EVENT_END_TIME to HelperFunctions.localDateTimeToDate(event.endTime),
             EVENT_INVENTORY to event.inventory,
             EVENT_TAGS to event.tags.toList()
         )
@@ -66,10 +66,10 @@ object EventAdapter {
             organizer = documentData[EVENT_ORGANIZER] as String?,
             zoneName = documentData[EVENT_ZONE_NAME] as String?,
             description = documentData[EVENT_DESCRIPTION] as String?,
-            startTime = HelperFunctions.DateToLocalDateTime(
+            startTime = HelperFunctions.dateToLocalDateTime(
                 (documentData[EVENT_START_TIME] as Timestamp?)?.toDate()
             ),
-            endTime = HelperFunctions.DateToLocalDateTime(
+            endTime = HelperFunctions.dateToLocalDateTime(
                 // TODO: test if start time is null (remove ? from Timestamp)
                 (documentData[EVENT_END_TIME] as Timestamp?)?.toDate()
             ),

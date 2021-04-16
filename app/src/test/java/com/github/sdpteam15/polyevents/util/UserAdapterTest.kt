@@ -38,7 +38,8 @@ class UserAdapterTest {
 
         assertEquals(document[DatabaseConstant.USER_UID], googleId)
         assertEquals(document[DatabaseConstant.USER_USERNAME], username)
-        assertEquals(document[DatabaseConstant.USER_BIRTH_DATE], birthDate.atStartOfDay())
+        assertEquals(document[DatabaseConstant.USER_BIRTH_DATE],
+            HelperFunctions.localDateTimeToDate(birthDate.atStartOfDay()))
         assertEquals(document[DatabaseConstant.USER_NAME], name)
         assertEquals(document[DatabaseConstant.USER_EMAIL], email)
         assertEquals(document[DatabaseConstant.USER_PHONE], telephone)
@@ -47,7 +48,7 @@ class UserAdapterTest {
     @Test
     fun conversionOfDocumentToUserEntityPreservesData() {
         val birthDateTimeStamp =
-                Timestamp(HelperFunctions.LocalDateToTimeToDate(birthDate.atStartOfDay())!!)
+                Timestamp(HelperFunctions.localDateTimeToDate(birthDate.atStartOfDay())!!)
         val userDocumentData : HashMap<String, Any?> = hashMapOf(
                 DatabaseConstant.USER_UID to googleId,
                 DatabaseConstant.USER_NAME to name,

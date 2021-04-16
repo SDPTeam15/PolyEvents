@@ -32,7 +32,12 @@ object UserAdapter {
             USER_USERNAME to user.username,
             USER_NAME to user.name,
             // convert the localdate to LocalDateTime compatible to store in Firestore
-            USER_BIRTH_DATE to user.birthDate?.atStartOfDay(),
+            // UPDATE: this will store the localdatetime as a hashmap, not a timestamp in Firestore
+            // Best to convert to date to parse the birthdate as a Timestamp from Firestore when converting
+            // from document
+            USER_BIRTH_DATE to HelperFunctions.localDateTimeToDate(
+                user.birthDate?.atStartOfDay()
+            ),
             USER_EMAIL to user.email,
             USER_PHONE to user.telephone
         )
@@ -51,7 +56,7 @@ object UserAdapter {
             uid = documentData.get(USER_UID) as String,
             username = documentData.get(USER_USERNAME) as String?,
             name = documentData.get(USER_NAME) as String?,
-            birthDate = HelperFunctions.DateToLocalDateTime(
+            birthDate = HelperFunctions.dateToLocalDateTime(
                 (documentData.get(USER_BIRTH_DATE) as Timestamp?)?.toDate()
             )?.toLocalDate(),
             email = documentData.get(USER_EMAIL) as String?,

@@ -42,8 +42,8 @@ class HelperFunctionsTests {
     fun testLocalDateTimeToDateConversionsAreEquivalent() {
         // NOTE!!: Some precision in nanoseconds of time is lost during the conversion
         val ldt = LocalDateTime.now()
-        val date = HelperFunctions.LocalDateToTimeToDate(ldt)
-        val ldtRetrieved = HelperFunctions.DateToLocalDateTime(date)
+        val date = HelperFunctions.localDateTimeToDate(ldt)
+        val ldtRetrieved = HelperFunctions.dateToLocalDateTime(date)
         assertEquals(ldt.month, ldtRetrieved!!.month)
         assertEquals(ldt.year, ldtRetrieved.year)
         assertEquals(ldt.dayOfYear, ldtRetrieved.dayOfYear)
