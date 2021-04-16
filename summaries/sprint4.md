@@ -28,5 +28,14 @@ During this long sprint, I merging and testing the UserEntity with Stephane, I i
 The estimated time was too low for the last part, so I will implemented the test for it next week.
 
 ## Stephane
+During this sprint, I finally merged the model entities branch and fully tested it, so that the rest of code is consistent with these changes. 
+I also spent some time looking at kotlin coroutines to maybe use in the database.
+
+My time estimates for merging the model entities was a bit higher (2h) than expected, mainly because of tests. Looking at 
+kotlin coroutines took about 3 or 4 hours. Needless to say, I haven't done my time quota for this sprint (missing about 8 hours), 
+that I will try to catch up somehow in the upcoming weeks,
+
+Next week, I'll tackle a front end feature like events to change a bit.
+
 
 ## Overall team
