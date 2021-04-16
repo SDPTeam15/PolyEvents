@@ -1,7 +1,8 @@
 package com.github.sdpteam15.polyevents.database.objects
 
 import android.annotation.SuppressLint
-import com.github.sdpteam15.polyevents.database.DatabaseConstant
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.LocationConstant.LOCATIONS_COLLECTION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.LocationConstant.LOCATIONS_POINT
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.model.UserEntity
@@ -11,7 +12,6 @@ import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.LocationConstant.*
 
 object HeatmapDatabaseFirestore : HeatmapDatabaseInterface {
     @SuppressLint("StaticFieldLeak")

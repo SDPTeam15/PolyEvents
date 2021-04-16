@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.database
 
 import android.annotation.SuppressLint
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.database.objects.*
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
@@ -18,7 +19,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.*
 
 object FirestoreDatabaseProvider : DatabaseInterface {
     @SuppressLint("StaticFieldLeak")
@@ -197,9 +197,9 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             .collection(collection.toString())
             .document(id)
 
-        val task = if (element == null || adapter == null){
+        val task = if (element == null || adapter == null) {
             document.delete()
-        }else{
+        } else {
             document.set(adapter.toDocument(element))
         }
 

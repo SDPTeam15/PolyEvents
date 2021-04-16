@@ -1,7 +1,6 @@
 package com.github.sdpteam15.polyevents.util
 
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.UserConstants.*
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.*
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.google.firebase.Timestamp
@@ -74,7 +73,7 @@ class UserAdapterTest {
             USER_USERNAME.value to username,
             USER_PHONE.value to telephone,
             USER_PROFILES.value to listProfile
-            )
+        )
 
         assertNull(UserAdapter.fromDocument(userDocumentData, googleId).age)
     }

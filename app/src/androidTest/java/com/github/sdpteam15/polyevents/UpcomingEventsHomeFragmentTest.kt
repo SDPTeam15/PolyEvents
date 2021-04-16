@@ -39,28 +39,28 @@ class UpcomingEventsHomeFragmentTest {
         val eventsToAdd = ArrayList<Event>()
 
         eventsToAdd.add(
-                Event(
+            Event(
 
-                    eventName = "Sushi demo",
-                    description = "Super hungry activity !",
-                    startTime = LocalDateTime.of(2021, 3, 7, 12, 15),
-                    organizer = "The fish band",
-                    zoneName = "Kitchen",
-                    tags = mutableSetOf("sushi", "japan", "cooking")
-                )
+                eventName = "Sushi demo",
+                description = "Super hungry activity !",
+                startTime = LocalDateTime.of(2021, 3, 7, 12, 15),
+                organizer = "The fish band",
+                zoneName = "Kitchen",
+                tags = mutableSetOf("sushi", "japan", "cooking")
+            )
         )
 
         eventsToAdd.add(
-                Event(
+            Event(
 
-                    eventName = "Aqua Poney",
-                    description = "Super cool activity !" +
-                            " With a super long description that essentially describes and explains" +
-                            " the content of the activity we are speaking of.",
-                    startTime = LocalDateTime.of(2021, 3, 7, 14, 15),
-                    organizer = "The Aqua Poney team",
-                    zoneName = "Swimming pool"
-                )
+                eventName = "Aqua Poney",
+                description = "Super cool activity !" +
+                        " With a super long description that essentially describes and explains" +
+                        " the content of the activity we are speaking of.",
+                startTime = LocalDateTime.of(2021, 3, 7, 14, 15),
+                organizer = "The Aqua Poney team",
+                zoneName = "Swimming pool"
+            )
         )
 
         eventsToAdd.add(
@@ -91,7 +91,7 @@ class UpcomingEventsHomeFragmentTest {
         currentDatabase = FakeDatabase
         FakeDatabase.userToNull = true
         FakeDatabaseEvent.events.clear()
-        for (event in eventsToAdd){
+        for (event in eventsToAdd) {
             currentDatabase.eventDatabase!!.createEvent(event)
         }
         currentDatabase.eventDatabase!!.getListEvent(null, null, events)
@@ -107,7 +107,7 @@ class UpcomingEventsHomeFragmentTest {
     }
 
     @After
-    fun tearDown(){
+    fun tearDown() {
         FakeDatabase.userToNull = false
         currentDatabase = FirestoreDatabaseProvider
     }

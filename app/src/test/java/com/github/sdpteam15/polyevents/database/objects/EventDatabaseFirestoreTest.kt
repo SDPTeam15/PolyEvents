@@ -1,8 +1,7 @@
 package com.github.sdpteam15.polyevents.database.objects
 
 import android.graphics.Bitmap
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.*
-import com.github.sdpteam15.polyevents.database.DatabaseInterface
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.EVENT_COLLECTION
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.Event
 import com.github.sdpteam15.polyevents.model.Item

@@ -1,9 +1,7 @@
 package com.github.sdpteam15.polyevents.database.objects
 
 import android.annotation.SuppressLint
-import com.github.sdpteam15.polyevents.database.Database
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZoneConstant.*
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.*
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.ZONE_COLLECTION
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.model.UserEntity

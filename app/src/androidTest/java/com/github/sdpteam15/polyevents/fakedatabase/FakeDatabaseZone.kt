@@ -3,10 +3,9 @@ package com.github.sdpteam15.polyevents.fakedatabase
 import com.github.sdpteam15.polyevents.database.objects.ZoneDatabaseInterface
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.model.UserEntity
-import com.github.sdpteam15.polyevents.model.UserProfile
 import com.github.sdpteam15.polyevents.model.Zone
 
-object FakeDatabaseZone:ZoneDatabaseInterface {
+object FakeDatabaseZone : ZoneDatabaseInterface {
     override fun createZone(zone: Zone, userAccess: UserEntity?): Observable<Boolean> {
         return Observable(true)
     }

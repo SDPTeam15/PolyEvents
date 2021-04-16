@@ -1,8 +1,8 @@
 package com.github.sdpteam15.polyevents.database.objects
 
 import com.github.sdpteam15.polyevents.database.DatabaseConstant
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.*
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.LocationConstant.*
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.LocationConstant.LOCATIONS_COLLECTION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.LocationConstant.LOCATIONS_POINT
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.observe.Observable

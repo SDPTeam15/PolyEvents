@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.*
 import com.github.sdpteam15.polyevents.adapter.ProfileAdapter
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.UserConstants.*
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.UserConstants.USER_USERNAME
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
@@ -24,7 +24,6 @@ import com.github.sdpteam15.polyevents.login.UserLogin
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 import com.github.sdpteam15.polyevents.model.UserRole
-import com.google.firebase.auth.FirebaseAuth
 import java.time.format.DateTimeFormatter
 
 /**
@@ -85,7 +84,11 @@ class ProfileFragment : Fragment() {
                 else userBirthDate.format(DateTimeFormatter.ISO_LOCAL_DATE)
             viewRoot.findViewById<EditText>(R.id.profileBirthdayET).setText(birthDateFormatted)
         }
-        currentDatabase.userDatabase!!.getUserInformation(userInfoLiveData, currentUser!!.uid, currentUser!!)
+        currentDatabase.userDatabase!!.getUserInformation(
+            userInfoLiveData,
+            currentUser!!.uid,
+            currentUser!!
+        )
 
         viewRoot.findViewById<Button>(R.id.btnUpdateInfos).setOnClickListener {
             //Clear the previous map and add every field
@@ -95,7 +98,11 @@ class ProfileFragment : Fragment() {
             //hashMapNewInfo[USER_BIRTH_DATE] = viewRoot.findViewById<EditText>(R.id.profileBirthdayET).text.toString()
 
             //Call the DB to update the user information and getUserInformation once it is done
-            currentDatabase.userDatabase!!.updateUserInformation(hashMapNewInfo, currentUser!!.uid, currentUser!!)
+            currentDatabase.userDatabase!!.updateUserInformation(
+                hashMapNewInfo,
+                currentUser!!.uid,
+                currentUser!!
+            )
                 .observe(this) { newValue ->
                     if (newValue.value) {
                         currentDatabase.userDatabase!!.getUserInformation(
@@ -127,11 +134,12 @@ class ProfileFragment : Fragment() {
         recyclerView = viewRoot.findViewById(R.id.id_recycler_profile_list)
         recyclerView.adapter = ProfileAdapter(this, profiles)
 
-        if(currentUser!!.profiles.size > 0)
-            currentDatabase.userDatabase!!.getUserProfilesList(profiles, currentUser!!).observe(this) {
-                if (!it.value)
-                    HelperFunctions.showToast(getString(R.string.fail_to_update), activity)
-            }
+        if (currentUser!!.profiles.size > 0)
+            currentDatabase.userDatabase!!.getUserProfilesList(profiles, currentUser!!)
+                .observe(this) {
+                    if (!it.value)
+                        HelperFunctions.showToast(getString(R.string.fail_to_update), activity)
+                }
 
         viewRoot.findViewById<ImageButton>(R.id.id_add_profile_button)
             .setOnClickListener { createProfilePopup() }
@@ -199,10 +207,11 @@ class ProfileFragment : Fragment() {
         remove = EditProfileActivity.end.observe {
             if (it.value) {
                 remove()
-                currentDatabase.userDatabase!!.getUserProfilesList(profiles, currentUser!!).observe(this) {
-                    if (!it.value)
-                        HelperFunctions.showToast(getString(R.string.fail_to_update), activity)
-                }
+                currentDatabase.userDatabase!!.getUserProfilesList(profiles, currentUser!!)
+                    .observe(this) {
+                        if (!it.value)
+                            HelperFunctions.showToast(getString(R.string.fail_to_update), activity)
+                    }
             }
         }
     }

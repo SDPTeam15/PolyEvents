@@ -19,7 +19,7 @@ object UserAdapter : AdapterInterface<UserEntity> {
         USER_BIRTH_DATE.value to element.birthDate?.atStartOfDay(),
         USER_EMAIL.value to element.email,
         USER_PHONE.value to element.telephone,
-        USER_PROFILES.value to  element.profiles
+        USER_PROFILES.value to element.profiles
     )
 
     override fun fromDocument(document: MutableMap<String, Any?>, id: String) = UserEntity(

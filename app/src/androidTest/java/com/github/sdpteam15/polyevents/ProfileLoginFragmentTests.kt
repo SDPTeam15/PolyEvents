@@ -8,24 +8,19 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.NUMBER_UPCOMING_EVENTS
-import com.github.sdpteam15.polyevents.database.objects.EventDatabaseFirestore
 import com.github.sdpteam15.polyevents.database.objects.EventDatabaseInterface
-import com.github.sdpteam15.polyevents.database.objects.UserDatabaseFirestore
 import com.github.sdpteam15.polyevents.database.objects.UserDatabaseInterface
 import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.database.observe.UpdateArgs
 import com.github.sdpteam15.polyevents.fragments.HomeFragment
 import com.github.sdpteam15.polyevents.fragments.LoginFragment
 import com.github.sdpteam15.polyevents.fragments.ProfileFragment
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.auth.User
 import org.hamcrest.Matchers
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.any
 import org.mockito.Mockito.mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.Mockito.`when` as When
@@ -72,13 +67,25 @@ class ProfileLoginFragmentTests {
 
         When(mockedDatabase.eventDatabase).thenReturn(mockedEventDatabase)
         When(mockedDatabase.userDatabase).thenReturn(mockedUserDatabase)
-        
+
         When(mockedDatabase.currentUser).thenReturn(null)
         val homeFragment = MainActivity.fragments[R.id.ic_home] as HomeFragment
-        When(mockedEventDatabase.getListEvent(null, NUMBER_UPCOMING_EVENTS.toLong(), homeFragment.events)).thenAnswer {
+        When(
+            mockedEventDatabase.getListEvent(
+                null,
+                NUMBER_UPCOMING_EVENTS.toLong(),
+                homeFragment.events
+            )
+        ).thenAnswer {
             Observable(true)
         }
-        When(mockedEventDatabase.getListEvent(null, NUMBER_UPCOMING_EVENTS.toLong(), homeFragment.events)).thenAnswer {
+        When(
+            mockedEventDatabase.getListEvent(
+                null,
+                NUMBER_UPCOMING_EVENTS.toLong(),
+                homeFragment.events
+            )
+        ).thenAnswer {
             Observable(true)
         }
         currentDatabase = mockedDatabase
@@ -243,7 +250,7 @@ class ProfileLoginFragmentTests {
         onView(withId(R.id.profileEmail)).check(matches(withText(Matchers.equalTo(emailTest2))))
     }
 
-    private fun initDBTests(){
+    private fun initDBTests() {
         //Make sure we are not connected to Firebase
         FirebaseAuth.getInstance().signOut()
         //remove current user so that we stay on login fragment
@@ -284,7 +291,10 @@ class ProfileLoginFragmentTests {
         var accountCreated = false
         //Mock the firstConnexion method so that it sets the boolean to true if called
         When(
-            mockedUserDatabase.firstConnexion(loginFragment.currentUser!!, loginFragment.currentUser!!)
+            mockedUserDatabase.firstConnexion(
+                loginFragment.currentUser!!,
+                loginFragment.currentUser!!
+            )
         ).thenAnswer { _ ->
             accountCreated = true
             endingRequestFirstConnection
@@ -331,7 +341,10 @@ class ProfileLoginFragmentTests {
 
         //Mock the firstConnexion method so that it sets the boolean to false if called
         When(
-            mockedUserDatabase.firstConnexion(loginFragment.currentUser!!, loginFragment.currentUser!!)
+            mockedUserDatabase.firstConnexion(
+                loginFragment.currentUser!!,
+                loginFragment.currentUser!!
+            )
         ).thenAnswer { _ ->
             accountNotCreated = false
             endingRequestFirstConnection

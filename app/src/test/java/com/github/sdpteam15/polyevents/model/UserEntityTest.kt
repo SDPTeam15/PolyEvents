@@ -3,7 +3,10 @@ package com.github.sdpteam15.polyevents.model
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import org.junit.Test
 import java.time.LocalDate
-import kotlin.test.*
+import kotlin.test.BeforeTest
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class UserEntityTest {
     lateinit var user: UserEntity
@@ -15,9 +18,9 @@ class UserEntityTest {
     val email = "John@email.com"
 
     val adminProfile = UserProfile(
-            pid = googleId,
-            profileName = "adminProfile",
-            userRole = UserRole.ADMIN
+        pid = googleId,
+        profileName = "adminProfile",
+        userRole = UserRole.ADMIN
     )
 
     val currentDate = birthDate
@@ -31,15 +34,18 @@ class UserEntityTest {
             username = username,
             birthDate = birthDate,
             name = name,
-            email = email)
+            email = email
+        )
         user.addNewProfile(adminProfile)
     }
 
     @Test
     fun testUserAgeReturnedCorrectly() {
         val age = user.age
-        assertEquals(HelperFunctions.calculateAge(birthDate, LocalDate.now()),
-                    age)
+        assertEquals(
+            HelperFunctions.calculateAge(birthDate, LocalDate.now()),
+            age
+        )
     }
 
     @Test

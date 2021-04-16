@@ -17,9 +17,9 @@ import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.github.sdpteam15.polyevents.HelperTestFunction.getCurrentActivity
+import com.github.sdpteam15.polyevents.adapter.ItemRequestAdapter
 import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
-import com.github.sdpteam15.polyevents.adapter.ItemRequestAdapter
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabase
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabaseItem
@@ -73,21 +73,20 @@ class ItemRequestActivityTest {
     @Before
     fun setup() {
         availableItems = mutableMapOf()
-        availableItems[Item(null,"Bananas", ItemType.OTHER)] = 30
-        availableItems[Item(null,"Kiwis", ItemType.OTHER)] = 10
-        availableItems[Item(null,"230V Plugs", ItemType.PLUG)] = 30
-        availableItems[Item(null,"Fridge (large)", ItemType.OTHER)] = 5
-        availableItems[Item(null,"Cord rewinder (15m)", ItemType.PLUG)] = 30
-        availableItems[Item(null,"Cord rewinder (50m)",ItemType.PLUG)] = 10
-        availableItems[Item(null,"Cord rewinder (25m)",ItemType.PLUG)] = 20
-
+        availableItems[Item(null, "Bananas", ItemType.OTHER)] = 30
+        availableItems[Item(null, "Kiwis", ItemType.OTHER)] = 10
+        availableItems[Item(null, "230V Plugs", ItemType.PLUG)] = 30
+        availableItems[Item(null, "Fridge (large)", ItemType.OTHER)] = 5
+        availableItems[Item(null, "Cord rewinder (15m)", ItemType.PLUG)] = 30
+        availableItems[Item(null, "Cord rewinder (50m)", ItemType.PLUG)] = 10
+        availableItems[Item(null, "Cord rewinder (25m)", ItemType.PLUG)] = 20
 
 
         // TODO : replace by the db interface call
         Database.currentDatabase = FakeDatabase
         FakeDatabaseItem.items.clear()
-        for ((item,count) in availableItems){
-            Database.currentDatabase.itemDatabase!!.createItem(item,count)
+        for ((item, count) in availableItems) {
+            Database.currentDatabase.itemDatabase!!.createItem(item, count)
         }
         Database.currentDatabase.itemDatabase!!.getItemsList(availableItemsList)
 

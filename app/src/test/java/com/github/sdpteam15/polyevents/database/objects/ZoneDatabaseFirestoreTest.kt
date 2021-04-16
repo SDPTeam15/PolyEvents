@@ -1,7 +1,7 @@
 package objects
 
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.ZONE_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZoneConstant.*
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.*
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.objects.ZoneDatabaseFirestore

@@ -2,7 +2,6 @@ package com.github.sdpteam15.polyevents.util
 
 
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.EventConstant.*
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.*
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.Event
 import com.github.sdpteam15.polyevents.model.Item

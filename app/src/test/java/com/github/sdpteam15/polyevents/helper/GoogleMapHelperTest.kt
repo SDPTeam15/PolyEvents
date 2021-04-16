@@ -1,7 +1,6 @@
 package com.github.sdpteam15.polyevents.helper
 
 import com.github.sdpteam15.polyevents.R
-import org.mockito.kotlin.anyOrNull
 import com.google.android.gms.dynamic.IObjectWrapper
 import com.google.android.gms.internal.maps.zzt
 import com.google.android.gms.internal.maps.zzw
@@ -12,6 +11,7 @@ import com.google.android.gms.maps.model.*
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.anyOrNull
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue

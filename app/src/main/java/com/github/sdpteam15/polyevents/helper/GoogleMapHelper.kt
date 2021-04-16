@@ -7,11 +7,10 @@ import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.database.DatabaseConstant
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZoneConstant.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.*
 import kotlin.math.*
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZoneConstant.*
 
 enum class PolygonAction {
     RIGHT,
@@ -308,9 +307,12 @@ object GoogleMapHelper {
         val pos3 = tempLatLng[2]!!
         val pos4 = tempLatLng[3]!!
 
-        val posMidRight = LatLng(0.5 * (pos3.latitude + pos4.latitude), 0.5 * (pos3.longitude + pos4.longitude))
-        val posMidDown = LatLng(0.5 * (pos3.latitude + pos2.latitude), 0.5 * (pos3.longitude + pos2.longitude))
-        val posCenter = LatLng(0.5 * (pos4.latitude + pos2.latitude), 0.5 * (pos4.longitude + pos2.longitude))
+        val posMidRight =
+            LatLng(0.5 * (pos3.latitude + pos4.latitude), 0.5 * (pos3.longitude + pos4.longitude))
+        val posMidDown =
+            LatLng(0.5 * (pos3.latitude + pos2.latitude), 0.5 * (pos3.longitude + pos2.longitude))
+        val posCenter =
+            LatLng(0.5 * (pos4.latitude + pos2.latitude), 0.5 * (pos4.longitude + pos2.longitude))
 
         val anchor = IconAnchor(0.5f, 0.5f)
         val bound = IconBound(0, 0, 100, 100)

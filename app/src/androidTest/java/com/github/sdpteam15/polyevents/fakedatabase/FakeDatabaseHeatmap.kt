@@ -3,10 +3,9 @@ package com.github.sdpteam15.polyevents.fakedatabase
 import com.github.sdpteam15.polyevents.database.objects.HeatmapDatabaseInterface
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.model.UserEntity
-import com.github.sdpteam15.polyevents.model.UserProfile
 import com.google.android.gms.maps.model.LatLng
 
-object FakeDatabaseHeatmap:HeatmapDatabaseInterface {
+object FakeDatabaseHeatmap : HeatmapDatabaseInterface {
 
     override fun setUserLocation(
         location: LatLng,

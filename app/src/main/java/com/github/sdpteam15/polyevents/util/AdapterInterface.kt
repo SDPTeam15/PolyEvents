@@ -11,7 +11,7 @@ interface AdapterInterface<T> {
      * @param element the entity we're converting
      * @return a hashmap mapping entity fields to their values
      */
-    fun toDocument(element : T) : HashMap<String, Any?>
+    fun toDocument(element: T): HashMap<String, Any?>
 
     /**
      * Convert document data to a user entity in our model.
@@ -20,5 +20,5 @@ interface AdapterInterface<T> {
      * @param document this is the data we retrieve from the document.
      * @return the corresponding userEntity.
      */
-    fun fromDocument(document: MutableMap<String, Any?>, id : String) : T
+    fun fromDocument(document: MutableMap<String, Any?>, id: String): T
 }

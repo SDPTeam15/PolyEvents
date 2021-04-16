@@ -3,9 +3,10 @@ package com.github.sdpteam15.polyevents
 import android.content.Intent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.Espresso.*
-import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.assertion.ViewAssertions.*
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.replaceText
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import com.github.sdpteam15.polyevents.admin.ZoneManagementActivity
 import com.github.sdpteam15.polyevents.admin.ZoneManagementListActivity
@@ -37,7 +38,7 @@ class ZoneManagementTest {
     val username = "JohnDoe"
     val email = "John@Doe.com"
     lateinit var mockedDatabase: DatabaseInterface
-    lateinit var mockedZoneDatabase:ZoneDatabaseInterface
+    lateinit var mockedZoneDatabase: ZoneDatabaseInterface
     val zoneId = "IDZone"
     val zoneName = "Cool Zone name"
     val zoneDesc = "Cool zone desc"
@@ -48,7 +49,7 @@ class ZoneManagementTest {
         mockedDatabase = Mockito.mock(DatabaseInterface::class.java)
         mockedZoneDatabase = Mockito.mock(ZoneDatabaseInterface::class.java)
         When(mockedDatabase.zoneDatabase).thenReturn(mockedZoneDatabase)
-        
+
         val mockedUserProfile = UserProfile("TestID", "TestName")
         When(mockedDatabase.currentProfile).thenReturn(mockedUserProfile)
 
@@ -280,46 +281,47 @@ class ZoneManagementTest {
     fun clickOnDeleteButtonClearLocationAndSetCorrectText() {
         onView(withId(R.id.btnDeleteZoneCoordinates))
             .perform(click())
-        assert(ZoneManagementActivity.zone.location=="")
+        assert(ZoneManagementActivity.zone.location == "")
         onView(withId(R.id.zoneManagementCoordinates))
             .check(matches(withText("Not set")))
     }
 
     @Test
-    fun zoneIdSetterWorksProperly(){
-        ZoneManagementActivity.zoneId=zoneId
-        assert(ZoneManagementActivity.zoneId==zoneId)
+    fun zoneIdSetterWorksProperly() {
+        ZoneManagementActivity.zoneId = zoneId
+        assert(ZoneManagementActivity.zoneId == zoneId)
     }
 
     @Test
-    fun postValueWithNullLocationDisplayCorrectText(){
-        val zoneWithNull = Zone(zoneId=zoneId,zoneName=zoneName,location = null,description = zoneDesc)
+    fun postValueWithNullLocationDisplayCorrectText() {
+        val zoneWithNull =
+            Zone(zoneId = zoneId, zoneName = zoneName, location = null, description = zoneDesc)
         ZoneManagementActivity.zoneObservable.postValue(zoneWithNull)
         onView(withId(R.id.zoneManagementCoordinates))
             .check(matches(withText("Not set")))
     }
 
     @Test
-    fun btnManageCoordsCorrectlyActs(){
-        ZoneManagementActivity.inTest=true
+    fun btnManageCoordsCorrectlyActs() {
+        ZoneManagementActivity.inTest = true
         onView(withId(R.id.zoneManagementDescription))
             .perform(replaceText(zoneDesc))
         onView(withId(R.id.zoneManagementName))
             .perform(replaceText(zoneName))
         onView(withId(R.id.btnModifyZoneCoordinates))
             .perform(click())
-        assert(ZoneManagementActivity.zone.zoneName==zoneName)
-        assert(ZoneManagementActivity.zone.description==zoneDesc)
+        assert(ZoneManagementActivity.zone.zoneName == zoneName)
+        assert(ZoneManagementActivity.zone.description == zoneDesc)
         onView(withId(R.id.flMapEditZone))
             .check(matches(isDisplayed()))
     }
 
     @Test
-    fun deleteCoordinatesDeleteFromGoogleMapHelper(){
+    fun deleteCoordinatesDeleteFromGoogleMapHelper() {
         val arrayLngLat = arrayOf(4.10, 4.20, 4.30, 4.40, 4.50, 4.60, 4.70, 4.80)
         val arrayLngLat2 = arrayOf(5.10, 5.20, 5.30, 5.40, 5.50, 5.60, 5.70, 5.80)
 
-        val map:MutableMap<Int,List<LatLng>> = mutableMapOf()
+        val map: MutableMap<Int, List<LatLng>> = mutableMapOf()
 
         val listLngLat: ArrayList<LatLng> = ArrayList()
         listLngLat.add(LatLng(arrayLngLat[0], arrayLngLat[1]))
@@ -344,15 +346,15 @@ class ZoneManagementTest {
         val nbModified = 3
 
         GoogleMapHelper.coordinates = map
-        assert(GoogleMapHelper.coordinates.size==initSize)
+        assert(GoogleMapHelper.coordinates.size == initSize)
 
 
-        ZoneManagementActivity.nbModified=nbModified
+        ZoneManagementActivity.nbModified = nbModified
         GoogleMapHelper.uid = initSize
         onView(withId(R.id.btnDeleteZoneCoordinates)).perform(click())
-        assert(GoogleMapHelper.coordinates.size==initSize-nbModified)
-        assert(GoogleMapHelper.uid==initSize-nbModified)
-        assert(ZoneManagementActivity.nbModified==0)
+        assert(GoogleMapHelper.coordinates.size == initSize - nbModified)
+        assert(GoogleMapHelper.uid == initSize - nbModified)
+        assert(ZoneManagementActivity.nbModified == 0)
     }
 
 }

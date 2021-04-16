@@ -5,11 +5,11 @@ import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.Item
 import com.github.sdpteam15.polyevents.model.ItemType
-import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 
-object FakeDatabaseItem:ItemDatabaseInterface {
+object FakeDatabaseItem : ItemDatabaseInterface {
     lateinit var items: MutableMap<String, Pair<Item, Int>>
+
     init {
         initItems()
     }

@@ -22,7 +22,7 @@ class NavigationViewFragmentTest {
     var mainActivity = ActivityScenarioRule(MainActivity::class.java)
 
     @Before
-    fun setup(){
+    fun setup() {
         //Initial state
         MainActivity.currentUser = null
         FirebaseAuth.getInstance().signOut()

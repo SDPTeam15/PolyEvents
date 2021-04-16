@@ -1,16 +1,14 @@
 package com.github.sdpteam15.polyevents.fakedatabase
 
-import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.Matcher
 import com.github.sdpteam15.polyevents.database.objects.EventDatabaseInterface
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.Event
-import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 import java.time.LocalDateTime
 
-object FakeDatabaseEvent:EventDatabaseInterface {
+object FakeDatabaseEvent : EventDatabaseInterface {
     init {
         initEvents()
     }

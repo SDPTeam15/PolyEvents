@@ -2,7 +2,6 @@ package com.github.sdpteam15.polyevents.util
 
 
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.EventConstant.*
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.*
 import com.github.sdpteam15.polyevents.model.Event
 import com.github.sdpteam15.polyevents.model.Item
 import com.github.sdpteam15.polyevents.model.ItemType
@@ -88,7 +87,8 @@ class EventAdapterTest {
             EVENT_INVENTORY.value to testEventWithoutTimes.inventory
         )
 
-        val obtainedEvent = EventAdapter.fromDocument(eventDocumentData, testEventWithoutTimes.eventId!!)
+        val obtainedEvent =
+            EventAdapter.fromDocument(eventDocumentData, testEventWithoutTimes.eventId!!)
         assertEquals(testEventWithoutTimes, obtainedEvent)
         assertTrue(obtainedEvent.hasItem(item1))
         assertTrue(obtainedEvent.tags.contains(tag1))

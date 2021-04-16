@@ -12,5 +12,5 @@ object DatabaseListener {
     var lastSetSuccessListener: OnSuccessListener<Void>? = null
     var lastFailureListener: OnFailureListener? = null
     var lastGetSuccessListener: OnSuccessListener<DocumentSnapshot>? = null
-    var lastAddSuccessListener: OnSuccessListener<DocumentReference>?=null
+    var lastAddSuccessListener: OnSuccessListener<DocumentReference>? = null
 }

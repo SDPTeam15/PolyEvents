@@ -1,12 +1,10 @@
 package com.github.sdpteam15.polyevents.database
 
-import android.provider.ContactsContract
 import com.github.sdpteam15.polyevents.database.objects.*
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.*
 import com.github.sdpteam15.polyevents.util.AdapterInterface
-import com.google.android.gms.maps.model.LatLng
 import java.util.*
 
 const val NUMBER_UPCOMING_EVENTS = 3
@@ -39,7 +37,7 @@ interface DatabaseInterface {
         element: T,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterInterface<T>,
-        userAccess: UserProfile?=currentProfile
+        userAccess: UserProfile? = currentProfile
     ): Observable<String>
 
     /**
@@ -53,7 +51,7 @@ interface DatabaseInterface {
         element: T,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterInterface<T>,
-        userAccess: UserProfile?=currentProfile
+        userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**
@@ -69,7 +67,7 @@ interface DatabaseInterface {
         id: String,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterInterface<T>?,
-        userAccess: UserProfile?=currentProfile
+        userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**
@@ -82,7 +80,7 @@ interface DatabaseInterface {
     fun deleteEntity(
         id: String,
         collection: DatabaseConstant.CollectionConstant,
-        userAccess: UserProfile?=currentProfile
+        userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**
@@ -98,7 +96,7 @@ interface DatabaseInterface {
         id: String,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterInterface<T>,
-        userAccess: UserProfile?=currentProfile
+        userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**
@@ -114,6 +112,6 @@ interface DatabaseInterface {
         ids: List<String>,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterInterface<T>,
-        userAccess: UserProfile?=currentProfile
+        userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 }

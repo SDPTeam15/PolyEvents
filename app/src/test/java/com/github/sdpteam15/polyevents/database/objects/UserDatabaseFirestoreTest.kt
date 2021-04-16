@@ -1,14 +1,10 @@
 package objects
 
-import com.github.sdpteam15.polyevents.database.DatabaseConstant
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.USER_COLLECTION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.UserConstants.*
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.objects.UserDatabaseFirestore
-
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.UserConstants.*
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.*
-import com.github.sdpteam15.polyevents.database.objects.UserDatabaseInterface
-import com.github.sdpteam15.polyevents.database.objects.ZoneDatabaseFirestore
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.google.android.gms.tasks.Task
@@ -64,14 +60,15 @@ class UserDatabaseFirestoreTest {
         UserDatabaseFirestore.firestore = mockedDatabase
 
         UserDatabaseFirestore.firstConnectionUser = UserEntity(uid = "DEFAULT")
-        FirestoreDatabaseProvider.lastQuerySuccessListener= null
-        FirestoreDatabaseProvider.lastSetSuccessListener= null
-        FirestoreDatabaseProvider.lastFailureListener= null
-        FirestoreDatabaseProvider.lastGetSuccessListener= null
-        FirestoreDatabaseProvider.lastAddSuccessListener= null
+        FirestoreDatabaseProvider.lastQuerySuccessListener = null
+        FirestoreDatabaseProvider.lastSetSuccessListener = null
+        FirestoreDatabaseProvider.lastFailureListener = null
+        FirestoreDatabaseProvider.lastGetSuccessListener = null
+        FirestoreDatabaseProvider.lastAddSuccessListener = null
     }
+
     @After
-    fun teardown(){
+    fun teardown() {
         FirestoreDatabaseProvider.firestore = null
         UserDatabaseFirestore.firestore = null
     }
@@ -110,8 +107,10 @@ class UserDatabaseFirestoreTest {
         }
 
         val isInDb = Observable<Boolean>()
-        val result = FirestoreDatabaseProvider.userDatabase!!.inDatabase(isInDb,
-            uidTest, user)
+        val result = FirestoreDatabaseProvider.userDatabase!!.inDatabase(
+            isInDb,
+            uidTest, user
+        )
         //Assert that the value are correctly set by the database
         assert(isInDb.value!!)
         //assert that the value is not in database
@@ -151,8 +150,10 @@ class UserDatabaseFirestoreTest {
         }
 
         val isInDb = Observable<Boolean>()
-        val result = FirestoreDatabaseProvider.userDatabase!!.inDatabase(isInDb,
-            uidTest, user)
+        val result = FirestoreDatabaseProvider.userDatabase!!.inDatabase(
+            isInDb,
+            uidTest, user
+        )
         //Assert that the DB successfully performed the query
         assert(result.value!!)
         //assert that the value is not in database
@@ -187,8 +188,10 @@ class UserDatabaseFirestoreTest {
         }
 
         val userObs = Observable<UserEntity>()
-        val result = FirestoreDatabaseProvider.userDatabase!!.getUserInformation(userObs,
-            uidTest, user)
+        val result = FirestoreDatabaseProvider.userDatabase!!.getUserInformation(
+            userObs,
+            uidTest, user
+        )
         //Assert that the DB correctly answer with true
         assert(result.value!!)
         //assert that the value of the observable was set by the DB
@@ -225,7 +228,8 @@ class UserDatabaseFirestoreTest {
         )
         Mockito.`when`(mockedCollectionReference.document(uidTest))
             .thenReturn(mockedDocumentReference)
-        Mockito.`when`(mockedDocumentReference.update(map as Map<String, Any>)).thenReturn(mockedTask)
+        Mockito.`when`(mockedDocumentReference.update(map as Map<String, Any>))
+            .thenReturn(mockedTask)
         //TODO Mock the result from the database once the data class user is terminated
 
         Mockito.`when`(mockedTask.addOnSuccessListener(ArgumentMatchers.any())).thenAnswer {
@@ -243,8 +247,10 @@ class UserDatabaseFirestoreTest {
         }
 
         //Assert that the database correctly setted the value
-        val result = FirestoreDatabaseProvider.userDatabase!!.updateUserInformation(map,
-            uidTest, user)
+        val result = FirestoreDatabaseProvider.userDatabase!!.updateUserInformation(
+            map,
+            uidTest, user
+        )
         assert(result.value!!)
         assert(emailSet.equals(emailTest2))
         assert(nameSet.equals(displayNameTest2))

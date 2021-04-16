@@ -1,20 +1,19 @@
 package com.github.sdpteam15.polyevents.fakedatabase
 
-import com.github.sdpteam15.polyevents.database.objects.UserDatabaseFirestore
 import com.github.sdpteam15.polyevents.database.objects.UserDatabaseInterface
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 
-object FakeDatabaseUser:UserDatabaseInterface {
+object FakeDatabaseUser : UserDatabaseInterface {
     lateinit var profiles: MutableList<UserProfile>
 
     private fun initProfiles() {
         profiles = mutableListOf()
     }
 
-   fun getProfilesList(uid: String, user: UserEntity?): List<UserProfile> =
+    fun getProfilesList(uid: String, user: UserEntity?): List<UserProfile> =
         profiles
 
 

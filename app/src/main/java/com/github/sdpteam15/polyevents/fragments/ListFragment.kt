@@ -14,7 +14,6 @@ import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.Event
-import java.time.LocalDateTime
 
 /**
  * Extra containing the event ID to show on the launched event page

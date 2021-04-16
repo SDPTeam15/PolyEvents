@@ -90,8 +90,7 @@ class EditProfileActivity : AppCompatActivity() {
                 if (it.value) {
                     end.postValue(true, this)
                     onBackPressed()
-                }
-                else
+                } else
                     HelperFunctions.showToast(
                         getString(R.string.EditProfileActivity_DatabaseError),
                         this

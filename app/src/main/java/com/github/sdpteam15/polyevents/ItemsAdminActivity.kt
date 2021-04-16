@@ -44,12 +44,13 @@ class ItemsAdminActivity : AppCompatActivity() {
                 currentDatabase.itemDatabase!!.removeItem(it.value.first.itemId!!)
         }
         items.observeAdd(this) {
-            if (it.sender!= currentDatabase.itemDatabase!!) {
-                currentDatabase.itemDatabase!!.createItem(it.value.first, it.value.second).observe { it1 ->
-                    if (it1.value) {
-                        currentDatabase.itemDatabase!!.getItemsList(items)
+            if (it.sender != currentDatabase.itemDatabase!!) {
+                currentDatabase.itemDatabase!!.createItem(it.value.first, it.value.second)
+                    .observe { it1 ->
+                        if (it1.value) {
+                            currentDatabase.itemDatabase!!.getItemsList(items)
+                        }
                     }
-                }
             }
         }
 
