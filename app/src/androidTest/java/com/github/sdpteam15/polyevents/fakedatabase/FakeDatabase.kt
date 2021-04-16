@@ -25,7 +25,7 @@ object FakeDatabase : DatabaseInterface {
         } else {
             CURRENT_USER
         }
-    override val currentProfile: UserProfile?
+    override var currentProfile: UserProfile? = null
         get() = null
 
     override var itemDatabase: ItemDatabaseInterface? = null

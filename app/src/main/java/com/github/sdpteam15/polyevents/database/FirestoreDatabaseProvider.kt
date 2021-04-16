@@ -26,7 +26,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     var firestore: FirebaseFirestore? = null
         get() = field ?: Firebase.firestore
 
-    override val currentProfile: UserProfile?
+    override var currentProfile: UserProfile? = null
         get() = null
 
     override var itemDatabase: ItemDatabaseInterface? = null

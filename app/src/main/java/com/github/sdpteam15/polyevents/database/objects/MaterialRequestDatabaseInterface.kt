@@ -11,7 +11,7 @@ interface MaterialRequestDatabaseInterface {
         get() = Database.currentDatabase.currentUser
     val currentProfile: UserProfile?
         get() = Database.currentDatabase.currentProfile
-
+/*
     /**
      * Answer a material request
      * @param id id of the items
@@ -46,6 +46,6 @@ interface MaterialRequestDatabaseInterface {
     fun createMaterialRequest(
         request: MaterialRequest,
         userAccess: UserProfile? = currentProfile
-    )
+    )*/
 
 }

@@ -3,11 +3,16 @@ package com.github.sdpteam15.polyevents.database.objects
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.ITEM_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
+import com.github.sdpteam15.polyevents.login.GoogleUserLogin
+import com.github.sdpteam15.polyevents.login.UserLogin
+import com.github.sdpteam15.polyevents.login.UserLoginInterface
 import com.github.sdpteam15.polyevents.model.Item
 import com.github.sdpteam15.polyevents.model.ItemType
 import com.github.sdpteam15.polyevents.model.UserEntity
+import com.github.sdpteam15.polyevents.model.UserProfile
 import com.github.sdpteam15.polyevents.util.ItemEntityAdapter
 import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -15,6 +20,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when` as When
 
@@ -48,12 +54,21 @@ class ItemDatabaseFirestoreTest {
         FirestoreDatabaseProvider.lastFailureListener = null
         FirestoreDatabaseProvider.lastGetSuccessListener = null
         FirestoreDatabaseProvider.lastAddSuccessListener = null
+
+        val mockedUserLogin = Mockito.mock(UserLoginInterface::class.java) as UserLoginInterface<AuthResult>
+        UserLogin.currentUserLogin = mockedUserLogin
+        FirestoreDatabaseProvider.currentUser = user
+        Mockito.`when`(mockedUserLogin.isConnected()).thenReturn(true)
+        FirestoreDatabaseProvider.currentProfile = UserProfile()
+        assert(ItemDatabaseFirestore.currentUser==FirestoreDatabaseProvider.currentUser)
+        assert(ItemDatabaseFirestore.currentProfile==FirestoreDatabaseProvider.currentProfile)
     }
 
     @After
     fun teardown() {
         FirestoreDatabaseProvider.firestore = null
         ItemDatabaseFirestore.firestore = null
+        UserLogin.currentUserLogin = GoogleUserLogin
     }
 
 

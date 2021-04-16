@@ -27,7 +27,7 @@ interface DatabaseInterface {
     /**
      * The current profile of the database
      */
-    val currentProfile: UserProfile?
+    var currentProfile: UserProfile?
 
     /**
      * The database used to handle query about items

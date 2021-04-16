@@ -6,9 +6,14 @@ import com.github.sdpteam15.polyevents.database.DatabaseConstant.LocationConstan
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.observe.Observable
+import com.github.sdpteam15.polyevents.login.GoogleUserLogin
+import com.github.sdpteam15.polyevents.login.UserLogin
+import com.github.sdpteam15.polyevents.login.UserLoginInterface
 import com.github.sdpteam15.polyevents.model.UserEntity
+import com.github.sdpteam15.polyevents.model.UserProfile
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.firestore.*
 import org.hamcrest.CoreMatchers
 import org.hamcrest.MatcherAssert
@@ -45,12 +50,21 @@ class HeatmapDatabaseFirestoreTest {
         FirestoreDatabaseProvider.lastFailureListener = null
         FirestoreDatabaseProvider.lastGetSuccessListener = null
         FirestoreDatabaseProvider.lastAddSuccessListener = null
+
+        val mockedUserLogin = Mockito.mock(UserLoginInterface::class.java) as UserLoginInterface<AuthResult>
+        UserLogin.currentUserLogin = mockedUserLogin
+        FirestoreDatabaseProvider.currentUser = user
+        Mockito.`when`(mockedUserLogin.isConnected()).thenReturn(true)
+        FirestoreDatabaseProvider.currentProfile = UserProfile()
+        assert(HeatmapDatabaseFirestore.currentUser==FirestoreDatabaseProvider.currentUser)
+        assert(HeatmapDatabaseFirestore.currentProfile==FirestoreDatabaseProvider.currentProfile)
     }
 
     @After
     fun teardown() {
         FirestoreDatabaseProvider.firestore = null
         HeatmapDatabaseFirestore.firestore = null
+        UserLogin.currentUserLogin = GoogleUserLogin
     }
 
 

@@ -12,24 +12,4 @@ object MaterialRequestDatabaseFirestore : MaterialRequestDatabaseInterface {
     @SuppressLint("StaticFieldLeak")
     var firestore: FirebaseFirestore? = null
         get() = field ?: Firebase.firestore
-
-    override fun answerMaterialRequest(
-        id: String,
-        answer: Boolean,
-        userAccess: UserProfile?
-    ): Observable<Boolean> {
-        TODO("Not yet implemented")
-    }
-
-    override fun getMaterialRequestList(
-        materialList: Observable<MaterialRequest>,
-        matcher: String?,
-        userAccess: UserProfile?
-    ): Observable<Boolean> {
-        TODO("Not yet implemented")
-    }
-
-    override fun createMaterialRequest(request: MaterialRequest, userAccess: UserProfile?) {
-        TODO("Not yet implemented")
-    }
 }

@@ -6,9 +6,13 @@ import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.objects.UserDatabaseFirestore
 import com.github.sdpteam15.polyevents.database.observe.Observable
+import com.github.sdpteam15.polyevents.login.GoogleUserLogin
+import com.github.sdpteam15.polyevents.login.UserLogin
+import com.github.sdpteam15.polyevents.login.UserLoginInterface
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.firestore.*
 import org.junit.After
 import org.junit.Before
@@ -62,6 +66,14 @@ class UserDatabaseFirestoreTest {
         //FirestoreDatabaseProvider.userDatabase =  mockedDatabaseUser
         UserDatabaseFirestore.firestore = mockedDatabase
 
+        val mockedUserLogin = Mockito.mock(UserLoginInterface::class.java) as UserLoginInterface<AuthResult>
+        UserLogin.currentUserLogin = mockedUserLogin
+        FirestoreDatabaseProvider.currentUser = user
+        Mockito.`when`(mockedUserLogin.isConnected()).thenReturn(true)
+        FirestoreDatabaseProvider.currentProfile = UserProfile()
+        assert(UserDatabaseFirestore.currentUser==FirestoreDatabaseProvider.currentUser)
+        assert(UserDatabaseFirestore.currentProfile==FirestoreDatabaseProvider.currentProfile)
+
         UserDatabaseFirestore.firstConnectionUser = UserEntity(uid = "DEFAULT")
         FirestoreDatabaseProvider.lastQuerySuccessListener = null
         FirestoreDatabaseProvider.lastSetSuccessListener = null
@@ -74,6 +86,7 @@ class UserDatabaseFirestoreTest {
     fun teardown() {
         FirestoreDatabaseProvider.firestore = null
         UserDatabaseFirestore.firestore = null
+        UserLogin.currentUserLogin = GoogleUserLogin
     }
 
     @Test
