@@ -42,11 +42,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="profile name"
+                android:hint="@string/profile_name_edit_Text"
                 android:inputType="textPersonName"
                 app:layout_constraintEnd_toStartOf="@+id/id_confirm_add_item_button"
                 app:layout_constraintStart_toStartOf="parent"
-                tools:layout_editor_absoluteY="8dp" />
+                app:layout_constraintTop_toTopOf="parent" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
