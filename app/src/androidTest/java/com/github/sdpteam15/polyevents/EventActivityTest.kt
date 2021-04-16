@@ -46,7 +46,7 @@ class EventActivityTest {
                 eventName = "Sushi demo",
                 description = "Super hungry activity !",
                 startTime = LocalDateTime.of(2021, 3, 7, 12, 15),
-                endTime =  LocalDateTime.of(2021, 3, 7, 13, 0,0),
+                endTime = LocalDateTime.of(2021, 3, 7, 13, 0, 0),
                 organizer = "The fish band",
                 zoneName = "Kitchen",
                 tags = mutableSetOf("sushi", "japan", "cooking")

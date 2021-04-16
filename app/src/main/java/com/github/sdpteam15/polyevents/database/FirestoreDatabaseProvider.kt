@@ -57,7 +57,6 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     override fun addProfile(profile: UserProfile, uid: String, user: UserEntity?): Boolean =
         profiles.add(profile)// TODO : Not yet Implemented
 
-
     override fun createItem(
         item: Item,
         count: Int,
@@ -125,7 +124,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         // TODO should update add item if non existent in database ?
         // if (event.eventId == null) return createEvent(event, profile)
         return thenDoSet(
-            firestore!!.collection(EVENT_COLLECTION).document(event.eventId!!).set(event)
+            firestore!!.collection(EVENT_COLLECTION).document(event.eventId!!).set(EventAdapter.toDocument(event))
         )
     }
 
@@ -308,6 +307,34 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     ) {
         user.postValue(UserAdapter.fromDocument(it.data!!, it.id), this)
     }
+
+    /*
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun getItemsList(): MutableList<String> {
+
+
+
+    override fun getItemsList(): MutableList<Item> {
+        //TODO adapt to firebase
+        return FakeDatabase.getItemsList()
+    }
+
+    override fun addItem(item: Item): Boolean {
+        //TODO adapt to firebase
+        return FakeDatabase.addItem(item)
+    }
+
+    override fun removeItem(item: Item): Boolean {
+        //TODO adapt to firebase
+        return FakeDatabase.removeItem(item)
+    }
+
+    override fun getAvailableItems(): Map<String, Int> {
+        //TODO adapt to firebase
+        return FakeDatabase.getAvailableItems()
+    }
+
+     */
 
     override fun setUserLocation(
         location: LatLng,

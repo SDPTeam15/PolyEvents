@@ -200,66 +200,6 @@ interface DatabaseInterface {
     ): Observable<Boolean>
 
 
-/*
-    /**
-     * Query the upcoming events (the closest first)
-     * @param number : the number of events to retrieve
-     * @param activityList: the list of event that will be set when the DB returns the information
-     * @param profile : profile for database access
-     * @return An observer that will be set to true if the communication with the DB is over and no error
-     */
-    fun getUpcomingEvents(
-        number: Int = NUMBER_UPCOMING_EVENTS,
-        activityList: Observable<List<Event>>,
-        profile: ProfileInterface = CurrentProfile
-    ): Observable<Boolean>
-    */
-
-    /**
-     * All accessor and modifier methods for users and profiles
-     */
-    /*
-    /**
-     * Add profile to a user
-     * @param profile profile to add
-     * @param uid uid
-     * @param user user for database access
-     * @return An observer that will be set to true if the communication with the DB is over and no error
-     */
-    fun addProfile(
-        profile: ProfileInterface, uid: String,
-        user: UserInterface = currentUser as UserInterface
-    ): Observable<Boolean>
-
-    /**
-     * Remove the profile from the user in database
-     * @param profile: The profile we want to remove
-     * @param uid : the uid of the user from which we want to query the information
-     * @param userAccess: the user object to use its permission
-     * @return An observer that will be set to true if the communication with the DB is over and no error
-     */
-    fun removeProfile(
-        profile: ProfileInterface,
-        uid: String = (User.currentUser as UserInterface).uid,
-        user: UserInterface = User.currentUser as UserInterface
-    ): Observable<Boolean>
-
-
-    /**
-     * Get list of profile of a user uid
-     * @param uid uid
-     * @param profileList mutable live data in which the list of profile will be set
-     * @param user user for database access
-     * @return list of profile of a user uid
-     */
-    fun getListProfile(
-        uid: String,
-        profileList:Observable<List<ProfileInterface>>,
-        user: UserInterface = currentUser as UserInterface
-    ): Observable<Boolean>
-        */
-
-    // TODO: Do we need userAccess for these methods? (Might do these with security rules)
     /**
      * Update the user information in the database
      * @param newValues : a map with the new value to set in the database
@@ -272,7 +212,6 @@ interface DatabaseInterface {
         uid: String,
         userAccess: UserEntity? = currentUser
     ): Observable<Boolean>
-
 
     /**
      * Register the user in the database with its basic information (uid, email, name)
@@ -311,35 +250,19 @@ interface DatabaseInterface {
         userAccess: UserEntity? = currentUser
     ): Observable<Boolean>
 
-    /*
-    /**
-     * Returns the list of items
-     * @return The current mutable list of items
-     */
-    fun getItemsList(): MutableList<Item>
 
     /**
-     * Adds an Item to the Item Database
-     * @param item : item to add
-     * @return true if the item is successfully added to the database
+     * Look in the database if the user already exists or not
+     * @param profile : live data that will be set with the find profile value
+     * @param pid : profile id we want to get
+     * @param profileAccess : the profile object to use its permission
+     * @return An observer that will be set to true if the communication with the DB is over and no error
      */
-    fun addItem(item : Item):Boolean
-
-    /**
-     * Removes an Item from the Item Database
-     * @param item : item to remove
-     * @return true if the item is successfully removed from the database
-     */
-    fun removeItem(item: Item): Boolean
-
-    /**
-     * TODO : adapt into asynchronous method
-     * Fetch the available items
-     * @return (for now) map of pair : <item name, available quantity>
-     */
-    fun getAvailableItems(): Map<String, Int>
-
-     */
+    fun getProfileById(
+        profile: Observable<UserProfile>,
+        pid: String,
+        userAccess: UserEntity? = currentUser
+    ): Observable<Boolean>
 
     /**
      * Update, or add if it was not already in the database, the current location

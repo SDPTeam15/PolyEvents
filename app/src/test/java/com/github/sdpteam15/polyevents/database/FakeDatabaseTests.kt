@@ -1,15 +1,13 @@
 package com.github.sdpteam15.polyevents.database
+
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
-import com.github.sdpteam15.polyevents.model.Event
-import com.github.sdpteam15.polyevents.model.Item
-import com.github.sdpteam15.polyevents.model.UserEntity
-import com.github.sdpteam15.polyevents.model.UserProfile
-import com.github.sdpteam15.polyevents.model.Zone
+import com.github.sdpteam15.polyevents.model.*
 import com.google.android.gms.maps.model.LatLng
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Test
+import java.time.LocalDateTime
 import kotlin.test.assertNotNull
 import org.hamcrest.CoreMatchers.`is` as Is
 
@@ -18,7 +16,7 @@ class FakeDatabaseTests {
     lateinit var mockedUserProfile: UserProfile
     lateinit var mockedEvent: Event
     lateinit var mockedEventList: ObservableList<Event>
-    lateinit var mockedItemList: ObservableList<Pair<Item,Int>>
+    lateinit var mockedItemList: ObservableList<Pair<Item, Int>>
     val uid = "TestUID"
 
     @Before
@@ -36,9 +34,34 @@ class FakeDatabaseTests {
         assertNotNull(FakeDatabase.getProfilesList("", mockedUserInterface))
         assertNotNull(FakeDatabase.addProfile(mockedUserProfile, "", mockedUserInterface))
         assertNotNull(FakeDatabase.updateProfile(mockedUserProfile, mockedUserInterface))
-        assert(FakeDatabase.getZoneInformation("",Observable(),mockedUserInterface).value!!)
-        assert(FakeDatabase.updateZoneInformation("", Zone(),mockedUserInterface).value!!)
-        assert(FakeDatabase.createZone(Zone(),mockedUserInterface).value!!)
+        assert(FakeDatabase.getZoneInformation("", Observable(), mockedUserInterface).value!!)
+        assert(FakeDatabase.updateZoneInformation("", Zone(), mockedUserInterface).value!!)
+        assert(FakeDatabase.createZone(Zone(), mockedUserInterface).value!!)
+    }
+
+    @Test
+    fun updateItemTest() {
+        val testItem = Item("xxxbananaxxx", "banana", ItemType.OTHER)
+        val testQuantity = 3
+        FakeDatabase.updateItem(testItem, testQuantity)
+        assert(FakeDatabase.items.containsValue(Pair(testItem, testQuantity)))
+    }
+
+    @Test
+    fun updateEventTest() {
+        val testEvent = Event(
+            eventId = "xxxeventxxxx",
+            eventName = "Sushi demo",
+            organizer = "The fish band",
+            zoneName = "Kitchen",
+            description = "Super hungry activity !",
+            startTime = LocalDateTime.of(2021, 3, 7, 12, 15),
+            endTime = LocalDateTime.of(2021, 3, 7, 12, 45),
+            inventory = mutableListOf(),
+            tags = mutableSetOf("sushi", "japan", "cooking")
+        )
+        FakeDatabase.updateEvents(testEvent)
+        assert(FakeDatabase.events.containsValue(testEvent))
     }
 
     @Test
@@ -80,7 +103,8 @@ class FakeDatabaseTests {
         var userIsUpdated = false
         user.observe { userIsUpdated = true }
 
-        FakeDatabase.getUserInformation(user, uid, mockedUserInterface).observe { IsUpdated = it.value }
+        FakeDatabase.getUserInformation(user, uid, mockedUserInterface)
+            .observe { IsUpdated = it.value }
         assert(IsUpdated)
         assert(userIsUpdated)
     }

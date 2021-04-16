@@ -97,7 +97,6 @@ object FakeDatabase : DatabaseInterface {
     override fun addProfile(profile: UserProfile, uid: String, user: UserEntity?): Boolean =
         profiles.add(profile)
 
-
     override fun getListEvent(
         matcher: Matcher?,
         number: Long?,
@@ -109,15 +108,6 @@ object FakeDatabase : DatabaseInterface {
         eventList.addAll(events.values, this)
         return Observable(true, this)
     }
-    /*
-    override fun getUpcomingEvents(number: Int, profile: UserProfile?): List<Event> =
-            getListEvent("", number, profile)
-
-    override fun getEventFromId(id: String, profile: UserProfile?): Event =
-            events.value[0]
-
-    override fun updateEvent(Event: Event, profile: UserProfile?): Boolean = true
-    */
 
     override fun createItem(
         item: Item,
@@ -220,20 +210,6 @@ object FakeDatabase : DatabaseInterface {
     ): Observable<Boolean> =
         Observable(true, this)
 
-    /*
-        override fun getAvailableItems(): Map<String, Int> {
-            val map = mutableMapOf<String, Int>()
-            map["230V plug"] = 20
-            map["Cord rewinder (50m)"] = 10
-            map["Cooking plate"] = 5
-            map["Cord rewinder (100m)"] = 1
-            map["Cord rewinder (10m)"] = 30
-            map["Fridge (large)"] = 2
-            map["Fridge (small)"] = 10
-
-            return map
-        }
-    */
     override fun inDatabase(
         isInDb: Observable<Boolean>,
         uid: String,
@@ -243,29 +219,6 @@ object FakeDatabase : DatabaseInterface {
         return Observable(true, this)
     }
 
-    override fun getUserInformation(
-        user: Observable<UserEntity>,
-        uid: String?,
-        userAccess: UserEntity?
-    ): Observable<Boolean> {
-        user.value = CURRENT_USER
-        return Observable(true)
-    }
-
-    /*
-        override fun getItemsList(): MutableList<Item> {
-            return items
-        }
-
-        override fun addItem(item: Item): Boolean {
-            return items.add(item)
-        }
-
-        override fun removeItem(item: Item): Boolean {
-            return items.remove(item)
-        }
-
-        */
     override fun setUserLocation(
         location: LatLng,
         userAccess: UserEntity?
@@ -387,7 +340,7 @@ object FakeDatabase : DatabaseInterface {
     }
 
     /**
-     * Generates a random
+     * Generates a random key simulating fireBase
      */
     private fun generateRandomKey(): String {
         val charPool: List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')

@@ -12,7 +12,6 @@ import com.google.android.gms.maps.model.*
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
-import java.io.File
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -59,7 +58,12 @@ class GoogleMapHelperTest {
         mockedF = Mockito.mock(ICameraUpdateFactoryDelegate::class.java)
 
         CameraUpdateFactory.zza(mockedF)
-        When(mockedF.newLatLngZoom(GoogleMapHelper.cameraPosition, GoogleMapHelper.cameraZoom)).thenReturn(mockedwesh)
+        When(
+            mockedF.newLatLngZoom(
+                GoogleMapHelper.cameraPosition,
+                GoogleMapHelper.cameraZoom
+            )
+        ).thenReturn(mockedwesh)
 
         println("${GoogleMapHelper.cameraPosition}")
 
@@ -81,8 +85,8 @@ class GoogleMapHelperTest {
 
     @Test
     fun setMinAndMaxZoom() {
-        var zoomMin: Boolean = false
-        var zoomMax: Boolean = false
+        var zoomMin = false
+        var zoomMax = false
         When(mockedMap.setMaxZoomPreference(GoogleMapHelper.maxZoom)).then {
             zoomMax = true
             Unit
@@ -99,8 +103,15 @@ class GoogleMapHelperTest {
 
     @Test
     fun setBoundariesTest() {
-        var bound: Boolean = false
-        When(GoogleMapHelper.map!!.setLatLngBoundsForCameraTarget(LatLngBounds(GoogleMapHelper.swBound, GoogleMapHelper.neBound))).then {
+        var bound = false
+        When(
+            GoogleMapHelper.map!!.setLatLngBoundsForCameraTarget(
+                LatLngBounds(
+                    GoogleMapHelper.swBound,
+                    GoogleMapHelper.neBound
+                )
+            )
+        ).then {
             bound = true
             Unit
         }
@@ -159,7 +170,16 @@ class GoogleMapHelperTest {
         val anchor = IconAnchor(0f, 0f)
         val bound = IconBound(0, 0, 100, 100)
         val dimension = IconDimension(100, 100)
-        GoogleMapHelper.newMarker(LatLng(lat, lng), anchor, null, null, true, R.id.ic_more, bound, dimension)
+        GoogleMapHelper.newMarker(
+            LatLng(lat, lng),
+            anchor,
+            null,
+            null,
+            true,
+            R.id.ic_more,
+            bound,
+            dimension
+        )
     }
 
     @Test
@@ -179,10 +199,12 @@ class GoogleMapHelperTest {
         GoogleMapHelper.moveDiagMarker = Marker(mockedzzt)
         GoogleMapHelper.moveRightMarker = Marker(mockedzzt)
         GoogleMapHelper.moveDownMarker = Marker(mockedzzt)
+        GoogleMapHelper.rotationMarker = Marker(mockedzzt)
         GoogleMapHelper.movePos = position
         GoogleMapHelper.moveDiagPos = position
         GoogleMapHelper.moveRightPos = position
         GoogleMapHelper.moveDownPos = position
+        GoogleMapHelper.rotationPos = position
 
         GoogleMapHelper.tempLatLng.add(position)
         GoogleMapHelper.tempLatLng.add(position)
@@ -215,10 +237,12 @@ class GoogleMapHelperTest {
         GoogleMapHelper.moveDiagMarker = Marker(mockedzzt)
         GoogleMapHelper.moveRightMarker = Marker(mockedzzt)
         GoogleMapHelper.moveDownMarker = Marker(mockedzzt)
+        GoogleMapHelper.rotationMarker = Marker(mockedzzt)
         GoogleMapHelper.movePos = position
         GoogleMapHelper.moveDiagPos = position
         GoogleMapHelper.moveRightPos = position
         GoogleMapHelper.moveDownPos = position
+        GoogleMapHelper.rotationPos = position
         GoogleMapHelper.tempLatLng.add(position)
         GoogleMapHelper.tempLatLng.add(position)
         GoogleMapHelper.tempLatLng.add(position)
