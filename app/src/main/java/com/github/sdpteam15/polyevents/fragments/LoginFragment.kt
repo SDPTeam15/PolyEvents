@@ -14,15 +14,16 @@ import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.login.UserLogin
 import com.github.sdpteam15.polyevents.model.UserEntity
+import com.google.android.gms.tasks.OnCompleteListener
 
 /**
  * [Fragment] subclass representing the login page allowing the user to connect to the application
  */
-private const val SIGN_IN_RC: Int = 200
+
 
 class LoginFragment : Fragment() {
     val inDbObservable = Observable<Boolean>()
-
+    val SIGN_IN_RC: Int = 200
     // Return CurrentUser if we are not in test, but we can use a fake user in test this way
     var currentUser: UserEntity? = null
         get() = field ?: currentDatabase.currentUser
@@ -112,7 +113,7 @@ class LoginFragment : Fragment() {
         val rootView = inflater.inflate(R.layout.fragment_login, container, false)
         //Attach an event to sign-in button
         rootView.findViewById<com.google.android.gms.common.SignInButton>(R.id.btnLogin)
-            .setOnClickListener { _ ->
+            .setOnClickListener {
                 if (currentUser == null) {
                     UserLogin.currentUserLogin.signIn(activity as Activity, this, SIGN_IN_RC)
                 } else {

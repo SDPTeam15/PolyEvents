@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents
 
+import android.content.Intent
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -14,17 +15,22 @@ import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.fragments.HomeFragment
 import com.github.sdpteam15.polyevents.fragments.LoginFragment
 import com.github.sdpteam15.polyevents.fragments.ProfileFragment
+import com.github.sdpteam15.polyevents.login.GoogleUserLogin
 import com.github.sdpteam15.polyevents.login.UserLogin
+import com.github.sdpteam15.polyevents.login.UserLoginInterface
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
-import com.google.firebase.auth.FirebaseAuth
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.AuthResult
 import org.hamcrest.Matchers
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito.any
 import org.mockito.Mockito.mock
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.anyOrNull
 import org.mockito.Mockito.`when` as When
 
 
@@ -114,6 +120,58 @@ class ProfileLoginFragmentTests {
     }
 
     @Test
+    fun clickOnSignInLaunchTheCorrectIntent() {
+        val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
+        loginFragment.currentUser = null
+
+        val mockedUserLogin = mock(UserLoginInterface::class.java) as UserLoginInterface<AuthResult>
+        UserLogin.currentUserLogin = mockedUserLogin
+        When(mockedUserLogin.isConnected()).thenReturn(false)
+
+        onView(withId(R.id.ic_login)).perform(click())
+        onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
+
+        var set = false
+        When(mockedUserLogin.signIn(anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
+            set = true
+            Unit
+        }
+        onView(withId(R.id.btnLogin)).perform(click())
+        assert(set)
+        UserLogin.currentUserLogin = GoogleUserLogin
+    }
+
+    @Test
+    fun receveivedInfoTriggerTheLogin() {
+        val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
+        loginFragment.currentUser = null
+
+        val mockedUserLogin = mock(UserLoginInterface::class.java) as UserLoginInterface<AuthResult>
+        UserLogin.currentUserLogin = mockedUserLogin
+        When(mockedUserLogin.isConnected()).thenReturn(false)
+        val mockedTask = mock(Task::class.java) as Task<AuthResult>
+
+
+        onView(withId(R.id.ic_login)).perform(click())
+        onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
+
+        var set = false
+        When(
+            mockedUserLogin.getResultFromIntent(
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenAnswer {
+            set = true
+            mockedTask
+        }
+        loginFragment.onActivityResult(loginFragment.SIGN_IN_RC, 10, Intent())
+        assert(set)
+        UserLogin.currentUserLogin = GoogleUserLogin
+    }
+
+    @Test
     fun signOutButtonRedirectToLoginFragment() {
         UserLogin.currentUserLogin.signOut()
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
@@ -134,6 +192,7 @@ class ProfileLoginFragmentTests {
 
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         loginFragment.currentUser = null
+
 
         onView(withId(R.id.ic_login)).perform(click())
         onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
@@ -273,8 +332,6 @@ class ProfileLoginFragmentTests {
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
 
         initDBTests()
-
-
         //Mock the in database method, to return false
         val endingRequestInDatabase = Observable<Boolean>()
         When(
@@ -367,6 +424,40 @@ class ProfileLoginFragmentTests {
         //Wait enough time
         Thread.sleep(3000)
         assert(accountNotCreated)
+    }
+
+    @Test
+    fun ifIssueWithCommunicationDoesNothing() {
+        val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
+        initDBTests()
+
+        val endingRequestFirstConnection = Observable<Boolean>()
+
+        //Mock the firstConnexion method so that it sets the boolean to false if called
+        When(
+            mockedUserDatabase.firstConnexion(
+                loginFragment.currentUser!!
+            )
+        ).thenAnswer {
+            endingRequestFirstConnection
+        }
+
+        When(
+            mockedUserDatabase.inDatabase(
+                loginFragment.inDbObservable,
+                uidTest
+            )
+        ).thenAnswer { _ ->
+            loginFragment.inDbObservable.postValue(false)
+            endingRequest
+        }
+        onView(withId(R.id.btnLogin)).perform(click())
+        //Notify that the firstConnection request was successfully performed
+        endingRequestFirstConnection.postValue(false)
+        //Notify that the getUserAInformation request was successfully performed
+        endingRequest.postValue(false)
+        onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
+
     }
 }
 
