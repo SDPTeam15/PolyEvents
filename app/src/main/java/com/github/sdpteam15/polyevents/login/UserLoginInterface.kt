@@ -28,7 +28,7 @@ interface UserLoginInterface<T> {
     fun signOut()
 
     /**
-     *
+     * Return true if the user currently connected, false otherwise
      */
     fun isConnected(): Boolean
 

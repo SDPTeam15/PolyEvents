@@ -19,7 +19,7 @@ object FakeDatabase : DatabaseInterface {
     var userToNull = false
     override val currentUserObservable: Observable<UserEntity> = Observable()
 
-    override val currentUser: UserEntity?
+    override var currentUser: UserEntity?=null
         get() = if (userToNull) {
             null
         } else {

@@ -22,7 +22,7 @@ interface DatabaseInterface {
     /**
      * The current user of the database
      */
-    val currentUser: UserEntity?
+    var currentUser: UserEntity?
 
     /**
      * The current profile of the database

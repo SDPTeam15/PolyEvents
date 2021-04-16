@@ -10,14 +10,19 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabase
+import com.github.sdpteam15.polyevents.login.GoogleUserLogin
 import com.github.sdpteam15.polyevents.login.UserLogin
+import com.github.sdpteam15.polyevents.login.UserLoginInterface
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.Mockito.`when` as When
 
 @RunWith(MockitoJUnitRunner::class)
 class NavigationViewFragmentTest {
@@ -30,13 +35,25 @@ class NavigationViewFragmentTest {
     fun setup() {
         //Initial state
         Database.currentDatabase = FirestoreDatabaseProvider
+        val mockedUserLogin = Mockito.mock(UserLoginInterface::class.java) as UserLoginInterface<AuthResult>
+        UserLogin.currentUserLogin = mockedUserLogin
+        When(mockedUserLogin.isConnected()).thenReturn(false)
+
         MainActivity.currentUser = null
-        UserLogin.currentUserLogin.signOut()
+        Database.currentDatabase.currentUser = null
+    }
+    @After
+    fun teardown(){
+        UserLogin.currentUserLogin = GoogleUserLogin
     }
 
     @Test
     fun NavigationBarDisplaysCorrectFragment() {
+        MainActivity.currentUser = null
+        Database.currentDatabase.currentUser = null
+
         //Initial state
+        Espresso.onView(withId(R.id.ic_home)).perform(click())
         Espresso.onView(withId(R.id.id_fragment_home)).check(matches(isDisplayed()))
 
         //Espresso.onView(withId(R.id.ic_map)).perform(click())

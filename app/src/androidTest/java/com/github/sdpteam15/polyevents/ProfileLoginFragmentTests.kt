@@ -14,6 +14,7 @@ import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.fragments.HomeFragment
 import com.github.sdpteam15.polyevents.fragments.LoginFragment
 import com.github.sdpteam15.polyevents.fragments.ProfileFragment
+import com.github.sdpteam15.polyevents.login.UserLogin
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 import com.google.firebase.auth.FirebaseAuth
@@ -114,7 +115,7 @@ class ProfileLoginFragmentTests {
 
     @Test
     fun signOutButtonRedirectToLoginFragment() {
-        FirebaseAuth.getInstance().signOut()
+        UserLogin.currentUserLogin.signOut()
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
 
         profileFragment.currentUser = user
@@ -127,7 +128,7 @@ class ProfileLoginFragmentTests {
 
     @Test
     fun loginFragmentIfNotLoggedInOtherwiseProfileFragment() {
-        FirebaseAuth.getInstance().signOut()
+        UserLogin.currentUserLogin.signOut()
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
         profileFragment.currentUser = user
 
@@ -149,7 +150,7 @@ class ProfileLoginFragmentTests {
     @Test
     fun signInButtonRedirectToProfileFragmentAfterSuccess() {
         //Log out from Firebase if connected
-        FirebaseAuth.getInstance().signOut()
+        UserLogin.currentUserLogin.signOut()
 
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         loginFragment.currentUser = null
@@ -252,7 +253,7 @@ class ProfileLoginFragmentTests {
 
     private fun initDBTests() {
         //Make sure we are not connected to Firebase
-        FirebaseAuth.getInstance().signOut()
+        UserLogin.currentUserLogin.signOut()
         //remove current user so that we stay on login fragment
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         loginFragment.currentUser = null

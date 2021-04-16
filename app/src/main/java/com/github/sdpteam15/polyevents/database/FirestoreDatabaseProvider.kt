@@ -66,6 +66,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             }
         }
         set(value){
+            loadSuccess=value!=null
             currentUserObservable.value = value
         }
 
