@@ -73,7 +73,7 @@ class EditProfileActivity : AppCompatActivity() {
             lastName = profile.profileName ?: ""
             name.setText(profile.profileName ?: "")
         }
-        currentDatabase.getProfileById(updater, pid)
+        currentDatabase.userDatabase!!.getProfileById(updater, pid)
 
         cancel.setOnClickListener {
             onBackPressed()
@@ -86,7 +86,7 @@ class EditProfileActivity : AppCompatActivity() {
             profile.userRole = newRank
             profile.profileName = newName
 
-            currentDatabase.updateProfile(profile).observe {
+            currentDatabase.userDatabase!!.updateProfile(profile).observe {
                 if (it.value) {
                     end.postValue(true, this)
                     onBackPressed()

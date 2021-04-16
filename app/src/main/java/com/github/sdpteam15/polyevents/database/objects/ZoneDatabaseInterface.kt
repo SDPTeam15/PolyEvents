@@ -2,10 +2,12 @@ package com.github.sdpteam15.polyevents.database.objects
 
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.model.UserEntity
+import com.github.sdpteam15.polyevents.model.UserProfile
 import com.github.sdpteam15.polyevents.model.Zone
 
 interface ZoneDatabaseInterface {
     val currentUser: UserEntity?
+    val currentProfile: UserProfile?
 
     /**
      * Store the newly created zone information in the database
@@ -28,7 +30,7 @@ interface ZoneDatabaseInterface {
     fun getZoneInformation(
         zoneId: String,
         zone: Observable<Zone>,
-        userAccess: UserEntity?=currentUser
+        userAccess: UserEntity? = currentUser
     ): Observable<Boolean>
 
     /**
@@ -39,8 +41,8 @@ interface ZoneDatabaseInterface {
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun updateZoneInformation(
-        zoneId:String,
+        zoneId: String,
         newZone: Zone,
-        userAccess:UserEntity?=currentUser
+        userAccess: UserEntity? = currentUser
     ): Observable<Boolean>
 }

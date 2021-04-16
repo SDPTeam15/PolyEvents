@@ -6,6 +6,7 @@ import com.github.sdpteam15.polyevents.database.DatabaseConstant
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.model.UserEntity
+import com.github.sdpteam15.polyevents.model.UserProfile
 import com.github.sdpteam15.polyevents.model.Zone
 import com.github.sdpteam15.polyevents.util.ZoneAdapter
 import com.google.firebase.firestore.FirebaseFirestore
@@ -13,12 +14,15 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 object ZoneDatabaseFirestore : ZoneDatabaseInterface {
-    override val currentUser: UserEntity?
-        get() = Database.currentDatabase.currentUser
-
     @SuppressLint("StaticFieldLeak")
-    private var firestore: FirebaseFirestore? = null
+    var firestore: FirebaseFirestore? = null
         get() = field ?: Firebase.firestore
+
+    override val currentUser: UserEntity?
+        get()= Database.currentDatabase.currentUser
+
+    override val currentProfile: UserProfile?
+        get() = Database.currentDatabase.currentProfile
 
     override fun createZone(zone: Zone, userAccess: UserEntity?): Observable<Boolean> {
         return FirestoreDatabaseProvider.thenDoAdd(

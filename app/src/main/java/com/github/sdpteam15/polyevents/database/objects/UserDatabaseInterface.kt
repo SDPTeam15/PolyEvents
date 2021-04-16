@@ -8,6 +8,7 @@ import com.github.sdpteam15.polyevents.model.UserProfile
 
 interface UserDatabaseInterface {
     val currentUser: UserEntity?
+    val currentProfile: UserProfile?
 
     /**
      * Update the user information in the database

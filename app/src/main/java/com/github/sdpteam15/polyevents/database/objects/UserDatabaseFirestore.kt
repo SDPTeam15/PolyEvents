@@ -18,16 +18,21 @@ import com.google.firebase.ktx.Firebase
 
 object UserDatabaseFirestore : UserDatabaseInterface {
     @SuppressLint("StaticFieldLeak")
-    private var firestore: FirebaseFirestore? = null
+    var firestore: FirebaseFirestore? = null
         get() = field ?: Firebase.firestore
 
     override val currentUser: UserEntity?
-        get() = Database.currentDatabase.currentUser
+        get()= Database.currentDatabase.currentUser
+
+    override val currentProfile: UserProfile?
+        get() = Database.currentDatabase.currentProfile
 
     /**
      * Map used in the firstConnection method. It's public to be able to use it in tests
      */
     var firstConnectionUser: UserEntity = UserEntity(uid = "DEFAULT")
+
+    var profiles: MutableList<UserProfile> = mutableListOf()
 
     override fun updateUserInformation(
         newValues: Map<String, String>,
@@ -48,7 +53,7 @@ object UserDatabaseFirestore : UserDatabaseInterface {
         return FirestoreDatabaseProvider.thenDoSet(
             firestore!!.collection(DatabaseConstant.USER_COLLECTION)
                 .document(user.uid)
-                .set(FirestoreDatabaseProvider.firstConnectionUser)
+                .set(firstConnectionUser)
         )
     }
 
@@ -124,7 +129,7 @@ object UserDatabaseFirestore : UserDatabaseInterface {
         FirestoreDatabaseProvider.setEntity(
             profile,
             profile.pid!!,
-            DatabaseConstant.PROFILE_COLLECTION,
+            DatabaseConstant.CollectionConstant.PROFILE_COLLECTION,
             ProfileAdapter
         )
 
@@ -136,7 +141,7 @@ object UserDatabaseFirestore : UserDatabaseInterface {
         FirestoreDatabaseProvider.getListEntity(
             profiles,
             user.profiles,
-            DatabaseConstant.PROFILE_COLLECTION,
+            DatabaseConstant.CollectionConstant.PROFILE_COLLECTION,
             ProfileAdapter
         )
 
@@ -148,7 +153,7 @@ object UserDatabaseFirestore : UserDatabaseInterface {
         FirestoreDatabaseProvider.getListEntity(
             users,
             profile.users,
-            DatabaseConstant.USER_COLLECTION,
+            DatabaseConstant.CollectionConstant.PROFILE_COLLECTION,
             UserAdapter
         )
 
@@ -159,13 +164,13 @@ object UserDatabaseFirestore : UserDatabaseInterface {
     ): Observable<Boolean> = FirestoreDatabaseProvider.getEntity(
         profile,
         pid,
-        DatabaseConstant.PROFILE_COLLECTION,
+        DatabaseConstant.CollectionConstant.PROFILE_COLLECTION,
         ProfileAdapter
     )
 
     override fun removeProfile(profile: UserProfile, user: UserEntity?) =
         FirestoreDatabaseProvider.deleteEntity(
             profile.pid!!,
-            DatabaseConstant.PROFILE_COLLECTION
+            DatabaseConstant.CollectionConstant.PROFILE_COLLECTION
         )
 }

@@ -6,6 +6,7 @@ import com.github.sdpteam15.polyevents.database.DatabaseConstant
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.model.UserEntity
+import com.github.sdpteam15.polyevents.model.UserProfile
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
@@ -15,11 +16,14 @@ import com.google.firebase.ktx.Firebase
 
 object HeatmapDatabaseFirestore: HeatmapDatabaseInterface {
     @SuppressLint("StaticFieldLeak")
-    private var firestore: FirebaseFirestore? = null
+    var firestore: FirebaseFirestore? = null
         get() = field ?: Firebase.firestore
 
     override val currentUser: UserEntity?
         get()= Database.currentDatabase.currentUser
+
+    override val currentProfile: UserProfile?
+        get() = Database.currentDatabase.currentProfile
 
     override fun setUserLocation(
         location: LatLng,
