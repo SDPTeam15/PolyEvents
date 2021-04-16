@@ -54,6 +54,7 @@ val usernameEntity = "JohnDoe"
 val name = "John Doe"
 val birthDate = LocalDate.of(1990, 12, 30)
 val email = "John@email.com"
+val listProfile = ArrayList<String>()
 
 class FirestoreDatabaseProviderTest {
     lateinit var user: UserEntity
@@ -69,7 +70,8 @@ class FirestoreDatabaseProviderTest {
         user = UserEntity(
             uid = uidTest,
             name = displayNameTest,
-            email = emailTest
+            email = emailTest,
+            profiles = listProfile
         )
 
         userDocument = hashMapOf(

@@ -14,14 +14,12 @@ import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.login.UserLogin
 import com.github.sdpteam15.polyevents.model.*
-import com.github.sdpteam15.polyevents.util.EventAdapter
-import com.github.sdpteam15.polyevents.util.ItemEntityAdapter
-import com.github.sdpteam15.polyevents.util.UserAdapter
-import com.github.sdpteam15.polyevents.util.ZoneAdapter
+import com.github.sdpteam15.polyevents.util.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -143,7 +141,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             .document(id).get()
     ) {
         returnEvent.postValue(
-            EventAdapter.fromDocument(it.data!!, it.id)!!, this
+            EventAdapter.fromDocument(it.data!!, it.id), this
         )
     }
 

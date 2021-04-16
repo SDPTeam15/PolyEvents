@@ -73,7 +73,7 @@ class ZoneDatabaseFirestoreTest {
         val testZone = Zone(zoneID, zoneName, zoneLoc, zoneDesc)
 
         Mockito.`when`(mockedDatabase.collection(DatabaseConstant.ZONE_COLLECTION)).thenReturn(mockedCollectionReference)
-        Mockito.`when`(mockedCollectionReference.add(ZoneAdapter.toZoneDocument(testZone))).thenReturn(
+        Mockito.`when`(mockedCollectionReference.add(ZoneAdapter.toDocument(testZone))).thenReturn(
             taskReferenceMock
         )
 
@@ -115,7 +115,7 @@ class ZoneDatabaseFirestoreTest {
         Mockito.`when`(mockedDatabase.collection(DatabaseConstant.ZONE_COLLECTION)).thenReturn(mockedCollectionReference)
         Mockito.`when`(mockedCollectionReference.document(zoneID))
             .thenReturn(mockedDocumentReference)
-        Mockito.`when`(mockedDocumentReference.update(ZoneAdapter.toZoneDocument(testZone))).thenReturn(
+        Mockito.`when`(mockedDocumentReference.update(ZoneAdapter.toDocument(testZone))).thenReturn(
             mockedTask
         )
 

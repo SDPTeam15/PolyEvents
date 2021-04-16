@@ -24,7 +24,7 @@ object ZoneDatabaseFirestore : ZoneDatabaseInterface {
         return FirestoreDatabaseProvider.thenDoAdd(
             firestore!!
                 .collection(DatabaseConstant.ZONE_COLLECTION)
-                .add(ZoneAdapter.toZoneDocument(zone))
+                .add(ZoneAdapter.toDocument(zone))
         )
     }
 
@@ -40,7 +40,7 @@ object ZoneDatabaseFirestore : ZoneDatabaseInterface {
                 .document(zoneId)
                 .get()
         ) {
-            it.data?.let { it1 -> zone.postValue(ZoneAdapter.toZoneEntity(it1, it.id),this) }
+            it.data?.let { it1 -> zone.postValue(ZoneAdapter.fromDocument(it1, it.id),this) }
         }
     }
 
@@ -53,7 +53,7 @@ object ZoneDatabaseFirestore : ZoneDatabaseInterface {
             firestore!!
                 .collection(DatabaseConstant.ZONE_COLLECTION)
                 .document(zoneId)
-                .update(ZoneAdapter.toZoneDocument(newZone))
+                .update(ZoneAdapter.toDocument(newZone))
         )
     }
 }

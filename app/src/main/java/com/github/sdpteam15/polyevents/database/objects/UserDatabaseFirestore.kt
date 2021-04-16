@@ -75,6 +75,6 @@ object UserDatabaseFirestore: UserDatabaseInterface {
             .document(uid!!)
             .get()
     ) {
-        it.data?.let { it1 -> user.postValue(UserAdapter.toUserEntity(it1),this) }
+        it.data?.let { it1 -> user.postValue(UserAdapter.fromDocument(it1, it.id),this) }
     }
 }
