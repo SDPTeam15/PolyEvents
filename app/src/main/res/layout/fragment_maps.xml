@@ -7,27 +7,6 @@ android:layout_width="match_parent"
 android:layout_height="match_parent"
 tools:context=".MainActivity" >
 
-    <!--
-    <Button
-        android:id="@+id/addNewArea"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginRight="20dp"
-        android:layout_marginBottom="10dp"
-        app:icon="@android:drawable/ic_input_add" />
-
-    <Button
-        android:id="@+id/acceptNewArea"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginRight="20dp"
-        android:layout_marginBottom="60dp"
-        app:icon="@android:drawable/stat_sys_upload" />
--->
     <fragment
         android:id="@+id/id_fragment_map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
@@ -51,27 +30,28 @@ tools:context=".MainActivity" >
         app:layout_constraintEnd_toEndOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/id_location_button"
+        android:id="@+id/saveAreas"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:contentDescription="@string/none"
+        android:layout_above="@+id/id_edit_area"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
+        android:contentDescription="@string/none"
+        android:layout_gravity="center_horizontal|end"
+        android:src="@drawable/ic_save"
         android:layout_marginEnd="@dimen/margin_right_map_btn"
         android:layout_marginBottom="@dimen/margin_bottom_map_btn"
-        android:clickable="true"
-        android:src="@drawable/ic_location_off"/>
+        app:layout_constraintBottom_toTopOf="@+id/id_edit_area"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/saveAreas"
+        android:id="@+id/id_edit_area"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/acceptNewArea"
         android:layout_alignParentEnd="true"
         android:contentDescription="@string/none"
         android:layout_gravity="center_horizontal|end"
-        android:src="@drawable/ic_save"
+        android:src="@drawable/ic_edit"
         android:layout_marginEnd="@dimen/margin_right_map_btn"
         android:layout_marginBottom="@dimen/margin_bottom_map_btn"
         app:layout_constraintBottom_toTopOf="@+id/acceptNewArea"
@@ -102,5 +82,16 @@ tools:context=".MainActivity" >
         app:layout_constraintBottom_toTopOf="@+id/addNewArea"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/id_location_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:contentDescription="@string/none"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="@dimen/margin_right_map_btn"
+        android:layout_marginBottom="@dimen/margin_bottom_map_btn"
+        android:clickable="true"
+        android:src="@drawable/ic_location_off"/>
 </RelativeLayout>

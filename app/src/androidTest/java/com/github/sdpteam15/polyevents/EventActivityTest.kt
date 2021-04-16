@@ -16,7 +16,8 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.github.sdpteam15.polyevents.adapter.EventItemAdapter
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
-import com.github.sdpteam15.polyevents.database.DatabaseInterface
+import com.github.sdpteam15.polyevents.database.FakeDatabase
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.fragments.EXTRA_EVENT_ID
 import com.github.sdpteam15.polyevents.model.Event
 import org.hamcrest.CoreMatchers.containsString
@@ -25,16 +26,12 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.mock
 import org.mockito.junit.MockitoJUnitRunner
 import java.time.LocalDateTime
 
 
 @RunWith(MockitoJUnitRunner::class)
 class EventActivityTest {
-    lateinit var events: ArrayList<Event>
-    lateinit var mockedUpcomingEventsProvider: DatabaseInterface
 
     @Rule
     @JvmField
@@ -42,21 +39,21 @@ class EventActivityTest {
 
     @Before
     fun setup() {
-        events = ArrayList<Event>()
-        events.add(
+
+        FakeDatabase.events.clear()
+        FakeDatabase.createEvent(
             Event(
-                eventId = "event1",
                 eventName = "Sushi demo",
                 description = "Super hungry activity !",
                 startTime = LocalDateTime.of(2021, 3, 7, 12, 15),
+                endTime = LocalDateTime.of(2021, 3, 7, 13, 0, 0),
                 organizer = "The fish band",
                 zoneName = "Kitchen",
                 tags = mutableSetOf("sushi", "japan", "cooking")
             )
         )
-        events.add(
+        FakeDatabase.createEvent(
             Event(
-                eventId = "event2",
                 eventName = "Aqua Poney",
                 description = "Super cool activity !" +
                         " With a super long description that essentially describes and explains" +
@@ -66,10 +63,8 @@ class EventActivityTest {
                 zoneName = "Swimming pool"
             )
         )
-
-        events.add(
+        FakeDatabase.createEvent(
             Event(
-                eventId = "event3",
                 eventName = "Concert",
                 description = "Super noisy activity !",
                 startTime = LocalDateTime.of(2021, 3, 7, 21, 15),
@@ -78,18 +73,12 @@ class EventActivityTest {
                 tags = mutableSetOf("music", "live", "pogo")
             )
         )
-        mockedUpcomingEventsProvider = mock(DatabaseInterface::class.java)
-        currentDatabase = mockedUpcomingEventsProvider
-        `when`(mockedUpcomingEventsProvider.getUpcomingEvents()).thenReturn(events)
-        `when`(mockedUpcomingEventsProvider.getEventFromId("1")).thenReturn(events[0])
-        `when`(mockedUpcomingEventsProvider.getEventFromId("2")).thenReturn(events[1])
-        `when`(mockedUpcomingEventsProvider.getEventFromId("3")).thenReturn(events[2])
-
-        `when`(mockedUpcomingEventsProvider.getEventFromId("event1")).thenReturn(events[0])
-
+        currentDatabase = FakeDatabase
+        Intents.init()
         // go to activities list fragment
         Espresso.onView(withId(R.id.ic_list)).perform(click())
-        Intents.init()
+        Thread.sleep(1000)
+
     }
 
     @After
@@ -100,7 +89,7 @@ class EventActivityTest {
     @Test
     fun correctNumberUpcomingEventsDisplayed() {
         Espresso.onView(withId(R.id.recycler_events_list))
-            .check(RecyclerViewItemCountAssertion(mockedUpcomingEventsProvider.getUpcomingEvents().size))
+            .check(RecyclerViewItemCountAssertion(FakeDatabase.events.size))
     }
 
     @Test
@@ -120,8 +109,11 @@ class EventActivityTest {
             ApplicationProvider.getApplicationContext(),
             EventActivity::class.java
         )
-        intent.putExtra(EXTRA_EVENT_ID, "1")
-        val eventToTest = mockedUpcomingEventsProvider.getEventFromId("1") as Event
+        val events = ObservableList<Event>()
+        currentDatabase.getListEvent(null, 1, events)
+
+        val eventToTest = events[0]
+        intent.putExtra(EXTRA_EVENT_ID, eventToTest.eventId!!)
         val scenario = ActivityScenario.launch<EventActivity>(intent)
         Thread.sleep(1000)
 

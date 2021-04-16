@@ -9,6 +9,7 @@ package com.github.sdpteam15.polyevents.model
 // TODO: refactor to database
 object Depot {
     const val DEPOT_NAME: String = "mainDepot"
+
     // TODO: consider storing the list of items instead of just the number
     val inventory: MutableMap<ItemType, Int> = mutableMapOf()
 

@@ -1,46 +1,68 @@
 package com.github.sdpteam15.polyevents.database
 
 import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.model.Event
-import com.github.sdpteam15.polyevents.model.UserEntity
-import com.github.sdpteam15.polyevents.model.UserProfile
-import com.github.sdpteam15.polyevents.model.Zone
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
+import com.github.sdpteam15.polyevents.model.*
 import com.google.android.gms.maps.model.LatLng
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Test
+import java.time.LocalDateTime
 import kotlin.test.assertNotNull
 import org.hamcrest.CoreMatchers.`is` as Is
 
 class FakeDatabaseTests {
-    lateinit var mokedUserInterface: UserEntity
-    lateinit var mokedUserProfile: UserProfile
-    lateinit var mokedEvent: Event
+    lateinit var mockedUserInterface: UserEntity
+    lateinit var mockedUserProfile: UserProfile
+    lateinit var mockedEvent: Event
+    lateinit var mockedEventList: ObservableList<Event>
+    lateinit var mockedItemList: ObservableList<Pair<Item, Int>>
     val uid = "TestUID"
 
     @Before
     fun setup() {
-        mokedUserInterface = UserEntity(uid = uid)
-        mokedUserProfile = UserProfile()
-        mokedEvent = Event("xxxEventxxx")
+        mockedUserInterface = UserEntity(uid = uid)
+        mockedUserProfile = UserProfile()
+        mockedEvent = Event("xxxEventxxx")
+        mockedEventList = ObservableList()
+        mockedItemList = ObservableList()
     }
 
     @Test
     fun toRemoveTest() {
         assertNotNull(FakeDatabase.CURRENT_USER)
-        assertNotNull(FakeDatabase.getProfilesList("", mokedUserInterface))
-        assertNotNull(FakeDatabase.addProfile(mokedUserProfile, "", mokedUserInterface))
-        assertNotNull(FakeDatabase.removeProfile(mokedUserProfile, "", mokedUserInterface))
-        assertNotNull(FakeDatabase.updateProfile(mokedUserProfile, mokedUserInterface))
-        assert(FakeDatabase.getListEvent("", 1, mokedUserProfile).size <= 1)
-        assert(FakeDatabase.getListEvent("", 100, mokedUserProfile).size <= 100)
-        assert(FakeDatabase.getUpcomingEvents(1, mokedUserProfile).size <= 1)
-        assert(FakeDatabase.getUpcomingEvents(100, mokedUserProfile).size <= 100)
-        assert(FakeDatabase.updateEvent(mokedEvent, mokedUserProfile))
-        assert(FakeDatabase.getZoneInformation("",Observable(),mokedUserInterface).value!!)
-        assert(FakeDatabase.updateZoneInformation("", Zone(),mokedUserInterface).value!!)
-        assert(FakeDatabase.createZone(Zone(),mokedUserInterface).value!!)
-        assert(FakeDatabase.getEventFromId("",mokedUserProfile)==FakeDatabase.getListEvent()[0])
+        assertNotNull(FakeDatabase.getProfilesList("", mockedUserInterface))
+        assertNotNull(FakeDatabase.addProfile(mockedUserProfile, "", mockedUserInterface))
+        assertNotNull(FakeDatabase.removeProfile(mockedUserProfile, "", mockedUserInterface))
+        assertNotNull(FakeDatabase.updateProfile(mockedUserProfile, mockedUserInterface))
+        assert(FakeDatabase.getZoneInformation("", Observable(), mockedUserInterface).value!!)
+        assert(FakeDatabase.updateZoneInformation("", Zone(), mockedUserInterface).value!!)
+        assert(FakeDatabase.createZone(Zone(), mockedUserInterface).value!!)
+    }
+
+    @Test
+    fun updateItemTest() {
+        val testItem = Item("xxxbananaxxx", "banana", ItemType.OTHER)
+        val testQuantity = 3
+        FakeDatabase.updateItem(testItem, testQuantity)
+        assert(FakeDatabase.items.containsValue(Pair(testItem, testQuantity)))
+    }
+
+    @Test
+    fun updateEventTest() {
+        val testEvent = Event(
+            eventId = "xxxeventxxxx",
+            eventName = "Sushi demo",
+            organizer = "The fish band",
+            zoneName = "Kitchen",
+            description = "Super hungry activity !",
+            startTime = LocalDateTime.of(2021, 3, 7, 12, 15),
+            endTime = LocalDateTime.of(2021, 3, 7, 12, 45),
+            inventory = mutableListOf(),
+            tags = mutableSetOf("sushi", "japan", "cooking")
+        )
+        FakeDatabase.updateEvents(testEvent)
+        assert(FakeDatabase.events.containsValue(testEvent))
     }
 
     @Test
@@ -48,16 +70,16 @@ class FakeDatabaseTests {
         val hashMap = hashMapOf<String, String>()
 
         var IsUpdated = false
-        FakeDatabase.updateUserInformation(hashMap, uid, mokedUserInterface)
-            .observe { IsUpdated = it!! }
+        FakeDatabase.updateUserInformation(hashMap, uid, mockedUserInterface)
+            .observe { IsUpdated = it.value }
         assert(IsUpdated)
     }
 
     @Test
     fun firstConnexionTest() {
         var IsUpdated = false
-        FakeDatabase.firstConnexion(mokedUserInterface, mokedUserInterface)
-            .observe { IsUpdated = it!! }
+        FakeDatabase.firstConnexion(mockedUserInterface, mockedUserInterface)
+            .observe { IsUpdated = it.value }
         assert(IsUpdated)
     }
 
@@ -67,9 +89,9 @@ class FakeDatabaseTests {
 
         var IsUpdated = false
         var isInDbIsUpdated = false
-        isInDb.observe { isInDbIsUpdated = it!! }
+        isInDb.observe { isInDbIsUpdated = it.value }
 
-        FakeDatabase.inDatabase(isInDb, uid, mokedUserInterface).observe { IsUpdated = it!! }
+        FakeDatabase.inDatabase(isInDb, uid, mockedUserInterface).observe { IsUpdated = it.value }
         assert(IsUpdated)
         assert(isInDbIsUpdated)
     }
@@ -82,7 +104,8 @@ class FakeDatabaseTests {
         var userIsUpdated = false
         user.observe { userIsUpdated = true }
 
-        FakeDatabase.getUserInformation(user, uid, mokedUserInterface).observe { IsUpdated = it!! }
+        FakeDatabase.getUserInformation(user, uid, mockedUserInterface)
+            .observe { IsUpdated = it.value }
         assert(IsUpdated)
         assert(userIsUpdated)
     }
@@ -93,8 +116,8 @@ class FakeDatabaseTests {
         val lat = 46.548823
         val lng = 7.017012
         val pointToAdd = LatLng(lat, lng)
-        FakeDatabase.setUserLocation(pointToAdd, mokedUserInterface).observe {
-            isUpdated = it!!
+        FakeDatabase.setUserLocation(pointToAdd, mockedUserInterface).observe {
+            isUpdated = it.value
         }
 
         assertThat(isUpdated, Is(true))
@@ -108,8 +131,8 @@ class FakeDatabaseTests {
         var locationsAreUpdated = false
         locations.observe { locationsAreUpdated = true }
 
-        FakeDatabase.getUsersLocations(locations, mokedUserInterface).observe {
-            isUpdated = it!!
+        FakeDatabase.getUsersLocations(locations, mockedUserInterface).observe {
+            isUpdated = it.value
         }
 
         assertThat(isUpdated, Is(true))

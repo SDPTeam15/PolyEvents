@@ -1,11 +1,11 @@
 package com.github.sdpteam15.polyevents.model
 
 import android.graphics.Bitmap
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.google.firebase.firestore.IgnoreExtraProperties
-import com.google.firebase.firestore.ServerTimestamp
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
 
 /**
  * Entity model for an activity during the event. Renamed Event
@@ -27,7 +27,7 @@ import java.util.*
 // TODO: keep track of items, or just required items?
 @IgnoreExtraProperties
 data class Event(
-    val eventId: String,
+    val eventId: String? = null,
     val eventName: String? = null,
     val organizer: String? = null,
     val zoneName: String? = null,
@@ -62,7 +62,7 @@ data class Event(
      * Add an item to the event's inventory
      * @param item the item to add
      * @return true if the item was successfully added
-      */
+     */
     fun addItem(item: Item): Boolean =
         inventory.add(item)
 
@@ -87,6 +87,7 @@ data class Event(
      * hour going between 0-23h.
      * @return string HH:MM
      */
+    @RequiresApi(Build.VERSION_CODES.O)
     fun formattedStartTime(): String {
         if (startTime == null) {
             return ""

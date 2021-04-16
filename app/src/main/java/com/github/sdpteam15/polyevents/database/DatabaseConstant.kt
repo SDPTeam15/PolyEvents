@@ -14,7 +14,7 @@ object DatabaseConstant {
     const val USER_DISPLAY_NAME = "displayName"
     const val USER_EMAIL = "email"
     const val USER_AGE = "age"
-    const val USER_TYPE =  "userType"
+    const val USER_TYPE = "userType"
     const val USER_BIRTH_DATE = "birthDate"
     const val USER_PHONE = "telephone"
     const val USER_PROFILES = "profiles"
@@ -48,8 +48,9 @@ object DatabaseConstant {
      */
     const val ITEM_COLLECTION = "items"
     const val ITEM_DOCUMENT_ID = "itemId"
-    const val ITEM_NAME = "name"
+    const val ITEM_NAME = "itemName"
     const val ITEM_TYPE = "itemType"
+    const val ITEM_COUNT = "count"
 
 
     /**

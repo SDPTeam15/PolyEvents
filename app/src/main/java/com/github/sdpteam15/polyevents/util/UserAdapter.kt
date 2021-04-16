@@ -9,7 +9,6 @@ import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_USERNAME
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.google.firebase.Timestamp
-import kotlin.collections.HashMap
 
 /**
  * A class for converting between user entities in our code and
@@ -29,13 +28,13 @@ object UserAdapter {
      */
     fun toUserDocument(user: UserEntity): HashMap<String, Any?> {
         return hashMapOf(
-                USER_UID to user.uid,
-                USER_USERNAME to user.username,
-                USER_NAME to user.name,
-                // convert the localdate to LocalDateTime compatible to store in Firestore
-                USER_BIRTH_DATE to user.birthDate?.atStartOfDay(),
-                USER_EMAIL to user.email,
-                USER_PHONE to user.telephone
+            USER_UID to user.uid,
+            USER_USERNAME to user.username,
+            USER_NAME to user.name,
+            // convert the localdate to LocalDateTime compatible to store in Firestore
+            USER_BIRTH_DATE to user.birthDate?.atStartOfDay(),
+            USER_EMAIL to user.email,
+            USER_PHONE to user.telephone
         )
     }
 
@@ -49,14 +48,14 @@ object UserAdapter {
      */
     fun toUserEntity(documentData: MutableMap<String, Any?>): UserEntity {
         return UserEntity(
-                uid = documentData.get(USER_UID) as String,
-                username = documentData.get(USER_USERNAME) as String?,
-                name = documentData.get(USER_NAME) as String?,
-                birthDate = HelperFunctions.DateToLocalDateTime(
-                        (documentData.get(USER_BIRTH_DATE) as Timestamp?)?.toDate()
-                )?.toLocalDate(),
-                email = documentData.get(USER_EMAIL) as String?,
-                telephone = documentData.get(USER_PHONE) as String?
+            uid = documentData.get(USER_UID) as String,
+            username = documentData.get(USER_USERNAME) as String?,
+            name = documentData.get(USER_NAME) as String?,
+            birthDate = HelperFunctions.DateToLocalDateTime(
+                (documentData.get(USER_BIRTH_DATE) as Timestamp?)?.toDate()
+            )?.toLocalDate(),
+            email = documentData.get(USER_EMAIL) as String?,
+            telephone = documentData.get(USER_PHONE) as String?
         )
     }
 }

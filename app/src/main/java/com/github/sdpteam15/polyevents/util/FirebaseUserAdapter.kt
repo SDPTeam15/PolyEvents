@@ -5,9 +5,9 @@ import com.google.firebase.auth.FirebaseUser
 
 /**
  * FirebaseUser adapter
-*/
+ */
 object FirebaseUserAdapter {
-    fun toUser(firebaseUser : FirebaseUser): UserEntity {
+    fun toUser(firebaseUser: FirebaseUser): UserEntity {
         return UserEntity(
             uid = firebaseUser.uid,
             name = firebaseUser.displayName,
