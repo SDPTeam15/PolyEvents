@@ -2,7 +2,9 @@ package com.github.sdpteam15.polyevents.database.objects
 
 import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.observe.Observable
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.UserEntity
+import com.github.sdpteam15.polyevents.model.UserProfile
 
 interface UserDatabaseInterface {
     val currentUser: UserEntity?
@@ -56,5 +58,81 @@ interface UserDatabaseInterface {
         uid: String? = currentUser?.uid,
         userAccess: UserEntity? = currentUser
     ): Observable<Boolean>
+
+    /**
+     * add a UserProfile to a UserEntity
+     * @param profile profile we want to add in the database
+     * @param user user to add
+     * @param userAccess user for database access
+     * @return An observer that will be set to the new UserProfile ID if the communication with the DB is over and no error
+     */
+    fun addUserProfileAndAddToUser(
+        profile: UserProfile,
+        user: UserEntity = currentUser!!,
+        userAccess: UserEntity? = currentUser
+    ): Observable<Boolean>
+
+    /**
+     * Update profile
+     * @param profile : a map with the new value to set in the database
+     * @param userAccess: the user object to use its permission
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun updateProfile(
+        profile: UserProfile,
+        userAccess: UserEntity? = currentUser
+    ): Observable<Boolean>
+
+    /**
+     * Get list of profile of a user
+     * @param profiles profile list
+     * @param user user
+     * @param userAccess user for database access
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun getUserProfilesList(
+        profiles: ObservableList<UserProfile>,
+        user: UserEntity,
+        userAccess: UserEntity? = currentUser
+    ): Observable<Boolean>
+
+    /**
+     * Get list of user of a profile
+     * @param users user list
+     * @param profile profile
+     * @param userAccess user for database access
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun getProfilesUserList(
+        users: ObservableList<UserEntity>,
+        profile: UserProfile,
+        userAccess: UserEntity? = currentUser
+    ): Observable<Boolean>
+
+    /**
+     * Look in the database if the user already exists or not
+     * @param profile : live data that will be set with the find profile value
+     * @param pid : profile id we want to get
+     * @param profileAccess : the profile object to use its permission
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun getProfileById(
+        profile: Observable<UserProfile>,
+        pid: String,
+        userAccess: UserEntity? = currentUser
+    ): Observable<Boolean>
+
+
+    /**
+     * Remove profile from a user
+     * @param profile profile to remove
+     * @param user user for database access
+     * @return if the operation succeed
+     */
+    fun removeProfile(
+        profile: UserProfile,
+        user: UserEntity? = currentUser
+    ): Observable<Boolean>
+
 
 }

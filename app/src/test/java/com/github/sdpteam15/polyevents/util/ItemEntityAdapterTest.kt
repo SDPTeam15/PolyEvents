@@ -52,4 +52,23 @@ class ItemEntityAdapterTest {
         assertEquals(document[DatabaseConstant.ITEM_COUNT], itemQuantity)
         assertEquals(document[DatabaseConstant.ITEM_NAME], itemName)
     }
+
+    @Test
+    fun conversionOfItemEntityToDocumentPreservesDataDoesntAddAMissingId() {
+        val itemEntity2 = Item(
+            itemId = null,
+            itemName = itemName,
+            itemType = itemType
+        )
+        document = ItemEntityAdapter.toItemDocument(itemEntity2, itemQuantity)
+
+        assertEquals(
+            ItemType.valueOf(
+                document[DatabaseConstant.ITEM_TYPE] as String
+            ), itemEntity.itemType
+        )
+        assertEquals(document[DatabaseConstant.ITEM_COUNT], itemQuantity)
+        assertEquals(document[DatabaseConstant.ITEM_NAME], itemName)
+        assert(!document.containsKey(DatabaseConstant.ITEM_DOCUMENT_ID))
+    }
 }

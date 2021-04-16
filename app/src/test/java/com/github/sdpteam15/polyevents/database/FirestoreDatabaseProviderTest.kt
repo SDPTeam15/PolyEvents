@@ -77,7 +77,8 @@ class FirestoreDatabaseProviderTest {
         userDocument = hashMapOf(
             USER_UID to uidTest,
             USER_NAME to displayNameTest,
-            USER_EMAIL to emailTest
+            USER_EMAIL to emailTest,
+            DatabaseConstant.USER_PROFILES to listProfile
         )
         zoneDocument = hashMapOf(
             ZONE_DOCUMENT_ID to zoneID,
@@ -467,6 +468,7 @@ class FirestoreDatabaseProviderTest {
         When(mockedCollectionReference.document(uidTest)).thenReturn(mockedDocumentReference)
         When(mockedDocumentReference.get()).thenReturn(mockedTask)
         When(mockedDocument.data).thenReturn(userDocument)
+        When(mockedDocument.id).thenReturn(uidTest)
 
         When(mockedTask.addOnSuccessListener(any())).thenAnswer {
             //Trigger the last used trigger that will do a callback according to the getUserInformation method

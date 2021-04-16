@@ -40,7 +40,6 @@ class ZoneAdapterTest {
             ZONE_DESCRIPTION to zone.description,
             ZONE_DOCUMENT_ID to zone.zoneId
         )
-
         val obtainedZone = ZoneAdapter.fromDocument(zoneDocumentData, zoneId)
         assertEquals(obtainedZone, zone)
     }

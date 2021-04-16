@@ -27,6 +27,7 @@ private const val uidTest2 = "Test uid2"
 private const val emailTest2 = "Test email"
 private const val displayNameTest2 = "Test uid2"
 private const val username = "Test username"
+private val listProfile = ArrayList<String>()
 
 class UserDatabaseFirestoreTest {
     lateinit var user: UserEntity
@@ -39,13 +40,15 @@ class UserDatabaseFirestoreTest {
         user = UserEntity(
             uid = uidTest,
             name = displayNameTest,
-            email = emailTest
+            email = emailTest,
+            profiles = listProfile
         )
 
         userDocument = hashMapOf(
             DatabaseConstant.USER_UID to uidTest,
             DatabaseConstant.USER_NAME to displayNameTest,
-            DatabaseConstant.USER_EMAIL to emailTest
+            DatabaseConstant.USER_EMAIL to emailTest,
+            DatabaseConstant.USER_PROFILES to listProfile
         )
         //Mock the database and set it as the default database
         mockedDatabase = Mockito.mock(FirebaseFirestore::class.java)
@@ -162,6 +165,7 @@ class UserDatabaseFirestoreTest {
             .thenReturn(mockedDocumentReference)
         Mockito.`when`(mockedDocumentReference.get()).thenReturn(mockedTask)
         Mockito.`when`(mockedDocument.data).thenReturn(userDocument)
+        Mockito.`when`(mockedDocument.id).thenReturn(uidTest)
 
         Mockito.`when`(mockedTask.addOnSuccessListener(ArgumentMatchers.any())).thenAnswer {
             //Trigger the last used trigger that will do a callback according to the getUserInformation method

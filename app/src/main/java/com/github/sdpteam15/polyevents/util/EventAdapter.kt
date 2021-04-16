@@ -29,7 +29,7 @@ object EventAdapter : AdapterInterface<Event> {
         EVENT_ORGANIZER to element.organizer,
         EVENT_ZONE_NAME to element.zoneName,
         EVENT_DESCRIPTION to element.description,
-        // LocalDateTime instances can be directly stored to Firestore without need of conversion
+        // LocalDateTime instances can be directly stored to the database without need of conversion
         // UPDATE: LocalDateTime will not be stored as a Timestamp instance, instead it will be
         // stored as a hashmap representing the LocalDateTime instance
         EVENT_START_TIME to HelperFunctions.LocalDateToTimeToDate(element.startTime),
