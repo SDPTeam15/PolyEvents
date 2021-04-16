@@ -13,6 +13,11 @@ During this long sprint, I implemented a feature that allows to rotate new areas
 My time estimates for the queries to the db were good. However the rotation feature took me longer than expected (3h).
 
 ## Florian
+During this sprint, I finished to implement the adaptation of our existing code with the observable type and the new Item type to make the view asynchronous and to be able to get querries from the database.
+
+My time estimates were two low this week. It took me a long time to merge the work done on master and adapt the tests for every class that needed to and to create new tests.
+
+Next sprint, I'll take a task using concepts I already know, like storing into the database and UI components that I'm already familiar with, so that I won't spend too much time reading the documentation.
 
 ## Mathieu
 
