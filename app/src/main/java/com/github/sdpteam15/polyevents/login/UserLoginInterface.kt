@@ -27,6 +27,9 @@ interface UserLoginInterface<T> {
      */
     fun signOut()
 
+
+    fun isConnected(): Boolean
+
     /**
      * Method to log the user in the application
      * @param activity: The current activity to use the context

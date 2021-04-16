@@ -17,6 +17,7 @@ interface DatabaseInterface {
     /**
      * Current user of this database
      */
+    val currentUserObservable: Observable<UserEntity>
     val currentUser: UserEntity?
     val currentProfile: UserProfile?
     var itemDatabase: ItemDatabaseInterface?

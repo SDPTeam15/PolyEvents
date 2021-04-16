@@ -5,6 +5,7 @@ import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConst
 import com.github.sdpteam15.polyevents.database.objects.*
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
+import com.github.sdpteam15.polyevents.login.UserLogin
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 import com.github.sdpteam15.polyevents.util.AdapterInterface
@@ -41,17 +42,31 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     override var materialRequestDatabase: MaterialRequestDatabaseInterface? = null
         get() = field ?: MaterialRequestDatabaseFirestore
 
-
-    override var currentUser: UserEntity? = null
+    override val currentUserObservable = Observable<UserEntity>()
+    private var loadSuccess = false
+    override var currentUser: UserEntity?
         get() {
-            if (FirebaseAuth.getInstance().currentUser != null) {
-                firestore!!.collection(USER_COLLECTION.toString())
-                    .document(FirebaseAuth.getInstance().currentUser!!.uid)
-                    .get()
-                    .addOnSuccessListener { field = UserAdapter.fromDocument(it.data!!, it.id) }
+            if(UserLogin.currentUserLogin.isConnected()){
+                if(currentUserObservable.value==null || !loadSuccess) {
+                    currentUserObservable.postValue(UserLogin.currentUserLogin.getCurrentUser()!!,this)
+                    firestore!!.collection(USER_COLLECTION.toString())
+                        .document(FirebaseAuth.getInstance().currentUser!!.uid)
+                        .get()
+                        .addOnSuccessListener {
+                            if(it.data!=null){
+                                currentUserObservable.postValue(UserAdapter.fromDocument(it.data!!, it.id),this)
+                                loadSuccess = true
+                            }
+                        }
+                }
+                return currentUserObservable.value
+            } else {
+                return null
             }
-            // UserLogin.currentUserLogin.getCurrentUser()
-            return field
+
+        }
+        set(value){
+            currentUserObservable.value = value
         }
 
 

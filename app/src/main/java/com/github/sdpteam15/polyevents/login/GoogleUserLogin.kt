@@ -83,4 +83,8 @@ object GoogleUserLogin : UserLoginInterface<AuthResult> {
 
         fragment.startActivityForResult(signIn!!.signInIntent, reqCode)
     }
+
+    override fun isConnected(): Boolean {
+        return FirebaseAuth.getInstance().currentUser!=null
+    }
 }
