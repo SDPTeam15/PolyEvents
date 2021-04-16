@@ -27,7 +27,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         get() = field ?: Firebase.firestore
 
     override val currentProfile: UserProfile?
-        get() = null // TODO("Not yet implemented")
+        get() = null
 
     override var itemDatabase: ItemDatabaseInterface? = null
         get() = field ?: ItemDatabaseFirestore

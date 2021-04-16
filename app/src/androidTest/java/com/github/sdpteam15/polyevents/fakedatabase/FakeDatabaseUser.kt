@@ -26,20 +26,20 @@ object FakeDatabaseUser : UserDatabaseInterface {
     override fun updateUserInformation(
         newValues: Map<String, String>,
         uid: String,
-        userAccess: UserEntity?
+        userAccess: UserProfile?
     ): Observable<Boolean> =
         Observable(true, this)
 
     override fun firstConnexion(
         user: UserEntity,
-        userAccess: UserEntity?
+        userAccess: UserProfile?
     ): Observable<Boolean> =
         Observable(true, this)
 
     override fun inDatabase(
         isInDb: Observable<Boolean>,
         uid: String,
-        userAccess: UserEntity?
+        userAccess: UserProfile?
     ): Observable<Boolean> {
         isInDb.postValue(true, this)
         return Observable(true, this)
@@ -48,7 +48,7 @@ object FakeDatabaseUser : UserDatabaseInterface {
     override fun getUserInformation(
         user: Observable<UserEntity>,
         uid: String?,
-        userAccess: UserEntity?
+        userAccess: UserProfile?
     ): Observable<Boolean> {
         TODO("Not yet implemented")
     }

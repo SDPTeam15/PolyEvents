@@ -86,8 +86,7 @@ class ProfileFragment : Fragment() {
         }
         currentDatabase.userDatabase!!.getUserInformation(
             userInfoLiveData,
-            currentUser!!.uid,
-            currentUser!!
+            currentUser!!.uid
         )
 
         viewRoot.findViewById<Button>(R.id.btnUpdateInfos).setOnClickListener {
@@ -100,15 +99,13 @@ class ProfileFragment : Fragment() {
             //Call the DB to update the user information and getUserInformation once it is done
             currentDatabase.userDatabase!!.updateUserInformation(
                 hashMapNewInfo,
-                currentUser!!.uid,
-                currentUser!!
+                currentUser!!.uid
             )
                 .observe(this) { newValue ->
                     if (newValue.value) {
                         currentDatabase.userDatabase!!.getUserInformation(
                             userInfoLiveData,
-                            currentUser!!.uid,
-                            currentUser!!
+                            currentUser!!.uid
                         )
                     } else {
                         HelperFunctions.showToast(getString(R.string.fail_to_update), activity)

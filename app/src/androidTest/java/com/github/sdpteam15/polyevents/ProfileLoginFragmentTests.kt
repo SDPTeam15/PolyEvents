@@ -15,6 +15,7 @@ import com.github.sdpteam15.polyevents.fragments.HomeFragment
 import com.github.sdpteam15.polyevents.fragments.LoginFragment
 import com.github.sdpteam15.polyevents.fragments.ProfileFragment
 import com.github.sdpteam15.polyevents.model.UserEntity
+import com.github.sdpteam15.polyevents.model.UserProfile
 import com.google.firebase.auth.FirebaseAuth
 import org.hamcrest.Matchers
 import org.junit.Before
@@ -43,6 +44,7 @@ class ProfileLoginFragmentTests {
 
     lateinit var user: UserEntity
     lateinit var user2: UserEntity
+    lateinit var profile: UserProfile
     lateinit var mockedDatabaseUser: UserEntity
     lateinit var mockedDatabaseUser2: UserEntity
 
@@ -55,6 +57,7 @@ class ProfileLoginFragmentTests {
     fun setup() {
         user = UserEntity(uid = uidTest, email = emailTest, name = displayNameTest)
         user2 = UserEntity(uid = uidTest2, email = emailTest2, name = displayNameTest2)
+        profile = UserProfile()
 
         testRule = ActivityScenarioRule<MainActivity>(MainActivity::class.java)
         endingRequest = Observable()
@@ -98,7 +101,7 @@ class ProfileLoginFragmentTests {
         //Mock the inDatabase method so that it returns true directly
         val endingRequest2 = Observable<Boolean>()
         When(
-            mockedUserDatabase.inDatabase(loginFragment.inDbObservable, uidTest, user)
+            mockedUserDatabase.inDatabase(loginFragment.inDbObservable, uidTest)
         ).thenAnswer { _ ->
             loginFragment.inDbObservable.postValue(true)
             endingRequest2
@@ -165,8 +168,7 @@ class ProfileLoginFragmentTests {
         When(
             mockedUserDatabase.getUserInformation(
                 profileFragment.userInfoLiveData,
-                uidTest,
-                user
+                uidTest
             )
         ).thenAnswer { _ ->
             profileFragment.userInfoLiveData.postValue(user)
@@ -197,7 +199,7 @@ class ProfileLoginFragmentTests {
         var endingRequestUpdate = Observable<Boolean>()
         var updated = false
         When(
-            mockedUserDatabase.updateUserInformation(profileFragment.hashMapNewInfo, uidTest, user)
+            mockedUserDatabase.updateUserInformation(profileFragment.hashMapNewInfo, uidTest)
         ).thenAnswer { _ ->
             updated = true
             endingRequestUpdate
@@ -207,8 +209,7 @@ class ProfileLoginFragmentTests {
         When(
             mockedUserDatabase.getUserInformation(
                 profileFragment.userInfoLiveData,
-                uidTest,
-                user
+                uidTest
             )
         ).thenAnswer { _ ->
             profileFragment.userInfoLiveData.postValue(user2)
@@ -232,8 +233,7 @@ class ProfileLoginFragmentTests {
         When(
             mockedUserDatabase.getUserInformation(
                 profileFragment.userInfoLiveData,
-                uidTest,
-                user
+                uidTest
             )
         ).thenAnswer { _ ->
             profileFragment.userInfoLiveData.postValue(user)
@@ -279,8 +279,7 @@ class ProfileLoginFragmentTests {
         When(
             mockedUserDatabase.inDatabase(
                 loginFragment.inDbObservable,
-                uidTest,
-                loginFragment.currentUser!!
+                uidTest
             )
         ).thenAnswer { _ ->
             loginFragment.inDbObservable.postValue(false)
@@ -292,7 +291,6 @@ class ProfileLoginFragmentTests {
         //Mock the firstConnexion method so that it sets the boolean to true if called
         When(
             mockedUserDatabase.firstConnexion(
-                loginFragment.currentUser!!,
                 loginFragment.currentUser!!
             )
         ).thenAnswer { _ ->
@@ -304,8 +302,7 @@ class ProfileLoginFragmentTests {
         When(
             mockedUserDatabase.getUserInformation(
                 profileFragment.userInfoLiveData,
-                uidTest,
-                user
+                uidTest
             )
         ).thenAnswer { _ ->
             profileFragment.userInfoLiveData.postValue(user)
@@ -342,7 +339,6 @@ class ProfileLoginFragmentTests {
         //Mock the firstConnexion method so that it sets the boolean to false if called
         When(
             mockedUserDatabase.firstConnexion(
-                loginFragment.currentUser!!,
                 loginFragment.currentUser!!
             )
         ).thenAnswer { _ ->
@@ -354,8 +350,7 @@ class ProfileLoginFragmentTests {
         When(
             mockedUserDatabase.getUserInformation(
                 profileFragment.userInfoLiveData,
-                uidTest,
-                user
+                uidTest
             )
         ).thenAnswer { _ ->
             profileFragment.userInfoLiveData.postValue(user)

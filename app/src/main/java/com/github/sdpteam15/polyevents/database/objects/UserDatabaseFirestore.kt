@@ -29,7 +29,7 @@ object UserDatabaseFirestore : UserDatabaseInterface {
     override fun updateUserInformation(
         newValues: Map<String, String>,
         uid: String,
-        userAccess: UserEntity?
+        userAccess: UserProfile?
     ): Observable<Boolean> = FirestoreDatabaseProvider.thenDoSet(
         firestore!!.collection(USER_COLLECTION.value)
             .document(uid)
@@ -38,7 +38,7 @@ object UserDatabaseFirestore : UserDatabaseInterface {
 
     override fun firstConnexion(
         user: UserEntity,
-        userAccess: UserEntity?
+        userAccess: UserProfile?
     ): Observable<Boolean> {
         firstConnectionUser = user
 
@@ -52,7 +52,7 @@ object UserDatabaseFirestore : UserDatabaseInterface {
     override fun inDatabase(
         isInDb: Observable<Boolean>,
         uid: String,
-        userAccess: UserEntity?
+        userAccess: UserProfile?
     ): Observable<Boolean> = FirestoreDatabaseProvider.thenDoGet(
         firestore!!.collection(USER_COLLECTION.value)
             .whereEqualTo(USER_UID.value, uid)
@@ -69,7 +69,7 @@ object UserDatabaseFirestore : UserDatabaseInterface {
     override fun getUserInformation(
         user: Observable<UserEntity>,
         uid: String?,
-        userAccess: UserEntity?
+        userAccess: UserProfile?
     ): Observable<Boolean> = FirestoreDatabaseProvider.thenDoMultGet(
         firestore!!.collection(USER_COLLECTION.value)
             .document(uid!!)

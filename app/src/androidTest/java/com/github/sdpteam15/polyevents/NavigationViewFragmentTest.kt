@@ -7,7 +7,11 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
+import com.github.sdpteam15.polyevents.database.Database
+import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabase
+import com.github.sdpteam15.polyevents.login.UserLogin
 import com.google.firebase.auth.FirebaseAuth
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -24,8 +28,10 @@ class NavigationViewFragmentTest {
     @Before
     fun setup() {
         //Initial state
+
+
         MainActivity.currentUser = null
-        FirebaseAuth.getInstance().signOut()
+        UserLogin.currentUserLogin.signOut()
     }
 
     @Test
@@ -42,7 +48,7 @@ class NavigationViewFragmentTest {
         //Espresso.onView(withId(R.id.ic_map)).perform(click())
         //Espresso.onView(withId(R.id.id_fragment_map)).check(matches(isDisplayed()))
 
-        if (FirebaseAuth.getInstance().currentUser == null) {
+        if (Database.currentDatabase.currentUser == null) {
             Espresso.onView(withId(R.id.ic_login)).perform(click())
             Espresso.onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
         } else {
@@ -64,7 +70,7 @@ class NavigationViewFragmentTest {
 
     @Test
     fun loginFragmentDisplayedIfNoAuth() {
-        FirebaseAuth.getInstance().signOut()
+        UserLogin.currentUserLogin.signOut()
         Espresso.onView(withId(R.id.ic_login)).perform(click())
         Espresso.onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
     }

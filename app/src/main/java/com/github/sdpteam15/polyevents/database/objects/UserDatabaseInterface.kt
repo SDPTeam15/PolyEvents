@@ -27,7 +27,7 @@ interface UserDatabaseInterface {
     fun updateUserInformation(
         newValues: Map<String, String>,
         uid: String,
-        userAccess: UserEntity? = currentUser
+        userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**
@@ -38,7 +38,7 @@ interface UserDatabaseInterface {
      */
     fun firstConnexion(
         user: UserEntity,
-        userAccess: UserEntity? = currentUser
+        userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**
@@ -51,7 +51,7 @@ interface UserDatabaseInterface {
     fun inDatabase(
         isInDb: Observable<Boolean>,
         uid: String,
-        userAccess: UserEntity? = currentUser
+        userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**
@@ -64,7 +64,7 @@ interface UserDatabaseInterface {
     fun getUserInformation(
         user: Observable<UserEntity>,
         uid: String? = currentUser?.uid,
-        userAccess: UserEntity? = currentUser
+        userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**

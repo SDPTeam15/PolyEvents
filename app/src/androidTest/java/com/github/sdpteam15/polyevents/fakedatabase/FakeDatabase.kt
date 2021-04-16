@@ -17,6 +17,7 @@ object FakeDatabase : DatabaseInterface {
         email = "Fake@mail.ch"
     )
     var userToNull = false
+    override val currentUserObservable: Observable<UserEntity> = Observable()
 
     override val currentUser: UserEntity?
         get() = if (userToNull) {

@@ -29,9 +29,10 @@ interface DatabaseInterface {
 
     /**
      * Add an Entity to the data base
-     * @param element
+     * @param element : The element that needs to be added in the database
      * @param collection
-     * @param adapter
+     * @param adapter: The adapter converting the
+     * @param userAccess:
      * @return
      */
     fun <T> addEntityAndGetId(
@@ -46,6 +47,7 @@ interface DatabaseInterface {
      * @param element
      * @param collection
      * @param adapter
+     * @param userAccess
      * @return
      */
     fun <T> addEntity(
@@ -61,6 +63,7 @@ interface DatabaseInterface {
      * @param id
      * @param collection
      * @param adapter
+     * @param userAccess
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun <T> setEntity(
@@ -75,7 +78,7 @@ interface DatabaseInterface {
      * Set an Entity to the data base
      * @param id
      * @param collection
-     * @param adapter
+     * @param userAccess
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun deleteEntity(
@@ -90,7 +93,8 @@ interface DatabaseInterface {
      * @param id
      * @param collection
      * @param adapter
-     * @return An observer that will be set to true if the communication with the DB is over and no error
+     * @param userAccess
+     * * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun <T> getEntity(
         element: Observable<T>,
@@ -106,6 +110,7 @@ interface DatabaseInterface {
      * @param ids
      * @param collection
      * @param adapter
+     * @param userAccess
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun <T> getListEntity(

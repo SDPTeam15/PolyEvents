@@ -7,6 +7,7 @@ import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.objects.UserDatabaseFirestore
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.model.UserEntity
+import com.github.sdpteam15.polyevents.model.UserProfile
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.*
 import org.junit.After
@@ -34,6 +35,7 @@ private const val username = "Test username"
 
 class UserDatabaseFirestoreTest {
     lateinit var user: UserEntity
+    lateinit var profile: UserProfile
     lateinit var mockedDatabase: FirebaseFirestore
     lateinit var database: DatabaseInterface
     lateinit var userDocument: HashMap<String, Any?>
@@ -46,6 +48,7 @@ class UserDatabaseFirestoreTest {
             email = emailTest,
             profiles = listProfile
         )
+        profile = UserProfile()
 
         userDocument = hashMapOf(
             USER_UID.value to uidTest,
@@ -109,7 +112,7 @@ class UserDatabaseFirestoreTest {
         val isInDb = Observable<Boolean>()
         val result = FirestoreDatabaseProvider.userDatabase!!.inDatabase(
             isInDb,
-            uidTest, user
+            uidTest, profile
         )
         //Assert that the value are correctly set by the database
         assert(isInDb.value!!)
@@ -152,7 +155,7 @@ class UserDatabaseFirestoreTest {
         val isInDb = Observable<Boolean>()
         val result = FirestoreDatabaseProvider.userDatabase!!.inDatabase(
             isInDb,
-            uidTest, user
+            uidTest, profile
         )
         //Assert that the DB successfully performed the query
         assert(result.value!!)
@@ -190,7 +193,7 @@ class UserDatabaseFirestoreTest {
         val userObs = Observable<UserEntity>()
         val result = FirestoreDatabaseProvider.userDatabase!!.getUserInformation(
             userObs,
-            uidTest, user
+            uidTest, profile
         )
         //Assert that the DB correctly answer with true
         assert(result.value!!)
@@ -249,7 +252,7 @@ class UserDatabaseFirestoreTest {
         //Assert that the database correctly setted the value
         val result = FirestoreDatabaseProvider.userDatabase!!.updateUserInformation(
             map,
-            uidTest, user
+            uidTest, profile
         )
         assert(result.value!!)
         assert(emailSet.equals(emailTest2))
@@ -292,7 +295,7 @@ class UserDatabaseFirestoreTest {
         }
 
         //Assert that the database correctly setted the value
-        val result = FirestoreDatabaseProvider.userDatabase!!.firstConnexion(user, user)
+        val result = FirestoreDatabaseProvider.userDatabase!!.firstConnexion(user, profile)
         assert(result.value!!)
         assert(emailSet.equals(user.email))
         assert(nameSet.equals(user.name))
