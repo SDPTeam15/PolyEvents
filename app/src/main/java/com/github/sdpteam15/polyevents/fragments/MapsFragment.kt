@@ -40,7 +40,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     var zone: Zone? = null
     var onEdit: Boolean = false
     var startId = -1
-    var inTest = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -126,13 +125,11 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (!inTest) {
-            val mapFragment =
-                childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
-            mapFragment?.getMapAsync(this)
-            if (!locationPermissionGranted) {
-                getLocationPermission()
-            }
+        val mapFragment =
+            childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
+        mapFragment?.getMapAsync(this)
+        if (!locationPermissionGranted) {
+            getLocationPermission()
         }
     }
 
