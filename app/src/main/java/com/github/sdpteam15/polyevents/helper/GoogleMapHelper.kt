@@ -10,7 +10,6 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.DatabaseConstant
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.*
-import kotlin.math.pow
 import kotlin.math.*
 
 enum class PolygonAction {
@@ -106,9 +105,8 @@ object GoogleMapHelper {
      * Restores the camera to the location it was before changing fragment or activity, goes to a initial position if it is the first time the map is opened
      */
     fun restoreCameraState() {
-        map!!.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraPosition,cameraZoom))
+        map!!.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraPosition, cameraZoom))
     }
-
 
 
     /**
@@ -180,8 +178,6 @@ object GoogleMapHelper {
             }
 
             var list = coords
-            var lat = 0.0
-            var lng = 0.0
             if (list.first() == list.last()) {
                 list = coords.subList(0, coords.size - 1)
             }
@@ -239,7 +235,7 @@ object GoogleMapHelper {
      */
     fun saveNewArea(context: Context?) {
         if (tempPoly != null) {
-            var name = ""
+            val name: String
             if (tempTitle != null) {
                 name = tempTitle!!
             } else {
@@ -381,7 +377,19 @@ object GoogleMapHelper {
         )
         movePos = moveMarker!!.position
 
-        rotationMarker = map!!.addMarker(newMarker(pos4, anchor, PolygonAction.ROTATE.toString(), null, true, R.drawable.ic_rotation, bound, dimension))
+        rotationMarker = map!!.addMarker(
+            newMarker(
+                context,
+                pos4,
+                anchor,
+                PolygonAction.ROTATE.toString(),
+                null,
+                true,
+                R.drawable.ic_rotation,
+                bound,
+                dimension
+            )
+        )
         rotationPos = rotationMarker!!.position
     }
 
@@ -471,7 +479,7 @@ object GoogleMapHelper {
         moveRightPos = moveRightMarker!!.position
 
         moveDownMarker!!.position =
-                LatLng(moveDownPos!!.latitude + diffLat, moveDownPos!!.longitude + diffLng)
+            LatLng(moveDownPos!!.latitude + diffLat, moveDownPos!!.longitude + diffLng)
         moveDownPos = moveDownMarker!!.position
 
         rotationMarker!!.position =

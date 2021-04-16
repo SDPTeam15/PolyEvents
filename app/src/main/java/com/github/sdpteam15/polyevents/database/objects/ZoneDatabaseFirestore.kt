@@ -12,9 +12,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
-object ZoneDatabaseFirestore:ZoneDatabaseInterface {
+object ZoneDatabaseFirestore : ZoneDatabaseInterface {
     override val currentUser: UserEntity?
-        get()= Database.currentDatabase.currentUser
+        get() = Database.currentDatabase.currentUser
 
     @SuppressLint("StaticFieldLeak")
     private var firestore: FirebaseFirestore? = null
@@ -40,7 +40,7 @@ object ZoneDatabaseFirestore:ZoneDatabaseInterface {
                 .document(zoneId)
                 .get()
         ) {
-            zone.postValue(it.data?.let { it1 -> ZoneAdapter.toZoneEntity(it1, it.id) })
+            it.data?.let { it1 -> zone.postValue(ZoneAdapter.toZoneEntity(it1, it.id),this) }
         }
     }
 

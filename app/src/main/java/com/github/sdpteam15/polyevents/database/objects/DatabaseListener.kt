@@ -8,9 +8,9 @@ import com.google.firebase.firestore.QuerySnapshot
 
 object DatabaseListener {
     //Method used to get listener in the test set to mock and test the database
-    var lastGetSuccessListener: OnSuccessListener<QuerySnapshot>? = null
+    var lastQuerySuccessListener: OnSuccessListener<QuerySnapshot>? = null
     var lastSetSuccessListener: OnSuccessListener<Void>? = null
     var lastFailureListener: OnFailureListener? = null
-    var lastMultGetSuccessListener: OnSuccessListener<DocumentSnapshot>? = null
+    var lastGetSuccessListener: OnSuccessListener<DocumentSnapshot>? = null
     var lastAddSuccessListener: OnSuccessListener<DocumentReference>?=null
 }

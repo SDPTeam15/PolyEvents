@@ -60,11 +60,12 @@ class ProfileFragment : Fragment() {
 
         //When user Info live data is updated, set the correct value in the textview
         userInfoLiveData.observe(this) { userInfo ->
-            profileNameET.setText(userInfo!!.name)
-            profileEmailET.setText(userInfo.email)
-            profileUsernameET.setText(userInfo.username)
+            val userInfoValue = userInfo.value
+            profileNameET.setText(userInfoValue.name)
+            profileEmailET.setText(userInfoValue.email)
+            profileUsernameET.setText(userInfoValue.username)
 
-            val userBirthDate = userInfo.value.birthDate
+            val userBirthDate = userInfoValue.birthDate
             val birthDateFormatted =
                 if (userBirthDate == null) ""
                 else userBirthDate.format(DateTimeFormatter.ISO_LOCAL_DATE)

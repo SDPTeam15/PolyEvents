@@ -1,25 +1,32 @@
 package com.github.sdpteam15.polyevents.database
 
+import android.annotation.SuppressLint
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_COLLECTION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.ITEM_COLLECTION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.ITEM_COUNT
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.LOCATIONS_POINT
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_UID
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZONE_COLLECTION
 import com.github.sdpteam15.polyevents.database.observe.Observable
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
+import com.github.sdpteam15.polyevents.login.UserLogin
 import com.github.sdpteam15.polyevents.model.*
-import com.github.sdpteam15.polyevents.util.FirebaseUserAdapter
+import com.github.sdpteam15.polyevents.util.EventAdapter
+import com.github.sdpteam15.polyevents.util.ItemEntityAdapter
 import com.github.sdpteam15.polyevents.util.UserAdapter
 import com.github.sdpteam15.polyevents.util.ZoneAdapter
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 object FirestoreDatabaseProvider : DatabaseInterface {
+    @SuppressLint("StaticFieldLeak")
     var firestore: FirebaseFirestore? = null
         get() = field ?: Firebase.firestore
 
@@ -37,11 +44,8 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         get() = null // TODO("Not yet implemented")
 
     override fun getProfilesList(uid: String, user: UserEntity?): List<UserProfile> {
-        return ArrayList()/*TODO*/
-    }
 
-    override fun addProfile(profile: UserProfile, uid: String, user: UserEntity?): Boolean {
-        return true/*TODO*/
+        return profiles // TODO : Not yet Implemented
     }
 
     override fun addProfile(profile: UserProfile, uid: String, user: UserEntity?): Boolean =
@@ -51,12 +55,95 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         profile: UserProfile,
         uid: String?,
         user: UserEntity?
-    ): Boolean {
-        return FakeDatabase.removeProfile(profile,uid,user)
+    ): Boolean = profiles.remove(profile)// TODO : Not yet Implemented
+
+    override fun updateProfile(profile: UserProfile, user: UserEntity?): Boolean =
+        true// TODO : Not yet Implemented
+
+
+    override fun createItem(
+        item: Item,
+        count: Int,
+        profile: UserProfile?
+    ): Observable<Boolean> = thenDoAdd(
+        firestore!!.collection(ITEM_COLLECTION).add(ItemEntityAdapter.toItemDocument(item, count))
+    )
+
+
+    override fun removeItem(itemId: String, profile: UserProfile?): Observable<Boolean> = thenDoSet(
+        firestore!!.collection(ITEM_COLLECTION)
+            .document(itemId).delete()
+    )
+
+    override fun updateItem(
+        item: Item,
+        count: Int,
+        profile: UserProfile?
+    ): Observable<Boolean> {
+        // TODO should update add item if non existent in database ?
+        // if (item.itemId == null) return createItem(item, count, profile)
+        return thenDoSet(
+            firestore!!
+                .collection(ITEM_COLLECTION)
+                .document(item.itemId!!)
+                .set(ItemEntityAdapter.toItemDocument(item, count))
+        )
     }
 
-    override fun updateProfile(profile: UserProfile, user: UserEntity?): Boolean {
-        return true/*TODO*/
+    override fun getItemsList(
+        itemList: ObservableList<Pair<Item, Int>>,
+        profile: UserProfile?
+    ): Observable<Boolean> {
+        return thenDoGet(
+            firestore!!.collection(ITEM_COLLECTION).get()
+        ) { querySnapshot ->
+            itemList.clear(this)
+            val items = querySnapshot.documents.map {
+                ItemEntityAdapter.toItemEntity(it.data!!, it.id)
+            }
+            itemList.addAll(items, this)
+        }
+    }
+
+    override fun getAvailableItems(
+        itemList: ObservableList<Pair<Item, Int>>,
+        profile: UserProfile?
+    ): Observable<Boolean> {
+        return thenDoGet(
+            firestore!!.collection(ITEM_COLLECTION).whereGreaterThan(ITEM_COUNT, 0).get()
+        ) { querySnapshot ->
+            itemList.clear(this)
+            val items = querySnapshot.documents.map {
+                ItemEntityAdapter.toItemEntity(it.data!!, it.id)
+            }
+            itemList.addAll(items, this)
+        }
+    }
+
+    override fun createEvent(event: Event, profile: UserProfile?): Observable<Boolean> =
+        thenDoAdd(firestore!!.collection(EVENT_COLLECTION).add(EventAdapter.toEventDocument(event)))
+
+
+    override fun updateEvents(event: Event, profile: UserProfile?): Observable<Boolean> {
+        // TODO should update add item if non existent in database ?
+        // if (event.eventId == null) return createEvent(event, profile)
+        return thenDoSet(
+            firestore!!.collection(EVENT_COLLECTION).document(event.eventId!!)
+                .set(EventAdapter.toEventDocument(event))
+        )
+    }
+
+    override fun getEventFromId(
+        id: String,
+        returnEvent: Observable<Event>,
+        profile: UserProfile?
+    ): Observable<Boolean> = thenDoMultGet(
+        firestore!!.collection(EVENT_COLLECTION)
+            .document(id).get()
+    ) {
+        returnEvent.postValue(
+            it.data?.let { it1 -> EventAdapter.toEventEntity(it1, id) }!!, this
+        )
     }
 
     override fun updateProfile(
@@ -93,7 +180,6 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             }
         }
     }
-    //Up to here delete
 
 
     //Method used to get listener in the test set to mock and test the database

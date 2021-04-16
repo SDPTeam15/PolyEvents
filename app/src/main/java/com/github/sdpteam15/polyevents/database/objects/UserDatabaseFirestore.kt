@@ -7,6 +7,7 @@ import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.util.UserAdapter
+import com.github.sdpteam15.polyevents.util.ZoneAdapter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
@@ -74,6 +75,6 @@ object UserDatabaseFirestore: UserDatabaseInterface {
             .document(uid!!)
             .get()
     ) {
-        user.postValue(it.data?.let { it1 -> UserAdapter.toUserEntity(it1) })
+        it.data?.let { it1 -> user.postValue(UserAdapter.toUserEntity(it1),this) }
     }
 }

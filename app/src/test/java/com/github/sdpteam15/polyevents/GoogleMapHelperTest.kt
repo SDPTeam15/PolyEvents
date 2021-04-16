@@ -89,7 +89,6 @@ class GoogleMapHelperTest {
         map2[id3] = listLngLat2
 
         var correctString = ""
-        var tmpString =""
         for (i in arrayLngLat2.indices) {
             correctString += arrayLngLat2[i].toString()
             if (i % 2 == 0)
@@ -97,7 +96,7 @@ class GoogleMapHelperTest {
             else
                 correctString += DatabaseConstant.POINTS_SEP
         }
-        tmpString = correctString.substring(0, correctString.length -  DatabaseConstant.POINTS_SEP.length)
+        val tmpString: String = correctString.substring(0, correctString.length -  DatabaseConstant.POINTS_SEP.length)
         correctString = tmpString+DatabaseConstant.AREAS_SEP+tmpString
 
         assert(correctString == GoogleMapHelper.areasToFormattedStringLocations(from = 1,points = map2))
