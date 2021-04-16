@@ -309,9 +309,9 @@ object GoogleMapHelper {
 
         val temp1 = (pos4.latitude + pos3.latitude) / 2
         val temp2 = (pos2.longitude + pos3.longitude) / 2
-        val posMidRight = LatLng(temp1, pos4.longitude)
-        val posMidDown = LatLng(pos2.latitude, temp2)
-        val posCenter = LatLng(temp1, temp2)
+        val posMidRight = LatLng(0.5 * (pos3.latitude + pos4.latitude), 0.5 * (pos3.longitude + pos4.longitude))
+        val posMidDown = LatLng(0.5 * (pos3.latitude + pos2.latitude), 0.5 * (pos3.longitude + pos2.longitude))
+        val posCenter = LatLng(0.5 * (pos4.latitude + pos2.latitude), 0.5 * (pos4.longitude + pos2.longitude))
 
         val anchor = IconAnchor(0.5f, 0.5f)
         val bound = IconBound(0, 0, 100, 100)
