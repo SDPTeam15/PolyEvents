@@ -3,6 +3,7 @@ package com.github.sdpteam15.polyevents.database
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.*
+import com.github.sdpteam15.polyevents.util.AdapterInterface
 import com.google.android.gms.maps.model.LatLng
 import java.util.*
 
@@ -44,40 +45,16 @@ interface DatabaseInterface {
         user: UserEntity? = currentUser
     ): Boolean
 
-    /**
-     * Remove profile from a user
-     * @param profile profile to remove
-     * @param uid uid
-     * @param user user for database access
-     * @return if the operation succeed
-     */
-    //@Deprecated(message = "Use the asynchronous method")
-    fun removeProfile(
-        profile: UserProfile, uid: String? = currentUser?.uid,
-        user: UserEntity? = currentUser
-    ): Boolean
-
-    /**
-     * Update profile in database
-     * @param profile profile to update
-     * @param user profile for database access
-     * @return if the operation succeed
-     */
-    //@Deprecated(message = "Use the asynchronous method")
-    fun updateProfile(
-        profile: UserProfile,
-        user: UserEntity? = currentUser
-    ): Boolean
-
     // Methods that we should use to have asynchronous communication
     /**
      * Items modifier and accessor methods
      */
 
     /**
+     * create a new Item
      * @param item item we want to add in the database
      * @param profile profile for database access
-     * @return An observer that will be set to true if the communication with the DB is over and no error
+     * @return An observer that will be set to the new Item ID if the communication with the DB is over and no error
      */
     fun createItem(
         item: Item,
@@ -224,11 +201,6 @@ interface DatabaseInterface {
 
 
     /**
-     * All accessor and modifier methods for users and profiles
-     */
-
-    // TODO: Do we need userAccess for these methods? (Might do these with security rules)
-    /**
      * Update the user information in the database
      * @param newValues : a map with the new value to set in the database
      * @param uid : the uid of the user from which we want to query the information
@@ -238,19 +210,6 @@ interface DatabaseInterface {
     fun updateUserInformation(
         newValues: Map<String, String>,
         uid: String,
-        userAccess: UserEntity? = currentUser
-    ): Observable<Boolean>
-
-    /**
-     * Update profile
-     * @param newValues : a map with the new value to set in the database
-     * @param pid : the uid of the profile from which we want to query the information
-     * @param userAccess: the user object to use its permission
-     * @return An observer that will be set to true if the communication with the DB is over and no error
-     */
-    fun updateProfile(
-        newValues: Map<String, String>,
-        pid: String,
         userAccess: UserEntity? = currentUser
     ): Observable<Boolean>
 
@@ -326,6 +285,139 @@ interface DatabaseInterface {
     fun getUsersLocations(
         usersLocations: Observable<List<LatLng>>,
         userAccess: UserEntity? = currentUser
+    ): Observable<Boolean>
+
+    /**
+     * add a UserProfile to a UserEntity
+     * @param profile profile we want to add in the database
+     * @param user user to add
+     * @param userAccess user for database access
+     * @return An observer that will be set to the new UserProfile ID if the communication with the DB is over and no error
+     */
+    fun addUserProfileAndAddToUser(
+        profile: UserProfile,
+        user: UserEntity = currentUser!!,
+        userAccess: UserEntity? = currentUser
+    ): Observable<Boolean>
+
+    /**
+     * Update profile
+     * @param profile : a map with the new value to set in the database
+     * @param userAccess: the user object to use its permission
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun updateProfile(
+        profile: UserProfile,
+        userAccess: UserEntity? = currentUser
+    ): Observable<Boolean>
+
+    /**
+     * Get list of profile of a user
+     * @param profiles profile list
+     * @param user user
+     * @param userAccess user for database access
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun getUserProfilesList(
+        profiles: ObservableList<UserProfile>,
+        user: UserEntity,
+        userAccess: UserEntity? = currentUser
+    ): Observable<Boolean>
+
+    /**
+     * Get list of user of a profile
+     * @param users user list
+     * @param profile profile
+     * @param userAccess user for database access
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun getProfilesUserList(
+        users: ObservableList<UserEntity>,
+        profile: UserProfile,
+        userAccess: UserEntity? = currentUser
+    ): Observable<Boolean>
+
+
+    /**
+     * Remove profile from a user
+     * @param profile profile to remove
+     * @param user user for database access
+     * @return if the operation succeed
+     */
+    fun removeProfile(
+        profile: UserProfile,
+        user: UserEntity? = currentUser
+    ): Observable<Boolean>
+
+
+    /**
+     * Add an Entity to the data base
+     * @param element
+     * @param collection
+     * @param adapter
+     * @return
+     */
+    fun <T> addEntity(
+        element: T,
+        collection: String,
+        adapter: AdapterInterface<T>
+    ): Observable<String>
+
+    /**
+     * Set an Entity to the data base
+     * @param element null for delete
+     * @param id
+     * @param collection
+     * @param adapter
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun <T> setEntity(
+        element: T?,
+        id: String,
+        collection: String,
+        adapter: AdapterInterface<T>?
+    ): Observable<Boolean>
+
+    /**
+     * Set an Entity to the data base
+     * @param id
+     * @param collection
+     * @param adapter
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun deleteEntity(
+        id: String,
+        collection: String
+    ): Observable<Boolean>
+
+    /**
+     * get an Entity to the data base
+     * @param element
+     * @param id
+     * @param collection
+     * @param adapter
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun <T> getEntity(
+        element: Observable<T>,
+        id: String,
+        collection: String,
+        adapter: AdapterInterface<T>
+    ): Observable<Boolean>
+
+    /**
+     * get a list Entity to the data base
+     * @param elements
+     * @param ids
+     * @param collection
+     * @param adapter
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun <T> getListEntity(
+        elements: ObservableList<T>,
+        ids: List<String>,
+        collection: String,
+        adapter: AdapterInterface<T>
     ): Observable<Boolean>
 
     /**

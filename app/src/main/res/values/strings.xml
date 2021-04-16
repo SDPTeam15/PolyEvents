@@ -64,10 +64,6 @@
     </string-array>
     <!-- EditProfileActivity -->
 
-
-
-
-
     <!-- String related to the zone management activity-->
     <string name="btn_create_zone_button_text">Create zone</string>
     <string name="btn_update_zone_button_text">Update zone</string>
@@ -90,4 +86,5 @@
     <string name="btn_delete_coord_text">Delete</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="none">None</string>
+    <string name="ProfileList">Profile List</string>
 </resources>

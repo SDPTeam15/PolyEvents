@@ -24,7 +24,7 @@ class ZoneAdapterTest {
 
     @Test
     fun conversionOfZoneToDocumentPreservesData() {
-        val document = ZoneAdapter.toZoneDocument(zone)
+        val document = ZoneAdapter.toDocument(zone)
 
         assertEquals(document[ZONE_NAME], zone.zoneName)
         assertEquals(document[ZONE_LOCATION], zone.location)
@@ -41,13 +41,13 @@ class ZoneAdapterTest {
             ZONE_DOCUMENT_ID to zone.zoneId
         )
 
-        val obtainedZone = ZoneAdapter.toZoneEntity(zoneDocumentData, zoneId)
+        val obtainedZone = ZoneAdapter.fromDocument(zoneDocumentData, zoneId)
         assertEquals(obtainedZone, zone)
     }
 
     @Test
     fun conversionOfZoneToDocumentWithoutIDAddNoId() {
-        val document = ZoneAdapter.toZoneDocument(Zone(null, zoneName, location, zoneDescription))
+        val document = ZoneAdapter.toDocument(Zone(null, zoneName, location, zoneDescription))
 
         assertEquals(document[ZONE_NAME], zone.zoneName)
         assertEquals(document[ZONE_LOCATION], zone.location)

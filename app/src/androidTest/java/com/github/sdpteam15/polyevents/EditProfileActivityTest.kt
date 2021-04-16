@@ -58,7 +58,7 @@ class EditProfileActivityTest {
             name = "UName"
         )
         mokedUserProfile = UserProfile(
-            userUid = "UID",
+            pid = "PID",
             profileName = "PName",
             userRole = rank
         )
@@ -73,7 +73,7 @@ class EditProfileActivityTest {
             EditProfileActivity.updater.postValue(mokedUserProfile)
             Observable(true)
         }
-        When(mokedDatabaseInterface.updateProfile(EditProfileActivity.map, pid)).thenAnswer {
+        When(mokedDatabaseInterface.updateProfile(mokedUserProfile)).thenAnswer {
             Observable(true)
         }
 
@@ -96,7 +96,7 @@ class EditProfileActivityTest {
         rank.perform(replaceText(UserRole.ADMIN.toString()))
         name.perform(click())
         activity.rankOnFocusChangeListener(false)
-        rank.check(matches(ViewMatchers.withText(UserRole.ADMIN.toString())))
+        rank.check(matches(ViewMatchers.withText("Admin")))
 
         activity.nameOnFocusChangeListener(true)
         name.perform(replaceText("notnull"))
@@ -115,7 +115,7 @@ class EditProfileActivityTest {
         rank.perform(replaceText(UserRole.ADMIN.toString()))
         name.perform(click())
         activity.rankOnFocusChangeListener(false)
-        rank.check(matches(ViewMatchers.withText(UserRole.ADMIN.toString())))
+        rank.check(matches(ViewMatchers.withText("Admin")))
 
         activity.nameOnFocusChangeListener(true)
         name.perform(replaceText("notnull"))
@@ -131,14 +131,14 @@ class EditProfileActivityTest {
     fun adminCanNotUpdate() {
         setup(UserRole.ADMIN, "PID")
 
-        When(mokedDatabaseInterface.updateProfile(EditProfileActivity.map, "PID")).thenAnswer {
+        When(mokedDatabaseInterface.updateProfile(mokedUserProfile)).thenAnswer {
             Observable(false)
         }
 
         rank.perform(replaceText(UserRole.ADMIN.toString()))
         name.perform(click())
         activity.rankOnFocusChangeListener(false)
-        rank.check(matches(ViewMatchers.withText(UserRole.ADMIN.toString())))
+        rank.check(matches(ViewMatchers.withText("Admin")))
 
         activity.nameOnFocusChangeListener(true)
         name.perform(replaceText("notnull"))

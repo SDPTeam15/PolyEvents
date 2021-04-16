@@ -1,23 +1,30 @@
 package com.github.sdpteam15.polyevents.fragments
 
-import android.os.Build
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.transition.Slide
+import android.transition.TransitionManager
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import androidx.annotation.RequiresApi
+import android.widget.*
 import androidx.fragment.app.Fragment
-import com.github.sdpteam15.polyevents.MainActivity
-import com.github.sdpteam15.polyevents.R
+import androidx.recyclerview.widget.RecyclerView
+import com.github.sdpteam15.polyevents.*
+import com.github.sdpteam15.polyevents.adapter.ProfileAdapter
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_USERNAME
 import com.github.sdpteam15.polyevents.database.observe.Observable
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.changeFragment
 import com.github.sdpteam15.polyevents.login.UserLogin
 import com.github.sdpteam15.polyevents.model.UserEntity
+import com.github.sdpteam15.polyevents.model.UserProfile
+import com.github.sdpteam15.polyevents.model.UserRole
+import com.google.firebase.auth.FirebaseAuth
 import java.time.format.DateTimeFormatter
 
 /**
@@ -34,6 +41,14 @@ class ProfileFragment : Fragment() {
     lateinit var profileEmailET: EditText
     lateinit var profileUsernameET: EditText
 
+    /**
+     * Recycler containing all the items
+     */
+    lateinit var recyclerView: RecyclerView
+
+    val profiles = ObservableList<UserProfile>()
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //If the user is not logged in, redirect him to the login page
@@ -42,7 +57,6 @@ class ProfileFragment : Fragment() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -94,6 +108,102 @@ class ProfileFragment : Fragment() {
                     }
                 }
         }
+
+        initProfileList(viewRoot)
+
         return viewRoot
+    }
+
+    fun initProfileList(viewRoot: View) {
+        profiles.observeRemove {
+            if (it.sender != currentDatabase)
+                currentDatabase.removeProfile(it.value)
+        }
+        profiles.observeAdd {
+            if (it.sender != currentDatabase)
+                currentDatabase.addUserProfileAndAddToUser(it.value, currentUser!!)
+        }
+
+        recyclerView = viewRoot.findViewById(R.id.id_recycler_profile_list)
+        recyclerView.adapter = ProfileAdapter(this, profiles)
+
+        if(currentUser!!.profiles.size > 0)
+            currentDatabase.getUserProfilesList(profiles, currentUser!!).observe(this) {
+                if (!it.value)
+                    HelperFunctions.showToast(getString(R.string.fail_to_update), activity)
+            }
+
+        viewRoot.findViewById<ImageButton>(R.id.id_add_profile_button)
+            .setOnClickListener { createProfilePopup() }
+    }
+
+    private fun createProfilePopup() {
+        // Initialize a new layout inflater instance
+        val inflater: LayoutInflater =
+            (activity)!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+
+        // Inflate a custom view using layout inflater
+        val view = inflater.inflate(R.layout.popup_profile, null)
+
+        // Initialize a new instance of popup window
+        val popupWindow = PopupWindow(
+            view, // Custom view to show in popup window
+            LinearLayout.LayoutParams.MATCH_PARENT, // Width of popup window
+            LinearLayout.LayoutParams.WRAP_CONTENT // Window height
+        )
+
+        val slideIn = Slide()
+        slideIn.slideEdge = Gravity.TOP
+        popupWindow.enterTransition = slideIn
+
+        // Slide animation for popup window exit transition
+        val slideOut = Slide()
+        slideOut.slideEdge = Gravity.END
+        popupWindow.exitTransition = slideOut
+
+
+        // Get the widgets reference from custom view
+        val profileName = view.findViewById<EditText>(R.id.id_edittext_profile_name)
+        val confirmButton = view.findViewById<ImageButton>(R.id.id_confirm_add_item_button)
+
+        //set focus on the popup
+        popupWindow.isFocusable = true
+
+        // Set a click listener for popup's button widget
+        confirmButton.setOnClickListener {
+            profiles.add(
+                UserProfile(
+                    profileName = profileName.text.toString()
+                ), this
+            )
+            // Dismiss the popup window
+            popupWindow.dismiss()
+        }
+
+
+        // Finally, show the popup window on app
+        TransitionManager.beginDelayedTransition(this.recyclerView)
+        popupWindow.showAtLocation(this.recyclerView, Gravity.CENTER, 0, 0)
+    }
+
+    var remove: () -> Boolean = { true }
+
+    fun editProfile(item: UserProfile) {
+        val intent = Intent(activity, EditProfileActivity::class.java)
+        intent.putExtra(
+            CALLER_RANK,
+            if (currentUser!!.isAdmin()) UserRole.ADMIN.toString() else UserRole.PARTICIPANT.toString()
+        )
+        intent.putExtra(EDIT_PROFILE_ID, item.pid)
+        startActivity(intent)
+        remove = EditProfileActivity.end.observe {
+            if (it.value) {
+                remove()
+                currentDatabase.getUserProfilesList(profiles, currentUser!!).observe(this) {
+                    if (!it.value)
+                        HelperFunctions.showToast(getString(R.string.fail_to_update), activity)
+                }
+            }
+        }
     }
 }

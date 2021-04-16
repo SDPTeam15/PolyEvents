@@ -22,10 +22,11 @@ object DatabaseConstant {
     /**
      * Profile related constants
      */
-    const val PROFILE_COLLECTION = "Profile"
+    const val PROFILE_COLLECTION = "profile"
     const val PROFILE_ID = "pid"
     const val PROFILE_NAME = "name"
     const val PROFILE_RANK = "rank"
+    const val PROFILE_USERS = "users"
 
     /**
      * Event related constants
@@ -100,7 +101,7 @@ object DatabaseConstant {
     }
 
     enum class ProfileConstants(val str: String) {
-        PROFILE_COLLECTION("Profile"),
+        PROFILE_COLLECTION("profile"),
         PROFILE_ID("pid"),
         PROFILE_NAME("name"),
         PROFILE_RANK("rank")

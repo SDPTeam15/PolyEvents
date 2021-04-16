@@ -33,7 +33,6 @@ class FakeDatabaseTests {
         assertNotNull(FakeDatabase.CURRENT_USER)
         assertNotNull(FakeDatabase.getProfilesList("", mockedUserInterface))
         assertNotNull(FakeDatabase.addProfile(mockedUserProfile, "", mockedUserInterface))
-        assertNotNull(FakeDatabase.removeProfile(mockedUserProfile, "", mockedUserInterface))
         assertNotNull(FakeDatabase.updateProfile(mockedUserProfile, mockedUserInterface))
         assert(FakeDatabase.getZoneInformation("", Observable(), mockedUserInterface).value!!)
         assert(FakeDatabase.updateZoneInformation("", Zone(), mockedUserInterface).value!!)

@@ -58,7 +58,7 @@ class EventAdapterTest {
 
     @Test
     fun conversionOfEventToDocumentPreservesData() {
-        val document = EventAdapter.toEventDocument(event)
+        val document = EventAdapter.toDocument(event)
 
         assertEquals(document[EVENT_DOCUMENT_ID], event.eventId)
         assertEquals(document[EVENT_NAME], event.eventName)
@@ -95,7 +95,7 @@ class EventAdapterTest {
             EVENT_INVENTORY to testEventWithoutTimes.inventory
         )
 
-        val obtainedEvent = EventAdapter.toEventEntity(eventDocumentData, testEventWithoutTimes.eventId!!)
+        val obtainedEvent = EventAdapter.fromDocument(eventDocumentData, testEventWithoutTimes.eventId!!)
         assertEquals(testEventWithoutTimes, obtainedEvent)
         assertTrue(obtainedEvent.hasItem(item1))
         assertTrue(obtainedEvent.tags.contains(tag1))
@@ -103,7 +103,7 @@ class EventAdapterTest {
 
     @Test
     fun testConversionWithNullValues() {
-        val document = EventAdapter.toEventDocument(event)
+        val document = EventAdapter.toDocument(event)
         assertNull(document[EVENT_END_TIME])
     }
 }
