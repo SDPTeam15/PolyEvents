@@ -19,18 +19,6 @@ class DatabaseListenerTest {
 
     @Test
     fun variablesAreCorrectlySet(){
-        val user = UserEntity(
-            uid = googleId,
-            username = usernameEntity,
-            birthDate = birthDate,
-            name = name,
-            email = email
-        )
-        FirestoreDatabaseProvider.firstConnectionUser = user
-        MatcherAssert.assertThat(
-            FirestoreDatabaseProvider.firstConnectionUser,
-            CoreMatchers.`is`(user)
-        )
 
         val lastQuerySuccessListener= OnSuccessListener<QuerySnapshot> { }
         val lastSetSuccessListener= OnSuccessListener<Void> { }

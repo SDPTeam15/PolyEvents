@@ -38,7 +38,7 @@ data class UserEntity(
     val userProfiles: ObservableList<UserProfile>
         get() {
             val res = ObservableList<UserProfile>()
-            Database.currentDatabase.getUserProfilesList(res, this)
+            Database.currentDatabase.userDatabase!!.getUserProfilesList(res, this)
             return res
         }
 

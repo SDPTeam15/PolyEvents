@@ -35,19 +35,19 @@ class ItemsAdminActivity : AppCompatActivity() {
         setContentView(R.layout.activity_items_admin)
 
 
-        currentDatabase.getItemsList(items).observe(this) {
+        currentDatabase.itemDatabase!!.getItemsList(items).observe(this) {
             if (!it.value)
                 println("query not satisfied")
         }
         items.observeRemove(this) {
             if (it.sender != currentDatabase)
-                currentDatabase.removeItem(it.value.first.itemId!!)
+                currentDatabase.itemDatabase!!.removeItem(it.value.first.itemId!!)
         }
         items.observeAdd(this) {
             if (it.sender != currentDatabase) {
-                currentDatabase.createItem(it.value.first, it.value.second).observe { it1 ->
+                currentDatabase.itemDatabase!!.createItem(it.value.first, it.value.second).observe { it1 ->
                     if (it1.value) {
-                        currentDatabase.getItemsList(items)
+                        currentDatabase.itemDatabase!!.getItemsList(items)
                     }
                 }
             }

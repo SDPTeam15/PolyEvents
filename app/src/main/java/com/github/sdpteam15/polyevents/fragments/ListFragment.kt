@@ -49,7 +49,7 @@ class ListFragment : Fragment() {
         }
 
         recyclerView.adapter = EventItemAdapter(events, openEvent)
-        currentDatabase.getListEvent(null, 10, events).observe(this) {
+        currentDatabase.eventDatabase!!.getListEvent(null, 10, events).observe(this) {
             if (!it.value) {
                 HelperFunctions.showToast("Failed to get events information", fragmentView.context)
             }

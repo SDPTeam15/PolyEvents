@@ -63,7 +63,7 @@ class LoginFragment : Fragment() {
      * This method will call the inDatabase method to check whether the users has already been registered to the database or not
      */
     private fun addIfNotInDB() {
-        currentDatabase.inDatabase(inDbObservable, currentUser!!.uid, currentUser!!)
+        currentDatabase.userDatabase!!.inDatabase(inDbObservable, currentUser!!.uid, currentUser!!)
             .observe(this) { success ->
                 if (success.value) {
                     if (inDbObservable.value!!) {
@@ -89,6 +89,7 @@ class LoginFragment : Fragment() {
      */
     private fun createAccountAndRedirect() {
         currentDatabase
+            .userDatabase!!
             .firstConnexion(currentUser!!, currentUser!!)
             .observe(this) { success ->
                 if (success.value) {

@@ -17,6 +17,9 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.github.sdpteam15.polyevents.adapter.EventItemAdapter
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
+import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabase
+import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabaseEvent
+import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabaseZone
 import com.github.sdpteam15.polyevents.fragments.EXTRA_EVENT_ID
 import com.github.sdpteam15.polyevents.model.Event
 import org.hamcrest.CoreMatchers.containsString
@@ -39,8 +42,8 @@ class EventActivityTest {
     @Before
     fun setup() {
 
-        FakeDatabase.events.clear()
-        FakeDatabase.createEvent(
+        FakeDatabaseEvent.events.clear()
+        FakeDatabase.eventDatabase!!.createEvent(
             Event(
                 eventName = "Sushi demo",
                 description = "Super hungry activity !",
@@ -51,7 +54,7 @@ class EventActivityTest {
                 tags = mutableSetOf("sushi", "japan", "cooking")
             )
         )
-        FakeDatabase.createEvent(
+        FakeDatabase.eventDatabase!!.createEvent(
             Event(
                 eventName = "Aqua Poney",
                 description = "Super cool activity !" +
@@ -62,7 +65,7 @@ class EventActivityTest {
                 zoneName = "Swimming pool"
             )
         )
-        FakeDatabase.createEvent(
+        FakeDatabase.eventDatabase!!.createEvent(
             Event(
                 eventName = "Concert",
                 description = "Super noisy activity !",
@@ -88,7 +91,7 @@ class EventActivityTest {
     @Test
     fun correctNumberUpcomingEventsDisplayed() {
         Espresso.onView(withId(R.id.recycler_events_list))
-            .check(RecyclerViewItemCountAssertion(FakeDatabase.events.size))
+            .check(RecyclerViewItemCountAssertion(FakeDatabaseEvent.events.size))
     }
 
     @Test
@@ -109,7 +112,7 @@ class EventActivityTest {
             EventActivity::class.java
         )
         val events = ObservableList<Event>()
-        currentDatabase.getListEvent(null, 1, events)
+        currentDatabase.eventDatabase!!.getListEvent(null, 1, events)
 
         val eventToTest = events[0]
         intent.putExtra(EXTRA_EVENT_ID, eventToTest.eventId!!)

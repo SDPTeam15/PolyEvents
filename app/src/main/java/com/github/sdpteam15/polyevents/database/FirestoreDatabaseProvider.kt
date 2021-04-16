@@ -28,17 +28,17 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     override val currentProfile: UserProfile?
         get() = null // TODO("Not yet implemented")
 
-    override val itemDatabase: ItemDatabaseInterface? = null
+    override var itemDatabase: ItemDatabaseInterface? = null
         get() = field ?: ItemDatabaseFirestore
-    override val zoneDatabase: ZoneDatabaseInterface? = null
+    override var zoneDatabase: ZoneDatabaseInterface? = null
         get() = field ?: ZoneDatabaseFirestore
-    override val userDatabase: UserDatabaseInterface? = null
+    override var userDatabase: UserDatabaseInterface? = null
         get() = field ?: UserDatabaseFirestore
-    override val heatmapDatabase: HeatmapDatabaseInterface? = null
+    override var heatmapDatabase: HeatmapDatabaseInterface? = null
         get() = field ?: HeatmapDatabaseFirestore
-    override val eventDatabase: EventDatabaseInterface? = null
+    override var eventDatabase: EventDatabaseInterface? = null
         get() = field ?: EventDatabaseFirestore
-    override val materialRequestDatabase: MaterialRequestDatabaseInterface? = null
+    override var materialRequestDatabase: MaterialRequestDatabaseInterface? = null
         get() = field ?: MaterialRequestDatabaseFirestore
 
 
@@ -148,7 +148,8 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     override fun <T> addEntityAndGetId(
         element: T,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>
+        adapter: AdapterInterface<T>,
+        userAccess: UserProfile?
     ): Observable<String> {
         val ended = Observable<String>()
         val task = firestore!!
@@ -167,7 +168,8 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     override fun <T> addEntity(
         element: T,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>
+        adapter: AdapterInterface<T>,
+        userAccess: UserProfile?
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
         val task = firestore!!
@@ -187,7 +189,8 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         element: T?,
         id: String,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>?
+        adapter: AdapterInterface<T>?,
+        userAccess: UserProfile?
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
         val document = firestore!!
@@ -211,14 +214,16 @@ object FirestoreDatabaseProvider : DatabaseInterface {
 
     override fun deleteEntity(
         id: String,
-        collection: DatabaseConstant.CollectionConstant
+        collection: DatabaseConstant.CollectionConstant,
+        userAccess: UserProfile?
     ): Observable<Boolean> = setEntity<Void>(null, id, collection, null)
 
     override fun <T> getEntity(
         element: Observable<T>,
         id: String,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>
+        adapter: AdapterInterface<T>,
+        userAccess: UserProfile?
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
 
@@ -247,7 +252,8 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         elements: ObservableList<T>,
         ids: List<String>,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>
+        adapter: AdapterInterface<T>,
+        userAccess: UserProfile?
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
 

@@ -12,6 +12,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import com.github.sdpteam15.polyevents.adapter.EventItemAdapter
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
+import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabase
 import com.github.sdpteam15.polyevents.model.Item
 import com.github.sdpteam15.polyevents.model.ItemType
 import org.junit.After
@@ -46,7 +47,7 @@ class ItemsAdminActivityTest {
 
         FakeDatabase.items.clear()
         for ((item, count) in availableItems) {
-            currentDatabase.createItem(item, count)
+            currentDatabase.itemDatabase!!.createItem(item, count)
         }
 
         val intent  = Intent(ApplicationProvider.getApplicationContext(), ItemsAdminActivity::class.java)

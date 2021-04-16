@@ -85,7 +85,7 @@ class ProfileFragment : Fragment() {
                 else userBirthDate.format(DateTimeFormatter.ISO_LOCAL_DATE)
             viewRoot.findViewById<EditText>(R.id.profileBirthdayET).setText(birthDateFormatted)
         }
-        currentDatabase.getUserInformation(userInfoLiveData, currentUser!!.uid, currentUser!!)
+        currentDatabase.userDatabase!!.getUserInformation(userInfoLiveData, currentUser!!.uid, currentUser!!)
 
         viewRoot.findViewById<Button>(R.id.btnUpdateInfos).setOnClickListener {
             //Clear the previous map and add every field
@@ -95,10 +95,10 @@ class ProfileFragment : Fragment() {
             //hashMapNewInfo[USER_BIRTH_DATE] = viewRoot.findViewById<EditText>(R.id.profileBirthdayET).text.toString()
 
             //Call the DB to update the user information and getUserInformation once it is done
-            currentDatabase.updateUserInformation(hashMapNewInfo, currentUser!!.uid, currentUser!!)
+            currentDatabase.userDatabase!!.updateUserInformation(hashMapNewInfo, currentUser!!.uid, currentUser!!)
                 .observe(this) { newValue ->
                     if (newValue.value) {
-                        currentDatabase.getUserInformation(
+                        currentDatabase.userDatabase!!.getUserInformation(
                             userInfoLiveData,
                             currentUser!!.uid,
                             currentUser!!
@@ -117,18 +117,18 @@ class ProfileFragment : Fragment() {
     fun initProfileList(viewRoot: View) {
         profiles.observeRemove {
             if (it.sender != currentDatabase)
-                currentDatabase.removeProfile(it.value)
+                currentDatabase.userDatabase!!.removeProfile(it.value)
         }
         profiles.observeAdd {
             if (it.sender != currentDatabase)
-                currentDatabase.addUserProfileAndAddToUser(it.value, currentUser!!)
+                currentDatabase.userDatabase!!.addUserProfileAndAddToUser(it.value, currentUser!!)
         }
 
         recyclerView = viewRoot.findViewById(R.id.id_recycler_profile_list)
         recyclerView.adapter = ProfileAdapter(this, profiles)
 
         if(currentUser!!.profiles.size > 0)
-            currentDatabase.getUserProfilesList(profiles, currentUser!!).observe(this) {
+            currentDatabase.userDatabase!!.getUserProfilesList(profiles, currentUser!!).observe(this) {
                 if (!it.value)
                     HelperFunctions.showToast(getString(R.string.fail_to_update), activity)
             }
@@ -199,7 +199,7 @@ class ProfileFragment : Fragment() {
         remove = EditProfileActivity.end.observe {
             if (it.value) {
                 remove()
-                currentDatabase.getUserProfilesList(profiles, currentUser!!).observe(this) {
+                currentDatabase.userDatabase!!.getUserProfilesList(profiles, currentUser!!).observe(this) {
                     if (!it.value)
                         HelperFunctions.showToast(getString(R.string.fail_to_update), activity)
                 }

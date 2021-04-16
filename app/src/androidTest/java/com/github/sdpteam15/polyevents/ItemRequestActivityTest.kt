@@ -21,6 +21,7 @@ import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.adapter.ItemRequestAdapter
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
+import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabase
 import com.github.sdpteam15.polyevents.model.Item
 import com.github.sdpteam15.polyevents.model.ItemType
 import org.hamcrest.CoreMatchers.`is`
@@ -85,9 +86,9 @@ class ItemRequestActivityTest {
         Database.currentDatabase = FakeDatabase
         FakeDatabase.items.clear()
         for ((item,count) in availableItems){
-            Database.currentDatabase.createItem(item,count)
+            Database.currentDatabase.itemDatabase!!.createItem(item,count)
         }
-        Database.currentDatabase.getItemsList(availableItemsList)
+        Database.currentDatabase.itemDatabase!!.getItemsList(availableItemsList)
 
         // go to activities more fragment
         mainActivity = ActivityScenarioRule(MainActivity::class.java)

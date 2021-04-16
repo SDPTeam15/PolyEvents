@@ -12,6 +12,8 @@ import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.NUMBER_UPCOMING_EVENTS
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
+import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabase
+import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabaseEvent
 import com.github.sdpteam15.polyevents.fragments.HomeFragment
 import com.github.sdpteam15.polyevents.model.Event
 import org.junit.After
@@ -88,11 +90,11 @@ class UpcomingEventsHomeFragmentTest {
         val homeFragment = MainActivity.fragments[R.id.ic_home] as HomeFragment
         currentDatabase = FakeDatabase
         FakeDatabase.userToNull = true
-        FakeDatabase.events.clear()
+        FakeDatabaseEvent.events.clear()
         for (event in eventsToAdd){
-            currentDatabase.createEvent(event)
+            currentDatabase.eventDatabase!!.createEvent(event)
         }
-        currentDatabase.getListEvent(null, null, events)
+        currentDatabase.eventDatabase!!.getListEvent(null, null, events)
 
         // Update the content to use the mock activities query helper
         runOnUiThread {

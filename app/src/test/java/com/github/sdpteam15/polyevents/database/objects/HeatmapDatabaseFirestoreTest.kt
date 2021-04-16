@@ -24,6 +24,7 @@ class HeatmapDatabaseFirestoreTest {
     lateinit var user: UserEntity
     lateinit var mockedDatabase: FirebaseFirestore
     lateinit var database: DatabaseInterface
+    lateinit var mockedHeatmapDatabase: HeatmapDatabaseInterface
 
     @Before
     fun setup() {
@@ -35,9 +36,10 @@ class HeatmapDatabaseFirestoreTest {
 
         //Mock the database and set it as the default database
         mockedDatabase = Mockito.mock(FirebaseFirestore::class.java)
+        mockedHeatmapDatabase = Mockito.mock(HeatmapDatabaseInterface::class.java)
         FirestoreDatabaseProvider.firestore = mockedDatabase
+        FirestoreDatabaseProvider.heatmapDatabase = mockedHeatmapDatabase
 
-        FirestoreDatabaseProvider.firstConnectionUser=UserEntity(uid = "DEFAULT")
         FirestoreDatabaseProvider.lastQuerySuccessListener= null
         FirestoreDatabaseProvider.lastSetSuccessListener= null
         FirestoreDatabaseProvider.lastFailureListener= null
@@ -94,7 +96,7 @@ class HeatmapDatabaseFirestoreTest {
             mockedTask
         }
 
-        val result = FirestoreDatabaseProvider.setUserLocation(pointToAdd, user)
+        val result = FirestoreDatabaseProvider.heatmapDatabase!!.setUserLocation(pointToAdd, user)
         MatcherAssert.assertThat(result.value, CoreMatchers.`is`(true))
         MatcherAssert.assertThat(latSet, CoreMatchers.`is`(lat))
         MatcherAssert.assertThat(lngSet, CoreMatchers.`is`(lng))
@@ -154,7 +156,7 @@ class HeatmapDatabaseFirestoreTest {
         }
 
         val locationsObs = Observable<List<LatLng>>()
-        val result = FirestoreDatabaseProvider.getUsersLocations(locationsObs, user)
+        val result = FirestoreDatabaseProvider.heatmapDatabase!!.getUsersLocations(locationsObs, user)
 
         // Assert that the DB successfully performed the query
         MatcherAssert.assertThat(result.value, CoreMatchers.`is`(true))

@@ -3,6 +3,8 @@ package objects
 import com.github.sdpteam15.polyevents.database.DatabaseConstant
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
+import com.github.sdpteam15.polyevents.database.objects.UserDatabaseFirestore
+import com.github.sdpteam15.polyevents.database.objects.UserDatabaseInterface
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.google.android.gms.tasks.Task
@@ -34,6 +36,7 @@ class UserDatabaseFirestoreTest {
     lateinit var mockedDatabase: FirebaseFirestore
     lateinit var database: DatabaseInterface
     lateinit var userDocument: HashMap<String, Any?>
+    lateinit var mockedDatabaseUser: UserDatabaseFirestore
 
     @Before
     fun setup() {
@@ -52,9 +55,11 @@ class UserDatabaseFirestoreTest {
         )
         //Mock the database and set it as the default database
         mockedDatabase = Mockito.mock(FirebaseFirestore::class.java)
+        mockedDatabaseUser = Mockito.mock(UserDatabaseFirestore::class.java)
         FirestoreDatabaseProvider.firestore = mockedDatabase
+        FirestoreDatabaseProvider.userDatabase =  mockedDatabaseUser
 
-        FirestoreDatabaseProvider.firstConnectionUser=UserEntity(uid = "DEFAULT")
+        mockedDatabaseUser.firstConnectionUser = UserEntity(uid = "DEFAULT")
         FirestoreDatabaseProvider.lastQuerySuccessListener= null
         FirestoreDatabaseProvider.lastSetSuccessListener= null
         FirestoreDatabaseProvider.lastFailureListener= null
@@ -100,7 +105,7 @@ class UserDatabaseFirestoreTest {
         }
 
         val isInDb = Observable<Boolean>()
-        val result = FirestoreDatabaseProvider.inDatabase(isInDb,
+        val result = FirestoreDatabaseProvider.userDatabase!!.inDatabase(isInDb,
             uidTest, user)
         //Assert that the value are correctly set by the database
         assert(isInDb.value!!)
@@ -141,7 +146,7 @@ class UserDatabaseFirestoreTest {
         }
 
         val isInDb = Observable<Boolean>()
-        val result = FirestoreDatabaseProvider.inDatabase(isInDb,
+        val result = FirestoreDatabaseProvider.userDatabase!!.inDatabase(isInDb,
             uidTest, user)
         //Assert that the DB successfully performed the query
         assert(result.value!!)
@@ -177,7 +182,7 @@ class UserDatabaseFirestoreTest {
         }
 
         val userObs = Observable<UserEntity>()
-        val result = FirestoreDatabaseProvider.getUserInformation(userObs,
+        val result = FirestoreDatabaseProvider.userDatabase!!.getUserInformation(userObs,
             uidTest, user)
         //Assert that the DB correctly answer with true
         assert(result.value!!)
@@ -233,7 +238,7 @@ class UserDatabaseFirestoreTest {
         }
 
         //Assert that the database correctly setted the value
-        val result = FirestoreDatabaseProvider.updateUserInformation(map,
+        val result = FirestoreDatabaseProvider.userDatabase!!.updateUserInformation(map,
             uidTest, user)
         assert(result.value!!)
         assert(emailSet.equals(emailTest2))
@@ -276,7 +281,7 @@ class UserDatabaseFirestoreTest {
         }
 
         //Assert that the database correctly setted the value
-        val result = FirestoreDatabaseProvider.firstConnexion(user, user)
+        val result = FirestoreDatabaseProvider.userDatabase!!.firstConnexion(user, user)
         assert(result.value!!)
         assert(emailSet.equals(user.email))
         assert(nameSet.equals(user.name))

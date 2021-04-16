@@ -3,6 +3,7 @@ package objects
 import com.github.sdpteam15.polyevents.database.DatabaseConstant
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
+import com.github.sdpteam15.polyevents.database.objects.ZoneDatabaseFirestore
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.Zone
@@ -17,6 +18,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
+import org.mockito.Mockito.`when` as When
 
 private const val zoneID = "ZONEID"
 private const val zoneName = "ZONENAME"
@@ -31,6 +33,7 @@ class ZoneDatabaseFirestoreTest {
     lateinit var mockedDatabase: FirebaseFirestore
     lateinit var database: DatabaseInterface
     lateinit var zoneDocument: HashMap<String, Any?>
+    lateinit var mockedZoneDatabase: ZoneDatabaseFirestore
 
     @Before
     fun setup() {
@@ -51,8 +54,10 @@ class ZoneDatabaseFirestoreTest {
         //Mock the database and set it as the default database
         mockedDatabase = Mockito.mock(FirebaseFirestore::class.java)
         FirestoreDatabaseProvider.firestore = mockedDatabase
-
-        FirestoreDatabaseProvider.firstConnectionUser=UserEntity(uid = "DEFAULT")
+        mockedZoneDatabase = Mockito.mock(ZoneDatabaseFirestore::class.java)
+        FirestoreDatabaseProvider.zoneDatabase = mockedZoneDatabase
+        
+        
         FirestoreDatabaseProvider.lastQuerySuccessListener= null
         FirestoreDatabaseProvider.lastSetSuccessListener= null
         FirestoreDatabaseProvider.lastFailureListener= null
@@ -72,8 +77,8 @@ class ZoneDatabaseFirestoreTest {
 
         val testZone = Zone(zoneID, zoneName, zoneLoc, zoneDesc)
 
-        Mockito.`when`(mockedDatabase.collection(DatabaseConstant.ZONE_COLLECTION)).thenReturn(mockedCollectionReference)
-        Mockito.`when`(mockedCollectionReference.add(ZoneAdapter.toDocument(testZone))).thenReturn(
+        When(mockedDatabase.collection(DatabaseConstant.ZONE_COLLECTION)).thenReturn(mockedCollectionReference)
+        When(mockedCollectionReference.add(ZoneAdapter.toDocument(testZone))).thenReturn(
             taskReferenceMock
         )
 
@@ -82,7 +87,7 @@ class ZoneDatabaseFirestoreTest {
         var zoneLocAdded = ""
         var zoneIDAdded = ""
 
-        Mockito.`when`(taskReferenceMock.addOnSuccessListener(ArgumentMatchers.any())).thenAnswer {
+        When(taskReferenceMock.addOnSuccessListener(ArgumentMatchers.any())).thenAnswer {
             FirestoreDatabaseProvider.lastAddSuccessListener!!.onSuccess(null)
             //set method in hard to see if the success listener is successfully called
             zoneNameAdded = testZone.zoneName!!
@@ -91,11 +96,11 @@ class ZoneDatabaseFirestoreTest {
             zoneIDAdded = testZone.zoneId!!
             taskReferenceMock
         }
-        Mockito.`when`(taskReferenceMock.addOnFailureListener(ArgumentMatchers.any())).thenAnswer {
+        When(taskReferenceMock.addOnFailureListener(ArgumentMatchers.any())).thenAnswer {
             taskReferenceMock
         }
 
-        val result = FirestoreDatabaseProvider.createZone(testZone, user)
+        val result =  FirestoreDatabaseProvider.zoneDatabase!!.createZone(testZone, user)
         assert(result.value!!)
         assert(zoneNameAdded == zoneName)
         assert(zoneDescAdded == zoneDesc)
@@ -112,10 +117,10 @@ class ZoneDatabaseFirestoreTest {
         val mockedDocumentReference = Mockito.mock(DocumentReference::class.java)
         val testZone = Zone(zoneID, zoneName, zoneLoc, zoneDesc)
 
-        Mockito.`when`(mockedDatabase.collection(DatabaseConstant.ZONE_COLLECTION)).thenReturn(mockedCollectionReference)
-        Mockito.`when`(mockedCollectionReference.document(zoneID))
+        When(mockedDatabase.collection(DatabaseConstant.ZONE_COLLECTION)).thenReturn(mockedCollectionReference)
+        When(mockedCollectionReference.document(zoneID))
             .thenReturn(mockedDocumentReference)
-        Mockito.`when`(mockedDocumentReference.update(ZoneAdapter.toDocument(testZone))).thenReturn(
+        When(mockedDocumentReference.update(ZoneAdapter.toDocument(testZone))).thenReturn(
             mockedTask
         )
 
@@ -124,7 +129,7 @@ class ZoneDatabaseFirestoreTest {
         var zoneLocUpdated = ""
         var zoneIDUpdated = ""
 
-        Mockito.`when`(mockedTask.addOnSuccessListener(ArgumentMatchers.any())).thenAnswer {
+        When(mockedTask.addOnSuccessListener(ArgumentMatchers.any())).thenAnswer {
             FirestoreDatabaseProvider.lastSetSuccessListener!!.onSuccess(null)
             //set method in hard to see if the success listener is successfully called
             zoneNameUpdated = testZone.zoneName!!
@@ -133,11 +138,11 @@ class ZoneDatabaseFirestoreTest {
             zoneIDUpdated = testZone.zoneId!!
             mockedTask
         }
-        Mockito.`when`(mockedTask.addOnFailureListener(ArgumentMatchers.any())).thenAnswer {
+        When(mockedTask.addOnFailureListener(ArgumentMatchers.any())).thenAnswer {
             mockedTask
         }
 
-        val result = FirestoreDatabaseProvider.updateZoneInformation(zoneID, testZone, user)
+        val result =  FirestoreDatabaseProvider.zoneDatabase!!.updateZoneInformation(zoneID, testZone, user)
         assert(result.value!!)
         assert(zoneNameUpdated == zoneName)
         assert(zoneDescUpdated == zoneDesc)
@@ -153,25 +158,25 @@ class ZoneDatabaseFirestoreTest {
         val mockedDocumentReference = Mockito.mock(DocumentReference::class.java)
         val mockedDocument = Mockito.mock(DocumentSnapshot::class.java)
 
-        Mockito.`when`(mockedDatabase.collection(DatabaseConstant.ZONE_COLLECTION)).thenReturn(mockedCollectionReference)
-        Mockito.`when`(mockedCollectionReference.document(zoneID))
+        When(mockedDatabase.collection(DatabaseConstant.ZONE_COLLECTION)).thenReturn(mockedCollectionReference)
+        When(mockedCollectionReference.document(zoneID))
             .thenReturn(mockedDocumentReference)
-        Mockito.`when`(mockedDocumentReference.get()).thenReturn(mockedTask)
-        Mockito.`when`(mockedDocument.data).thenReturn(zoneDocument)
-        Mockito.`when`(mockedDocument.id)
+        When(mockedDocumentReference.get()).thenReturn(mockedTask)
+        When(mockedDocument.data).thenReturn(zoneDocument)
+        When(mockedDocument.id)
             .thenReturn(zoneID)
 
-        Mockito.`when`(mockedTask.addOnSuccessListener(ArgumentMatchers.any())).thenAnswer {
+        When(mockedTask.addOnSuccessListener(ArgumentMatchers.any())).thenAnswer {
             FirestoreDatabaseProvider.lastGetSuccessListener!!.onSuccess(mockedDocument)
             //set method in hard to see if the success listener is successfully called
             mockedTask
         }
-        Mockito.`when`(mockedTask.addOnFailureListener(ArgumentMatchers.any())).thenAnswer {
+        When(mockedTask.addOnFailureListener(ArgumentMatchers.any())).thenAnswer {
             mockedTask
         }
         val obsZone = Observable<Zone>()
 
-        val result = FirestoreDatabaseProvider.getZoneInformation(zoneID, obsZone, user)
+        val result = FirestoreDatabaseProvider.zoneDatabase!!.getZoneInformation(zoneID, obsZone, user)
         val value = obsZone.value!!
         assert(result.value!!)
         assert(value.zoneName == zoneName)

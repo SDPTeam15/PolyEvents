@@ -25,7 +25,7 @@ class EventActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayShowHomeEnabled(true)
 
         println(intent.getStringExtra(EXTRA_EVENT_ID))
-        currentDatabase.getEventFromId(intent.getStringExtra(EXTRA_EVENT_ID)!!, obsEvent)
+        currentDatabase.eventDatabase!!.getEventFromId(intent.getStringExtra(EXTRA_EVENT_ID)!!, obsEvent)
             .observe(this) { b ->
                 if (!b.value) {
                     HelperFunctions.showToast(getString(R.string.event_info_fail), this)
