@@ -257,19 +257,49 @@ class ObservableList<T> : MutableList<T> {
     fun add(index: Int, item: T, sender: Any?) = add(index, item, sender, true)
 
     private fun add(index: Int, item: T, sender: Any? = null, notify: Boolean) =
-        add(index, Observable(item), sender, notify)!!
+        add(index, Observable(item), sender, notify)
 
     override fun add(index: Int, element: T) {
-        add(index, element)
+        add(index, element, null)
     }
 
-    override fun addAll(index: Int, elements: Collection<T>): Boolean {
-        TODO("Not yet implemented")
+    /**
+     * Add all items in the list.
+     * @param index index in list.
+     * @param items items list.
+     * @param sender The source of the event.
+     */
+    fun addAll(index: Int, items: Collection<T>, sender: Any? = null): Boolean {
+        var res = true
+        var i = 0
+        for (item: T in items) {
+            res = res && (add((i++ + index), item, sender, false) != null)
+        }
+        notifyUpdate(sender)
+        return res
     }
+    override fun addAll(index: Int, elements: Collection<T>) = addAll(index, elements, null)
 
-    override fun retainAll(elements: Collection<T>): Boolean {
-        TODO("Not yet implemented")
+    /**
+     * Retains only the elements in this collection that are contained in the specified collection.
+     * @param items items list.
+     * @param sender The source of the event.
+     * @return true if any element was removed from the collection.
+     */
+    fun retainAll(items: Collection<T>, sender: Any?): Boolean {
+        var i = 0
+        val toremove = mutableListOf<Observable<T>>()
+        for (item in values) {
+            if(item.value !in items)
+                toremove.add(item)
+        }
+        for (item in toremove)
+            remove(item, sender, false)
+        notifyUpdate(sender)
+        return values.size != 0
     }
+    override fun retainAll(elements: Collection<T>): Boolean =
+        retainAll(elements, null)
 
     override fun subList(fromIndex: Int, toIndex: Int): MutableList<T> {
         TODO("Not yet implemented")
