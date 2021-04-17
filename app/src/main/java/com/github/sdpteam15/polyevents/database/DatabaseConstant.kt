@@ -10,7 +10,8 @@ object DatabaseConstant {
         ITEM_COLLECTION("items"),
         EVENT_COLLECTION("events"),
         PROFILE_COLLECTION("profile"),
-        USER_COLLECTION("users")
+        USER_COLLECTION("users");
+        override fun toString(): String = value
     }
 
     enum class EventConstant(val value: String) {
@@ -23,21 +24,24 @@ object DatabaseConstant {
         EVENT_END_TIME("endTime"),
         EVENT_INVENTORY("inventory"),
         EVENT_ICON("icon"),
-        EVENT_TAGS("tags")
+        EVENT_TAGS("tags");
+        override fun toString(): String = value
     }
 
     enum class ItemConstants(val value: String) {
         ITEM_DOCUMENT_ID("itemId"),
         ITEM_NAME("name"),
         ITEM_TYPE("itemType"),
-        ITEM_COUNT("itemCount")
+        ITEM_COUNT("itemCount");
+        override fun toString(): String = value
     }
 
     enum class ProfileConstants(val value: String) {
         PROFILE_ID("pid"),
         PROFILE_NAME("name"),
         PROFILE_RANK("rank"),
-        PROFILE_USERS("users")
+        PROFILE_USERS("users");
+        override fun toString(): String = value
     }
 
     enum class UserConstants(val value: String) {
@@ -50,7 +54,8 @@ object DatabaseConstant {
         USER_TYPE("userType"),
         USER_BIRTH_DATE("birthDate"),
         USER_PHONE("telephone"),
-        USER_PROFILES("profiles")
+        USER_PROFILES("profiles");
+        override fun toString(): String = value
     }
 
     enum class ZoneConstant(val value: String) {
@@ -60,11 +65,13 @@ object DatabaseConstant {
         ZONE_DESCRIPTION("zoneDescription"),
         LAT_LONG_SEP("|"),
         POINTS_SEP("!"),
-        AREAS_SEP("?")
+        AREAS_SEP("?");
+        override fun toString(): String = value
     }
 
     enum class LocationConstant(val value: String) {
         LOCATIONS_COLLECTION("locations"),
-        LOCATIONS_POINT("point")
+        LOCATIONS_POINT("point");
+        override fun toString(): String = value
     }
 }

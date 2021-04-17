@@ -13,7 +13,6 @@ import com.github.sdpteam15.polyevents.util.UserAdapter
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
@@ -40,22 +39,20 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         get() = field ?: MaterialRequestDatabaseFirestore
 
     override val currentUserObservable = Observable<UserEntity>()
-    private var loadSuccess : Boolean? = false
+    var loadSuccess : Boolean? = false
     override var currentUser: UserEntity?
         get() {
             if(UserLogin.currentUserLogin.isConnected()){
                 if(loadSuccess == false) {
                     loadSuccess = null
                     currentUserObservable.postValue(UserLogin.currentUserLogin.getCurrentUser()!!,this)
-                    firestore!!.collection(USER_COLLECTION.toString())
-                        .document(FirebaseAuth.getInstance().currentUser!!.uid)
+                    firestore!!.collection(USER_COLLECTION.value)
+                        .document(currentUserObservable.value!!.uid)
                         .get()
                         .addOnSuccessListener {
-                            if(it.data!=null){
+                            loadSuccess = it.data!=null
+                            if(loadSuccess!!)
                                 currentUserObservable.postValue(UserAdapter.fromDocument(it.data!!, it.id),this)
-                                loadSuccess = true
-                            }
-                            loadSuccess = false
                         }
                         .addOnFailureListener {
                             loadSuccess = false
@@ -174,7 +171,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     ): Observable<String> {
         val ended = Observable<String>()
         val task = firestore!!
-            .collection(collection.toString())
+            .collection(collection.value)
             .add(adapter.toDocument(element))
 
         lastAddSuccessListener =
@@ -194,7 +191,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
         val task = firestore!!
-            .collection(collection.toString())
+            .collection(collection.value)
             .add(adapter.toDocument(element))
 
         lastAddSuccessListener =
@@ -215,7 +212,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
         val document = firestore!!
-            .collection(collection.toString())
+            .collection(collection.value)
             .document(id)
 
         val task = if (element == null || adapter == null) {
@@ -260,7 +257,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             ended.postValue(false, this)
         }
 
-        val task = firestore!!.collection(collection.toString())
+        val task = firestore!!.collection(collection.value)
             .document(id)
             .get()
 
@@ -280,7 +277,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
 
         val lastFailureListener = OnFailureListener { ended.postValue(false, this) }
         val mutableList = mutableListOf<T?>()
-        val fsCollection = firestore!!.collection(collection.toString())
+        val fsCollection = firestore!!.collection(collection.value)
         for (id in ids) {
             mutableList.add(null)
             fsCollection.document(id)
