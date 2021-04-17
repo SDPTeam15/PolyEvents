@@ -197,13 +197,16 @@ class ProfileLoginFragmentTests {
     @Test
     fun signOutButtonRedirectToLoginFragment() {
         UserLogin.currentUserLogin.signOut()
+        val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
+        loginFragment.currentUser = user
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
 
         profileFragment.currentUser = user
         onView(withId(R.id.ic_login)).perform(click())
         onView(withId(R.id.id_fragment_profile)).check(matches(isDisplayed()))
-        onView(withId(R.id.btnUpdateInfos))
-            .perform(scrollTo(), click());
+
+        onView(withId(R.id.btnLogout))
+            .perform(scrollTo());
         onView(withId(R.id.btnLogout)).perform(click())
         onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
     }
@@ -300,7 +303,7 @@ class ProfileLoginFragmentTests {
             endingRequest
         }
         onView(withId(R.id.btnUpdateInfos))
-            .perform(scrollTo(), click());
+            .perform(scrollTo())
         //Click on the update button
         onView(withId(R.id.btnUpdateInfos)).perform(click())
         endingRequestUpdate.postValue(true)
