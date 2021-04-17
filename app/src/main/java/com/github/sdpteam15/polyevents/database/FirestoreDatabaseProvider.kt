@@ -26,9 +26,6 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     var firestore: FirebaseFirestore? = null
         get() = field ?: Firebase.firestore
 
-    override var currentProfile: UserProfile? = null
-        get() = null
-
     override var itemDatabase: ItemDatabaseInterface? = null
         get() = field ?: ItemDatabaseFirestore
     override var zoneDatabase: ZoneDatabaseInterface? = null
@@ -43,11 +40,12 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         get() = field ?: MaterialRequestDatabaseFirestore
 
     override val currentUserObservable = Observable<UserEntity>()
-    private var loadSuccess = false
+    private var loadSuccess : Boolean? = false
     override var currentUser: UserEntity?
         get() {
             if(UserLogin.currentUserLogin.isConnected()){
-                if(!loadSuccess) {
+                if(loadSuccess == false) {
+                    loadSuccess = null
                     currentUserObservable.postValue(UserLogin.currentUserLogin.getCurrentUser()!!,this)
                     firestore!!.collection(USER_COLLECTION.toString())
                         .document(FirebaseAuth.getInstance().currentUser!!.uid)
@@ -57,6 +55,10 @@ object FirestoreDatabaseProvider : DatabaseInterface {
                                 currentUserObservable.postValue(UserAdapter.fromDocument(it.data!!, it.id),this)
                                 loadSuccess = true
                             }
+                            loadSuccess = false
+                        }
+                        .addOnFailureListener {
+                            loadSuccess = false
                         }
                 }
                 return currentUserObservable.value
@@ -69,6 +71,9 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             loadSuccess=value!=null
             currentUserObservable.value = value
         }
+
+
+    override var currentProfile: UserProfile? = null
 
 
     //Method used to get listener in the test set to mock and test the database

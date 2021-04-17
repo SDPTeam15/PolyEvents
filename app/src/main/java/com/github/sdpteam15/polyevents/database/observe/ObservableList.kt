@@ -1,7 +1,7 @@
 package com.github.sdpteam15.polyevents.database.observe
 
 import androidx.lifecycle.LifecycleOwner
-import com.github.sdpteam15.polyevents.helper.HelperFunctions.observeOnStop
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.observeOnDestroy
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.run
 
 class IndexedValue<T>(val value: T, val index: Int)
@@ -249,7 +249,7 @@ class ObservableList<T> : MutableList<T> {
      *  @return a method to remove the observer
      */
     fun observeAdd(lifecycle: LifecycleOwner, observer: (UpdateArgs<T>) -> Unit): () -> Boolean =
-        observeOnStop(lifecycle, observeAdd(observer))
+        observeOnDestroy(lifecycle, observeAdd(observer))
 
     /**
      *  Add an observer for the live data removals
@@ -267,7 +267,7 @@ class ObservableList<T> : MutableList<T> {
      *  @return a method to remove the observer
      */
     fun observeRemove(lifecycle: LifecycleOwner, observer: (UpdateArgs<T>) -> Unit): () -> Boolean =
-        observeOnStop(lifecycle, observeRemove(observer))
+        observeOnDestroy(lifecycle, observeRemove(observer))
 
     /**
      *  Add an observer for the live data clearing
@@ -288,7 +288,7 @@ class ObservableList<T> : MutableList<T> {
         lifecycle: LifecycleOwner,
         observer: (UpdateArgs<IndexedValue<T>>) -> Unit
     ): () -> Boolean =
-        observeOnStop(lifecycle, observeUpdate(observer))
+        observeOnDestroy(lifecycle, observeUpdate(observer))
 
     /**
      *  Add an observer for the live data
@@ -306,7 +306,7 @@ class ObservableList<T> : MutableList<T> {
      *  @return a method to remove the observer
      */
     fun observe(lifecycle: LifecycleOwner, observer: (UpdateArgs<List<T>>) -> Unit): () -> Boolean =
-        observeOnStop(lifecycle, observe(observer))
+        observeOnDestroy(lifecycle, observe(observer))
 
     private fun itemAdded(value: UpdateArgs<T>) {
         run(Runnable {

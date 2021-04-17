@@ -17,7 +17,7 @@ interface ItemDatabaseInterface {
      * create a new Item
      * @param item item we want to add in the database
      * @param userAccess the user profile to use its permission
-     * @return An observer that will be set to the new Item ID if the communication with the DB is over and no error
+     * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun createItem(
         item: Item,

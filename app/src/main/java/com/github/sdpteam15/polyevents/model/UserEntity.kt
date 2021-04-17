@@ -35,11 +35,27 @@ data class UserEntity(
         get() =
             birthDate?.let { HelperFunctions.calculateAge(it, LocalDate.now()) }
 
-    val userProfiles: ObservableList<UserProfile>
+    var loadSuccess = false
+        set(value){
+            field = value
+            if(!value)
+                userProfiles
+        }
+    private lateinit var remove: () -> Boolean
+    var userProfiles: ObservableList<UserProfile> = ObservableList()
         get() {
-            val res = ObservableList<UserProfile>()
-            Database.currentDatabase.userDatabase!!.getUserProfilesList(res, this)
-            return res
+            if (!loadSuccess)
+                remove = Database.currentDatabase.userDatabase!!.getUserProfilesList(field, this)
+                    .observe {
+                        if(it.value)
+                            loadSuccess = true
+                        remove()
+                    }
+            return field
+        }
+        set(value) {
+            loadSuccess = true
+            field = value
         }
 
     /**

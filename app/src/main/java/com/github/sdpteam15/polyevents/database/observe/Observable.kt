@@ -1,7 +1,7 @@
 package com.github.sdpteam15.polyevents.database.observe
 
 import androidx.lifecycle.LifecycleOwner
-import com.github.sdpteam15.polyevents.helper.HelperFunctions.observeOnStop
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.observeOnDestroy
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.run
 
 /**
@@ -62,7 +62,7 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
      *  @return a method to remove the observer
      */
     fun observe(lifecycle: LifecycleOwner, observer: (UpdateArgs<T>) -> Unit): () -> Boolean =
-        observeOnStop(lifecycle, observe(observer))
+        observeOnDestroy(lifecycle, observe(observer))
 
     /**
      * Post a new value

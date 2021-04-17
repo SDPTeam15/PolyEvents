@@ -9,7 +9,7 @@ object DatabaseConstant {
         ZONE_COLLECTION("zones"),
         ITEM_COLLECTION("items"),
         EVENT_COLLECTION("events"),
-        PROFILE_COLLECTION("Profile"),
+        PROFILE_COLLECTION("profile"),
         USER_COLLECTION("users")
     }
 
@@ -34,7 +34,6 @@ object DatabaseConstant {
     }
 
     enum class ProfileConstants(val value: String) {
-        PROFILE_COLLECTION("profile"),
         PROFILE_ID("pid"),
         PROFILE_NAME("name"),
         PROFILE_RANK("rank"),

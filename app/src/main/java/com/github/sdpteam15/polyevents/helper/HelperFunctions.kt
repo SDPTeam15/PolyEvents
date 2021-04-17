@@ -46,10 +46,10 @@ object HelperFunctions {
         }
     }
 
-    fun observeOnStop(lifecycle: LifecycleOwner, result: () -> Boolean): () -> Boolean {
+    fun observeOnDestroy(lifecycle: LifecycleOwner, result: () -> Boolean): () -> Boolean {
         //Anonymous class to observe the ON_STOP Event ao the Activity/Fragment
         val lifecycleObserver = object : LifecycleObserver {
-            @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+            @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
             fun stopListener() = result()
         }
         lifecycle.lifecycle.addObserver(lifecycleObserver)
