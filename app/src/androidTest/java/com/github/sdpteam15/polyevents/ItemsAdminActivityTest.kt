@@ -1,7 +1,6 @@
 package com.github.sdpteam15.polyevents
 
 import android.content.Intent
-import android.util.Log
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.closeSoftKeyboard
@@ -10,21 +9,16 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.github.sdpteam15.polyevents.adapter.EventItemAdapter
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
-import com.github.sdpteam15.polyevents.database.DatabaseInterface
-import com.github.sdpteam15.polyevents.database.FakeDatabase
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
-import com.github.sdpteam15.polyevents.database.observe.ObservableList
+import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabase
+import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabaseItem
 import com.github.sdpteam15.polyevents.model.Item
 import com.github.sdpteam15.polyevents.model.ItemType
 import org.junit.After
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.junit.MockitoJUnitRunner
 
 
 class ItemsAdminActivityTest {
@@ -35,12 +29,12 @@ class ItemsAdminActivityTest {
     private val testQuantity = 3
 
 
-    lateinit var itemsAdminActivity : ActivityScenario<ItemsAdminActivity>
+    lateinit var itemsAdminActivity: ActivityScenario<ItemsAdminActivity>
 
     @Before
     fun setup() {
         availableItems = mutableMapOf()
-        availableItems[Item(null, "Bananas", ItemType.OTHER)] = 30
+        availableItems[Item(null, "Chocolat", ItemType.OTHER)] = 30
         availableItems[Item(null, "Kiwis", ItemType.OTHER)] = 10
         availableItems[Item(null, "230V Plugs", ItemType.PLUG)] = 30
         availableItems[Item(null, "Fridge (large)", ItemType.OTHER)] = 5
@@ -52,22 +46,24 @@ class ItemsAdminActivityTest {
         // TODO : replace by the db interface call
         currentDatabase = FakeDatabase
 
-        FakeDatabase.items.clear()
+        FakeDatabaseItem.items.clear()
         for ((item, count) in availableItems) {
-            currentDatabase.createItem(item, count)
+            currentDatabase.itemDatabase!!.createItem(item, count)
         }
 
-        val intent  = Intent(ApplicationProvider.getApplicationContext(), ItemsAdminActivity::class.java)
+        val intent =
+            Intent(ApplicationProvider.getApplicationContext(), ItemsAdminActivity::class.java)
         itemsAdminActivity = ActivityScenario.launch(intent)
 
         //itemsAdminActivity.scenario.recreate()
         Thread.sleep(1000)
     }
+
     @After
-    fun tearDown(){
+    fun tearDown() {
+        currentDatabase = FirestoreDatabaseProvider
         currentDatabase = FirestoreDatabaseProvider
     }
-
 
 
     @Test
@@ -89,7 +85,6 @@ class ItemsAdminActivityTest {
             .check(RecyclerViewItemCountAssertion(availableItems.size + 1))
     }
 
-    //Test passes manually but not with gradle
     @Test
     fun removeButtonRemovesItemFromList() {
         onView(withId(R.id.id_recycler_items_list)).perform(
@@ -97,6 +92,7 @@ class ItemsAdminActivityTest {
                 0, TestHelper.clickChildViewWithId(R.id.id_remove_item)
             )
         )
+        Thread.sleep(1000)
         onView(withId(R.id.id_recycler_items_list))
             .check(RecyclerViewItemCountAssertion(availableItems.size - 1))
     }

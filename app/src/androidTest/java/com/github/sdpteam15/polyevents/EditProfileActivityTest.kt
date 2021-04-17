@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents
 
 import android.content.Intent
+import android.service.autofill.UserData
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
@@ -16,6 +17,7 @@ import com.github.sdpteam15.polyevents.HelperTestFunction.getCurrentActivity
 import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
+import com.github.sdpteam15.polyevents.database.objects.UserDatabaseInterface
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
@@ -33,9 +35,10 @@ class EditProfileActivityTest {
     lateinit var scenario: ActivityScenario<EditProfileActivity>
     val activity: EditProfileActivity get() = getCurrentActivity()
 
-    lateinit var mokedDatabaseInterface: DatabaseInterface
-    lateinit var mokedUserEntity: UserEntity
-    lateinit var mokedUserProfile: UserProfile
+    lateinit var mockedDatabaseInterface: DatabaseInterface
+    lateinit var mockedUserEntity: UserEntity
+    lateinit var mockedUserProfile: UserProfile
+    lateinit var mockedUserDatabase: UserDatabaseInterface
 
     private val id: ViewInteraction get() = Espresso.onView(withId(R.id.EditProfileActivity_ID))
     private val idLayout: ViewInteraction get() = Espresso.onView(withId(R.id.EditProfileActivity_IDLayout))
@@ -51,29 +54,32 @@ class EditProfileActivityTest {
         intent.putExtra(CALLER_RANK, rank.toString())
         intent.putExtra(EDIT_PROFILE_ID, pid)
 
-        mokedDatabaseInterface = mock(DatabaseInterface::class.java)
-        mokedUserEntity = UserEntity(
+        mockedDatabaseInterface = mock(DatabaseInterface::class.java)
+        mockedUserDatabase = mock(UserDatabaseInterface::class.java)
+        When(mockedDatabaseInterface.userDatabase).thenReturn(mockedUserDatabase)
+
+        mockedUserEntity = UserEntity(
             uid = "UID",
             username = "UName",
             name = "UName"
         )
-        mokedUserProfile = UserProfile(
-            userUid = "UID",
+        mockedUserProfile = UserProfile(
+            pid = "PID",
             profileName = "PName",
             userRole = rank
         )
 
-        Database.currentDatabase = mokedDatabaseInterface
+        Database.currentDatabase = mockedDatabaseInterface
 
 
-        When(mokedDatabaseInterface.currentUser).thenReturn(mokedUserEntity)
-        When(mokedDatabaseInterface.currentProfile).thenReturn(mokedUserProfile)
+        When(mockedDatabaseInterface.currentUser).thenReturn(mockedUserEntity)
+        When(mockedDatabaseInterface.currentProfile).thenReturn(mockedUserProfile)
 
-        When(mokedDatabaseInterface.getProfileById(EditProfileActivity.updater, pid)).thenAnswer {
-            EditProfileActivity.updater.postValue(mokedUserProfile)
+        When(mockedUserDatabase.getProfileById(EditProfileActivity.updater, pid)).thenAnswer {
+            EditProfileActivity.updater.postValue(mockedUserProfile)
             Observable(true)
         }
-        When(mokedDatabaseInterface.updateProfile(EditProfileActivity.map, pid)).thenAnswer {
+        When(mockedUserDatabase.updateProfile(mockedUserProfile)).thenAnswer {
             Observable(true)
         }
 
@@ -96,7 +102,7 @@ class EditProfileActivityTest {
         rank.perform(replaceText(UserRole.ADMIN.toString()))
         name.perform(click())
         activity.rankOnFocusChangeListener(false)
-        rank.check(matches(ViewMatchers.withText(UserRole.ADMIN.toString())))
+        rank.check(matches(ViewMatchers.withText("Admin")))
 
         activity.nameOnFocusChangeListener(true)
         name.perform(replaceText("notnull"))
@@ -115,7 +121,7 @@ class EditProfileActivityTest {
         rank.perform(replaceText(UserRole.ADMIN.toString()))
         name.perform(click())
         activity.rankOnFocusChangeListener(false)
-        rank.check(matches(ViewMatchers.withText(UserRole.ADMIN.toString())))
+        rank.check(matches(ViewMatchers.withText("Admin")))
 
         activity.nameOnFocusChangeListener(true)
         name.perform(replaceText("notnull"))
@@ -131,14 +137,14 @@ class EditProfileActivityTest {
     fun adminCanNotUpdate() {
         setup(UserRole.ADMIN, "PID")
 
-        When(mokedDatabaseInterface.updateProfile(EditProfileActivity.map, "PID")).thenAnswer {
+        When(mockedUserDatabase.updateProfile(mockedUserProfile)).thenAnswer {
             Observable(false)
         }
 
         rank.perform(replaceText(UserRole.ADMIN.toString()))
         name.perform(click())
         activity.rankOnFocusChangeListener(false)
-        rank.check(matches(ViewMatchers.withText(UserRole.ADMIN.toString())))
+        rank.check(matches(ViewMatchers.withText("Admin")))
 
         activity.nameOnFocusChangeListener(true)
         name.perform(replaceText("notnull"))

@@ -7,13 +7,10 @@ import android.widget.Toast
 import androidx.arch.core.executor.ArchTaskExecutor
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
-import com.github.sdpteam15.polyevents.MainActivity
 import com.github.sdpteam15.polyevents.R
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -27,8 +24,12 @@ object HelperFunctions {
      * @param newFrag: the fragment we want to display (should be in the fragments app from Mainevent otherwise nothing happen)
      * @param activity: the activity in which a fragment is instantiate
      */
-    fun changeFragment(activity: FragmentActivity?, newFrag: Fragment?, idFrameLayout:Int=R.id.fl_wrapper) {
-        if(newFrag!=null) {
+    fun changeFragment(
+        activity: FragmentActivity?,
+        newFrag: Fragment?,
+        idFrameLayout: Int = R.id.fl_wrapper
+    ) {
+        if (newFrag != null) {
             activity?.supportFragmentManager?.beginTransaction()?.apply {
                 replace(idFrameLayout, newFrag)
                 commit()

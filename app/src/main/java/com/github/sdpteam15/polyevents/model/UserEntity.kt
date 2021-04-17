@@ -1,5 +1,7 @@
 package com.github.sdpteam15.polyevents.model
 
+import com.github.sdpteam15.polyevents.database.Database
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.google.firebase.firestore.IgnoreExtraProperties
 import java.time.LocalDate
@@ -20,70 +22,57 @@ import java.time.LocalDate
  */
 @IgnoreExtraProperties
 data class UserEntity(
-    val uid: String,
+    var uid: String,
     var username: String? = null,
     var name: String? = null,
     var birthDate: LocalDate? = null,
     var email: String? = null,
     var telephone: String? = null,
-    val profiles: MutableList<UserProfile> = mutableListOf()
+    val profiles: MutableList<String> = mutableListOf()
 ) {
 
     val age: Int?
         get() =
             birthDate?.let { HelperFunctions.calculateAge(it, LocalDate.now()) }
 
+    val userProfiles: ObservableList<UserProfile>
+        get() {
+            val res = ObservableList<UserProfile>()
+            Database.currentDatabase.userDatabase!!.getUserProfilesList(res, this)
+            return res
+        }
+
     /**
      * Check if current user has an admin profile
      * @return if one of the profiles has admin role
      */
     fun isAdmin(): Boolean {
-        for (profile in profiles) {
-            if (profile.userRole == UserRole.ADMIN) return true
-        }
-        return false
+        //TODO
+        return true
     }
 
     /**
      * Create a new Profile with the given to the associated user
-     * @param name the name of the profile
+     * @param profile the new Profile to add
      * @return true if new profile with given was successfully added
      */
-    fun addNewProfile(name: String): Boolean =
-        profiles.add(UserProfile(
-            userUid = uid,
-            profileName = name
-        ))
-
-    /**
-     * Add a new profile to the user's list of profiles
-     * @param userProfile the new Profile to add
-     * @return true if newProfile was successfully added
-     */
-    fun addNewProfile(userProfile: UserProfile): Boolean =
-        profiles.add(
-            userProfile
-        )
-
+    fun addNewProfile(profile: UserProfile): Boolean {
+        if (profile.pid != null) {
+            profiles.add(profile.pid!!)
+            profile.users.add(this.uid)
+            return true
+        }
+        return false
+    }
 
     /**
      * Remove a Profile with the given name
      * @param name the name of the profile to remove
      * @return true if a profile with the given name was found
      */
-    fun removeProfile(name: String?): Boolean {
-        if (name != null) {
-            for (prof in profiles) {
-                if (prof.profileName == name)
-                // TODO: do we allow several profiles with the same name? (if so need to remove them all)
-                    return profiles.remove(prof)
-            }
-        }
+    fun removeProfile(id: String?): Boolean {
+        if (id != null)
+            return profiles.remove(id)
         return false
-    }
-
-    // TODO
-    fun switchRoles(userRole: UserRole) {
-
     }
 }

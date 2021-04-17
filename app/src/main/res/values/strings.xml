@@ -4,9 +4,7 @@
     <string name="at_hour_text">at %1$s</string>
 
     <!-- Login Fragment strings-->
-    <string name="login_failed_text">Failed to log into your Google account</string>
-    <string name="login_failed_title">Login failed</string>
-    <string name="ok_button_text">OK</string>
+    <string name="login_failed_text">Failed to log into your account</string>
     <string name="login_button_text">Sign in with Google</string>
 
 
@@ -14,42 +12,6 @@
     <string name="text_lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse sed hendrerit quam. Phasellus sed nisl suscipit, dictum mauris et, imperdiet elit. Curabitur metus ipsum, ullamcorper sed augue quis, fermentum aliquet orci. Fusce suscipit dolor libero, et malesuada dolor viverra eget. Aenean imperdiet risus lectus, in consequat quam congue vel. Duis ut risus interdum, tincidunt lacus in, euismod dolor. Vestibulum ornare nulla nisl, vitae viverra libero finibus vitae. Nunc vitae lobortis ante. Nullam et erat sit amet erat faucibus elementum et non nisl. Aliquam convallis pellentesque nulla at luctus. Morbi rhoncus est quam, ac euismod urna cursus sed. Donec dignissim mi non est posuere vehicula.</string>
     <string name="label_tags">Tags:</string>
 
-    <string-array name="countries_array">
-        <item>Afghanistan</item>
-        <item>Albania</item>
-        <item>Algeria</item>
-        <item>American Samoa</item>
-        <item>Andorra</item>
-        <item>Angola</item>
-        <item>Anguilla</item>
-        <item>Antarctica</item>
-        <item>Antigua and Barbuda</item>
-        <item>Argentina</item>
-        <item>Armenia</item>
-        <item>Aruba</item>
-        <item>Australia</item>
-        <item>Austria</item>
-        <item>Azerbaijan</item>
-        <item>Bahrain</item>
-        <item>Bangladesh</item>
-        <item>Barbados</item>
-        <item>Belarus</item>
-        <item>Belgium</item>
-        <item>Belize</item>
-        <item>Benin</item>
-        <item>Bermuda</item>
-        <item>Bhutan</item>
-        <item>Bolivia</item>
-        <item>Bosnia and Herzegovina</item>
-        <item>Botswana</item>
-        <item>Bouvet Island</item>
-        <item>Brazil</item>
-        <item>British Indian Ocean Territory</item>
-        <item>British Virgin Islands</item>
-        <item>Brunei</item>
-        <item>Bulgaria</item>
-        <item>Switzerland</item>
-    </string-array>
 
     <!-- All string for Profile Fragment -->
     <string name="logout_button_text">Logout</string>
@@ -102,10 +64,6 @@
     </string-array>
     <!-- EditProfileActivity -->
 
-
-
-
-
     <!-- String related to the zone management activity-->
     <string name="btn_create_zone_button_text">Create zone</string>
     <string name="btn_update_zone_button_text">Update zone</string>
@@ -128,4 +86,6 @@
     <string name="btn_delete_coord_text">Delete</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="none">None</string>
+    <string name="ProfileList">Profile List</string>
+    <string name="profile_name_edit_Text">profile name</string>
 </resources>

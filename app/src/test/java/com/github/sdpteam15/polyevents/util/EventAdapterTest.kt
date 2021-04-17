@@ -1,15 +1,7 @@
 package com.github.sdpteam15.polyevents.util
 
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_DESCRIPTION
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_DOCUMENT_ID
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_END_TIME
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_ICON
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_INVENTORY
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_NAME
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_ORGANIZER
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_START_TIME
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_TAGS
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_ZONE_NAME
+
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.EventConstant.*
 import com.github.sdpteam15.polyevents.model.Event
 import com.github.sdpteam15.polyevents.model.Item
 import com.github.sdpteam15.polyevents.model.ItemType
@@ -58,19 +50,19 @@ class EventAdapterTest {
 
     @Test
     fun conversionOfEventToDocumentPreservesData() {
-        val document = EventAdapter.toEventDocument(event)
+        val document = EventAdapter.toDocument(event)
 
-        assertEquals(document[EVENT_DOCUMENT_ID], event.eventId)
-        assertEquals(document[EVENT_NAME], event.eventName)
-        assertEquals(document[EVENT_ORGANIZER], event.organizer)
-        assertEquals(document[EVENT_ZONE_NAME], event.zoneName)
-        assertEquals(document[EVENT_ICON], event.icon)
+        assertEquals(document[EVENT_DOCUMENT_ID.value], event.eventId)
+        assertEquals(document[EVENT_NAME.value], event.eventName)
+        assertEquals(document[EVENT_ORGANIZER.value], event.organizer)
+        assertEquals(document[EVENT_ZONE_NAME.value], event.zoneName)
+        assertEquals(document[EVENT_ICON.value], event.icon)
 
-        val storedEventInventory = document[EVENT_INVENTORY] as List<Item>
+        val storedEventInventory = document[EVENT_INVENTORY.value] as List<Item>
         assertTrue(storedEventInventory.contains(item1))
         assertTrue(storedEventInventory.contains(item2))
 
-        val storedEventTags = document[EVENT_TAGS] as List<String>
+        val storedEventTags = document[EVENT_TAGS.value] as List<String>
         assertTrue(storedEventTags.contains(tag1))
         assertTrue(storedEventTags.contains(tag2))
     }
@@ -84,18 +76,19 @@ class EventAdapterTest {
         )
 
         val eventDocumentData: HashMap<String, Any?> = hashMapOf(
-            EVENT_DOCUMENT_ID to testEventWithoutTimes.eventId,
-            EVENT_NAME to testEventWithoutTimes.eventName,
-            EVENT_ORGANIZER to testEventWithoutTimes.organizer,
-            EVENT_ZONE_NAME to testEventWithoutTimes.zoneName,
-            EVENT_DESCRIPTION to testEventWithoutTimes.description,
-            EVENT_START_TIME to testEventWithoutTimes.startTime,
-            EVENT_END_TIME to testEventWithoutTimes.endTime,
-            EVENT_TAGS to tags,
-            EVENT_INVENTORY to testEventWithoutTimes.inventory
+            EVENT_DOCUMENT_ID.value to testEventWithoutTimes.eventId,
+            EVENT_NAME.value to testEventWithoutTimes.eventName,
+            EVENT_ORGANIZER.value to testEventWithoutTimes.organizer,
+            EVENT_ZONE_NAME.value to testEventWithoutTimes.zoneName,
+            EVENT_DESCRIPTION.value to testEventWithoutTimes.description,
+            EVENT_START_TIME.value to testEventWithoutTimes.startTime,
+            EVENT_END_TIME.value to testEventWithoutTimes.endTime,
+            EVENT_TAGS.value to tags,
+            EVENT_INVENTORY.value to testEventWithoutTimes.inventory
         )
 
-        val obtainedEvent = EventAdapter.toEventEntity(eventDocumentData, testEventWithoutTimes.eventId!!)
+        val obtainedEvent =
+            EventAdapter.fromDocument(eventDocumentData, testEventWithoutTimes.eventId!!)
         assertEquals(testEventWithoutTimes, obtainedEvent)
         assertTrue(obtainedEvent.hasItem(item1))
         assertTrue(obtainedEvent.tags.contains(tag1))
@@ -103,7 +96,7 @@ class EventAdapterTest {
 
     @Test
     fun testConversionWithNullValues() {
-        val document = EventAdapter.toEventDocument(event)
+        val document = EventAdapter.toDocument(event)
         assertNull(document[EVENT_END_TIME])
     }
 }

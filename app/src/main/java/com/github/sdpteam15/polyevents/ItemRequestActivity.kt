@@ -42,7 +42,7 @@ class ItemRequestActivity : AppCompatActivity() {
             }
             Unit
         }
-        currentDatabase.getAvailableItems(obsItems).observe {
+        currentDatabase.itemDatabase!!.getAvailableItems(obsItems).observe {
             if (it.value) {
                 recyclerView.adapter =
                     ItemRequestAdapter(obsItems, onItemQuantityChangeListener)
