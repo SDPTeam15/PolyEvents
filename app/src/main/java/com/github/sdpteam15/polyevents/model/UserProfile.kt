@@ -22,14 +22,12 @@ data class UserProfile(
             if(!value)
                 userEntity
         }
-    private lateinit var remove: () -> Boolean
     var userEntity: ObservableList<UserEntity> = ObservableList()
         get() {
             if (!loadSuccess)
-                remove = Database.currentDatabase.userDatabase!!.getProfilesUserList(field, this)
-                    .observe {
+                Database.currentDatabase.userDatabase!!.getProfilesUserList(field, this)
+                    .observeOnce {
                         loadSuccess = it.value
-                        remove()
                     }
             return field
         }

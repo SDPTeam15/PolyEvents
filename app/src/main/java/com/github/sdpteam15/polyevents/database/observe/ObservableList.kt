@@ -7,10 +7,10 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions.run
 class IndexedValue<T>(val value: T, val index: Int)
 
 class ObservableList<T> : MutableList<T> {
-    private val observersAdd = mutableSetOf<(UpdateArgs<T>) -> Unit>()
-    private val observersRemove = mutableSetOf<(UpdateArgs<T>) -> Unit>()
-    private val observersItemUpdate = mutableSetOf<(UpdateArgs<IndexedValue<T>>) -> Unit>()
-    private val observers = mutableSetOf<(UpdateArgs<List<T>>) -> Unit>()
+    private val observersAdd = mutableSetOf<(UpdateArgs<IndexedValue<T>>) -> Boolean>()
+    private val observersRemove = mutableSetOf<(UpdateArgs<T>) -> Boolean>()
+    private val observersItemUpdate = mutableSetOf<(UpdateArgs<IndexedValue<T>>) -> Boolean>()
+    private val observers = mutableSetOf<(UpdateArgs<List<T>>) -> Boolean>()
 
     private val values: MutableList<Observable<T>> = mutableListOf()
     private val removeItemObserver: MutableMap<Observable<T>, () -> Boolean> = mutableMapOf()
@@ -55,7 +55,7 @@ class ObservableList<T> : MutableList<T> {
 
     override operator fun set(index: Int, element: T): T = set(index, element, null)
 
-    override fun add(element: T): Boolean = add(element, null) != null
+    override fun add(element: T) = add(element, null) != null
 
     /**
      * Add an observable.
@@ -72,22 +72,24 @@ class ObservableList<T> : MutableList<T> {
         notify: Boolean
     ): Observable<T>? {
         if (observable.value != null) {
-            if (!values.add(observable)) {
+            if (!values.add(observable))
                 return null
-            }
+            val index = values.indexOf(observable)
             removeItemObserver[observable] =
                 observable.observe {
                     itemUpdated(
                         UpdateArgs(
                             IndexedValue(
                                 it.value,
-                                values.indexOf(observable)
+                                index
                             ), it.sender
                         )
                     )
                 }
-            itemAdded(UpdateArgs(observable.value!!, sender))
-            notifyUpdate(sender)
+            itemAdded(UpdateArgs(IndexedValue(observable.value!!, index), sender))
+            if (notify) {
+                notifyUpdate(sender)
+            }
             return observable
         }
         return null
@@ -103,7 +105,7 @@ class ObservableList<T> : MutableList<T> {
     private fun add(item: T, sender: Any? = null, notify: Boolean): Observable<T>? =
         add(Observable(item), sender, notify)!!
 
-    override fun addAll(elements: Collection<T>): Boolean = addAll(elements, null)
+    override fun addAll(elements: Collection<T>) = addAll(elements, null)
 
     /**
      * Add all items in the list.
@@ -119,7 +121,7 @@ class ObservableList<T> : MutableList<T> {
         return res
     }
 
-    override fun remove(element: T): Boolean = remove(element, null) != null
+    override fun remove(element: T) = remove(element, null) != null
 
     /**
      * Remove an item.
@@ -127,7 +129,7 @@ class ObservableList<T> : MutableList<T> {
      * @param sender The source of the event.
      * @return observable removed.
      */
-    fun remove(observable: Observable<T>, sender: Any? = null): Observable<T>? =
+    fun remove(observable: Observable<T>, sender: Any? = null) =
         remove(observable, sender, true)
 
     private fun remove(
@@ -162,7 +164,7 @@ class ObservableList<T> : MutableList<T> {
         return null
     }
 
-    override fun removeAll(elements: Collection<T>): Boolean = removeAll(elements, null)
+    override fun removeAll(elements: Collection<T>) = removeAll(elements, null)
 
     /**
      * Add all items in the list.
@@ -195,8 +197,8 @@ class ObservableList<T> : MutableList<T> {
 
     private fun find(item: T): Observable<T>? = values.find { it.value == item }
 
-    override fun isEmpty(): Boolean = values.isEmpty()
-    override fun contains(element: T): Boolean = (find(element) != null)
+    override fun isEmpty() = values.isEmpty()
+    override fun contains(element: T) = (find(element) != null)
 
     override fun indexOf(element: T): Int {
         val item = find(element) ?: return -1
@@ -217,8 +219,48 @@ class ObservableList<T> : MutableList<T> {
         return values.lastIndexOf(item)
     }
 
+    private fun add(
+        index: Int,
+        observable: Observable<T>,
+        sender: Any? = null,
+        notify: Boolean
+    ): Observable<T>? {
+        if (observable.value != null) {
+            values.add(index, observable)
+            removeItemObserver[observable] =
+                observable.observe {
+                    itemUpdated(
+                        UpdateArgs(
+                            IndexedValue(
+                                it.value,
+                                index
+                            ), it.sender
+                        )
+                    )
+                }
+            itemAdded(UpdateArgs(IndexedValue(observable.value!!, index), sender))
+            if (notify) {
+                notifyUpdate(sender)
+            }
+            return observable
+        }
+        return null
+    }
+
+    /**
+     * Add an item.
+     * @param index Index to add.
+     * @param item Item to add.
+     * @param sender The source of the event.
+     * @return Observable added.
+     */
+    fun add(index: Int, item: T, sender: Any?) = add(index, item, sender, true)
+
+    private fun add(index: Int, item: T, sender: Any? = null, notify: Boolean) =
+        add(index, Observable(item), sender, notify)!!
+
     override fun add(index: Int, element: T) {
-        TODO("Not yet implemented")
+        add(index, element)
     }
 
     override fun addAll(index: Int, elements: Collection<T>): Boolean {
@@ -234,101 +276,370 @@ class ObservableList<T> : MutableList<T> {
     }
 
     /**
+     *  Add an observer for the live data additions while it return true
+     *  @param observer observer for the live data additions
+     *  @return a method to remove the observer
+     */
+    fun observeAddWithIndexWhileTrue(observer: (UpdateArgs<IndexedValue<T>>) -> Boolean): () -> Boolean {
+        observersAdd.add(observer)
+        return { leaveAdd(observer) }
+    }
+
+    /**
+     *  Add an observer for the live data additions while it return true
+     *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @param observer observer for the live data additions
+     *  @return a method to remove the observer
+     */
+    fun observeAddWithIndexWhileTrue(
+        lifecycle: LifecycleOwner,
+        observer: (UpdateArgs<IndexedValue<T>>) -> Boolean
+    ) =
+        observeOnDestroy(lifecycle, observeAddWithIndexWhileTrue(observer))
+
+    /**
+     *  Add an observer for the live data additions while it return true
+     *  @param observer observer for the live data additions
+     *  @return a method to remove the observer
+     */
+    fun observeAddWhileTrue(observer: (UpdateArgs<T>) -> Boolean) = observeAddWithIndexWhileTrue {
+        observer(UpdateArgs(it.value.value, it.sender))
+    }
+
+    /**
+     *  Add an observer for the live data additions while it return true
+     *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @param observer observer for the live data additions
+     *  @return a method to remove the observer
+     */
+    fun observeAddWhileTrue(lifecycle: LifecycleOwner, observer: (UpdateArgs<T>) -> Boolean) =
+        observeOnDestroy(lifecycle, observeAddWhileTrue(observer))
+
+    /**
      *  Add an observer for the live data additions
      *  @param observer observer for the live data additions
      *  @return a method to remove the observer
      */
-    fun observeAdd(observer: (UpdateArgs<T>) -> Unit): () -> Boolean {
-        observersAdd.add(observer)
-        return { observersAdd.remove(observer) }
+    fun observeAddWithIndex(observer: (UpdateArgs<IndexedValue<T>>) -> Unit) =
+        observeAddWithIndexWhileTrue {
+            observer(it)
+            true
+        }
+
+    /**
+     *  Add an observer for the live data additions
+     *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @param observer observer for the live data additions
+     *  @return a method to remove the observer
+     */
+    fun observeAddWithIndex(
+        lifecycle: LifecycleOwner,
+        observer: (UpdateArgs<IndexedValue<T>>) -> Unit
+    ) =
+        observeOnDestroy(lifecycle, observeAddWithIndex(observer))
+
+    /**
+     *  Add an observer for the live data additions
+     *  @param observer observer for the live data additions
+     *  @return a method to remove the observer
+     */
+    fun observeAdd(observer: (UpdateArgs<T>) -> Unit) = observeAddWhileTrue {
+        observer(it)
+        true
     }
 
     /**
      *  Add an observer for the live data additions
+     *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @param observer observer for the live data additions
+     *  @return a method to remove the observer
+     */
+    fun observeAdd(lifecycle: LifecycleOwner, observer: (UpdateArgs<T>) -> Unit) =
+        observeOnDestroy(lifecycle, observeAdd(observer))
+
+    /**
+     *  Add an observer for the live data additions once
+     *  @param observer observer for the live data additions
+     *  @return a method to remove the observer
+     */
+    fun observeAddWithIndexOnce(observer: (UpdateArgs<IndexedValue<T>>) -> Unit) =
+        observeAddWithIndexWhileTrue {
+            observer(it)
+            false
+        }
+
+    /**
+     *  Add an observer for the live data additions once
+     *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @param observer observer for the live data additions
+     *  @return a method to remove the observer
+     */
+    fun observeAddWithIndexOnce(
+        lifecycle: LifecycleOwner,
+        observer: (UpdateArgs<IndexedValue<T>>) -> Unit
+    ) =
+        observeOnDestroy(lifecycle, observeAddWithIndexOnce(observer))
+
+    /**
+     *  Add an observer for the live data additions once
+     *  @param observer observer for the live data additions
+     *  @return a method to remove the observer
+     */
+    fun observeAddOnce(observer: (UpdateArgs<T>) -> Unit) = observeAddWhileTrue {
+        observer(it)
+        false
+    }
+
+    /**
+     *  Add an observer for the live data additions once
+     *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @param observer observer for the live data additions
+     *  @return a method to remove the observer
+     */
+    fun observeAddOnce(lifecycle: LifecycleOwner, observer: (UpdateArgs<T>) -> Unit) =
+        observeOnDestroy(lifecycle, observeAddOnce(observer))
+
+    /**
+     *  remove an observer for the live data
+     *  @param observer observer for the live data
+     *  @return if the observer have been remove
+     */
+    fun leaveAdd(observer: (UpdateArgs<IndexedValue<T>>) -> Boolean) = observersAdd.remove(observer)
+
+    /**
+     *  Add an observer for the live data removals while it return true
+     *  @param observer observer for the live data removals
+     *  @return a method to remove the observer
+     */
+    fun observeRemoveWhileTrue(observer: (UpdateArgs<T>) -> Boolean): () -> Boolean {
+        observersRemove.add(observer)
+        return { leaveRemove(observer) }
+    }
+
+    /**
+     *  Add an observer for the live data removals while it return true
      *  @param observer lifecycle of the observer to automatically remove it from the observers when stopped
      *  @return a method to remove the observer
      */
-    fun observeAdd(lifecycle: LifecycleOwner, observer: (UpdateArgs<T>) -> Unit): () -> Boolean =
-        observeOnDestroy(lifecycle, observeAdd(observer))
+    fun observeRemoveWhileTrue(
+        lifecycle: LifecycleOwner,
+        observer: (UpdateArgs<T>) -> Boolean
+    ): () -> Boolean =
+        observeOnDestroy(lifecycle, observeRemoveWhileTrue(observer))
 
     /**
      *  Add an observer for the live data removals
      *  @param observer observer for the live data removals
      *  @return a method to remove the observer
      */
-    fun observeRemove(observer: (UpdateArgs<T>) -> Unit): () -> Boolean {
-        observersRemove.add(observer)
-        return { observersRemove.remove(observer) }
+    fun observeRemove(observer: (UpdateArgs<T>) -> Unit) = observeRemoveWhileTrue {
+        observer(it)
+        true
     }
 
     /**
      *  Add an observer for the live data removals
-     *  @param observer lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @param observer observer for the live data removals
      *  @return a method to remove the observer
      */
-    fun observeRemove(lifecycle: LifecycleOwner, observer: (UpdateArgs<T>) -> Unit): () -> Boolean =
+    fun observeRemove(lifecycle: LifecycleOwner, observer: (UpdateArgs<T>) -> Unit) =
         observeOnDestroy(lifecycle, observeRemove(observer))
 
     /**
-     *  Add an observer for the live data clearing
-     *  @param observer observer for the live data clearing
+     *  Add an observer for the live data removals once
+     *  @param observer observer for the live data removals
      *  @return a method to remove the observer
      */
-    fun observeUpdate(observer: (UpdateArgs<IndexedValue<T>>) -> Unit): () -> Boolean {
-        observersItemUpdate.add(observer)
-        return { observersItemUpdate.remove(observer) }
+    fun observeRemoveOnce(observer: (UpdateArgs<T>) -> Unit) = observeRemoveWhileTrue {
+        observer(it)
+        false
     }
 
     /**
-     *  Add an observer for the live data clearing
-     *  @param observer lifecycle of the observer to automatically remove it from the observers when stopped
+     *  Add an observer for the live data removals once
+     *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @param observer observer for the live data removals
+     *  @return a method to remove the observer
+     */
+    fun observeRemoveOnce(
+        lifecycle: LifecycleOwner,
+        observer: (UpdateArgs<T>) -> Unit
+    ) = observeOnDestroy(lifecycle, observeRemove(observer))
+
+    /**
+     *  remove an observer for the live data
+     *  @param observer observer for the live data
+     *  @return if the observer have been remove
+     */
+    fun leaveRemove(observer: (UpdateArgs<T>) -> Boolean) = observersRemove.remove(observer)
+
+    /**
+     *  Add an observer for the live data updating while it return tru
+     *  @param observer observer for the live data updating
+     *  @return a method to remove the observer
+     */
+    fun observeUpdateWhileTrue(observer: (UpdateArgs<IndexedValue<T>>) -> Boolean): () -> Boolean {
+        observersItemUpdate.add(observer)
+        return { leaveUpdate(observer) }
+    }
+
+    /**
+     *  Add an observer for the live data updating while it return tru
+     *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @param observer observer for the live data updating
+     *  @return a method to remove the observer
+     */
+    fun observeUpdateWhileTrue(
+        lifecycle: LifecycleOwner,
+        observer: (UpdateArgs<IndexedValue<T>>) -> Boolean
+    ) = observeOnDestroy(lifecycle, observeUpdateWhileTrue(observer))
+
+    /**
+     *  Add an observer for the live data updating
+     *  @param observer observer for the live data updating
+     *  @return a method to remove the observer
+     */
+    fun observeUpdate(observer: (UpdateArgs<IndexedValue<T>>) -> Unit) = observeUpdateWhileTrue {
+        observer(it)
+        true
+    }
+
+    /**
+     *  Add an observer for the live data updating
+     *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @param observer observer for the live data updating
      *  @return a method to remove the observer
      */
     fun observeUpdate(
         lifecycle: LifecycleOwner,
         observer: (UpdateArgs<IndexedValue<T>>) -> Unit
-    ): () -> Boolean =
-        observeOnDestroy(lifecycle, observeUpdate(observer))
+    ) = observeOnDestroy(lifecycle, observeUpdate(observer))
+
+    /**
+     *  Add an observer for the live data updating once
+     *  @param observer observer for the live data updating
+     *  @return a method to remove the observer
+     */
+    fun observeUpdateOnce(observer: (UpdateArgs<IndexedValue<T>>) -> Unit) =
+        observeUpdateWhileTrue {
+            observer(it)
+            false
+        }
+
+    /**
+     *  Add an observer for the live data updating once
+     *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @param observer observer for the live data updating
+     *  @return a method to remove the observer
+     */
+    fun observeUpdateOnce(
+        lifecycle: LifecycleOwner,
+        observer: (UpdateArgs<IndexedValue<T>>) -> Unit
+    ) = observeOnDestroy(lifecycle, observeUpdate(observer))
+
+    /**
+     *  remove an observer for the live data
+     *  @param observer observer for the live data
+     *  @return if the observer have been remove
+     */
+    fun leaveUpdate(observer: (UpdateArgs<IndexedValue<T>>) -> Boolean) =
+        observersItemUpdate.remove(observer)
+
+    /**
+     *  Add an observer for the live data while it return true
+     *  @param observer observer for the live data
+     *  @return a method to remove the observer
+     */
+    fun observeWhileTrue(observer: (UpdateArgs<List<T>>) -> Boolean): () -> Boolean {
+        observers.add(observer)
+        return { leave(observer) }
+    }
+
+    /**
+     *  Add an observer for the live data while it return true
+     *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @param observer observer for the live data
+     *  @return a method to remove the observer
+     */
+    fun observeWhileTrue(lifecycle: LifecycleOwner, observer: (UpdateArgs<List<T>>) -> Boolean) =
+        observeOnDestroy(lifecycle, observeWhileTrue(observer))
 
     /**
      *  Add an observer for the live data
      *  @param observer observer for the live data
      *  @return a method to remove the observer
      */
-    fun observe(observer: (UpdateArgs<List<T>>) -> Unit): () -> Boolean {
-        observers.add(observer)
-        return { observers.remove(observer) }
+    fun observe(observer: (UpdateArgs<List<T>>) -> Unit) = observeWhileTrue {
+        observer(it)
+        true
     }
 
     /**
      *  Add an observer for the live data
-     *  @param observer lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @param observer observer for the live data
      *  @return a method to remove the observer
      */
-    fun observe(lifecycle: LifecycleOwner, observer: (UpdateArgs<List<T>>) -> Unit): () -> Boolean =
+    fun observe(lifecycle: LifecycleOwner, observer: (UpdateArgs<List<T>>) -> Unit) =
         observeOnDestroy(lifecycle, observe(observer))
 
-    private fun itemAdded(value: UpdateArgs<T>) {
+    /**
+     *  Add an observer for the live data once
+     *  @param observer observer for the live data
+     *  @return a method to remove the observer
+     */
+    fun observeOnce(observer: (UpdateArgs<List<T>>) -> Unit) = observeWhileTrue {
+        observer(it)
+        false
+    }
+
+    /**
+     *  Add an observer for the live data once
+     *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @param observer observer for the live data
+     *  @return a method to remove the observer
+     */
+    fun observeOnce(lifecycle: LifecycleOwner, observer: (UpdateArgs<List<T>>) -> Unit) =
+        observeOnDestroy(lifecycle, observeOnce(observer))
+
+    /**
+     *  remove an observer for the live data
+     *  @param observer observer for the live data
+     *  @return if the observer have been remove
+     */
+    fun leave(observer: (UpdateArgs<List<T>>) -> Boolean) = observers.remove(observer)
+
+    private fun itemAdded(value: UpdateArgs<IndexedValue<T>>) {
         run(Runnable {
-            for (obs in observersAdd) {
-                obs(value)
-            }
+            val toRemove = mutableListOf<(UpdateArgs<IndexedValue<T>>) -> Boolean>()
+            for (obs in observersAdd)
+                if (!obs(value))
+                    toRemove.add(obs)
+            for (obs in toRemove)
+                leaveAdd(obs)
         })
     }
 
     private fun itemRemoved(value: UpdateArgs<T>) {
         run(Runnable {
-            for (obs in observersRemove) {
-                obs(value)
-            }
+            val toRemove = mutableListOf<(UpdateArgs<T>) -> Boolean>()
+            for (obs in observersRemove)
+                if (!obs(value))
+                    toRemove.add(obs)
+            for (obs in toRemove)
+                leaveRemove(obs)
         })
     }
 
     private fun itemUpdated(value: UpdateArgs<IndexedValue<T>>) {
         run(Runnable {
-            for (obs in observersItemUpdate) {
-                obs(value)
-            }
+            val toRemove = mutableListOf<(UpdateArgs<IndexedValue<T>>) -> Boolean>()
+            for (obs in observersItemUpdate)
+                if (!obs(value))
+                    toRemove.add(obs)
+            for (obs in toRemove)
+                leaveUpdate(obs)
             notifyUpdate(value.sender)
         })
     }
@@ -336,20 +647,23 @@ class ObservableList<T> : MutableList<T> {
     fun notifyUpdate(sender: Any? = null) {
         if (observers.isNotEmpty()) {
             val valueList = this.value
-            for (obs in observers) {
-                obs(UpdateArgs(valueList, sender))
-            }
+            val toRemove = mutableListOf<(UpdateArgs<List<T>>) -> Boolean>()
+            for (obs in observers)
+                if (!obs(UpdateArgs(valueList, sender)))
+                    toRemove.add(obs)
+            for (obs in toRemove)
+                leave(obs)
         }
     }
 
     inner class ObservableListIterator(var index: Int) : MutableListIterator<T> {
-        override fun hasNext(): Boolean = values.size > index
-        override fun next(): T = get(index++)
-        override fun nextIndex(): Int = index + 1
+        override fun hasNext() = values.size > index
+        override fun next() = get(index++)
+        override fun nextIndex() = index + 1
 
-        override fun hasPrevious(): Boolean = index > 0
-        override fun previous(): T = get(--index)
-        override fun previousIndex(): Int = index
+        override fun hasPrevious() = index > 0
+        override fun previous() = get(--index)
+        override fun previousIndex() = index
 
 
         override fun add(element: T) = add(index++, element)

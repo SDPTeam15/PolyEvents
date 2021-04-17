@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.model
 
 import com.github.sdpteam15.polyevents.database.Database
+import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.google.firebase.firestore.IgnoreExtraProperties
@@ -41,21 +42,33 @@ data class UserEntity(
             if(!value)
                 userProfiles
         }
-    private lateinit var remove: () -> Boolean
     var userProfiles: ObservableList<UserProfile> = ObservableList()
         get() {
             if (!loadSuccess)
-                remove = Database.currentDatabase.userDatabase!!.getUserProfilesList(field, this)
-                    .observe {
+                Database.currentDatabase.userDatabase!!.getUserProfilesList(field, this)
+                    .observeOnce {
                         if(it.value)
                             loadSuccess = true
-                        remove()
                     }
             return field
         }
         set(value) {
             loadSuccess = true
             field = value
+        }
+
+    val bestRole: Observable<UserRole>
+        get() {
+            val result = Observable<UserRole>()
+            userProfiles
+                .observeOnce {
+                    var res = UserRole.PARTICIPANT
+                    for (e in it.value)
+                        if(e.userRole < res)
+                            res = e.userRole
+                    result.postValue(res, this)
+                }
+            return result
         }
 
     /**
