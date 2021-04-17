@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.model
 
 import com.github.sdpteam15.polyevents.database.Database
+import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.google.firebase.firestore.IgnoreExtraProperties
@@ -35,11 +36,39 @@ data class UserEntity(
         get() =
             birthDate?.let { HelperFunctions.calculateAge(it, LocalDate.now()) }
 
-    val userProfiles: ObservableList<UserProfile>
+    var loadSuccess = false
+        set(value){
+            field = value
+            if(!value)
+                userProfiles
+        }
+    var userProfiles: ObservableList<UserProfile> = ObservableList()
         get() {
-            val res = ObservableList<UserProfile>()
-            Database.currentDatabase.userDatabase!!.getUserProfilesList(res, this)
-            return res
+            if (!loadSuccess)
+                Database.currentDatabase.userDatabase!!.getUserProfilesList(field, this)
+                    .observeOnce {
+                        if(it.value)
+                            loadSuccess = true
+                    }
+            return field
+        }
+        set(value) {
+            loadSuccess = true
+            field = value
+        }
+
+    val bestRole: Observable<UserRole>
+        get() {
+            val result = Observable<UserRole>()
+            userProfiles
+                .observeOnce {
+                    var res = UserRole.PARTICIPANT
+                    for (e in it.value)
+                        if(e.userRole < res)
+                            res = e.userRole
+                    result.postValue(res, this)
+                }
+            return result
         }
 
     /**

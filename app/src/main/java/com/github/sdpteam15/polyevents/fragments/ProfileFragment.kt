@@ -16,6 +16,7 @@ import com.github.sdpteam15.polyevents.*
 import com.github.sdpteam15.polyevents.adapter.ProfileAdapter
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.UserConstants.USER_USERNAME
+import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
@@ -44,9 +45,6 @@ class ProfileFragment : Fragment() {
      * Recycler containing all the items
      */
     lateinit var recyclerView: RecyclerView
-
-    val profiles = ObservableList<UserProfile>()
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -113,30 +111,26 @@ class ProfileFragment : Fragment() {
                 }
         }
 
-        initProfileList(viewRoot)
+        currentDatabase.currentUserObservable.observe(this) {
+            initProfileList(viewRoot, it.value)
+        }
 
         return viewRoot
     }
 
-    fun initProfileList(viewRoot: View) {
-        profiles.observeRemove {
+    fun initProfileList(viewRoot: View, user : UserEntity) {
+        user.userProfiles.observeRemove(this) {
             if (it.sender != currentDatabase.userDatabase!!)
                 currentDatabase.userDatabase!!.removeProfile(it.value)
         }
-        profiles.observeAdd {
+        user.userProfiles.observeAdd(this) {
             if (it.sender != currentDatabase.userDatabase!!)
-                currentDatabase.userDatabase!!.addUserProfileAndAddToUser(it.value, currentUser!!)
+                currentDatabase.userDatabase!!.addUserProfileAndAddToUser(it.value, user)
         }
 
         recyclerView = viewRoot.findViewById(R.id.id_recycler_profile_list)
-        recyclerView.adapter = ProfileAdapter(this, profiles)
+        recyclerView.adapter = ProfileAdapter(this, user.userProfiles)
 
-        if (currentUser!!.profiles.size > 0)
-            currentDatabase.userDatabase!!.getUserProfilesList(profiles, currentUser!!)
-                .observe(this) {
-                    if (!it.value)
-                        HelperFunctions.showToast(getString(R.string.fail_to_update), activity)
-                }
 
         viewRoot.findViewById<ImageButton>(R.id.id_add_profile_button)
             .setOnClickListener { createProfilePopup() }
@@ -176,7 +170,7 @@ class ProfileFragment : Fragment() {
 
         // Set a click listener for popup's button widget
         confirmButton.setOnClickListener {
-            profiles.add(
+            currentUser!!.userProfiles.add(
                 UserProfile(
                     profileName = profileName.text.toString()
                 ), this
@@ -201,15 +195,6 @@ class ProfileFragment : Fragment() {
         )
         intent.putExtra(EDIT_PROFILE_ID, item.pid)
         startActivity(intent)
-        remove = EditProfileActivity.end.observe {
-            if (it.value) {
-                remove()
-                currentDatabase.userDatabase!!.getUserProfilesList(profiles, currentUser!!)
-                    .observe(this) {
-                        if (!it.value)
-                            HelperFunctions.showToast(getString(R.string.fail_to_update), activity)
-                    }
-            }
-        }
+        currentUser!!.loadSuccess = false
     }
 }

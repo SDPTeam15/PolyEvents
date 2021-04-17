@@ -18,13 +18,13 @@ class ProfileAdapter(
 ) : RecyclerView.Adapter<ProfileAdapter.ItemViewHolder>() {
 
     init {
-        items.observe {
+        items.observe(profileFragment) {
             notifyDataSetChanged()
         }
     }
 
     /**
-     * adapted ViewHolder for each item
+     * adapted ViewHolder for each profile
      * Takes the corresponding event view
      */
     inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -34,13 +34,15 @@ class ProfileAdapter(
         private val btnRemove = view.findViewById<ImageButton>(R.id.id_profile_remove_item)
 
         /**
-         * Binds the values of each view of an event to the layout of an event
+         * Binds the values of each view of an event to the layout of an profile
          */
         fun bind(item: UserProfile) {
 
             R.id.id_edittext_item_name
             itemName.text =
-                if (item.userRole != UserRole.PARTICIPANT) "${item.profileName} (${item.userRole})" else item.profileName
+                if (item.userRole != UserRole.PARTICIPANT)
+                    "${item.profileName} (${item.userRole})"
+                else item.profileName
             btnRemove.setOnClickListener {
                 items.remove(item)
             }

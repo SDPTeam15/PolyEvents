@@ -17,6 +17,7 @@ interface UserDatabaseInterface {
     val currentProfile: UserProfile?
         get() = Database.currentDatabase.currentProfile
 
+    // TODO: Do we need userAccess for these methods? (Might do these with security rules)
     /**
      * Update the user information in the database
      * @param newValues : a map with the new value to set in the database
@@ -72,7 +73,7 @@ interface UserDatabaseInterface {
      * @param profile profile we want to add in the database
      * @param user user to add
      * @param userAccess user for database access
-     * @return An observer that will be set to the new UserProfile ID if the communication with the DB is over and no error
+     * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun addUserProfileAndAddToUser(
         profile: UserProfile,

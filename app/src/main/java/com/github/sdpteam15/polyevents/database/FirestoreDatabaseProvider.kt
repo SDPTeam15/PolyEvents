@@ -13,7 +13,6 @@ import com.github.sdpteam15.polyevents.util.UserAdapter
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
@@ -25,9 +24,6 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     @SuppressLint("StaticFieldLeak")
     var firestore: FirebaseFirestore? = null
         get() = field ?: Firebase.firestore
-
-    override var currentProfile: UserProfile? = null
-        get() = null
 
     override var itemDatabase: ItemDatabaseInterface? = null
         get() = field ?: ItemDatabaseFirestore
@@ -43,20 +39,23 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         get() = field ?: MaterialRequestDatabaseFirestore
 
     override val currentUserObservable = Observable<UserEntity>()
-    private var loadSuccess = false
+    var loadSuccess : Boolean? = false
     override var currentUser: UserEntity?
         get() {
             if(UserLogin.currentUserLogin.isConnected()){
-                if(!loadSuccess) {
+                if(loadSuccess == false) {
+                    loadSuccess = null
                     currentUserObservable.postValue(UserLogin.currentUserLogin.getCurrentUser()!!,this)
                     firestore!!.collection(USER_COLLECTION.value)
-                        .document(FirebaseAuth.getInstance().currentUser!!.uid)
+                        .document(currentUserObservable.value!!.uid)
                         .get()
                         .addOnSuccessListener {
-                            if(it.data!=null){
+                            loadSuccess = it.data!=null
+                            if(loadSuccess!!)
                                 currentUserObservable.postValue(UserAdapter.fromDocument(it.data!!, it.id),this)
-                                loadSuccess = true
-                            }
+                        }
+                        .addOnFailureListener {
+                            loadSuccess = false
                         }
                 }
                 return currentUserObservable.value
@@ -69,6 +68,9 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             loadSuccess=value!=null
             currentUserObservable.value = value
         }
+
+
+    override var currentProfile: UserProfile? = null
 
 
     //Method used to get listener in the test set to mock and test the database

@@ -1,18 +1,25 @@
 package com.github.sdpteam15.polyevents
 
 import android.content.Intent
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.RecyclerViewActions
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
+import com.github.sdpteam15.polyevents.adapter.EventItemAdapter
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.NUMBER_UPCOMING_EVENTS
 import com.github.sdpteam15.polyevents.database.objects.EventDatabaseInterface
 import com.github.sdpteam15.polyevents.database.objects.UserDatabaseInterface
 import com.github.sdpteam15.polyevents.database.observe.Observable
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.fragments.HomeFragment
 import com.github.sdpteam15.polyevents.fragments.LoginFragment
 import com.github.sdpteam15.polyevents.fragments.ProfileFragment
@@ -21,17 +28,15 @@ import com.github.sdpteam15.polyevents.login.UserLogin
 import com.github.sdpteam15.polyevents.login.UserLoginInterface
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
+import com.github.sdpteam15.polyevents.model.UserRole
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import org.hamcrest.Matchers
-import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.any
 import org.mockito.Mockito.mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.anyOrNull
@@ -41,19 +46,21 @@ import org.mockito.Mockito.`when` as When
 private const val displayNameTest = "Test displayName"
 private const val emailTest = "Test email"
 private const val uidTest = "Test uid"
-private const val pidTest = "Test pid"
 
 private const val displayNameTest2 = "Test displayName2"
 private const val emailTest2 = "Test email2"
 private const val uidTest2 = "Test uid2"
 
+private const val pidTest = "Test pid"
+
 @RunWith(MockitoJUnitRunner::class)
 class ProfileLoginFragmentTests {
     @Rule
     @JvmField
-    var testRule = ActivityScenarioRule<MainActivity>(MainActivity::class.java)
+    var testRule = ActivityScenarioRule(MainActivity::class.java)
 
     lateinit var user: UserEntity
+    lateinit var userObservable: Observable<UserEntity>
     lateinit var user2: UserEntity
     lateinit var profile: UserProfile
     lateinit var mockedDatabaseUser: UserEntity
@@ -102,6 +109,9 @@ class ProfileLoginFragmentTests {
         ).thenAnswer {
             Observable(true)
         }
+        userObservable = Observable()
+        When(mockedDatabase.currentUserObservable)
+            .thenAnswer { userObservable }
         currentDatabase = mockedDatabase
     }
 
@@ -119,8 +129,8 @@ class ProfileLoginFragmentTests {
 
         onView(withId(R.id.btnLogin)).perform(click())
 
-        assert(GoogleUserLogin.gso!=null)
-        assert(GoogleUserLogin.signIn!=null)
+        assert(GoogleUserLogin.gso != null)
+        assert(GoogleUserLogin.signIn != null)
         GoogleUserLogin.firebaseAuth = null
     }
 
@@ -232,7 +242,6 @@ class ProfileLoginFragmentTests {
         onView(withId(R.id.id_fragment_profile)).check(matches(isDisplayed()))
     }
 
-
     @Test
     fun signInButtonRedirectToProfileFragmentAfterSuccess() {
         //Log out from Firebase if connected
@@ -271,7 +280,6 @@ class ProfileLoginFragmentTests {
         onView(withId(R.id.profileName)).check(matches(withText(Matchers.equalTo(displayNameTest))))
         onView(withId(R.id.profileEmail)).check(matches(withText(Matchers.equalTo(emailTest))))
     }
-
 
     @Test
     fun updateAreCorrectlyRefreshedAndDisplayed() {
@@ -415,6 +423,7 @@ class ProfileLoginFragmentTests {
 
     @Test
     fun ifInDbDoNotAddIt() {
+
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
         initDBTests()
@@ -488,5 +497,185 @@ class ProfileLoginFragmentTests {
         onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
 
     }
-}
 
+    @Test
+    fun profilesAreDisplayed() {
+        val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
+        loginFragment.currentUser = user
+
+        val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
+        profileFragment.currentUser = user
+        loginDirectly(loginFragment, R.id.ic_login)
+
+        //Mock the profile
+        When(
+            mockedUserDatabase.getUserProfilesList(
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenAnswer {
+            val profiles = it!!.arguments[0] as ObservableList<UserProfile>
+            profiles.clear(currentDatabase)
+            profiles.add(
+                UserProfile(
+                    pid = pidTest,
+                    profileName = displayNameTest,
+                    userRole = UserRole.PARTICIPANT,
+                    users = mutableListOf(user.uid)
+                ), currentDatabase
+            )
+            profiles.add(
+                UserProfile(
+                    pid = pidTest,
+                    profileName = displayNameTest,
+                    userRole = UserRole.ADMIN,
+                    users = mutableListOf(user.uid)
+                ), currentDatabase
+            )
+            Observable(true)
+        }
+
+        user.profiles.add(pidTest)
+        userObservable.postValue(user)
+
+        onView(withId(R.id.id_recycler_profile_list)).check(RecyclerViewItemCountAssertion(2))
+    }
+
+
+    @Test
+    fun addButtonPopupAddsItemToList() {
+
+        val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
+        loginFragment.currentUser = user
+
+        val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
+        profileFragment.currentUser = user
+        loginDirectly(loginFragment, R.id.ic_login)
+
+        //Mock the profile
+        When(
+            mockedUserDatabase.addUserProfileAndAddToUser(
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenAnswer {
+            Observable(true)
+        }
+        When(
+            mockedUserDatabase.getUserProfilesList(
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenAnswer {
+            val profiles = it!!.arguments[0] as ObservableList<UserProfile>
+            profiles.clear(currentDatabase)
+            Observable(true)
+        }
+
+        user.profiles.add(pidTest)
+        userObservable.postValue(user)
+
+        onView(withId(R.id.id_add_profile_button)).perform(click())
+        onView(withId(R.id.id_edittext_profile_name)).perform(ViewActions.typeText(displayNameTest))
+        Espresso.closeSoftKeyboard()
+        onView(withId(R.id.id_confirm_add_item_button)).perform(click())
+        Thread.sleep(1000)
+        onView(withId(R.id.id_recycler_profile_list))
+            .check(RecyclerViewItemCountAssertion(1))
+    }
+
+    @Test
+    fun removeButtonRemovesProfilesFromList() {
+        val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
+        loginFragment.currentUser = user
+
+        val profileFragment =
+            MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
+        profileFragment.currentUser = user
+        loginDirectly(loginFragment, R.id.ic_login)
+
+        //Mock the profile
+        When(
+            mockedUserDatabase.getUserProfilesList(
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenAnswer {
+            val profiles = it!!.arguments[0] as ObservableList<UserProfile>
+            profiles.clear(currentDatabase)
+            profiles.add(
+                UserProfile(
+                    pid = pidTest,
+                    profileName = displayNameTest,
+                    userRole = UserRole.PARTICIPANT,
+                    users = mutableListOf(user.uid)
+                ), currentDatabase
+            )
+            Observable(true)
+        }
+
+        user.profiles.add(pidTest)
+        userObservable.postValue(user)
+
+        onView(withId(R.id.id_recycler_profile_list)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<EventItemAdapter.ItemViewHolder>(
+                0, TestHelper.clickChildViewWithId(R.id.id_profile_remove_item)
+            )
+        )
+        Thread.sleep(1000)
+        onView(withId(R.id.id_recycler_profile_list)).check(RecyclerViewItemCountAssertion(0))
+    }
+
+    @Test
+    fun editButtonStartProfileEdition() {
+        val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
+        loginFragment.currentUser = user
+
+        val profileFragment =
+            MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
+        profileFragment.currentUser = user
+        loginDirectly(loginFragment, R.id.ic_login)
+
+        //Mock the profile
+        When(
+            mockedUserDatabase.getUserProfilesList(
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenAnswer {
+            val profiles = it!!.arguments[0] as ObservableList<UserProfile>
+            profiles.clear(currentDatabase)
+            profiles.add(
+                UserProfile(
+                    pid = pidTest,
+                    profileName = displayNameTest,
+                    userRole = UserRole.PARTICIPANT,
+                    users = mutableListOf(user.uid)
+                ), currentDatabase
+            )
+            Observable(true)
+        }
+
+        user.profiles.add(pidTest)
+        userObservable.postValue(user)
+        Intents.init()
+        onView(withId(R.id.id_recycler_profile_list)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<EventItemAdapter.ItemViewHolder>(
+                0, TestHelper.clickChildViewWithId(R.id.id_profile_edit_item)
+            )
+        )
+        Thread.sleep(1000)
+        Intents.intended(
+            IntentMatchers.hasExtra(
+                EDIT_PROFILE_ID,
+                pidTest
+            )
+        )
+        Intents.release()
+    }
+}

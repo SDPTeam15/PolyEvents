@@ -6,8 +6,8 @@ import com.github.sdpteam15.polyevents.database.observe.ObservableList
 /**
  * @property pid id of the Profile
  * @property profileName the name of the profile
- * @property userRole the role associated with this user profile. Can be one of admin,
- * staff, event organizer or simply participant.
+ * @property userRole the role associated with this user profile. Can be one of admin, staff, event organizer or simply participant.
+ * @property users  the list of users the profile has
  */
 data class UserProfile(
     var pid: String? = null,
@@ -15,10 +15,24 @@ data class UserProfile(
     var userRole: UserRole = UserRole.PARTICIPANT,
     val users: MutableList<String> = mutableListOf()
 ) {
-    val userEntity: ObservableList<UserEntity>
+
+    var loadSuccess = false
+        set(value){
+            field = value
+            if(!value)
+                userEntity
+        }
+    var userEntity: ObservableList<UserEntity> = ObservableList()
         get() {
-            val res = ObservableList<UserEntity>()
-            Database.currentDatabase.userDatabase!!.getProfilesUserList(res, this)
-            return res
+            if (!loadSuccess)
+                Database.currentDatabase.userDatabase!!.getProfilesUserList(field, this)
+                    .observeOnce {
+                        loadSuccess = it.value
+                    }
+            return field
+        }
+        set(value) {
+            loadSuccess = true
+            field = value
         }
 }
