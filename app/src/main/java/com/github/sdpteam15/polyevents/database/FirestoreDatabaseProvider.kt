@@ -49,7 +49,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             if(UserLogin.currentUserLogin.isConnected()){
                 if(!loadSuccess) {
                     currentUserObservable.postValue(UserLogin.currentUserLogin.getCurrentUser()!!,this)
-                    firestore!!.collection(USER_COLLECTION.toString())
+                    firestore!!.collection(USER_COLLECTION.value)
                         .document(FirebaseAuth.getInstance().currentUser!!.uid)
                         .get()
                         .addOnSuccessListener {
@@ -169,7 +169,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     ): Observable<String> {
         val ended = Observable<String>()
         val task = firestore!!
-            .collection(collection.toString())
+            .collection(collection.value)
             .add(adapter.toDocument(element))
 
         lastAddSuccessListener =
@@ -189,7 +189,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
         val task = firestore!!
-            .collection(collection.toString())
+            .collection(collection.value)
             .add(adapter.toDocument(element))
 
         lastAddSuccessListener =
@@ -210,7 +210,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
         val document = firestore!!
-            .collection(collection.toString())
+            .collection(collection.value)
             .document(id)
 
         val task = if (element == null || adapter == null) {
@@ -255,7 +255,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             ended.postValue(false, this)
         }
 
-        val task = firestore!!.collection(collection.toString())
+        val task = firestore!!.collection(collection.value)
             .document(id)
             .get()
 
@@ -275,7 +275,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
 
         val lastFailureListener = OnFailureListener { ended.postValue(false, this) }
         val mutableList = mutableListOf<T?>()
-        val fsCollection = firestore!!.collection(collection.toString())
+        val fsCollection = firestore!!.collection(collection.value)
         for (id in ids) {
             mutableList.add(null)
             fsCollection.document(id)

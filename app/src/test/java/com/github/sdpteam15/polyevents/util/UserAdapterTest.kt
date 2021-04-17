@@ -37,7 +37,6 @@ class UserAdapterTest {
     @Test
     fun conversionOfUserEntityToDocumentPreservesData() {
         val document = UserAdapter.toDocument(user)
-        println(document)
         assertEquals(document[USER_UID.value], googleId)
         assertEquals(document[USER_USERNAME.value], username)
         assertEquals(document[USER_BIRTH_DATE.value], birthDate.atStartOfDay())
