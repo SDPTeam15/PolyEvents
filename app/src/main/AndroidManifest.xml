@@ -17,7 +17,7 @@
         android:theme="@style/Theme.PolyEvents">
         <activity
             android:name=".admin.ZoneManagementListActivity"
-            android:parentActivityName=".MainActivity"></activity>
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".admin.EventManagementActivity"
             android:label="@string/title_activity_event_management"
@@ -30,7 +30,8 @@
 
         <activity android:name=".admin.ZoneManagementActivity"
             android:label="@string/title_activity_zone_management"
-            android:parentActivityName=".admin.ZoneManagementListActivity" />
+            android:parentActivityName=".admin.ZoneManagementListActivity"
+            android:launchMode="singleTop"/>
         <activity
             android:name=".admin.ItemRequestManagementActivity"
             android:label="@string/title_activity_item_request_management"

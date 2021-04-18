@@ -1,11 +1,6 @@
 package com.github.sdpteam15.polyevents.util
 
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_BIRTH_DATE
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_EMAIL
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_NAME
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_PHONE
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_UID
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.USER_USERNAME
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.UserConstants.*
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.google.firebase.Timestamp
@@ -14,53 +9,33 @@ import com.google.firebase.Timestamp
  * A class for converting between user entities in our code and
  * documents in the Firebase database. Not unlike the DTO (Data
  * transfer object) concept.
- *
- * IMPORTANT: This should be updated whenever we add, remove or update fields of UserEntity.
  */
-// TODO: convert profiles list
-object UserAdapter {
-    /**
-     * Convert a user entity to an intermediate mapping
-     * of fields to their values, that we can pass to the document directly.
-     * Firestore document keys are always strings.
-     * @param user the entity we're converting
-     * @return a hashmap of the entity fields to their values
-     */
-    fun toUserDocument(user: UserEntity): HashMap<String, Any?> {
-        return hashMapOf(
-            USER_UID to user.uid,
-            USER_USERNAME to user.username,
-            USER_NAME to user.name,
-            // convert the localdate to LocalDateTime compatible to store in Firestore
-            // UPDATE: this will store the localdatetime as a hashmap, not a timestamp in Firestore
-            // Best to convert to date to parse the birthdate as a Timestamp from Firestore when converting
-            // from document
-            USER_BIRTH_DATE to HelperFunctions.localDateTimeToDate(
-                user.birthDate?.atStartOfDay()
-            ),
-            USER_EMAIL to user.email,
-            USER_PHONE to user.telephone
-        )
-    }
+object UserAdapter : AdapterInterface<UserEntity> {
+    override fun toDocument(element: UserEntity): HashMap<String, Any?> = hashMapOf(
+        USER_UID.value to element.uid,
+        USER_USERNAME.value to element.username,
+        USER_NAME.value to element.name,
+        // convert the localdate to LocalDateTime compatible to store in Firestore
+        // UPDATE: this will store the localdatetime as a hashmap, not a timestamp in Firestore
+        // Best to convert to date to parse the birthdate as a Timestamp from Firestore when converting
+        // from document
+        USER_BIRTH_DATE.value to HelperFunctions.localDateTimeToDate(
+            element.birthDate?.atStartOfDay()
+        ),
+        USER_EMAIL.value to element.email,
+        USER_PHONE.value to element.telephone,
+        USER_PROFILES.value to element.profiles
+    )
 
-    /**
-     * Convert document data to a user entity in our model.
-     * Data retrieved from Firestore documents are always of the form of a mutable mapping,
-     * that maps strings - which are the names of the fields of our entity - to their values,
-     * which can be of any type..
-     * @param documentData this is the data we retrieve from the document.
-     * @return the corresponding userEntity.
-     */
-    fun toUserEntity(documentData: MutableMap<String, Any?>): UserEntity {
-        return UserEntity(
-            uid = documentData.get(USER_UID) as String,
-            username = documentData.get(USER_USERNAME) as String?,
-            name = documentData.get(USER_NAME) as String?,
-            birthDate = HelperFunctions.dateToLocalDateTime(
-                (documentData.get(USER_BIRTH_DATE) as Timestamp?)?.toDate()
-            )?.toLocalDate(),
-            email = documentData.get(USER_EMAIL) as String?,
-            telephone = documentData.get(USER_PHONE) as String?
-        )
-    }
+    override fun fromDocument(document: MutableMap<String, Any?>, id: String) = UserEntity(
+        uid = id,
+        username = document[USER_USERNAME.value] as String?,
+        name = document[USER_NAME.value] as String?,
+        birthDate = HelperFunctions.dateToLocalDateTime(
+            (document[USER_BIRTH_DATE.value] as Timestamp?)?.toDate()
+        )?.toLocalDate(),
+        email = document[USER_EMAIL.value] as String?,
+        telephone = document[USER_PHONE.value] as String?,
+        profiles = (document[USER_PROFILES.value] as List<String>).toMutableList()
+    )
 }

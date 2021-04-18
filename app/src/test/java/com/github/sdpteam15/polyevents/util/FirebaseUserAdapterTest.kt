@@ -1,11 +1,13 @@
 package com.github.sdpteam15.polyevents.util
 
+import com.github.sdpteam15.polyevents.login.FirebaseUserAdapter
 import com.google.firebase.auth.FirebaseUser
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.`when` as When
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.`when` as When
 
 class FirebaseUserAdapterTest {
     val displayName = "John"

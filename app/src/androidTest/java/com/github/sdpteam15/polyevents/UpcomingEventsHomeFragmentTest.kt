@@ -9,10 +9,11 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
-import com.github.sdpteam15.polyevents.database.FakeDatabase
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.NUMBER_UPCOMING_EVENTS
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
+import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabase
+import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabaseEvent
 import com.github.sdpteam15.polyevents.fragments.HomeFragment
 import com.github.sdpteam15.polyevents.model.Event
 import org.junit.After
@@ -38,28 +39,28 @@ class UpcomingEventsHomeFragmentTest {
         val eventsToAdd = ArrayList<Event>()
 
         eventsToAdd.add(
-                Event(
+            Event(
 
-                    eventName = "Sushi demo",
-                    description = "Super hungry activity !",
-                    startTime = LocalDateTime.of(2021, 3, 7, 12, 15),
-                    organizer = "The fish band",
-                    zoneName = "Kitchen",
-                    tags = mutableSetOf("sushi", "japan", "cooking")
-                )
+                eventName = "Sushi demo",
+                description = "Super hungry activity !",
+                startTime = LocalDateTime.of(2021, 3, 7, 12, 15),
+                organizer = "The fish band",
+                zoneName = "Kitchen",
+                tags = mutableSetOf("sushi", "japan", "cooking")
+            )
         )
 
         eventsToAdd.add(
-                Event(
+            Event(
 
-                    eventName = "Aqua Poney",
-                    description = "Super cool activity !" +
-                            " With a super long description that essentially describes and explains" +
-                            " the content of the activity we are speaking of.",
-                    startTime = LocalDateTime.of(2021, 3, 7, 14, 15),
-                    organizer = "The Aqua Poney team",
-                    zoneName = "Swimming pool"
-                )
+                eventName = "Aqua Poney",
+                description = "Super cool activity !" +
+                        " With a super long description that essentially describes and explains" +
+                        " the content of the activity we are speaking of.",
+                startTime = LocalDateTime.of(2021, 3, 7, 14, 15),
+                organizer = "The Aqua Poney team",
+                zoneName = "Swimming pool"
+            )
         )
 
         eventsToAdd.add(
@@ -89,11 +90,11 @@ class UpcomingEventsHomeFragmentTest {
         val homeFragment = MainActivity.fragments[R.id.ic_home] as HomeFragment
         currentDatabase = FakeDatabase
         FakeDatabase.userToNull = true
-        FakeDatabase.events.clear()
-        for (event in eventsToAdd){
-            currentDatabase.createEvent(event)
+        FakeDatabaseEvent.events.clear()
+        for (event in eventsToAdd) {
+            currentDatabase.eventDatabase!!.createEvent(event)
         }
-        currentDatabase.getEvents(null, null, events)
+        currentDatabase.eventDatabase!!.getListEvent(null, null, events)
 
         // Update the content to use the mock activities query helper
         runOnUiThread {
@@ -106,7 +107,7 @@ class UpcomingEventsHomeFragmentTest {
     }
 
     @After
-    fun tearDown(){
+    fun tearDown() {
         FakeDatabase.userToNull = false
         currentDatabase = FirestoreDatabaseProvider
     }
