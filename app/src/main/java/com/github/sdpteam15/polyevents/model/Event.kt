@@ -3,6 +3,7 @@ package com.github.sdpteam15.polyevents.model
 import android.graphics.Bitmap
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.github.sdpteam15.polyevents.exceptions.MaxAttendeesException
 import com.google.firebase.firestore.IgnoreExtraProperties
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -21,6 +22,7 @@ import java.time.format.DateTimeFormatter
  * @property tags additional set of tags to describe the event
  * @property startTime the time at which the event begins
  * @property endTime the time at which the event ends
+ * @property limitedEvent specifies whether the event has a maximum number of attendees
  * @property maxNumberOfSlots the maximum amount of attendees to this event
  */
 // TODO: look into storing instances of LocalDateTime, or Long (for startTime and endTime)
@@ -40,8 +42,34 @@ data class Event(
     val inventory: MutableList<Item> = mutableListOf(),
     // NOTE: Set is not a supported collection in Firebase Firestore so will be stored as list in the db.
     val tags: MutableSet<String> = mutableSetOf(),
-    var maxNumberOfSlots: Int? = null
+    var limitedEvent: Boolean = false,
+    var maxNumberOfSlots: Int? = 0,
+    val participants: MutableSet<UserEntity> = mutableSetOf()
 ) {
+    /**
+     * Set the maximum number of participant slots for this event if it's a limited event.
+     * @param slots: the maximum number of slots for this event
+     */
+    fun setMaxNumberOfSlots(slots: Int) {
+        if (!limitedEvent) {
+            limitedEvent = true
+        }
+        maxNumberOfSlots = slots
+    }
+
+    /**
+     * Add a participant to this event if it's a limited event.
+     * @param user the participant to add
+     * @throws MaxAttendeesException if the maximum number of participants was already reached
+     */
+    fun addParticipant(user: UserEntity) {
+        if (limitedEvent) {
+            if (participants.size >= maxNumberOfSlots!!)
+                throw MaxAttendeesException("Maximum number of participants reached")
+            participants.add(user)
+        }
+    }
+
     /**
      * Add a new tag for this activity
      * @param newTag : the tag to add
