@@ -42,6 +42,7 @@ object DatabaseConstant {
     const val EVENT_INVENTORY = "inventory"
     const val EVENT_ICON = "icon"
     const val EVENT_TAGS = "tags"
+    const val EVENT_MAX_SLOTS = "maxNumberOfSlots"
 
     /**
      * Items related constants

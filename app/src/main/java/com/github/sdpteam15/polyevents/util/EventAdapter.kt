@@ -4,6 +4,7 @@ import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_DESCRIPTI
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_DOCUMENT_ID
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_END_TIME
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_INVENTORY
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_MAX_SLOTS
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_NAME
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_ORGANIZER
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.EVENT_START_TIME
@@ -42,7 +43,8 @@ object EventAdapter {
             EVENT_START_TIME to HelperFunctions.localDateTimeToDate(event.startTime),
             EVENT_END_TIME to HelperFunctions.localDateTimeToDate(event.endTime),
             EVENT_INVENTORY to event.inventory,
-            EVENT_TAGS to event.tags.toList()
+            EVENT_TAGS to event.tags.toList(),
+            EVENT_MAX_SLOTS to event.maxNumberOfSlots
         )
         if(event.eventId != null){
             hash[EVENT_DOCUMENT_ID] = event.eventId
@@ -75,7 +77,8 @@ object EventAdapter {
             ),
             // TODO: Check how item is stored in Firestore, and check if conversion worked
             inventory = (documentData[EVENT_INVENTORY] as List<Item>).toMutableList(),
-            tags = (documentData[EVENT_TAGS] as List<String>).toMutableSet()
+            tags = (documentData[EVENT_TAGS] as List<String>).toMutableSet(),
+            maxNumberOfSlots = documentData[EVENT_MAX_SLOTS] as Int?
         )
     }
 }

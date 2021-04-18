@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
                     mapFragment!![R.id.id_fragment_admin_hub] = AdminHubFragment()
                     mapFragment!![R.id.ic_home] = HomeFragment()
                     mapFragment!![R.id.ic_map] = MapsFragment()
-                    mapFragment!![R.id.ic_list] = ListFragment()
+                    mapFragment!![R.id.ic_list] = EventListFragment()
                     mapFragment!![R.id.ic_login] = LoginFragment()
                     mapFragment!![R.id.ic_more] = MoreFragment()
                     mapFragment!![R.id.id_fragment_profile] = ProfileFragment()

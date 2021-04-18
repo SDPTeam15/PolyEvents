@@ -21,10 +21,12 @@ import java.time.format.DateTimeFormatter
  * @property tags additional set of tags to describe the event
  * @property startTime the time at which the event begins
  * @property endTime the time at which the event ends
+ * @property maxNumberOfSlots the maximum amount of attendees to this event
  */
 // TODO: look into storing instances of LocalDateTime, or Long (for startTime and endTime)
 // TODO: Should the eventName be unique? (Important when writing security rules)
 // TODO: keep track of items, or just required items?
+// TODO: add location
 @IgnoreExtraProperties
 data class Event(
     val eventId: String? = null,
@@ -37,7 +39,8 @@ data class Event(
     val endTime: LocalDateTime? = null,
     val inventory: MutableList<Item> = mutableListOf(),
     // NOTE: Set is not a supported collection in Firebase Firestore so will be stored as list in the db.
-    val tags: MutableSet<String> = mutableSetOf()
+    val tags: MutableSet<String> = mutableSetOf(),
+    var maxNumberOfSlots: Int? = null
 ) {
     /**
      * Add a new tag for this activity
@@ -87,7 +90,6 @@ data class Event(
      * hour going between 0-23h.
      * @return string HH:MM
      */
-    @RequiresApi(Build.VERSION_CODES.O)
     fun formattedStartTime(): String {
         if (startTime == null) {
             return ""

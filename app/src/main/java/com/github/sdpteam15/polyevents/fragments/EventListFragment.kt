@@ -23,7 +23,7 @@ const val EXTRA_EVENT_ID = "com.github.sdpteam15.polyevents.event.EVENT_ID"
 /**
  * Shows the list of events and displays them in a new event when we click on one of them
  */
-class ListFragment : Fragment() {
+class EventListFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     val events = ObservableList<Event>()
