@@ -1,10 +1,9 @@
 package com.github.sdpteam15.polyevents.model
 
 import android.graphics.Bitmap
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.github.sdpteam15.polyevents.exceptions.MaxAttendeesException
 import com.google.firebase.firestore.IgnoreExtraProperties
+import java.lang.IllegalArgumentException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -42,18 +41,53 @@ data class Event(
     val inventory: MutableList<Item> = mutableListOf(),
     // NOTE: Set is not a supported collection in Firebase Firestore so will be stored as list in the db.
     val tags: MutableSet<String> = mutableSetOf(),
-    var limitedEvent: Boolean = false,
-    var maxNumberOfSlots: Int? = 0,
+    private val participants: MutableSet<String> = mutableSetOf()
 ) {
+    var limitedEvent: Boolean = false
+        private set
+    var maxNumberOfSlots: Int? = 0
+        private set
+
     /**
-     * Set the maximum number of participant slots for this event if it's a limited event.
-     * @param slots: the maximum number of slots for this event
+     * Get a copy of the event participants
      */
-    fun setMaxNumberOfSlots(slots: Int) {
-        if (!limitedEvent) {
-            limitedEvent = true
+    fun getParticipants() = participants.toMutableSet()
+
+    /**
+     * Remove a participant from event
+     * @param userUid the id of the user to remove from the participant set
+     */
+    fun removeParticipant(userUid: String) {
+        this.participants.remove(userUid)
+    }
+
+    /**
+     * Make this event limited and set the maximum number of attendees for this event.
+     * @param maxNumberOfSlots the maximum number of people that can attend this event
+     * @throws IllegalArgumentException if the maximum number of slots is negative
+     */
+    fun makeLimitedEvent(maxNumberOfSlots: Int) {
+        if (maxNumberOfSlots < 0) {
+            throw IllegalArgumentException("Cannot have a negative number of slots")
         }
-        maxNumberOfSlots = slots
+        limitedEvent = true
+        this.maxNumberOfSlots = maxNumberOfSlots
+    }
+
+    /**
+     * Add a participant to this event if it's a limited event
+     * @param userUid the id of the new participant user
+     * @throws IllegalArgumentException if the event is not a limited event
+     * @throws MaxAttendeesException if the event is already at max capacity
+     */
+    fun addParticipant(userUid: String) {
+        if (!this.limitedEvent) {
+            throw IllegalArgumentException("This event is not a limited event to add participants")
+        }
+        if (this.participants.size >= maxNumberOfSlots!!) {
+            throw MaxAttendeesException("Reached the maximum number of attendees for this event")
+        }
+        this.participants.add(userUid)
     }
 
     /**

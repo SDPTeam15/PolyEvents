@@ -9,7 +9,6 @@ import com.github.sdpteam15.polyevents.database.Matcher
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.Event
-import com.github.sdpteam15.polyevents.model.EventAttendee
 import com.github.sdpteam15.polyevents.model.UserProfile
 import com.github.sdpteam15.polyevents.util.EventAdapter
 import com.google.firebase.firestore.FirebaseFirestore
@@ -76,50 +75,4 @@ object EventDatabaseFirestore : EventDatabaseInterface {
             }
         }
     }
-
-    override fun getEventAttendeesByEventId(
-        eventId: String,
-        matcher: Matcher?,
-        limit: Long?,
-        eventAttendees: ObservableList<EventAttendee>,
-        userAccess: UserProfile?
-    ): Observable<Boolean> {
-        TODO("Not yet implemented")
-    }
-
-
-
-    override fun addEventAttendee(eventId: String, userUid: String, userAccess: UserProfile?) =
-        FirestoreDatabaseProvider.thenDoAdd(
-            FirestoreDatabaseProvider.firestore!!.collection(
-                DatabaseConstant.CollectionConstant.EVENT_ATTENDEES_COLLECTION.value
-            ).add(EventAttendee(currentUser!!.uid, eventId))
-        )
-
-    override fun getEventAttendeeByIds(
-        eventId: String,
-        userUid: String,
-        eventAttendee: Observable<EventAttendee?>,
-        userAccess: UserProfile?
-    ): Observable<Boolean> =
-        FirestoreDatabaseProvider.thenDoGet(
-            FirestoreDatabaseProvider.firestore!!.collection(
-                DatabaseConstant.CollectionConstant.EVENT_ATTENDEES_COLLECTION.value
-            ).whereEqualTo(DatabaseConstant.EventConstant.EVENT_DOCUMENT_ID.value, eventId)
-                .whereEqualTo("userUid", userUid).get()
-        ) {
-            if (it.documents.isEmpty()) {
-                Log.d(TAG, "No event attendee found with event id $eventId and user id $userUid")
-                eventAttendee.postValue(null, this)
-            } else {
-                val numberOfDocumentsRetrieved = it.documents.size
-                val documentRetrieved = it.documents.get(0)
-                Log.d(TAG, "$numberOfDocumentsRetrieved event attendees retrieved")
-                eventAttendee.postValue(EventAttendee(
-                    documentRetrieved[DatabaseConstant.UserConstants.USER_UID.value] as String?,
-                    documentRetrieved[DatabaseConstant.EventConstant.EVENT_DOCUMENT_ID.value] as String?
-                ))
-            }
-        }
-
 }

@@ -9,11 +9,10 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.observe.Observable
+import com.github.sdpteam15.polyevents.exceptions.MaxAttendeesException
 import com.github.sdpteam15.polyevents.fragments.EXTRA_EVENT_ID
-import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.model.Event
-import com.github.sdpteam15.polyevents.model.EventAttendee
 
 const val TAG = "EventActivity"
 
@@ -85,27 +84,20 @@ class EventActivity : AppCompatActivity() {
             Log.d(TAG, "No user logged in")
             showToast(resources.getString(R.string.toast_subscribe_warning), this)
         } else {
-            val eventAttendee = Observable<EventAttendee?>()
-            currentDatabase.eventDatabase!!.getEventAttendeeByIds(eventId = event.eventId!!,
-                userUid = currentDatabase.currentUser!!.uid,
-                eventAttendee = eventAttendee
-            )
-            eventAttendee.observe {
-                if (it.value != null) {
-                    Log.d(TAG, "User already subscribed to event")
-                    showToast("Already subscribed to this event", this)
-                    subscribeButton.isEnabled = false
-                } else {
-                    currentDatabase.eventDatabase!!.addEventAttendee(
-                        eventId = event.eventId!!,
-                        userUid = currentDatabase.currentUser!!.uid
-                    ).observe {
-                        if (it.value) {
-                            showToast("Successfully subscribed to this event", this)
-                        } else {
-                            showToast("Could not subscribe to this event", this)
-                        }
-                    }
+            if (event.getParticipants().contains(currentDatabase.currentUser!!.uid)) {
+                Log.d(TAG, "User already subscribed to event")
+                showToast(resources.getString(R.string.event_already_subscribed), this)
+            } else {
+                try {
+                    event.addParticipant(currentDatabase.currentUser!!.uid)
+                    Log.d(TAG, event.getParticipants().toString())
+
+                    currentDatabase.eventDatabase!!.updateEvents(event)
+                    showToast(resources.getString(R.string.event_successfully_subscribed), this)
+                    Log.d(TAG, "User successfully subscribed to event")
+                } catch (e: MaxAttendeesException) {
+                    Log.d(TAG, "Max number of attendees reached")
+                    showToast(resources.getString(R.string.event_subscribe_at_max_capacity), this)
                 }
             }
         }

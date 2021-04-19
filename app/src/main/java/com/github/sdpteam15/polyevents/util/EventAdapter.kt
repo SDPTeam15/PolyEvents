@@ -25,29 +25,40 @@ object EventAdapter : AdapterInterface<Event> {
         // LocalDateTime instances can be directly stored to the database without need of conversion
         // UPDATE: LocalDateTime will not be stored as a Timestamp instance, instead it will be
         // stored as a hashmap representing the LocalDateTime instance
-        EVENT_START_TIME.value to HelperFunctions.localDateToTimeToDate(element.startTime),
-        EVENT_END_TIME.value to HelperFunctions.localDateToTimeToDate(element.endTime),
+        EVENT_START_TIME.value to HelperFunctions.localDateTimeToDate(element.startTime),
+        EVENT_END_TIME.value to HelperFunctions.localDateTimeToDate(element.endTime),
         EVENT_INVENTORY.value to element.inventory,
         EVENT_TAGS.value to element.tags.toList(),
-        EVENT_MAX_SLOTS.value to element.maxNumberOfSlots
+        EVENT_MAX_SLOTS.value to element.maxNumberOfSlots,
+        EVENT_LIMITED.value to element.limitedEvent,
+        EVENT_PARTICIPANTS.value to element.getParticipants().toList()
     )
 
-    override fun fromDocument(document: MutableMap<String, Any?>, id: String) = Event(
-        eventId = id,
-        eventName = document[EVENT_NAME.value] as String?,
-        organizer = document[EVENT_ORGANIZER.value] as String?,
-        zoneName = document[EVENT_ZONE_NAME.value] as String?,
-        description = document[EVENT_DESCRIPTION.value] as String?,
-        startTime = HelperFunctions.dateToLocalDateTime(
-            (document[EVENT_START_TIME.value] as Timestamp?)?.toDate()
-        ),
-        endTime = HelperFunctions.dateToLocalDateTime(
-            // TODO: test if start time is null (remove ? from Timestamp)
-            (document[EVENT_END_TIME.value] as Timestamp?)?.toDate()
-        ),
-        // TODO: Check how item is stored in Firestore, and check if conversion worked
-        inventory = (document[EVENT_INVENTORY.value] as List<Item>).toMutableList(),
-        tags = (document[EVENT_TAGS.value] as List<String>).toMutableSet(),
-        maxNumberOfSlots = document[EVENT_MAX_SLOTS.value] as Int?
-    )
+    override fun fromDocument(document: MutableMap<String, Any?>, id: String): Event {
+        val event = Event(
+            eventId = id,
+            eventName = document[EVENT_NAME.value] as String?,
+            organizer = document[EVENT_ORGANIZER.value] as String?,
+            zoneName = document[EVENT_ZONE_NAME.value] as String?,
+            description = document[EVENT_DESCRIPTION.value] as String?,
+            startTime = HelperFunctions.dateToLocalDateTime(
+                (document[EVENT_START_TIME.value] as Timestamp?)?.toDate()
+            ),
+            endTime = HelperFunctions.dateToLocalDateTime(
+                // TODO: test if start time is null (remove ? from Timestamp)
+                (document[EVENT_END_TIME.value] as Timestamp?)?.toDate()
+            ),
+            // TODO: Check how item is stored in Firestore, and check if conversion worked
+            inventory = (document[EVENT_INVENTORY.value] as List<Item>).toMutableList(),
+            tags = (document[EVENT_TAGS.value] as List<String>).toMutableSet(),
+            participants = (document[EVENT_PARTICIPANTS.value] as List<String>).toMutableSet()
+        )
+
+        val limitedEvent = document[EVENT_LIMITED.value] as Boolean
+        if (limitedEvent) {
+            val maxNumberOfSlots = (document[EVENT_MAX_SLOTS.value] as Long).toInt()
+            event.makeLimitedEvent(maxNumberOfSlots)
+        }
+        return event
+    }
 }

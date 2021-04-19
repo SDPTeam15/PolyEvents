@@ -5,7 +5,6 @@ import com.github.sdpteam15.polyevents.database.Matcher
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.Event
-import com.github.sdpteam15.polyevents.model.EventAttendee
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 
@@ -64,31 +63,4 @@ interface EventDatabaseInterface {
         eventList: ObservableList<Event>,
         userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
-
-    /**
-     * Get the list of attendees for a certain event.
-     *
-     *
-     */
-    fun getEventAttendeesByEventId(
-        eventId: String,
-        matcher: Matcher? = null,
-        limit: Long? = null,
-        eventAttendees: ObservableList<EventAttendee>,
-        userAccess: UserProfile? = currentProfile
-    ): Observable<Boolean>
-
-    fun addEventAttendee(
-        eventId: String,
-        userUid: String = currentUser!!.uid,
-        userAccess: UserProfile? = currentProfile
-    ): Observable<Boolean>
-
-    fun getEventAttendeeByIds(
-        eventId: String,
-        userUid: String = currentUser!!.uid,
-        eventAttendee: Observable<EventAttendee?>,
-        userAccess: UserProfile? = currentProfile
-    ): Observable<Boolean>
-
 }
