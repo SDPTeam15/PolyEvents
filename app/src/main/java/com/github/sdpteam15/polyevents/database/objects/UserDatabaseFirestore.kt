@@ -78,6 +78,24 @@ object UserDatabaseFirestore : UserDatabaseInterface {
         it.data?.let { it1 -> user.postValue(UserAdapter.fromDocument(it1, it.id), this) }
     }
 
+    override fun getListAllUsers(
+        users: ObservableList<UserEntity>,
+        userAccess: UserProfile?
+    ): Observable<Boolean> {
+        return FirestoreDatabaseProvider.thenDoGet(
+            firestore!!.collection(USER_COLLECTION.value)
+                .get()
+        ){
+            it.forEach{
+                it1-> it1.data?.let {
+                    it2-> users.add(UserAdapter.fromDocument(it2, it1.id), this)
+                    println("ICCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCI "+ it1.data)
+                }
+            }
+        }
+
+    }
+
     override fun addUserProfileAndAddToUser(
         profile: UserProfile,
         user: UserEntity,
