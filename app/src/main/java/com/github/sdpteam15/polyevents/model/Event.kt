@@ -44,7 +44,6 @@ data class Event(
     val tags: MutableSet<String> = mutableSetOf(),
     var limitedEvent: Boolean = false,
     var maxNumberOfSlots: Int? = 0,
-    val participants: MutableSet<UserEntity> = mutableSetOf()
 ) {
     /**
      * Set the maximum number of participant slots for this event if it's a limited event.
@@ -55,19 +54,6 @@ data class Event(
             limitedEvent = true
         }
         maxNumberOfSlots = slots
-    }
-
-    /**
-     * Add a participant to this event if it's a limited event.
-     * @param user the participant to add
-     * @throws MaxAttendeesException if the maximum number of participants was already reached
-     */
-    fun addParticipant(user: UserEntity) {
-        if (limitedEvent) {
-            if (participants.size >= maxNumberOfSlots!!)
-                throw MaxAttendeesException("Maximum number of participants reached")
-            participants.add(user)
-        }
     }
 
     /**

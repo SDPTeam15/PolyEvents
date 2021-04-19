@@ -1,17 +1,22 @@
 package com.github.sdpteam15.polyevents.database.objects
 
 import android.annotation.SuppressLint
+import android.util.Log
+import com.github.sdpteam15.polyevents.database.DatabaseConstant
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.EVENT_COLLECTION
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.Matcher
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.Event
+import com.github.sdpteam15.polyevents.model.EventAttendee
 import com.github.sdpteam15.polyevents.model.UserProfile
 import com.github.sdpteam15.polyevents.util.EventAdapter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+
+const val TAG = "EventDatabaseFirestore"
 
 object EventDatabaseFirestore : EventDatabaseInterface {
     @SuppressLint("StaticFieldLeak")
@@ -47,18 +52,18 @@ object EventDatabaseFirestore : EventDatabaseInterface {
         )
     }
 
-    override fun getListEvent(
+    override fun getEvents(
         matcher: Matcher?,
-        number: Long?,
+        limit: Long?,
         eventList: ObservableList<Event>,
         userAccess: UserProfile?
     ): Observable<Boolean> {
         val task = FirestoreDatabaseProvider.firestore!!.collection(EVENT_COLLECTION.value)
         val query = matcher?.match(task)
         val v = if (query != null) {
-            if (number != null) query.limit(number).get() else query.get()
+            if (limit != null) query.limit(limit).get() else query.get()
         } else {
-            if (number != null) task.limit(number).get() else task.get()
+            if (limit != null) task.limit(limit).get() else task.get()
         }
         return FirestoreDatabaseProvider.thenDoGet(v) {
             eventList.clear(this)
@@ -71,4 +76,50 @@ object EventDatabaseFirestore : EventDatabaseInterface {
             }
         }
     }
+
+    override fun getEventAttendeesByEventId(
+        eventId: String,
+        matcher: Matcher?,
+        limit: Long?,
+        eventAttendees: ObservableList<EventAttendee>,
+        userAccess: UserProfile?
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+
+
+    override fun addEventAttendee(eventId: String, userUid: String, userAccess: UserProfile?) =
+        FirestoreDatabaseProvider.thenDoAdd(
+            FirestoreDatabaseProvider.firestore!!.collection(
+                DatabaseConstant.CollectionConstant.EVENT_ATTENDEES_COLLECTION.value
+            ).add(EventAttendee(currentUser!!.uid, eventId))
+        )
+
+    override fun getEventAttendeeByIds(
+        eventId: String,
+        userUid: String,
+        eventAttendee: Observable<EventAttendee?>,
+        userAccess: UserProfile?
+    ): Observable<Boolean> =
+        FirestoreDatabaseProvider.thenDoGet(
+            FirestoreDatabaseProvider.firestore!!.collection(
+                DatabaseConstant.CollectionConstant.EVENT_ATTENDEES_COLLECTION.value
+            ).whereEqualTo(DatabaseConstant.EventConstant.EVENT_DOCUMENT_ID.value, eventId)
+                .whereEqualTo("userUid", userUid).get()
+        ) {
+            if (it.documents.isEmpty()) {
+                Log.d(TAG, "No event attendee found with event id $eventId and user id $userUid")
+                eventAttendee.postValue(null, this)
+            } else {
+                val numberOfDocumentsRetrieved = it.documents.size
+                val documentRetrieved = it.documents.get(0)
+                Log.d(TAG, "$numberOfDocumentsRetrieved event attendees retrieved")
+                eventAttendee.postValue(EventAttendee(
+                    documentRetrieved[DatabaseConstant.UserConstants.USER_UID.value] as String?,
+                    documentRetrieved[DatabaseConstant.EventConstant.EVENT_DOCUMENT_ID.value] as String?
+                ))
+            }
+        }
+
 }
