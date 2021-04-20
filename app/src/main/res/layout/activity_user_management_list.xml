@@ -4,14 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".admin.UserManagementActivity">
+    tools:context=".admin.UserManagementListActivity">
 
-    <FrameLayout
-        android:id="@+id/fl_user_management_profile"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_user"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="215dp"
-        tools:layout_editor_absoluteY="162dp">
-
-    </FrameLayout>
+        android:scrollbarAlwaysDrawHorizontalTrack="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
