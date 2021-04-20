@@ -16,8 +16,8 @@ class UserListAdapter(
     private val listener: (UserEntity) -> Unit
 ) : RecyclerView.Adapter<UserListAdapter.UserViewHolder>() {
     /**
-     * adapted ViewHolder for each event
-     * Takes the corresponding event view
+     * adapted ViewHolder for each users
+     * Takes the corresponding user view
      */
     class UserViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val userName = view.findViewById<TextView>(R.id.user_name_list)
@@ -25,16 +25,14 @@ class UserListAdapter(
         private val userEmail = view.findViewById<TextView>(R.id.user_email_list)
 
         /**
-         * Binds the values of each field of an event to the layout of an event
+         * Binds the values of each field of an user to the layout of an user
          */
         fun bind(user: UserEntity) {
-            println("In testo")
             userName.text = user.name
             userUsername.text = user.username
             userEmail.text = user.email
         }
     }
-
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -46,7 +44,6 @@ class UserListAdapter(
     }
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
-        println("In testo 2")
         val user = users[position]
         holder.bind(user)
         holder.itemView.setOnClickListener {
