@@ -9,6 +9,7 @@ import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
+import com.github.sdpteam15.polyevents.util.ItemEntityAdapter
 import com.github.sdpteam15.polyevents.util.ProfileAdapter
 import com.github.sdpteam15.polyevents.util.UserAdapter
 import com.google.android.gms.tasks.OnFailureListener
@@ -86,14 +87,12 @@ object UserDatabaseFirestore : UserDatabaseInterface {
             firestore!!.collection(USER_COLLECTION.value)
                 .get()
         ){
-            it.forEach{
-                it1-> it1.data?.let {
-                    it2-> users.add(UserAdapter.fromDocument(it2, it1.id), this)
-                    println("ICCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCI "+ it1.data)
-                }
+            users.clear()
+            val us = it.documents.map {
+                UserAdapter.fromDocument(it.data!!, it.id)
             }
+            users.addAll(us, this)
         }
-
     }
 
     override fun addUserProfileAndAddToUser(
