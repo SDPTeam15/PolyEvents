@@ -18,7 +18,6 @@ import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.login.UserLogin
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
-import com.google.firebase.auth.FirebaseAuth
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -91,6 +90,6 @@ class AdminHubFragmentTest {
     @Test
     fun clickOnBtnUserManagementDisplayCorrectActivity() {
         Espresso.onView(ViewMatchers.withId(R.id.btnRedirectUserManagement)).perform(click())
-        Intents.intended(IntentMatchers.hasComponent(UserManagementActivity::class.java.name))
+        Intents.intended(IntentMatchers.hasComponent(UserManagementListActivity::class.java.name))
     }
 }
