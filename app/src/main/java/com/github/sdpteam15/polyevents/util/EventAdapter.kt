@@ -29,8 +29,8 @@ object EventAdapter : AdapterInterface<Event> {
         EVENT_END_TIME.value to HelperFunctions.localDateTimeToDate(element.endTime),
         EVENT_INVENTORY.value to element.inventory,
         EVENT_TAGS.value to element.tags.toList(),
-        EVENT_MAX_SLOTS.value to element.maxNumberOfSlots,
-        EVENT_LIMITED.value to element.limitedEvent,
+        EVENT_MAX_SLOTS.value to element.getMaxNumberOfSlots(),
+        EVENT_LIMITED.value to element.isLimitedEvent(),
         EVENT_PARTICIPANTS.value to element.getParticipants().toList()
     )
 
@@ -51,14 +51,11 @@ object EventAdapter : AdapterInterface<Event> {
             // TODO: Check how item is stored in Firestore, and check if conversion worked
             inventory = (document[EVENT_INVENTORY.value] as List<Item>).toMutableList(),
             tags = (document[EVENT_TAGS.value] as List<String>).toMutableSet(),
+            limitedEvent = document[EVENT_LIMITED.value] as Boolean,
+            maxNumberOfSlots = (document[EVENT_MAX_SLOTS.value] as Long).toInt(),
             participants = (document[EVENT_PARTICIPANTS.value] as List<String>).toMutableSet()
         )
 
-        val limitedEvent = document[EVENT_LIMITED.value] as Boolean
-        if (limitedEvent) {
-            val maxNumberOfSlots = (document[EVENT_MAX_SLOTS.value] as Long).toInt()
-            event.makeLimitedEvent(maxNumberOfSlots)
-        }
         return event
     }
 }

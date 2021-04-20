@@ -41,12 +41,14 @@ data class Event(
     val inventory: MutableList<Item> = mutableListOf(),
     // NOTE: Set is not a supported collection in Firebase Firestore so will be stored as list in the db.
     val tags: MutableSet<String> = mutableSetOf(),
+    private var limitedEvent: Boolean = false,
+    private var maxNumberOfSlots: Int? = 0,
     private val participants: MutableSet<String> = mutableSetOf()
 ) {
-    var limitedEvent: Boolean = false
-        private set
-    var maxNumberOfSlots: Int? = 0
-        private set
+
+    fun getMaxNumberOfSlots(): Int? = maxNumberOfSlots
+
+    fun isLimitedEvent(): Boolean = limitedEvent
 
     /**
      * Get a copy of the event participants
