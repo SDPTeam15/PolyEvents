@@ -12,11 +12,11 @@ import com.google.android.gms.maps.model.*
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
-import org.mockito.kotlin.anyOrNull
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import org.mockito.Mockito.`when` as When
+import org.mockito.kotlin.anyOrNull
 
 private const val lat = 42.52010210373032
 private const val lng = 8.566237434744834

@@ -12,7 +12,6 @@ import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZoneConstant.*
 import com.github.sdpteam15.polyevents.model.Zone
 import com.github.sdpteam15.polyevents.admin.ZoneManagementActivity
 import com.github.sdpteam15.polyevents.database.DatabaseConstant
-import com.github.sdpteam15.polyevents.model.Zone
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.*
 import kotlin.math.*
@@ -152,7 +151,7 @@ object GoogleMapHelper {
             listEvent1.add(LatLng(46.52073238207864, 6.565499156713487))
             listEvent1.add(LatLng(46.52073238207864, 6.565711721777915))
             listEvent1.add(LatLng(46.52100506978624, 6.565711721777915))
-            addArea(context, uid++, listEvent1, "Sushi Demo")
+            addArea(context, uidArea++, listEvent1, "Sushi Demo")
             val zone1 = Zone(null, "Salle 1", zoneAreasToFormattedStringLocation(editingZone), "Salle 1")
             setZone(zone1)
 
@@ -294,7 +293,7 @@ object GoogleMapHelper {
                 name = "Area $id"
 
             }
-            addArea(id, tempPoly!!.points, name)
+            addArea(context, id, tempPoly!!.points, name)
             colorAreas(editingZone, EDITED_ZONE_STROKE_COLOR)
         }
         clearTemp()
@@ -726,7 +725,7 @@ object GoogleMapHelper {
                         bound,
                         dimension
                     )
-                ), areasPoints.get(value.key)!!.second
+                ), areasPoints.get(value.key)!!.third
             )
         }
     }
@@ -769,9 +768,9 @@ object GoogleMapHelper {
         var s = ""
         for(uid in temp){
             s += areaToFormattedStringLocation(areasPoints[uid]!!.third.points.dropLast(1))
-            s += DatabaseConstant.AREAS_SEP
+            s += AREAS_SEP
         }
-        return s.substring(0, s.length - DatabaseConstant.AREAS_SEP.length)
+        return s.substring(0, s.length - AREAS_SEP.value.length)
     }
 
     fun areaToFormattedStringLocation(loc: List<LatLng>?): String {
