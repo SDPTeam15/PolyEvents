@@ -16,7 +16,6 @@ import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.fragments.MapsFragment
 import com.github.sdpteam15.polyevents.helper.GoogleMapHelper
-import com.github.sdpteam15.polyevents.helper.GoogleMapHelper.removeRangePolygon
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.Zone
 
@@ -27,7 +26,6 @@ class ZoneManagementActivity : AppCompatActivity() {
         val zone = Zone(location = "")
         var zoneId = ""
         var inTest = false
-        var nbModified = 0
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,7 +45,6 @@ class ZoneManagementActivity : AppCompatActivity() {
         val mapFragment = MapsFragment()
         mapFragment.zone = zone
         zoneObservable = Observable()
-        Log.d("AAAAAAAAAAA", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA ${zoneId} bb")
         zoneObservable.observe(this) {
             //Reactive the back button and make the map fragment invisible
             supportActionBar!!.setDisplayHomeAsUpEnabled(true)
@@ -57,14 +54,10 @@ class ZoneManagementActivity : AppCompatActivity() {
             etName.setText(zoneInfo.zoneName)
             etDesc.setText(zoneInfo.description)
             changeCoordinatesText(etLoc, btnManageCoor, btnDelete, zoneInfo.location)
-
-            GoogleMapHelper.setZone(it)
         }
 
         if (zoneId == NEW_ZONE) {
             zoneId = GoogleMapHelper.uidZone++.toString()
-            Log.d("NEW ZONE", "New zone with ID $zoneId")
-            //mapFragment.startId = GoogleMapHelper.uidArea
             GoogleMapHelper.zonesToArea[zoneId.toInt()] = Pair(null, mutableListOf())
             // Create a new zone, setup the text of the button consequently
             changeCoordinatesText(etLoc, btnManageCoor, btnDelete, "")
@@ -111,12 +104,7 @@ class ZoneManagementActivity : AppCompatActivity() {
         btnDelete.setOnClickListener {
             //reset the location field text
             zone.location = ""
-            //If some area has been added on the map, remove them
-            if (nbModified != 0) {
-                removeRangePolygon(GoogleMapHelper.uidArea - nbModified, GoogleMapHelper.uidArea)
-                GoogleMapHelper.uidArea -= nbModified
-                nbModified = 0
-            }
+            GoogleMapHelper.removeZoneAreas(GoogleMapHelper.editingZone)
             //Set the correct text and visibility on the buttons
             changeCoordinatesText(etLoc, btnManageCoor, btnDelete, "")
         }
@@ -234,6 +222,7 @@ class ZoneManagementActivity : AppCompatActivity() {
                 this
             )
             val int = Intent(this, ZoneManagementListActivity::class.java)
+            GoogleMapHelper.setZone(zone)
             startActivity(int)
         } else {
             //show a toast indicating that there was an error and stay on this activity
