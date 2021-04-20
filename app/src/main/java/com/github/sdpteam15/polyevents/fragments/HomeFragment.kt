@@ -1,8 +1,6 @@
 package com.github.sdpteam15.polyevents.fragments
 
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +9,9 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
+import com.github.sdpteam15.polyevents.database.NUMBER_UPCOMING_EVENTS
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
+import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.Event
 
 /**
@@ -19,6 +20,7 @@ import com.github.sdpteam15.polyevents.model.Event
 class HomeFragment : Fragment() {
 
     private lateinit var listUpcomingEventsLayout: LinearLayout
+    val events = ObservableList<Event>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +36,15 @@ class HomeFragment : Fragment() {
         listUpcomingEventsLayout =
             fragmentView.findViewById<LinearLayout>(R.id.id_upcoming_events_list)
 
-        updateContent()
+        currentDatabase.eventDatabase!!.getListEvent(null, NUMBER_UPCOMING_EVENTS.toLong(), events)
+            .observe(this) {
+                if (!it.value) {
+                    HelperFunctions.showToast("Failed to load events", fragmentView.context)
+                }
+            }
+        events.observe(this) {
+            updateContent()
+        }
 
         return fragmentView
     }
@@ -46,10 +56,8 @@ class HomeFragment : Fragment() {
         // Remove all the content first
         listUpcomingEventsLayout.removeAllViews()
 
-        val events = currentDatabase.getUpcomingEvents()
-
-        for (event: Event in events) {
-            setupEventTab(event)
+        for (e in events) {
+            setupEventTab(e)
         }
     }
 

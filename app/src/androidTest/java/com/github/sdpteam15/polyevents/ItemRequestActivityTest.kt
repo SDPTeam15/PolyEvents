@@ -1,7 +1,6 @@
 package com.github.sdpteam15.polyevents
 
 
-import android.app.Activity
 import android.view.View
 import android.view.WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
 import android.view.WindowManager.LayoutParams.TYPE_TOAST
@@ -17,13 +16,16 @@ import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
-import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
-import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
-import androidx.test.runner.lifecycle.Stage
 import com.github.sdpteam15.polyevents.HelperTestFunction.getCurrentActivity
+import com.github.sdpteam15.polyevents.adapter.ItemRequestAdapter
 import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
-import com.github.sdpteam15.polyevents.adapter.ItemRequestAdapter
+import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
+import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabase
+import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabaseItem
+import com.github.sdpteam15.polyevents.model.Item
+import com.github.sdpteam15.polyevents.model.ItemType
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.Description
 import org.hamcrest.TypeSafeMatcher
@@ -32,15 +34,13 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito
-import org.mockito.Mockito.`when`
 import org.mockito.junit.MockitoJUnitRunner
 
 
 @RunWith(MockitoJUnitRunner::class)
 class ItemRequestActivityTest {
-    private lateinit var availableItems: MutableMap<String, Int>
-    private lateinit var availableItemsList: List<Pair<String, Int>>
+    private lateinit var availableItems: MutableMap<Item, Int>
+    private var availableItemsList = ObservableList<Pair<Item, Int>>()
     private lateinit var mockedAvailableItemsProvider: DatabaseInterface
 
     @Rule
@@ -68,27 +68,29 @@ class ItemRequestActivityTest {
 
     @After
     fun teardown() {
+        Database.currentDatabase = FirestoreDatabaseProvider
         Intents.release()
     }
 
     @Before
     fun setup() {
         availableItems = mutableMapOf()
-        availableItems["Bananas"] = 30
-        availableItems["Kiwis"] = 10
-        availableItems["230V plugs"] = 30
-        availableItems["Fridge (large)"] = 5
-        availableItems["Cord rewinder (15m)"] = 30
-        availableItems["Cord rewinder (50m)"] = 10
-        availableItems["Cord rewinder (25m)"] = 20
-
-        availableItemsList = availableItems.toList()
+        availableItems[Item(null, "Bananas", ItemType.OTHER)] = 30
+        availableItems[Item(null, "Kiwis", ItemType.OTHER)] = 10
+        availableItems[Item(null, "230V Plugs", ItemType.PLUG)] = 30
+        availableItems[Item(null, "Fridge (large)", ItemType.OTHER)] = 5
+        availableItems[Item(null, "Cord rewinder (15m)", ItemType.PLUG)] = 30
+        availableItems[Item(null, "Cord rewinder (50m)", ItemType.PLUG)] = 10
+        availableItems[Item(null, "Cord rewinder (25m)", ItemType.PLUG)] = 20
 
 
         // TODO : replace by the db interface call
-        mockedAvailableItemsProvider = Mockito.mock(DatabaseInterface::class.java)
-        Database.currentDatabase = mockedAvailableItemsProvider
-        `when`(mockedAvailableItemsProvider.getAvailableItems()).thenReturn(availableItems)
+        Database.currentDatabase = FakeDatabase
+        FakeDatabaseItem.items.clear()
+        for ((item, count) in availableItems) {
+            Database.currentDatabase.itemDatabase!!.createItem(item, count)
+        }
+        Database.currentDatabase.itemDatabase!!.getItemsList(availableItemsList)
 
         // go to activities more fragment
         mainActivity = ActivityScenarioRule(MainActivity::class.java)
@@ -97,6 +99,7 @@ class ItemRequestActivityTest {
         // Go to items request activity
         onView(withId(R.id.id_request_button)).perform(click())
         Intents.init()
+        Thread.sleep(1000)
     }
 
     @Test
@@ -110,7 +113,7 @@ class ItemRequestActivityTest {
         val itemsToSelect = arrayOf(0, 1, 3)
         val quantityToSelect = arrayOf(30, 3, 5, 2, 40, 4, 20)
         val correctQuantityAfterSelection = arrayOf(30, 3, 5, 2, 30, 4, 20)
-        val itemsSelected = mutableMapOf<String, Int>()
+        val itemsSelected = mutableMapOf<Item, Int>()
 
         for (i in itemsToSelect) {
             // Set the quantity wanted for each item
@@ -160,7 +163,7 @@ class ItemRequestActivityTest {
         selectItemQuantity(0, "-1")
         selectItemQuantity(itemToSelect, quantityToSelect.toString())
 
-        val correctMap = mutableMapOf<String, Int>()
+        val correctMap = mutableMapOf<Item, Int>()
         correctMap[availableItemsList[itemToSelect].first] = quantityToSelect
 
         assertThat(
@@ -176,7 +179,7 @@ class ItemRequestActivityTest {
         val itemToSelect = 1
         selectItemQuantity(itemToSelect, quantityToSelect.toString())
 
-        val correctMap = mutableMapOf<String, Int>()
+        val correctMap = mutableMapOf<Item, Int>()
         correctMap[availableItemsList[itemToSelect].first] = availableItemsList[itemToSelect].second
 
         assertThat(

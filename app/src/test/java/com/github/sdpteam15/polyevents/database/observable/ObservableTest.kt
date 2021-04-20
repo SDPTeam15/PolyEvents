@@ -1,63 +1,89 @@
 package com.github.sdpteam15.polyevents.database.observable
 
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.database.observe.Observer
 import org.junit.Test
 import org.mockito.Mockito.mock
 import kotlin.test.assertEquals
 import org.mockito.Mockito.`when` as When
 
+const val sender = "sender"
+
 class ObservableTest {
     @Test
-    fun constructorTest() {
+    fun constructor() {
         assertEquals(null, Observable<Int>().value)
+        assertEquals(null, Observable<Int>().sender)
         assertEquals(null, Observable<Int>(null).value)
+        assertEquals(null, Observable<Int>(sender = sender).sender)
+        assertEquals(null, Observable<Int>(null, sender).sender)
+        assertEquals(null, Observable<Int>(null).sender)
         assertEquals(0, Observable(0).value)
+        assertEquals(sender, Observable(0, sender).sender)
     }
 
     @Test
-    fun observerIsUpdatedTest() {
-        val mockedObserver = mock(Observer::class.java) as Observer<Boolean>
+    fun lambdaIsUpdated() {
         var isUpdate = false
-        When(mockedObserver.update(value = true)).thenAnswer {
-            isUpdate = true
-            Unit
-        }
-        val observable = Observable(false)
-        val suppressor = observable.observe { isUpdate = true }
-        observable.value = true
+        val observable = Observable<Boolean>()
+        val suppressor = observable.observe { isUpdate = it.value ?: false }
+        observable.postValue(true, sender)
 
         assertEquals(true, isUpdate)
         assertEquals(true, observable.value)
-
-        When(mockedObserver.update(value = false)).thenAnswer {
-            isUpdate = true
-            Unit
-        }
+        assertEquals(sender, observable.sender)
 
         isUpdate = false
         suppressor()
-        observable.value = false
+        observable.postValue(false, sender)
 
         assertEquals(false, isUpdate)
         assertEquals(false, observable.value)
+        assertEquals(sender, observable.sender)
+
+        isUpdate = false
+        observable.observeOnce { isUpdate = it.value ?: false }
+        observable.postValue(true, sender)
+
+        assertEquals(true, isUpdate)
+        assertEquals(true, observable.value)
+        assertEquals(sender, observable.sender)
+
+        isUpdate = false
+        observable.postValue(false, sender)
+
+        assertEquals(false, isUpdate)
+        assertEquals(false, observable.value)
+        assertEquals(sender, observable.sender)
     }
 
     @Test
-    fun lambdaIsUpdatedTest() {
+    fun lambdaIsUpdatedWithLifecycleOwner() {
         var isUpdate = false
-        val observable = Observable(false)
-        val suppressor = observable.observe { isUpdate = it ?: false }
-        observable.value = true
+        val observable = Observable<Boolean>()
+        val mockedLifecycleOwner = mock(LifecycleOwner::class.java)
+        val mockedLifecycle = mock(Lifecycle::class.java)
+        When(mockedLifecycleOwner.lifecycle).thenReturn(mockedLifecycle)
 
-        assertEquals(true, isUpdate)
-        assertEquals(true, observable.value)
-
+        var suppressor = observable.observe(mockedLifecycleOwner) { isUpdate = it.value ?: false }
+        observable.postValue(true, sender)
+        assert(isUpdate)
+        assert(suppressor())
         isUpdate = false
-        suppressor()
-        observable.value = false
 
-        assertEquals(false, isUpdate)
-        assertEquals(false, observable.value)
+        suppressor = observable.observeOnce(mockedLifecycleOwner) { isUpdate = it.value ?: false }
+        observable.postValue(true, sender)
+        assert(isUpdate)
+        assert(!suppressor())
+        isUpdate = false
+
+        suppressor = observable.observeWhileTrue(mockedLifecycleOwner) {
+            isUpdate = it.value ?: false
+            true
+        }
+        observable.postValue(true, sender)
+        assert(isUpdate)
+        assert(suppressor())
     }
 }

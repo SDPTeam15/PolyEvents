@@ -5,33 +5,39 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
-import com.github.sdpteam15.polyevents.database.FakeDatabase
+import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.fragments.EXTRA_EVENT_ID
+import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.model.Event
 
 /**
  * An activity containing events description
  */
 class EventActivity : AppCompatActivity() {
 
-    override fun onResume() {
-        super.onResume()
-        updateInfo()
-    }
+    var obsEvent = Observable<Event>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_event)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowHomeEnabled(true)
+
+        println(intent.getStringExtra(EXTRA_EVENT_ID))
+        currentDatabase.eventDatabase!!.getEventFromId(intent.getStringExtra(EXTRA_EVENT_ID)!!, obsEvent)
+            .observe(this) { b ->
+                if (!b.value) {
+                    HelperFunctions.showToast(getString(R.string.event_info_fail), this)
+                }
+            }
+        obsEvent.observe(this) { updateInfo(it.value) }
     }
 
     /**
      * Updates the event information
      */
-    fun updateInfo() {
-        val id = intent.getStringExtra(EXTRA_EVENT_ID)
-        val event = currentDatabase.getEventFromId(id!!)!!
+    private fun updateInfo(event: Event) {
         // Capture the layout's TextView and set the string as its text
         findViewById<TextView>(R.id.txt_event_Name).apply {
             text = event.eventName

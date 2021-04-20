@@ -8,13 +8,11 @@ import android.widget.Button
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
-import com.github.sdpteam15.polyevents.database.DatabaseConstant
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.UserProfile
 import com.github.sdpteam15.polyevents.model.UserRole
 import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
 
 const val CALLER_RANK = "com.github.sdpteam15.polyevents.user.CALLER_RANK"
 const val EDIT_PROFILE_ID = "com.github.sdpteam15.polyevents.user.EDIT_PROFILE_ID"
@@ -22,7 +20,7 @@ const val EDIT_PROFILE_ID = "com.github.sdpteam15.polyevents.user.EDIT_PROFILE_I
 class EditProfileActivity : AppCompatActivity() {
     companion object {
         val updater = Observable<UserProfile>()
-        val map = HashMap<String, String>()
+        var end = Observable<Boolean>()
     }
 
     private val id: TextInputEditText get() = findViewById(R.id.EditProfileActivity_ID)
@@ -43,6 +41,8 @@ class EditProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_profile)
 
+        end.postValue(false, this)
+
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         val adapter = ArrayAdapter(
@@ -58,22 +58,22 @@ class EditProfileActivity : AppCompatActivity() {
             rankLayout.visibility = View.GONE
         }
 
-        rank.setOnFocusChangeListener { view, b ->
+        rank.setOnFocusChangeListener { _, b ->
             rankOnFocusChangeListener(b)
         }
-        name.setOnFocusChangeListener { view, b ->
+        name.setOnFocusChangeListener { _, b ->
             nameOnFocusChangeListener(b)
         }
 
         updater.observe(this) {
-            profile = it!!
-            id.setText(it.userUid)
-            lastRank = it.userRole
-            rank.setText(it.userRole.toString())
-            lastName = it.profileName ?: ""
-            name.setText(it.profileName ?: "")
+            profile = it.value
+            id.setText(profile.pid)
+            lastRank = profile.userRole
+            rank.setText(rankToString(profile.userRole))
+            lastName = profile.profileName ?: ""
+            name.setText(profile.profileName ?: "")
         }
-        currentDatabase.getProfileById(updater, pid)
+        currentDatabase.userDatabase!!.getProfileById(updater, pid)
 
         cancel.setOnClickListener {
             onBackPressed()
@@ -81,40 +81,58 @@ class EditProfileActivity : AppCompatActivity() {
 
         save.setOnClickListener {
             val newName = name.text.toString()
-            val newRank = UserRole.valueOf(rank.text.toString())
+            val newRank = stringToRank(rank.text.toString())
 
-            if(profile.userRole != newRank)
-                map[DatabaseConstant.PROFILE_RANK] = newRank.toString()
-            if(profile.profileName != newName)
-                map[DatabaseConstant.PROFILE_NAME] = newName
+            profile.userRole = newRank
+            profile.profileName = newName
 
-            currentDatabase.updateProfile(map, pid).observe {
-                if(it == true)
+            currentDatabase.userDatabase!!.updateProfile(profile).observe {
+                if (it.value) {
+                    end.postValue(true, this)
                     onBackPressed()
-                else
-                    HelperFunctions.showToast(getString(R.string.EditProfileActivity_DatabaseError),this)
+                } else
+                    HelperFunctions.showToast(
+                        getString(R.string.EditProfileActivity_DatabaseError),
+                        this
+                    )
             }
         }
     }
 
-    fun rankOnFocusChangeListener(b :Boolean) {
+    fun rankOnFocusChangeListener(b: Boolean) {
         if (b) {
             rank.setText("")
         } else {
-            try {
-                lastRank = UserRole.valueOf(rank.text.toString())
-            } catch (e: Exception) {
-                rank.setText(lastRank.toString())
-            }
+            lastRank = stringToRank(rank.text.toString())
+            rank.setText(rankToString(lastRank))
         }
     }
 
-    fun nameOnFocusChangeListener(b :Boolean) {
+    fun nameOnFocusChangeListener(b: Boolean) {
         if (!b) {
-            if(name.text.toString().isNotEmpty())
+            if (name.text.toString().isNotEmpty())
                 lastName = name.text.toString()
             else
                 name.setText(lastName)
         }
+    }
+
+    fun rankToString(rank: UserRole): String {
+        when (rank) {
+            UserRole.ADMIN -> return resources.getStringArray(R.array.EditProfileActivity_Ranks)[0]
+            UserRole.ORGANIZER -> return resources.getStringArray(R.array.EditProfileActivity_Ranks)[1]
+            UserRole.STAFF -> return resources.getStringArray(R.array.EditProfileActivity_Ranks)[2]
+            UserRole.PARTICIPANT -> return resources.getStringArray(R.array.EditProfileActivity_Ranks)[3]
+        }
+    }
+
+    fun stringToRank(rank: String): UserRole {
+        when (rank) {
+            resources.getStringArray(R.array.EditProfileActivity_Ranks)[0] -> return UserRole.ADMIN
+            resources.getStringArray(R.array.EditProfileActivity_Ranks)[1] -> return UserRole.ORGANIZER
+            resources.getStringArray(R.array.EditProfileActivity_Ranks)[2] -> return UserRole.STAFF
+            resources.getStringArray(R.array.EditProfileActivity_Ranks)[3] -> return UserRole.PARTICIPANT
+        }
+        return lastRank
     }
 }

@@ -15,6 +15,7 @@ import com.github.sdpteam15.polyevents.admin.ZoneManagementActivity
 import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
+import com.github.sdpteam15.polyevents.login.UserLogin
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 import com.google.firebase.auth.FirebaseAuth
@@ -46,7 +47,7 @@ class ZoneManagementListTest {
 
         Database.currentDatabase = mockedDatabase
 
-        FirebaseAuth.getInstance().signOut()
+        UserLogin.currentUserLogin.signOut()
         testUser = UserEntity(
             uid = uid,
             username = username,

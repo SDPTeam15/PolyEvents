@@ -55,24 +55,24 @@ class MainActivity : AppCompatActivity() {
             when (it.itemId) {
                 R.id.ic_map -> HelperFunctions.changeFragment(this, fragments[R.id.ic_map])
                 R.id.ic_list -> HelperFunctions.changeFragment(this, fragments[R.id.ic_list])
-                R.id.ic_login -> if (currentUser==null) {
+                R.id.ic_login -> if (currentUser == null) {
                     HelperFunctions.changeFragment(this, fragments[R.id.ic_login])
                 } else {
                     HelperFunctions.changeFragment(this, fragments[R.id.id_fragment_profile])
                 }
                 R.id.ic_more -> HelperFunctions.changeFragment(this, fragments[R.id.ic_more])
                 else ->
-                //TODO Add a condition to see if the user is an admin or not and if so, redirect him to the admin hub
+                    //TODO Add a condition to see if the user is an admin or not and if so, redirect him to the admin hub
                     redirectAdmin()
             }
             true
         }
-
+/*
         adapter = ArrayAdapter(
             this,
             android.R.layout.simple_list_item_1,
             resources.getStringArray(R.array.countries_array)
-        )
+        )*/
         /*
         var lv_listView = findViewById<ListView>(R.id.lv_listView)
         lv_listView.adapter = adapter
@@ -108,7 +108,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun redirectAdmin() {
-        if(currentUser == null) {
+        if (currentUser == null) {
             HelperFunctions.changeFragment(this, fragments[R.id.ic_home])
         } else {
             HelperFunctions.changeFragment(this, fragments[R.id.id_fragment_admin_hub])
