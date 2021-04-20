@@ -69,9 +69,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             currentUserObservable.value = value
         }
 
-
     override var currentProfile: UserProfile? = null
-
 
     //Method used to get listener in the test set to mock and test the database
     var lastQuerySuccessListener: OnSuccessListener<QuerySnapshot>? = null
@@ -150,8 +148,6 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     fun thenDoSet(
         task: Task<Void>
     ): Observable<Boolean> {
-
-
         val ended = Observable<Boolean>()
 
         lastSetSuccessListener = OnSuccessListener<Void> { ended.postValue(true, this) }
@@ -161,7 +157,6 @@ object FirestoreDatabaseProvider : DatabaseInterface {
 
         return ended
     }
-
 
     override fun <T> addEntityAndGetId(
         element: T,
