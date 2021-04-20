@@ -21,10 +21,10 @@ const val TAG = "EventActivity"
  */
 class EventActivity : AppCompatActivity() {
 
-    var obsEvent = Observable<Event>()
-    lateinit var event: Event
+    private var obsEvent = Observable<Event>()
+    private lateinit var event: Event
 
-    lateinit var subscribeButton: Button
+    private lateinit var subscribeButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,33 +73,50 @@ class EventActivity : AppCompatActivity() {
             //TODO : change image
         }
 
-        if (event.limitedEvent) {
-            // TODO: change button text if current user already subscribed?
+        if (event.isLimitedEvent()) {
             subscribeButton.visibility = View.VISIBLE
+            if (currentDatabase.currentUser != null
+                && event.getParticipants().contains(currentDatabase.currentUser!!.uid)) {
+                subscribeButton.setText(resources.getString(R.string.event_unsubscribe))
+            }
         }
     }
 
-    fun subscribeToEvent(view: View) {
+    fun onClickEventSubscribe(view: View) {
         if (currentDatabase.currentUser == null) {
             Log.d(TAG, "No user logged in")
             showToast(resources.getString(R.string.toast_subscribe_warning), this)
+        } else if (event.getParticipants().contains(currentDatabase.currentUser!!.uid)){
+            unsubscribeFromEvent()
         } else {
-            if (event.getParticipants().contains(currentDatabase.currentUser!!.uid)) {
-                Log.d(TAG, "User already subscribed to event")
-                showToast(resources.getString(R.string.event_already_subscribed), this)
-            } else {
-                try {
-                    event.addParticipant(currentDatabase.currentUser!!.uid)
-                    Log.d(TAG, event.getParticipants().toString())
+            subscribeToEvent()
+        }
+    }
 
-                    currentDatabase.eventDatabase!!.updateEvents(event)
-                    showToast(resources.getString(R.string.event_successfully_subscribed), this)
-                    Log.d(TAG, "User successfully subscribed to event")
-                } catch (e: MaxAttendeesException) {
-                    Log.d(TAG, "Max number of attendees reached")
-                    showToast(resources.getString(R.string.event_subscribe_at_max_capacity), this)
-                }
-            }
+    fun unsubscribeFromEvent() {
+        event.removeParticipant(currentDatabase.currentUser!!.uid)
+        Log.d(TAG, event.getParticipants().toString())
+
+        currentDatabase.eventDatabase!!.updateEvents(event)
+        showToast(resources.getString(R.string.event_successfully_unsubscribed), this)
+        Log.d(TAG, "User successfully removed from event")
+
+        subscribeButton.setText(resources.getString(R.string.event_subscribe))
+    }
+
+    fun subscribeToEvent() {
+        try {
+            event.addParticipant(currentDatabase.currentUser!!.uid)
+            Log.d(TAG, event.getParticipants().toString())
+
+            currentDatabase.eventDatabase!!.updateEvents(event)
+            showToast(resources.getString(R.string.event_successfully_subscribed), this)
+            Log.d(TAG, "User successfully subscribed to event")
+
+            subscribeButton.setText(resources.getString(R.string.event_unsubscribe))
+        } catch (e: MaxAttendeesException) {
+            Log.d(TAG, "Max number of attendees reached")
+            showToast(resources.getString(R.string.event_subscribe_at_max_capacity), this)
         }
     }
 

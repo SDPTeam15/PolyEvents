@@ -48,8 +48,9 @@ object FakeDatabaseEvent : EventDatabaseInterface {
                         " the content of the activity we are speaking of.",
                 startTime = LocalDateTime.of(2021, 3, 7, 14, 15),
                 organizer = "The Aqua Poney team",
-                zoneName = "Swimming pool"
+                zoneName = "Swimming pool",
             )
+        events["event3"]!!.makeLimitedEvent(3)
 
     }
 
@@ -57,18 +58,7 @@ object FakeDatabaseEvent : EventDatabaseInterface {
         val eventId = FakeDatabase.generateRandomKey()
         val b = events.put(
             eventId,
-            Event(
-                eventId,
-                event.eventName,
-                event.organizer,
-                event.zoneName,
-                event.description,
-                event.icon,
-                event.startTime,
-                event.endTime,
-                event.inventory,
-                event.tags
-            )
+            event.copy(eventId = eventId)
         ) == null
         return Observable(b, this)
     }
@@ -92,9 +82,9 @@ object FakeDatabaseEvent : EventDatabaseInterface {
     }
 
 
-    override fun getListEvent(
+    override fun getEvents(
         matcher: Matcher?,
-        number: Long?,
+        limit: Long?,
         eventList: ObservableList<Event>,
         profile: UserProfile?
     ): Observable<Boolean> {
