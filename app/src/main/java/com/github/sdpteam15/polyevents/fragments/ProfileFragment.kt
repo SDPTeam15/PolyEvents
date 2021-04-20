@@ -30,7 +30,7 @@ import java.time.format.DateTimeFormatter
 /**
  *  [Fragment] subclass that represents the profile page allowing the user to modify its private information
  */
-class ProfileFragment : Fragment() {
+class ProfileFragment(val userId:String?=null) : Fragment() {
     //Return currentUser if we are not in test, but we can use a fake user in test this way
     var currentUser: UserEntity? = null
         get() = field ?: currentDatabase.currentUser
@@ -42,7 +42,7 @@ class ProfileFragment : Fragment() {
     lateinit var profileUsernameET: EditText
 
     /**
-     * Recycler containing all the items
+     * Recycler containing all the profile
      */
     lateinit var recyclerView: RecyclerView
 
