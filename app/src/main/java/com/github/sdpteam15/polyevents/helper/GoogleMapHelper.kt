@@ -10,8 +10,6 @@ import androidx.core.content.ContextCompat
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZoneConstant.*
 import com.github.sdpteam15.polyevents.model.Zone
-import com.github.sdpteam15.polyevents.admin.ZoneManagementActivity
-import com.github.sdpteam15.polyevents.database.DatabaseConstant
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.*
 import kotlin.math.*
@@ -129,10 +127,10 @@ object GoogleMapHelper {
             val zoneTemp = zonesToArea.toMap()
             zonesToArea.clear()
             areasPoints.clear()
-            for((k,v) in zoneTemp){
+            for ((k, v) in zoneTemp) {
                 editingZone = k
                 zonesToArea[editingZone] = Pair(null, mutableListOf())
-                for(id in v.second){
+                for (id in v.second) {
                     addArea(context, id, areaTemp[id]!!.third.points, areaTemp[id]!!.second.title)
                 }
             }
@@ -152,7 +150,8 @@ object GoogleMapHelper {
             listEvent1.add(LatLng(46.52073238207864, 6.565711721777915))
             listEvent1.add(LatLng(46.52100506978624, 6.565711721777915))
             addArea(context, uidArea++, listEvent1, "Sushi Demo")
-            val zone1 = Zone(null, "Salle 1", zoneAreasToFormattedStringLocation(editingZone), "Salle 1")
+            val zone1 =
+                Zone(null, "Salle 1", zoneAreasToFormattedStringLocation(editingZone), "Salle 1")
             setZone(zone1)
 
             val zoneID2 = uidZone++
@@ -164,29 +163,42 @@ object GoogleMapHelper {
             listEvent3.add(LatLng(46.52108443041863, 6.566078178584576))
             listEvent3.add(LatLng(46.521115113422766, 6.5660761669278145))
             addArea(context, uidArea++, listEvent3, "La route en T")
-            val listEvent4= arrayListOf<LatLng>()
+            val listEvent4 = arrayListOf<LatLng>()
             listEvent4.add(LatLng(46.52115986905187, 6.565824374556541))
             listEvent4.add(LatLng(46.521115113422766, 6.565824374556541))
             listEvent4.add(LatLng(46.521115113422766, 6.565871313214302))
             listEvent4.add(LatLng(46.52115986905187, 6.565871313214302))
             addArea(context, uidArea++, listEvent4, "La route en T2")
-            val zoneEnT = Zone(null, "Route en T", zoneAreasToFormattedStringLocation(editingZone), "La route en T")
+            val zoneEnT = Zone(
+                null,
+                "Route en T",
+                zoneAreasToFormattedStringLocation(editingZone),
+                "La route en T"
+            )
             setZone(zoneEnT)
 
             editingZone = currentEditZone
         }
     }
 
-    fun importNewZone(context: Context?, zone: Zone){
+    /**
+     * Import zone from database
+     * @param zone zone to import
+     */
+    fun importNewZone(context: Context?, zone: Zone) {
         zonesToArea[uidZone++] = Pair(zone, mutableListOf())
-        for(areas in zone.getZoneCoordinates()){
+        for (areas in zone.getZoneCoordinates()) {
             addArea(context, uidArea++, areas, zone.zoneName)
         }
     }
 
-    fun setZone(zone: Zone){
+    /**
+     * Set the texts to the areas of the zone
+     * @param zone new zone created
+     */
+    fun setZone(zone: Zone) {
         val list = zonesToArea[editingZone]!!.second.toMutableList()
-        for(l in list){
+        for (l in list) {
             areasPoints[l]!!.second.title = zone.zoneName
         }
         zonesToArea[editingZone] = Pair(zone, list)
@@ -246,7 +258,7 @@ object GoogleMapHelper {
             }
 
             areasPoints[id] = Triple(editingZone, marker, polygon)
-            if(!zonesToArea[editingZone]!!.second.contains(id)){
+            if (!zonesToArea[editingZone]!!.second.contains(id)) {
                 zonesToArea[editingZone]!!.second.add(id)
             }
         }
@@ -285,10 +297,10 @@ object GoogleMapHelper {
         if (tempPoly != null) {
             var name = ""
             var id = -1
-            if(tempTitle != null){
+            if (tempTitle != null) {
                 name = tempTitle!!
                 id = modifyingArea
-            }else{
+            } else {
                 id = uidArea++
                 name = "Area $id"
 
@@ -346,7 +358,9 @@ object GoogleMapHelper {
         tempLatLng.add(pos2)
         tempLatLng.add(pos3)
         tempLatLng.add(pos4)
-        tempPoly = map!!.addPolygon(PolygonOptions().add(pos1).add(pos2).add(pos3).add(pos4).strokeColor(Color.RED))
+        tempPoly = map!!.addPolygon(
+            PolygonOptions().add(pos1).add(pos2).add(pos3).add(pos4).strokeColor(Color.RED)
+        )
 
         setupModifyMarkers(context)
     }
@@ -730,9 +744,14 @@ object GoogleMapHelper {
         }
     }
 
+    /**
+     * Can edit the selected area if the area is in the list of areas of the current editingZone
+     * @param tag: tag of the area to begin editing
+     * @return true if can edit, false if not
+     */
     fun canEdit(tag: String): Boolean {
         val t = tag.toInt()
-        return zonesToArea[editingZone]?.second?.contains(t)?:false
+        return zonesToArea[editingZone]?.second?.contains(t) ?: false
     }
 
     /**
@@ -755,24 +774,37 @@ object GoogleMapHelper {
         setupModifyMarkers(context)
     }
 
-    fun removeArea(id: Int){
-        areasPoints[id]?: return
+    /**
+     * Removes the area with given ID
+     * @param id id of the area to remove
+     */
+    fun removeArea(id: Int) {
+        areasPoints[id] ?: return
         zonesToArea[areasPoints[id]!!.first]!!.second.remove(id)
         areasPoints[id]!!.second.remove()
         areasPoints[id]!!.third.remove()
         areasPoints.remove(id)
     }
 
-    fun zoneAreasToFormattedStringLocation(idZone: Int): String{
+    /**
+     * Generate the string format for Firebase of the area points for a given zone
+     * @param idZone id of the zone
+     */
+    fun zoneAreasToFormattedStringLocation(idZone: Int): String {
         var temp = zonesToArea[idZone]!!.second.toMutableList()
         var s = ""
-        for(uid in temp){
+        for (uid in temp) {
             s += areaToFormattedStringLocation(areasPoints[uid]!!.third.points.dropLast(1))
             s += AREAS_SEP
         }
         return s.substring(0, s.length - AREAS_SEP.value.length)
     }
 
+    /**
+     * Generate the string format of a list of points
+     * @param loc list of the points to save into a string
+     * @return formatted string of the points
+     */
     fun areaToFormattedStringLocation(loc: List<LatLng>?): String {
         if (loc == null) {
             return ""
@@ -785,10 +817,14 @@ object GoogleMapHelper {
         return s.substring(0, s.length - POINTS_SEP.value.length)
     }
 
-    fun removeZoneAreas(id: Int){
-        zonesToArea[id]?: return
+    /**
+     * Deletes the areas of a zone
+     * @param id id of the zone
+     */
+    fun removeZoneAreas(id: Int) {
+        zonesToArea[id] ?: return
         val areas = zonesToArea[id]!!.second.toList()
-        for(uid in areas){
+        for (uid in areas) {
             removeArea(uid)
         }
         zonesToArea[id] = Pair(null, mutableListOf())
@@ -918,15 +954,17 @@ object GoogleMapHelper {
      * @param idZone id of the zone to color
      * @param color color target for the zone
      */
-    fun colorAreas(idZone: Int, color: Int){
-        for(key in zonesToArea[idZone]!!.second){
+    fun colorAreas(idZone: Int, color: Int) {
+        for (key in zonesToArea[idZone]!!.second) {
             areasPoints[key]!!.third.strokeColor = color
         }
     }
 
-
-    fun clearSelectedZone(){
-        if(selectedZone != -1){
+    /**
+     * clears the color of the current selected zone
+     */
+    fun clearSelectedZone() {
+        if (selectedZone != -1) {
             colorAreas(selectedZone, DEFAULT_ZONE_STROKE_COLOR)
             selectedZone = -1
         }
@@ -936,7 +974,7 @@ object GoogleMapHelper {
      * Set the selected zone to color it on the map
      * @param tag id of the selected zone
      */
-    fun setSelectedZones(tag: Int){
+    fun setSelectedZones(tag: Int) {
         clearSelectedZone()
         selectedZone = tag
         colorAreas(tag, SELECTED_ZONE_STROKE_COLOR)
