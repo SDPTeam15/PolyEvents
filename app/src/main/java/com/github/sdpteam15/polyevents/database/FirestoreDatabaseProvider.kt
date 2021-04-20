@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.database
 
 import android.annotation.SuppressLint
+import android.util.Log
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.database.objects.*
 import com.github.sdpteam15.polyevents.database.observe.Observable
@@ -92,7 +93,10 @@ object FirestoreDatabaseProvider : DatabaseInterface {
 
         lastAddSuccessListener =
             OnSuccessListener<DocumentReference> { ended.postValue(true, this) }
-        lastFailureListener = OnFailureListener { ended.postValue(false, this) }
+        lastFailureListener = OnFailureListener {
+            it.message?.let { it1 -> Log.d(this::class.qualifiedName, it1) }
+            ended.postValue(false, this)
+        }
         task.addOnSuccessListener(lastAddSuccessListener!!)
             .addOnFailureListener(lastFailureListener!!)
 
@@ -115,7 +119,10 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             ended.postValue(true, this)
         }
 
-        lastFailureListener = OnFailureListener { ended.postValue(false, this) }
+        lastFailureListener = OnFailureListener {
+            it.message?.let { it1 -> Log.d(this::class.qualifiedName, it1) }
+            ended.postValue(false, this)
+        }
         task.addOnSuccessListener(lastQuerySuccessListener!!)
             .addOnFailureListener(lastFailureListener!!)
         return ended
@@ -136,7 +143,10 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             onSuccessListener(it)
             ended.postValue(true, this)
         }
-        lastFailureListener = OnFailureListener { ended.postValue(false, this) }
+        lastFailureListener = OnFailureListener {
+            it.message?.let { it1 -> Log.d(this::class.qualifiedName, it1) }
+            ended.postValue(false, this)
+        }
         task.addOnSuccessListener(lastGetSuccessListener!!)
             .addOnFailureListener(lastFailureListener!!)
         return ended
@@ -155,7 +165,10 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         val ended = Observable<Boolean>()
 
         lastSetSuccessListener = OnSuccessListener<Void> { ended.postValue(true, this) }
-        lastFailureListener = OnFailureListener { ended.postValue(false, this) }
+        lastFailureListener = OnFailureListener {
+            it.message?.let { it1 -> Log.d(this::class.qualifiedName, it1) }
+            ended.postValue(false, this)
+        }
         task.addOnSuccessListener(lastSetSuccessListener!!)
             .addOnFailureListener(lastFailureListener!!)
 
@@ -176,7 +189,10 @@ object FirestoreDatabaseProvider : DatabaseInterface {
 
         lastAddSuccessListener =
             OnSuccessListener<DocumentReference> { ended.postValue(it.id, this) }
-        lastFailureListener = OnFailureListener { ended.postValue("", this) }
+        lastFailureListener = OnFailureListener {
+            it.message?.let { it1 -> Log.d(this::class.qualifiedName, it1) }
+            ended.postValue("", this)
+        }
 
         task.addOnSuccessListener(lastAddSuccessListener!!)
             .addOnFailureListener(lastFailureListener!!)
@@ -196,7 +212,10 @@ object FirestoreDatabaseProvider : DatabaseInterface {
 
         lastAddSuccessListener =
             OnSuccessListener<DocumentReference> { ended.postValue(true, this) }
-        lastFailureListener = OnFailureListener { ended.postValue(false, this) }
+        lastFailureListener = OnFailureListener {
+            it.message?.let { it1 -> Log.d(this::class.qualifiedName, it1) }
+            ended.postValue(false, this)
+        }
 
         task.addOnSuccessListener(lastAddSuccessListener!!)
             .addOnFailureListener(lastFailureListener!!)
@@ -222,7 +241,10 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         }
 
         lastSetSuccessListener = OnSuccessListener<Void> { ended.postValue(true, this) }
-        lastFailureListener = OnFailureListener { ended.postValue(false, this) }
+        lastFailureListener = OnFailureListener {
+            it.message?.let { it1 -> Log.d(this::class.qualifiedName, it1) }
+            ended.postValue(false, this)
+        }
 
         task.addOnSuccessListener(lastSetSuccessListener!!)
         task.addOnFailureListener(lastFailureListener!!)
@@ -254,6 +276,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         }
 
         lastFailureListener = OnFailureListener {
+            it.message?.let { it1 -> Log.d(this::class.qualifiedName, it1) }
             ended.postValue(false, this)
         }
 
@@ -275,7 +298,9 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
 
-        val lastFailureListener = OnFailureListener { ended.postValue(false, this) }
+        val lastFailureListener = OnFailureListener {
+            it.message?.let { it1 -> Log.d(this::class.qualifiedName, it1) }
+            ended.postValue(false, this) }
         val mutableList = mutableListOf<T?>()
         val fsCollection = firestore!!.collection(collection.value)
         for (id in ids) {
