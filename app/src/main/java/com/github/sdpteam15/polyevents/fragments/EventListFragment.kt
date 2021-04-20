@@ -37,7 +37,7 @@ class EventListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val fragmentView = inflater.inflate(R.layout.fragment_list, container, false)
+        val fragmentView = inflater.inflate(R.layout.fragment_events, container, false)
         recyclerView = fragmentView.findViewById<RecyclerView>(R.id.recycler_events_list)
 
         val openEvent = { event: Event ->
@@ -48,7 +48,7 @@ class EventListFragment : Fragment() {
         }
 
         recyclerView.adapter = EventItemAdapter(events, openEvent)
-        currentDatabase.eventDatabase!!.getListEvent(null, 10, events).observe(this) {
+        currentDatabase.eventDatabase!!.getEvents(null, 10, events).observe(this) {
             if (!it.value) {
                 HelperFunctions.showToast("Failed to get events information", fragmentView.context)
             }

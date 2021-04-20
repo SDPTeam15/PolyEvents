@@ -48,7 +48,7 @@ class EventItemAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         val adapterLayout = LayoutInflater.from(parent.context)
-            .inflate(R.layout.tab_event, parent, false)
+            .inflate(R.layout.card_event, parent, false)
         return ItemViewHolder(adapterLayout)
     }
 

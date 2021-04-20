@@ -50,7 +50,7 @@ class UserAdapterTest {
     @Test
     fun conversionOfDocumentToUserEntityPreservesData() {
         val birthDateTimeStamp =
-            Timestamp(HelperFunctions.localDateToTimeToDate(birthDate.atStartOfDay())!!)
+            Timestamp(HelperFunctions.localDateTimeToDate(birthDate.atStartOfDay())!!)
         val userDocumentData: HashMap<String, Any?> = hashMapOf(
             USER_UID.value to googleId,
             USER_NAME.value to name,
