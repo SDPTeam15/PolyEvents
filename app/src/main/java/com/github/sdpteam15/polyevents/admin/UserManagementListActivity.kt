@@ -27,33 +27,32 @@ class UserManagementListActivity : AppCompatActivity() {
         setContentView(R.layout.activity_user_management_list)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
-
         recyclerView = findViewById(R.id.recycler_view_user)
         recyclerView.setHasFixedSize(false)
 
         val openUser = {
-            user:UserEntity ->
+            user: UserEntity ->
             val intent = Intent(this, UserManagementActivity::class.java).apply {
-                putExtra(EXTRA_EVENT_ID, user.uid)
+                putExtra(EXTRA_USER_ID, user.uid)
             }
             startActivity(intent)
         }
         recyclerView.adapter = UserListAdapter(users, openUser)
-        getListUsers()
 
+        getListUsers()
     }
 
     private fun getListUsers(){
         currentDatabase.userDatabase!!.getListAllUsers(users).observe {
             if(it.value){
-               recyclerView.adapter!!.notifyDataSetChanged()
+                recyclerView.adapter!!.notifyDataSetChanged()
             }else {
                 HelperFunctions.showToast("Failed to get events information", this)
             }
         }
-        /*
+
         users.observe(this){
             recyclerView.adapter!!.notifyDataSetChanged()
-        }*/
+        }
     }
 }
