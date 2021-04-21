@@ -23,6 +23,7 @@ import org.junit.Test
 class ItemsAdminActivityTest {
 
     lateinit var availableItems: MutableMap<Item, Int>
+    lateinit var availableItemTypes: MutableList<String>
 
     private val testItem = Item(null, "test item", "TESTITEMTYPE")
     private val testQuantity = 3
@@ -33,22 +34,28 @@ class ItemsAdminActivityTest {
     @Before
     fun setup() {
         availableItems = mutableMapOf()
-        availableItems[Item(null, "Chocolat", "OTHER")] = 30
-        availableItems[Item(null, "Kiwis", "OTHER")] = 10
-        availableItems[Item(null, "230V Plugs", "OTHER")] = 30
-        availableItems[Item(null, "Fridge (large)", "OTHER")] = 5
-        availableItems[Item(null, "Cord rewinder (15m)", "OTHER")] = 30
-        availableItems[Item(null, "Cord rewinder (50m)", "OTHER")] = 10
-        availableItems[Item(null, "Cord rewinder (25m)", "OTHER")] = 20
+        availableItems[Item(null, "Chocolat", "Food")] = 30
+        availableItems[Item(null, "Kiwis", "Food")] = 10
+        availableItems[Item(null, "230V Plugs", "Plug")] = 30
+        availableItems[Item(null, "Fridge (large)", "Fridge")] = 5
+        availableItems[Item(null, "Cord rewinder (15m)", "Plug")] = 30
+        availableItems[Item(null, "Cord rewinder (50m)", "Plug")] = 10
+        availableItems[Item(null, "Cord rewinder (25m)", "Plug")] = 20
 
+        availableItemTypes = mutableListOf("Food","Plug","Fridge")
 
-        // TODO : replace by the db interface call
         currentDatabase = FakeDatabase
 
         FakeDatabaseItem.items.clear()
         for ((item, count) in availableItems) {
             currentDatabase.itemDatabase!!.createItem(item, count)
         }
+
+        FakeDatabaseItem.itemTypes.clear()
+        for (itemType in availableItemTypes){
+            currentDatabase.itemDatabase!!.createItemType(itemType)
+        }
+
 
         val intent =
             Intent(ApplicationProvider.getApplicationContext(), ItemsAdminActivity::class.java)
@@ -60,7 +67,6 @@ class ItemsAdminActivityTest {
 
     @After
     fun tearDown() {
-        currentDatabase = FirestoreDatabaseProvider
         currentDatabase = FirestoreDatabaseProvider
     }
 
@@ -78,10 +84,13 @@ class ItemsAdminActivityTest {
         closeSoftKeyboard()
         onView(withId(R.id.id_edittext_item_quantity)).perform(typeText(testQuantity.toString()))
         closeSoftKeyboard()
+        onView(withId(R.id.id_edittext_item_type)).perform(typeText(testItem.itemType))
+        closeSoftKeyboard()
         onView(withId(R.id.id_confirm_add_item_button)).perform(click())
         Thread.sleep(1000)
         onView(withId(R.id.id_recycler_items_list))
             .check(RecyclerViewItemCountAssertion(availableItems.size + 1))
+        assert(FakeDatabaseItem.itemTypes.contains(testItem.itemType))
     }
 
     @Test

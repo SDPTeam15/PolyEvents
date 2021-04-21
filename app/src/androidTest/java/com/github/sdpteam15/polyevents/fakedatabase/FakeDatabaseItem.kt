@@ -12,6 +12,7 @@ object FakeDatabaseItem : ItemDatabaseInterface {
 
     init {
         initItems()
+        initItemTypes()
     }
 
     private fun initItems() {
@@ -95,6 +96,7 @@ object FakeDatabaseItem : ItemDatabaseInterface {
         itemTypeList: ObservableList<String>,
         userAccess: UserProfile?
     ): Observable<Boolean> {
+        itemTypeList.clear()
         itemTypeList.addAll(itemTypes)
         return Observable(true)
     }

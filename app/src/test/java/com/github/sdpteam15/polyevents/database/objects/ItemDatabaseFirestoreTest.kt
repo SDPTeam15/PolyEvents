@@ -1,5 +1,7 @@
 package com.github.sdpteam15.polyevents.database.objects
 
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.ITEM_TYPE_COLLECTION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.ITEM_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
@@ -207,4 +209,41 @@ class ItemDatabaseFirestoreTest {
         assert(itemCountAdded == testQuantity)
         assert(itemIdAdded == testItem.itemId!!)
     }
+
+    @Test
+    fun addItemTypeInDatabaseWorks() {
+        val mockedCollectionReference = mock(CollectionReference::class.java)
+        val taskReferenceMock = mock(Task::class.java) as Task<DocumentReference>
+
+        val testItemType = "TEST_ITEM_TYPE"
+
+        When(mockedDatabase.collection(ITEM_TYPE_COLLECTION.value)).thenReturn(mockedCollectionReference)
+        When(
+            mockedCollectionReference.add(
+                hashMapOf(
+                    DatabaseConstant.ItemConstants.ITEM_TYPE.value to testItemType
+                )
+            )
+        ).thenReturn(
+            taskReferenceMock
+        )
+
+        var itemTypeAdded: String? = null
+
+        When(taskReferenceMock.addOnSuccessListener(any())).thenAnswer {
+            FirestoreDatabaseProvider.lastAddSuccessListener!!.onSuccess(null)
+            //set method in hard to see if the success listener is successfully called
+            itemTypeAdded = testItemType
+            taskReferenceMock
+        }
+        When(taskReferenceMock.addOnFailureListener(any())).thenAnswer {
+            taskReferenceMock
+        }
+
+        val result = FirestoreDatabaseProvider.itemDatabase!!.createItemType(testItemType)
+        assert(result.value!!)
+        assert(itemTypeAdded == testItemType)
+    }
+
+    @
 }
