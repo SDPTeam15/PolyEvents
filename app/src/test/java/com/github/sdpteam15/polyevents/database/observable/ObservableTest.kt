@@ -27,7 +27,7 @@ class ObservableTest {
     fun lambdaIsUpdated() {
         var isUpdate = false
         val observable = Observable<Boolean>()
-        val suppressor = observable.observe { isUpdate = it.value ?: false }
+        val suppressor = observable.observe { isUpdate = it.value }
         observable.postValue(true, sender)
 
         assertEquals(true, isUpdate)
@@ -43,8 +43,8 @@ class ObservableTest {
         assertEquals(sender, observable.sender)
 
         isUpdate = false
-        observable.observeOnce { isUpdate = it.value ?: false }
         observable.postValue(true, sender)
+        observable.observeOnce { isUpdate = it.value }
 
         assertEquals(true, isUpdate)
         assertEquals(true, observable.value)

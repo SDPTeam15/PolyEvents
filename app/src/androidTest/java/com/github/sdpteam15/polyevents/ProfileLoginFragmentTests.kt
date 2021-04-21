@@ -589,6 +589,7 @@ class ProfileLoginFragmentTests {
 
     @Test
     fun removeButtonRemovesProfilesFromList() {
+
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         loginFragment.currentUser = user
 
@@ -617,6 +618,13 @@ class ProfileLoginFragmentTests {
             )
             Observable(true)
         }
+        When(
+            mockedUserDatabase.removeProfileFromUser(
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenReturn(Observable(true))
 
         user.profiles.add(pidTest)
         userObservable.postValue(user)
