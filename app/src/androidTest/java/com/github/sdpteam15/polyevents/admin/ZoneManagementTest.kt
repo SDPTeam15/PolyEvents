@@ -1,4 +1,4 @@
-package com.github.sdpteam15.polyevents
+package com.github.sdpteam15.polyevents.admin
 
 import android.content.Intent
 import androidx.test.core.app.ActivityScenario
@@ -8,8 +8,8 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
-import com.github.sdpteam15.polyevents.admin.ZoneManagementActivity
-import com.github.sdpteam15.polyevents.admin.ZoneManagementListActivity
+import com.github.sdpteam15.polyevents.MainActivity
+import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
@@ -21,7 +21,6 @@ import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 import com.github.sdpteam15.polyevents.model.Zone
 import com.google.android.gms.maps.model.LatLng
-import com.google.firebase.auth.FirebaseAuth
 import org.junit.After
 import org.junit.Before
 import org.junit.Test

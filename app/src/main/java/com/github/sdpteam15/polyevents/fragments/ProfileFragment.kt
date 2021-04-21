@@ -69,7 +69,7 @@ class ProfileFragment(val userId:String? = null) : Fragment() {
         }
 
 
-        var currentUID = userId?: currentUser!!.uid
+        val currentUID = userId?: currentUser!!.uid
 
         addListener(viewRoot)
         addObserver(viewRoot)
