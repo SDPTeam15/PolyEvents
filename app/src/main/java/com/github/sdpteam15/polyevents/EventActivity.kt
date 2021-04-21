@@ -21,9 +21,6 @@ const val TAG = "EventActivity"
  */
 class EventActivity : AppCompatActivity() {
 
-    private var obsEvent = Observable<Event>()
-    private lateinit var event: Event
-
     private lateinit var subscribeButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,7 +46,7 @@ class EventActivity : AppCompatActivity() {
      * Updates the event information
      */
     private fun updateInfo(event: Event) {
-        this.event = event
+        EventActivity.event = event
         // Capture the layout's TextView and set the string as its text
         findViewById<TextView>(R.id.txt_event_Name).apply {
             text = event.eventName
@@ -118,6 +115,12 @@ class EventActivity : AppCompatActivity() {
             Log.d(TAG, "Max number of attendees reached")
             showToast(resources.getString(R.string.event_subscribe_at_max_capacity), this)
         }
+    }
+
+    // Refactored here for tests
+    companion object {
+        var obsEvent = Observable<Event>()
+        lateinit var event: Event
     }
 
 }
