@@ -17,6 +17,7 @@ import com.github.sdpteam15.polyevents.fragments.EXTRA_EVENT_ID
 import com.github.sdpteam15.polyevents.model.Event
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertDisplayed
+import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertNotDisplayed
 import com.schibsted.spain.barista.interaction.BaristaClickInteractions.clickOn
 import org.hamcrest.CoreMatchers.containsString
 import org.junit.After
@@ -131,6 +132,7 @@ class EventActivityTest {
 
         // Making sure EventActivity.obsEvent and the testEvent instance are the same here
         assert(EventActivity.obsEvent.value!!.getParticipants().contains(uid))
+        assert(EventActivity.event.getParticipants().contains(uid))
         assert(testLimitedEvent.getParticipants().contains(uid))
         assertDisplayed(R.id.button_subscribe_event, R.string.event_unsubscribe)
 
@@ -176,6 +178,7 @@ class EventActivityTest {
         scenario.close()
     }
 
+    @Test
     fun testEventActivityWhenAlreadySubscribedToEvent() {
         testLimitedEvent.addParticipant(uid)
 
@@ -190,6 +193,36 @@ class EventActivityTest {
         assert(!testLimitedEvent.getParticipants().contains(uid))
 
         assertDisplayed(R.id.button_subscribe_event, R.string.event_subscribe)
+    }
+
+    @Test
+    fun testEventFetchFailedDoesNotDisplayAnything() {
+        When(mockedEventDatabase.getEventFromId(id = limitedEventId,
+            returnEvent = EventActivity.obsEvent)).thenReturn(Observable(false))
+
+        goToEventActivityWithLimitedEventIntent()
+
+        // Nothing displayed
+        Espresso.onView(withId(R.id.txt_event_Name))
+            .check(matches(withText(containsString(""))))
+    }
+
+    @Test
+    fun testPublicEventShouldHaveNoSubscribeButton() {
+        When(
+            mockedEventDatabase.getEventFromId(
+                id = limitedEventId, returnEvent = EventActivity.obsEvent
+            )
+        ).then {
+            EventActivity.obsEvent.postValue(testLimitedEvent.copy(
+                limitedEvent = false, maxNumberOfSlots = null)
+            )
+            Observable(true)
+        }
+
+        goToEventActivityWithLimitedEventIntent()
+
+        assertNotDisplayed(R.id.button_subscribe_event)
     }
 
     fun goToEventActivityWithLimitedEventIntent() {

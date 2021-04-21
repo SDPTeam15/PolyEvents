@@ -154,4 +154,9 @@ class EventTest {
         event.addParticipant((userUid))
     }
 
+    @Test(expected = IllegalArgumentException::class)
+    fun testMakeLimitedEventWithNegativeNumberThrowsException() {
+        event.makeLimitedEvent(-1)
+    }
+
 }
