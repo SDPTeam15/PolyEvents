@@ -26,6 +26,7 @@ private const val maxZoom = 21f
 private const val areaName = "Gunter"
 private const val areaId = 1234
 
+//TODO : Refactor file to have less lines
 class GoogleMapHelperTest {
     lateinit var mockedMap: MapsInterface
     lateinit var mockedF: ICameraUpdateFactoryDelegate

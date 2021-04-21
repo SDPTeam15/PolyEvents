@@ -32,6 +32,8 @@ data class IconBound(
 data class IconDimension(var width: Int, var height: Int)
 data class IconAnchor(var anchorWidth: Float, var anchorHeight: Float)
 
+//TODO : Refactor file, it is too long
+
 @SuppressLint("StaticFieldLeak")
 object GoogleMapHelper {
     var map: MapsInterface? = null
