@@ -3,8 +3,8 @@ package com.github.sdpteam15.polyevents.fragments
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,6 +23,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.*
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.Polygon
 import com.google.android.gms.maps.model.Polyline
@@ -30,8 +31,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
 class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
-    OnPolygonClickListener, OnMarkerClickListener, OnInfoWindowClickListener, OnMarkerDragListener,
-    OnMyLocationButtonClickListener {
+        OnPolygonClickListener, OnMarkerClickListener, OnInfoWindowClickListener, OnMarkerDragListener,
+        OnMyLocationButtonClickListener,  OnMapClickListener{
 
     private lateinit var locationButton: FloatingActionButton
     var locationPermissionGranted = false
@@ -80,15 +81,16 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
             saveButton.setOnClickListener {
                 GoogleMapHelper.editMode = false
                 GoogleMapHelper.clearTemp()
-                val location = GoogleMapHelper.areasToFormattedStringLocations(from = startId)
+                //TODO : Save the areas in the map
+                //val location = GoogleMapHelper.areasToFormattedStringLocations(from = startId)
+                val location = GoogleMapHelper.zoneAreasToFormattedStringLocation(GoogleMapHelper.editingZone)
                 zone!!.location = location
-                ZoneManagementActivity.nbModified = GoogleMapHelper.uid - startId
                 ZoneManagementActivity.zoneObservable.postValue(
                     Zone(
-                        zoneName = zone?.zoneName,
-                        zoneId = zone?.zoneId,
+                        zoneName = zone!!.zoneName,
+                        zoneId = zone!!.zoneId,
                         location = location,
-                        description = zone?.description
+                        description = zone!!.description
                     )
                 )
             }
@@ -143,23 +145,27 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         googleMap.setOnMarkerDragListener(this)
         googleMap.setOnInfoWindowClickListener(this)
         googleMap.setOnMyLocationButtonClickListener(this)
+        googleMap.setOnMapClickListener(this)
         GoogleMapHelper.setUpMap(requireContext())
 
         if (useUserLocation) {
             activateMyLocation()
         }
-        startId = GoogleMapHelper.uid
+        startId = GoogleMapHelper.uidArea
 
     }
 
     override fun onPolylineClick(polyline: Polyline) {}
 
     override fun onPolygonClick(polygon: Polygon) {
-        if (GoogleMapHelper.editMode) {
-            GoogleMapHelper.editArea(requireContext(), polygon.tag.toString())
+        if (onEdit) {
+            if(GoogleMapHelper.editMode && GoogleMapHelper.canEdit(polygon.tag.toString())){
+                GoogleMapHelper.editArea(requireContext(), polygon.tag.toString())
+            }
         } else {
+            GoogleMapHelper.setSelectedZoneFromArea(polygon.tag.toString())
             //Shows the info window of the marker assigned to the area
-            GoogleMapHelper.areasPoints.get(polygon.tag)!!.first.showInfoWindow()
+            GoogleMapHelper.areasPoints.get(polygon.tag)!!.second.showInfoWindow()
         }
 
     }
@@ -167,6 +173,10 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     override fun onMarkerClick(marker: Marker): Boolean {
         if (!GoogleMapHelper.editMode) {
             marker.showInfoWindow()
+        }
+        val tag = marker.tag
+        if(tag != null){
+            GoogleMapHelper.setSelectedZones(tag.toString().toInt())
         }
         marker.showInfoWindow()
 
@@ -245,7 +255,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     @SuppressLint("MissingPermission")
     private fun switchLocationOnOff() {
         val locationIsOn = GoogleMapHelper.map!!.isMyLocationEnabled
-        Log.d("POSITION", "Location is active ? $locationIsOn")
         if (locationIsOn) {
             // Disable the location
             GoogleMapHelper.map!!.isMyLocationEnabled = false
@@ -329,5 +338,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
                 }
             }
         }
+    }
+
+    override fun onMapClick(p0: LatLng?) {
+        GoogleMapHelper.clearSelectedZone()
     }
 }
