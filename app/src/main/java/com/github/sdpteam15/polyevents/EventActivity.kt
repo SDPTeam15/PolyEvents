@@ -32,6 +32,17 @@ class EventActivity : AppCompatActivity() {
 
         subscribeButton = findViewById(R.id.button_subscribe_event)
 
+        getEventAndObserve()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        // Get event again in case of changes
+        getEventAndObserve()
+    }
+
+    private fun getEventAndObserve() {
         Log.d(TAG, intent.getStringExtra(EXTRA_EVENT_ID)!!)
         currentDatabase.eventDatabase!!.getEventFromId(intent.getStringExtra(EXTRA_EVENT_ID)!!, obsEvent)
             .observe(this) { b ->
@@ -41,7 +52,6 @@ class EventActivity : AppCompatActivity() {
             }
         obsEvent.observe(this) { updateInfo(it.value) }
     }
-
     /**
      * Updates the event information
      */
@@ -76,6 +86,8 @@ class EventActivity : AppCompatActivity() {
                 && event.getParticipants().contains(currentDatabase.currentUser!!.uid)) {
                 subscribeButton.setText(resources.getString(R.string.event_unsubscribe))
             }
+        } else {
+            subscribeButton.visibility = View.GONE
         }
     }
 
