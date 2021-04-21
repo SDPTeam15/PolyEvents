@@ -89,4 +89,7 @@
     <string name="none">None</string>
     <string name="ProfileList">Profile List</string>
     <string name="profile_name_edit_Text">profile name</string>
+    <string name="failed_to_get_list_users">Failed to get users information</string>
+    <string name="failed_to_get_item">Failed to get items</string>
+    <string name="failed_to_get_event_list">Failed to get events information</string>
 </resources>

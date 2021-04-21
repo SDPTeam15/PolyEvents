@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.adapter.ItemAdapter
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
+import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.Item
 import com.github.sdpteam15.polyevents.model.ItemType
 
@@ -37,7 +38,7 @@ class ItemsAdminActivity : AppCompatActivity() {
 
         currentDatabase.itemDatabase!!.getItemsList(items).observe(this) {
             if (!it.value)
-                println("query not satisfied")
+                HelperFunctions.showToast(getString(R.string.failed_to_get_item),this)
         }
         items.observeRemove(this) {
             if (it.sender != currentDatabase.itemDatabase!!)

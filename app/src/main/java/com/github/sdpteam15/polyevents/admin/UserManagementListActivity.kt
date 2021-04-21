@@ -20,7 +20,7 @@ class UserManagementListActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private val users = ObservableList<UserEntity>()
     companion object{
-        val EXTRA_USER_ID = "USER_ID"
+        const val EXTRA_USER_ID = "USER_ID"
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +47,7 @@ class UserManagementListActivity : AppCompatActivity() {
             if(it.value){
                 recyclerView.adapter!!.notifyDataSetChanged()
             }else {
-                HelperFunctions.showToast("Failed to get events information", this)
+                HelperFunctions.showToast(getString(R.string.failed_to_get_list_users), this)
             }
         }
 

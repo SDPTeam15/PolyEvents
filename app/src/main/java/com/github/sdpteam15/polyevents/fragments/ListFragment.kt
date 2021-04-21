@@ -30,7 +30,6 @@ class ListFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-
     }
 
     override fun onCreateView(
@@ -38,7 +37,7 @@ class ListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val fragmentView = inflater.inflate(R.layout.fragment_list, container, false)
-        recyclerView = fragmentView.findViewById<RecyclerView>(R.id.recycler_events_list)
+        recyclerView = fragmentView.findViewById(R.id.recycler_events_list)
 
         val openEvent = { event: Event ->
             val intent = Intent(inflater.context, EventActivity::class.java).apply {
@@ -50,7 +49,7 @@ class ListFragment : Fragment() {
         recyclerView.adapter = EventItemAdapter(events, openEvent)
         currentDatabase.eventDatabase!!.getListEvent(null, 10, events).observe(this) {
             if (!it.value) {
-                HelperFunctions.showToast("Failed to get events information", fragmentView.context)
+                HelperFunctions.showToast(getString(R.string.failed_to_get_event_list), fragmentView.context)
             }
         }
         events.observe(this) { recyclerView.adapter!!.notifyDataSetChanged() }
