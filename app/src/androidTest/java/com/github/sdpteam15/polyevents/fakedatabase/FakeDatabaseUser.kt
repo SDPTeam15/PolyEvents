@@ -63,6 +63,14 @@ object FakeDatabaseUser : UserDatabaseInterface {
         return Observable(profile.pid != null)
     }
 
+    override fun removeProfileFromUser(
+        profile: UserProfile,
+        user: UserEntity,
+        userAccess: UserProfile?
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
     override fun updateProfile(profile: UserProfile, userAccess: UserEntity?): Observable<Boolean> {
         TODO("Not yet implemented")
     }
