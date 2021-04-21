@@ -52,7 +52,7 @@ object EventAdapter : AdapterInterface<Event> {
             inventory = (document[EVENT_INVENTORY.value] as List<Item>).toMutableList(),
             tags = (document[EVENT_TAGS.value] as List<String>).toMutableSet(),
             limitedEvent = document[EVENT_LIMITED.value] as Boolean,
-            maxNumberOfSlots = (document[EVENT_MAX_SLOTS.value] as Long).toInt(),
+            maxNumberOfSlots = (document[EVENT_MAX_SLOTS.value] as Long?)?.toInt(),
             participants = (document[EVENT_PARTICIPANTS.value] as List<String>).toMutableSet()
         )
 

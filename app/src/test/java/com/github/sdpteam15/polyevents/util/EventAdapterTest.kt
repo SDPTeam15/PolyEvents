@@ -84,7 +84,10 @@ class EventAdapterTest {
             EVENT_START_TIME.value to testEventWithoutTimes.startTime,
             EVENT_END_TIME.value to testEventWithoutTimes.endTime,
             EVENT_TAGS.value to tags,
-            EVENT_INVENTORY.value to testEventWithoutTimes.inventory
+            EVENT_INVENTORY.value to testEventWithoutTimes.inventory,
+            EVENT_LIMITED.value to testEventWithoutTimes.isLimitedEvent(),
+            EVENT_MAX_SLOTS.value to testEventWithoutTimes.getMaxNumberOfSlots(),
+            EVENT_PARTICIPANTS.value to testEventWithoutTimes.getParticipants().toList()
         )
 
         val obtainedEvent =

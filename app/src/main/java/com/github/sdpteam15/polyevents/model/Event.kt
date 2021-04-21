@@ -42,13 +42,27 @@ data class Event(
     // NOTE: Set is not a supported collection in Firebase Firestore so will be stored as list in the db.
     val tags: MutableSet<String> = mutableSetOf(),
     private var limitedEvent: Boolean = false,
-    private var maxNumberOfSlots: Int? = 0,
+    private var maxNumberOfSlots: Int? = null,
     private val participants: MutableSet<String> = mutableSetOf()
 ) {
 
-    fun getMaxNumberOfSlots(): Int? = maxNumberOfSlots
+    /**
+     * Get the maximum number of slots if this event is limited
+     */
+    fun getMaxNumberOfSlots(): Int? = if (limitedEvent) maxNumberOfSlots else null
 
+    /**
+     * Check if event is limited
+     */
     fun isLimitedEvent(): Boolean = limitedEvent
+
+    /**
+     * Clear the event of its participants.
+     * Only for testing purposes
+     */
+    fun clearParticipants() {
+        participants.clear()
+    }
 
     /**
      * Get a copy of the event participants
@@ -76,6 +90,7 @@ data class Event(
         this.maxNumberOfSlots = maxNumberOfSlots
     }
 
+    // TODO: Subscribe to event using profile or user id??
     /**
      * Add a participant to this event if it's a limited event
      * @param userUid the id of the new participant user
