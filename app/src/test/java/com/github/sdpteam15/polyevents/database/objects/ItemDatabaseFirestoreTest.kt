@@ -7,7 +7,6 @@ import com.github.sdpteam15.polyevents.login.GoogleUserLogin
 import com.github.sdpteam15.polyevents.login.UserLogin
 import com.github.sdpteam15.polyevents.login.UserLoginInterface
 import com.github.sdpteam15.polyevents.model.Item
-import com.github.sdpteam15.polyevents.model.ItemType
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 import com.github.sdpteam15.polyevents.util.ItemEntityAdapter
@@ -81,7 +80,7 @@ class ItemDatabaseFirestoreTest {
         val mockedCollectionReference = mock(CollectionReference::class.java)
         val taskReferenceMock = mock(Task::class.java) as Task<DocumentReference>
 
-        val testItem = Item("xxxbananaxxx", "banana", ItemType.OTHER)
+        val testItem = Item("xxxbananaxxx", "banana", "OTHER")
         val testQuantity = 3
 
         When(mockedDatabase.collection(ITEM_COLLECTION.value)).thenReturn(mockedCollectionReference)
@@ -97,7 +96,7 @@ class ItemDatabaseFirestoreTest {
         )
 
         var itemNameAdded = ""
-        var itemTypeAdded: ItemType? = null
+        var itemTypeAdded: String? = null
         var itemCountAdded = 0
         var itemIdAdded = ""
 
@@ -129,7 +128,7 @@ class ItemDatabaseFirestoreTest {
         val documentReference = mock(DocumentReference::class.java) as DocumentReference
         val taskMock = mock(Task::class.java) as Task<Void>
 
-        val testItem = Item("xxxbananaxxx", "banana", ItemType.OTHER)
+        val testItem = Item("xxxbananaxxx", "banana", "OTHER")
         val testQuantity = 3
 
         When(mockedDatabase.collection(ITEM_COLLECTION.value)).thenReturn(mockedCollectionReference)
@@ -144,7 +143,7 @@ class ItemDatabaseFirestoreTest {
         ).thenReturn(taskMock)
 
         var itemNameUpdated = ""
-        var itemTypeUpdated: ItemType? = null
+        var itemTypeUpdated: String? = null
         var itemCountUpdated = 0
         var itemIdUpdated = ""
 
@@ -176,7 +175,7 @@ class ItemDatabaseFirestoreTest {
         val documentReference = mock(DocumentReference::class.java) as DocumentReference
         val taskMock = mock(Task::class.java) as Task<Void>
 
-        val testItem = Item("xxxbananaxxx", "banana", ItemType.OTHER)
+        val testItem = Item("xxxbananaxxx", "banana", "OTHER")
         val testQuantity = 3
 
         When(mockedDatabase.collection(ITEM_COLLECTION.value)).thenReturn(mockedCollectionReference)
@@ -184,7 +183,7 @@ class ItemDatabaseFirestoreTest {
         When(documentReference.delete()).thenReturn(taskMock)
 
         var itemNameAdded = ""
-        var itemTypeAdded: ItemType? = null
+        var itemTypeAdded: String? = null
         var itemCountAdded = 0
         var itemIdAdded = ""
 

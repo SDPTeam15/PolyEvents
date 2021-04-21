@@ -13,7 +13,6 @@ import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabase
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabaseItem
 import com.github.sdpteam15.polyevents.model.Item
-import com.github.sdpteam15.polyevents.model.ItemType
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -49,13 +48,13 @@ class MoreFragmentTest {
     @Test
     fun itemsAdminActivity() {
         var availableItems: MutableMap<Item, Int> = mutableMapOf()
-        availableItems[Item(null, "Chocolat", ItemType.OTHER)] = 30
-        availableItems[Item(null, "Kiwis", ItemType.OTHER)] = 10
-        availableItems[Item(null, "230V Plugs", ItemType.PLUG)] = 30
-        availableItems[Item(null, "Fridge (large)", ItemType.OTHER)] = 5
-        availableItems[Item(null, "Cord rewinder (15m)", ItemType.PLUG)] = 30
-        availableItems[Item(null, "Cord rewinder (50m)", ItemType.PLUG)] = 10
-        availableItems[Item(null, "Cord rewinder (25m)", ItemType.PLUG)] = 20
+        availableItems[Item(null, "Chocolat", "OTHER")] = 30
+        availableItems[Item(null, "Kiwis", "OTHER")] = 10
+        availableItems[Item(null, "230V Plugs", "PLUG")] = 30
+        availableItems[Item(null, "Fridge (large)", "OTHER")] = 5
+        availableItems[Item(null, "Cord rewinder (15m)", "PLUG")] = 30
+        availableItems[Item(null, "Cord rewinder (50m)", "PLUG")] = 10
+        availableItems[Item(null, "Cord rewinder (25m)", "PLUG")] = 20
 
         Database.currentDatabase = FakeDatabase
 

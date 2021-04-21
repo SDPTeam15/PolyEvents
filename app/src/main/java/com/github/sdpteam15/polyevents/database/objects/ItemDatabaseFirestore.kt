@@ -1,7 +1,9 @@
 package com.github.sdpteam15.polyevents.database.objects
 
 import android.annotation.SuppressLint
+import com.github.sdpteam15.polyevents.database.DatabaseConstant
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.ITEM_COLLECTION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.ITEM_TYPE_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.ItemConstants.ITEM_COUNT
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.observe.Observable
@@ -79,4 +81,33 @@ object ItemDatabaseFirestore : ItemDatabaseInterface {
             itemList.addAll(items, this)
         }
     }
+
+    override fun createItemType(
+        itemType: String,
+        userAccess: UserProfile?
+    ): Observable<Boolean> = FirestoreDatabaseProvider.thenDoAdd(
+        FirestoreDatabaseProvider.firestore!!.collection(ITEM_TYPE_COLLECTION.value)
+            .add(
+                hashMapOf(
+                    DatabaseConstant.ItemConstants.ITEM_TYPE.value to itemType
+                )
+            )
+    )
+
+    override fun getItemTypes(
+        itemTypeList: ObservableList<String>,
+        userAccess: UserProfile?
+    ): Observable<Boolean> {
+        return FirestoreDatabaseProvider.thenDoGet(
+            FirestoreDatabaseProvider.firestore!!.collection(ITEM_TYPE_COLLECTION.value).get()
+        ) { querySnapshot ->
+            itemTypeList.clear(this)
+            val itemsTypes = querySnapshot.documents.map {
+                it.data!![DatabaseConstant.ItemConstants.ITEM_TYPE.value] as String
+            }
+            itemTypeList.addAll(itemsTypes, this)
+        }
+    }
+
+
 }

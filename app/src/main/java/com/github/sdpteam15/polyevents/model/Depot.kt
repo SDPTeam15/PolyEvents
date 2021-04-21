@@ -11,13 +11,13 @@ object Depot {
     const val DEPOT_NAME: String = "mainDepot"
 
     // TODO: consider storing the list of items instead of just the number
-    val inventory: MutableMap<ItemType, Int> = mutableMapOf()
+    val inventory: MutableMap<String, Int> = mutableMapOf()
 
     /**
      * Check if a certain item is available in the depot
      * @param itemType the item to check
      * @return true if the item's amount is bigger than 0
      */
-    fun isAvailable(itemType: ItemType): Boolean =
+    fun isAvailable(itemType: String): Boolean =
         inventory.getOrDefault(itemType, 0) > 0
 }
