@@ -13,7 +13,7 @@ import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.github.sdpteam15.polyevents.adapter.EventItemAdapter
-import com.github.sdpteam15.polyevents.admin.EditProfileActivity.Companion.EDIT_PROFILE_ID
+import com.github.sdpteam15.polyevents.EditProfileActivity.Companion.EDIT_PROFILE_ID
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.NUMBER_UPCOMING_EVENTS
