@@ -50,7 +50,14 @@ object FakeDatabaseUser : UserDatabaseInterface {
         uid: String?,
         userAccess: UserProfile?
     ): Observable<Boolean> {
-        TODO("Not yet implemented")
+        return Observable(true)
+    }
+
+    override fun getListAllUsers(
+        users: ObservableList<UserEntity>,
+        userAccess: UserProfile?
+    ): Observable<Boolean> {
+        return Observable(true)
     }
 
     override fun addUserProfileAndAddToUser(

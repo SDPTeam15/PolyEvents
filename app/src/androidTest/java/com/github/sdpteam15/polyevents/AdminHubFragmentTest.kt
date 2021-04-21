@@ -15,14 +15,18 @@ import com.github.sdpteam15.polyevents.admin.*
 import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
+import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabase
 import com.github.sdpteam15.polyevents.login.UserLogin
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.mock
+import org.mockito.kotlin.anyOrNull
 import org.mockito.Mockito.`when` as When
 
 @RunWith(AndroidJUnit4::class)
@@ -89,7 +93,9 @@ class AdminHubFragmentTest {
 
     @Test
     fun clickOnBtnUserManagementDisplayCorrectActivity() {
+        Database.currentDatabase = FakeDatabase
         Espresso.onView(ViewMatchers.withId(R.id.btnRedirectUserManagement)).perform(click())
         Intents.intended(IntentMatchers.hasComponent(UserManagementListActivity::class.java.name))
+        Database.currentDatabase = FirestoreDatabaseProvider
     }
 }

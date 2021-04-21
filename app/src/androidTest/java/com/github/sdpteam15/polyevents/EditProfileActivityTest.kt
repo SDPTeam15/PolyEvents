@@ -14,6 +14,9 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.sdpteam15.polyevents.HelperTestFunction.getCurrentActivity
+import com.github.sdpteam15.polyevents.admin.EditProfileActivity
+import com.github.sdpteam15.polyevents.admin.EditProfileActivity.Companion.CALLER_RANK
+import com.github.sdpteam15.polyevents.admin.EditProfileActivity.Companion.EDIT_PROFILE_ID
 import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
