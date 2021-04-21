@@ -3,8 +3,7 @@ package com.github.sdpteam15.polyevents.database.objects
 import android.annotation.SuppressLint
 import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.DatabaseConstant
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.TEST_COLLECTION
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.USER_COLLECTION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.*
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.UserConstants.USER_UID
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.observe.Observable
@@ -124,21 +123,33 @@ object UserDatabaseFirestore : UserDatabaseInterface {
         user: UserEntity,
         userAccess: UserProfile?
     ): Observable<Boolean> {
-        user.profiles.remove(profile.pid)
-        return Database.currentDatabase.setEntity(
+        user.profiles.remove(profile.pid!!)
+        profile.users.remove(user.uid)
+        val end = Observable<Boolean>()
+        FirestoreDatabaseProvider.setEntity(
             user,
             user.uid,
             USER_COLLECTION,
-            UserAdapter,
-            userAccess
-        )
+            UserAdapter
+        ).observeOnce { it1 ->
+            if(it1.value)
+                FirestoreDatabaseProvider.setEntity(
+                    profile,
+                    profile.pid!!,
+                    PROFILE_COLLECTION,
+                    ProfileAdapter
+                ).observeOnce { end.postValue(it.value, it.sender) }
+            else
+                end.postValue(it1.value, it1.sender)
+        }
+        return end
     }
 
     override fun updateProfile(profile: UserProfile, userAccess: UserEntity?): Observable<Boolean> =
         FirestoreDatabaseProvider.setEntity(
             profile,
             profile.pid!!,
-            DatabaseConstant.CollectionConstant.PROFILE_COLLECTION,
+            PROFILE_COLLECTION,
             ProfileAdapter
         )
 
@@ -150,7 +161,7 @@ object UserDatabaseFirestore : UserDatabaseInterface {
         FirestoreDatabaseProvider.getListEntity(
             profiles,
             user.profiles,
-            DatabaseConstant.CollectionConstant.PROFILE_COLLECTION,
+            PROFILE_COLLECTION,
             ProfileAdapter
         )
 

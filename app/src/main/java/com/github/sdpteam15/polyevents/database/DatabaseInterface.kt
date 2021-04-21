@@ -70,8 +70,7 @@ interface DatabaseInterface {
     fun <T> addEntityAndGetId(
         element: T,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>,
-        userAccess: UserProfile? = currentProfile
+        adapter: AdapterInterface<T>
     ): Observable<String>
 
     /**
@@ -85,8 +84,7 @@ interface DatabaseInterface {
     fun <T> addEntity(
         element: T,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>,
-        userAccess: UserProfile? = currentProfile
+        adapter: AdapterInterface<T>
     ): Observable<Boolean>
 
     /**
@@ -95,28 +93,24 @@ interface DatabaseInterface {
      * @param id The id with which we will set the element
      * @param collection The collection in which we want to set the given element
      * @param adapter The adapter converting the element into a HashMap recognised by the database
-     * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun <T> setEntity(
         element: T?,
         id: String,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>?,
-        userAccess: UserProfile? = currentProfile
+        adapter: AdapterInterface<T>?
     ): Observable<Boolean>
 
     /**
      * Set an Entity to the data base
      * @param id The id with which we will delete the element
      * @param collection The collection from which we want to delete the given id
-     * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun deleteEntity(
         id: String,
-        collection: DatabaseConstant.CollectionConstant,
-        userAccess: UserProfile? = currentProfile
+        collection: DatabaseConstant.CollectionConstant
     ): Observable<Boolean>
 
     /**
@@ -125,15 +119,13 @@ interface DatabaseInterface {
      * @param id The id with which we will get the element
      * @param collection The collection from which we want to retrieve the entity
      * @param adapter The adapter converting the element into a HashMap recognised by the database
-     * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun <T> getEntity(
         element: Observable<T>,
         id: String,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>,
-        userAccess: UserProfile? = currentProfile
+        adapter: AdapterInterface<T>
     ): Observable<Boolean>
 
     /**
@@ -142,14 +134,12 @@ interface DatabaseInterface {
      * @param ids The id at which we need to set the element
      * @param collection The collection from which we want to retrieve the list of entity
      * @param adapter The adapter converting the element into a HashMap recognised by the database
-     * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun <T> getListEntity(
         elements: ObservableList<T>,
         ids: List<String>,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>,
-        userAccess: UserProfile? = currentProfile
+        adapter: AdapterInterface<T>
     ): Observable<Boolean>
 }

@@ -174,8 +174,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     override fun <T> addEntityAndGetId(
         element: T,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>,
-        userAccess: UserProfile?
+        adapter: AdapterInterface<T>
     ): Observable<String> {
         val ended = Observable<String>()
         val task = firestore!!
@@ -194,11 +193,10 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     override fun <T> addEntity(
         element: T,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>,
-        userAccess: UserProfile?
+        adapter: AdapterInterface<T>
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
-        addEntityAndGetId(element, collection, adapter, userAccess).observeOnce {
+        addEntityAndGetId(element, collection, adapter).observeOnce {
             ended.postValue(it.value != "", this)
         }
         return ended
@@ -208,8 +206,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         element: T?,
         id: String,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>?,
-        userAccess: UserProfile?
+        adapter: AdapterInterface<T>?
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
         val document = firestore!!
@@ -233,16 +230,14 @@ object FirestoreDatabaseProvider : DatabaseInterface {
 
     override fun deleteEntity(
         id: String,
-        collection: DatabaseConstant.CollectionConstant,
-        userAccess: UserProfile?
+        collection: DatabaseConstant.CollectionConstant
     ): Observable<Boolean> = setEntity<Void>(null, id, collection, null)
 
     override fun <T> getEntity(
         element: Observable<T>,
         id: String,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>,
-        userAccess: UserProfile?
+        adapter: AdapterInterface<T>
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
 
@@ -271,8 +266,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         elements: ObservableList<T>,
         ids: List<String>,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>,
-        userAccess: UserProfile?
+        adapter: AdapterInterface<T>
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
 

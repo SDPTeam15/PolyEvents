@@ -76,8 +76,7 @@ class FirestoreDatabaseProviderTest {
         val end = FirestoreDatabaseProvider.addEntityAndGetId(
             StringWithID(TEST_ID, TEST_STRING),
             DatabaseConstant.CollectionConstant.TEST_COLLECTION,
-            adapterInterface,
-            null
+            adapterInterface
         )
 
         assertNotNull(hashMap)
@@ -131,8 +130,7 @@ class FirestoreDatabaseProviderTest {
         var end = FirestoreDatabaseProvider.addEntity(
             StringWithID(TEST_ID, TEST_STRING),
             DatabaseConstant.CollectionConstant.TEST_COLLECTION,
-            adapterInterface,
-            null
+            adapterInterface
         )
 
         assertNotNull(hashMap)
@@ -154,8 +152,7 @@ class FirestoreDatabaseProviderTest {
         end = FirestoreDatabaseProvider.addEntity(
             StringWithID(TEST_ID, TEST_STRING),
             DatabaseConstant.CollectionConstant.TEST_COLLECTION,
-            adapterInterface,
-            null
+            adapterInterface
         )
 
         assertNotNull(hashMap)
@@ -201,8 +198,7 @@ class FirestoreDatabaseProviderTest {
             StringWithID(TEST_ID, TEST_STRING),
             TEST_ID,
             DatabaseConstant.CollectionConstant.TEST_COLLECTION,
-            adapterInterface,
-            null
+            adapterInterface
         )
 
         assertNotNull(hashMap)
@@ -251,8 +247,7 @@ class FirestoreDatabaseProviderTest {
 
         val end = FirestoreDatabaseProvider.deleteEntity(
             TEST_ID,
-            DatabaseConstant.CollectionConstant.TEST_COLLECTION,
-            null
+            DatabaseConstant.CollectionConstant.TEST_COLLECTION
         )
 
         assertNotNull(lastAddSuccessListener)
@@ -302,8 +297,7 @@ class FirestoreDatabaseProviderTest {
             result,
             TEST_ID,
             DatabaseConstant.CollectionConstant.TEST_COLLECTION,
-            adapterInterface,
-            null
+            adapterInterface
         )
 
         assertNotNull(lastAddSuccessListener)
@@ -377,8 +371,7 @@ class FirestoreDatabaseProviderTest {
             result,
             listOf(TEST_ID, TEST_ID1, TEST_ID2),
             DatabaseConstant.CollectionConstant.TEST_COLLECTION,
-            adapterInterface,
-            null
+            adapterInterface
         )
 
         assertNotNull(lastAddSuccessListener[TEST_ID])
