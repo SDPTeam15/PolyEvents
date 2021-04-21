@@ -96,7 +96,7 @@ class ItemDatabaseFirestoreTest {
             taskReferenceMock
         )
 
-        var itemNameAdded = ""
+        var itemNameAdded : String? = ""
         var itemTypeAdded: ItemType? = null
         var itemCountAdded = 0
         var itemIdAdded = ""
@@ -143,7 +143,7 @@ class ItemDatabaseFirestoreTest {
             )
         ).thenReturn(taskMock)
 
-        var itemNameUpdated = ""
+        var itemNameUpdated: String? = ""
         var itemTypeUpdated: ItemType? = null
         var itemCountUpdated = 0
         var itemIdUpdated = ""
@@ -183,7 +183,7 @@ class ItemDatabaseFirestoreTest {
         When(mockedCollectionReference.document(testItem.itemId!!)).thenReturn(documentReference)
         When(documentReference.delete()).thenReturn(taskMock)
 
-        var itemNameAdded = ""
+        var itemNameAdded: String? = ""
         var itemTypeAdded: ItemType? = null
         var itemCountAdded = 0
         var itemIdAdded = ""
