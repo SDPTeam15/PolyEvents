@@ -1,6 +1,8 @@
-package com.github.sdpteam15.polyevents
+package com.github.sdpteam15.polyevents.fragments
 
 import android.content.Intent
+import android.view.View
+import android.widget.EditText
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
@@ -14,6 +16,10 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.github.sdpteam15.polyevents.adapter.EventItemAdapter
 import com.github.sdpteam15.polyevents.EditProfileActivity.Companion.EDIT_PROFILE_ID
+import com.github.sdpteam15.polyevents.MainActivity
+import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.RecyclerViewItemCountAssertion
+import com.github.sdpteam15.polyevents.TestHelper
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.NUMBER_UPCOMING_EVENTS
@@ -21,9 +27,6 @@ import com.github.sdpteam15.polyevents.database.objects.EventDatabaseInterface
 import com.github.sdpteam15.polyevents.database.objects.UserDatabaseInterface
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
-import com.github.sdpteam15.polyevents.fragments.HomeFragment
-import com.github.sdpteam15.polyevents.fragments.LoginFragment
-import com.github.sdpteam15.polyevents.fragments.ProfileFragment
 import com.github.sdpteam15.polyevents.login.GoogleUserLogin
 import com.github.sdpteam15.polyevents.login.UserLogin
 import com.github.sdpteam15.polyevents.login.UserLoginInterface
@@ -217,7 +220,7 @@ class ProfileLoginFragmentTests {
         onView(withId(R.id.id_fragment_profile)).check(matches(isDisplayed()))
 
         onView(withId(R.id.btnLogout))
-            .perform(scrollTo());
+            .perform(scrollTo())
         onView(withId(R.id.btnLogout)).perform(click())
         onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
     }
@@ -587,6 +590,7 @@ class ProfileLoginFragmentTests {
         onView(withId(R.id.id_recycler_profile_list))
             .check(RecyclerViewItemCountAssertion(1))
     }
+    
 
     @Test
     fun removeButtonRemovesProfilesFromList() {

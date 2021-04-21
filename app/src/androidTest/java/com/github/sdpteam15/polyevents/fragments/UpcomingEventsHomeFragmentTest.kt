@@ -1,4 +1,4 @@
-package com.github.sdpteam15.polyevents
+package com.github.sdpteam15.polyevents.fragments
 
 
 import androidx.test.espresso.Espresso
@@ -8,13 +8,14 @@ import androidx.test.espresso.matcher.ViewMatchers.hasChildCount
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread
+import com.github.sdpteam15.polyevents.MainActivity
+import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.NUMBER_UPCOMING_EVENTS
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabase
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabaseEvent
-import com.github.sdpteam15.polyevents.fragments.HomeFragment
 import com.github.sdpteam15.polyevents.model.Event
 import org.junit.After
 import org.junit.Before
