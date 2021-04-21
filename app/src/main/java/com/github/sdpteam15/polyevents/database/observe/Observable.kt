@@ -46,7 +46,8 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
         observers.add(observer)
         if (updateArgs != null)
             run(Runnable {
-                observer(updateArgs!!)
+                if(!observer(updateArgs!!))
+                    observers.remove(observer)
             })
         return { leave(observer) }
     }
@@ -118,7 +119,7 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
                 if (!obs(updateArgs!!))
                     toRemove.add(obs)
             for (obs in toRemove)
-                    leave(obs)
+                leave(obs)
         })
     }
 }
