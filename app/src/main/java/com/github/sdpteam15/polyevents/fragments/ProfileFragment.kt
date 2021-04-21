@@ -120,14 +120,14 @@ class ProfileFragment : Fragment() {
 
     fun initProfileList(viewRoot: View, user : UserEntity) {
         user.userProfiles.observeRemove(this) {
-            if (it.sender != currentDatabase.userDatabase!!){
+            if (it.sender != currentDatabase){
                 currentDatabase.userDatabase!!.removeProfileFromUser(it.value, user).observeOnce {
                     HelperFunctions.showToast("Fail to remove profiles", context)
                 }
             }
         }
         user.userProfiles.observeAdd(this) {
-            if (it.sender != currentDatabase.userDatabase!!)
+            if (it.sender != currentDatabase)
                 currentDatabase.userDatabase!!.addUserProfileAndAddToUser(it.value, user).observeOnce {
                     HelperFunctions.showToast("Fail to add profiles", context)
                 }
