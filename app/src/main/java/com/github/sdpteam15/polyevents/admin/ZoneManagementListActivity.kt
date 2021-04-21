@@ -2,15 +2,17 @@ package com.github.sdpteam15.polyevents.admin
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.helper.GoogleMapHelper
 
 
 class ZoneManagementListActivity : AppCompatActivity() {
     companion object {
         val EXTRA_ID = "ZONEID"
-        val NEW_ZONE = "0"
+        val NEW_ZONE = "-1"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -2,9 +2,16 @@ package com.github.sdpteam15.polyevents
 
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZoneConstant.*
 import com.github.sdpteam15.polyevents.helper.GoogleMapHelper
+import com.google.android.gms.internal.maps.zzt
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.internal.maps.zzw
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.Polygon
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mock
+import org.mockito.Mockito
+import javax.annotation.meta.When
 
 class GoogleMapHelperTest {
     lateinit var listLngLat: ArrayList<LatLng>
@@ -23,6 +30,7 @@ class GoogleMapHelperTest {
         listLngLat.add(LatLng(arrayLngLat[2], arrayLngLat[3]))
         listLngLat.add(LatLng(arrayLngLat[4], arrayLngLat[5]))
         listLngLat.add(LatLng(arrayLngLat[6], arrayLngLat[7]))
+        listLngLat.add(LatLng(arrayLngLat[0], arrayLngLat[1]))
 
         listLngLat2 = ArrayList()
 
@@ -30,6 +38,7 @@ class GoogleMapHelperTest {
         listLngLat2.add(LatLng(arrayLngLat2[2], arrayLngLat2[3]))
         listLngLat2.add(LatLng(arrayLngLat2[4], arrayLngLat2[5]))
         listLngLat2.add(LatLng(arrayLngLat2[6], arrayLngLat2[7]))
+        listLngLat2.add(LatLng(arrayLngLat2[0], arrayLngLat2[1]))
 
         map[id1] = listLngLat
         map[id2] = listLngLat2
@@ -47,7 +56,7 @@ class GoogleMapHelperTest {
         }
         correctString =
             correctString.substring(0, correctString.length - POINTS_SEP.value.length)
-        assert(correctString == GoogleMapHelper.areaToFormattedStringLocation(listLngLat))
+        assert(correctString == GoogleMapHelper.areaToFormattedStringLocation(listLngLat.dropLast(1)))
     }
 
     @Test
@@ -77,73 +86,21 @@ class GoogleMapHelperTest {
             else
                 correctString += POINTS_SEP.value
         }
-        correctString =
-            correctString.substring(0, correctString.length - POINTS_SEP.value.length)
+        correctString = correctString.substring(0, correctString.length - POINTS_SEP.value.length)
+        val zoneId = GoogleMapHelper.uidZone
 
-        assert(correctString == GoogleMapHelper.areasToFormattedStringLocations(points = map))
-    }
-
-    @Test
-    fun areasToFormattedStringLocationsTakesLowerBoundIntoAccount() {
-        val map2: MutableMap<Int, List<LatLng>> = mutableMapOf()
-        map2[id1] = listLngLat
-        map2[id2] = listLngLat2
-        map2[id3] = listLngLat2
-
-        var correctString = ""
-        for (i in arrayLngLat2.indices) {
-            correctString += arrayLngLat2[i].toString()
-            if (i % 2 == 0)
-                correctString += LAT_LONG_SEP.value
-            else
-                correctString += POINTS_SEP.value
+        val mutableList = mutableListOf<zzw>()
+        val areas = mutableListOf<Int>()
+        val mockedzzt = Mockito.mock(zzt::class.java)
+        var areaId = -1
+        for(i in 0 until map.size){
+            mutableList.add(i,Mockito.mock(zzw::class.java))
+            Mockito.`when`((mutableList[i]).points).thenReturn(map[i])
+            areaId = GoogleMapHelper.uidArea++
+            GoogleMapHelper.areasPoints[areaId] = Triple(zoneId, Marker(mockedzzt), Polygon(mutableList[i]))
+            areas.add(areaId)
         }
-        val tmpString: String =
-            correctString.substring(0, correctString.length - POINTS_SEP.value.length)
-        correctString = tmpString + AREAS_SEP.value + tmpString
-
-        assert(
-            correctString == GoogleMapHelper.areasToFormattedStringLocations(
-                from = 1,
-                points = map2
-            )
-        )
-    }
-
-    @Test
-    fun areasToFormattedStringLocationsTakesUpperBoundIntoAccount() {
-        val map2: MutableMap<Int, List<LatLng>> = mutableMapOf()
-        map2[id1] = listLngLat
-        map2[id2] = listLngLat2
-        map2[id3] = listLngLat2
-
-        var correctString = ""
-        for (i in arrayLngLat.indices) {
-            correctString += arrayLngLat[i].toString()
-            if (i % 2 == 0)
-                correctString += LAT_LONG_SEP.value
-            else
-                correctString += POINTS_SEP.value
-        }
-        correctString = correctString.substring(
-            0,
-            correctString.length - POINTS_SEP.value.length
-        ) + AREAS_SEP.value
-        for (i in arrayLngLat2.indices) {
-            correctString += arrayLngLat2[i].toString()
-            if (i % 2 == 0)
-                correctString += LAT_LONG_SEP.value
-            else
-                correctString += POINTS_SEP.value
-        }
-        correctString =
-            correctString.substring(0, correctString.length - POINTS_SEP.value.length)
-
-        assert(
-            correctString == GoogleMapHelper.areasToFormattedStringLocations(
-                to = 2,
-                points = map2
-            )
-        )
+        GoogleMapHelper.zonesToArea[zoneId] = Pair(null, areas)
+        assert(correctString == GoogleMapHelper.zoneAreasToFormattedStringLocation(zoneId))
     }
 }
