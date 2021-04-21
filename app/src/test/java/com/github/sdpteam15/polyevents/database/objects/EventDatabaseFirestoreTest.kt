@@ -3,6 +3,7 @@ package com.github.sdpteam15.polyevents.database.objects
 import android.graphics.Bitmap
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.EVENT_COLLECTION
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.login.GoogleUserLogin
 import com.github.sdpteam15.polyevents.login.UserLogin
 import com.github.sdpteam15.polyevents.login.UserLoginInterface
@@ -16,6 +17,7 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QuerySnapshot
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -208,6 +210,66 @@ class EventDatabaseFirestoreTest {
         assert(endTime == testEvent.endTime)
         assert(inventory == testEvent.inventory)
         assert(tags == testEvent.tags)
+    }
+
+    @Test
+    fun getEventListInDatabaseWorks() {
+        val mockedCollectionReference = mock(CollectionReference::class.java)
+        val taskReferenceMock = mock(Task::class.java) as Task<QuerySnapshot>
+        val mockedQuerySnapshot = mock(QuerySnapshot::class.java) as QuerySnapshot
+
+        val testEvents = ObservableList<Event>()
+
+        val eventsToBeAdded = mutableListOf<Event>()
+        eventsToBeAdded.add(Event(
+            eventId = "event1",
+            eventName = "Sushi demo",
+            description = "Super hungry activity !",
+            startTime = LocalDateTime.of(2021, 3, 7, 12, 15),
+            organizer = "The fish band",
+            zoneName = "Kitchen",
+            tags = mutableSetOf("sushi", "japan", "cooking")
+        ))
+        eventsToBeAdded.add(Event(
+            eventId = "event2",
+            eventName = "Saxophone demo",
+            description = "Super noisy activity !",
+            startTime = LocalDateTime.of(2021, 3, 7, 17, 15),
+            organizer = "The music band",
+            zoneName = "Concert Hall"
+        ))
+        eventsToBeAdded.add(Event(
+            eventId = "event3",
+            eventName = "Aqua Poney",
+            description = "Super cool activity !" +
+                    " With a super long description that essentially describes and explains" +
+                    " the content of the activity we are speaking of.",
+            startTime = LocalDateTime.of(2021, 3, 7, 14, 15),
+            organizer = "The Aqua Poney team",
+            zoneName = "Swimming pool"
+        ))
+
+
+        When(mockedDatabase.collection(EVENT_COLLECTION.value)).thenReturn(mockedCollectionReference)
+        When(mockedCollectionReference.get()).thenReturn(
+            taskReferenceMock
+        )
+
+        When(taskReferenceMock.addOnSuccessListener(any())).thenAnswer {
+            FirestoreDatabaseProvider.lastQuerySuccessListener!!.onSuccess(mockedQuerySnapshot)
+            //set method in hard to see if the success listener is successfully called
+            testEvents.addAll(eventsToBeAdded)
+            taskReferenceMock
+        }
+        When(taskReferenceMock.addOnFailureListener(any())).thenAnswer {
+            taskReferenceMock
+        }
+
+        val result = FirestoreDatabaseProvider.eventDatabase!!.getListEvent(eventList = testEvents)
+        assert(result.value!!)
+        for (itemType in eventsToBeAdded){
+            assert(itemType in testEvents)
+        }
     }
 
 }
