@@ -106,4 +106,8 @@
     <string name="event_subscribe_at_max_capacity">
         Event has reached the maximum number of participants</string>
     <string name="event_profile_picture">Event Profile Picture</string>
+    
+    <!-- EventListFragment -->
+    <string name="event_attendees">%d/%d </string>
+    <string name="event_schedule">at %s</string>
 </resources>
