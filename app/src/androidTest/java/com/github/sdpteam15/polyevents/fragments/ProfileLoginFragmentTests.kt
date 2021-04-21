@@ -590,7 +590,7 @@ class ProfileLoginFragmentTests {
         onView(withId(R.id.id_recycler_profile_list))
             .check(RecyclerViewItemCountAssertion(1))
     }
-    
+
 
     @Test
     fun removeButtonRemovesProfilesFromList() {

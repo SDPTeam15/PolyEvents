@@ -29,22 +29,22 @@ import java.time.format.DateTimeFormatter
 /**
  *  [Fragment] subclass that represents the profile page allowing the user to modify its private information
  */
-class ProfileFragment(val userId:String? = null) : Fragment() {
+class ProfileFragment(private val userId:String? = null) : Fragment() {
     //Return currentUser if we are not in test, but we can use a fake user in test this way
     var currentUser: UserEntity? = null
         get() = field ?: currentDatabase.currentUser
 
     val userInfoLiveData = Observable<UserEntity>()
     val hashMapNewInfo = HashMap<String, String>()
-    val adminMode = userId != null
-    lateinit var profileNameET: EditText
-    lateinit var profileEmailET: EditText
-    lateinit var profileUsernameET: EditText
+    private val adminMode = userId != null
+    private lateinit var profileNameET: EditText
+    private lateinit var profileEmailET: EditText
+    private lateinit var profileUsernameET: EditText
 
     /**
      * Recycler containing all the profile
      */
-    lateinit var recyclerView: RecyclerView
+    private lateinit var recyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -215,8 +215,6 @@ class ProfileFragment(val userId:String? = null) : Fragment() {
         TransitionManager.beginDelayedTransition(this.recyclerView)
         popupWindow.showAtLocation(this.recyclerView, Gravity.CENTER, 0, 0)
     }
-
-    var remove: () -> Boolean = { true }
 
     fun editProfile(item: UserProfile) {
         val intent = Intent(activity, EditProfileActivity::class.java)
