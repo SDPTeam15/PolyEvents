@@ -1,7 +1,9 @@
 package com.github.sdpteam15.polyevents.database.objects
 
 import android.annotation.SuppressLint
+import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.DatabaseConstant
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.TEST_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.UserConstants.USER_UID
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
@@ -115,6 +117,21 @@ object UserDatabaseFirestore : UserDatabaseInterface {
             update()
 
         return ended
+    }
+
+    override fun removeProfileFromUser(
+        profile: UserProfile,
+        user: UserEntity,
+        userAccess: UserProfile?
+    ): Observable<Boolean> {
+        user.profiles.remove(profile.pid)
+        return Database.currentDatabase.setEntity(
+            user,
+            user.uid,
+            USER_COLLECTION,
+            UserAdapter,
+            userAccess
+        )
     }
 
     override fun updateProfile(profile: UserProfile, userAccess: UserEntity?): Observable<Boolean> =
