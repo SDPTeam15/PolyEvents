@@ -5,6 +5,7 @@ import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConst
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.ITEM_TYPE_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
+import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProviderTest
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.login.GoogleUserLogin
 import com.github.sdpteam15.polyevents.login.UserLogin
@@ -13,6 +14,7 @@ import com.github.sdpteam15.polyevents.model.Item
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 import com.github.sdpteam15.polyevents.util.ItemEntityAdapter
+import com.github.sdpteam15.polyevents.util.ItemTypeAdapter
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.firestore.CollectionReference
@@ -104,7 +106,6 @@ class ItemDatabaseFirestoreTest {
         var itemTypeAdded: String? = null
         var itemCountAdded = 0
         var itemIdAdded = ""
-
         When(taskReferenceMock.addOnSuccessListener(any())).thenAnswer {
             FirestoreDatabaseProvider.lastAddSuccessListener!!.onSuccess(null)
             //set method in hard to see if the success listener is successfully called
@@ -305,7 +306,7 @@ class ItemDatabaseFirestoreTest {
     fun addItemTypeInDatabaseWorks() {
         val mockedCollectionReference = mock(CollectionReference::class.java)
         val taskReferenceMock = mock(Task::class.java) as Task<DocumentReference>
-
+        val docReferenceMock = mock(DocumentReference::class.java) as DocumentReference
         val testItemType = "TEST_ITEM_TYPE"
 
         When(mockedDatabase.collection(ITEM_TYPE_COLLECTION.value)).thenReturn(
@@ -313,18 +314,16 @@ class ItemDatabaseFirestoreTest {
         )
         When(
             mockedCollectionReference.add(
-                hashMapOf(
-                    DatabaseConstant.ItemConstants.ITEM_TYPE.value to testItemType
-                )
+                ItemTypeAdapter.toDocument(testItemType)
             )
         ).thenReturn(
             taskReferenceMock
         )
+        When(docReferenceMock.id).thenReturn("test")
 
         var itemTypeAdded: String? = null
-
         When(taskReferenceMock.addOnSuccessListener(any())).thenAnswer {
-            FirestoreDatabaseProvider.lastAddSuccessListener!!.onSuccess(null)
+            FirestoreDatabaseProvider.lastAddSuccessListener!!.onSuccess(docReferenceMock)
             //set method in hard to see if the success listener is successfully called
             itemTypeAdded = testItemType
             taskReferenceMock
