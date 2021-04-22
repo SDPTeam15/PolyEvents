@@ -161,6 +161,7 @@ object UserDatabaseFirestore : UserDatabaseInterface {
         FirestoreDatabaseProvider.getListEntity(
             profiles,
             user.profiles,
+            null,
             PROFILE_COLLECTION,
             ProfileAdapter
         )
@@ -173,6 +174,7 @@ object UserDatabaseFirestore : UserDatabaseInterface {
         FirestoreDatabaseProvider.getListEntity(
             users,
             profile.users,
+            null,
             DatabaseConstant.CollectionConstant.PROFILE_COLLECTION,
             UserAdapter
         )

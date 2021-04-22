@@ -72,7 +72,7 @@ object DatabaseConstant {
     }
 
     enum class LocationConstant(val value: String) {
-        LOCATIONS_COLLECTION("locations"),
+        LOCATIONS_DEVICE("device"),
         LOCATIONS_POINT("point"),
         LOCATIONS_TIME("time");
         override fun toString(): String = value

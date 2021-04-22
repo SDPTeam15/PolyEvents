@@ -1,8 +1,10 @@
 package com.github.sdpteam15.polyevents.model
 
 import com.google.android.gms.maps.model.LatLng
+import java.time.LocalDateTime
 
 data class DeviceLocation (
+    val device: String? = null,
     val location: LatLng,
-    val device: String
+    val time: LocalDateTime? = null,
 )

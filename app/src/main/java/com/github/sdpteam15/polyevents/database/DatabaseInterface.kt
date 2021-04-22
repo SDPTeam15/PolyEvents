@@ -5,6 +5,8 @@ import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.*
 import com.github.sdpteam15.polyevents.util.AdapterInterface
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.Query
 import java.util.*
 
 const val NUMBER_UPCOMING_EVENTS = 3
@@ -131,14 +133,16 @@ interface DatabaseInterface {
     /**
      * Get a list Entity from the database
      * @param elements An observable list in which the elements will be set once retrieve from the database
-     * @param ids The id at which we need to set the element
+     * @param ids The ids at which we need to get the element, if null get all
+     * @param matcher To filter the elements
      * @param collection The collection from which we want to retrieve the list of entity
      * @param adapter The adapter converting the element into a HashMap recognised by the database
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun <T> getListEntity(
         elements: ObservableList<T>,
-        ids: List<String>,
+        ids: List<String>? = null,
+        matcher: Matcher?,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterInterface<T>
     ): Observable<Boolean>

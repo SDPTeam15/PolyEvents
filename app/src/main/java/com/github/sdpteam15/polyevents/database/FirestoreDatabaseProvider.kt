@@ -13,10 +13,7 @@ import com.github.sdpteam15.polyevents.util.UserAdapter
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -32,7 +29,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     override var userDatabase: UserDatabaseInterface? = null
         get() = field ?: UserDatabaseFirestore
     override var heatmapDatabase: HeatmapDatabaseInterface? = null
-        get() = field ?: HeatmapDatabaseFirestore
+        get() = field ?: HeatmapDatabase(this)
     override var eventDatabase: EventDatabaseInterface? = null
         get() = field ?: EventDatabaseFirestore
     override var materialRequestDatabase: MaterialRequestDatabaseInterface? = null
@@ -264,39 +261,51 @@ object FirestoreDatabaseProvider : DatabaseInterface {
 
     override fun <T> getListEntity(
         elements: ObservableList<T>,
-        ids: List<String>,
+        ids: List<String>?,
+        matcher: Matcher?,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterInterface<T>
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
 
         val lastFailureListener = OnFailureListener { ended.postValue(false, this) }
-        val mutableList = mutableListOf<T?>()
         val fsCollection = firestore!!.collection(collection.value)
-        for (id in ids) {
-            mutableList.add(null)
-            fsCollection.document(id)
-                .get()
-                .addOnSuccessListener {
-                    if (it.data != null) {
-                        val index = ids.indexOf(it.id)
-                        mutableList[index] = adapter.fromDocument(it.data!!, it.id)
-                        var b = true
-                        for (p in mutableList)
-                            if (p == null) {
-                                b = false
-                                break
-                            }
-                        if (b) {
-                            elements.clear(this)
+        if (ids != null) {
+            val mutableList = mutableListOf<T?>()
+            for (id in ids) {
+                mutableList.add(null)
+                fsCollection.document(id)
+                    .get()
+                    .addOnSuccessListener {
+                        if (it.data != null) {
+                            val index = ids.indexOf(it.id)
+                            mutableList[index] = adapter.fromDocument(it.data!!, it.id)
+                            var b = true
                             for (p in mutableList)
-                                elements.add(p!!, this)
-                            ended.postValue(true, this)
-                        }
+                                if (p == null) {
+                                    b = false
+                                    break
+                                }
+                            if (b) {
+                                elements.clear(this)
+                                for (p in mutableList)
+                                    elements.add(p!!, this)
+                                ended.postValue(true, this)
+                            }
+                        } else
+                            ended.postValue(false, this)
                     }
-                    else
-                        ended.postValue(false, this)
+                    .addOnFailureListener(lastFailureListener)
+            }
+        } else {
+            val task = matcher?.match(fsCollection)?.get() ?: fsCollection.get()
+            task.addOnSuccessListener {
+                elements.clear(this)
+                for (e in it) {
+                    val v = adapter.fromDocument(e.data, e.id)
+                    elements.add(v, this)
                 }
+            }
                 .addOnFailureListener(lastFailureListener)
         }
         return ended

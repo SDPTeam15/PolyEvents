@@ -1,6 +1,5 @@
 package com.github.sdpteam15.polyevents.database
 
-import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.Query
 
 /**
@@ -8,5 +7,6 @@ import com.google.firebase.firestore.Query
  * For example keep only the first 5 items from the collection.
  */
 interface Matcher {
-    fun match(collection: CollectionReference): Query
+    //TODO make the Matcher generic for any DB
+    fun match(collection: Query): Query
 }

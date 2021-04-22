@@ -582,8 +582,15 @@ class ObservableList<T> : MutableList<T> {
      *  @return a method to remove the observer
      */
     fun observeWhileTrue(observer: (UpdateArgs<List<T>>) -> Boolean): () -> Boolean {
+
         observers.add(observer)
+        run(Runnable {
+            if(!observer(UpdateArgs(this.value, this)))
+                observers.remove(observer)
+        })
         return { leave(observer) }
+
+
     }
 
     /**
@@ -676,10 +683,10 @@ class ObservableList<T> : MutableList<T> {
 
     fun notifyUpdate(sender: Any? = null) {
         if (observers.isNotEmpty()) {
-            val valueList = this.value
+            val valueList = UpdateArgs(this.value, sender)
             val toRemove = mutableListOf<(UpdateArgs<List<T>>) -> Boolean>()
             for (obs in observers)
-                if (!obs(UpdateArgs(valueList, sender)))
+                if (!obs(valueList))
                     toRemove.add(obs)
             for (obs in toRemove)
                 leave(obs)

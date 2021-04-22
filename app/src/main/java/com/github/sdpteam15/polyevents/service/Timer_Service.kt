@@ -51,7 +51,7 @@ class Timer_Service : Service() {
     private fun initServices() {
         addServices {
             if(IsSendingLocationOn)
-                Database.currentDatabase.heatmapDatabase!!.setUserLocation(
+                Database.currentDatabase.heatmapDatabase!!.setLocation(
                     LatLng(2.2,2.2)
                 )
         }

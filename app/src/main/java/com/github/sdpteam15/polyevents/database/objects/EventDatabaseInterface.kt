@@ -7,6 +7,8 @@ import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.Event
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.Query
 
 interface EventDatabaseInterface {
     val currentUser: UserEntity?

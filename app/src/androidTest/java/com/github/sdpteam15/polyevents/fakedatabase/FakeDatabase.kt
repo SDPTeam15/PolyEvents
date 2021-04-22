@@ -2,6 +2,7 @@ package com.github.sdpteam15.polyevents.fakedatabase
 
 import com.github.sdpteam15.polyevents.database.DatabaseConstant
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
+import com.github.sdpteam15.polyevents.database.Matcher
 import com.github.sdpteam15.polyevents.database.objects.*
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
@@ -89,7 +90,8 @@ object FakeDatabase : DatabaseInterface {
 
     override fun <T> getListEntity(
         elements: ObservableList<T>,
-        ids: List<String>,
+        ids: List<String>?,
+        matcher: Matcher?,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterInterface<T>
     ): Observable<Boolean> {
