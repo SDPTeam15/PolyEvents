@@ -6,17 +6,14 @@ import android.transition.Slide
 import android.transition.TransitionManager
 import android.view.Gravity
 import android.view.LayoutInflater
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.LinearLayout
-import android.widget.PopupWindow
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.adapter.ItemAdapter
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
+import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.Item
-import com.github.sdpteam15.polyevents.model.ItemType
 
 /**
  * Activity displaying Items and supports items creation and deletion
@@ -24,6 +21,7 @@ import com.github.sdpteam15.polyevents.model.ItemType
 class ItemsAdminActivity : AppCompatActivity() {
 
     private val items = ObservableList<Pair<Item, Int>>()
+    private val itemTypes = ObservableList<String>()
 
     /**
      * Recycler containing all the items
@@ -39,9 +37,14 @@ class ItemsAdminActivity : AppCompatActivity() {
             if (!it.value)
                 println("query not satisfied")
         }
+        currentDatabase.itemDatabase!!.getItemTypes(itemTypes).observe(this) {
+            if (!it.value)
+                HelperFunctions.showToast("Querry not satisfied", this)
+        }
         items.observeRemove(this) {
-            if (it.sender != currentDatabase.itemDatabase!!)
+            if (it.sender != currentDatabase.itemDatabase!!) {
                 currentDatabase.itemDatabase!!.removeItem(it.value.first.itemId!!)
+            }
         }
         items.observeAdd(this) {
             if (it.sender != currentDatabase.itemDatabase!!) {
@@ -51,6 +54,12 @@ class ItemsAdminActivity : AppCompatActivity() {
                             currentDatabase.itemDatabase!!.getItemsList(items)
                         }
                     }
+            }
+        }
+
+        itemTypes.observeAdd(this) {
+            if (it.sender != currentDatabase.itemDatabase!!) {
+                currentDatabase.itemDatabase!!.createItemType(it.value)
             }
         }
 
@@ -90,20 +99,35 @@ class ItemsAdminActivity : AppCompatActivity() {
         val itemName = view.findViewById<EditText>(R.id.id_edittext_item_name)
         val confirmButton = view.findViewById<ImageButton>(R.id.id_confirm_add_item_button)
         val itemQuantity = view.findViewById<EditText>(R.id.id_edittext_item_quantity)
+        val itemTypeTextView = view.findViewById<AutoCompleteTextView>(R.id.id_edittext_item_type)
+
+        //set adapter to show available item types
+        val adapter = ArrayAdapter(this, android.R.layout.select_dialog_item, itemTypes)
+        itemTypeTextView.setAdapter(adapter)
+
+        // update adapter when a new itemType is added
+        itemTypes.observe(this) { adapter.notifyDataSetChanged() }
 
         //set focus on the popup
         popupWindow.isFocusable = true
 
         // Set a click listener for popup's button widget
         confirmButton.setOnClickListener {
+            val itemType = itemTypeTextView.text.toString()
 
+            // add new item Type if not already present
+            if (itemType !in itemTypes) {
+                itemTypes.add(itemType)
+            }
 
+            // add new item
             items.add(
                 Pair(
-                    Item(null, itemName.text.toString(), ItemType.OTHER),
+                    Item(null, itemName.text.toString(), itemType),
                     itemQuantity.text.toString().toInt()
                 ), this
             )
+
             // Dismiss the popup window
             popupWindow.dismiss()
 

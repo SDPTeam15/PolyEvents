@@ -10,7 +10,9 @@ object DatabaseConstant {
         ITEM_COLLECTION("items"),
         EVENT_COLLECTION("events"),
         PROFILE_COLLECTION("profile"),
-        USER_COLLECTION("users");
+        USER_COLLECTION("users"),
+        ITEM_TYPE_COLLECTION("itemTypes"),
+        TEST_COLLECTION("test");
         override fun toString(): String = value
     }
 

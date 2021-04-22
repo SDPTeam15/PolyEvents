@@ -49,8 +49,7 @@ object FakeDatabase : DatabaseInterface {
     override fun <T> addEntityAndGetId(
         element: T,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>,
-        userAccess: UserProfile?
+        adapter: AdapterInterface<T>
     ): Observable<String> {
         TODO("Not yet implemented")
     }
@@ -58,8 +57,7 @@ object FakeDatabase : DatabaseInterface {
     override fun <T> addEntity(
         element: T,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>,
-        userAccess: UserProfile?
+        adapter: AdapterInterface<T>
     ): Observable<Boolean> {
         TODO("Not yet implemented")
     }
@@ -68,16 +66,14 @@ object FakeDatabase : DatabaseInterface {
         element: T?,
         id: String,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>?,
-        userAccess: UserProfile?
+        adapter: AdapterInterface<T>?
     ): Observable<Boolean> {
         TODO("Not yet implemented")
     }
 
     override fun deleteEntity(
         id: String,
-        collection: DatabaseConstant.CollectionConstant,
-        userAccess: UserProfile?
+        collection: DatabaseConstant.CollectionConstant
     ): Observable<Boolean> {
         TODO("Not yet implemented")
     }
@@ -86,8 +82,7 @@ object FakeDatabase : DatabaseInterface {
         element: Observable<T>,
         id: String,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>,
-        userAccess: UserProfile?
+        adapter: AdapterInterface<T>
     ): Observable<Boolean> {
         TODO("Not yet implemented")
     }
@@ -96,8 +91,7 @@ object FakeDatabase : DatabaseInterface {
         elements: ObservableList<T>,
         ids: List<String>,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>,
-        userAccess: UserProfile?
+        adapter: AdapterInterface<T>
     ): Observable<Boolean> {
         TODO("Not yet implemented")
     }
