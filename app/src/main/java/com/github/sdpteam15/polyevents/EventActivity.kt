@@ -93,7 +93,6 @@ class EventActivity : AppCompatActivity() {
 
     fun onClickEventSubscribe(view: View) {
         if (currentDatabase.currentUser == null) {
-            Log.d(TAG, "No user logged in")
             showToast(resources.getString(R.string.toast_subscribe_warning), this)
         } else if (event.getParticipants().contains(currentDatabase.currentUser!!.uid)){
             unsubscribeFromEvent()
@@ -104,11 +103,9 @@ class EventActivity : AppCompatActivity() {
 
     fun unsubscribeFromEvent() {
         event.removeParticipant(currentDatabase.currentUser!!.uid)
-        Log.d(TAG, event.getParticipants().toString())
 
         currentDatabase.eventDatabase!!.updateEvents(event)
         showToast(resources.getString(R.string.event_successfully_unsubscribed), this)
-        Log.d(TAG, "User successfully removed from event")
 
         subscribeButton.setText(resources.getString(R.string.event_subscribe))
     }
@@ -116,15 +113,11 @@ class EventActivity : AppCompatActivity() {
     fun subscribeToEvent() {
         try {
             event.addParticipant(currentDatabase.currentUser!!.uid)
-            Log.d(TAG, event.getParticipants().toString())
 
             currentDatabase.eventDatabase!!.updateEvents(event)
             showToast(resources.getString(R.string.event_successfully_subscribed), this)
-            Log.d(TAG, "User successfully subscribed to event")
-
             subscribeButton.setText(resources.getString(R.string.event_unsubscribe))
         } catch (e: MaxAttendeesException) {
-            Log.d(TAG, "Max number of attendees reached")
             showToast(resources.getString(R.string.event_subscribe_at_max_capacity), this)
         }
     }
