@@ -12,6 +12,11 @@ Next week I will work on the admin side, to display the list of all user so that
 ## Mathieu
 
 ## Robin
+This week I made a the test of the last week part, fixe some bugs and Update ObservableList
+
+My times estimates were generally good.
+
+Next week I will work on the Heatmap to display it on the mapfragment.
 
 ## Stephane (Scrum Master)
 This week I implemented the user registration to activities in an event. 
