@@ -26,7 +26,10 @@ object DatabaseConstant {
         EVENT_END_TIME("endTime"),
         EVENT_INVENTORY("inventory"),
         EVENT_ICON("icon"),
-        EVENT_TAGS("tags");
+        EVENT_TAGS("tags"),
+        EVENT_MAX_SLOTS("maxNumberOfSlots"),
+        EVENT_LIMITED("limitedEvent"),
+        EVENT_PARTICIPANTS("participants");
         override fun toString(): String = value
     }
 

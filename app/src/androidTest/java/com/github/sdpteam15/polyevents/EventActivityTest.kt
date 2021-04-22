@@ -5,143 +5,237 @@ import android.content.Intent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.RecyclerViewActions
-import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.Intents.intended
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
-import androidx.test.ext.junit.rules.ActivityScenarioRule
-import com.github.sdpteam15.polyevents.adapter.EventItemAdapter
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
+import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
-import com.github.sdpteam15.polyevents.database.observe.ObservableList
-import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabase
-import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabaseEvent
-import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabaseZone
+import com.github.sdpteam15.polyevents.database.objects.EventDatabaseInterface
+import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.fragments.EXTRA_EVENT_ID
 import com.github.sdpteam15.polyevents.model.Event
+import com.github.sdpteam15.polyevents.model.UserEntity
+import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertDisplayed
+import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertNotDisplayed
+import com.schibsted.spain.barista.interaction.BaristaClickInteractions.clickOn
 import org.hamcrest.CoreMatchers.containsString
 import org.junit.After
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito.*
 import org.mockito.junit.MockitoJUnitRunner
 import java.time.LocalDateTime
+import org.mockito.Mockito.`when` as When
 
 
 @RunWith(MockitoJUnitRunner::class)
 class EventActivityTest {
 
-    @Rule
-    @JvmField
-    var mainActivity = ActivityScenarioRule(MainActivity::class.java)
+    lateinit var testUser: UserEntity
+    val uid = "testUid"
+    val username = "john"
+    val email = "user@email.com"
+
+    lateinit var testLimitedEvent: Event
+    val limitedEventId = "limitedEvent"
+
+    lateinit var mockedDatabase: DatabaseInterface
+    lateinit var mockedEventDatabase: EventDatabaseInterface
+
+    lateinit var scenario: ActivityScenario<EventActivity>
 
     @Before
     fun setup() {
+        testUser = UserEntity(
+            uid = uid,
+            username = username,
+            email = email
+        )
 
-        FakeDatabaseEvent.events.clear()
-        FakeDatabase.eventDatabase!!.createEvent(
-            Event(
-                eventName = "Sushi demo",
-                description = "Super hungry activity !",
-                startTime = LocalDateTime.of(2021, 3, 7, 12, 15),
-                endTime = LocalDateTime.of(2021, 3, 7, 13, 0, 0),
-                organizer = "The fish band",
-                zoneName = "Kitchen",
-                tags = mutableSetOf("sushi", "japan", "cooking")
-            )
+        mockedDatabase = mock(DatabaseInterface::class.java)
+        mockedEventDatabase = mock(EventDatabaseInterface::class.java)
+        When(mockedDatabase.currentUser).thenReturn(testUser)
+        When(mockedDatabase.eventDatabase).thenReturn(mockedEventDatabase)
+
+        currentDatabase = mockedDatabase
+
+        testLimitedEvent = Event(
+            eventId = "limitedEvent",
+            eventName = "limited Event only",
+            description = "Super noisy activity !",
+            startTime = LocalDateTime.of(2021, 3, 7, 21, 15),
+            organizer = "AcademiC DeCibel",
+            zoneName = "Concert Hall",
+            tags = mutableSetOf("music", "live", "pogo")
         )
-        FakeDatabase.eventDatabase!!.createEvent(
-            Event(
-                eventName = "Aqua Poney",
-                description = "Super cool activity !" +
-                        " With a super long description that essentially describes and explains" +
-                        " the content of the activity we are speaking of.",
-                startTime = LocalDateTime.of(2021, 3, 7, 14, 15),
-                organizer = "The Aqua Poney team",
-                zoneName = "Swimming pool"
+        testLimitedEvent.makeLimitedEvent(3)
+
+        // How to modify a parameter of a mocked method (Very bad workaround)
+        // https://stackoverflow.com/questions/12429169/how-to-mock-a-void-return-method-affecting-an-object
+        /*doAnswer { invocation ->
+            val args = invocation.arguments
+            (args[1] as Observable<Event>).postValue(testLimitedEvent, null)
+            Observable<Boolean>(true) // void method, so return null
+        }.`when`(mockedEventDatabase.getEventFromId("limitedEvent",
+            any()
+        ))*/
+        When(
+            mockedEventDatabase.getEventFromId(
+                id = limitedEventId, returnEvent = EventActivity.obsEvent
             )
-        )
-        FakeDatabase.eventDatabase!!.createEvent(
-            Event(
-                eventName = "Concert",
-                description = "Super noisy activity !",
-                startTime = LocalDateTime.of(2021, 3, 7, 21, 15),
-                organizer = "AcademiC DeCibel",
-                zoneName = "Concert Hall",
-                tags = mutableSetOf("music", "live", "pogo")
-            )
-        )
-        currentDatabase = FakeDatabase
-        Intents.init()
-        // go to activities list fragment
-        Espresso.onView(withId(R.id.ic_list)).perform(click())
-        Thread.sleep(1000)
+        ).then {
+            EventActivity.obsEvent.postValue(testLimitedEvent)
+            Observable(true)
+        }
 
     }
 
     @After
     fun teardown() {
         currentDatabase = FirestoreDatabaseProvider
-        Intents.release()
     }
 
     @Test
-    fun correctNumberUpcomingEventsDisplayed() {
-        Espresso.onView(withId(R.id.recycler_events_list))
-            .check(RecyclerViewItemCountAssertion(FakeDatabaseEvent.events.size))
-    }
-
-    @Test
-    fun eventActivityOpensOnClick() {
-        Espresso.onView(withId(R.id.recycler_events_list)).perform(
-            RecyclerViewActions.actionOnItemAtPosition<EventItemAdapter.ItemViewHolder>(
-                0,
-                click()
-            )
-        )
-        intended(hasComponent(EventActivity::class.java.name))
-    }
-
-    @Test
-    fun eventActivityShowsValuesFromGivenActivity() {
-        val intent = Intent(
-            ApplicationProvider.getApplicationContext(),
-            EventActivity::class.java
-        )
-        val events = ObservableList<Event>()
-        currentDatabase.eventDatabase!!.getListEvent(null, 1, events)
-
-        val eventToTest = events[0]
-        intent.putExtra(EXTRA_EVENT_ID, eventToTest.eventId!!)
-        val scenario = ActivityScenario.launch<EventActivity>(intent)
-        Thread.sleep(1000)
+    fun eventActivityCorrectlyShowsEvent() {
+        goToEventActivityWithLimitedEventIntent()
 
         Espresso.onView(withId(R.id.txt_event_Name))
-            .check(matches(withText(containsString(eventToTest.eventName))))
+            .check(matches(withText(containsString(testLimitedEvent.eventName))))
 
         Espresso.onView(withId(R.id.txt_event_description))
-            .check(matches(withText(containsString(eventToTest.description))))
+            .check(matches(withText(containsString(testLimitedEvent.description))))
 
 
         Espresso.onView(withId(R.id.txt_event_organizer))
-            .check(matches(withText(containsString(eventToTest.organizer))))
+            .check(matches(withText(containsString(testLimitedEvent.organizer))))
 
         Espresso.onView(withId(R.id.txt_event_zone))
-            .check(matches(withText(containsString(eventToTest.zoneName))))
+            .check(matches(withText(containsString(testLimitedEvent.zoneName))))
 
         Espresso.onView(withId(R.id.txt_event_date))
-            .check(matches(withText(containsString(eventToTest.formattedStartTime()))))
+            .check(matches(withText(containsString(testLimitedEvent.formattedStartTime()))))
 
         Espresso.onView(withId(R.id.txt_event_tags))
-            .check(matches(withText(containsString(eventToTest.tags.joinToString { s -> s }))))
+            .check(matches(withText(containsString(testLimitedEvent.tags.joinToString { s -> s }))))
+
+        assertDisplayed(R.id.button_subscribe_event, R.string.event_subscribe)
+        //TODO check image is correct
+    }
+
+    @Test
+    fun testEventSubscription() {
+        goToEventActivityWithLimitedEventIntent()
+
+        clickOn(R.id.button_subscribe_event)
+
+        // Making sure EventActivity.obsEvent and the testEvent instance are the same here
+        assert(EventActivity.obsEvent.value!!.getParticipants().contains(uid))
+        assert(EventActivity.event.getParticipants().contains(uid))
+        assert(testLimitedEvent.getParticipants().contains(uid))
+        assertDisplayed(R.id.button_subscribe_event, R.string.event_unsubscribe)
+
+        // Unsubscribe
+        clickOn(R.id.button_subscribe_event)
+
+        assert(!testLimitedEvent.getParticipants().contains(currentDatabase.currentUser!!.uid))
+        assertDisplayed(R.id.button_subscribe_event, R.string.event_subscribe)
 
         scenario.close()
-        //TODO check image is correct
+    }
+
+    @Test
+    fun testEventSubscriptionForFullEvent() {
+        testLimitedEvent.makeLimitedEvent(1)
+        testLimitedEvent.addParticipant("bogusId")
+        assert(testLimitedEvent.getMaxNumberOfSlots() == testLimitedEvent.getParticipants().size)
+
+        goToEventActivityWithLimitedEventIntent()
+
+        assertDisplayed(R.id.button_subscribe_event, R.string.event_subscribe)
+
+        clickOn(R.id.button_subscribe_event)
+
+        // Nothing happens, button subscribe should not have changed
+        assertDisplayed(R.id.button_subscribe_event, R.string.event_subscribe)
+        scenario.close()
+    }
+
+    @Test
+    fun testSubscriptionToEventWithNoUserLoggedIn() {
+        When(mockedDatabase.currentUser).thenReturn(null)
+
+        goToEventActivityWithLimitedEventIntent()
+
+        assertDisplayed(R.id.button_subscribe_event, R.string.event_subscribe)
+
+        clickOn(R.id.button_subscribe_event)
+        // Nothing happens, button subscribe should not have changed (Show should toast to login)
+        assert(testLimitedEvent.getParticipants().isEmpty())
+        assertDisplayed(R.id.button_subscribe_event, R.string.event_subscribe)
+
+        scenario.close()
+    }
+
+    @Test
+    fun testEventActivityWhenAlreadySubscribedToEvent() {
+        testLimitedEvent.addParticipant(uid)
+
+        goToEventActivityWithLimitedEventIntent()
+        assert(EventActivity.obsEvent.value!!.getParticipants().contains(uid))
+
+        assertDisplayed(R.id.button_subscribe_event, R.string.event_unsubscribe)
+
+        // Now unsubscribe
+        clickOn(R.id.button_subscribe_event)
+        assert(!EventActivity.obsEvent.value!!.getParticipants().contains(uid))
+        assert(!testLimitedEvent.getParticipants().contains(uid))
+
+        assertDisplayed(R.id.button_subscribe_event, R.string.event_subscribe)
+    }
+
+    @Test
+    fun testEventFetchFailedDoesNotDisplayAnything() {
+        When(mockedEventDatabase.getEventFromId(id = limitedEventId,
+            returnEvent = EventActivity.obsEvent)).thenReturn(Observable(false))
+
+        goToEventActivityWithLimitedEventIntent()
+
+        // Nothing displayed
+        Espresso.onView(withId(R.id.txt_event_Name))
+            .check(matches(withText(containsString(""))))
+    }
+
+    @Test
+    fun testPublicEventShouldHaveNoSubscribeButton() {
+        When(
+            mockedEventDatabase.getEventFromId(
+                id = limitedEventId, returnEvent = EventActivity.obsEvent
+            )
+        ).then {
+            EventActivity.obsEvent.postValue(testLimitedEvent.copy(
+                limitedEvent = false, maxNumberOfSlots = null)
+            )
+            Observable(true)
+        }
+
+        goToEventActivityWithLimitedEventIntent()
+
+        assertNotDisplayed(R.id.button_subscribe_event)
+    }
+
+    fun goToEventActivityWithLimitedEventIntent() {
+        val intent = Intent(
+            ApplicationProvider.getApplicationContext(),
+            EventActivity::class.java
+        ).apply {
+            putExtra(EXTRA_EVENT_ID, limitedEventId)
+        }
+
+        scenario = ActivityScenario.launch<EventActivity>(intent)
+
+        Thread.sleep(1000)
     }
 }
 

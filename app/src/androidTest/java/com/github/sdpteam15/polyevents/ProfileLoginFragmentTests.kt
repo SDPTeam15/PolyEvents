@@ -92,7 +92,7 @@ class ProfileLoginFragmentTests {
         When(mockedDatabase.currentUser).thenReturn(null)
         val homeFragment = MainActivity.fragments[R.id.ic_home] as HomeFragment
         When(
-            mockedEventDatabase.getListEvent(
+            mockedEventDatabase.getEvents(
                 null,
                 NUMBER_UPCOMING_EVENTS.toLong(),
                 homeFragment.events
@@ -101,7 +101,7 @@ class ProfileLoginFragmentTests {
             Observable(true)
         }
         When(
-            mockedEventDatabase.getListEvent(
+            mockedEventDatabase.getEvents(
                 null,
                 NUMBER_UPCOMING_EVENTS.toLong(),
                 homeFragment.events

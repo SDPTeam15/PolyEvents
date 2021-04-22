@@ -8,7 +8,7 @@ object ItemEntityAdapter {
         Pair(
             Item(
                 id,
-                documentData[ITEM_NAME.value] as String,
+                documentData[ITEM_NAME.value] as String?,
                 documentData[ITEM_TYPE.value] as String),
                 (documentData[ITEM_COUNT.value] as Long).toInt()
         )
