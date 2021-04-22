@@ -4,7 +4,6 @@ package com.github.sdpteam15.polyevents.util
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.EventConstant.*
 import com.github.sdpteam15.polyevents.model.Event
 import com.github.sdpteam15.polyevents.model.Item
-import com.github.sdpteam15.polyevents.model.ItemType
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -24,8 +23,8 @@ class EventAdapterTest {
     val tag1 = "GOOD"
     val tag2 = "BAD"
 
-    val item1 = Item(null, "micro1", ItemType.MICROPHONE)
-    val item2 = Item(null, "plug2", ItemType.PLUG)
+    val item1 = Item(null, "micro1", "MICROPHONE")
+    val item2 = Item(null, "plug2", "PLUG")
 
     lateinit var event: Event
 

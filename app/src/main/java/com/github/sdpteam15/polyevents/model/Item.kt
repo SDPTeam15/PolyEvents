@@ -18,5 +18,5 @@ import com.google.firebase.firestore.IgnoreExtraProperties
 data class Item(
         val itemId: String?,
         val itemName: String?,
-        val itemType: ItemType
+        val itemType: String
 )
