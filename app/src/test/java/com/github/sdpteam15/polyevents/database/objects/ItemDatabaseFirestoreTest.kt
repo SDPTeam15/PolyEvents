@@ -14,6 +14,7 @@ import com.github.sdpteam15.polyevents.model.Item
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 import com.github.sdpteam15.polyevents.util.ItemEntityAdapter
+import com.github.sdpteam15.polyevents.util.ItemTypeAdapter
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.firestore.CollectionReference
@@ -63,7 +64,7 @@ class ItemDatabaseFirestoreTest {
     @Test
     fun variableCorrectlySet() {
         val mockedUserLogin =
-            Mockito.mock(UserLoginInterface::class.java) as UserLoginInterface<AuthResult>
+            mock(UserLoginInterface::class.java) as UserLoginInterface<AuthResult>
         UserLogin.currentUserLogin = mockedUserLogin
         FirestoreDatabaseProvider.currentUser = user
         Mockito.`when`(mockedUserLogin.isConnected()).thenReturn(true)
