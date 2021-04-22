@@ -8,6 +8,11 @@ I under-estimate a bit the time needed to fix the tests once the refactor is don
 Next week I will work on the admin side, to display the list of all user so that the admin can have access to the information of the user and his profile list (to promote/demote him)
 
 ## Florian 
+This week I added the functionality to add new Item types. It will be helpful to query items by their type. 
+
+I estimated the time well, as I had a general idea how to implement each part of the work at the beginning. 
+
+Next week I'll use this Item type feature to search for items by type. 
 
 ## Mathieu
 
