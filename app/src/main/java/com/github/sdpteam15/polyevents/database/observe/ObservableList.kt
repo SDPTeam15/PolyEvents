@@ -582,15 +582,8 @@ class ObservableList<T> : MutableList<T> {
      *  @return a method to remove the observer
      */
     fun observeWhileTrue(observer: (UpdateArgs<List<T>>) -> Boolean): () -> Boolean {
-
         observers.add(observer)
-        run(Runnable {
-            if(!observer(UpdateArgs(this.value, this)))
-                observers.remove(observer)
-        })
         return { leave(observer) }
-
-
     }
 
     /**

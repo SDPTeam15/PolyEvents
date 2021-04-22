@@ -43,6 +43,9 @@ open class GoogleMapAdapter(var map: GoogleMap?) : MapsInterface {
         map!!.isMyLocationEnabled = value
     }
 
+    override fun addTileOverlay(tileProvider: TileOverlayOptions?): TileOverlay  =
+        map!!.addTileOverlay(tileProvider)
+
     override fun moveCamera(cameraUpdate: CameraUpdate) {
         map!!.moveCamera(cameraUpdate)
     }

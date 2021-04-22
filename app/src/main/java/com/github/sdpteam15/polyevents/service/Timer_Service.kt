@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.IBinder
 import com.github.sdpteam15.polyevents.Settings.IsSendingLocationOn
 import com.github.sdpteam15.polyevents.database.Database
+import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.UpdateArgs
 import com.google.android.gms.maps.model.LatLng
 import java.util.*
@@ -23,12 +24,10 @@ class Timer_Service : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        instance = this
-
-        initServices()
+        instance.value = this
 
         mTimer = Timer()
-        mTimer!!.scheduleAtFixedRate(TimeDisplayTimerTask(), 30, NOTIFY_INTERVAL)
+        mTimer!!.scheduleAtFixedRate(TimeDisplayTimerTask(), 0 , 30 * 1000)
         intent = Intent(str_receiver)
     }
 
@@ -48,15 +47,6 @@ class Timer_Service : Service() {
         mTimer!!.cancel()
     }
 
-    private fun initServices() {
-        addServices {
-            if(IsSendingLocationOn)
-                Database.currentDatabase.heatmapDatabase!!.setLocation(
-                    LatLng(2.2,2.2)
-                )
-        }
-    }
-
     fun addServices(service: () -> Unit) {
         observers.add(service)
         removeList.add {
@@ -66,7 +56,7 @@ class Timer_Service : Service() {
     }
 
     companion object {
-        lateinit var instance: Timer_Service
+        var instance = Observable<Timer_Service>()
         var str_receiver = "receiver"
         const val NOTIFY_INTERVAL: Long = 1000
     }

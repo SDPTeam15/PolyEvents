@@ -31,6 +31,6 @@ interface HeatmapDatabaseInterface {
      */
     fun getLocations(
         usersLocations: ObservableList<LatLng>,
-        userAccess: UserEntity?
+        userAccess: UserEntity? = null
     ): Observable<Boolean>
 }

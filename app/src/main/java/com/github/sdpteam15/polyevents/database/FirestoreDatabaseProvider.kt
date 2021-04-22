@@ -8,12 +8,16 @@ import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.login.UserLogin
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
-import com.github.sdpteam15.polyevents.util.AdapterInterface
+import com.github.sdpteam15.polyevents.util.AdapterFromDocumentInterface
+import com.github.sdpteam15.polyevents.util.AdapterToDocumentInterface
 import com.github.sdpteam15.polyevents.util.UserAdapter
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
-import com.google.firebase.firestore.*
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -171,7 +175,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     override fun <T> addEntityAndGetId(
         element: T,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>
+        adapter: AdapterToDocumentInterface<T>
     ): Observable<String> {
         val ended = Observable<String>()
         val task = firestore!!
@@ -190,7 +194,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     override fun <T> addEntity(
         element: T,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>
+        adapter: AdapterToDocumentInterface<T>
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
         addEntityAndGetId(element, collection, adapter).observeOnce {
@@ -203,7 +207,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         element: T?,
         id: String,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>?
+        adapter: AdapterToDocumentInterface<T>?
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
         val document = firestore!!
@@ -234,7 +238,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         element: Observable<T>,
         id: String,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>
+        adapter: AdapterFromDocumentInterface<T>
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
 
@@ -264,7 +268,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         ids: List<String>?,
         matcher: Matcher?,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>
+        adapter: AdapterFromDocumentInterface<T>
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
 
@@ -288,8 +292,10 @@ object FirestoreDatabaseProvider : DatabaseInterface {
                                 }
                             if (b) {
                                 elements.clear(this)
-                                for (p in mutableList)
-                                    elements.add(p!!, this)
+                                val list = mutableListOf<T>()
+                                for (e in mutableList)
+                                    list.add(e!!)
+                                elements.addAll(list, this)
                                 ended.postValue(true, this)
                             }
                         } else
@@ -301,10 +307,11 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             val task = matcher?.match(fsCollection)?.get() ?: fsCollection.get()
             task.addOnSuccessListener {
                 elements.clear(this)
-                for (e in it) {
-                    val v = adapter.fromDocument(e.data, e.id)
-                    elements.add(v, this)
-                }
+                val list = mutableListOf<T>()
+                for (e in it)
+                    list.add(adapter.fromDocument(e.data, e.id))
+                elements.addAll(list, this)
+                ended.postValue(true, this)
             }
                 .addOnFailureListener(lastFailureListener)
         }

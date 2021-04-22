@@ -17,19 +17,19 @@ import com.google.firebase.Timestamp
 object DeviceLocationAdapter : AdapterInterface<DeviceLocation>  {
     override fun toDocument(element: DeviceLocation): HashMap<String, Any?> = hashMapOf(
         LocationConstant.LOCATIONS_DEVICE.value to element.device,
-        LocationConstant.LOCATIONS_POINT.value + "/latitude"  to element.location.latitude,
-        LocationConstant.LOCATIONS_POINT.value + "/longitude" to element.location.longitude,
+        LocationConstant.LOCATIONS_POINT_LATITUDE.value to element.location.latitude,
+        LocationConstant.LOCATIONS_POINT_LONGITUDE.value to element.location.longitude,
         LocationConstant.LOCATIONS_TIME.value to HelperFunctions.LocalDateToTimeToDate(element.time)
     )
 
     override fun fromDocument(document: MutableMap<String, Any?>, id: String): DeviceLocation = DeviceLocation(
         device = document[LocationConstant.LOCATIONS_DEVICE.value] as String?,
         location = LatLng(
-            document[LocationConstant.LOCATIONS_POINT.value + "/latitude"] as Double,
-            document[LocationConstant.LOCATIONS_POINT.value + "/longitude"] as Double,
+            document[LocationConstant.LOCATIONS_POINT_LATITUDE.value] as Double,
+            document[LocationConstant.LOCATIONS_POINT_LONGITUDE.value] as Double,
         ),
         time = HelperFunctions.DateToLocalDateTime(
-            (document[DatabaseConstant.EventConstant.EVENT_START_TIME.value] as Timestamp?)?.toDate()
+            (document[LocationConstant.LOCATIONS_TIME.value] as Timestamp?)?.toDate()
         )
     )
 }

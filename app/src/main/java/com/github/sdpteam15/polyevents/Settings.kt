@@ -23,8 +23,8 @@ object Settings {
                     file.forEachLine {
                         val line = it.split(SPLIT_CHAR)
                         when (line[0]) {
-                            IS_SENDING_LOCATION_ON -> isSendingLocationOn = line[0] == "true"
-                            LOCATION_ID -> locationId = line[0]
+                            IS_SENDING_LOCATION_ON -> isSendingLocationOn = line[1] == "true"
+                            LOCATION_ID -> locationId = line[1]
                         }
                     }
                 field = true

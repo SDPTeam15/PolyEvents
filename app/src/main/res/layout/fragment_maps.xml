@@ -44,6 +44,20 @@ tools:context=".MainActivity" >
         app:layout_constraintEnd_toEndOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/id_heatmap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/acceptNewArea"
+        android:layout_alignParentEnd="true"
+        android:contentDescription="@string/none"
+        android:layout_gravity="center_horizontal|end"
+        android:src="@drawable/ic_heatmap"
+        android:layout_marginEnd="@dimen/margin_right_map_btn"
+        android:layout_marginBottom="@dimen/margin_bottom_map_btn"
+        app:layout_constraintBottom_toTopOf="@+id/id_locate_me_button"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/id_edit_area"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

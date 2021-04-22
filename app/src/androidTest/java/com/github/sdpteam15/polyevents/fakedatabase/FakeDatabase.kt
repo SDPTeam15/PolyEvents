@@ -8,7 +8,9 @@ import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
+import com.github.sdpteam15.polyevents.util.AdapterFromDocumentInterface
 import com.github.sdpteam15.polyevents.util.AdapterInterface
+import com.github.sdpteam15.polyevents.util.AdapterToDocumentInterface
 import kotlin.random.Random
 
 object FakeDatabase : DatabaseInterface {
@@ -50,7 +52,7 @@ object FakeDatabase : DatabaseInterface {
     override fun <T> addEntityAndGetId(
         element: T,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>
+        adapter: AdapterToDocumentInterface<T>
     ): Observable<String> {
         TODO("Not yet implemented")
     }
@@ -58,7 +60,7 @@ object FakeDatabase : DatabaseInterface {
     override fun <T> addEntity(
         element: T,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>
+        adapter: AdapterToDocumentInterface<T>
     ): Observable<Boolean> {
         TODO("Not yet implemented")
     }
@@ -67,7 +69,7 @@ object FakeDatabase : DatabaseInterface {
         element: T?,
         id: String,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>?
+        adapter: AdapterToDocumentInterface<T>?
     ): Observable<Boolean> {
         TODO("Not yet implemented")
     }
@@ -83,7 +85,7 @@ object FakeDatabase : DatabaseInterface {
         element: Observable<T>,
         id: String,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>
+        adapter: AdapterFromDocumentInterface<T>
     ): Observable<Boolean> {
         TODO("Not yet implemented")
     }
@@ -93,7 +95,7 @@ object FakeDatabase : DatabaseInterface {
         ids: List<String>?,
         matcher: Matcher?,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>
+        adapter: AdapterFromDocumentInterface<T>
     ): Observable<Boolean> {
         TODO("Not yet implemented")
     }

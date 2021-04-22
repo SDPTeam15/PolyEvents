@@ -2,8 +2,8 @@ package com.github.sdpteam15.polyevents.fragments
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,10 +14,14 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.admin.ZoneManagementActivity
+import com.github.sdpteam15.polyevents.database.Database
+import com.github.sdpteam15.polyevents.database.observe.Observable
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.helper.GoogleMapAdapter
 import com.github.sdpteam15.polyevents.helper.GoogleMapHelper
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.isPermissionGranted
+import com.github.sdpteam15.polyevents.helper.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
 import com.github.sdpteam15.polyevents.model.Zone
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.*
@@ -28,6 +32,7 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.Polygon
 import com.google.android.gms.maps.model.Polyline
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import java.util.*
 
 
 class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
@@ -37,10 +42,11 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     private lateinit var locationButton: FloatingActionButton
     var locationPermissionGranted = false
     private var useUserLocation = false
-    var PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1
     var zone: Zone? = null
     var onEdit: Boolean = false
     var startId = -1
+    var drawHeatmap = false
+    var timerHeatmap : Timer? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,6 +68,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         locationButton = view.findViewById(R.id.id_location_button)
         val locateMeButton = view.findViewById<FloatingActionButton>(R.id.id_locate_me_button)
         val saveButton = view.findViewById<FloatingActionButton>(R.id.saveAreas)
+        val heatmapButton = view.findViewById<FloatingActionButton>(R.id.id_heatmap)
 
         addNewAreaButton.setOnClickListener {
             GoogleMapHelper.createNewArea(requireContext())
@@ -77,6 +84,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
             saveButton.visibility = View.VISIBLE
             locationButton.visibility = View.INVISIBLE
             locateMeButton.visibility = View.INVISIBLE
+            heatmapButton.visibility = View.INVISIBLE
 
             saveButton.setOnClickListener {
                 GoogleMapHelper.editMode = false
@@ -101,11 +109,32 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
             saveButton.visibility = View.INVISIBLE
             locationButton.visibility = View.VISIBLE
             locateMeButton.visibility = View.VISIBLE
+            heatmapButton.visibility = View.VISIBLE
+        }
+
+        heatmapButton.setOnClickListener {
+            drawHeatmap = !drawHeatmap
+            if(drawHeatmap){
+                timerHeatmap = Timer("SettingUp", false)
+                val task = object : TimerTask() {
+                    override fun run() {
+                        val locations = ObservableList<LatLng>()
+                        Database.currentDatabase.heatmapDatabase!!.getLocations(locations)
+                        locations.observeOnce {
+                            GoogleMapHelper.addHeatMap(it.value)
+                        }
+                    }
+                }
+                timerHeatmap?.schedule(task, 0, 15 * 1000)
+            }
+            else
+                GoogleMapHelper.lastOverlay?.remove()
         }
 
         locationButton.setOnClickListener {
             switchLocationOnOff()
         }
+
         locationButton.tag = R.drawable.ic_location_on
 
 
@@ -114,16 +143,16 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         }
 
         locateMeButton.tag = R.drawable.ic_locate_me
-
         return view
     }
 
     override fun onPause() {
         super.onPause()
         GoogleMapHelper.saveCamera()
-
+        timerHeatmap?.cancel()
+        drawHeatmap = false
+        GoogleMapHelper.lastOverlay?.remove()
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -131,7 +160,10 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
             childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
         if (!locationPermissionGranted) {
-            getLocationPermission()
+            HelperFunctions.getLocationPermission(requireActivity()).observeOnce {
+                locationPermissionGranted = it.value
+                activateMyLocation()
+            }
         }
     }
 
@@ -289,56 +321,11 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
 
     //-----------END LISTENER---------------------------------------
 
-
-    /**
-     * Asks for permission to use location
-     */
-    fun getLocationPermission() {
-        /*
-         * Request location permission, so that we can get the location of the
-         * device. The result of the permission request is handled by a callback,
-         * onRequestPermissionsResult.
-         */
-
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            )
-            == PackageManager.PERMISSION_GRANTED
-        ) {
-            locationPermissionGranted = true
-        } else {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
-            )
-        }
-    }
-
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
         grantResults: IntArray
-    ) {
-        when (requestCode) {
-            PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION -> {
-
-                // If request is denied, the result arrays are empty.
-                if (isPermissionGranted(
-                        permissions,
-                        grantResults,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                    )
-                ) {
-                    locationPermissionGranted = true
-                    activateMyLocation()
-                } else {
-                    locationPermissionGranted = false
-                }
-            }
-        }
-    }
+    ) = HelperFunctions.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
     override fun onMapClick(p0: LatLng?) {
         GoogleMapHelper.clearSelectedZone()

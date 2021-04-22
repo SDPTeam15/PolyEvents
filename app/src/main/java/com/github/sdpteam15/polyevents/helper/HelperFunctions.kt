@@ -1,10 +1,15 @@
 package com.github.sdpteam15.polyevents.helper
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.arch.core.executor.ArchTaskExecutor
+import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityCompat.RequestPermissionsRequestCodeValidator
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
@@ -12,11 +17,16 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.database.observe.Observable
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Period
 import java.time.ZoneId
 import java.util.*
+
+const val PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1
 
 object HelperFunctions {
     /**
@@ -35,6 +45,68 @@ object HelperFunctions {
                 commit()
             }
         }
+    }
+
+    var end: Observable<Boolean>? = null
+
+    /**
+     * Asks for permission to use location
+     */
+    fun getLocationPermission(activity: Activity): Observable<Boolean> {
+        /*
+         * Request location permission, so that we can get the location of the
+         * device. The result of the permission request is handled by a callback,
+         * onRequestPermissionsResult.
+         */
+
+        if (ContextCompat.checkSelfPermission(
+                activity,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+            return Observable(true)
+        } else if (activity is RequestPermissionsRequestCodeValidator) {
+            end = Observable<Boolean>()
+            ActivityCompat.requestPermissions(
+                activity,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
+            )
+            return end!!
+        } else
+            return Observable(false)
+    }
+
+    fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        when (requestCode) {
+            PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION -> {
+                end?.value = isPermissionGranted(
+                    permissions,
+                    grantResults,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                )
+                end = null
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun getLoc(activity: Activity): Observable<LatLng?> {
+        val end = Observable<LatLng?>()
+        LocationServices.getFusedLocationProviderClient(activity).lastLocation.addOnSuccessListener {
+            if(it != null)
+                end.postValue(
+                    LatLng(it.latitude, it.longitude)
+                )
+            else
+                end.postValue(null)
+        }.addOnFailureListener { end.postValue(null) }
+        return end
     }
 
     @SuppressLint("RestrictedApi")

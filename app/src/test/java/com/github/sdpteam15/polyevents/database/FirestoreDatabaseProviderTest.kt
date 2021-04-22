@@ -424,14 +424,6 @@ class FirestoreDatabaseProviderTest {
             TEST_ID2
         }
         lastAddSuccessListenerDocumentSnapshot[TEST_ID2]!!.onSuccess(mockDocumentSnapshot)
-        result.observeOnce {
-            assertEquals(TEST_ID, it.value[0].id)
-            assertEquals(TEST_STRING, it.value[0].string)
-            assertEquals(TEST_ID1, it.value[1].id)
-            assertEquals(TEST_STRING, it.value[1].string)
-            assertEquals(TEST_ID2, it.value[2].id)
-            assertEquals(TEST_STRING, it.value[2].string)
-        }
 
         end.observeOnce {
             assert(it.value)
@@ -440,8 +432,14 @@ class FirestoreDatabaseProviderTest {
         lastFailureListener!!.onFailure(Exception())
         end.observeOnce {
             assert(!it.value)
+            val list = result.value
+            assertEquals(TEST_ID, list[0].id)
+            assertEquals(TEST_STRING, list[0].string)
+            assertEquals(TEST_ID1, list[1].id)
+            assertEquals(TEST_STRING, list[1].string)
+            assertEquals(TEST_ID2, list[2].id)
+            assertEquals(TEST_STRING, list[2].string)
         }
-
 
         end = FirestoreDatabaseProvider.getListEntity(
             result,

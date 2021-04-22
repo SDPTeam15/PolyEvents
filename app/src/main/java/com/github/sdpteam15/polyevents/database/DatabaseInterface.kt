@@ -4,9 +4,8 @@ import com.github.sdpteam15.polyevents.database.objects.*
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.*
-import com.github.sdpteam15.polyevents.util.AdapterInterface
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.Query
+import com.github.sdpteam15.polyevents.util.AdapterFromDocumentInterface
+import com.github.sdpteam15.polyevents.util.AdapterToDocumentInterface
 import java.util.*
 
 const val NUMBER_UPCOMING_EVENTS = 3
@@ -18,7 +17,7 @@ interface DatabaseInterface {
 
     /**
      * The current user observable of the database
-      */
+     */
     val currentUserObservable: Observable<UserEntity>
 
     /**
@@ -72,7 +71,7 @@ interface DatabaseInterface {
     fun <T> addEntityAndGetId(
         element: T,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>
+        adapter: AdapterToDocumentInterface<T>
     ): Observable<String>
 
     /**
@@ -86,7 +85,7 @@ interface DatabaseInterface {
     fun <T> addEntity(
         element: T,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>
+        adapter: AdapterToDocumentInterface<T>
     ): Observable<Boolean>
 
     /**
@@ -101,7 +100,7 @@ interface DatabaseInterface {
         element: T?,
         id: String,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>?
+        adapter: AdapterToDocumentInterface<T>?
     ): Observable<Boolean>
 
     /**
@@ -127,7 +126,7 @@ interface DatabaseInterface {
         element: Observable<T>,
         id: String,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>
+        adapter: AdapterFromDocumentInterface<T>
     ): Observable<Boolean>
 
     /**
@@ -144,6 +143,6 @@ interface DatabaseInterface {
         ids: List<String>? = null,
         matcher: Matcher?,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>
+        adapter: AdapterFromDocumentInterface<T>
     ): Observable<Boolean>
 }

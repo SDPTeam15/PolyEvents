@@ -52,6 +52,15 @@ class MainActivity : AppCompatActivity() {
         Settings.isLoaded = Settings.isLoaded
         val intent = Intent(applicationContext, Timer_Service::class.java)
         startService(intent)
+        Timer_Service.instance.observeOnce {
+            it.value.addServices {
+                if (Settings.IsSendingLocationOn)
+                    HelperFunctions.getLoc(this).observeOnce {
+                        if(it.value != null)
+                            currentDatabase.heatmapDatabase!!.setLocation(it.value)
+                    }
+            }
+        }
 
         //Set the basic fragment to the home one or to admin hub if it is logged in
         //TODO Add a condition to see if the user is an admin or not and if so, redirect him to the admin hub
