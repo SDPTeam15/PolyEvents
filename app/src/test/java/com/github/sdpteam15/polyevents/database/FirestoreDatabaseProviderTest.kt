@@ -58,17 +58,17 @@ class FirestoreDatabaseProviderTest {
             val mock = mock(CollectionReference::class.java)
             When(mock.add(anyOrNull())).thenAnswer {
                 hashMap = it!!.arguments[0] as HashMap<String, Any?>
-                val mock = mock(Task::class.java) as Task<DocumentReference>
-                When(mock.addOnSuccessListener(anyOrNull())).thenAnswer {
+                val mock2 = mock(Task::class.java) as Task<DocumentReference>
+                When(mock2.addOnSuccessListener(anyOrNull())).thenAnswer {
                     lastAddSuccessListener =
                         it!!.arguments[0] as OnSuccessListener<DocumentReference>
-                    mock
+                    mock2
                 }
-                When(mock.addOnFailureListener(anyOrNull())).thenAnswer {
+                When(mock2.addOnFailureListener(anyOrNull())).thenAnswer {
                     lastFailureListener = it!!.arguments[0] as OnFailureListener
-                    mock
+                    mock2
                 }
-                mock
+                mock2
             }
             mock
         }
@@ -113,17 +113,17 @@ class FirestoreDatabaseProviderTest {
             val mock = mock(CollectionReference::class.java)
             When(mock.add(anyOrNull())).thenAnswer {
                 hashMap = it!!.arguments[0] as HashMap<String, Any?>
-                val mock = mock(Task::class.java) as Task<DocumentReference>
-                When(mock.addOnSuccessListener(anyOrNull())).thenAnswer {
+                val mock2 = mock(Task::class.java) as Task<DocumentReference>
+                When(mock2.addOnSuccessListener(anyOrNull())).thenAnswer {
                     lastAddSuccessListener =
                         it!!.arguments[0] as OnSuccessListener<DocumentReference>
-                    mock
+                    mock2
                 }
-                When(mock.addOnFailureListener(anyOrNull())).thenAnswer {
+                When(mock2.addOnFailureListener(anyOrNull())).thenAnswer {
                     lastFailureListener = it!!.arguments[0] as OnFailureListener
-                    mock
+                    mock2
                 }
-                mock
+                mock2
             }
             mock
         }
@@ -177,22 +177,22 @@ class FirestoreDatabaseProviderTest {
         When(mokeFirestore.collection(anyOrNull())).thenAnswer {
             val mock = mock(CollectionReference::class.java)
             When(mock.document(anyOrNull())).thenAnswer {
-                val mock = mock(DocumentReference::class.java)
-                When(mock.set(anyOrNull())).thenAnswer {
+                val mock2 = mock(DocumentReference::class.java)
+                When(mock2.set(anyOrNull())).thenAnswer {
                     hashMap = it!!.arguments[0] as HashMap<String, Any?>
-                    val mock = mock(Task::class.java) as Task<DocumentReference>
-                    When(mock.addOnSuccessListener(anyOrNull())).thenAnswer {
+                    val mock3 = mock(Task::class.java) as Task<DocumentReference>
+                    When(mock3.addOnSuccessListener(anyOrNull())).thenAnswer {
                         lastAddSuccessListener =
                             it!!.arguments[0] as OnSuccessListener<Void>
-                        mock
+                        mock3
                     }
-                    When(mock.addOnFailureListener(anyOrNull())).thenAnswer {
+                    When(mock3.addOnFailureListener(anyOrNull())).thenAnswer {
                         lastFailureListener = it!!.arguments[0] as OnFailureListener
-                        mock
+                        mock3
                     }
-                    mock
+                    mock3
                 }
-                mock
+                mock2
             }
             mock
         }
@@ -230,21 +230,21 @@ class FirestoreDatabaseProviderTest {
         When(mokeFirestore.collection(anyOrNull())).thenAnswer {
             val mock = mock(CollectionReference::class.java)
             When(mock.document(anyOrNull())).thenAnswer {
-                val mock = mock(DocumentReference::class.java)
-                When(mock.delete()).thenAnswer {
-                    val mock = mock(Task::class.java) as Task<DocumentReference>
-                    When(mock.addOnSuccessListener(anyOrNull())).thenAnswer {
+                val mock2 = mock(DocumentReference::class.java)
+                When(mock2.delete()).thenAnswer {
+                    val mock3 = mock(Task::class.java) as Task<DocumentReference>
+                    When(mock3.addOnSuccessListener(anyOrNull())).thenAnswer {
                         lastAddSuccessListener =
                             it!!.arguments[0] as OnSuccessListener<Void>
-                        mock
+                        mock3
                     }
-                    When(mock.addOnFailureListener(anyOrNull())).thenAnswer {
+                    When(mock3.addOnFailureListener(anyOrNull())).thenAnswer {
                         lastFailureListener = it!!.arguments[0] as OnFailureListener
-                        mock
+                        mock3
                     }
-                    mock
+                    mock3
                 }
-                mock
+                mock2
             }
             mock
         }
@@ -277,26 +277,26 @@ class FirestoreDatabaseProviderTest {
         When(mokeFirestore.collection(anyOrNull())).thenAnswer {
             val mock = mock(CollectionReference::class.java)
             When(mock.document(anyOrNull())).thenAnswer {
-                val mock = mock(DocumentReference::class.java)
-                When(mock.get()).thenAnswer {
-                    val mock = mock(Task::class.java) as Task<DocumentSnapshot>
-                    When(mock.addOnSuccessListener(anyOrNull())).thenAnswer {
+                val mock2 = mock(DocumentReference::class.java)
+                When(mock2.get()).thenAnswer {
+                    val mock3 = mock(Task::class.java) as Task<DocumentSnapshot>
+                    When(mock3.addOnSuccessListener(anyOrNull())).thenAnswer {
                         lastAddSuccessListener =
                             it!!.arguments[0] as OnSuccessListener<DocumentSnapshot>
-                        mock
+                        mock3
                     }
-                    When(mock.addOnFailureListener(anyOrNull())).thenAnswer {
+                    When(mock3.addOnFailureListener(anyOrNull())).thenAnswer {
                         lastFailureListener = it!!.arguments[0] as OnFailureListener
-                        mock
+                        mock3
                     }
-                    mock
+                    mock3
                 }
-                mock
+                mock2
             }
             mock
         }
 
-        val result = Observable<StringWithID>();
+        val result = Observable<StringWithID>()
 
         val end = FirestoreDatabaseProvider.getEntity(
             result,
@@ -346,32 +346,32 @@ class FirestoreDatabaseProviderTest {
 
     @Test
     fun getListEntity() {
-        var lastAddSuccessListener = mutableMapOf<String, OnSuccessListener<DocumentSnapshot>>()
+        val lastAddSuccessListener = mutableMapOf<String, OnSuccessListener<DocumentSnapshot>>()
         var lastFailureListener: OnFailureListener? = null
 
         When(mokeFirestore.collection(anyOrNull())).thenAnswer {
             val mock = mock(CollectionReference::class.java)
             When(mock.document(anyOrNull())).thenAnswer {
                 val id = it!!.arguments[0] as String
-                val mock = mock(DocumentReference::class.java)
-                When(mock.get()).thenAnswer {
-                    val mock = mock(Task::class.java) as Task<DocumentSnapshot>
-                    When(mock.addOnSuccessListener(anyOrNull())).thenAnswer {
+                val mock2 = mock(DocumentReference::class.java)
+                When(mock2.get()).thenAnswer {
+                    val mock3 = mock(Task::class.java) as Task<DocumentSnapshot>
+                    When(mock3.addOnSuccessListener(anyOrNull())).thenAnswer {
                         lastAddSuccessListener[id] = it!!.arguments[0] as OnSuccessListener<DocumentSnapshot>
-                        mock
+                        mock3
                     }
-                    When(mock.addOnFailureListener(anyOrNull())).thenAnswer {
+                    When(mock3.addOnFailureListener(anyOrNull())).thenAnswer {
                         lastFailureListener = it!!.arguments[0] as OnFailureListener
-                        mock
+                        mock3
                     }
-                    mock
+                    mock3
                 }
-                mock
+                mock2
             }
             mock
         }
 
-        val result = ObservableList<StringWithID>();
+        val result = ObservableList<StringWithID>()
 
         val end = FirestoreDatabaseProvider.getListEntity(
             result,

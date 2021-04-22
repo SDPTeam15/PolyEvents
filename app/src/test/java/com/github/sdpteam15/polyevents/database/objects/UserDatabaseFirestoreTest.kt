@@ -1,16 +1,18 @@
 package objects
 
+import com.github.sdpteam15.polyevents.database.*
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.UserConstants.*
-import com.github.sdpteam15.polyevents.database.DatabaseInterface
-import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.objects.UserDatabaseFirestore
 import com.github.sdpteam15.polyevents.database.observe.Observable
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.login.GoogleUserLogin
 import com.github.sdpteam15.polyevents.login.UserLogin
 import com.github.sdpteam15.polyevents.login.UserLoginInterface
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
+import com.google.android.gms.tasks.OnFailureListener
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.firestore.*
@@ -19,7 +21,12 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
+import org.mockito.Mockito.mock
+import org.mockito.kotlin.anyOrNull
 import java.time.LocalDate
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import org.mockito.Mockito.`when` as When
 
 val googleId = "googleId"
 val usernameEntity = "JohnDoe"
@@ -61,7 +68,7 @@ class UserDatabaseFirestoreTest {
             USER_PROFILES.value to listProfile
         )
         //Mock the database and set it as the default database
-        mockedDatabase = Mockito.mock(FirebaseFirestore::class.java)
+        mockedDatabase = mock(FirebaseFirestore::class.java)
         FirestoreDatabaseProvider.firestore = mockedDatabase
         //FirestoreDatabaseProvider.userDatabase =  mockedDatabaseUser
         UserDatabaseFirestore.firestore = mockedDatabase
@@ -85,7 +92,7 @@ class UserDatabaseFirestoreTest {
 
     @Test
     fun variableCorrectlySet(){
-        val mockedUserLogin = Mockito.mock(UserLoginInterface::class.java) as UserLoginInterface<AuthResult>
+        val mockedUserLogin = mock(UserLoginInterface::class.java) as UserLoginInterface<AuthResult>
         UserLogin.currentUserLogin = mockedUserLogin
         FirestoreDatabaseProvider.currentUser = user
         Mockito.`when`(mockedUserLogin.isConnected()).thenReturn(true)
@@ -98,11 +105,11 @@ class UserDatabaseFirestoreTest {
     @Test
     fun inDatabaseCorrectlySetTheObservable() {
         //Mock all the necessary class to mock the methods
-        val mockedCollectionReference = Mockito.mock(CollectionReference::class.java)
-        val mockedQuery = Mockito.mock(Query::class.java)
-        val mockedTask = Mockito.mock(Task::class.java) as Task<QuerySnapshot>
-        val mockedDocument = Mockito.mock(QuerySnapshot::class.java)
-        val mockedList = Mockito.mock(List::class.java) as List<DocumentSnapshot>
+        val mockedCollectionReference = mock(CollectionReference::class.java)
+        val mockedQuery = mock(Query::class.java)
+        val mockedTask = mock(Task::class.java) as Task<QuerySnapshot>
+        val mockedDocument = mock(QuerySnapshot::class.java)
+        val mockedList = mock(List::class.java) as List<DocumentSnapshot>
 
         //Mock all the needed method to perform the query correctly
         Mockito.`when`(mockedDatabase.collection(USER_COLLECTION.value)).thenReturn(
@@ -142,11 +149,11 @@ class UserDatabaseFirestoreTest {
     @Test
     fun notInDatabaseCorrectlySetTheObservable() {
         //Mock the needed classes
-        val mockedCollectionReference = Mockito.mock(CollectionReference::class.java)
-        val mockedQuery = Mockito.mock(Query::class.java)
-        val mockedTask = Mockito.mock(Task::class.java) as Task<QuerySnapshot>
-        val mockedDocument = Mockito.mock(QuerySnapshot::class.java)
-        val mockedList = Mockito.mock(List::class.java) as List<DocumentSnapshot>
+        val mockedCollectionReference = mock(CollectionReference::class.java)
+        val mockedQuery = mock(Query::class.java)
+        val mockedTask = mock(Task::class.java) as Task<QuerySnapshot>
+        val mockedDocument = mock(QuerySnapshot::class.java)
+        val mockedList = mock(List::class.java) as List<DocumentSnapshot>
 
         //mock the needed method
         Mockito.`when`(mockedDatabase.collection(USER_COLLECTION.value)).thenReturn(
@@ -185,10 +192,10 @@ class UserDatabaseFirestoreTest {
     @Test
     fun getUserInformationReturnCorrectInformation() {
         //Mock the needed classes
-        val mockedCollectionReference = Mockito.mock(CollectionReference::class.java)
-        val mockedDocumentReference = Mockito.mock(DocumentReference::class.java)
-        val mockedTask = Mockito.mock(Task::class.java) as Task<DocumentSnapshot>
-        val mockedDocument = Mockito.mock(DocumentSnapshot::class.java)
+        val mockedCollectionReference = mock(CollectionReference::class.java)
+        val mockedDocumentReference = mock(DocumentReference::class.java)
+        val mockedTask = mock(Task::class.java) as Task<DocumentSnapshot>
+        val mockedDocument = mock(DocumentSnapshot::class.java)
 
         //mock the needed method
         Mockito.`when`(mockedDatabase.collection(USER_COLLECTION.value)).thenReturn(
@@ -228,9 +235,9 @@ class UserDatabaseFirestoreTest {
     @Test
     fun updateUserInformationSetTheGoodInformation() {
         //mock the required class
-        val mockedCollectionReference = Mockito.mock(CollectionReference::class.java)
-        val mockedDocumentReference = Mockito.mock(DocumentReference::class.java)
-        val mockedTask = Mockito.mock(Task::class.java) as Task<Void>
+        val mockedCollectionReference = mock(CollectionReference::class.java)
+        val mockedDocumentReference = mock(DocumentReference::class.java)
+        val mockedTask = mock(Task::class.java) as Task<Void>
 
         //Create a hashmap with values to update
         val map: HashMap<String, String> = HashMap()
@@ -283,9 +290,9 @@ class UserDatabaseFirestoreTest {
     @Test
     fun firstConnectionSetTheGoodInformation() {
         //mock the required class
-        val mockedCollectionReference = Mockito.mock(CollectionReference::class.java)
-        val mockedDocumentReference = Mockito.mock(DocumentReference::class.java)
-        val mockedTask = Mockito.mock(Task::class.java) as Task<Void>
+        val mockedCollectionReference = mock(CollectionReference::class.java)
+        val mockedDocumentReference = mock(DocumentReference::class.java)
+        val mockedTask = mock(Task::class.java) as Task<Void>
 
         var emailSet: String? = ""
         var nameSet: String? = ""
@@ -321,4 +328,41 @@ class UserDatabaseFirestoreTest {
         assert(uidSet.equals(user.uid))
     }
 
+    @Test
+    fun getListUsersWorksProperly() {
+        val mockedTask = mock(Task::class.java) as Task<QuerySnapshot>
+        val mockedCollection = mock(CollectionReference::class.java)
+        val mockedDocument = mock(QuerySnapshot::class.java)
+
+        val userToBeAdded = mutableListOf<UserEntity>()
+        val testUser = ObservableList<UserEntity>()
+        userToBeAdded.add(UserEntity("uid1","username1","name1"))
+        userToBeAdded.add(UserEntity("uid2","username2","name2"))
+        userToBeAdded.add(UserEntity("uid3","username3","name3"))
+        userToBeAdded.add(UserEntity("uid4","username4","name4"))
+        userToBeAdded.add(UserEntity("uid5","username5","name5"))
+        userToBeAdded.add(UserEntity("uid6","username6","name6"))
+        userToBeAdded.add(UserEntity("uid7","username7","name7"))
+        userToBeAdded.add(UserEntity("uid8","username8","name8"))
+        userToBeAdded.add(UserEntity("uid9","username9","name9"))
+
+
+        Mockito.`when`(mockedDatabase.collection(USER_COLLECTION.value)).thenReturn(mockedCollection)
+        Mockito.`when`(mockedCollection.get()).thenAnswer {
+            mockedTask
+        }
+
+        When(mockedTask.addOnSuccessListener(anyOrNull())).thenAnswer {
+            FirestoreDatabaseProvider.lastQuerySuccessListener!!.onSuccess(mockedDocument)
+            //set method in hard to see if the success listener is successfully called
+            testUser.addAll(userToBeAdded)
+            mockedTask
+        }
+        val result = FirestoreDatabaseProvider.userDatabase!!.getListAllUsers(testUser)
+        assert(result.value!!)
+        for (user in userToBeAdded) {
+            assert(user in testUser)
+        }
+
+    }
 }
