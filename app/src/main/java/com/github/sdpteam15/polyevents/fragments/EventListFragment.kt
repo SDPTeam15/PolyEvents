@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.fragments
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -48,15 +49,27 @@ class EventListFragment : Fragment() {
         }
 
         recyclerView.adapter = EventItemAdapter(events, openEvent)
+        recyclerView.setHasFixedSize(false)
+
+        getEventsListAndDisplay(fragmentView.context)
+        // Inflate the layout for this fragment
+        return fragmentView
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        getEventsListAndDisplay(context)
+    }
+
+    private fun getEventsListAndDisplay(context: Context?) {
+        // TODO: set limit or not?
         currentDatabase.eventDatabase!!.getEvents(null, 10, events).observe(this) {
             if (!it.value) {
-                HelperFunctions.showToast("Failed to get events information", fragmentView.context)
+                HelperFunctions.showToast("Failed to get events information", context)
             }
         }
         events.observe(this) { recyclerView.adapter!!.notifyDataSetChanged() }
-        recyclerView.setHasFixedSize(false)
-        // Inflate the layout for this fragment
-        return fragmentView
     }
 
     /**

@@ -14,12 +14,18 @@ import com.github.sdpteam15.polyevents.fragments.EXTRA_EVENT_ID
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.model.Event
 
-const val TAG = "EventActivity"
-
 /**
  * An activity containing events description
  */
 class EventActivity : AppCompatActivity() {
+
+    companion object {
+        const val TAG = "EventActivity"
+
+        // Refactored here for tests
+        var obsEvent = Observable<Event>()
+        lateinit var event: Event
+    }
 
     private lateinit var subscribeButton: Button
 
@@ -43,7 +49,6 @@ class EventActivity : AppCompatActivity() {
     }
 
     private fun getEventAndObserve() {
-        Log.d(TAG, intent.getStringExtra(EXTRA_EVENT_ID)!!)
         currentDatabase.eventDatabase!!.getEventFromId(intent.getStringExtra(EXTRA_EVENT_ID)!!, obsEvent)
             .observe(this) { b ->
                 if (!b.value) {
@@ -120,12 +125,6 @@ class EventActivity : AppCompatActivity() {
         } catch (e: MaxAttendeesException) {
             showToast(resources.getString(R.string.event_subscribe_at_max_capacity), this)
         }
-    }
-
-    // Refactored here for tests
-    companion object {
-        var obsEvent = Observable<Event>()
-        lateinit var event: Event
     }
 
 }
