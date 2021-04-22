@@ -15,5 +15,5 @@ package com.github.sdpteam15.polyevents.model
 data class Item(
         val itemId: String?,
         val itemName: String,
-        val itemType: ItemType
+        val itemType: String
 )
