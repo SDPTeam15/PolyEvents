@@ -93,6 +93,19 @@ interface UserDatabaseInterface {
     ): Observable<Boolean>
 
     /**
+     * remove a UserProfile from a UserEntity
+     * @param profile profile to remove
+     * @param user user for database access
+     * @param userAccess the user profile to use its permission
+     * @return if the operation succeed
+    */
+    fun removeProfileFromUser(
+        profile: UserProfile,
+        user: UserEntity,
+        userAccess: UserProfile? = currentProfile
+    ): Observable<Boolean>
+
+    /**
      * Update profile
      * @param profile a map with the new value to set in the database
      * @param userAccess the user profile to use its permission
@@ -153,6 +166,5 @@ interface UserDatabaseInterface {
         profile: UserProfile,
         user: UserEntity? = currentUser
     ): Observable<Boolean>
-
 
 }

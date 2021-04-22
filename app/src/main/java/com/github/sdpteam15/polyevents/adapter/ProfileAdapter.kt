@@ -54,7 +54,7 @@ class ProfileAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         val adapterLayout = LayoutInflater.from(parent.context)
-            .inflate(R.layout.tab_profile, parent, false)
+            .inflate(R.layout.card_profile, parent, false)
         return ItemViewHolder(adapterLayout)
     }
 

@@ -2,7 +2,6 @@ package com.github.sdpteam15.polyevents.util
 
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.ItemConstants.*
 import com.github.sdpteam15.polyevents.model.Item
-import com.github.sdpteam15.polyevents.model.ItemType
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -10,7 +9,7 @@ import org.junit.Test
 class ItemEntityAdapterTest {
     val itemId = "micro1"
     val itemName = "Microphone Elgato"
-    val itemType = ItemType.MICROPHONE
+    val itemType = "MICROPHONE"
     val itemQuantity = 5
 
     lateinit var itemEntity: Item
@@ -32,7 +31,7 @@ class ItemEntityAdapterTest {
         val itemDocumentData: HashMap<String, Any?> = hashMapOf(
             ITEM_NAME.value to itemName,
             ITEM_DOCUMENT_ID.value to itemId,
-            ITEM_TYPE.value to itemType.name,
+            ITEM_TYPE.value to itemType,
             ITEM_COUNT.value to itemQuantity.toLong()
         )
         val obtainedItem = ItemEntityAdapter.toItemEntity(itemDocumentData, itemId)
@@ -43,11 +42,7 @@ class ItemEntityAdapterTest {
 
     @Test
     fun conversionOfItemEntityToDocumentPreservesData() {
-        assertEquals(
-            ItemType.valueOf(
-                document[ITEM_TYPE.value] as String
-            ), itemEntity.itemType
-        )
+        assertEquals(document[ITEM_TYPE.value] as String, itemEntity.itemType)
         assertEquals(document[ITEM_DOCUMENT_ID.value], itemEntity.itemId)
         assertEquals(document[ITEM_COUNT.value], itemQuantity)
         assertEquals(document[ITEM_NAME.value], itemName)
@@ -62,11 +57,7 @@ class ItemEntityAdapterTest {
         )
         document = ItemEntityAdapter.toItemDocument(itemEntity2, itemQuantity)
 
-        assertEquals(
-            ItemType.valueOf(
-                document[ITEM_TYPE.value] as String
-            ), itemEntity.itemType
-        )
+        assertEquals(document[ITEM_TYPE.value] as String, itemEntity.itemType)
         assertEquals(document[ITEM_COUNT.value], itemQuantity)
         assertEquals(document[ITEM_NAME.value], itemName)
         assert(!document.containsKey(ITEM_DOCUMENT_ID.value))

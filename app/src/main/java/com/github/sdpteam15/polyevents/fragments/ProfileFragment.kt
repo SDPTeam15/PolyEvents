@@ -151,12 +151,17 @@ class ProfileFragment(private val userId:String? = null) : Fragment() {
 
     fun initProfileList(viewRoot: View, user : UserEntity) {
         user.userProfiles.observeRemove(this) {
-            if (it.sender != currentDatabase.userDatabase!!)
-                currentDatabase.userDatabase!!.removeProfile(it.value)
+            if (it.sender != currentDatabase){
+                currentDatabase.userDatabase!!.removeProfileFromUser(it.value, user).observeOnce {
+                    HelperFunctions.showToast("Fail to remove profiles", context)
+                }
+            }
         }
         user.userProfiles.observeAdd(this) {
-            if (it.sender != currentDatabase.userDatabase!!)
-                currentDatabase.userDatabase!!.addUserProfileAndAddToUser(it.value, user)
+            if (it.sender != currentDatabase)
+                currentDatabase.userDatabase!!.addUserProfileAndAddToUser(it.value, user).observeOnce {
+                    HelperFunctions.showToast("Fail to add profiles", context)
+                }
         }
 
         recyclerView = viewRoot.findViewById(R.id.id_recycler_profile_list)

@@ -8,7 +8,7 @@ class ItemTest {
     lateinit var testItem: Item
 
     val itemName = "micro1"
-    val itemType = ItemType.MICROPHONE
+    val itemType = "MICROPHONE"
 
     @Before
     fun setup() {
