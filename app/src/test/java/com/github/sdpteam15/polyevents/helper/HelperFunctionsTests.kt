@@ -11,39 +11,62 @@ import kotlin.test.assertEquals
 class HelperFunctionsTests {
 
     // Fake array of location permissions
-    private val grantPermissions = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_COARSE_LOCATION)
+    private val grantPermissions = arrayOf(
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION
+    )
 
     @Test
     fun isPermissionGrantedIsTrueWhenGranted() {
         // Fake attributions of permissions
-        val grantResults: IntArray = intArrayOf(PackageManager.PERMISSION_GRANTED, PackageManager.PERMISSION_DENIED)
+        val grantResults: IntArray =
+            intArrayOf(PackageManager.PERMISSION_GRANTED, PackageManager.PERMISSION_DENIED)
 
-        assertThat(HelperFunctions.isPermissionGranted(grantPermissions, grantResults, Manifest.permission.ACCESS_FINE_LOCATION), `is`(true))
+        assertThat(
+            HelperFunctions.isPermissionGranted(
+                grantPermissions,
+                grantResults,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ), `is`(true)
+        )
     }
 
     @Test
     fun isPermissionGrantedIsFalseWhenDenied() {
         // Fake attributions of permissions
-        val grantResults: IntArray = intArrayOf(PackageManager.PERMISSION_DENIED, PackageManager.PERMISSION_GRANTED)
+        val grantResults: IntArray =
+            intArrayOf(PackageManager.PERMISSION_DENIED, PackageManager.PERMISSION_GRANTED)
 
-        assertThat(HelperFunctions.isPermissionGranted(grantPermissions, grantResults, Manifest.permission.ACCESS_FINE_LOCATION), `is`(false))
+        assertThat(
+            HelperFunctions.isPermissionGranted(
+                grantPermissions,
+                grantResults,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ), `is`(false)
+        )
     }
 
     @Test
     fun isPermissionGrantedIsFalseWhenNoPermissionMach() {
         // Fake attributions of permissions
-        val grantResults: IntArray = intArrayOf(PackageManager.PERMISSION_DENIED, PackageManager.PERMISSION_GRANTED)
+        val grantResults: IntArray =
+            intArrayOf(PackageManager.PERMISSION_DENIED, PackageManager.PERMISSION_GRANTED)
 
-        assertThat(HelperFunctions.isPermissionGranted(grantPermissions, grantResults, Manifest.permission.ACCESS_NETWORK_STATE), `is`(false))
+        assertThat(
+            HelperFunctions.isPermissionGranted(
+                grantPermissions,
+                grantResults,
+                Manifest.permission.ACCESS_NETWORK_STATE
+            ), `is`(false)
+        )
     }
 
     @Test
     fun testLocalDateTimeToDateConversionsAreEquivalent() {
         // NOTE!!: Some precision in nanoseconds of time is lost during the conversion
         val ldt = LocalDateTime.now()
-        val date = HelperFunctions.LocalDateToTimeToDate(ldt)
-        val ldtRetrieved = HelperFunctions.DateToLocalDateTime(date)
+        val date = HelperFunctions.localDateTimeToDate(ldt)
+        val ldtRetrieved = HelperFunctions.dateToLocalDateTime(date)
         assertEquals(ldt.month, ldtRetrieved!!.month)
         assertEquals(ldt.year, ldtRetrieved.year)
         assertEquals(ldt.dayOfYear, ldtRetrieved.dayOfYear)

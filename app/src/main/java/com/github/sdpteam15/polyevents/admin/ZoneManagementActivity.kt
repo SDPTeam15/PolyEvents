@@ -15,19 +15,32 @@ import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.fragments.MapsFragment
 import com.github.sdpteam15.polyevents.helper.GoogleMapHelper
-import com.github.sdpteam15.polyevents.helper.GoogleMapHelper.removeRangePolygon
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.Zone
 
 
 class ZoneManagementActivity : AppCompatActivity() {
     companion object {
-        val zoneObservable = Observable<Zone>()
+        var zoneObservable = Observable<Zone>()
         val zone = Zone(location = "")
         var zoneId = ""
         var inTest = false
-        var nbModified = 0
     }
+
+    val etName
+        get() = findViewById<EditText>(R.id.zoneManagementName)
+    val etDesc
+        get() = findViewById<EditText>(R.id.zoneManagementDescription)
+    val etLoc
+        get() = findViewById<EditText>(R.id.zoneManagementCoordinates)
+    val btnManage
+        get() = findViewById<Button>(R.id.btnManage)
+    val btnManageCoor
+        get() = findViewById<Button>(R.id.btnModifyZoneCoordinates)
+    val btnDelete
+        get() = findViewById<Button>(R.id.btnDeleteZoneCoordinates)
+    val tvManage
+        get() = findViewById<TextView>(R.id.tvManage)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,17 +49,10 @@ class ZoneManagementActivity : AppCompatActivity() {
         //Get the views needed in the code
         val int = intent
         zoneId = int.getStringExtra(EXTRA_ID).toString()
-        val btnManage = findViewById<Button>(R.id.btnManage)
-        val btnManageCoor = findViewById<Button>(R.id.btnModifyZoneCoordinates)
-        val btnDelete = findViewById<Button>(R.id.btnDeleteZoneCoordinates)
-        val tvManage = findViewById<TextView>(R.id.tvManage)
-        val etName = findViewById<EditText>(R.id.zoneManagementName)
-        val etDesc = findViewById<EditText>(R.id.zoneManagementDescription)
-        val etLoc = findViewById<EditText>(R.id.zoneManagementCoordinates)
         val mapFragment = MapsFragment()
         mapFragment.zone = zone
-
-        zoneObservable.observe {
+        zoneObservable = Observable()
+        zoneObservable.observe(this) {
             //Reactive the back button and make the map fragment invisible
             supportActionBar!!.setDisplayHomeAsUpEnabled(true)
             findViewById<FrameLayout>(R.id.flMapEditZone).visibility = View.INVISIBLE
@@ -58,13 +64,15 @@ class ZoneManagementActivity : AppCompatActivity() {
         }
 
         if (zoneId == NEW_ZONE) {
+            zoneId = GoogleMapHelper.uidZone++.toString()
+            GoogleMapHelper.zonesToArea[zoneId.toInt()] = Pair(null, mutableListOf())
             // Create a new zone, setup the text of the button consequently
             changeCoordinatesText(etLoc, btnManageCoor, btnDelete, "")
             btnManage.text = this.getString(R.string.btn_create_zone_button_text)
             tvManage.text = this.getString(R.string.tv_create_zone_text)
             //Click on manage create a new zone
             btnManage.setOnClickListener {
-                createZone(etName, etDesc, etLoc)
+                createZone()
             }
         } else {
             // Manage an existing zone, setup the text of the button consequently
@@ -73,45 +81,32 @@ class ZoneManagementActivity : AppCompatActivity() {
             tvManage.text = this.getString(R.string.tv_update_zone_text)
 
             // Get the zone information in the database
-            currentDatabase.getZoneInformation(zoneId, zoneObservable)
+            currentDatabase.zoneDatabase!!.getZoneInformation(zoneId, zoneObservable)
             // Click on manage update the zone
             btnManage.setOnClickListener {
-                updateZoneInfo(etName, etDesc, etLoc)
+                updateZoneInfo()
             }
         }
-        setupListener(btnDelete, btnManageCoor, etLoc, etDesc, etName, mapFragment)
+        GoogleMapHelper.editingZone = zoneId.toInt()
+        setupListener(mapFragment)
     }
 
     /**
      * Method that will set the listener on the buttons properly
-     * @param btnDelete: The button handling coordinates deletion
-     * @param btnManageCoor: The button handling coordinates update or set
-     * @param etLoc: EditText containing information about the coordinates
-     * @param etDesc: EditText containing information about the description
-     * @param etName: EditText containing information about the name
      * @param mapFragment: The map fragment object
      */
     private fun setupListener(
-        btnDelete: Button,
-        btnManageCoor: Button,
-        etLoc: EditText,
-        etDesc: EditText,
-        etName: EditText,
         mapFragment: MapsFragment
     ) {
         btnDelete.setOnClickListener {
             //reset the location field text
             zone.location = ""
-            //If some area has been added on the map, remove them
-            if (nbModified != 0) {
-                removeRangePolygon(GoogleMapHelper.uid - nbModified, GoogleMapHelper.uid)
-                GoogleMapHelper.uid -= nbModified
-                nbModified = 0
-            }
+            GoogleMapHelper.removeZoneAreas(GoogleMapHelper.editingZone)
             //Set the correct text and visibility on the buttons
             changeCoordinatesText(etLoc, btnManageCoor, btnDelete, "")
         }
         btnManageCoor.setOnClickListener {
+
             //display the FrameLayout that will contain the map fragment
             findViewById<FrameLayout>(R.id.flMapEditZone).visibility = View.VISIBLE
 
@@ -129,9 +124,6 @@ class ZoneManagementActivity : AppCompatActivity() {
 
     /**
      * Change the text of the coordinates  field
-     * @param etLoc: editText containing the text about coordinates
-     * @param btnManage: button handling update or create zone
-     * @param btnDelete: The button handling coordinates deletion
      * @param locationText: The location text we should inspect
      */
     private fun changeCoordinatesText(
@@ -140,7 +132,7 @@ class ZoneManagementActivity : AppCompatActivity() {
         btnDelete: Button,
         locationText: String?
     ) {
-        var text: String
+        var text = ""
         if (locationText == null || locationText == "") {
             //If the location is not currently set, delete button invisible and set the correct text
             text = getString(R.string.zone_management_coordinates_not_set)
@@ -158,11 +150,8 @@ class ZoneManagementActivity : AppCompatActivity() {
 
     /**
      * Handle the zone creation event
-     * @param etName: EditText containing information about the name
-     * @param etDesc: EditText containing information about the description
-     * @param etLoc: EditText containing information about the coordinates
      */
-    private fun createZone(etName: EditText, etDesc: EditText, etLoc: EditText) {
+    private fun createZone() {
         //Create a new zone based on the fields
         val name = etName.text.toString()
         val desc = etDesc.text.toString()
@@ -174,7 +163,7 @@ class ZoneManagementActivity : AppCompatActivity() {
             zone.zoneName = name
             //zoneId is null to create a new Area
             zone.zoneId = null
-            currentDatabase.createZone(zone).observe {
+            currentDatabase.zoneDatabase!!.createZone(zone).observe {
                 callbackHandler(
                     it.value,
                     this.getString(R.string.zone_added_successfully),
@@ -186,11 +175,8 @@ class ZoneManagementActivity : AppCompatActivity() {
 
     /**
      * Handle the zone update event
-     * @param etName: EditText containing information about the name
-     * @param etDesc: EditText containing information about the description
-     * @param etLoc: EditText containing information about the coordinates
      */
-    private fun updateZoneInfo(etName: EditText, etDesc: EditText, etLoc: EditText) {
+    private fun updateZoneInfo() {
         //Update zone information based on the fields
         val name = etName.text.toString()
         val desc = etDesc.text.toString()
@@ -201,7 +187,7 @@ class ZoneManagementActivity : AppCompatActivity() {
             zone.zoneName = name
             zone.zoneId = zoneId
 
-            currentDatabase.updateZoneInformation(zoneId, zone).observe {
+            currentDatabase.zoneDatabase!!.updateZoneInformation(zoneId, zone).observe {
                 callbackHandler(
                     it.value,
                     this.getString(R.string.zone_updated_successfully),
@@ -224,7 +210,11 @@ class ZoneManagementActivity : AppCompatActivity() {
                 succMess,
                 this
             )
+            etDesc.setText("")
+            etName.setText("")
+            etLoc.setText("")
             val int = Intent(this, ZoneManagementListActivity::class.java)
+            GoogleMapHelper.setZone(zone)
             startActivity(int)
         } else {
             //show a toast indicating that there was an error and stay on this activity

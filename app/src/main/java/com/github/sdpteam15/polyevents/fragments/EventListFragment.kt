@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.fragments
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,7 +15,6 @@ import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.Event
-import java.time.LocalDateTime
 
 /**
  * Extra containing the event ID to show on the launched event page
@@ -24,7 +24,7 @@ const val EXTRA_EVENT_ID = "com.github.sdpteam15.polyevents.event.EVENT_ID"
 /**
  * Shows the list of events and displays them in a new event when we click on one of them
  */
-class ListFragment : Fragment() {
+class EventListFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     val events = ObservableList<Event>()
@@ -38,7 +38,7 @@ class ListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val fragmentView = inflater.inflate(R.layout.fragment_list, container, false)
+        val fragmentView = inflater.inflate(R.layout.fragment_events, container, false)
         recyclerView = fragmentView.findViewById<RecyclerView>(R.id.recycler_events_list)
 
         val openEvent = { event: Event ->
@@ -49,15 +49,27 @@ class ListFragment : Fragment() {
         }
 
         recyclerView.adapter = EventItemAdapter(events, openEvent)
-        currentDatabase.getListEvent(null, 10, events).observe(this) {
+        recyclerView.setHasFixedSize(false)
+
+        getEventsListAndDisplay(fragmentView.context)
+        // Inflate the layout for this fragment
+        return fragmentView
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        getEventsListAndDisplay(context)
+    }
+
+    private fun getEventsListAndDisplay(context: Context?) {
+        // TODO: set limit or not?
+        currentDatabase.eventDatabase!!.getEvents(null, 10, events).observe(this) {
             if (!it.value) {
-                HelperFunctions.showToast("Failed to get events information", fragmentView.context)
+                HelperFunctions.showToast("Failed to get events information", context)
             }
         }
         events.observe(this) { recyclerView.adapter!!.notifyDataSetChanged() }
-        recyclerView.setHasFixedSize(false)
-        // Inflate the layout for this fragment
-        return fragmentView
     }
 
     /**

@@ -110,7 +110,7 @@ class ItemRequestAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         val adapterLayout = LayoutInflater.from(parent.context)
-            .inflate(R.layout.tab_item, parent, false)
+            .inflate(R.layout.card_item, parent, false)
         return ItemViewHolder(adapterLayout)
     }
 

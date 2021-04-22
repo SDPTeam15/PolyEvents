@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.model
 
-import org.junit.Assert.*
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class DepotTest {
@@ -8,11 +9,11 @@ class DepotTest {
 
     @Test
     fun testItemAvailabilityInDepot() {
-        depot.inventory[ItemType.PLUG] = 1
-        assertTrue(depot.isAvailable(ItemType.PLUG))
+        depot.inventory["PLUG"] = 1
+        assertTrue(depot.isAvailable("PLUG"))
 
-        depot.inventory[ItemType.PLUG] = 0
-        assertFalse(depot.isAvailable(ItemType.PLUG))
+        depot.inventory["PLUG"] = 0
+        assertFalse(depot.isAvailable("PLUG"))
     }
 
 }

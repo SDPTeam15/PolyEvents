@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
                     mapFragment!![R.id.id_fragment_admin_hub] = AdminHubFragment()
                     mapFragment!![R.id.ic_home] = HomeFragment()
                     mapFragment!![R.id.ic_map] = MapsFragment()
-                    mapFragment!![R.id.ic_list] = ListFragment()
+                    mapFragment!![R.id.ic_list] = EventListFragment()
                     mapFragment!![R.id.ic_login] = LoginFragment()
                     mapFragment!![R.id.ic_more] = MoreFragment()
                     mapFragment!![R.id.id_fragment_profile] = ProfileFragment()
@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
             when (it.itemId) {
                 R.id.ic_map -> HelperFunctions.changeFragment(this, fragments[R.id.ic_map])
                 R.id.ic_list -> HelperFunctions.changeFragment(this, fragments[R.id.ic_list])
-                R.id.ic_login -> if (currentUser==null) {
+                R.id.ic_login -> if (currentUser == null) {
                     HelperFunctions.changeFragment(this, fragments[R.id.ic_login])
                 } else {
                     HelperFunctions.changeFragment(this, fragments[R.id.id_fragment_profile])
@@ -67,12 +67,12 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
-
+/*
         adapter = ArrayAdapter(
             this,
             android.R.layout.simple_list_item_1,
             resources.getStringArray(R.array.countries_array)
-        )
+        )*/
         /*
         var lv_listView = findViewById<ListView>(R.id.lv_listView)
         lv_listView.adapter = adapter

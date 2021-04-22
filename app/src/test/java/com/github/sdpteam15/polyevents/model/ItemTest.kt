@@ -1,6 +1,6 @@
 package com.github.sdpteam15.polyevents.model
 
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
@@ -8,11 +8,11 @@ class ItemTest {
     lateinit var testItem: Item
 
     val itemName = "micro1"
-    val itemType = ItemType.MICROPHONE
+    val itemType = "MICROPHONE"
 
     @Before
     fun setup() {
-        testItem = Item(itemId=null, itemName = itemName, itemType = itemType)
+        testItem = Item(itemId = null, itemName = itemName, itemType = itemType)
     }
 
     @Test

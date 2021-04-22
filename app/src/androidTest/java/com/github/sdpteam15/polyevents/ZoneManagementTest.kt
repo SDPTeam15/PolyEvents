@@ -3,21 +3,28 @@ package com.github.sdpteam15.polyevents
 import android.content.Intent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.Espresso.*
-import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.assertion.ViewAssertions.*
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.replaceText
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import com.github.sdpteam15.polyevents.admin.ZoneManagementActivity
 import com.github.sdpteam15.polyevents.admin.ZoneManagementListActivity
 import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
+import com.github.sdpteam15.polyevents.database.objects.ZoneDatabaseInterface
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.helper.GoogleMapHelper
+import com.github.sdpteam15.polyevents.login.UserLogin
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 import com.github.sdpteam15.polyevents.model.Zone
+import com.google.android.gms.internal.maps.zzt
+import com.google.android.gms.internal.maps.zzw
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.Polygon
 import com.google.firebase.auth.FirebaseAuth
 import org.junit.After
 import org.junit.Before
@@ -36,7 +43,8 @@ class ZoneManagementTest {
     val username = "JohnDoe"
     val email = "John@Doe.com"
     lateinit var mockedDatabase: DatabaseInterface
-    val zoneId = "IDZone"
+    lateinit var mockedZoneDatabase: ZoneDatabaseInterface
+    val zoneId = "10"
     val zoneName = "Cool Zone name"
     val zoneDesc = "Cool zone desc"
     val zoneLoc = ""
@@ -44,6 +52,9 @@ class ZoneManagementTest {
     @Before
     fun setup() {
         mockedDatabase = Mockito.mock(DatabaseInterface::class.java)
+        mockedZoneDatabase = Mockito.mock(ZoneDatabaseInterface::class.java)
+        When(mockedDatabase.zoneDatabase).thenReturn(mockedZoneDatabase)
+
         val mockedUserProfile = UserProfile("TestID", "TestName")
         When(mockedDatabase.currentProfile).thenReturn(mockedUserProfile)
 
@@ -56,7 +67,7 @@ class ZoneManagementTest {
         Database.currentDatabase = mockedDatabase
         When(mockedDatabase.currentUser).thenReturn(testUser)
 
-        FirebaseAuth.getInstance().signOut()
+        UserLogin.currentUserLogin.signOut()
 
         MainActivity.currentUser = testUser
 
@@ -110,7 +121,7 @@ class ZoneManagementTest {
     @Test
     fun createWithCorrectInfoRedirectToCorrectActivity() {
         val obs = Observable<Boolean>()
-        When(mockedDatabase.createZone(ZoneManagementActivity.zone)).thenAnswer { _ ->
+        When(mockedZoneDatabase.createZone(ZoneManagementActivity.zone)).thenAnswer { _ ->
             obs
         }
 
@@ -127,12 +138,17 @@ class ZoneManagementTest {
 
     @Test
     fun updateInfoRedirectToCorrectActivityIfCorrect() {
-        val zoneInfo = Zone(zoneId, zoneName, zoneLoc, zoneDesc)
+
+        val editingZone = GoogleMapHelper.uidZone++
+        GoogleMapHelper.editingZone = editingZone
+        GoogleMapHelper.zonesToArea[editingZone] = Pair(null, mutableListOf())
+
+        val zoneInfo = Zone("$editingZone", zoneName, zoneLoc, zoneDesc)
 
         val obs = Observable<Boolean>()
         val obs2 = Observable<Boolean>()
         When(
-            mockedDatabase.getZoneInformation(
+            mockedZoneDatabase.getZoneInformation(
                 ZoneManagementActivity.zoneId,
                 ZoneManagementActivity.zoneObservable
             )
@@ -144,12 +160,12 @@ class ZoneManagementTest {
 
         val intent =
             Intent(ApplicationProvider.getApplicationContext(), ZoneManagementActivity::class.java)
-        intent.putExtra(ZoneManagementListActivity.EXTRA_ID, zoneId)
+        intent.putExtra(ZoneManagementListActivity.EXTRA_ID, "$editingZone")
         scenario2 = ActivityScenario.launch(intent)
 
         obs2.postValue(true)
         When(
-            mockedDatabase.updateZoneInformation(
+            mockedZoneDatabase.updateZoneInformation(
                 ZoneManagementActivity.zoneId,
                 ZoneManagementActivity.zone
             )
@@ -164,6 +180,11 @@ class ZoneManagementTest {
         onView(withId(R.id.zone_management_list_activity))
             .check(matches(isDisplayed()))
         scenario2.close()
+        GoogleMapHelper.editingZone = -1
+        GoogleMapHelper.zonesToArea.clear()
+        GoogleMapHelper.areasPoints.clear()
+        /**/
+
     }
 
     @Test
@@ -173,7 +194,7 @@ class ZoneManagementTest {
         val obs = Observable<Boolean>()
         val obs2 = Observable<Boolean>()
         When(
-            mockedDatabase.getZoneInformation(
+            mockedZoneDatabase.getZoneInformation(
                 ZoneManagementActivity.zoneId,
                 ZoneManagementActivity.zoneObservable
             )
@@ -189,7 +210,7 @@ class ZoneManagementTest {
 
 
         When(
-            mockedDatabase.updateZoneInformation(
+            mockedZoneDatabase.updateZoneInformation(
                 ZoneManagementActivity.zoneId,
                 ZoneManagementActivity.zone
             )
@@ -211,7 +232,7 @@ class ZoneManagementTest {
     @Test
     fun failToCreateStayOnActivity() {
         val obs = Observable<Boolean>()
-        When(mockedDatabase.createZone(ZoneManagementActivity.zone)).thenAnswer { _ ->
+        When(mockedZoneDatabase.createZone(ZoneManagementActivity.zone)).thenAnswer { _ ->
             obs
         }
 
@@ -228,12 +249,13 @@ class ZoneManagementTest {
 
     @Test
     fun failToUpdateStayOnActivity() {
+
         val zoneInfo = Zone(zoneId, zoneName, zoneLoc, zoneDesc)
 
         val obs = Observable<Boolean>()
         val obs2 = Observable<Boolean>()
         When(
-            mockedDatabase.getZoneInformation(
+            mockedZoneDatabase.getZoneInformation(
                 ZoneManagementActivity.zoneId,
                 ZoneManagementActivity.zoneObservable
             )
@@ -249,7 +271,7 @@ class ZoneManagementTest {
 
 
         When(
-            mockedDatabase.updateZoneInformation(
+            mockedZoneDatabase.updateZoneInformation(
                 ZoneManagementActivity.zoneId,
                 ZoneManagementActivity.zone
             )
@@ -275,46 +297,45 @@ class ZoneManagementTest {
     fun clickOnDeleteButtonClearLocationAndSetCorrectText() {
         onView(withId(R.id.btnDeleteZoneCoordinates))
             .perform(click())
-        assert(ZoneManagementActivity.zone.location=="")
+        assert(ZoneManagementActivity.zone.location == "")
         onView(withId(R.id.zoneManagementCoordinates))
             .check(matches(withText("Not set")))
     }
 
     @Test
-    fun zoneIdSetterWorksProperly(){
-        ZoneManagementActivity.zoneId=zoneId
-        assert(ZoneManagementActivity.zoneId==zoneId)
+    fun zoneIdSetterWorksProperly() {
+        ZoneManagementActivity.zoneId = zoneId
+        assert(ZoneManagementActivity.zoneId == zoneId)
     }
 
     @Test
-    fun postValueWithNullLocationDisplayCorrectText(){
-        val zoneWithNull = Zone(zoneId=zoneId,zoneName=zoneName,location = null,description = zoneDesc)
+    fun postValueWithNullLocationDisplayCorrectText() {
+        val zoneWithNull =
+            Zone(zoneId = zoneId, zoneName = zoneName, location = null, description = zoneDesc)
         ZoneManagementActivity.zoneObservable.postValue(zoneWithNull)
         onView(withId(R.id.zoneManagementCoordinates))
             .check(matches(withText("Not set")))
     }
 
     @Test
-    fun btnManageCoordsCorrectlyActs(){
-        ZoneManagementActivity.inTest=true
+    fun btnManageCoordsCorrectlyActs() {
+        ZoneManagementActivity.inTest = true
         onView(withId(R.id.zoneManagementDescription))
             .perform(replaceText(zoneDesc))
         onView(withId(R.id.zoneManagementName))
             .perform(replaceText(zoneName))
         onView(withId(R.id.btnModifyZoneCoordinates))
             .perform(click())
-        assert(ZoneManagementActivity.zone.zoneName==zoneName)
-        assert(ZoneManagementActivity.zone.description==zoneDesc)
+        assert(ZoneManagementActivity.zone.zoneName == zoneName)
+        assert(ZoneManagementActivity.zone.description == zoneDesc)
         onView(withId(R.id.flMapEditZone))
             .check(matches(isDisplayed()))
     }
 
     @Test
-    fun deleteCoordinatesDeleteFromGoogleMapHelper(){
+    fun deleteCoordinatesDeleteFromGoogleMapHelper() {
         val arrayLngLat = arrayOf(4.10, 4.20, 4.30, 4.40, 4.50, 4.60, 4.70, 4.80)
         val arrayLngLat2 = arrayOf(5.10, 5.20, 5.30, 5.40, 5.50, 5.60, 5.70, 5.80)
-
-        val map:MutableMap<Int,List<LatLng>> = mutableMapOf()
 
         var listLngLat: ArrayList<LatLng> = ArrayList()
         listLngLat.add(LatLng(arrayLngLat[0], arrayLngLat[1]))
@@ -322,32 +343,46 @@ class ZoneManagementTest {
         listLngLat.add(LatLng(arrayLngLat[4], arrayLngLat[5]))
         listLngLat.add(LatLng(arrayLngLat[6], arrayLngLat[7]))
 
-        var listLngLat2: ArrayList<LatLng> = ArrayList()
+        val listLngLat2: ArrayList<LatLng> = ArrayList()
 
         listLngLat2.add(LatLng(arrayLngLat2[0], arrayLngLat2[1]))
         listLngLat2.add(LatLng(arrayLngLat2[2], arrayLngLat2[3]))
         listLngLat2.add(LatLng(arrayLngLat2[4], arrayLngLat2[5]))
         listLngLat2.add(LatLng(arrayLngLat2[6], arrayLngLat2[7]))
 
-        map[0] = listLngLat
-        map[1] = listLngLat2
-        map[2] = listLngLat2
-        map[3] = listLngLat2
-        map[4] = listLngLat2
-
-        val initSize = map.size
-        val nbModified = 3
-
-        GoogleMapHelper.coordinates = map
-        assert(GoogleMapHelper.coordinates.size==initSize)
+        val mockedzzt = Mockito.mock(zzt::class.java)
+        var m = Marker(mockedzzt)
+        val mockedzzt2 = Mockito.mock(zzt::class.java)
+        var m2 = Marker(mockedzzt2)
 
 
-        ZoneManagementActivity.nbModified=nbModified
-        GoogleMapHelper.uid = initSize
+        val mockedzzw = Mockito.mock(zzw::class.java)
+        val p = Polygon(mockedzzw)
+        When(mockedzzw.points).thenReturn(listLngLat)
+
+        val mockedzzw2 = Mockito.mock(zzw::class.java)
+        val p2 = Polygon(mockedzzw2)
+        When(mockedzzw2.points).thenReturn(listLngLat2)
+        val nbAreas = 2
+        val editingZone = GoogleMapHelper.uidZone++
+        val area1 = GoogleMapHelper.uidArea++
+        val area2 = GoogleMapHelper.uidArea++
+
+        GoogleMapHelper.areasPoints[area1] = Triple(editingZone, m, p)
+        GoogleMapHelper.areasPoints[area2] = Triple(editingZone, m2, p2)
+
+        GoogleMapHelper.editingZone = editingZone
+        GoogleMapHelper.zonesToArea[editingZone] = Pair(null, mutableListOf(area1, area2))
+
+        assert(GoogleMapHelper.zonesToArea[editingZone]!!.second.size==nbAreas)
+
         onView(withId(R.id.btnDeleteZoneCoordinates)).perform(click())
-        assert(GoogleMapHelper.coordinates.size==initSize-nbModified)
-        assert(GoogleMapHelper.uid==initSize-nbModified)
-        assert(ZoneManagementActivity.nbModified==0)
+        assert(GoogleMapHelper.zonesToArea[editingZone]!!.second.size==0)
+
+        GoogleMapHelper.editingZone = -1
+        GoogleMapHelper.zonesToArea.clear()
+        GoogleMapHelper.areasPoints.clear()
+
     }
 
 }

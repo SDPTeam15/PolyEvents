@@ -51,8 +51,11 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.3'
     implementation 'androidx.gridlayout:gridlayout:1.0.0'
 
+
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    testImplementation "org.mockito.kotlin:mockito-kotlin:3.1.0"
+    androidTestImplementation "org.mockito.kotlin:mockito-kotlin:3.1.0"
 
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
@@ -91,6 +94,11 @@ dependencies {
 
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
     testImplementation 'org.jetbrains.kotlin:kotlin-test-junit'
+
+    // dependecy for Barista (UI tests based on Espresso)
+    androidTestImplementation('com.schibsted.spain:barista:3.9.0') {
+        exclude group: 'org.jetbrains.kotlin' // Only if you already use Kotlin in your project
+    }
 
     //UIAutomator
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
