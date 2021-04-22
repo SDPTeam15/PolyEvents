@@ -102,5 +102,18 @@
     <string name="at_hour_text">at %1$s</string>
     <string name="label_activity_description">Description:</string>
     <string name="label_tags">Tags:</string>
+    <string name="event_attendees">%d/%d </string>
+    <string name="event_schedule">at %s</string>
     <string name="event_info_fail">Failed to get the event information</string>
+
+    <!-- EventActivity -->
+    <string name="event_unsubscribe">Unsubscribe</string>
+    <string name="event_subscribe">Subscribe</string>
+    <string name="event_successfully_subscribed">Successfully registered to event!</string>
+    <string name="event_successfully_unsubscribed">Successfully unsubscribed from event!</string>
+    <string name="toast_subscribe_warning">"You have to be logged in to subscribe"</string>
+    <string name="event_already_subscribed">You are already registered to this event</string>
+    <string name="event_subscribe_at_max_capacity">
+        Event has reached the maximum number of participants</string>
+    <string name="event_profile_picture">Event Profile Picture</string>
 </resources>
