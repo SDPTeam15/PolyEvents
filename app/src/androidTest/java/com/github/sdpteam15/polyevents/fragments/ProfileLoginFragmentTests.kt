@@ -83,6 +83,7 @@ class ProfileLoginFragmentTests {
 
         testRule = ActivityScenarioRule<MainActivity>(MainActivity::class.java)
         endingRequest = Observable()
+        mockedDatabaseUser = UserEntity(uid = uidTest, email = emailTest, name = displayNameTest)
 
         //Create Mock database
         mockedUserDatabase = mock(UserDatabaseInterface::class.java)
@@ -591,6 +592,18 @@ class ProfileLoginFragmentTests {
             .check(RecyclerViewItemCountAssertion(1))
     }
 
+
+    @Test
+    fun nullUserRedirectToLoginFragment(){
+        val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
+        loginFragment.currentUser = mockedDatabaseUser
+        When(mockedDatabase.currentUser).thenReturn(null)
+
+        val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
+        profileFragment.currentUser = null
+        onView(withId(R.id.ic_login)).perform(click())
+        onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
+    }
 
     @Test
     fun removeButtonRemovesProfilesFromList() {

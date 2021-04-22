@@ -24,6 +24,7 @@ import com.github.sdpteam15.polyevents.login.UserLogin
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 import com.github.sdpteam15.polyevents.model.UserRole
+import com.google.rpc.Help
 import java.time.format.DateTimeFormatter
 
 /**
@@ -48,10 +49,7 @@ class ProfileFragment(private val userId:String? = null) : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //If the user is not logged in, redirect him to the login page
-        if (currentUser == null) {
-            changeFragment(activity, MainActivity.fragments[R.id.ic_login])
-        }
+
     }
 
     override fun onCreateView(
@@ -59,31 +57,32 @@ class ProfileFragment(private val userId:String? = null) : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val viewRoot = inflater.inflate(R.layout.fragment_profile, container, false)
-        profileNameET = viewRoot.findViewById(R.id.profileName)
-        profileEmailET = viewRoot.findViewById(R.id.profileEmail)
-        profileUsernameET = viewRoot.findViewById(R.id.profileUsernameET)
+        //If the user is not logged in, redirect him to the login page
+        if (currentUser == null) {
+            changeFragment(activity, MainActivity.fragments[R.id.ic_login])
+        } else{
+            profileNameET = viewRoot.findViewById(R.id.profileName)
+            profileEmailET = viewRoot.findViewById(R.id.profileEmail)
+            profileUsernameET = viewRoot.findViewById(R.id.profileUsernameET)
+            currentDatabase.currentUserObservable.observe(this) {
+                initProfileList(viewRoot, it.value)
+            }
 
+            val currentUID = userId?: currentUser!!.uid
+            addListener(viewRoot)
+            addObserver(viewRoot)
 
-        currentDatabase.currentUserObservable.observe(this) {
-            initProfileList(viewRoot, it.value)
+            if(adminMode){
+                setupAdminMode(viewRoot)
+            }else{
+                setupUserMode(viewRoot)
+            }
+
+            currentDatabase.userDatabase!!.getUserInformation(
+                userInfoLiveData,
+                currentUID
+            )
         }
-
-
-        val currentUID = userId?: currentUser!!.uid
-
-        addListener(viewRoot)
-        addObserver(viewRoot)
-
-        if(adminMode){
-            setupAdminMode(viewRoot)
-        }else{
-            setupUserMode(viewRoot)
-        }
-
-        currentDatabase.userDatabase!!.getUserInformation(
-            userInfoLiveData,
-            currentUID
-        )
 
         return viewRoot
     }
