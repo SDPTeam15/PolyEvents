@@ -1,8 +1,10 @@
 package com.github.sdpteam15.polyevents.database.objects
 
 import android.annotation.SuppressLint
+import com.github.sdpteam15.polyevents.Settings
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.LocationConstant.LOCATIONS_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.LocationConstant.LOCATIONS_POINT
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.LocationConstant.LOCATIONS_TIME
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.model.UserEntity
@@ -18,23 +20,18 @@ object HeatmapDatabaseFirestore : HeatmapDatabaseInterface {
     var firestore: FirebaseFirestore? = null
         get() = field ?: Firebase.firestore
 
-    override fun setUserLocation(
-        location: LatLng,
-        userAccess: UserEntity?
+    override fun setLocation(
+        location: LatLng
     ): Observable<Boolean> {
-        return FirestoreDatabaseProvider.thenDoSet(
-            firestore!!.collection(LOCATIONS_COLLECTION.value)
-                .document(userAccess!!.uid)
-                .set(
-                    hashMapOf(
-                        LOCATIONS_POINT.value to GeoPoint(
-                            location.latitude,
-                            location.longitude
-                        )
-                    ),
-                    SetOptions.merge()
-                )
-        )
+        if(Settings.LocationId == "") {
+            val ended = Observable<Boolean>()
+            FirestoreDatabaseProvider.addEntity(
+
+            ).observeOnce {  }
+            return
+        }
+        else
+
     }
 
     override fun getUsersLocations(
