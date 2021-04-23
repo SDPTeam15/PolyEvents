@@ -16,6 +16,12 @@ Next week I'll use this Item type feature to search for items by type.
 
 ## Mathieu
 
+This week, I made the connection between google map and the Zone management Activity that Alessio did last sprint. I also implemented the connection with the database to get all zones and add them to the map but I couldn't merge it with master due to an unexpected error from cirrius.
+
+For both tasks, I underestimated the time I had to spend to fix the tests and all dependencies of the code I changes.
+
+Next week, I'll finish to merge the task I couldn't merge this week and take an other task.
+
 ## Robin
 This week I made a the test of the last week part, fixe some bugs and Update ObservableList
 
