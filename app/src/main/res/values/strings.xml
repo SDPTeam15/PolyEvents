@@ -21,6 +21,8 @@
     <string name="FullNamePlaceholder">Full name</string>
     <string name="emailPlaceholder">Email</string>
     <string name="fail_to_update">A problem occurred while performing your request, please try again</string>
+    <string name="fail_to_remove_profiles">Fail to remove profiles</string>
+    <string name="fail_to_add_profiles">Fail to add profiles</string>
     <string name="profileFragmentTitle">My information</string>
     <string name="title_activity_item_request">Items Request</string>
 

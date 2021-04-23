@@ -1,10 +1,11 @@
 package com.github.sdpteam15.polyevents.database.objects
 
 import android.annotation.SuppressLint
-import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.DatabaseConstant
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.*
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.PROFILE_COLLECTION
+import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.UserConstants.USER_UID
+import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
@@ -18,7 +19,7 @@ import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
-object UserDatabaseFirestore : UserDatabaseInterface {
+class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
     @SuppressLint("StaticFieldLeak")
     var firestore: FirebaseFirestore? = null
         get() = field ?: Firebase.firestore
@@ -86,35 +87,44 @@ object UserDatabaseFirestore : UserDatabaseInterface {
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
 
-        val lastFailureListener = OnFailureListener { ended.postValue(false, this) }
-
-        val update: () -> Unit = {
-            user.addNewProfile(profile)
-
-            FirestoreDatabaseProvider.firestore!!.collection(USER_COLLECTION.value)
-                .document(user.uid)
-                .set(UserAdapter.toDocument(user))
-                .addOnSuccessListener {
-                    FirestoreDatabaseProvider.firestore!!.collection(DatabaseConstant.CollectionConstant.PROFILE_COLLECTION.value)
-                        .document(profile.pid!!)
-                        .set(ProfileAdapter.toDocument(profile))
-                        .addOnSuccessListener { ended.postValue(true, this) }
-                        .addOnFailureListener(lastFailureListener)
-                }
-                .addOnFailureListener(lastFailureListener)
+        profile.users.add(user.uid)
+        val updater : () -> Unit = {
+            user.profiles.add(profile.pid!!)
+            db.setEntity(
+                user,
+                user.uid,
+                USER_COLLECTION,
+                UserAdapter
+            ).observeOnce {
+                ended.postValue(it.value, it.sender)
+            }
         }
 
         if (profile.pid == null)
-            FirestoreDatabaseProvider.firestore!!.collection(DatabaseConstant.CollectionConstant.PROFILE_COLLECTION.value)
-                .add(ProfileAdapter.toDocument(profile))
-                .addOnSuccessListener {
-                    profile.pid = it.id
-                    update()
+            db.addEntityAndGetId(
+                profile,
+                PROFILE_COLLECTION,
+                ProfileAdapter
+            ).observeOnce {
+                if(it.value != "") {
+                    profile.pid = it.value
+                    updater()
                 }
-                .addOnFailureListener(lastFailureListener)
+                else
+                    ended.postValue(false, it.sender)
+            }
         else
-            update()
-
+            db.setEntity(
+                profile,
+                profile.pid!!,
+                PROFILE_COLLECTION,
+                ProfileAdapter
+            ).observeOnce {
+                if(it.value)
+                    updater()
+                else
+                    ended.postValue(false, it.sender)
+            }
         return ended
     }
 
@@ -126,27 +136,33 @@ object UserDatabaseFirestore : UserDatabaseInterface {
         user.profiles.remove(profile.pid!!)
         profile.users.remove(user.uid)
         val end = Observable<Boolean>()
-        FirestoreDatabaseProvider.setEntity(
+        db.setEntity(
             user,
             user.uid,
             USER_COLLECTION,
             UserAdapter
         ).observeOnce { it1 ->
-            if(it1.value)
-                FirestoreDatabaseProvider.setEntity(
-                    profile,
-                    profile.pid!!,
-                    PROFILE_COLLECTION,
-                    ProfileAdapter
-                ).observeOnce { end.postValue(it.value, it.sender) }
-            else
+            if (it1.value) {
+                (if (profile.users.isEmpty())
+                    db.deleteEntity(
+                        profile.pid!!,
+                        PROFILE_COLLECTION,
+                    )
+                else
+                    db.setEntity(
+                        profile,
+                        profile.pid!!,
+                        PROFILE_COLLECTION,
+                        ProfileAdapter
+                    )).observeOnce { end.postValue(it.value, it.sender) }
+            } else
                 end.postValue(it1.value, it1.sender)
         }
         return end
     }
 
     override fun updateProfile(profile: UserProfile, userAccess: UserEntity?): Observable<Boolean> =
-        FirestoreDatabaseProvider.setEntity(
+        db.setEntity(
             profile,
             profile.pid!!,
             PROFILE_COLLECTION,
@@ -158,7 +174,7 @@ object UserDatabaseFirestore : UserDatabaseInterface {
         user: UserEntity,
         userAccess: UserEntity?
     ): Observable<Boolean> =
-        FirestoreDatabaseProvider.getListEntity(
+        db.getListEntity(
             profiles,
             user.profiles,
             null,
@@ -171,11 +187,11 @@ object UserDatabaseFirestore : UserDatabaseInterface {
         profile: UserProfile,
         userAccess: UserEntity?
     ): Observable<Boolean> =
-        FirestoreDatabaseProvider.getListEntity(
+        db.getListEntity(
             users,
             profile.users,
             null,
-            DatabaseConstant.CollectionConstant.PROFILE_COLLECTION,
+            PROFILE_COLLECTION,
             UserAdapter
         )
 
@@ -183,16 +199,17 @@ object UserDatabaseFirestore : UserDatabaseInterface {
         profile: Observable<UserProfile>,
         pid: String,
         userAccess: UserEntity?
-    ): Observable<Boolean> = FirestoreDatabaseProvider.getEntity(
-        profile,
-        pid,
-        DatabaseConstant.CollectionConstant.PROFILE_COLLECTION,
-        ProfileAdapter
-    )
+    ): Observable<Boolean> =
+        db.getEntity(
+            profile,
+            pid,
+            PROFILE_COLLECTION,
+            ProfileAdapter
+        )
 
     override fun removeProfile(profile: UserProfile, user: UserEntity?) =
-        FirestoreDatabaseProvider.deleteEntity(
+        db.deleteEntity(
             profile.pid!!,
-            DatabaseConstant.CollectionConstant.PROFILE_COLLECTION
+            PROFILE_COLLECTION
         )
 }

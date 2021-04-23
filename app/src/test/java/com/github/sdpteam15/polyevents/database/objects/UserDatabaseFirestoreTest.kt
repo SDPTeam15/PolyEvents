@@ -1,10 +1,9 @@
-package objects
+package com.github.sdpteam15.polyevents.database.objects
 
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.UserConstants.*
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
-import com.github.sdpteam15.polyevents.database.objects.UserDatabaseFirestore
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.login.GoogleUserLogin
 import com.github.sdpteam15.polyevents.login.UserLogin
@@ -43,6 +42,7 @@ class UserDatabaseFirestoreTest {
     lateinit var mockedDatabase: FirebaseFirestore
     lateinit var database: DatabaseInterface
     lateinit var userDocument: HashMap<String, Any?>
+    lateinit var userDatabase: UserDatabase
 
     @Before
     fun setup() {
@@ -64,11 +64,12 @@ class UserDatabaseFirestoreTest {
         mockedDatabase = Mockito.mock(FirebaseFirestore::class.java)
         FirestoreDatabaseProvider.firestore = mockedDatabase
         //FirestoreDatabaseProvider.userDatabase =  mockedDatabaseUser
-        UserDatabaseFirestore.firestore = mockedDatabase
+        userDatabase = UserDatabase(Mockito.mock(DatabaseInterface::class.java))
+        userDatabase.firestore = mockedDatabase
 
 
 
-        UserDatabaseFirestore.firstConnectionUser = UserEntity(uid = "DEFAULT")
+        userDatabase.firstConnectionUser = UserEntity(uid = "DEFAULT")
         FirestoreDatabaseProvider.lastQuerySuccessListener = null
         FirestoreDatabaseProvider.lastSetSuccessListener = null
         FirestoreDatabaseProvider.lastFailureListener = null
@@ -79,7 +80,6 @@ class UserDatabaseFirestoreTest {
     @After
     fun teardown() {
         FirestoreDatabaseProvider.firestore = null
-        UserDatabaseFirestore.firestore = null
         UserLogin.currentUserLogin = GoogleUserLogin
     }
 
@@ -90,9 +90,9 @@ class UserDatabaseFirestoreTest {
         FirestoreDatabaseProvider.currentUser = user
         Mockito.`when`(mockedUserLogin.isConnected()).thenReturn(true)
         FirestoreDatabaseProvider.currentProfile = UserProfile()
-        assert(UserDatabaseFirestore.currentUser==FirestoreDatabaseProvider.currentUser)
-        assert(UserDatabaseFirestore.currentProfile==FirestoreDatabaseProvider.currentProfile)
-        assert(UserDatabaseFirestore.firestore==mockedDatabase)
+        assert(userDatabase.currentUser==FirestoreDatabaseProvider.currentUser)
+        assert(userDatabase.currentProfile==FirestoreDatabaseProvider.currentProfile)
+        assert(userDatabase.firestore==mockedDatabase)
     }
 
     @Test

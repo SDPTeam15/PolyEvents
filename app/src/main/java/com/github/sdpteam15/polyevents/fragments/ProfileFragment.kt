@@ -121,15 +121,17 @@ class ProfileFragment : Fragment() {
     fun initProfileList(viewRoot: View, user : UserEntity) {
         user.userProfiles.observeRemove(this) {
             if (it.sender != currentDatabase){
-                currentDatabase.userDatabase!!.removeProfileFromUser(it.value, user).observeOnce {
-                    HelperFunctions.showToast("Fail to remove profiles", context)
+                currentDatabase.userDatabase!!.removeProfileFromUser(it.value, user).observeOnce(this)  {
+                    if (!it.value)
+                        HelperFunctions.showToast(getString(R.string.fail_to_remove_profiles), context)
                 }
             }
         }
         user.userProfiles.observeAdd(this) {
             if (it.sender != currentDatabase)
-                currentDatabase.userDatabase!!.addUserProfileAndAddToUser(it.value, user).observeOnce {
-                    HelperFunctions.showToast("Fail to add profiles", context)
+                currentDatabase.userDatabase!!.addUserProfileAndAddToUser(it.value, user).observeOnce(this) {
+                    if (!it.value)
+                        HelperFunctions.showToast(getString(R.string.fail_to_add_profiles), context)
                 }
         }
 

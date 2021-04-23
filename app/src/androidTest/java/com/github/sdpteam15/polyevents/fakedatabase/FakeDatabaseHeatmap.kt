@@ -7,14 +7,10 @@ import com.github.sdpteam15.polyevents.model.UserEntity
 import com.google.android.gms.maps.model.LatLng
 
 object FakeDatabaseHeatmap : HeatmapDatabaseInterface {
-    override fun setLocation(location: LatLng): Observable<Boolean> {
-        TODO("Not yet implemented")
-    }
+    override fun setLocation(location: LatLng): Observable<Boolean> = Observable(true)
 
     override fun getLocations(
         usersLocations: ObservableList<LatLng>,
         userAccess: UserEntity?
-    ): Observable<Boolean> {
-        TODO("Not yet implemented")
-    }
+    ): Observable<Boolean> = Observable(true)
 }

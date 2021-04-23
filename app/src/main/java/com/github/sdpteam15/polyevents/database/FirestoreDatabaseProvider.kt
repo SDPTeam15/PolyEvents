@@ -27,17 +27,35 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         get() = field ?: Firebase.firestore
 
     override var itemDatabase: ItemDatabaseInterface? = null
-        get() = field ?: ItemDatabaseFirestore
+        get() {
+            field = field ?: ItemDatabaseFirestore
+            return field
+        }
     override var zoneDatabase: ZoneDatabaseInterface? = null
-        get() = field ?: ZoneDatabaseFirestore
+        get() {
+            field = field ?: ZoneDatabaseFirestore
+            return field
+        }
     override var userDatabase: UserDatabaseInterface? = null
-        get() = field ?: UserDatabaseFirestore
+        get() {
+            field = field ?: UserDatabase(this)
+            return field
+        }
     override var heatmapDatabase: HeatmapDatabaseInterface? = null
-        get() = field ?: HeatmapDatabase(this)
+        get() {
+            field = field ?: HeatmapDatabase(this)
+            return field
+        }
     override var eventDatabase: EventDatabaseInterface? = null
-        get() = field ?: EventDatabaseFirestore
+        get() {
+            field = field ?: EventDatabaseFirestore
+            return field
+        }
     override var materialRequestDatabase: MaterialRequestDatabaseInterface? = null
-        get() = field ?: MaterialRequestDatabaseFirestore
+        get() {
+            field = field ?: MaterialRequestDatabaseFirestore
+            return field
+        }
 
     override val currentUserObservable = Observable<UserEntity>()
     var loadSuccess: Boolean? = false
