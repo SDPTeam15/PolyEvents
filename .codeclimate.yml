@@ -26,10 +26,10 @@ checks:
       threshold: 8
   similar-code:
     config:
-      threshold: 5 # language-specific defaults. an override will affect all languages.
+      threshold: 500 # language-specific defaults. an override will affect all languages.
   identical-code:
     config:
-      threshold: 5 # language-specific defaults. an override will affect all languages.
+      threshold: 500 # language-specific defaults. an override will affect all languages.
 
 exclude_patterns:
 - "**/test/"
