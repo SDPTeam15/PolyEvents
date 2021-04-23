@@ -95,7 +95,7 @@ class MyLocationTests {
     }
 
     @Test
-    fun clickOnBtnCreateZoneLaunchCorrectActivityWithEmptyFields() {
+    fun locationButtonIsDisplayed() {
         pressBack()
         var position = LatLng(lat, lng)
         var camera = CameraPosition(position, zoom, 0f, 0f)
