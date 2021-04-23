@@ -1,8 +1,10 @@
 package com.github.sdpteam15.polyevents.model
 
+import android.util.Log
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZoneConstant.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.IgnoreExtraProperties
+import java.lang.Exception
 
 /**
  * Entity model for a zone. Events occur inside a zone.
@@ -31,7 +33,13 @@ data class Zone(
                 val points = s.split(POINTS_SEP.value)
                 for (p in points) {
                     val coor = p.split(LAT_LONG_SEP.value)
-                    curList.add(LatLng(coor[0].toDouble(), coor[1].toDouble()))
+
+                    try{
+                        curList.add(LatLng(coor[0].toDouble(), coor[1].toDouble()))
+                    }catch (e: NumberFormatException){
+                        println(coor)
+                    }
+
                 }
                 listZoneCoordinates.add(curList)
             }

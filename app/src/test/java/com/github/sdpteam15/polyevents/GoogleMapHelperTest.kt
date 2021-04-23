@@ -87,7 +87,7 @@ class GoogleMapHelperTest {
                 correctString += POINTS_SEP.value
         }
         correctString = correctString.substring(0, correctString.length - POINTS_SEP.value.length)
-        val zoneId = GoogleMapHelper.uidZone
+        val zoneId = "Zone ${GoogleMapHelper.uidZone++}"
 
         val mutableList = mutableListOf<zzw>()
         val areas = mutableListOf<Int>()

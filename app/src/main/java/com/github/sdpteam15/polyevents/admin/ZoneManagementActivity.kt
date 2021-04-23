@@ -64,8 +64,8 @@ class ZoneManagementActivity : AppCompatActivity() {
         }
 
         if (zoneId == NEW_ZONE) {
-            zoneId = GoogleMapHelper.uidZone++.toString()
-            GoogleMapHelper.zonesToArea[zoneId.toInt()] = Pair(null, mutableListOf())
+            zoneId = "Zone ${GoogleMapHelper.uidZone++}"
+            GoogleMapHelper.zonesToArea[zoneId] = Pair(null, mutableListOf())
             // Create a new zone, setup the text of the button consequently
             changeCoordinatesText(etLoc, btnManageCoor, btnDelete, "")
             btnManage.text = this.getString(R.string.btn_create_zone_button_text)
@@ -87,7 +87,7 @@ class ZoneManagementActivity : AppCompatActivity() {
                 updateZoneInfo()
             }
         }
-        GoogleMapHelper.editingZone = zoneId.toInt()
+        GoogleMapHelper.editingZone = zoneId
         setupListener(mapFragment)
     }
 
@@ -101,7 +101,7 @@ class ZoneManagementActivity : AppCompatActivity() {
         btnDelete.setOnClickListener {
             //reset the location field text
             zone.location = ""
-            GoogleMapHelper.removeZoneAreas(GoogleMapHelper.editingZone)
+            GoogleMapHelper.removeZoneAreas(GoogleMapHelper.editingZone!!)
             //Set the correct text and visibility on the buttons
             changeCoordinatesText(etLoc, btnManageCoor, btnDelete, "")
         }
@@ -152,10 +152,12 @@ class ZoneManagementActivity : AppCompatActivity() {
      * Handle the zone creation event
      */
     private fun createZone() {
+        //TODO: Modify the id of the area on google map after creating the zone on firebase
         //Create a new zone based on the fields
         val name = etName.text.toString()
         val desc = etDesc.text.toString()
         val loc = etLoc.text.toString()
+
         //check if the strings are all set properly
         if (checkNotEmpty(name, loc, desc)) {
             //set the correct information
@@ -214,7 +216,7 @@ class ZoneManagementActivity : AppCompatActivity() {
             etName.setText("")
             etLoc.setText("")
             val int = Intent(this, ZoneManagementListActivity::class.java)
-            GoogleMapHelper.setZone(zone)
+            GoogleMapHelper.removeZone(zoneId)
             startActivity(int)
         } else {
             //show a toast indicating that there was an error and stay on this activity
