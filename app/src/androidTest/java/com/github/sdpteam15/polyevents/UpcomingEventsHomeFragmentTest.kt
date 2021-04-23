@@ -94,7 +94,7 @@ class UpcomingEventsHomeFragmentTest {
         for (event in eventsToAdd) {
             currentDatabase.eventDatabase!!.createEvent(event)
         }
-        currentDatabase.eventDatabase!!.getListEvent(null, null, events)
+        currentDatabase.eventDatabase!!.getEvents(null, null, events)
 
         // Update the content to use the mock activities query helper
         runOnUiThread {

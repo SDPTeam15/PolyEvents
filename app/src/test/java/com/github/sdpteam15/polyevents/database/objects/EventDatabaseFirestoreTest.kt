@@ -67,7 +67,7 @@ class EventDatabaseFirestoreTest {
 
     @Test
     fun variableCorrectlySet(){
-        val mockedUserLogin = Mockito.mock(UserLoginInterface::class.java) as UserLoginInterface<AuthResult>
+        val mockedUserLogin = mock(UserLoginInterface::class.java) as UserLoginInterface<AuthResult>
         UserLogin.currentUserLogin = mockedUserLogin
         FirestoreDatabaseProvider.currentUser = user
         Mockito.`when`(mockedUserLogin.isConnected()).thenReturn(true)
@@ -264,7 +264,7 @@ class EventDatabaseFirestoreTest {
             taskReferenceMock
         }
 
-        val result = FirestoreDatabaseProvider.eventDatabase!!.getListEvent(eventList = testEvents)
+        val result = FirestoreDatabaseProvider.eventDatabase!!.getEvents(eventList = testEvents)
         assert(result.value!!)
         for (event in eventsToBeAdded){
             assert(event in testEvents)

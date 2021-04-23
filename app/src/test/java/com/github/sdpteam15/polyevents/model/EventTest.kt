@@ -1,8 +1,10 @@
 package com.github.sdpteam15.polyevents.model
 
+import com.github.sdpteam15.polyevents.exceptions.MaxAttendeesException
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
+import java.lang.IllegalArgumentException
 import java.time.LocalDateTime
 
 class EventTest {
@@ -22,6 +24,8 @@ class EventTest {
 
     lateinit var event: Event
     lateinit var eventWithNullStartTime: Event
+
+    val userUid = "testUid"
 
     @Before
     fun setupEvent() {
@@ -105,6 +109,54 @@ class EventTest {
     @Test
     fun checkTimeStampToLocalDateTimeConversion() {
         // TODO
+    }
+
+    @Test
+    fun testMakeEventLimited() {
+        assertNull(event.getMaxNumberOfSlots())
+        event.makeLimitedEvent(3)
+        assert(event.isLimitedEvent())
+        assertEquals(event.getMaxNumberOfSlots(), 3)
+    }
+
+    @Test
+    fun testAddAndRemoveParticipantsToEvent() {
+        event.makeLimitedEvent(3)
+        event.addParticipant(userUid)
+        assertFalse(event.getParticipants().isEmpty())
+        assert(event.getParticipants().contains(userUid))
+
+        event.removeParticipant(userUid)
+        assert(event.getParticipants().isEmpty())
+        assertFalse(event.getParticipants().contains(userUid))
+
+        event.addParticipant(userUid)
+        event.addParticipant("user2")
+        assertEquals(event.getParticipants().size, 2)
+
+        event.clearParticipants()
+        assert(event.getParticipants().isEmpty())
+
+        // No exceptions thrown
+        event.removeParticipant(userUid)
+    }
+
+    @Test(expected = MaxAttendeesException::class)
+    fun testAddParticipantsToAnAlreadyFullEvent() {
+        event.makeLimitedEvent(1)
+        event.addParticipant(userUid)
+
+        event.addParticipant("user2")
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun testAddParticipantToANotLimitedEventShouldThrowException() {
+        event.addParticipant((userUid))
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun testMakeLimitedEventWithNegativeNumberThrowsException() {
+        event.makeLimitedEvent(-1)
     }
 
 }

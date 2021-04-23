@@ -1,6 +1,8 @@
 package com.github.sdpteam15.polyevents.database.objects
 
 import android.annotation.SuppressLint
+import android.util.Log
+import com.github.sdpteam15.polyevents.database.DatabaseConstant
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.EVENT_COLLECTION
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.Matcher
@@ -14,6 +16,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+
+const val TAG = "EventDatabaseFirestore"
 
 object EventDatabaseFirestore : EventDatabaseInterface {
     @SuppressLint("StaticFieldLeak")
@@ -49,18 +53,18 @@ object EventDatabaseFirestore : EventDatabaseInterface {
         )
     }
 
-    override fun getListEvent(
+    override fun getEvents(
         matcher: Matcher?,
-        number: Long?,
+        limit: Long?,
         eventList: ObservableList<Event>,
         userAccess: UserProfile?
     ): Observable<Boolean> {
         val task = FirestoreDatabaseProvider.firestore!!.collection(EVENT_COLLECTION.value)
         val query = matcher?.match(task)
         val v = if (query != null) {
-            if (number != null) query.limit(number).get() else query.get()
+            if (limit != null) query.limit(limit).get() else query.get()
         } else {
-            if (number != null) task.limit(number).get() else task.get()
+            if (limit != null) task.limit(limit).get() else task.get()
         }
         return FirestoreDatabaseProvider.thenDoGet(v) {
             eventList.clear(this)

@@ -1,5 +1,7 @@
 package com.github.sdpteam15.polyevents.model
 
+import com.google.firebase.firestore.IgnoreExtraProperties
+
 /**
  * Entity model for an item, used in inventory management
  * for events.
@@ -12,8 +14,9 @@ package com.github.sdpteam15.polyevents.model
  * @property itemId the uid of the item, generally given by the admin
  * @property itemType the type of the item
  */
+@IgnoreExtraProperties
 data class Item(
         val itemId: String?,
-        val itemName: String,
+        val itemName: String?,
         val itemType: String
 )

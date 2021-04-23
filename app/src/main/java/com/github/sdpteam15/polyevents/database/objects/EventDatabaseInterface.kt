@@ -54,16 +54,15 @@ interface EventDatabaseInterface {
     /**
      * Get list of event
      * @param matcher matcher for the search
-     * @param number maximum of result
+     * @param limit maximum number of results
      * @param eventList the list of event that will be set when the DB returns the information
      * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
-    fun getListEvent(
+    fun getEvents(
         matcher: Matcher? = null,
-        number: Long? = null,
+        limit: Long? = null,
         eventList: ObservableList<Event>,
         userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
-
 }

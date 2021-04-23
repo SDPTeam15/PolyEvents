@@ -30,7 +30,7 @@ class EditProfileActivity : AppCompatActivity() {
     private val name: TextInputEditText get() = findViewById(R.id.EditProfileActivity_Name)
     private val save: Button get() = findViewById(R.id.EditProfileActivity_Save)
     private val cancel: Button get() = findViewById(R.id.EditProfileActivity_Cancel)
-    private val callerRank: UserRole get() = UserRole.valueOf(intent.getStringExtra(CALLER_RANK)!!)
+    private val callerRank: UserRole? get() = UserRole.fromString(intent.getStringExtra(CALLER_RANK)!!)
     private val pid: String get() = intent.getStringExtra(EDIT_PROFILE_ID)!!
     private lateinit var profile: UserProfile
 

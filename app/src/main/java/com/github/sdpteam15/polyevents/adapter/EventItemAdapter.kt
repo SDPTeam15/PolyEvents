@@ -15,7 +15,7 @@ import com.github.sdpteam15.polyevents.model.Event
  * @param events The list of events to adapt
  * @param listener A listener that will be triggered on click of an ItemViewHolder element
  */
-class EventItemAdapter(
+class EventItemAdapter (
     private val events: ObservableList<Event>,
     private val listener: (Event) -> Unit
 ) : RecyclerView.Adapter<EventItemAdapter.ItemViewHolder>() {
@@ -31,15 +31,32 @@ class EventItemAdapter(
         private val eventZone = view.findViewById<TextView>(R.id.id_event_zone)
         private val eventDescription = view.findViewById<TextView>(R.id.id_event_description)
         private val eventIcon = view.findViewById<ImageView>(R.id.id_event_icon)
+        private val attendeesNumberTextView = view.findViewById<TextView>(R.id.event_card_attendees_number)
 
         /**
          * Binds the values of each field of an event to the layout of an event
          */
         fun bind(event: Event) {
             eventName.text = event.eventName
-            eventSchedule.text = "at ${event.formattedStartTime()}"
+            eventSchedule.text = itemView.resources.getString(
+                R.string.event_schedule,
+                event.formattedStartTime()
+            )
             eventZone.text = event.zoneName
             eventDescription.text = event.description
+
+            if (event.isLimitedEvent()) {
+                attendeesNumberTextView.visibility = View.VISIBLE
+                val maxNumberOfSlots = event.getMaxNumberOfSlots()
+                val numberOfParticipants = event.getParticipants().size
+                attendeesNumberTextView.text = itemView.resources.getString(
+                    R.string.event_attendees,
+                    numberOfParticipants,
+                    maxNumberOfSlots
+                )
+            } else {
+                attendeesNumberTextView.visibility = View.GONE
+            }
 
             // TODO : set the icon of the event
             //eventIcon.setImageBitmap(event.icon)
@@ -48,7 +65,7 @@ class EventItemAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         val adapterLayout = LayoutInflater.from(parent.context)
-            .inflate(R.layout.tab_event, parent, false)
+            .inflate(R.layout.card_event, parent, false)
         return ItemViewHolder(adapterLayout)
     }
 

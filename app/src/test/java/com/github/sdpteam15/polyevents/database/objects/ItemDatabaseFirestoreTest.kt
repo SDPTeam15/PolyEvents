@@ -64,7 +64,7 @@ class ItemDatabaseFirestoreTest {
     @Test
     fun variableCorrectlySet() {
         val mockedUserLogin =
-            Mockito.mock(UserLoginInterface::class.java) as UserLoginInterface<AuthResult>
+            mock(UserLoginInterface::class.java) as UserLoginInterface<AuthResult>
         UserLogin.currentUserLogin = mockedUserLogin
         FirestoreDatabaseProvider.currentUser = user
         Mockito.`when`(mockedUserLogin.isConnected()).thenReturn(true)
@@ -102,10 +102,11 @@ class ItemDatabaseFirestoreTest {
             taskReferenceMock
         )
 
-        var itemNameAdded = ""
+        var itemNameAdded: String? = ""
         var itemTypeAdded: String? = null
         var itemCountAdded = 0
         var itemIdAdded = ""
+
         When(taskReferenceMock.addOnSuccessListener(any())).thenAnswer {
             FirestoreDatabaseProvider.lastAddSuccessListener!!.onSuccess(null)
             //set method in hard to see if the success listener is successfully called
@@ -148,7 +149,7 @@ class ItemDatabaseFirestoreTest {
             )
         ).thenReturn(taskMock)
 
-        var itemNameUpdated = ""
+        var itemNameUpdated: String? = ""
         var itemTypeUpdated: String? = null
         var itemCountUpdated = 0
         var itemIdUpdated = ""
@@ -188,7 +189,7 @@ class ItemDatabaseFirestoreTest {
         When(mockedCollectionReference.document(testItem.itemId!!)).thenReturn(documentReference)
         When(documentReference.delete()).thenReturn(taskMock)
 
-        var itemNameAdded = ""
+        var itemNameAdded: String? = ""
         var itemTypeAdded: String? = null
         var itemCountAdded = 0
         var itemIdAdded = ""
