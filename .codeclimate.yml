@@ -26,10 +26,10 @@ checks:
       threshold: 8
   similar-code:
     config:
-      threshold: 500 # language-specific defaults. an override will affect all languages.
+      threshold: 60 # otherwise, findViewById and hashMap creation will raise an alert
   identical-code:
     config:
-      threshold: 500 # language-specific defaults. an override will affect all languages.
+      threshold: 60 # otherwise, findViewById and hashMap creation will raise an alert
 
 exclude_patterns:
 - "**/test/"
