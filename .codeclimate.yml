@@ -1,4 +1,39 @@
+version: "2"         # required to adjust maintainability checks
+checks:
+  argument-count:
+    config:
+      threshold: 8
+  complex-logic:
+    config:
+      threshold: 10
+  file-lines:
+    config:
+      threshold: 400
+  method-complexity:
+    config:
+      threshold: 10
+  method-count:
+    config:
+      threshold: 20
+  method-lines:
+    config:
+      threshold: 60
+  nested-control-flow:
+    config:
+      threshold: 8
+  return-statements:
+    config:
+      threshold: 8
+  similar-code:
+    config:
+      threshold: 5 # language-specific defaults. an override will affect all languages.
+  identical-code:
+    config:
+      threshold: 5 # language-specific defaults. an override will affect all languages.
+
 exclude_patterns:
 - "**/test/"
 - "**/androidTest/"
 - "**test"
+- "**/summaries/"
+- "**/NVM/"
