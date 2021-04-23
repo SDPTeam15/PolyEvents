@@ -95,6 +95,11 @@ dependencies {
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
     testImplementation 'org.jetbrains.kotlin:kotlin-test-junit'
 
+    // dependecy for Barista (UI tests based on Espresso)
+    androidTestImplementation('com.schibsted.spain:barista:3.9.0') {
+        exclude group: 'org.jetbrains.kotlin' // Only if you already use Kotlin in your project
+    }
+
     //UIAutomator
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
 }

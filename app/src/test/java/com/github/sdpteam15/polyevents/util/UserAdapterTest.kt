@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.util
 
+import com.github.sdpteam15.polyevents.database.DatabaseConstant
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.UserConstants.*
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.UserEntity
@@ -39,7 +40,8 @@ class UserAdapterTest {
         val document = UserAdapter.toDocument(user)
         assertEquals(document[USER_UID.value], googleId)
         assertEquals(document[USER_USERNAME.value], username)
-        assertEquals(document[USER_BIRTH_DATE.value], birthDate.atStartOfDay())
+        assertEquals(document[USER_BIRTH_DATE.value],
+            HelperFunctions.localDateTimeToDate(birthDate.atStartOfDay()))
         assertEquals(document[USER_NAME.value], name)
         assertEquals(document[USER_EMAIL.value], email)
         assertEquals(document[USER_PHONE.value], telephone)
@@ -48,7 +50,7 @@ class UserAdapterTest {
     @Test
     fun conversionOfDocumentToUserEntityPreservesData() {
         val birthDateTimeStamp =
-            Timestamp(HelperFunctions.LocalDateToTimeToDate(birthDate.atStartOfDay())!!)
+            Timestamp(HelperFunctions.localDateTimeToDate(birthDate.atStartOfDay())!!)
         val userDocumentData: HashMap<String, Any?> = hashMapOf(
             USER_UID.value to googleId,
             USER_NAME.value to name,

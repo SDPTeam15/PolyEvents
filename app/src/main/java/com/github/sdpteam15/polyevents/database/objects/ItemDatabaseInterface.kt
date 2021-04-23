@@ -68,4 +68,25 @@ interface ItemDatabaseInterface {
         userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
+    /**
+     * create a new Item Type
+     * @param itemType item type we want to add in the database
+     * @param userAccess the user profile to use its permission
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun createItemType(
+        itemType: String,
+        userAccess: UserProfile? = currentProfile
+    ):Observable<Boolean>
+
+    /**
+     * Get list of existing items types
+     * @param itemTypeList the list of item types that will be set when the DB returns the information
+     * @param userAccess profile for database access
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun getItemTypes(
+        itemTypeList: ObservableList<String>,
+        userAccess: UserProfile? = currentProfile
+    ): Observable<Boolean>
 }

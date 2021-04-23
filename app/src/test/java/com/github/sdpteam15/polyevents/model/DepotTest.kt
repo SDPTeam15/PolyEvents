@@ -9,11 +9,11 @@ class DepotTest {
 
     @Test
     fun testItemAvailabilityInDepot() {
-        depot.inventory[ItemType.PLUG] = 1
-        assertTrue(depot.isAvailable(ItemType.PLUG))
+        depot.inventory["PLUG"] = 1
+        assertTrue(depot.isAvailable("PLUG"))
 
-        depot.inventory[ItemType.PLUG] = 0
-        assertFalse(depot.isAvailable(ItemType.PLUG))
+        depot.inventory["PLUG"] = 0
+        assertFalse(depot.isAvailable("PLUG"))
     }
 
 }

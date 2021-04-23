@@ -36,7 +36,7 @@ class HomeFragment : Fragment() {
         listUpcomingEventsLayout =
             fragmentView.findViewById<LinearLayout>(R.id.id_upcoming_events_list)
 
-        currentDatabase.eventDatabase!!.getListEvent(null, NUMBER_UPCOMING_EVENTS.toLong(), events)
+        currentDatabase.eventDatabase!!.getEvents(null, NUMBER_UPCOMING_EVENTS.toLong(), events)
             .observe(this) {
                 if (!it.value) {
                     HelperFunctions.showToast("Failed to load events", fragmentView.context)
@@ -66,7 +66,7 @@ class HomeFragment : Fragment() {
      * @param event : the event to add as a tab
      */
     private fun setupEventTab(event: Event) {
-        val eventTab = layoutInflater.inflate(R.layout.tab_event, null)
+        val eventTab = layoutInflater.inflate(R.layout.card_event, null)
 
         eventTab.findViewById<TextView>(R.id.id_event_name_text).text = event.eventName
 
