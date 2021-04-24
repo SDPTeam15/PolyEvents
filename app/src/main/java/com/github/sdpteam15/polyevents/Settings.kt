@@ -8,16 +8,16 @@ const val IS_SENDING_LOCATION_ON = "isSendingLocationOn"
 const val LOCATION_ID = "locationId"
 
 object Settings {
-    var mainActivity : MainActivity? = null
-    private var name = ""
+    var mainActivity: MainActivity? = null
+    private var name: String? = null
         get() {
-            if(field == "")
+            if (field == null && mainActivity != null)
                 field = mainActivity!!.getApplicationInfo().dataDir + "/Settings"
             return field
         }
     var isLoaded = false
         get() {
-            if (!field) {
+            if (!field && mainActivity != null) {
                 var file = File(name)
                 if (file.exists())
                     file.forEachLine {
@@ -32,33 +32,35 @@ object Settings {
             return field
         }
         set(value) {
-            File(name).printWriter().use {
-                it.println(IS_SENDING_LOCATION_ON + SPLIT_CHAR + if(isSendingLocationOn) "true" else "false")
-                it.println(LOCATION_ID + SPLIT_CHAR + locationId)
+            if (mainActivity != null) {
+                File(name).printWriter().use {
+                    it.println(IS_SENDING_LOCATION_ON + SPLIT_CHAR + if (isSendingLocationOn) "true" else "false")
+                    it.println(LOCATION_ID + SPLIT_CHAR + locationId)
+                }
+                field = true
             }
-            field = value
         }
 
 
     private var isSendingLocationOn = true
-    var IsSendingLocationOn : Boolean
+    var IsSendingLocationOn: Boolean
         get() {
             isLoaded
             return isSendingLocationOn
         }
-        set(value){
+        set(value) {
             isLoaded
             isSendingLocationOn = value
             isLoaded = true
         }
 
     private var locationId = ""
-    var LocationId : String
+    var LocationId: String
         get() {
             isLoaded
             return locationId
         }
-        set(value){
+        set(value) {
             isLoaded
             locationId = value
             isLoaded = true

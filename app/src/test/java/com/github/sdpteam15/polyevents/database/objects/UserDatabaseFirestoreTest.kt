@@ -36,7 +36,7 @@ private const val displayNameTest2 = "Test uid2"
 private const val username = "Test username"
 
 
-class UserDatabaseFirestoreTest {
+class UserDatabaseTest {
     lateinit var user: UserEntity
     lateinit var profile: UserProfile
     lateinit var mockedDatabase: FirebaseFirestore

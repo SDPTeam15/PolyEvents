@@ -68,7 +68,7 @@ interface DatabaseInterface {
      * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
-    fun <T> addEntityAndGetId(
+    fun <T : Any> addEntityAndGetId(
         element: T,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterToDocumentInterface<T>
@@ -82,7 +82,7 @@ interface DatabaseInterface {
      * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
-    fun <T> addEntity(
+    fun <T : Any> addEntity(
         element: T,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterToDocumentInterface<T>
@@ -96,7 +96,7 @@ interface DatabaseInterface {
      * @param adapter The adapter converting the element into a HashMap recognised by the database
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
-    fun <T> setEntity(
+    fun <T : Any> setEntity(
         element: T?,
         id: String,
         collection: DatabaseConstant.CollectionConstant,
@@ -122,7 +122,7 @@ interface DatabaseInterface {
      * @param adapter The adapter converting the element into a HashMap recognised by the database
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
-    fun <T> getEntity(
+    fun <T : Any> getEntity(
         element: Observable<T>,
         id: String,
         collection: DatabaseConstant.CollectionConstant,
@@ -138,7 +138,7 @@ interface DatabaseInterface {
      * @param adapter The adapter converting the element into a HashMap recognised by the database
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
-    fun <T> getListEntity(
+    fun <T : Any> getListEntity(
         elements: ObservableList<T>,
         ids: List<String>? = null,
         matcher: Matcher?,

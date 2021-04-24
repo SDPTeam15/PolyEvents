@@ -26,24 +26,21 @@ class HeatmapDatabase(private val db: DatabaseInterface) : HeatmapDatabaseInterf
         location: LatLng
     ): Observable<Boolean> {
         val element = DeviceLocation(Settings.LocationId, location, LocalDateTime.now())
-        if (Settings.LocationId == "") {
-            val ended = Observable<Boolean>()
+        return if (Settings.LocationId == "")
             db.addEntityAndGetId(
                 element,
                 LOCATION_COLLECTION,
                 DeviceLocationAdapter
-            ).observeOnce {
-                Settings.LocationId = it.value
-                ended.postValue(it.value != "", it.sender)
-            }
-            return ended
-        } else
-            return FirestoreDatabaseProvider.setEntity(
-                element,
-                Settings.LocationId,
-                LOCATION_COLLECTION,
-                DeviceLocationAdapter
-            )
+            ).mapOnce {
+                Settings.LocationId = it
+                it != ""
+            }.then
+        else db.setEntity(
+            element,
+            Settings.LocationId,
+            LOCATION_COLLECTION,
+            DeviceLocationAdapter
+        )
     }
 
     override fun getLocations(
@@ -56,32 +53,12 @@ class HeatmapDatabase(private val db: DatabaseInterface) : HeatmapDatabaseInterf
             tempusersLocations,
             null,
             object : Matcher {
-                override fun match(collection: Query): Query {
-                    var query = collection/*
-                    query = query.whereGreaterThan(
-                        DatabaseConstant.LocationConstant.LOCATIONS_POINT_LATITUDE.value,
-                        swBound.latitude
-                    )
-                    query = query.whereGreaterThan(
-                        DatabaseConstant.LocationConstant.LOCATIONS_POINT_LONGITUDE.value,
-                        swBound.longitude
-                    )
-                    query = query.whereLessThan(
-                        DatabaseConstant.LocationConstant.LOCATIONS_POINT_LATITUDE.value,
-                        neBound.latitude
-                    )
-                    query = query.whereLessThan(
-                        DatabaseConstant.LocationConstant.LOCATIONS_POINT_LONGITUDE.value,
-                        neBound.longitude
-                    )*/
-                    query = query.whereGreaterThan(
-                        DatabaseConstant.LocationConstant.LOCATIONS_TIME.value,
-                        HelperFunctions.localDateTimeToDate(
-                            LocalDateTime.now().minusMinutes(10)
-                        )!!
-                    )
-                    return query
-                }
+                override fun match(collection: Query) = collection.whereGreaterThan(
+                    DatabaseConstant.LocationConstant.LOCATIONS_TIME.value,
+                    HelperFunctions.localDateTimeToDate(
+                        LocalDateTime.now().minusMinutes(10)
+                    )!!
+                )
             },
             LOCATION_COLLECTION,
             object : AdapterFromDocumentInterface<LatLng> {

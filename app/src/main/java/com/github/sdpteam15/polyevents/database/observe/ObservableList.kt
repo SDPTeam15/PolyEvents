@@ -677,7 +677,7 @@ class ObservableList<T> : MutableList<T> {
 
     fun notifyUpdate(sender: Any? = null) {
         if (observers.isNotEmpty()) {
-            val valueList = UpdateArgs(this.value, sender)
+            val valueList = UpdateArgs(this as List<T>, sender)
             val toRemove = mutableListOf<(UpdateArgs<List<T>>) -> Boolean>()
             for (obs in observers)
                 if (!obs(valueList))

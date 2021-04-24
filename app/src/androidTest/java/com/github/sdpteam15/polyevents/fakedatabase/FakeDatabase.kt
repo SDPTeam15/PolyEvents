@@ -49,7 +49,7 @@ object FakeDatabase : DatabaseInterface {
     override var materialRequestDatabase: MaterialRequestDatabaseInterface? = null
         get() = field ?: FakeDatabaseMaterialRequest
 
-    override fun <T> addEntityAndGetId(
+    override fun <T : Any> addEntityAndGetId(
         element: T,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterToDocumentInterface<T>
@@ -57,7 +57,7 @@ object FakeDatabase : DatabaseInterface {
         TODO("Not yet implemented")
     }
 
-    override fun <T> addEntity(
+    override fun <T : Any> addEntity(
         element: T,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterToDocumentInterface<T>
@@ -65,7 +65,7 @@ object FakeDatabase : DatabaseInterface {
         TODO("Not yet implemented")
     }
 
-    override fun <T> setEntity(
+    override fun <T : Any> setEntity(
         element: T?,
         id: String,
         collection: DatabaseConstant.CollectionConstant,
@@ -81,7 +81,7 @@ object FakeDatabase : DatabaseInterface {
         TODO("Not yet implemented")
     }
 
-    override fun <T> getEntity(
+    override fun <T : Any> getEntity(
         element: Observable<T>,
         id: String,
         collection: DatabaseConstant.CollectionConstant,
@@ -90,7 +90,7 @@ object FakeDatabase : DatabaseInterface {
         TODO("Not yet implemented")
     }
 
-    override fun <T> getListEntity(
+    override fun <T : Any> getListEntity(
         elements: ObservableList<T>,
         ids: List<String>?,
         matcher: Matcher?,
