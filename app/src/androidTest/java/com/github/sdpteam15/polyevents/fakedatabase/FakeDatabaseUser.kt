@@ -80,10 +80,4 @@ object FakeDatabaseUser : UserDatabaseInterface {
     ): Observable<Boolean> {
         TODO("Not yet implemented")
     }
-
-    override fun removeProfile(profile: UserProfile, user: UserEntity?): Observable<Boolean> {
-        TODO("Not yet implemented")
-    }
-
-
 }

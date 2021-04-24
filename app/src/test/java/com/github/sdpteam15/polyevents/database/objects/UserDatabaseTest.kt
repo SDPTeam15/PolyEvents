@@ -303,23 +303,4 @@ class UserDatabaseTest {
         assertEquals(PROFILE_COLLECTION, get.collection)
         assertEquals(ProfileAdapter, get.adapter)
     }
-/*
-fun getProfileById(
-    profile: Observable<UserProfile>,
-    pid: String,
-    userAccess: UserEntity?
-): Observable<Boolean> =
-    db.getEntity(
-        profile,
-        pid,
-        DatabaseConstant.CollectionConstant.PROFILE_COLLECTION,
-        ProfileAdapter
-    )
-
-fun removeProfile(profile: UserProfile, user: UserEntity?) =
-    db.deleteEntity(
-        profile.pid!!,
-        DatabaseConstant.CollectionConstant.PROFILE_COLLECTION
-    )
-// */ // */ // */ // */
 }

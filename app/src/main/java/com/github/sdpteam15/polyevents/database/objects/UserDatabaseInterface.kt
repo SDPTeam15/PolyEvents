@@ -139,17 +139,4 @@ interface UserDatabaseInterface {
         pid: String,
         userAccess: UserEntity? = currentUser
     ): Observable<Boolean>
-
-
-    /**
-     * Remove profile from a user
-     * @param profile profile to remove
-     * @param user user for database access
-     * @return if the operation succeed
-     */
-    fun removeProfile(
-        profile: UserProfile,
-        user: UserEntity? = currentUser
-    ): Observable<Boolean>
-
 }

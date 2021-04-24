@@ -163,10 +163,4 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
             pid,
             PROFILE_COLLECTION
         )
-
-    override fun removeProfile(profile: UserProfile, user: UserEntity?) =
-        db.deleteEntity(
-            profile.pid!!,
-            PROFILE_COLLECTION
-        )
 }
