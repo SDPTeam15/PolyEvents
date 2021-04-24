@@ -183,7 +183,6 @@ class ZoneManagementTest {
         GoogleMapHelper.editingZone = null
         GoogleMapHelper.zonesToArea.clear()
         GoogleMapHelper.areasPoints.clear()
-        /**/
 
     }
 
