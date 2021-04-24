@@ -1,321 +1,239 @@
 package com.github.sdpteam15.polyevents.database.objects
 
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.USER_COLLECTION
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.UserConstants.*
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
-import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
+import com.github.sdpteam15.polyevents.database.HelperTestFunction
 import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.login.GoogleUserLogin
-import com.github.sdpteam15.polyevents.login.UserLogin
-import com.github.sdpteam15.polyevents.login.UserLoginInterface
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
-import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.AuthResult
-import com.google.firebase.firestore.*
-import org.junit.After
+import com.github.sdpteam15.polyevents.util.UserAdapter
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito
-import java.time.LocalDate
-
-val googleId = "googleId"
-val usernameEntity = "JohnDoe"
-val name = "John Doe"
-val birthDate = LocalDate.of(1990, 12, 30)
-val email = "John@email.com"
-
-private const val displayNameTest = "Test displayName"
-private const val emailTest = "Test email"
-private const val uidTest = "Test uid"
-private val listProfile = ArrayList<String>()
-private const val uidTest2 = "Test uid2"
-private const val emailTest2 = "Test email"
-private const val displayNameTest2 = "Test uid2"
-private const val username = "Test username"
-
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 class UserDatabaseTest {
-    lateinit var user: UserEntity
-    lateinit var profile: UserProfile
-    lateinit var mockedDatabase: FirebaseFirestore
-    lateinit var database: DatabaseInterface
-    lateinit var userDocument: HashMap<String, Any?>
-    lateinit var userDatabase: UserDatabase
+    lateinit var mackUserDatabase: UserDatabase
+    lateinit var mockDatabaseInterface: DatabaseInterface
 
     @Before
     fun setup() {
-        user = UserEntity(
-            uid = uidTest,
-            name = displayNameTest,
-            email = emailTest,
-            profiles = listProfile
-        )
-        profile = UserProfile()
-
-        userDocument = hashMapOf(
-            USER_UID.value to uidTest,
-            USER_NAME.value to displayNameTest,
-            USER_EMAIL.value to emailTest,
-            USER_PROFILES.value to listProfile
-        )
-        //Mock the database and set it as the default database
-        mockedDatabase = Mockito.mock(FirebaseFirestore::class.java)
-        FirestoreDatabaseProvider.firestore = mockedDatabase
-        //FirestoreDatabaseProvider.userDatabase =  mockedDatabaseUser
-        userDatabase = UserDatabase(Mockito.mock(DatabaseInterface::class.java))
-
-        userDatabase.firstConnectionUser = UserEntity(uid = "DEFAULT")
-        FirestoreDatabaseProvider.lastQuerySuccessListener = null
-        FirestoreDatabaseProvider.lastSetSuccessListener = null
-        FirestoreDatabaseProvider.lastFailureListener = null
-        FirestoreDatabaseProvider.lastGetSuccessListener = null
-        FirestoreDatabaseProvider.lastAddSuccessListener = null
-    }
-
-    @After
-    fun teardown() {
-        FirestoreDatabaseProvider.firestore = null
-        UserLogin.currentUserLogin = GoogleUserLogin
+        mockDatabaseInterface = HelperTestFunction.mockFor()
+        mackUserDatabase = UserDatabase(mockDatabaseInterface)
+        HelperTestFunction.clearQueue()
     }
 
     @Test
-    fun variableCorrectlySet(){/*
-        val mockedUserLogin = Mockito.mock(UserLoginInterface::class.java) as UserLoginInterface<AuthResult>
-        UserLogin.currentUserLogin = mockedUserLogin
-        FirestoreDatabaseProvider.currentUser = user
-        Mockito.`when`(mockedUserLogin.isConnected()).thenReturn(true)
-        FirestoreDatabaseProvider.currentProfile = UserProfile()
-        assert(userDatabase.currentUser==FirestoreDatabaseProvider.currentUser)
-        assert(userDatabase.currentProfile==FirestoreDatabaseProvider.currentProfile)
-        assert(userDatabase.firestore==mockedDatabase)
-    */}
+    fun updateUserInformation() {
+        val user = UserEntity("uid")
+        val userAccess = UserProfile()
+
+        HelperTestFunction.nextBoolean.add(true)
+        mackUserDatabase.updateUserInformation(user, userAccess)
+            .observeOnce { assert(it.value) }.then.postValue(false)
+
+        val set = HelperTestFunction.setEntityQueue.peek()!!
+
+        assertEquals(user, set.element)
+        assertEquals(user.uid, set.id)
+        assertEquals(USER_COLLECTION, set.collection)
+        assertEquals(UserAdapter, set.adapter)
+    }
 
     @Test
-    fun inDatabaseCorrectlySetTheObservable() {/*
-        //Mock all the necessary class to mock the methods
-        val mockedCollectionReference = Mockito.mock(CollectionReference::class.java)
-        val mockedQuery = Mockito.mock(Query::class.java)
-        val mockedTask = Mockito.mock(Task::class.java) as Task<QuerySnapshot>
-        val mockedDocument = Mockito.mock(QuerySnapshot::class.java)
-        val mockedList = Mockito.mock(List::class.java) as List<DocumentSnapshot>
+    fun firstConnexion() {
+        val user = UserEntity("uid")
 
-        //Mock all the needed method to perform the query correctly
-        Mockito.`when`(mockedDatabase.collection(USER_COLLECTION.value)).thenReturn(
-            mockedCollectionReference
-        )
-        Mockito.`when`(
-            mockedCollectionReference.whereEqualTo(
-                USER_UID.value,
-                uidTest
-            )
-        ).thenReturn(mockedQuery)
-        Mockito.`when`(mockedQuery.limit(1)).thenReturn(mockedQuery)
-        Mockito.`when`(mockedQuery.get()).thenReturn(mockedTask)
-        Mockito.`when`(mockedDocument.documents).thenReturn(mockedList)
-        Mockito.`when`(mockedList.size).thenReturn(1)
-        //mock sets the listerner
-        Mockito.`when`(mockedTask.addOnSuccessListener(ArgumentMatchers.any())).thenAnswer {
-            //Trigger the last used trigger that will do a callback according to the inDatabase method
-            FirestoreDatabaseProvider.lastQuerySuccessListener!!.onSuccess(mockedDocument)
-            mockedTask
-        }
-        Mockito.`when`(mockedTask.addOnFailureListener(ArgumentMatchers.any())).thenAnswer {
-            mockedTask
-        }
+        HelperTestFunction.nextBoolean.add(true)
+        mackUserDatabase.firstConnexion(user).observeOnce { assert(it.value) }.then.postValue(false)
 
+        val set = HelperTestFunction.setEntityQueue.peek()!!
+
+        assertEquals(user, set.element)
+        assertEquals(user.uid, set.id)
+        assertEquals(USER_COLLECTION, set.collection)
+        assertEquals(UserAdapter, set.adapter)
+    }
+
+    @Test
+    fun inDatabase() {
         val isInDb = Observable<Boolean>()
-        val result = FirestoreDatabaseProvider.userDatabase!!.inDatabase(
-            isInDb,
-            uidTest, profile
-        )
-        //Assert that the value are correctly set by the database
-        assert(isInDb.value!!)
-        //assert that the value is not in database
-        assert(result.value!!)
-    */}
+        val uid = "uid"
+        val userAccess = UserProfile()
+
+        HelperTestFunction.nextBoolean.add(true)
+        mackUserDatabase.inDatabase(isInDb.observeOnce { assert(it.value) }.then, uid, userAccess)
+            .observeOnce { assert(it.value) }.then.postValue(false)
+
+        val get = HelperTestFunction.getEntityQueue.peek()!!
+
+        assertNotNull(get.element)
+        assertEquals(uid, get.id)
+        assertEquals(USER_COLLECTION, get.collection)
+        assertEquals(UserAdapter, get.adapter)
+    }
 
     @Test
-    fun notInDatabaseCorrectlySetTheObservable() {/*
-        //Mock the needed classes
-        val mockedCollectionReference = Mockito.mock(CollectionReference::class.java)
-        val mockedQuery = Mockito.mock(Query::class.java)
-        val mockedTask = Mockito.mock(Task::class.java) as Task<QuerySnapshot>
-        val mockedDocument = Mockito.mock(QuerySnapshot::class.java)
-        val mockedList = Mockito.mock(List::class.java) as List<DocumentSnapshot>
+    fun getUserInformation() {
+        val user = Observable<UserEntity>()
+        val uid = "uid"
+        val userAccess = UserProfile()
 
-        //mock the needed method
-        Mockito.`when`(mockedDatabase.collection(USER_COLLECTION.value)).thenReturn(
-            mockedCollectionReference
-        )
-        Mockito.`when`(
-            mockedCollectionReference.whereEqualTo(
-                USER_UID.value,
-                uidTest
-            )
-        ).thenReturn(mockedQuery)
-        Mockito.`when`(mockedQuery.limit(1)).thenReturn(mockedQuery)
-        Mockito.`when`(mockedQuery.get()).thenReturn(mockedTask)
-        Mockito.`when`(mockedDocument.documents).thenReturn(mockedList)
-        Mockito.`when`(mockedList.size).thenReturn(0)
-        Mockito.`when`(mockedTask.addOnSuccessListener(ArgumentMatchers.any())).thenAnswer {
-            //Trigger the last used trigger that will do a callback according to the inDatabase method
-            FirestoreDatabaseProvider.lastQuerySuccessListener!!.onSuccess(mockedDocument)
-            mockedTask
-        }
-        Mockito.`when`(mockedTask.addOnFailureListener(ArgumentMatchers.any())).thenAnswer {
-            mockedTask
-        }
+        HelperTestFunction.nextBoolean.add(true)
+        mackUserDatabase.getUserInformation(user, uid, userAccess)
+            .observeOnce { assert(it.value) }.then.postValue(false)
 
-        val isInDb = Observable<Boolean>()
-        val result = FirestoreDatabaseProvider.userDatabase!!.inDatabase(
-            isInDb,
-            uidTest, profile
-        )
-        //Assert that the DB successfully performed the query
-        assert(result.value!!)
-        //assert that the value is not in database
-        assert(!isInDb.value!!)
-    */}
+        val get = HelperTestFunction.getEntityQueue.peek()!!
 
+        assertEquals(user, get.element)
+        assertEquals(uid, get.id)
+        assertEquals(USER_COLLECTION, get.collection)
+        assertEquals(UserAdapter, get.adapter)
+    }
+/*
     @Test
-    fun getUserInformationReturnCorrectInformation() {/*
-        //Mock the needed classes
-        val mockedCollectionReference = Mockito.mock(CollectionReference::class.java)
-        val mockedDocumentReference = Mockito.mock(DocumentReference::class.java)
-        val mockedTask = Mockito.mock(Task::class.java) as Task<DocumentSnapshot>
-        val mockedDocument = Mockito.mock(DocumentSnapshot::class.java)
+    fun addUserProfileAndAddToUser() {
+        val profile = UserProfile()
+        val user = UserEntity("uid")
+        val userAccess = UserEntity("uid")
 
-        //mock the needed method
-        Mockito.`when`(mockedDatabase.collection(USER_COLLECTION.value)).thenReturn(
-            mockedCollectionReference
-        )
-        Mockito.`when`(mockedCollectionReference.document(uidTest))
-            .thenReturn(mockedDocumentReference)
-        Mockito.`when`(mockedDocumentReference.get()).thenReturn(mockedTask)
-        Mockito.`when`(mockedDocument.data).thenReturn(userDocument)
-        Mockito.`when`(mockedDocument.id).thenReturn(uidTest)
+        HelperTestFunction.nextString.add("pid")
+        HelperTestFunction.nextBoolean.add(true)
+        mackUserDatabase.addUserProfileAndAddToUser(profile, user, userAccess)
+            .observeOnce { assert(it.value) }.then.postValue(false)
 
-        Mockito.`when`(mockedTask.addOnSuccessListener(ArgumentMatchers.any())).thenAnswer {
-            //Trigger the last used trigger that will do a callback according to the getUserInformation method
-            FirestoreDatabaseProvider.lastGetSuccessListener!!.onSuccess(mockedDocument)
-            mockedTask
-        }
-        Mockito.`when`(mockedTask.addOnFailureListener(ArgumentMatchers.any())).thenAnswer {
-            mockedTask
-        }
+        val get = HelperTestFunction.addEntityAndGetIdQueue.peek()!!
 
-        val userObs = Observable<UserEntity>()
-        val result = FirestoreDatabaseProvider.userDatabase!!.getUserInformation(
-            userObs,
-            uidTest, profile
-        )
-        //Assert that the DB correctly answer with true
-        assert(result.value!!)
-        //assert that the value of the observable was set by the DB
-        assert(userObs.value != null)
-        //Check that the value indeed corresponds to the correct user
-        val userValue = userObs.value!!
-        assert(userValue.email == emailTest)
-        assert(userValue.name == displayNameTest)
-        assert(userValue.uid == uidTest)
-    */}
+        assertEquals(user, get.element)
+        assertEquals(uid, get.id)
+        assertEquals(USER_COLLECTION, get.collection)
+        assertEquals(UserAdapter, get.adapter)
 
-    @Test
-    fun updateUserInformationSetTheGoodInformation() {/*
-        //mock the required class
-        val mockedCollectionReference = Mockito.mock(CollectionReference::class.java)
-        val mockedDocumentReference = Mockito.mock(DocumentReference::class.java)
-        val mockedTask = Mockito.mock(Task::class.java) as Task<Void>
+    }
+        ///
+        val ended = Observable<Boolean>()
 
-        //Create a hashmap with values to update
-        val map: HashMap<String, String> = HashMap()
-        map[USER_UID.value] = uidTest2
-        map[USER_USERNAME.value] = username
-        map[USER_NAME.value] = displayNameTest2
-        map[USER_EMAIL.value] = emailTest2
-
-        var emailSet = ""
-        var nameSet = ""
-        var uidSet = ""
-        var usernameSet = ""
-
-        //mock the needed method
-        Mockito.`when`(mockedDatabase.collection(USER_COLLECTION.value)).thenReturn(
-            mockedCollectionReference
-        )
-        Mockito.`when`(mockedCollectionReference.document(uidTest))
-            .thenReturn(mockedDocumentReference)
-        Mockito.`when`(mockedDocumentReference.update(map as Map<String, Any>))
-            .thenReturn(mockedTask)
-        //TODO Mock the result from the database once the data class user is terminated
-
-        Mockito.`when`(mockedTask.addOnSuccessListener(ArgumentMatchers.any())).thenAnswer {
-            FirestoreDatabaseProvider.lastSetSuccessListener!!.onSuccess(null)
-            //set method in hard to see if the success listener is successfully called
-            emailSet = emailTest2
-            nameSet = displayNameTest2
-            uidSet = uidTest2
-            usernameSet = username
-            mockedTask
+        profile.users.add(user.uid)
+        val updater: () -> Unit = {
+            user.profiles.add(profile.pid!!)
+            db.setEntity(
+                user,
+                user.uid,
+                USER_COLLECTION,
+                UserAdapter
+            ).updateOnce(ended)
         }
 
-        Mockito.`when`(mockedTask.addOnFailureListener(ArgumentMatchers.any())).thenAnswer {
-            mockedTask
+        if (profile.pid == null)
+            db.addEntityAndGetId(
+                profile,
+                DatabaseConstant.CollectionConstant.PROFILE_COLLECTION,
+                ProfileAdapter
+            ).observeOnce {
+                if (it.value != "") {
+                    profile.pid = it.value
+                    updater()
+                } else
+                    ended.postValue(false, it.sender)
+            }
+        else
+            db.setEntity(
+                profile,
+                profile.pid!!,
+                DatabaseConstant.CollectionConstant.PROFILE_COLLECTION,
+                ProfileAdapter
+            ).observeOnce {
+                if (it.value)
+                    updater()
+                else
+                    ended.postValue(false, it.sender)
+            }
+        return ended
+    }
+
+    fun removeProfileFromUser(
+        profile: UserProfile,
+        user: UserEntity,
+        userAccess: UserProfile?
+    ): Observable<Boolean> {
+        user.profiles.remove(profile.pid!!)
+        profile.users.remove(user.uid)
+        val end = Observable<Boolean>()
+        db.setEntity(
+            user,
+            user.uid,
+            USER_COLLECTION,
+            UserAdapter
+        ).observeOnce { it1 ->
+            if (it1.value) {
+                (if (profile.users.isEmpty())
+                    db.deleteEntity(
+                        profile.pid!!,
+                        DatabaseConstant.CollectionConstant.PROFILE_COLLECTION,
+                    )
+                else
+                    db.setEntity(
+                        profile,
+                        profile.pid!!,
+                        DatabaseConstant.CollectionConstant.PROFILE_COLLECTION,
+                        ProfileAdapter
+                    )).updateOnce(end)
+            } else
+                end.postValue(it1.value, it1.sender)
         }
+        return end
+    }
 
-        //Assert that the database correctly setted the value
-        val result = FirestoreDatabaseProvider.userDatabase!!.updateUserInformation(
-            uidTest,
-            profile
-        )
-        assert(result.value!!)
-        assert(emailSet.equals(emailTest2))
-        assert(nameSet.equals(displayNameTest2))
-        assert(uidSet.equals(uidTest2))
-        assert(usernameSet.equals(username))
-    */}
-
-    @Test
-    fun firstConnectionSetTheGoodInformation() {/*
-        //mock the required class
-        val mockedCollectionReference = Mockito.mock(CollectionReference::class.java)
-        val mockedDocumentReference = Mockito.mock(DocumentReference::class.java)
-        val mockedTask = Mockito.mock(Task::class.java) as Task<Void>
-
-        var emailSet: String? = ""
-        var nameSet: String? = ""
-        var uidSet = ""
-
-        Mockito.`when`(mockedDatabase.collection(USER_COLLECTION.value)).thenReturn(
-            mockedCollectionReference
-        )
-        Mockito.`when`(mockedCollectionReference.document(uidTest))
-            .thenReturn(mockedDocumentReference)
-        Mockito.`when`(mockedDocumentReference.set(user)).thenReturn(
-            mockedTask
+    fun updateProfile(profile: UserProfile, userAccess: UserEntity?) =
+        db.setEntity(
+            profile,
+            profile.pid!!,
+            DatabaseConstant.CollectionConstant.PROFILE_COLLECTION,
+            ProfileAdapter
         )
 
-        Mockito.`when`(mockedTask.addOnSuccessListener(ArgumentMatchers.any())).thenAnswer {
-            FirestoreDatabaseProvider.lastSetSuccessListener!!.onSuccess(null)
-            //set method in hard to see if the success listener is successfully called
-            emailSet = user.email
-            nameSet = user.name
-            uidSet = user.uid
-            mockedTask
-        }
+    fun getUserProfilesList(
+        profiles: ObservableList<UserProfile>,
+        user: UserEntity,
+        userAccess: UserEntity?
+    ): Observable<Boolean> =
+        db.getListEntity(
+            profiles,
+            user.profiles,
+            null,
+            DatabaseConstant.CollectionConstant.PROFILE_COLLECTION,
+            ProfileAdapter
+        )
 
-        Mockito.`when`(mockedTask.addOnFailureListener(ArgumentMatchers.any())).thenAnswer {
-            mockedTask
-        }
+    fun getProfilesUserList(
+        users: ObservableList<UserEntity>,
+        profile: UserProfile,
+        userAccess: UserEntity?
+    ): Observable<Boolean> =
+        db.getListEntity(
+            users,
+            profile.users,
+            null,
+            DatabaseConstant.CollectionConstant.PROFILE_COLLECTION,
+            UserAdapter
+        )
 
-        //Assert that the database correctly setted the value
-        val result = FirestoreDatabaseProvider.userDatabase!!.firstConnexion(user, profile)
-        assert(result.value!!)
-        assert(emailSet.equals(user.email))
-        assert(nameSet.equals(user.name))
-        assert(uidSet.equals(user.uid))
-    */}
+    fun getProfileById(
+        profile: Observable<UserProfile>,
+        pid: String,
+        userAccess: UserEntity?
+    ): Observable<Boolean> =
+        db.getEntity(
+            profile,
+            pid,
+            DatabaseConstant.CollectionConstant.PROFILE_COLLECTION,
+            ProfileAdapter
+        )
 
+    fun removeProfile(profile: UserProfile, user: UserEntity?) =
+        db.deleteEntity(
+            profile.pid!!,
+            DatabaseConstant.CollectionConstant.PROFILE_COLLECTION
+        )
+    // */
 }

@@ -29,8 +29,9 @@ class HeatmapDatabaseTest {
     @Test
     fun setLocation() {
         Settings.LocationId = ""
-        HelperTestFunction.nextString.add("ici")
         val latLng = LatLng(1.0,1.0)
+
+        HelperTestFunction.nextString.add("ici")
         mackHeatmapDatabase.setLocation(latLng).observeOnce { assert(it.value) }
 
         val add = HelperTestFunction.addEntityAndGetIdQueue.peek()!!

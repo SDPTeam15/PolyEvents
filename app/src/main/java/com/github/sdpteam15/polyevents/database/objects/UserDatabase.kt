@@ -68,40 +68,33 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
         val ended = Observable<Boolean>()
 
         profile.users.add(user.uid)
-        val updater: () -> Unit = {
-            user.profiles.add(profile.pid!!)
-            db.setEntity(
-                user,
-                user.uid,
-                USER_COLLECTION,
-                UserAdapter
-            ).updateOnce(ended)
-        }
 
-        if (profile.pid == null)
-            db.addEntityAndGetId(
-                profile,
-                PROFILE_COLLECTION,
-                ProfileAdapter
-            ).observeOnce {
-                if (it.value != "") {
-                    profile.pid = it.value
-                    updater()
-                } else
-                    ended.postValue(false, it.sender)
-            }
-        else
-            db.setEntity(
-                profile,
-                profile.pid!!,
-                PROFILE_COLLECTION,
-                ProfileAdapter
-            ).observeOnce {
-                if (it.value)
-                    updater()
-                else
-                    ended.postValue(false, it.sender)
-            }
+        (if (profile.pid == null) db.addEntityAndGetId(
+            profile,
+            PROFILE_COLLECTION,
+            ProfileAdapter
+        ).mapOnce {
+            if (it != "")
+                profile.pid = it
+            it != ""
+        }.then
+        else db.setEntity(
+            profile,
+            profile.pid!!,
+            PROFILE_COLLECTION,
+            ProfileAdapter
+        )).observeOnce {
+            if (it.value) {
+                user.profiles.add(profile.pid!!)
+                db.setEntity(
+                    user,
+                    user.uid,
+                    USER_COLLECTION,
+                    UserAdapter
+                ).updateOnce(ended)
+            } else
+                ended.postValue(false, it.sender)
+        }
         return ended
     }
 

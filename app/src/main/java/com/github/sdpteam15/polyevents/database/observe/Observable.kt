@@ -5,6 +5,7 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.run
+import java.util.logging.Level
 
 
 /**
@@ -264,7 +265,7 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
      * @param newValue the new value
      * @param sender The source of the event.
      */
-    fun postValue(newValue: T, sender: Any? = null) {
+    fun postValue(newValue: T, sender: Any? = null) : AfterRemovable<Observable<T>> {
         synchronized(this) { updateArgs = UpdateArgs(newValue, sender); }
         run(Runnable {
             val toRemove = mutableListOf<(UpdateArgs<T>) -> Boolean>()
@@ -274,5 +275,6 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
             for (obs in toRemove)
                 leave(obs)
         })
+        return AfterRemovable(this, { true })
     }
 }
