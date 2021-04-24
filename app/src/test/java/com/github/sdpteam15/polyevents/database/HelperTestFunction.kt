@@ -3,6 +3,7 @@ package com.github.sdpteam15.polyevents.database
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.util.AdapterToDocumentInterface
+import org.mockito.Mockito
 import org.mockito.kotlin.anyOrNull
 import java.util.*
 import org.mockito.Mockito.`when` as When
@@ -73,9 +74,10 @@ object HelperTestFunction {
         (getListEntityQueue as LinkedList).clear()
     }
 
-    inline fun <reified T : Any> mockFor(mokeDatabaseInterface: DatabaseInterface) {
+    fun mockFor() : DatabaseInterface {
+        val mokeDatabaseInterface = Mockito.mock(DatabaseInterface::class.java)
         When(
-            mokeDatabaseInterface.addEntityAndGetId<T>(
+            mokeDatabaseInterface.addEntityAndGetId(
                 anyOrNull(),
                 anyOrNull(),
                 anyOrNull()
@@ -84,15 +86,15 @@ object HelperTestFunction {
             val iterator = it!!.arguments.iterator()
             addEntityAndGetIdQueue.add(
                 addEntityAndGetIdArgs(
-                    iterator.next() as T,
+                    iterator.next() as Any,
                     iterator.next() as DatabaseConstant.CollectionConstant,
-                    iterator.next() as AdapterToDocumentInterface<T>,
+                    iterator.next() as AdapterToDocumentInterface<Any>,
                 )
             )
             Observable(nextString.peek() ?: "")
         }
         When(
-            mokeDatabaseInterface.addEntity<T>(
+            mokeDatabaseInterface.addEntity(
                 anyOrNull(),
                 anyOrNull(),
                 anyOrNull()
@@ -100,15 +102,15 @@ object HelperTestFunction {
         ).thenAnswer {
             addEntityQueue.add(
                 addEntityArgs(
-                    it!!.arguments[0] as T,
+                    it!!.arguments[0] as Any,
                     it!!.arguments[1] as DatabaseConstant.CollectionConstant,
-                    it!!.arguments[2] as AdapterToDocumentInterface<T>,
+                    it!!.arguments[2] as AdapterToDocumentInterface<Any>,
                 )
             )
             Observable(nextBoolean.peek() ?: true)
         }
         When(
-            mokeDatabaseInterface.setEntity<T>(
+            mokeDatabaseInterface.setEntity(
                 anyOrNull(),
                 anyOrNull(),
                 anyOrNull(),
@@ -118,10 +120,10 @@ object HelperTestFunction {
             val iterator = it!!.arguments.iterator()
             setEntityQueue.add(
                 setEntityArgs(
-                    iterator.next() as T,
+                    iterator.next() as Any,
                     iterator.next() as String,
                     iterator.next() as DatabaseConstant.CollectionConstant,
-                    iterator.next() as AdapterToDocumentInterface<T>?,
+                    iterator.next() as AdapterToDocumentInterface<Any>?,
                 )
             )
             Observable(nextBoolean.peek() ?: true)
@@ -142,7 +144,7 @@ object HelperTestFunction {
             Observable(nextBoolean.peek() ?: true)
         }
         When(
-            mokeDatabaseInterface.getEntity<T>(
+            mokeDatabaseInterface.getEntity<Any>(
                 anyOrNull(),
                 anyOrNull(),
                 anyOrNull(),
@@ -152,16 +154,16 @@ object HelperTestFunction {
             val iterator = it!!.arguments.iterator()
             getEntityQueue.add(
                 getEntityArgs(
-                    iterator.next() as Observable<T>,
+                    iterator.next() as Observable<Any>,
                     iterator.next() as String,
                     iterator.next() as DatabaseConstant.CollectionConstant,
-                    iterator.next() as AdapterToDocumentInterface<T>?,
+                    iterator.next() as AdapterToDocumentInterface<Any>?,
                 )
             )
             Observable(nextBoolean.peek() ?: true)
         }
         When(
-            mokeDatabaseInterface.getListEntity<T>(
+            mokeDatabaseInterface.getListEntity<Any>(
                 anyOrNull(),
                 anyOrNull(),
                 anyOrNull(),
@@ -172,14 +174,15 @@ object HelperTestFunction {
             val iterator = it!!.arguments.iterator()
             getListEntityQueue.add(
                 getListEntityArgs(
-                    iterator.next() as ObservableList<T>,
+                    iterator.next() as ObservableList<Any>,
                     iterator.next() as String?,
                     iterator.next() as Matcher?,
                     iterator.next() as DatabaseConstant.CollectionConstant,
-                    iterator.next() as AdapterToDocumentInterface<T>?,
+                    iterator.next() as AdapterToDocumentInterface<Any>?,
                 )
             )
             Observable(nextBoolean.peek() ?: true)
         }
+        return mokeDatabaseInterface
     }
 }

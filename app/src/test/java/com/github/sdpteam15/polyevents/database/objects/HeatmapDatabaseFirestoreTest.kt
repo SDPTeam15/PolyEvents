@@ -21,15 +21,13 @@ class HeatmapDatabaseTest {
     lateinit var mockDatabaseInterface : DatabaseInterface
     @Before
     fun setup() {
-        mockDatabaseInterface = Mockito.mock(DatabaseInterface::class.java)
+        mockDatabaseInterface = HelperTestFunction.mockFor()
         mackHeatmapDatabase = HeatmapDatabase(mockDatabaseInterface)
         HelperTestFunction.clearQueue()
     }
 
     @Test
     fun setLocation() {
-        HelperTestFunction.mockFor<DeviceLocation>(mockDatabaseInterface)
-
         Settings.LocationId = ""
         HelperTestFunction.nextString.add("ici")
         val latLng = LatLng(1.0,1.0)
@@ -55,8 +53,6 @@ class HeatmapDatabaseTest {
 
     @Test
     fun getLocations(){
-        HelperTestFunction.mockFor<LatLng>(mockDatabaseInterface)
-
         HelperTestFunction.nextBoolean.add(true)
         mackHeatmapDatabase.getLocations(ObservableList<LatLng>().observeOnce { assert(it.value.isNotEmpty()) }.then).observeOnce { assert(it.value) }
 
