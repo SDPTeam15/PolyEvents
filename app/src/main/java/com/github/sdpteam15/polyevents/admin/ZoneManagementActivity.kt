@@ -152,7 +152,6 @@ class ZoneManagementActivity : AppCompatActivity() {
      * Handle the zone creation event
      */
     private fun createZone() {
-        //TODO: Modify the id of the area on google map after creating the zone on firebase
         //Create a new zone based on the fields
         val name = etName.text.toString()
         val desc = etDesc.text.toString()

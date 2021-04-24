@@ -66,5 +66,11 @@ interface ZoneDatabaseInterface {
         userAccess: UserEntity? = currentUser
     ): Observable<Boolean>
 
+    /**
+     * Deletes a zone from the database
+     * @param zone zone to delete
+     * @param userAccess the user profile to use its permission
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
     fun deleteZone(zone: Zone, userAccess: UserEntity? = currentUser): Observable<Boolean>
 }
