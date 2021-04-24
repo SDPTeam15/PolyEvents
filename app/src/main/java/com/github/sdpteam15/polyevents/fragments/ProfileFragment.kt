@@ -36,7 +36,6 @@ class ProfileFragment : Fragment() {
         get() = field ?: currentDatabase.currentUser
 
     val userInfoLiveData = Observable<UserEntity>()
-    val hashMapNewInfo = HashMap<String, String>()
     lateinit var profileNameET: EditText
     lateinit var profileEmailET: EditText
     lateinit var profileUsernameET: EditText
@@ -88,16 +87,13 @@ class ProfileFragment : Fragment() {
         )
 
         viewRoot.findViewById<Button>(R.id.btnUpdateInfos).setOnClickListener {
-            //Clear the previous map and add every field
-            hashMapNewInfo.clear()
-            hashMapNewInfo[USER_USERNAME.value] = profileUsernameET.text.toString()
+            currentUser!!.name = profileUsernameET.text.toString()
             // TODO: editText should have birthday input and convert it to Timestamp otherwise things crash
             //hashMapNewInfo[USER_BIRTH_DATE] = viewRoot.findViewById<EditText>(R.id.profileBirthdayET).text.toString()
 
             //Call the DB to update the user information and getUserInformation once it is done
             currentDatabase.userDatabase!!.updateUserInformation(
-                hashMapNewInfo,
-                currentUser!!.uid
+                currentUser!!
             )
                 .observe(this) { newValue ->
                     if (newValue.value) {

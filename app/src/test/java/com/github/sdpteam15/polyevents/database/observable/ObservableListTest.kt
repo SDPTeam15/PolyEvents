@@ -32,8 +32,8 @@ class ObservableListTest {
         isUpdateAdd = false
         isUpdate = false
 
-        suppressorAdd()
-        suppressor()
+        suppressorAdd.remove()
+        suppressor.remove()
 
         list.add(1)
 
@@ -71,8 +71,8 @@ class ObservableListTest {
         isUpdateAdd = false
         isUpdate = false
 
-        suppressorAdd()
-        suppressor()
+        suppressorAdd.remove()
+        suppressor.remove()
 
         list.add(0, 1)
 
@@ -107,8 +107,8 @@ class ObservableListTest {
         isUpdateRemove = false
         isUpdate = false
 
-        suppressorRemove()
-        suppressor()
+        suppressorRemove.remove()
+        suppressor.remove()
 
         list.remove(1)
 
@@ -139,8 +139,8 @@ class ObservableListTest {
         isUpdateUpdate = false
         isUpdate = false
 
-        suppressorUpdate()
-        suppressor()
+        suppressorUpdate.remove()
+        suppressor.remove()
 
         list[0] = 0
 
@@ -171,8 +171,8 @@ class ObservableListTest {
         isUpdateUpdate = false
         isUpdate = false
 
-        suppressorUpdate()
-        suppressor()
+        suppressorUpdate.remove()
+        suppressor.remove()
 
         observable[0] = 0
 

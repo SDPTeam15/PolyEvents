@@ -211,10 +211,6 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         adapter: AdapterToDocumentInterface<T>
     ): Observable<String> {
         val ended = Observable<String>()
-        val task = firestore!!
-            .collection(collection.value)
-            .add(adapter.toDocument(element))
-
         lastAddSuccessListener =
             OnSuccessListener<DocumentReference> { ended.postValue(it.id, this) }
         lastFailureListener = OnFailureListener {
@@ -222,8 +218,9 @@ object FirestoreDatabaseProvider : DatabaseInterface {
                 Log.d(this::class.qualifiedName, it.message!!)
             ended.postValue("", this)
         }
-
-        task.addOnSuccessListener(lastAddSuccessListener!!)
+        firestore!!
+            .collection(collection.value)
+            .add(adapter.toDocument(element)).addOnSuccessListener(lastAddSuccessListener!!)
             .addOnFailureListener(lastFailureListener!!)
         return ended
     }
@@ -232,13 +229,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         element: T,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterToDocumentInterface<T>
-    ): Observable<Boolean> {
-        val ended = Observable<Boolean>()
-        addEntityAndGetId(element, collection, adapter).observeOnce {
-            ended.postValue(it.value != "", this)
-        }
-        return ended
-    }
+    ): Observable<Boolean> = addEntityAndGetId(element, collection, adapter).mapOnce{ it != "" }.then
 
     override fun <T> setEntity(
         element: T?,
@@ -247,15 +238,6 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         adapter: AdapterToDocumentInterface<T>?
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
-        val document = firestore!!
-            .collection(collection.value)
-            .document(id)
-
-        val task = if (element == null || adapter == null) {
-            document.delete()
-        } else {
-            document.set(adapter.toDocument(element))
-        }
 
         lastSetSuccessListener = OnSuccessListener<Void> { ended.postValue(true, this) }
         lastFailureListener = OnFailureListener {
@@ -263,10 +245,13 @@ object FirestoreDatabaseProvider : DatabaseInterface {
                 Log.d(this::class.qualifiedName, it.message!!)
             ended.postValue(false, this)
         }
-
-        task.addOnSuccessListener(lastSetSuccessListener!!)
-        task.addOnFailureListener(lastFailureListener!!)
-
+        val document = firestore!!
+            .collection(collection.value)
+            .document(id)
+        (if (element == null || adapter == null) document.delete()
+        else document.set(adapter.toDocument(element)))
+            .addOnSuccessListener(lastSetSuccessListener!!)
+            .addOnFailureListener(lastFailureListener!!)
         return ended
     }
 
@@ -282,7 +267,6 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         adapter: AdapterFromDocumentInterface<T>
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
-
         lastGetSuccessListener = OnSuccessListener {
             if (it.data != null) {
                 element.postValue(adapter.fromDocument(it.data!!, it.id), this)
@@ -290,19 +274,16 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             }
             ended.postValue(false, this)
         }
-
         lastFailureListener = OnFailureListener {
             if (it.message != null)
                 Log.d(this::class.qualifiedName, it.message!!)
             ended.postValue(false, this)
         }
-
-        val task = firestore!!.collection(collection.value)
+        firestore!!.collection(collection.value)
             .document(id)
             .get()
-
-        task.addOnFailureListener(lastFailureListener!!)
-        task.addOnSuccessListener(lastGetSuccessListener!!)
+            .addOnFailureListener(lastFailureListener!!)
+            .addOnSuccessListener(lastGetSuccessListener!!)
         return ended
     }
 

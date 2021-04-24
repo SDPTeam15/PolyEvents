@@ -12,10 +12,6 @@ import androidx.core.app.ActivityCompat.RequestPermissionsRequestCodeValidator
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.OnLifecycleEvent
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.google.android.gms.location.LocationServices
@@ -99,7 +95,7 @@ object HelperFunctions {
     fun getLoc(activity: Activity): Observable<LatLng?> {
         val end = Observable<LatLng?>()
         LocationServices.getFusedLocationProviderClient(activity).lastLocation.addOnSuccessListener {
-            if(it != null)
+            if (it != null)
                 end.postValue(
                     LatLng(it.latitude, it.longitude)
                 )
@@ -116,16 +112,6 @@ object HelperFunctions {
         } catch (e: RuntimeException) {
             runnable.run()
         }
-    }
-
-    fun observeOnDestroy(lifecycle: LifecycleOwner, result: () -> Boolean): () -> Boolean {
-        //Anonymous class to observe the ON_STOP Event ao the Activity/Fragment
-        val lifecycleObserver = object : LifecycleObserver {
-            @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-            fun stopListener() = result()
-        }
-        lifecycle.lifecycle.addObserver(lifecycleObserver)
-        return result
     }
 
     /**

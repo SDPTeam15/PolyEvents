@@ -20,26 +20,22 @@ interface UserDatabaseInterface {
     // TODO: Do we need userAccess for these methods? (Might do these with security rules)
     /**
      * Update the user information in the database
-     * @param newValues : a map with the new value to set in the database
-     * @param uid : the uid of the user from which we want to query the information
-     * @param userAccess: the user profile to use its permission
+     * @param user the user from which we want to query the information
+     * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun updateUserInformation(
-        newValues: Map<String, String>,
-        uid: String,
+        user: UserEntity,
         userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**
      * Register the user in the database with its basic information (uid, email, name)
      * @param user : user with all the requested information
-     * @param userAccess: the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun firstConnexion(
-        user: UserEntity,
-        userAccess: UserProfile? = currentProfile
+        user: UserEntity
     ): Observable<Boolean>
 
     /**
@@ -64,7 +60,7 @@ interface UserDatabaseInterface {
      */
     fun getUserInformation(
         user: Observable<UserEntity>,
-        uid: String? = currentUser?.uid,
+        uid: String = currentUser!!.uid,
         userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 

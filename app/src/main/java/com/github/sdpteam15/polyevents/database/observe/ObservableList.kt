@@ -1,7 +1,6 @@
 package com.github.sdpteam15.polyevents.database.observe
 
 import androidx.lifecycle.LifecycleOwner
-import com.github.sdpteam15.polyevents.helper.HelperFunctions.observeOnDestroy
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.run
 
 class IndexedValue<T>(val value: T, val index: Int)
@@ -85,7 +84,7 @@ class ObservableList<T> : MutableList<T> {
                             ), it.sender
                         )
                     )
-                }
+                }.remove
             itemAdded(UpdateArgs(IndexedValue(observable.value!!, index), sender))
             if (notify) {
                 notifyUpdate(sender)
@@ -237,7 +236,7 @@ class ObservableList<T> : MutableList<T> {
                             ), it.sender
                         )
                     )
-                }
+                }.remove
             itemAdded(UpdateArgs(IndexedValue(observable.value!!, index), sender))
             if (notify) {
                 notifyUpdate(sender)
@@ -278,6 +277,7 @@ class ObservableList<T> : MutableList<T> {
         notifyUpdate(sender)
         return res
     }
+
     override fun addAll(index: Int, elements: Collection<T>) = addAll(index, elements, null)
 
     /**
@@ -290,7 +290,7 @@ class ObservableList<T> : MutableList<T> {
         var i = 0
         val toremove = mutableListOf<Observable<T>>()
         for (item in values) {
-            if(item.value !in items)
+            if (item.value !in items)
                 toremove.add(item)
         }
         for (item in toremove)
@@ -298,6 +298,7 @@ class ObservableList<T> : MutableList<T> {
         notifyUpdate(sender)
         return values.size != 0
     }
+
     override fun retainAll(elements: Collection<T>): Boolean =
         retainAll(elements, null)
 
@@ -310,9 +311,9 @@ class ObservableList<T> : MutableList<T> {
      *  @param observer observer for the live data additions
      *  @return a method to remove the observer
      */
-    fun observeAddWithIndexWhileTrue(observer: (UpdateArgs<IndexedValue<T>>) -> Boolean): () -> Boolean {
+    fun observeAddWithIndexWhileTrue(observer: (UpdateArgs<IndexedValue<T>>) -> Boolean): Observable.AfterRemovable<ObservableList<T>> {
         observersAdd.add(observer)
-        return { leaveAdd(observer) }
+        return Observable.AfterRemovable(this, { leaveAdd(observer) })
     }
 
     /**
@@ -325,7 +326,7 @@ class ObservableList<T> : MutableList<T> {
         lifecycle: LifecycleOwner,
         observer: (UpdateArgs<IndexedValue<T>>) -> Boolean
     ) =
-        observeOnDestroy(lifecycle, observeAddWithIndexWhileTrue(observer))
+        Observable.observeOnDestroy(lifecycle, observeAddWithIndexWhileTrue(observer))
 
     /**
      *  Add an observer for the live data additions while it return true
@@ -343,7 +344,7 @@ class ObservableList<T> : MutableList<T> {
      *  @return a method to remove the observer
      */
     fun observeAddWhileTrue(lifecycle: LifecycleOwner, observer: (UpdateArgs<T>) -> Boolean) =
-        observeOnDestroy(lifecycle, observeAddWhileTrue(observer))
+        Observable.observeOnDestroy(lifecycle, observeAddWhileTrue(observer))
 
     /**
      *  Add an observer for the live data additions
@@ -366,7 +367,7 @@ class ObservableList<T> : MutableList<T> {
         lifecycle: LifecycleOwner,
         observer: (UpdateArgs<IndexedValue<T>>) -> Unit
     ) =
-        observeOnDestroy(lifecycle, observeAddWithIndex(observer))
+        Observable.observeOnDestroy(lifecycle, observeAddWithIndex(observer))
 
     /**
      *  Add an observer for the live data additions
@@ -385,7 +386,7 @@ class ObservableList<T> : MutableList<T> {
      *  @return a method to remove the observer
      */
     fun observeAdd(lifecycle: LifecycleOwner, observer: (UpdateArgs<T>) -> Unit) =
-        observeOnDestroy(lifecycle, observeAdd(observer))
+        Observable.observeOnDestroy(lifecycle, observeAdd(observer))
 
     /**
      *  Add an observer for the live data additions once
@@ -408,7 +409,7 @@ class ObservableList<T> : MutableList<T> {
         lifecycle: LifecycleOwner,
         observer: (UpdateArgs<IndexedValue<T>>) -> Unit
     ) =
-        observeOnDestroy(lifecycle, observeAddWithIndexOnce(observer))
+        Observable.observeOnDestroy(lifecycle, observeAddWithIndexOnce(observer))
 
     /**
      *  Add an observer for the live data additions once
@@ -427,7 +428,7 @@ class ObservableList<T> : MutableList<T> {
      *  @return a method to remove the observer
      */
     fun observeAddOnce(lifecycle: LifecycleOwner, observer: (UpdateArgs<T>) -> Unit) =
-        observeOnDestroy(lifecycle, observeAddOnce(observer))
+        Observable.observeOnDestroy(lifecycle, observeAddOnce(observer))
 
     /**
      *  remove an observer for the live data
@@ -441,9 +442,9 @@ class ObservableList<T> : MutableList<T> {
      *  @param observer observer for the live data removals
      *  @return a method to remove the observer
      */
-    fun observeRemoveWhileTrue(observer: (UpdateArgs<T>) -> Boolean): () -> Boolean {
+    fun observeRemoveWhileTrue(observer: (UpdateArgs<T>) -> Boolean): Observable.AfterRemovable<ObservableList<T>> {
         observersRemove.add(observer)
-        return { leaveRemove(observer) }
+        return Observable.AfterRemovable(this, { leaveRemove(observer) })
     }
 
     /**
@@ -454,8 +455,8 @@ class ObservableList<T> : MutableList<T> {
     fun observeRemoveWhileTrue(
         lifecycle: LifecycleOwner,
         observer: (UpdateArgs<T>) -> Boolean
-    ): () -> Boolean =
-        observeOnDestroy(lifecycle, observeRemoveWhileTrue(observer))
+    ) =
+        Observable.observeOnDestroy(lifecycle, observeRemoveWhileTrue(observer))
 
     /**
      *  Add an observer for the live data removals
@@ -474,7 +475,7 @@ class ObservableList<T> : MutableList<T> {
      *  @return a method to remove the observer
      */
     fun observeRemove(lifecycle: LifecycleOwner, observer: (UpdateArgs<T>) -> Unit) =
-        observeOnDestroy(lifecycle, observeRemove(observer))
+        Observable.observeOnDestroy(lifecycle, observeRemove(observer))
 
     /**
      *  Add an observer for the live data removals once
@@ -495,7 +496,7 @@ class ObservableList<T> : MutableList<T> {
     fun observeRemoveOnce(
         lifecycle: LifecycleOwner,
         observer: (UpdateArgs<T>) -> Unit
-    ) = observeOnDestroy(lifecycle, observeRemove(observer))
+    ) = Observable.observeOnDestroy(lifecycle, observeRemove(observer))
 
     /**
      *  remove an observer for the live data
@@ -509,9 +510,9 @@ class ObservableList<T> : MutableList<T> {
      *  @param observer observer for the live data updating
      *  @return a method to remove the observer
      */
-    fun observeUpdateWhileTrue(observer: (UpdateArgs<IndexedValue<T>>) -> Boolean): () -> Boolean {
+    fun observeUpdateWhileTrue(observer: (UpdateArgs<IndexedValue<T>>) -> Boolean): Observable.AfterRemovable<ObservableList<T>> {
         observersItemUpdate.add(observer)
-        return { leaveUpdate(observer) }
+        return Observable.AfterRemovable(this, { leaveUpdate(observer) })
     }
 
     /**
@@ -523,7 +524,7 @@ class ObservableList<T> : MutableList<T> {
     fun observeUpdateWhileTrue(
         lifecycle: LifecycleOwner,
         observer: (UpdateArgs<IndexedValue<T>>) -> Boolean
-    ) = observeOnDestroy(lifecycle, observeUpdateWhileTrue(observer))
+    ) = Observable.observeOnDestroy(lifecycle, observeUpdateWhileTrue(observer))
 
     /**
      *  Add an observer for the live data updating
@@ -544,7 +545,7 @@ class ObservableList<T> : MutableList<T> {
     fun observeUpdate(
         lifecycle: LifecycleOwner,
         observer: (UpdateArgs<IndexedValue<T>>) -> Unit
-    ) = observeOnDestroy(lifecycle, observeUpdate(observer))
+    ) = Observable.observeOnDestroy(lifecycle, observeUpdate(observer))
 
     /**
      *  Add an observer for the live data updating once
@@ -566,7 +567,7 @@ class ObservableList<T> : MutableList<T> {
     fun observeUpdateOnce(
         lifecycle: LifecycleOwner,
         observer: (UpdateArgs<IndexedValue<T>>) -> Unit
-    ) = observeOnDestroy(lifecycle, observeUpdate(observer))
+    ) = Observable.observeOnDestroy(lifecycle, observeUpdate(observer))
 
     /**
      *  remove an observer for the live data
@@ -581,9 +582,9 @@ class ObservableList<T> : MutableList<T> {
      *  @param observer observer for the live data
      *  @return a method to remove the observer
      */
-    fun observeWhileTrue(observer: (UpdateArgs<List<T>>) -> Boolean): () -> Boolean {
+    fun observeWhileTrue(observer: (UpdateArgs<List<T>>) -> Boolean): Observable.AfterRemovable<ObservableList<T>> {
         observers.add(observer)
-        return { leave(observer) }
+        return Observable.AfterRemovable(this, { leave(observer) })
     }
 
     /**
@@ -593,7 +594,7 @@ class ObservableList<T> : MutableList<T> {
      *  @return a method to remove the observer
      */
     fun observeWhileTrue(lifecycle: LifecycleOwner, observer: (UpdateArgs<List<T>>) -> Boolean) =
-        observeOnDestroy(lifecycle, observeWhileTrue(observer))
+        Observable.observeOnDestroy(lifecycle, observeWhileTrue(observer))
 
     /**
      *  Add an observer for the live data
@@ -612,7 +613,7 @@ class ObservableList<T> : MutableList<T> {
      *  @return a method to remove the observer
      */
     fun observe(lifecycle: LifecycleOwner, observer: (UpdateArgs<List<T>>) -> Unit) =
-        observeOnDestroy(lifecycle, observe(observer))
+        Observable.observeOnDestroy(lifecycle, observe(observer))
 
     /**
      *  Add an observer for the live data once
@@ -631,7 +632,7 @@ class ObservableList<T> : MutableList<T> {
      *  @return a method to remove the observer
      */
     fun observeOnce(lifecycle: LifecycleOwner, observer: (UpdateArgs<List<T>>) -> Unit) =
-        observeOnDestroy(lifecycle, observeOnce(observer))
+        Observable.observeOnDestroy(lifecycle, observeOnce(observer))
 
     /**
      *  remove an observer for the live data

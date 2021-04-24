@@ -1,53 +1,40 @@
 package com.github.sdpteam15.polyevents.database.objects
 
-import android.annotation.SuppressLint
-import com.github.sdpteam15.polyevents.database.DatabaseConstant
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.PROFILE_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.USER_COLLECTION
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.UserConstants.USER_UID
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
-import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 import com.github.sdpteam15.polyevents.util.ProfileAdapter
 import com.github.sdpteam15.polyevents.util.UserAdapter
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 
 class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
-    @SuppressLint("StaticFieldLeak")
-    var firestore: FirebaseFirestore? = null
-        get() = field ?: Firebase.firestore
-
     override var firstConnectionUser: UserEntity = UserEntity(uid = "DEFAULT")
 
     var profiles: MutableList<UserProfile> = mutableListOf()
 
     override fun updateUserInformation(
-        newValues: Map<String, String>,
-        uid: String,
-        userAccess: UserProfile?
-    ): Observable<Boolean> = FirestoreDatabaseProvider.thenDoSet(
-        firestore!!.collection(USER_COLLECTION.value)
-            .document(uid)
-            .update(newValues as Map<String, Any>)
-    )
-
-    override fun firstConnexion(
         user: UserEntity,
         userAccess: UserProfile?
+    ): Observable<Boolean> =
+        db.setEntity(
+            user,
+            user.uid,
+            USER_COLLECTION,
+            UserAdapter
+        )
+
+    override fun firstConnexion(
+        user: UserEntity
     ): Observable<Boolean> {
         firstConnectionUser = user
-
-        return FirestoreDatabaseProvider.thenDoSet(
-            firestore!!.collection(USER_COLLECTION.value)
-                .document(user.uid)
-                .set(firstConnectionUser)
+        return db.setEntity(
+            user,
+            user.uid,
+            USER_COLLECTION,
+            UserAdapter
         )
     }
 
@@ -55,30 +42,23 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
         isInDb: Observable<Boolean>,
         uid: String,
         userAccess: UserProfile?
-    ): Observable<Boolean> = FirestoreDatabaseProvider.thenDoGet(
-        firestore!!.collection(USER_COLLECTION.value)
-            .whereEqualTo(USER_UID.value, uid)
-            .limit(1)
-            .get()
-    ) { doc: QuerySnapshot ->
-        if (doc.documents.size == 1) {
-            isInDb.postValue(true)
-        } else {
-            isInDb.postValue(false)
-        }
-    }
+    ) = db.getEntity(
+        Observable(),
+        uid,
+        USER_COLLECTION,
+        UserAdapter
+    ).updateOnce(isInDb).then
 
     override fun getUserInformation(
         user: Observable<UserEntity>,
-        uid: String?,
+        uid: String,
         userAccess: UserProfile?
-    ): Observable<Boolean> = FirestoreDatabaseProvider.thenDoMultGet(
-        firestore!!.collection(USER_COLLECTION.value)
-            .document(uid!!)
-            .get()
-    ) {
-        it.data?.let { it1 -> user.postValue(UserAdapter.fromDocument(it1, it.id), this) }
-    }
+    ) = db.getEntity(
+        user,
+        uid,
+        USER_COLLECTION,
+        UserAdapter
+    )
 
     override fun addUserProfileAndAddToUser(
         profile: UserProfile,
@@ -88,16 +68,14 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
         val ended = Observable<Boolean>()
 
         profile.users.add(user.uid)
-        val updater : () -> Unit = {
+        val updater: () -> Unit = {
             user.profiles.add(profile.pid!!)
             db.setEntity(
                 user,
                 user.uid,
                 USER_COLLECTION,
                 UserAdapter
-            ).observeOnce {
-                ended.postValue(it.value, it.sender)
-            }
+            ).updateOnce(ended)
         }
 
         if (profile.pid == null)
@@ -106,11 +84,10 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
                 PROFILE_COLLECTION,
                 ProfileAdapter
             ).observeOnce {
-                if(it.value != "") {
+                if (it.value != "") {
                     profile.pid = it.value
                     updater()
-                }
-                else
+                } else
                     ended.postValue(false, it.sender)
             }
         else
@@ -120,7 +97,7 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
                 PROFILE_COLLECTION,
                 ProfileAdapter
             ).observeOnce {
-                if(it.value)
+                if (it.value)
                     updater()
                 else
                     ended.postValue(false, it.sender)
@@ -154,14 +131,14 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
                         profile.pid!!,
                         PROFILE_COLLECTION,
                         ProfileAdapter
-                    )).observeOnce { end.postValue(it.value, it.sender) }
+                    )).updateOnce(end)
             } else
                 end.postValue(it1.value, it1.sender)
         }
         return end
     }
 
-    override fun updateProfile(profile: UserProfile, userAccess: UserEntity?): Observable<Boolean> =
+    override fun updateProfile(profile: UserProfile, userAccess: UserEntity?) =
         db.setEntity(
             profile,
             profile.pid!!,

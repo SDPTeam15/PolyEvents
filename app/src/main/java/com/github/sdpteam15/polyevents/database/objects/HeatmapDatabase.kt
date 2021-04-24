@@ -76,7 +76,7 @@ class HeatmapDatabase(private val db: DatabaseInterface) : HeatmapDatabaseInterf
                     )*/
                     query = query.whereGreaterThan(
                         DatabaseConstant.LocationConstant.LOCATIONS_TIME.value,
-                        HelperFunctions.LocalDateToTimeToDate(
+                        HelperFunctions.localDateTimeToDate(
                             LocalDateTime.now().minusMinutes(10)
                         )!!
                     )

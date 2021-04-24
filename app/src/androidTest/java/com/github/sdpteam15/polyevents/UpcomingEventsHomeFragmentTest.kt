@@ -1,6 +1,9 @@
 package com.github.sdpteam15.polyevents
 
 
+import android.content.Intent
+import androidx.test.core.app.ActivityScenario
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -11,28 +14,30 @@ import androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiT
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.NUMBER_UPCOMING_EVENTS
+import com.github.sdpteam15.polyevents.database.objects.EventDatabaseInterface
+import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabase
-import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabaseEvent
 import com.github.sdpteam15.polyevents.fragments.HomeFragment
+import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.Event
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito.mock
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.anyOrNull
 import java.time.LocalDateTime
+import org.mockito.Mockito.`when` as When
 
 
 @RunWith(MockitoJUnitRunner::class)
 class UpcomingEventsHomeFragmentTest {
 
     var events = ObservableList<Event>()
-
-    @Rule
-    @JvmField
-    var mainActivity = ActivityScenarioRule(MainActivity::class.java)
+    lateinit var scenario : ActivityScenario<MainActivity>
 
     @Before
     fun setup() {
@@ -85,30 +90,32 @@ class UpcomingEventsHomeFragmentTest {
             )
         )
 
-
-        // Set the activities query helper in home fragment
-        val homeFragment = MainActivity.fragments[R.id.ic_home] as HomeFragment
-        currentDatabase = FakeDatabase
-        FakeDatabase.userToNull = true
-        FakeDatabaseEvent.events.clear()
-        for (event in eventsToAdd) {
-            currentDatabase.eventDatabase!!.createEvent(event)
+        val mockDatabaseInterface = HelperTestFunction.defaultMockDatabase()
+        val mockEventDatabase = mock(EventDatabaseInterface::class.java)
+        currentDatabase = mockDatabaseInterface
+        When(mockDatabaseInterface.eventDatabase).thenReturn(mockEventDatabase)
+        When(mockEventDatabase!!.getEvents(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer{
+            val list = mutableListOf<Event>()
+            var i = 0
+            for (e in eventsToAdd){
+                list.add(e)
+                if(++i >= it!!.arguments[1] as Long)
+                    break;
+            }
+            (it!!.arguments[2] as ObservableList<Event>).addAll(list)
+            Observable(true)
         }
-        currentDatabase.eventDatabase!!.getEvents(null, null, events)
 
-        // Update the content to use the mock activities query helper
-        runOnUiThread {
-            // Stuff that updates the UI
-            homeFragment.updateContent()
-        }
 
-        // Initially should be on home fragment but click on it if it gets modified
+        val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
+        scenario = ActivityScenario.launch(intent)
+
         Espresso.onView(withId(R.id.ic_home)).perform(click())
     }
 
     @After
     fun tearDown() {
-        FakeDatabase.userToNull = false
+        scenario.close()
         currentDatabase = FirestoreDatabaseProvider
     }
 
