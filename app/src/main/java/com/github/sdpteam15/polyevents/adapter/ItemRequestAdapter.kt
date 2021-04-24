@@ -1,12 +1,10 @@
 package com.github.sdpteam15.polyevents.adapter
 
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.TextView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
@@ -20,6 +18,7 @@ import com.github.sdpteam15.polyevents.model.Item
  * - A listener that will be triggered on click on a checkbox of an item view holder
  */
 class ItemRequestAdapter(
+    private val itemTypes : ObservableList<String>,
     private val availableItems: ObservableList<Pair<Item, Int>>,
     private val onItemQuantityChangeListener: (Item, Int) -> Unit
 ) : RecyclerView.Adapter<ItemRequestAdapter.ItemViewHolder>() {
@@ -28,16 +27,26 @@ class ItemRequestAdapter(
      * Adapted ViewHolder for each item
      * Takes the corresponding item "tab" view
      */
-    inner class ItemViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
-
+    inner class ItemViewHolder(private val view: View, private val parent: ViewGroup) : RecyclerView.ViewHolder(view) {
+/*
         private val itemName = view.findViewById<TextView>(R.id.id_item_name)
         private val itemQuantity = view.findViewById<EditText>(R.id.id_item_quantity)
+*/
+        val itemTypeSpinner = view.findViewById<Spinner>(R.id.spinner_item_type)
+
 
         /**
          * Binds the value of the item to the layout of the item tab
          */
-        fun bind(item: Pair<Item, Int>) {
-            itemName.text =
+        fun bind(itemType: String) {
+            val items = mutableListOf<Pair<Item,Int>>()
+            for(item in availableItems){
+                if(item.first.itemType == itemType){
+                    items.add(item)
+                }
+            }
+            itemTypeSpinner.adapter = ArrayAdapter(parent.context, R.layout.card_material_item, items)
+            /*itemName.text =
                 view.context.getString(
                     R.string.item_name_quantity_text,
                     item.first.itemName,
@@ -76,13 +85,13 @@ class ItemRequestAdapter(
                         }
                     }
                 }
-            })
+            })*/
         }
 
         private fun setNegativeQuantityToZero() {
             // Value set it negative, change it to 0
             // and inform the user
-            itemQuantity.setText("0")
+            /*itemQuantity.setText("0")*/
 
             showToast(
                 view.context.getString(R.string.item_quantity_positive_text),
@@ -94,8 +103,8 @@ class ItemRequestAdapter(
             // The quantity set is too high, set it to the max quantity
             // available and inform the user
             val maxQuantity = item.second
-            itemQuantity.setText(maxQuantity.toString())
-
+            /*itemQuantity.setText(maxQuantity.toString())
+*/
             // Update the list with the max quantity available
             onItemQuantityChangeListener(item.first, maxQuantity)
 
@@ -110,16 +119,16 @@ class ItemRequestAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         val adapterLayout = LayoutInflater.from(parent.context)
-            .inflate(R.layout.card_item, parent, false)
-        return ItemViewHolder(adapterLayout)
+            .inflate(R.layout.card_material_item_category, parent, false)
+        return ItemViewHolder(adapterLayout,parent)
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        val item = availableItems[position]
-        holder.bind(item)
+        val itemType = itemTypes[position]
+        holder.bind(itemType)
     }
 
     override fun getItemCount(): Int {
-        return availableItems.size
+        return itemTypes.size
     }
 }

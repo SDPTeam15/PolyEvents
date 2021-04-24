@@ -19,6 +19,7 @@ class ItemRequestActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     lateinit var mapSelectedItems: MutableMap<Item, Int>
     private val obsItems = ObservableList<Pair<Item, Int>>()
+    private val obsItemTypes = ObservableList<String>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,9 +45,13 @@ class ItemRequestActivity : AppCompatActivity() {
         }
         currentDatabase.itemDatabase!!.getAvailableItems(obsItems).observe {
             if (it.value) {
-                recyclerView.adapter =
-                    ItemRequestAdapter(obsItems, onItemQuantityChangeListener)
-                recyclerView.setHasFixedSize(false)
+                currentDatabase.itemDatabase!!.getItemTypes(obsItemTypes).observe { it2 ->
+                    if (it2.value){
+                        recyclerView.adapter =
+                            ItemRequestAdapter(obsItemTypes,obsItems, onItemQuantityChangeListener)
+                        recyclerView.setHasFixedSize(false)
+                    }
+                }
             }
         }
     }
