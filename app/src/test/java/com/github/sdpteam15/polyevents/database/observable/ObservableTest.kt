@@ -113,6 +113,25 @@ class ObservableTest {
         v.postValue(true)
         assert(!isUpdate)
 
+        v = Observable<Boolean>()
+        observe = true
+        v.mapWhileTrue { Pair(it, observe) }.then.observe { isUpdate = it.value }
+
+        assert(!isUpdate)
+        v.postValue(true)
+        assert(isUpdate)
+        isUpdate = false
+
+        observe = false
+        assert(!isUpdate)
+        v.postValue(true)
+        assert(isUpdate)
+        isUpdate = false
+
+        assert(!isUpdate)
+        v.postValue(true)
+        assert(!isUpdate)
+
         v = Observable()
         v.mapOnce(mockedLifecycleOwner) { it }.then.observe { isUpdate = it.value }
         assert(!isUpdate)
@@ -125,7 +144,35 @@ class ObservableTest {
         assert(!isUpdate)
 
         v = Observable()
+        v.mapOnce { it }.then.observe { isUpdate = it.value }
+        assert(!isUpdate)
+        v.postValue(true)
+        assert(isUpdate)
+        isUpdate = false
+
+        assert(!isUpdate)
+        v.postValue(true)
+        assert(!isUpdate)
+
+        v = Observable()
         v.map(mockedLifecycleOwner) { it }.then.observe { isUpdate = it.value }
+        assert(!isUpdate)
+        v.postValue(true)
+        assert(isUpdate)
+        isUpdate = false
+
+        assert(!isUpdate)
+        v.postValue(true)
+        assert(isUpdate)
+        isUpdate = false
+
+        assert(!isUpdate)
+        v.postValue(true)
+        assert(isUpdate)
+        isUpdate = false
+
+        v = Observable()
+        v.map { it }.then.observe { isUpdate = it.value }
         assert(!isUpdate)
         v.postValue(true)
         assert(isUpdate)

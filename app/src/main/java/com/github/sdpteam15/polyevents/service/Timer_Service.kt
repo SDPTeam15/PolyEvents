@@ -3,14 +3,11 @@ package com.github.sdpteam15.polyevents.service
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
-import com.github.sdpteam15.polyevents.Settings.IsSendingLocationOn
-import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.database.observe.UpdateArgs
-import com.google.android.gms.maps.model.LatLng
 import java.util.*
 
 const val SERVICE_PERIOD = 30L
+
 class Timer_Service : Service() {
 
     private var mTimer: Timer? = null
@@ -28,7 +25,7 @@ class Timer_Service : Service() {
         instance.value = this
 
         mTimer = Timer()
-        mTimer!!.scheduleAtFixedRate(TimeDisplayTimerTask(), 0 , SERVICE_PERIOD * 1000)
+        mTimer!!.scheduleAtFixedRate(TimeDisplayTimerTask(), 0, SERVICE_PERIOD * 1000)
         intent = Intent(str_receiver)
     }
 

@@ -5,7 +5,6 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.run
-import java.util.logging.Level
 
 
 /**
@@ -14,6 +13,7 @@ import java.util.logging.Level
  */
 class Observable<T>(value: T? = null, sender: Any? = null) {
     class AfterRemovable<U>(val then: U, val remove: () -> Boolean)
+    class UpdateValue<T>(val value: T, val sender: Any?)
     companion object {
         fun <U> observeOnDestroy(
             lifecycle: LifecycleOwner,
@@ -29,16 +29,13 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
         }
     }
 
-    constructor(value: T? = null) : this(value, null)
-    constructor() : this(null)
+    private val observers = mutableSetOf<(UpdateValue<T>) -> Boolean>()
 
-    private val observers = mutableSetOf<(UpdateArgs<T>) -> Boolean>()
-
-    private var updateArgs: UpdateArgs<T>? = null
+    private var updateArgs: UpdateValue<T>? = null
 
     init {
         if (value != null)
-            updateArgs = UpdateArgs(value, sender)
+            updateArgs = UpdateValue(value, sender)
     }
 
     /**
@@ -59,12 +56,13 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
 
     /**
      *  Add an observer for the live data while it return true
+     *  @param updateIfNotNull update if not null
      *  @param observer observer for the live data
      *  @return a method to remove the observer
      */
-    fun observeWhileTrue(observer: (UpdateArgs<T>) -> Boolean): AfterRemovable<Observable<T>> {
+    fun observeWhileTrue(updateIfNotNull : Boolean = true, observer: (UpdateValue<T>) -> Boolean): AfterRemovable<Observable<T>> {
         observers.add(observer)
-        if (updateArgs != null)
+        if (updateIfNotNull && updateArgs != null)
             run(Runnable {
                 if (!observer(updateArgs!!))
                     observers.remove(observer)
@@ -75,18 +73,20 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
     /**
      *  Add an observer for the live data while it return true
      *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @param updateIfNotNull update if not null
      *  @param observer observer for the live data
      *  @return a method to remove the observer
      */
-    fun observeWhileTrue(lifecycle: LifecycleOwner, observer: (UpdateArgs<T>) -> Boolean) =
-        observeOnDestroy(lifecycle, observeWhileTrue(observer))
+    fun observeWhileTrue(lifecycle: LifecycleOwner, updateIfNotNull : Boolean = true, observer: (UpdateValue<T>) -> Boolean) =
+        observeOnDestroy(lifecycle, observeWhileTrue(updateIfNotNull, observer))
 
     /**
      *  Add an observer for the live data
+     *  @param updateIfNotNull update if not null
      *  @param observer observer for the live data
      *  @return a method to remove the observer
      */
-    fun observe(observer: (UpdateArgs<T>) -> Unit) = observeWhileTrue {
+    fun observe(updateIfNotNull : Boolean = true, observer: (UpdateValue<T>) -> Unit) = observeWhileTrue(updateIfNotNull) {
         observer(it)
         true
     }
@@ -94,18 +94,20 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
     /**
      *  Add an observer for the live data
      *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @param updateIfNotNull update if not null
      *  @param observer observer for the live data
      *  @return a method to remove the observer
      */
-    fun observe(lifecycle: LifecycleOwner, observer: (UpdateArgs<T>) -> Unit) =
-        observeOnDestroy(lifecycle, observe(observer))
+    fun observe(lifecycle: LifecycleOwner, updateIfNotNull : Boolean = true, observer: (UpdateValue<T>) -> Unit) =
+        observeOnDestroy(lifecycle, observe(updateIfNotNull, observer))
 
     /**
      *  Add an observer for the live data once
      *  @param observer observer for the live data
+     *  @param updateIfNotNull update if not null
      *  @return a method to remove the observer
      */
-    fun observeOnce(observer: (UpdateArgs<T>) -> Unit) = observeWhileTrue {
+    fun observeOnce(updateIfNotNull : Boolean = true, observer: (UpdateValue<T>) -> Unit) = observeWhileTrue(updateIfNotNull) {
         observer(it)
         false
     }
@@ -113,18 +115,19 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
     /**
      *  Add an observer for the live data once
      *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @param updateIfNotNull update if not null
      *  @param observer observer for the live data
      *  @return a method to remove the observer
      */
-    fun observeOnce(lifecycle: LifecycleOwner, observer: (UpdateArgs<T>) -> Unit) =
-        observeOnDestroy(lifecycle, observeOnce(observer))
+    fun observeOnce(lifecycle: LifecycleOwner, updateIfNotNull : Boolean = true, observer: (UpdateValue<T>) -> Unit) =
+        observeOnDestroy(lifecycle, observeOnce(updateIfNotNull, observer))
 
     /**
      *  remove an observer for the live data
      *  @param observer observer for the live data
      *  @return if the observer have been remove
      */
-    fun leave(observer: (UpdateArgs<T>) -> Boolean): Boolean = observers.remove(observer)
+    fun leave(observer: (UpdateValue<T>) -> Boolean): Boolean = observers.remove(observer)
 
     /**
      *  map to an other observable while it return true
@@ -266,9 +269,9 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
      * @param sender The source of the event.
      */
     fun postValue(newValue: T, sender: Any? = null) : AfterRemovable<Observable<T>> {
-        synchronized(this) { updateArgs = UpdateArgs(newValue, sender); }
+        synchronized(this) { updateArgs = UpdateValue(newValue, sender); }
         run(Runnable {
-            val toRemove = mutableListOf<(UpdateArgs<T>) -> Boolean>()
+            val toRemove = mutableListOf<(UpdateValue<T>) -> Boolean>()
             for (obs in observers)
                 if (!obs(updateArgs!!))
                     toRemove.add(obs)
