@@ -2,6 +2,7 @@ package com.github.sdpteam15.polyevents.database
 
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
+import com.github.sdpteam15.polyevents.util.AdapterFromDocumentInterface
 import com.github.sdpteam15.polyevents.util.AdapterToDocumentInterface
 import org.mockito.Mockito
 import org.mockito.kotlin.anyOrNull
@@ -48,17 +49,17 @@ object HelperTestFunction {
         val element: Observable<out Any>,
         val id: String,
         val collection: DatabaseConstant.CollectionConstant,
-        val adapter: AdapterToDocumentInterface<out Any>? //'out E' is '? extends E' in java
+        val adapter: AdapterFromDocumentInterface<in Any>? //'in E' is '? super E' in java
     )
 
     val getEntityQueue: Queue<getEntityArgs> = LinkedList()
 
     class getListEntityArgs(
         val element: ObservableList<out Any>,
-        val ids: String?,
+        val ids: MutableList<String>?,
         val matcher: Matcher?,
         val collection: DatabaseConstant.CollectionConstant,
-        val adapter: AdapterToDocumentInterface<out Any>? //'out E' is '? extends E' in java
+        val adapter: AdapterFromDocumentInterface<in Any>? //'in E' is '? super E' in java
     )
 
     val getListEntityQueue: Queue<getListEntityArgs> = LinkedList()
@@ -91,7 +92,7 @@ object HelperTestFunction {
                     iterator.next() as AdapterToDocumentInterface<Any>,
                 )
             )
-            Observable(nextString.peek() ?: "")
+            Observable(nextString.poll() ?: "")
         }
         When(
             mokeDatabaseInterface.addEntity(
@@ -107,7 +108,7 @@ object HelperTestFunction {
                     it!!.arguments[2] as AdapterToDocumentInterface<Any>,
                 )
             )
-            Observable(nextBoolean.peek() ?: true)
+            Observable(nextBoolean.poll() ?: true)
         }
         When(
             mokeDatabaseInterface.setEntity(
@@ -126,7 +127,7 @@ object HelperTestFunction {
                     iterator.next() as AdapterToDocumentInterface<Any>?,
                 )
             )
-            Observable(nextBoolean.peek() ?: true)
+            Observable(nextBoolean.poll() ?: true)
         }
         When(
             mokeDatabaseInterface.deleteEntity(
@@ -141,7 +142,7 @@ object HelperTestFunction {
                     iterator.next() as DatabaseConstant.CollectionConstant,
                 )
             )
-            Observable(nextBoolean.peek() ?: true)
+            Observable(nextBoolean.poll() ?: true)
         }
         When(
             mokeDatabaseInterface.getEntity<Any>(
@@ -157,10 +158,10 @@ object HelperTestFunction {
                     iterator.next() as Observable<Any>,
                     iterator.next() as String,
                     iterator.next() as DatabaseConstant.CollectionConstant,
-                    iterator.next() as AdapterToDocumentInterface<Any>?,
+                    iterator.next() as AdapterFromDocumentInterface<Any>?,
                 )
             )
-            Observable(nextBoolean.peek() ?: true)
+            Observable(nextBoolean.poll() ?: true)
         }
         When(
             mokeDatabaseInterface.getListEntity<Any>(
@@ -175,13 +176,13 @@ object HelperTestFunction {
             getListEntityQueue.add(
                 getListEntityArgs(
                     iterator.next() as ObservableList<Any>,
-                    iterator.next() as String?,
+                    iterator.next() as MutableList<String>?,
                     iterator.next() as Matcher?,
                     iterator.next() as DatabaseConstant.CollectionConstant,
-                    iterator.next() as AdapterToDocumentInterface<Any>?,
+                    iterator.next() as AdapterFromDocumentInterface<Any>?,
                 )
             )
-            Observable(nextBoolean.peek() ?: true)
+            Observable(nextBoolean.poll() ?: true)
         }
         return mokeDatabaseInterface
     }

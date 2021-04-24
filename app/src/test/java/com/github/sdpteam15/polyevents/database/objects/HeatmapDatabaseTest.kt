@@ -55,7 +55,7 @@ class HeatmapDatabaseTest {
     @Test
     fun getLocations(){
         HelperTestFunction.nextBoolean.add(true)
-        mackHeatmapDatabase.getLocations(ObservableList<LatLng>().observeOnce { assert(it.value.isNotEmpty()) }.then).observeOnce { assert(it.value) }
+        mackHeatmapDatabase.getLocations(ObservableList()).observeOnce { assert(it.value) }
 
         val getlist = HelperTestFunction.getListEntityQueue.peek()!!
 

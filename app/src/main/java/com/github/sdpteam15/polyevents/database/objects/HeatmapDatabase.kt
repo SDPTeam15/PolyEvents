@@ -29,8 +29,7 @@ class HeatmapDatabase(private val db: DatabaseInterface) : HeatmapDatabaseInterf
         return if (Settings.LocationId == "")
             db.addEntityAndGetId(
                 element,
-                LOCATION_COLLECTION,
-                DeviceLocationAdapter
+                LOCATION_COLLECTION
             ).mapOnce {
                 Settings.LocationId = it
                 it != ""
@@ -38,11 +37,11 @@ class HeatmapDatabase(private val db: DatabaseInterface) : HeatmapDatabaseInterf
         else db.setEntity(
             element,
             Settings.LocationId,
-            LOCATION_COLLECTION,
-            DeviceLocationAdapter
+            LOCATION_COLLECTION
         )
     }
 
+    //TODO : remove the added points for the final
     override fun getLocations(
         usersLocations: ObservableList<LatLng>,
         userAccess: UserEntity?

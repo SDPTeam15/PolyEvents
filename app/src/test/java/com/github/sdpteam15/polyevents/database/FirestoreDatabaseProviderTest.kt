@@ -20,27 +20,12 @@ const val TEST_ID = "test_id"
 const val TEST_ID1 = "test_id1"
 const val TEST_ID2 = "test_id2"
 
-const val TEST_STR = "STR"
-
 class FirestoreDatabaseProviderTest {
     lateinit var mokeFirestore: FirebaseFirestore
-    lateinit var adapterInterface: AdapterInterface<StringWithID>
-
-    class StringWithID(val id: String, val string: String)
 
     @Before
     fun setup() {
         mokeFirestore = mock(FirebaseFirestore::class.java)
-        adapterInterface = object : AdapterInterface<StringWithID> {
-            override fun toDocument(element: StringWithID): HashMap<String, Any?> = hashMapOf(
-                TEST_STR to element.string
-            )
-
-            override fun fromDocument(
-                document: MutableMap<String, Any?>,
-                id: String
-            ) = StringWithID(id, document[TEST_STR] as String)
-        }
 
         FirestoreDatabaseProvider.firestore = mokeFirestore
     }
@@ -72,8 +57,7 @@ class FirestoreDatabaseProviderTest {
 
         val end = FirestoreDatabaseProvider.addEntityAndGetId(
             StringWithID(TEST_ID, TEST_STRING),
-            DatabaseConstant.CollectionConstant.TEST_COLLECTION,
-            adapterInterface
+            DatabaseConstant.CollectionConstant.TEST_COLLECTION
         )
 
         assertNotNull(hashMap)
@@ -126,8 +110,7 @@ class FirestoreDatabaseProviderTest {
 
         var end = FirestoreDatabaseProvider.addEntity(
             StringWithID(TEST_ID, TEST_STRING),
-            DatabaseConstant.CollectionConstant.TEST_COLLECTION,
-            adapterInterface
+            DatabaseConstant.CollectionConstant.TEST_COLLECTION
         )
 
         assertNotNull(hashMap)
@@ -148,8 +131,7 @@ class FirestoreDatabaseProviderTest {
 
         end = FirestoreDatabaseProvider.addEntity(
             StringWithID(TEST_ID, TEST_STRING),
-            DatabaseConstant.CollectionConstant.TEST_COLLECTION,
-            adapterInterface
+            DatabaseConstant.CollectionConstant.TEST_COLLECTION
         )
 
         assertNotNull(hashMap)
@@ -194,8 +176,7 @@ class FirestoreDatabaseProviderTest {
         val end = FirestoreDatabaseProvider.setEntity(
             StringWithID(TEST_ID, TEST_STRING),
             TEST_ID,
-            DatabaseConstant.CollectionConstant.TEST_COLLECTION,
-            adapterInterface
+            DatabaseConstant.CollectionConstant.TEST_COLLECTION
         )
 
         assertNotNull(hashMap)
@@ -293,8 +274,7 @@ class FirestoreDatabaseProviderTest {
         val end = FirestoreDatabaseProvider.getEntity(
             result,
             TEST_ID,
-            DatabaseConstant.CollectionConstant.TEST_COLLECTION,
-            adapterInterface
+            DatabaseConstant.CollectionConstant.TEST_COLLECTION
         )
 
         assertNotNull(lastAddSuccessListener)
@@ -385,8 +365,7 @@ class FirestoreDatabaseProviderTest {
             result,
             listOf(TEST_ID, TEST_ID1, TEST_ID2),
             null,
-            DatabaseConstant.CollectionConstant.TEST_COLLECTION,
-            adapterInterface
+            DatabaseConstant.CollectionConstant.TEST_COLLECTION
         )
 
         assertNotNull(lastAddSuccessListenerDocumentSnapshot[TEST_ID])
@@ -445,8 +424,7 @@ class FirestoreDatabaseProviderTest {
             result,
             null,
             null,
-            DatabaseConstant.CollectionConstant.TEST_COLLECTION,
-            adapterInterface
+            DatabaseConstant.CollectionConstant.TEST_COLLECTION
         )
 
         assertNotNull(lastAddSuccessListenerQuerySnapshot)
@@ -482,8 +460,7 @@ class FirestoreDatabaseProviderTest {
             object : Matcher {
                 override fun match(collection: Query): Query = collection
             },
-            DatabaseConstant.CollectionConstant.TEST_COLLECTION,
-            adapterInterface
+            DatabaseConstant.CollectionConstant.TEST_COLLECTION
         )
 
         assertNotNull(lastAddSuccessListenerQuerySnapshot)

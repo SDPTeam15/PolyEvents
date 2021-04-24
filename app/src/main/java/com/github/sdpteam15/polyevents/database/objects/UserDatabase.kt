@@ -22,8 +22,7 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
         db.setEntity(
             user,
             user.uid,
-            USER_COLLECTION,
-            UserAdapter
+            USER_COLLECTION
         )
 
     override fun firstConnexion(
@@ -33,8 +32,7 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
         return db.setEntity(
             user,
             user.uid,
-            USER_COLLECTION,
-            UserAdapter
+            USER_COLLECTION
         )
     }
 
@@ -45,8 +43,7 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
     ) = db.getEntity(
         Observable(),
         uid,
-        USER_COLLECTION,
-        UserAdapter
+        USER_COLLECTION
     ).updateOnce(isInDb).then
 
     override fun getUserInformation(
@@ -56,8 +53,7 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
     ) = db.getEntity(
         user,
         uid,
-        USER_COLLECTION,
-        UserAdapter
+        USER_COLLECTION
     )
 
     override fun addUserProfileAndAddToUser(
@@ -71,8 +67,7 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
 
         (if (profile.pid == null) db.addEntityAndGetId(
             profile,
-            PROFILE_COLLECTION,
-            ProfileAdapter
+            PROFILE_COLLECTION
         ).mapOnce {
             if (it != "")
                 profile.pid = it
@@ -81,16 +76,14 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
         else db.setEntity(
             profile,
             profile.pid!!,
-            PROFILE_COLLECTION,
-            ProfileAdapter
+            PROFILE_COLLECTION
         )).observeOnce {
             if (it.value) {
                 user.profiles.add(profile.pid!!)
                 db.setEntity(
                     user,
                     user.uid,
-                    USER_COLLECTION,
-                    UserAdapter
+                    USER_COLLECTION
                 ).updateOnce(ended)
             } else
                 ended.postValue(false, it.sender)
@@ -109,8 +102,7 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
         db.setEntity(
             user,
             user.uid,
-            USER_COLLECTION,
-            UserAdapter
+            USER_COLLECTION
         ).observeOnce { it1 ->
             if (it1.value) {
                 (if (profile.users.isEmpty())
@@ -122,8 +114,7 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
                     db.setEntity(
                         profile,
                         profile.pid!!,
-                        PROFILE_COLLECTION,
-                        ProfileAdapter
+                        PROFILE_COLLECTION
                     )).updateOnce(end)
             } else
                 end.postValue(it1.value, it1.sender)
@@ -135,8 +126,7 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
         db.setEntity(
             profile,
             profile.pid!!,
-            PROFILE_COLLECTION,
-            ProfileAdapter
+            PROFILE_COLLECTION
         )
 
     override fun getUserProfilesList(
@@ -148,8 +138,7 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
             profiles,
             user.profiles,
             null,
-            PROFILE_COLLECTION,
-            ProfileAdapter
+            PROFILE_COLLECTION
         )
 
     override fun getProfilesUserList(
@@ -161,8 +150,7 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
             users,
             profile.users,
             null,
-            PROFILE_COLLECTION,
-            UserAdapter
+            USER_COLLECTION
         )
 
     override fun getProfileById(
@@ -173,8 +161,7 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
         db.getEntity(
             profile,
             pid,
-            PROFILE_COLLECTION,
-            ProfileAdapter
+            PROFILE_COLLECTION
         )
 
     override fun removeProfile(profile: UserProfile, user: UserEntity?) =

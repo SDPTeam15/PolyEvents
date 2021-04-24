@@ -71,7 +71,7 @@ interface DatabaseInterface {
     fun <T : Any> addEntityAndGetId(
         element: T,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterToDocumentInterface<T>
+        adapter: AdapterToDocumentInterface<T> = collection.adapter as AdapterToDocumentInterface<T>
     ): Observable<String>
 
     /**
@@ -85,7 +85,7 @@ interface DatabaseInterface {
     fun <T : Any> addEntity(
         element: T,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterToDocumentInterface<T>
+        adapter: AdapterToDocumentInterface<T> = collection.adapter as AdapterToDocumentInterface<T>
     ): Observable<Boolean>
 
     /**
@@ -100,7 +100,7 @@ interface DatabaseInterface {
         element: T?,
         id: String,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterToDocumentInterface<T>?
+        adapter: AdapterToDocumentInterface<T>? = collection.adapter as AdapterToDocumentInterface<T>
     ): Observable<Boolean>
 
     /**
@@ -126,7 +126,7 @@ interface DatabaseInterface {
         element: Observable<T>,
         id: String,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterFromDocumentInterface<T>
+        adapter: AdapterFromDocumentInterface<T> = collection.adapter as AdapterFromDocumentInterface<T>
     ): Observable<Boolean>
 
     /**
@@ -143,6 +143,6 @@ interface DatabaseInterface {
         ids: List<String>? = null,
         matcher: Matcher?,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterFromDocumentInterface<T>
+        adapter: AdapterFromDocumentInterface<T> = collection.adapter as AdapterFromDocumentInterface<T>
     ): Observable<Boolean>
 }
