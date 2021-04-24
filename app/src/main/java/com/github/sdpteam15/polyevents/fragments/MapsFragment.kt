@@ -31,7 +31,7 @@ import com.google.android.gms.maps.model.Polyline
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.*
 
-
+const val HEATMAP_PERIOD = 15L
 class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     OnPolygonClickListener, OnMarkerClickListener, OnInfoWindowClickListener, OnMarkerDragListener,
     OnMyLocationButtonClickListener, OnMapClickListener {
@@ -141,7 +141,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
                         }
                     }
                 }
-                timerHeatmap?.schedule(task, 0, 15 * 1000)
+                timerHeatmap?.schedule(task, 0, HEATMAP_PERIOD * 1000)
             } else
                 GoogleMapHelper.lastOverlay?.remove()
         }
