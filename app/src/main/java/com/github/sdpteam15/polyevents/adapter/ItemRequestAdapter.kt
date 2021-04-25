@@ -19,9 +19,15 @@ import com.github.sdpteam15.polyevents.model.Item
  */
 class ItemRequestAdapter(
     private val itemTypes : ObservableList<String>,
-    private val availableItems: ObservableList<Pair<Item, Int>>,
+    val availableItems: Map<String, MutableList<Pair<Item, Int>>>,
     private val onItemQuantityChangeListener: (Item, Int) -> Unit
 ) : RecyclerView.Adapter<ItemRequestAdapter.ItemViewHolder>() {
+    private var isCategoryOpen : MutableMap<String,Boolean> = mutableMapOf()
+    init {
+        for (itemType in itemTypes){
+            isCategoryOpen[itemType] = false
+        }
+    }
 
     /**
      * Adapted ViewHolder for each item
@@ -32,7 +38,6 @@ class ItemRequestAdapter(
         private val itemName = view.findViewById<TextView>(R.id.id_item_name)
         private val itemQuantity = view.findViewById<EditText>(R.id.id_item_quantity)
 */
-        val itemTypeSpinner = view.findViewById<Spinner>(R.id.spinner_item_type)
 
 
         /**
@@ -40,12 +45,8 @@ class ItemRequestAdapter(
          */
         fun bind(itemType: String) {
             val items = mutableListOf<Pair<Item,Int>>()
-            for(item in availableItems){
-                if(item.first.itemType == itemType){
-                    items.add(item)
-                }
-            }
-            itemTypeSpinner.adapter = ArrayAdapter(parent.context, R.layout.card_material_item, items)
+
+
             /*itemName.text =
                 view.context.getString(
                     R.string.item_name_quantity_text,
@@ -129,6 +130,10 @@ class ItemRequestAdapter(
     }
 
     override fun getItemCount(): Int {
-        return itemTypes.size
+        var count = 0
+        for (isOpen in isCategoryOpen.entries){
+            count += 1 + (if (isOpen.value) 0 else availableItems[isOpen.key]?.size ?: 0)
+        }
+        return count
     }
 }
