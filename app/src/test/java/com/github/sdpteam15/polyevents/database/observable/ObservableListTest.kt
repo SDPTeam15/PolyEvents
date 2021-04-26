@@ -19,44 +19,9 @@ class ObservableListTest {
         val observable = ObservableList<Int>()
         val list: MutableList<Int> = observable
 
-        val suppressorAdd = observable.observeAdd { isUpdateAdd = true }
-        val suppressor = observable.observe { isUpdate = true }
 
-        list.add(0)
-
-        assertEquals(true, isUpdateAdd)
-        assertEquals(true, isUpdate)
-        assertEquals(1, observable.size)
-        assertEquals(0, observable[0])
-
-        isUpdateAdd = false
-        isUpdate = false
-
-        suppressorAdd()
-        suppressor()
-
-        list.add(1)
-
-        assertEquals(false, isUpdateAdd)
-        assertEquals(false, isUpdate)
-        assertEquals(2, observable.size)
-        assertEquals(0, observable[0])
-        assertEquals(1, observable[1])
-        assertEquals(0, observable.getObservable(0).value)
-
-        assertNull(observable.add(Observable()))
-    }
-
-    @Test
-    fun lambdaIsUpdatedOnAddWithIndex() {
-        var isUpdateAdd = false
-        var isUpdate = false
-        val observable = ObservableList<Int>()
-        val list: MutableList<Int> = observable
-
-
-        val suppressorAdd = observable.observeAddWithIndex {
-            assert(it.value.index < 5)
+        val suppressorAdd = observable.observeAdd {
+            assert(it.index < 5)
             isUpdateAdd = true
         }
         val suppressor = observable.observe { isUpdate = true }
@@ -71,8 +36,8 @@ class ObservableListTest {
         isUpdateAdd = false
         isUpdate = false
 
-        suppressorAdd()
-        suppressor()
+        suppressorAdd.remove()
+        suppressor.remove()
 
         list.add(0, 1)
 
@@ -82,6 +47,7 @@ class ObservableListTest {
         assertEquals(1, observable[0])
         assertEquals(0, observable[1])
         assertEquals(1, observable.getObservable(0).value)
+        assertNull(observable.add(Observable()))
     }
 
     @Test
@@ -107,8 +73,8 @@ class ObservableListTest {
         isUpdateRemove = false
         isUpdate = false
 
-        suppressorRemove()
-        suppressor()
+        suppressorRemove.remove()
+        suppressor.remove()
 
         list.remove(1)
 
@@ -139,8 +105,8 @@ class ObservableListTest {
         isUpdateUpdate = false
         isUpdate = false
 
-        suppressorUpdate()
-        suppressor()
+        suppressorUpdate.remove()
+        suppressor.remove()
 
         list[0] = 0
 
@@ -171,8 +137,8 @@ class ObservableListTest {
         isUpdateUpdate = false
         isUpdate = false
 
-        suppressorUpdate()
-        suppressor()
+        suppressorUpdate.remove()
+        suppressor.remove()
 
         observable[0] = 0
 
@@ -195,7 +161,7 @@ class ObservableListTest {
 
     @Test
     fun lambdaIsUpdatedWithLifecycleOwner() {
-        val isUpdate = MutableList<Int>(0) { 0 }
+        val isUpdate = mutableListOf<Int>()
         val observable = ObservableList<Boolean>()
         val mockedLifecycleOwner = Mockito.mock(LifecycleOwner::class.java)
         val mockedLifecycle = Mockito.mock(Lifecycle::class.java)
@@ -203,29 +169,25 @@ class ObservableListTest {
         val list: MutableList<Boolean> = observable
 
         isUpdate.add(0)
-        observable.observeAddOnce(mockedLifecycleOwner) { isUpdate[0]++ }
+        observable.observeAddWhileTrue(mockedLifecycleOwner) { 1 > isUpdate[0]++ }
         isUpdate.add(0)
-        observable.observeAddWhileTrue(mockedLifecycleOwner) { 1 > isUpdate[1]++ }
+        observable.observeOnce(mockedLifecycleOwner) { isUpdate[1]++ }
         isUpdate.add(0)
-        observable.observeAddWithIndexWhileTrue(mockedLifecycleOwner) { 1 > isUpdate[2]++ }
+        observable.observeRemoveOnce(mockedLifecycleOwner) { isUpdate[2]++ }
         isUpdate.add(0)
-        observable.observeOnce(mockedLifecycleOwner) { isUpdate[3]++ }
+        observable.observeRemoveWhileTrue(mockedLifecycleOwner) { 1 > isUpdate[3]++ }
         isUpdate.add(0)
-        observable.observeRemoveOnce(mockedLifecycleOwner) { isUpdate[4]++ }
+        observable.observeUpdate(mockedLifecycleOwner) { isUpdate[4]++ }
         isUpdate.add(0)
-        observable.observeRemoveWhileTrue(mockedLifecycleOwner) { 1 > isUpdate[5]++ }
+        observable.observeUpdateOnce(mockedLifecycleOwner) { isUpdate[5]++ }
         isUpdate.add(0)
-        observable.observeUpdate(mockedLifecycleOwner) { isUpdate[6]++ }
+        observable.observeUpdateWhileTrue(mockedLifecycleOwner) { 1 > isUpdate[6]++ }
         isUpdate.add(0)
-        observable.observeUpdateOnce(mockedLifecycleOwner) { isUpdate[7]++ }
+        observable.observeWhileTrue(mockedLifecycleOwner) { 1 > isUpdate[7]++ }
         isUpdate.add(0)
-        observable.observeUpdateWhileTrue(mockedLifecycleOwner) { 1 > isUpdate[8]++ }
+        observable.observeAdd(mockedLifecycleOwner) { isUpdate[8]++ }
         isUpdate.add(0)
-        observable.observeWhileTrue(mockedLifecycleOwner) { 1 > isUpdate[9]++ }
-        isUpdate.add(0)
-        observable.observeAddWithIndex(mockedLifecycleOwner) { isUpdate[10]++ }
-        isUpdate.add(0)
-        observable.observeAddWithIndexOnce(mockedLifecycleOwner) { isUpdate[11]++ }
+        observable.observeAddOnce(mockedLifecycleOwner) { isUpdate[9]++ }
 
         list.addAll(MutableList(3) { true })
 
@@ -235,11 +197,13 @@ class ObservableListTest {
 
         observable.clear()
 
-        assertEquals("[1, 2, 2, 1, 3, 2, 6, 6, 2, 2, 3, 1]", isUpdate.toString())
+        assertEquals("[2, 1, 1, 2, 3, 1, 2, 2, 3, 1]", isUpdate.toString())
     }
 
     @Test
     fun listIsImplemented() {
+        assertEquals(1, ObservableList(listOf(0)).size)
+
         val list: MutableList<Int> = ObservableList()
 
         assertFailsWith<NotImplementedError> { list.subList(0,0) }
@@ -262,6 +226,8 @@ class ObservableListTest {
         list.add(2)
 
         val iterator = list.iterator() as MutableListIterator<Int>
+        val iterator2 = list.listIterator()
+        val iterator3 = list.listIterator(0)
 
         assert(iterator.hasNext())
         assertNotNull(iterator.nextIndex())
@@ -280,6 +246,158 @@ class ObservableListTest {
 
         iterator.remove()
         assertEquals(0, list[0])
+    }
 
+    @Test
+    fun map(){
+        var updated = false
+        val observableList = ObservableList<Int>()
+        val list: MutableList<Int> = observableList
+        val mappedObservableList = observableList.map{it.hashCode()}.then
+
+        assertFailsWith<NotImplementedError> { list.subList(0,0) }
+
+        mappedObservableList.observeOnce { updated = true }
+        list.add(0)
+        assert(updated)
+        updated = false
+        list.add(1)
+        list.add(2)
+
+        mappedObservableList.observeOnce { updated = true }
+        assert(list.retainAll(mutableListOf(0)))
+        assert(updated)
+        updated = false
+
+        mappedObservableList.observeOnce { updated = true }
+        assert(list.removeAll(mutableListOf(0)))
+        assert(updated)
+        updated = false
+
+        mappedObservableList.observeOnce { updated = true }
+        list.addAll(listOf(0, 1, 2))
+        assert(updated)
+        updated = false
+
+        mappedObservableList.observeOnce { updated = true }
+        list.remove(0)
+        assert(updated)
+        updated = false
+
+        mappedObservableList.observeOnce { updated = true }
+        list.removeAt(0)
+        assert(updated)
+        updated = false
+
+        mappedObservableList.observeOnce { updated = true }
+        list.add(0, 0)
+        assert(updated)
+        updated = false
+
+        mappedObservableList.observeOnce { updated = true }
+        list.addAll(0, listOf(4))
+        assert(updated)
+        updated = false
+
+        mappedObservableList.observeOnce { updated = true }
+        list[0] = 1
+        assert(updated)
+        updated = false
+
+        mappedObservableList.observeOnce { updated = true }
+        list.clear()
+        assert(updated)
+        updated = false
+
+        val mockedLifecycleOwner = Mockito.mock(LifecycleOwner::class.java)
+        val mockedLifecycle = Mockito.mock(Lifecycle::class.java)
+        Mockito.`when`(mockedLifecycleOwner.lifecycle).thenReturn(mockedLifecycle)
+
+        assertNotNull(observableList.mapWhileTrue(condition = {true}) { it })
+        assertNotNull(observableList.mapWhileTrue(mockedLifecycleOwner, condition = {true}) { it })
+        assertNotNull(observableList.map{ it })
+        assertNotNull(observableList.map(mockedLifecycleOwner) { it })
+        assertNotNull(observableList.mapOnce{ it })
+        assertNotNull(observableList.mapOnce(mockedLifecycleOwner) { it })
+    }
+
+    @Test
+    fun group(){
+        var updated = false
+        val observableList = ObservableList<Int>()
+        val list: MutableList<Int> = observableList
+        val mappedObservableMap = observableList.group{ it % 2 }.then
+
+        assertFailsWith<NotImplementedError> { list.subList(0,0) }
+
+        mappedObservableMap.observeOnce { updated = true }
+        list.add(0)
+        assert(updated)
+        updated = false
+        list.add(1)
+        list.add(2)
+
+        mappedObservableMap.observeOnce { updated = true }
+        assert(list.retainAll(mutableListOf(0)))
+        assert(updated)
+        updated = false
+
+        mappedObservableMap.observeOnce { updated = true }
+        assert(list.removeAll(mutableListOf(0)))
+        assert(updated)
+        updated = false
+
+        mappedObservableMap.observeOnce { updated = true }
+        list.addAll(listOf(0, 1, 2))
+        assert(updated)
+        updated = false
+
+        mappedObservableMap.observeOnce {
+            updated = true
+        }
+        list.remove(0)
+        assert(updated)
+        updated = false
+
+        mappedObservableMap.observeOnce { updated = true }
+        list.removeAt(0)
+        assert(updated)
+        updated = false
+
+        mappedObservableMap.observeOnce { updated = true }
+        list.add(0, 0)
+        assert(updated)
+        updated = false
+
+        mappedObservableMap.observeOnce { updated = true }
+        list.addAll(0, listOf(4))
+        assert(updated)
+        updated = false
+
+        mappedObservableMap.observeOnce { updated = true }
+        list[0] = 1
+        assert(updated)
+        updated = false
+
+        mappedObservableMap.observeOnce { updated = true }
+        list[0] = 3
+        assert(updated)
+        updated = false
+
+        mappedObservableMap.observeOnce { updated = true }
+        list.clear()
+        assert(updated)
+        updated = false
+
+        val mockedLifecycleOwner = Mockito.mock(LifecycleOwner::class.java)
+        val mockedLifecycle = Mockito.mock(Lifecycle::class.java)
+        Mockito.`when`(mockedLifecycleOwner.lifecycle).thenReturn(mockedLifecycle)
+
+        assertNotNull(observableList.groupWhileTrue(condition = {true}) { it % 2 })
+        assertNotNull(observableList.groupWhileTrue(mockedLifecycleOwner, condition = {true}) { it % 2 })
+        assertNotNull(observableList.group{ it % 2 })
+        assertNotNull(observableList.group(mockedLifecycleOwner) { it % 2 })
+        assertNotNull(observableList.groupOnce{ it % 2})
+        assertNotNull(observableList.groupOnce(mockedLifecycleOwner) { it % 2 })
     }
 }

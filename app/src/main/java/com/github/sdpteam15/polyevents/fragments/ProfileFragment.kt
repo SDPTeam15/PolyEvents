@@ -15,10 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.*
 import com.github.sdpteam15.polyevents.adapter.ProfileAdapter
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.UserConstants.USER_USERNAME
-import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.changeFragment
 import com.github.sdpteam15.polyevents.login.UserLogin
@@ -36,7 +33,6 @@ class ProfileFragment : Fragment() {
         get() = field ?: currentDatabase.currentUser
 
     val userInfoLiveData = Observable<UserEntity>()
-    val hashMapNewInfo = HashMap<String, String>()
     lateinit var profileNameET: EditText
     lateinit var profileEmailET: EditText
     lateinit var profileUsernameET: EditText
@@ -88,16 +84,13 @@ class ProfileFragment : Fragment() {
         )
 
         viewRoot.findViewById<Button>(R.id.btnUpdateInfos).setOnClickListener {
-            //Clear the previous map and add every field
-            hashMapNewInfo.clear()
-            hashMapNewInfo[USER_USERNAME.value] = profileUsernameET.text.toString()
+            currentUser!!.name = profileUsernameET.text.toString()
             // TODO: editText should have birthday input and convert it to Timestamp otherwise things crash
             //hashMapNewInfo[USER_BIRTH_DATE] = viewRoot.findViewById<EditText>(R.id.profileBirthdayET).text.toString()
 
             //Call the DB to update the user information and getUserInformation once it is done
             currentDatabase.userDatabase!!.updateUserInformation(
-                hashMapNewInfo,
-                currentUser!!.uid
+                currentUser!!
             )
                 .observe(this) { newValue ->
                     if (newValue.value) {
@@ -121,15 +114,17 @@ class ProfileFragment : Fragment() {
     fun initProfileList(viewRoot: View, user : UserEntity) {
         user.userProfiles.observeRemove(this) {
             if (it.sender != currentDatabase){
-                currentDatabase.userDatabase!!.removeProfileFromUser(it.value, user).observeOnce {
-                    HelperFunctions.showToast("Fail to remove profiles", context)
+                currentDatabase.userDatabase!!.removeProfileFromUser(it.value, user).observeOnce(this)  {
+                    if (!it.value)
+                        HelperFunctions.showToast(getString(R.string.fail_to_remove_profiles), context)
                 }
             }
         }
         user.userProfiles.observeAdd(this) {
             if (it.sender != currentDatabase)
-                currentDatabase.userDatabase!!.addUserProfileAndAddToUser(it.value, user).observeOnce {
-                    HelperFunctions.showToast("Fail to add profiles", context)
+                currentDatabase.userDatabase!!.addUserProfileAndAddToUser(it.value, user).observeOnce(this) {
+                    if (!it.value)
+                        HelperFunctions.showToast(getString(R.string.fail_to_add_profiles), context)
                 }
         }
 

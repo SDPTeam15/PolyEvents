@@ -41,7 +41,7 @@ class ZoneManagementListTest {
 
     @Before
     fun setup() {
-        mockedDatabase = mock(DatabaseInterface::class.java)
+        mockedDatabase = HelperTestFunction.defaultMockDatabase()
         val mockedUserProfile = UserProfile("TestID", "TestName")
         When(mockedDatabase.currentProfile).thenReturn(mockedUserProfile)
 

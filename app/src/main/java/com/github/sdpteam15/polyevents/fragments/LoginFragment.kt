@@ -14,7 +14,6 @@ import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.login.UserLogin
 import com.github.sdpteam15.polyevents.model.UserEntity
-import com.google.android.gms.tasks.OnCompleteListener
 
 /**
  * [Fragment] subclass representing the login page allowing the user to connect to the application
