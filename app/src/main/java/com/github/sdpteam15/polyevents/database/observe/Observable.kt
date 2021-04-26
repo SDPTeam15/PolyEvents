@@ -292,25 +292,29 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
     /**
      *  update to an other observable
      *  @param observable observer for the live data
+     *  @param updateIfNotNull update if not null
      */
-    fun update(observable: Observable<T>) =
-        updateWhileTrue(observable) { true }
+    fun update(observable: Observable<T>, updateIfNotNull: Boolean = true) =
+        updateWhileTrue(observable, updateIfNotNull) { true }
 
     /**
      *  update to an other observable
      *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
      *  @param observable observer for the live data
+     *  @param updateIfNotNull update if not null
      */
     fun update(
         lifecycle: LifecycleOwner,
-        observable: Observable<T>
-    ) = observeOnDestroy(lifecycle, update(observable))
+        observable: Observable<T>,
+        updateIfNotNull: Boolean = true
+    ) = observeOnDestroy(lifecycle, update(observable, updateIfNotNull))
 
     /**
      *  update to an other observable once
      *  @param observable observer for the live data
+     *  @param updateIfNotNull update if not null
      */
-    fun updateOnce(observable: Observable<T>, updateIfNotNull: Boolean = false) =
+    fun updateOnce(observable: Observable<T>, updateIfNotNull: Boolean = true) =
         updateWhileTrue(observable, updateIfNotNull) { false }
 
     /**
@@ -322,7 +326,7 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
     fun updateOnce(
         lifecycle: LifecycleOwner,
         observable: Observable<T>,
-        updateIfNotNull: Boolean = false,
+        updateIfNotNull: Boolean = true,
     ) = observeOnDestroy(lifecycle, updateOnce(observable, updateIfNotNull))
 
     /**
