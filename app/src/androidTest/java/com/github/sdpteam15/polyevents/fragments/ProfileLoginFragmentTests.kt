@@ -284,7 +284,7 @@ class ProfileLoginFragmentTests {
     }
 
     @Test
-    fun updateAreCorrectlyRefreshedAndDisplayed() {/*
+    fun updateAreCorrectlyRefreshedAndDisplayed() {
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         loginFragment.currentUser = user
 
@@ -296,7 +296,7 @@ class ProfileLoginFragmentTests {
         var endingRequestUpdate = Observable<Boolean>()
         var updated = false
         When(
-            mockedUserDatabase.updateUserInformation(profileFragment.hashMapNewInfo, uidTest)
+            mockedUserDatabase.updateUserInformation(anyOrNull(), anyOrNull())
         ).thenAnswer { _ ->
             updated = true
             endingRequestUpdate
@@ -346,7 +346,7 @@ class ProfileLoginFragmentTests {
         //check that the values are still the same
         onView(withId(R.id.profileName)).check(matches(withText(Matchers.equalTo(displayNameTest2))))
         onView(withId(R.id.profileEmail)).check(matches(withText(Matchers.equalTo(emailTest2))))
-    */}
+    }
 
     private fun initDBTests() {
         //Make sure we are not connected to Firebase

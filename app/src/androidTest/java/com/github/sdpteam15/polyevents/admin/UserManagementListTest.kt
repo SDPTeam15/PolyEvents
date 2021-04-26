@@ -13,6 +13,7 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
+import com.github.sdpteam15.polyevents.HelperTestFunction
 import com.github.sdpteam15.polyevents.MainActivity
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.RecyclerViewItemCountAssertion
@@ -90,7 +91,8 @@ class UserManagementListTest {
     fun setup() {
         setupUser()
         val defProfile = UserProfile(pid = "PID", "PNAME", UserRole.ADMIN)
-        val mockDatabase = mock(DatabaseInterface::class.java)
+        val mockDatabase = HelperTestFunction.defaultMockDatabase()
+
         mockUserDB = mock(UserDatabaseInterface::class.java)
         val userEntity = UserEntity("uid", "username", "name", email = "email")
         Database.currentDatabase = mockDatabase
@@ -129,7 +131,7 @@ class UserManagementListTest {
     @Test
     fun correctNumberUsersDisplayed() {
         obs.postValue(true)
-        Espresso.onView(ViewMatchers.withId(R.id.recycler_view_user))
+        Espresso.onView(withId(R.id.recycler_view_user))
             .check(RecyclerViewItemCountAssertion(users.size))
     }
 

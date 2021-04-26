@@ -24,12 +24,12 @@ class ProfileAdapterTest {
     }
 
     @Test
-    fun conversionOfEventToDocumentPreservesData() {
+    fun conversionOfProfileoDocumentPreservesData() {
         val document = ProfileAdapter.toDocument(profile)
 
         Assert.assertEquals(document[DatabaseConstant.ProfileConstants.PROFILE_ID.value], profileId)
         Assert.assertEquals(document[DatabaseConstant.ProfileConstants.PROFILE_NAME.value], profileName)
-        Assert.assertEquals(document[DatabaseConstant.ProfileConstants.PROFILE_RANK.value], profileRank)
+        Assert.assertEquals(document[DatabaseConstant.ProfileConstants.PROFILE_RANK.value], profileRank.userRole)
         Assert.assertEquals(document[DatabaseConstant.ProfileConstants.PROFILE_USERS.value], users)
     }
 
@@ -38,7 +38,7 @@ class ProfileAdapterTest {
         val profil: HashMap<String, Any?> = hashMapOf(
                 DatabaseConstant.ProfileConstants.PROFILE_ID.value to profile.pid,
                 DatabaseConstant.ProfileConstants.PROFILE_NAME.value to profile.profileName,
-                DatabaseConstant.ProfileConstants.PROFILE_RANK.value to profile.userRole.toString(),
+                DatabaseConstant.ProfileConstants.PROFILE_RANK.value to profile.userRole.userRole,
                 DatabaseConstant.ProfileConstants.PROFILE_USERS.value to profile.users
         )
 
@@ -56,7 +56,7 @@ class ProfileAdapterTest {
         val profil: HashMap<String, Any?> = hashMapOf(
                 DatabaseConstant.ProfileConstants.PROFILE_ID.value to profile.pid,
                 DatabaseConstant.ProfileConstants.PROFILE_NAME.value to profile.profileName,
-                DatabaseConstant.ProfileConstants.PROFILE_RANK.value to "",
+                DatabaseConstant.ProfileConstants.PROFILE_RANK.value to null,
                 DatabaseConstant.ProfileConstants.PROFILE_USERS.value to profile.users
         )
 

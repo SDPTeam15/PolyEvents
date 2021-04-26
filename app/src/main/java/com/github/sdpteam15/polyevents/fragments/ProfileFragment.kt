@@ -17,7 +17,6 @@ import com.github.sdpteam15.polyevents.*
 import com.github.sdpteam15.polyevents.EditProfileActivity
 import com.github.sdpteam15.polyevents.adapter.ProfileAdapter
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.UserConstants.USER_USERNAME
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.changeFragment
@@ -30,7 +29,7 @@ import java.time.format.DateTimeFormatter
 /**
  *  [Fragment] subclass that represents the profile page allowing the user to modify its private information
  */
-class ProfileFragment(private val userId:String? = null) : Fragment() {
+class ProfileFragment(userId: String? = null) : Fragment() {
     //Return currentUser if we are not in test, but we can use a fake user in test this way
     var currentUser: UserEntity? = null
         get() = field ?: currentDatabase.currentUser
@@ -40,6 +39,8 @@ class ProfileFragment(private val userId:String? = null) : Fragment() {
     private lateinit var profileNameET: EditText
     private lateinit var profileEmailET: EditText
     private lateinit var profileUsernameET: EditText
+    val currentUID = userId ?: currentUser!!.uid
+    private lateinit var viewR: View
 
     /**
      * Recycler containing all the profile
@@ -47,45 +48,46 @@ class ProfileFragment(private val userId:String? = null) : Fragment() {
     private lateinit var recyclerView: RecyclerView
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         val viewRoot = inflater.inflate(R.layout.fragment_profile, container, false)
         //If the user is not logged in, redirect him to the login page
         if (currentUser == null) {
             changeFragment(activity, MainActivity.fragments[R.id.ic_login])
-        } else{
+        } else {
             profileNameET = viewRoot.findViewById(R.id.profileName)
             profileEmailET = viewRoot.findViewById(R.id.profileEmail)
             profileUsernameET = viewRoot.findViewById(R.id.profileUsernameET)
 
-
-            val currentUID = userId?: currentUser!!.uid
             addListener(viewRoot)
             addObserver(viewRoot)
 
-            if(adminMode){
+            if (adminMode) {
                 setupAdminMode(viewRoot)
-                userInfoLiveData.observe (this){
+                userInfoLiveData.observe(this) {
                     initProfileList(viewRoot, it.value)
                 }
-            }else{
+            } else {
                 setupUserMode(viewRoot)
                 currentDatabase.currentUserObservable.observe(this) {
                     initProfileList(viewRoot, it.value)
                 }
             }
-
-            currentDatabase.userDatabase!!.getUserInformation(
-                userInfoLiveData,
-                currentUID
-            )
+            getUserInformation()
         }
-
+        viewR = viewRoot
         return viewRoot
     }
 
-    private fun setupAdminMode(viewRoot:View){
+    private fun getUserInformation() {
+        currentDatabase.userDatabase!!.getUserInformation(
+                userInfoLiveData,
+                currentUID
+        )
+    }
+
+    private fun setupAdminMode(viewRoot: View) {
         viewRoot.findViewById<Button>(R.id.btnUpdateInfos).visibility = View.INVISIBLE
         viewRoot.findViewById<Button>(R.id.btnLogout).visibility = View.INVISIBLE
         viewRoot.findViewById<EditText>(R.id.profileBirthdayET).isEnabled = false
@@ -93,14 +95,14 @@ class ProfileFragment(private val userId:String? = null) : Fragment() {
 
     }
 
-    private fun setupUserMode(viewRoot: View){
+    private fun setupUserMode(viewRoot: View) {
         viewRoot.findViewById<Button>(R.id.btnUpdateInfos).visibility = View.VISIBLE
         viewRoot.findViewById<Button>(R.id.btnLogout).visibility = View.VISIBLE
         viewRoot.findViewById<EditText>(R.id.profileBirthdayET).isEnabled = true
         viewRoot.findViewById<EditText>(R.id.profileUsernameET).isEnabled = true
     }
 
-    private fun addObserver(viewRoot: View){
+    private fun addObserver(viewRoot: View) {
         //When user Info live data is updated, set the correct value in the textview
         userInfoLiveData.observe(this) { userInfo ->
             val userInfoValue = userInfo.value
@@ -110,13 +112,13 @@ class ProfileFragment(private val userId:String? = null) : Fragment() {
 
             val userBirthDate = userInfoValue.birthDate
             val birthDateFormatted =
-                if (userBirthDate == null) ""
-                else userBirthDate.format(DateTimeFormatter.ISO_LOCAL_DATE)
+                    if (userBirthDate == null) ""
+                    else userBirthDate.format(DateTimeFormatter.ISO_LOCAL_DATE)
             viewRoot.findViewById<EditText>(R.id.profileBirthdayET).setText(birthDateFormatted)
         }
     }
 
-    private fun addListener(viewRoot: View){
+    private fun addListener(viewRoot: View) {
         viewRoot.findViewById<Button>(R.id.btnUpdateInfos).setOnClickListener {
             //Clear the previous map and add every field
             currentUser!!.name = profileUsernameET.text.toString()
@@ -127,15 +129,15 @@ class ProfileFragment(private val userId:String? = null) : Fragment() {
             currentDatabase.userDatabase!!.updateUserInformation(
                     currentUser!!
             ).observe(this) { newValue ->
-                    if (newValue.value) {
-                        currentDatabase.userDatabase!!.getUserInformation(
+                if (newValue.value) {
+                    currentDatabase.userDatabase!!.getUserInformation(
                             userInfoLiveData,
                             currentUser!!.uid
-                        )
-                    } else {
-                        HelperFunctions.showToast(getString(R.string.fail_to_update), activity)
-                    }
+                    )
+                } else {
+                    HelperFunctions.showToast(getString(R.string.fail_to_update), activity)
                 }
+            }
         }
 
         //Logout button handler
@@ -145,10 +147,10 @@ class ProfileFragment(private val userId:String? = null) : Fragment() {
         }
     }
 
-    fun initProfileList(viewRoot: View, user : UserEntity) {
+    fun initProfileList(viewRoot: View, user: UserEntity) {
         user.userProfiles.observeRemove(this) {
-            if (it.sender != currentDatabase){
-                currentDatabase.userDatabase!!.removeProfileFromUser(it.value, user).observeOnce(this)  {
+            if (it.sender != currentDatabase) {
+                currentDatabase.userDatabase!!.removeProfileFromUser(it.value, user).observeOnce(this) {
                     if (!it.value)
                         HelperFunctions.showToast(getString(R.string.fail_to_remove_profiles), context)
                 }
@@ -167,23 +169,23 @@ class ProfileFragment(private val userId:String? = null) : Fragment() {
         recyclerView.adapter = ProfileAdapter(this, user.userProfiles)
 
         viewRoot.findViewById<ImageButton>(R.id.id_add_profile_button)
-            .setOnClickListener { createProfilePopup(user) }
+                .setOnClickListener { createProfilePopup(user) }
     }
 
     @SuppressLint("InflateParams")
     private fun createProfilePopup(user: UserEntity) {
         // Initialize a new layout inflater instance
         val inflater: LayoutInflater =
-            (activity)!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+                (activity)!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
         // Inflate a custom view using layout inflater
         val view = inflater.inflate(R.layout.popup_profile, null)
 
         // Initialize a new instance of popup window
         val popupWindow = PopupWindow(
-            view, // Custom view to show in popup window
-            LinearLayout.LayoutParams.MATCH_PARENT, // Width of popup window
-            LinearLayout.LayoutParams.WRAP_CONTENT // Window height
+                view, // Custom view to show in popup window
+                LinearLayout.LayoutParams.MATCH_PARENT, // Width of popup window
+                LinearLayout.LayoutParams.WRAP_CONTENT // Window height
         )
 
         val slideIn = Slide()
@@ -206,9 +208,9 @@ class ProfileFragment(private val userId:String? = null) : Fragment() {
         // Set a click listener for popup's button widget
         confirmButton.setOnClickListener {
             user.userProfiles.add(
-                UserProfile(
-                    profileName = profileName.text.toString()
-                ), this
+                    UserProfile(
+                            profileName = profileName.text.toString()
+                    ), this
             )
             // Dismiss the popup window
             popupWindow.dismiss()
@@ -222,12 +224,19 @@ class ProfileFragment(private val userId:String? = null) : Fragment() {
     fun editProfile(item: UserProfile) {
         val intent = Intent(activity, EditProfileActivity::class.java)
         intent.putExtra(
-            EditProfileActivity.CALLER_RANK,
-            if (currentUser!!.isAdmin()) UserRole.ADMIN.userRole else UserRole.PARTICIPANT.userRole
+                EditProfileActivity.CALLER_RANK,
+                if (currentUser!!.isAdmin()) UserRole.ADMIN.userRole else UserRole.PARTICIPANT.userRole
         )
 
         intent.putExtra(EditProfileActivity.EDIT_PROFILE_ID, item.pid.toString())
         startActivity(intent)
-        currentUser!!.loadSuccess = false
+
+        /*
+        EditProfileActivity.end.observeOnce(this, false) {
+            userInfoLiveData.value!!.loadSuccess = false
+            userInfoLiveData.value!!.userProfiles.observeOnce(this) {
+                recyclerView.adapter!!.notifyDataSetChanged()
+            }
+        }*/
     }
 }
