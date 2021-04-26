@@ -112,7 +112,7 @@ object UserDatabaseFirestore : UserDatabaseInterface {
                 .document(user.uid)
                 .set(UserAdapter.toDocument(user))
                 .addOnSuccessListener {
-                    FirestoreDatabaseProvider.firestore!!.collection(DatabaseConstant.CollectionConstant.PROFILE_COLLECTION.value)
+                    FirestoreDatabaseProvider.firestore!!.collection(PROFILE_COLLECTION.value)
                         .document(profile.pid!!)
                         .set(ProfileAdapter.toDocument(profile))
                         .addOnSuccessListener { ended.postValue(true, this) }
@@ -122,7 +122,7 @@ object UserDatabaseFirestore : UserDatabaseInterface {
         }
 
         if (profile.pid == null)
-            FirestoreDatabaseProvider.firestore!!.collection(DatabaseConstant.CollectionConstant.PROFILE_COLLECTION.value)
+            FirestoreDatabaseProvider.firestore!!.collection(PROFILE_COLLECTION.value)
                 .add(ProfileAdapter.toDocument(profile))
                 .addOnSuccessListener {
                     profile.pid = it.id
@@ -190,7 +190,7 @@ object UserDatabaseFirestore : UserDatabaseInterface {
         FirestoreDatabaseProvider.getListEntity(
             users,
             profile.users,
-            DatabaseConstant.CollectionConstant.PROFILE_COLLECTION,
+            PROFILE_COLLECTION,
             UserAdapter
         )
 
@@ -201,13 +201,13 @@ object UserDatabaseFirestore : UserDatabaseInterface {
     ): Observable<Boolean> = FirestoreDatabaseProvider.getEntity(
         profile,
         pid,
-        DatabaseConstant.CollectionConstant.PROFILE_COLLECTION,
+        PROFILE_COLLECTION,
         ProfileAdapter
     )
 
     override fun removeProfile(profile: UserProfile, user: UserEntity?) =
         FirestoreDatabaseProvider.deleteEntity(
             profile.pid!!,
-            DatabaseConstant.CollectionConstant.PROFILE_COLLECTION
+            PROFILE_COLLECTION
         )
 }

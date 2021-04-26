@@ -47,11 +47,6 @@ class ProfileFragment(private val userId:String? = null) : Fragment() {
      */
     private lateinit var recyclerView: RecyclerView
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -64,9 +59,7 @@ class ProfileFragment(private val userId:String? = null) : Fragment() {
             profileNameET = viewRoot.findViewById(R.id.profileName)
             profileEmailET = viewRoot.findViewById(R.id.profileEmail)
             profileUsernameET = viewRoot.findViewById(R.id.profileUsernameET)
-            currentDatabase.currentUserObservable.observe(this) {
-                initProfileList(viewRoot, it.value)
-            }
+
 
             val currentUID = userId?: currentUser!!.uid
             addListener(viewRoot)
@@ -74,8 +67,14 @@ class ProfileFragment(private val userId:String? = null) : Fragment() {
 
             if(adminMode){
                 setupAdminMode(viewRoot)
+                userInfoLiveData.observe (this){
+                    initProfileList(viewRoot, it.value)
+                }
             }else{
                 setupUserMode(viewRoot)
+                currentDatabase.currentUserObservable.observe(this) {
+                    initProfileList(viewRoot, it.value)
+                }
             }
 
             currentDatabase.userDatabase!!.getUserInformation(
