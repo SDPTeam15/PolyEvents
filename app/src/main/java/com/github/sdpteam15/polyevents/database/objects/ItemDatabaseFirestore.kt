@@ -60,7 +60,7 @@ object ItemDatabaseFirestore : ItemDatabaseInterface {
         ) { querySnapshot ->
             itemList.clear(this)
             val items = querySnapshot.documents.map {
-                ItemEntityAdapter.toItemEntity(it.data!!, it.id)
+                ItemEntityAdapter.fromDocument(it.data!!, it.id)
             }
             itemList.addAll(items, this)
         }
@@ -76,7 +76,7 @@ object ItemDatabaseFirestore : ItemDatabaseInterface {
         ) { querySnapshot ->
             itemList.clear(this)
             val items = querySnapshot.documents.map {
-                ItemEntityAdapter.toItemEntity(it.data!!, it.id)
+                ItemEntityAdapter.fromDocument(it.data!!, it.id)
             }
             itemList.addAll(items, this)
         }

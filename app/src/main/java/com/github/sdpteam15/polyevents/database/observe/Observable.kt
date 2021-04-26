@@ -5,9 +5,29 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.run
-
 /**
  * Data that notify a set of observers on a modification
+ * When adding observers and passing a lifecycleOwner in the parameters, the added observer will not be notified if the lifecycle is destroyed.
+ * This is useful for example when an activity is stopped, as we don't need to update data on this closed activity.
+ * If we don't give a Lifecycle in parameters, the observer will keep beeing notified even if the activity is stopped.
+ * To unsubscribe from the Observable, we take take the reference of the corresponding "remove" function
+ * We get the "remove" function by taking the return value of the observe method, for example :
+ *
+ *      val ret : ThenOrRemove = observable.observe { ... }
+ *      ...
+ *      do something
+ *      ...
+ *      //on a special event stop observing
+ *      ret.remove()
+ *
+ *  The chain operator "then" from this return function can be used to add multiple observers in a convenient way
+ *  For example in an activity:
+ *
+ *      observable.map(this){ ... }.then.observe(this){ ... }.then.map(this){}.then.observeOnce(this){ ... }
+ *
+ * When setting a value, we use an "UpdateValue" object which is a pair containing the new value,
+ * and eventually a reference to the sender object, which can be used when we need to know who sent the update.
+ *
  * @param value the initial value of the data
  * @param sender object that modified the data
  */
@@ -20,7 +40,8 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
     class ThenOrRemove<U>(val then: U, val remove: () -> Boolean)
 
     /**
-     * A value with the object that modified the data
+     * Use an UpdateValue object each time we want to set a new value for the data.
+     * It contains the new value and eventually the object that set the new value.
      * @property value the value
      * @property  sender object that modified the data
      */
@@ -288,12 +309,9 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
     fun postValue(newValue: T, sender: Any? = null) : ThenOrRemove<Observable<T>> {
         synchronized(this) { updateArgs = UpdateValue(newValue, sender); }
         run(Runnable {
-            val toRemove = mutableListOf<(UpdateValue<T>) -> Boolean>()
-            for (obs in observers)
+            for (obs in observers.toList())
                 if (!obs(updateArgs!!))
-                    toRemove.add(obs)
-            for (obs in toRemove)
-                leave(obs)
+                    leave(obs)
         })
         return ThenOrRemove(this, { true })
     }

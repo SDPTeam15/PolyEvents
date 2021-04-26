@@ -13,7 +13,7 @@ object DatabaseConstant {
                                   val adapter : AdapterInterface<out Any>) {
         LOCATION_COLLECTION("locations", DeviceLocationAdapter),
         ZONE_COLLECTION("zones", ZoneAdapter),
-        ITEM_COLLECTION("items", ItemTypeAdapter),
+        ITEM_COLLECTION("items", ItemEntityAdapter),
         EVENT_COLLECTION("events", EventAdapter),
         PROFILE_COLLECTION("profile", ProfileAdapter),
         USER_COLLECTION("users", UserAdapter),

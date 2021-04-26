@@ -18,12 +18,13 @@ class ObservableMap<K, T> : MutableMap<K, T> {
 
     open class UpdateKeyedValue<K, T>(value: T, val key: K, sender: Any?) :
         Observable.UpdateValue<T>(value, sender)
+
     class ObserversInfo<K, T>(
-        val value: Observable.UpdateValue<Map<K, T>>,
+        value: Map<K, T>,
         val info: Info,
         val args: Any?,
-        val sender: Any?
-    )
+        sender: Any?
+    ) : Observable.UpdateValue<Map<K, T>>(value, sender)
 
     enum class Info {
         put,
@@ -151,7 +152,7 @@ class ObservableMap<K, T> : MutableMap<K, T> {
      * @param sender The source of the event.
      */
     fun clear(sender: Any? = null) {
-        for (key in mapValues.keys) {
+        for (key in mapValues.keys.toList()) {
             remove(key, sender, false)
         }
         notifyUpdate(sender, Info.clear)
@@ -159,11 +160,12 @@ class ObservableMap<K, T> : MutableMap<K, T> {
 
     override val entries: MutableSet<MutableMap.MutableEntry<K, T>>
         get() = mapValues.entries.map {
-            object : MutableMap.MutableEntry<K, T>{
+            object : MutableMap.MutableEntry<K, T> {
                 override val key: K
                     get() = it.key
                 override val value: T
                     get() = it.value.value!!
+
                 override fun setValue(newValue: T): T {
                     val v = value
                     it.value.postValue(newValue, this)
@@ -402,11 +404,8 @@ class ObservableMap<K, T> : MutableMap<K, T> {
      *  @return a method to remove the observer
      */
     fun observeWhileTrue(observer: (Observable.UpdateValue<Map<K, T>>) -> Boolean): Observable.ThenOrRemove<ObservableMap<K, T>> {
-        val resultObserver: (ObserversInfo<K, T>) -> Boolean = {
-            observer(it.value)
-        }
-        observers.add(resultObserver)
-        return Observable.ThenOrRemove(this, { leave(resultObserver) })
+        observers.add(observer)
+        return Observable.ThenOrRemove(this, { leave(observer) })
     }
 
     /**
@@ -579,34 +578,26 @@ class ObservableMap<K, T> : MutableMap<K, T> {
 
     private fun itemPuted(value: UpdateKeyedValue<K, T>) {
         HelperFunctions.run(Runnable {
-            val toRemove = mutableListOf<(UpdateKeyedValue<K, T>) -> Boolean>()
-            for (obs in observersPut)
+            for (obs in observersPut.toList())
                 if (!obs(value))
-                    toRemove.add(obs)
-            for (obs in toRemove)
-                leavePut(obs)
+                    leavePut(obs)
         })
     }
 
     private fun itemRemoved(value: UpdateKeyedValue<K, T>) {
         HelperFunctions.run(Runnable {
-            val toRemove = mutableListOf<(UpdateKeyedValue<K, T>) -> Boolean>()
-            for (obs in observersRemove)
+            for (obs in observersRemove.toList())
                 if (!obs(value))
-                    toRemove.add(obs)
-            for (obs in toRemove)
-                leaveRemove(obs)
+                    leaveRemove(obs)
         })
     }
 
     private fun itemUpdated(value: UpdateKeyedValue<K, T>) {
         HelperFunctions.run(Runnable {
             val toRemove = mutableListOf<(UpdateKeyedValue<K, T>) -> Boolean>()
-            for (obs in observersItemUpdate)
+            for (obs in observersItemUpdate.toList())
                 if (!obs(value))
-                    toRemove.add(obs)
-            for (obs in toRemove)
-                leaveUpdate(obs)
+                    leaveUpdate(obs)
             notifyUpdate(value.sender, Info.itemUpdated, value)
         })
     }
@@ -615,17 +606,14 @@ class ObservableMap<K, T> : MutableMap<K, T> {
         if (observers.isNotEmpty()) {
             val valueList =
                 ObserversInfo(
-                    Observable.UpdateValue(this as MutableMap<K, T>, sender),
+                    this as MutableMap<K, T>,
                     info,
                     args,
                     sender
                 )
-            val toRemove = mutableListOf<(ObserversInfo<K, T>) -> Boolean>()
-            for (obs in observers)
+            for (obs in observers.toList())
                 if (!obs(valueList))
-                    toRemove.add(obs)
-            for (obs in toRemove)
-                leave(obs)
+                    leave(obs)
         }
     }
 }

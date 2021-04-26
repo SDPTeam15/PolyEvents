@@ -372,19 +372,15 @@ class ObservableListTest {
         assert(updated)
         updated = false
 
-        /*
         mappedObservableMap.observeOnce { updated = true }
         list[0] = 1
         assert(updated)
         updated = false
-        */
 
-        /*
         mappedObservableMap.observeOnce { updated = true }
         list.clear()
         assert(updated)
         updated = false
-        */
 
         val mockedLifecycleOwner = Mockito.mock(LifecycleOwner::class.java)
         val mockedLifecycle = Mockito.mock(Lifecycle::class.java)

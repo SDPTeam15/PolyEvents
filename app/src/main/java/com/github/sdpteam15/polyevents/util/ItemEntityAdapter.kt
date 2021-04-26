@@ -1,17 +1,10 @@
 package com.github.sdpteam15.polyevents.util
 
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.ItemConstants.*
+import com.github.sdpteam15.polyevents.model.Event
 import com.github.sdpteam15.polyevents.model.Item
 
-object ItemEntityAdapter {
-    fun toItemEntity(documentData: MutableMap<String, Any?>, id: String): Pair<Item, Int> =
-        Pair(
-            Item(
-                id,
-                documentData[ITEM_NAME.value] as String?,
-                documentData[ITEM_TYPE.value] as String),
-                (documentData[ITEM_COUNT.value] as Long).toInt()
-        )
+object ItemEntityAdapter : AdapterInterface<Pair<Item, Int>>{
 
     fun toItemDocument(item: Item, count: Int): HashMap<String, Any?> {
         val hash: HashMap<String, Any?> = hashMapOf(
@@ -24,4 +17,16 @@ object ItemEntityAdapter {
         }
         return hash
     }
+
+    override fun toDocument(element: Pair<Item, Int>): HashMap<String, Any?> =
+        toItemDocument(element.first, element.second)
+
+    override fun fromDocument(document: MutableMap<String, Any?>, id: String): Pair<Item, Int> =
+        Pair(
+            Item(
+                id,
+                document[ITEM_NAME.value] as String?,
+                document[ITEM_TYPE.value] as String),
+            (document[ITEM_COUNT.value] as Long).toInt()
+        )
 }

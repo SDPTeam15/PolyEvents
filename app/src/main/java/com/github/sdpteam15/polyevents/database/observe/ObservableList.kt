@@ -4,8 +4,31 @@ import androidx.lifecycle.LifecycleOwner
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.run
 
 /**
- * Observable live list of type T
- * @param
+ * Data that notify a set of observers on a modification
+ * When adding observers and passing a lifecycleOwner in the parameters, the added observer will not be notified if the lifecycle is destroyed.
+ * This is useful for example when an activity is stopped, as we don't need to update data on this closed activity.
+ * If we don't give a Lifecycle in parameters, the observer will keep beeing notified even if the activity is stopped.
+ * To unsubscribe from the Observable, we take take the reference of the corresponding "remove" function
+ * We get the "remove" function by taking the return value of the observe method, for example :
+ *
+ *      val ret : ThenOrRemove = observable.observe { ... }
+ *      ...
+ *      do something
+ *      ...
+ *      //on a special event stop observing
+ *      ret.remove()
+ *
+ *  The chain operator "then" from this return function can be used to add multiple observers in a convenient way
+ *  For example in an activity:
+ *
+ *      observable.map(this){ ... }.then.observe(this){ ... }.then.map(this){}.then.observeOnce(this){ ... }
+ *
+ * When setting a value, we use an "UpdateValue" object which is a pair containing the new value,
+ * and eventually a reference to the sender object, which can be used when we need to know who sent the update.
+ *
+ * @param collection initial collection of the data
+ * @param observable initial observable of the data
+ * @param sender last object that modified the data
  */
 class ObservableList<T>(
     collection: Collection<T>? = null,
@@ -36,11 +59,11 @@ class ObservableList<T>(
         Observable.UpdateValue<T>(value, sender)
 
     class ObserversInfo<T>(
-        val value: Observable.UpdateValue<List<T>>,
+        value: List<T>,
         val info: Info,
         val args: Any?,
-        val sender: Any?
-    )
+        sender: Any?
+    ) : Observable.UpdateValue<List<T>>(value, sender)
 
     enum class Info {
         add,
@@ -604,11 +627,8 @@ class ObservableList<T>(
      *  @return a method to remove the observer
      */
     fun observeWhileTrue(observer: (Observable.UpdateValue<List<T>>) -> Boolean): Observable.ThenOrRemove<ObservableList<T>> {
-        val resultObserver: (ObserversInfo<T>) -> Boolean = {
-            observer(it.value)
-        }
-        observers.add(resultObserver)
-        return Observable.ThenOrRemove(this, { leave(resultObserver) })
+        observers.add(observer)
+        return Observable.ThenOrRemove(this, { leave(observer) })
     }
 
     /**
@@ -810,25 +830,24 @@ class ObservableList<T>(
         mapper: (T) -> U
     ): Observable.ThenOrRemove<ObservableMap<U, ObservableList<T>>> {
 
-        val addLambda : (ObserversInfo<T>, Observable<T>) -> Unit = { it, observable ->
+        val addLambda: (ObserversInfo<T>, Observable<T>) -> Unit = { it, observable ->
             val key = mapper(observable.value!!)
             if (observableMap.containsKey(key)) {
                 observableMap[key]!!.add(observable, it.sender)
                 val o = observableMap.getObservable(key)!!
                 o.value!!.add(observable, it.sender)
                 o.postValue(o.value!!, it.sender)
-            }
-            else
+            } else
                 observableMap.put(
                     key,
                     ObservableList(observable = observable, sender = it.sender),
                     it.sender
                 )
         }
-        val removeLambda : (ObserversInfo<T>, Observable<T>) -> Unit = { it, observable ->
+        val removeLambda: (ObserversInfo<T>, Observable<T>) -> Unit = { it, observable ->
             val key = mapper(observable.value!!)
             observableMap[key]!!.remove(observable, it.sender)
-            if(observableMap[key]!!.isEmpty())
+            if (observableMap[key]!!.isEmpty())
                 observableMap.remove(key)
             else {
                 val o = observableMap.getObservable(key)!!
@@ -855,12 +874,12 @@ class ObservableList<T>(
                     Info.removeAt -> removeLambda(it, (it.args as Pair<Int, Observable<T>>).second)
                     Info.removeAll -> {
                         val (_, observables) = it.args as Pair<Collection<T>, MutableList<Observable<T>>>
-                        for(observable in observables)
+                        for (observable in observables)
                             removeLambda(it, observable)
                     }
                     Info.retainAll -> {
                         val (_, observables) = it.args as Pair<Collection<T>, MutableList<Observable<T>>>
-                        for(observable in observables)
+                        for (observable in observables)
                             removeLambda(it, observable)
                     }
                     Info.clear -> {
@@ -868,25 +887,23 @@ class ObservableList<T>(
                     }
                     Info.itemUpdated -> {
                         val (observable, value) = it.args as Pair<Observable<T>, UpdateIndexedValue<T>>
-                        var from : U? = null
+                        var from: U? = null
                         for (key in observableMap.keys)
                             if (observableMap[key]!!.contains(observable)) {
                                 from = key
                                 break
                             }
                         val to = mapper(value.value)
-                        if(from!! != to)
-                        {
+                        if (from!! != to) {
                             observableMap[from]!!.remove(observable, it.sender)
-                            if(observableMap[from]!!.isEmpty())
+                            if (observableMap[from]!!.isEmpty())
                                 observableMap.remove(from)
                             else {
                                 val o = observableMap.getObservable(from)!!
                                 o.postValue(o.value!!, it.sender)
                             }
                             addLambda(it, observable)
-                        }
-                        else{
+                        } else {
                             val o = observableMap.getObservable(to)!!
                             o.postValue(o.value!!, it.sender)
                         }
@@ -963,34 +980,25 @@ class ObservableList<T>(
 
     private fun itemAdded(value: UpdateIndexedValue<T>) {
         run(Runnable {
-            val toRemove = mutableListOf<(UpdateIndexedValue<T>) -> Boolean>()
-            for (obs in observersAdd)
+            for (obs in observersAdd.toList())
                 if (!obs(value))
-                    toRemove.add(obs)
-            for (obs in toRemove)
                 leaveAdd(obs)
         })
     }
 
     private fun itemRemoved(value: UpdateIndexedValue<T>) {
         run(Runnable {
-            val toRemove = mutableListOf<(UpdateIndexedValue<T>) -> Boolean>()
-            for (obs in observersRemove)
+            for (obs in observersRemove.toList())
                 if (!obs(value))
-                    toRemove.add(obs)
-            for (obs in toRemove)
-                leaveRemove(obs)
+                    leaveRemove(obs)
         })
     }
 
-    private fun itemUpdated(observable: Observable<T> , value: UpdateIndexedValue<T>) {
+    private fun itemUpdated(observable: Observable<T>, value: UpdateIndexedValue<T>) {
         run(Runnable {
-            val toRemove = mutableListOf<(UpdateIndexedValue<T>) -> Boolean>()
-            for (obs in observersItemUpdate)
+            for (obs in observersItemUpdate.toList())
                 if (!obs(value))
-                    toRemove.add(obs)
-            for (obs in toRemove)
-                leaveUpdate(obs)
+                    leaveUpdate(obs)
             notifyUpdate(value.sender, Info.itemUpdated, Pair(observable, value))
         })
     }
@@ -998,13 +1006,10 @@ class ObservableList<T>(
     private fun notifyUpdate(sender: Any? = null, info: Info, args: Any? = null) {
         if (observers.isNotEmpty()) {
             val valueList =
-                ObserversInfo(Observable.UpdateValue(this as List<T>, sender), info, args, sender)
-            val toRemove = mutableListOf<(ObserversInfo<T>) -> Boolean>()
-            for (obs in observers)
+                ObserversInfo(this as List<T>, info, args, sender)
+            for (obs in observers.toList())
                 if (!obs(valueList))
-                    toRemove.add(obs)
-            for (obs in toRemove)
-                leave(obs)
+                    leave(obs)
         }
     }
 
