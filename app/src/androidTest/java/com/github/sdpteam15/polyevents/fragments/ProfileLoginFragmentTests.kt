@@ -14,12 +14,9 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
+import com.github.sdpteam15.polyevents.*
 import com.github.sdpteam15.polyevents.adapter.EventItemAdapter
 import com.github.sdpteam15.polyevents.EditProfileActivity.Companion.EDIT_PROFILE_ID
-import com.github.sdpteam15.polyevents.MainActivity
-import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.RecyclerViewItemCountAssertion
-import com.github.sdpteam15.polyevents.TestHelper
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.NUMBER_UPCOMING_EVENTS

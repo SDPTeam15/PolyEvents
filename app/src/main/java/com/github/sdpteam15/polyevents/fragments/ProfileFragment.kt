@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.fragments
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -13,8 +14,8 @@ import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.*
-import com.github.sdpteam15.polyevents.adapter.ProfileAdapter
 import com.github.sdpteam15.polyevents.EditProfileActivity
+import com.github.sdpteam15.polyevents.adapter.ProfileAdapter
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.UserConstants.USER_USERNAME
 import com.github.sdpteam15.polyevents.database.observe.Observable
@@ -24,7 +25,6 @@ import com.github.sdpteam15.polyevents.login.UserLogin
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 import com.github.sdpteam15.polyevents.model.UserRole
-import com.google.rpc.Help
 import java.time.format.DateTimeFormatter
 
 /**
@@ -36,7 +36,6 @@ class ProfileFragment(private val userId:String? = null) : Fragment() {
         get() = field ?: currentDatabase.currentUser
 
     val userInfoLiveData = Observable<UserEntity>()
-    val hashMapNewInfo = HashMap<String, String>()
     private val adminMode = userId != null
     private lateinit var profileNameET: EditText
     private lateinit var profileEmailET: EditText
@@ -120,15 +119,13 @@ class ProfileFragment(private val userId:String? = null) : Fragment() {
     private fun addListener(viewRoot: View){
         viewRoot.findViewById<Button>(R.id.btnUpdateInfos).setOnClickListener {
             //Clear the previous map and add every field
-            hashMapNewInfo.clear()
-            hashMapNewInfo[USER_USERNAME.value] = profileUsernameET.text.toString()
+            currentUser!!.name = profileUsernameET.text.toString()
             // TODO: editText should have birthday input and convert it to Timestamp otherwise things crash
             //hashMapNewInfo[USER_BIRTH_DATE] = viewRoot.findViewById<EditText>(R.id.profileBirthdayET).text.toString()
 
             //Call the DB to update the user information and getUserInformation once it is done
             currentDatabase.userDatabase!!.updateUserInformation(
-                hashMapNewInfo,
-                currentUser!!.uid
+                    currentUser!!
             ).observe(this) { newValue ->
                     if (newValue.value) {
                         currentDatabase.userDatabase!!.getUserInformation(
@@ -173,6 +170,7 @@ class ProfileFragment(private val userId:String? = null) : Fragment() {
             .setOnClickListener { createProfilePopup() }
     }
 
+    @SuppressLint("InflateParams")
     private fun createProfilePopup() {
         // Initialize a new layout inflater instance
         val inflater: LayoutInflater =

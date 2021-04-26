@@ -11,6 +11,7 @@ import androidx.test.espresso.matcher.ViewMatchers.hasChildCount
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread
+import com.github.sdpteam15.polyevents.HelperTestFunction
 import com.github.sdpteam15.polyevents.MainActivity
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
@@ -107,7 +108,7 @@ class UpcomingEventsHomeFragmentTest {
             for (e in eventsToAdd) {
                 list.add(e)
                 if (++i >= it!!.arguments[1] as Long)
-                    break;
+                    break
             }
             (it!!.arguments[2] as ObservableList<Event>).addAll(list)
             Observable(true)

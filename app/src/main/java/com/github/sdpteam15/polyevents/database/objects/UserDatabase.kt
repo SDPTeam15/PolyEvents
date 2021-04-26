@@ -54,6 +54,10 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
         USER_COLLECTION
     )
 
+    override fun getListAllUsers(users: ObservableList<UserEntity>, userAccess: UserProfile?): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
     override fun addUserProfileAndAddToUser(
         profile: UserProfile,
         user: UserEntity,

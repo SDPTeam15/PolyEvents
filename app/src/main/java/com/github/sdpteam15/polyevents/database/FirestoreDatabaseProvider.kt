@@ -9,10 +9,9 @@ import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.login.UserLogin
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
+import com.github.sdpteam15.polyevents.model.UserRole
 import com.github.sdpteam15.polyevents.util.AdapterFromDocumentInterface
 import com.github.sdpteam15.polyevents.util.AdapterToDocumentInterface
-import com.github.sdpteam15.polyevents.model.UserRole
-import com.github.sdpteam15.polyevents.util.AdapterInterface
 import com.github.sdpteam15.polyevents.util.UserAdapter
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
