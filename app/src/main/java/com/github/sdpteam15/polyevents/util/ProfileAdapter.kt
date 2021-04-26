@@ -22,7 +22,7 @@ object ProfileAdapter : AdapterInterface<UserProfile> {
         pid = id as String?,
         profileName = document[PROFILE_NAME.value] as String?,
         userRole = if ((document[PROFILE_RANK.value] as String?) != null)
-            UserRole.fromString(document[PROFILE_RANK.value] as String)!!
+            UserRole.fromString(document[PROFILE_RANK.value] as String) ?: UserRole.PARTICIPANT
         else UserRole.PARTICIPANT,
         users = (document[PROFILE_USERS.value] as List<String>).toMutableList()
     )
