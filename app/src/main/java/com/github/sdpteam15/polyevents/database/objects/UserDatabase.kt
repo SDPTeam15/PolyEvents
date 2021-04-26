@@ -3,10 +3,13 @@ package com.github.sdpteam15.polyevents.database.objects
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.PROFILE_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
+import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
+import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider.firestore
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
+import com.github.sdpteam15.polyevents.util.UserAdapter
 
 class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
     override var firstConnectionUser: UserEntity = UserEntity(uid = "DEFAULT")
@@ -55,7 +58,16 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
     )
 
     override fun getListAllUsers(users: ObservableList<UserEntity>, userAccess: UserProfile?): Observable<Boolean> {
-        TODO("Not yet implemented")
+        return FirestoreDatabaseProvider.thenDoGet(
+                firestore!!.collection(USER_COLLECTION.value)
+                        .get()
+        ){
+            users.clear()
+            val us = it.documents.map {
+                UserAdapter.fromDocument(it.data!!, it.id)
+            }
+            users.addAll(us, this)
+        }
     }
 
     override fun addUserProfileAndAddToUser(

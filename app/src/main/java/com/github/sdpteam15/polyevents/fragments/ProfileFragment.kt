@@ -167,11 +167,11 @@ class ProfileFragment(private val userId:String? = null) : Fragment() {
         recyclerView.adapter = ProfileAdapter(this, user.userProfiles)
 
         viewRoot.findViewById<ImageButton>(R.id.id_add_profile_button)
-            .setOnClickListener { createProfilePopup() }
+            .setOnClickListener { createProfilePopup(user) }
     }
 
     @SuppressLint("InflateParams")
-    private fun createProfilePopup() {
+    private fun createProfilePopup(user: UserEntity) {
         // Initialize a new layout inflater instance
         val inflater: LayoutInflater =
             (activity)!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -205,7 +205,7 @@ class ProfileFragment(private val userId:String? = null) : Fragment() {
 
         // Set a click listener for popup's button widget
         confirmButton.setOnClickListener {
-            currentUser!!.userProfiles.add(
+            user.userProfiles.add(
                 UserProfile(
                     profileName = profileName.text.toString()
                 ), this
@@ -223,7 +223,7 @@ class ProfileFragment(private val userId:String? = null) : Fragment() {
         val intent = Intent(activity, EditProfileActivity::class.java)
         intent.putExtra(
             EditProfileActivity.CALLER_RANK,
-            if (currentUser!!.isAdmin()) UserRole.ADMIN.toString() else UserRole.PARTICIPANT.toString()
+            if (currentUser!!.isAdmin()) UserRole.ADMIN.userRole else UserRole.PARTICIPANT.userRole
         )
 
         intent.putExtra(EditProfileActivity.EDIT_PROFILE_ID, item.pid.toString())
