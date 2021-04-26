@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents
 
+import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -19,6 +20,7 @@ class ItemRequestActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     lateinit var mapSelectedItems: MutableMap<Item, Int>
     private val obsItems = ObservableList<Pair<Item, Int>>()
+    private val obsItemsMap : MutableMap<String,ObservableList<Pair<Item, Int>>> = mutableMapOf()
     private val obsItemTypes = ObservableList<String>()
 
 
@@ -47,8 +49,14 @@ class ItemRequestActivity : AppCompatActivity() {
             if (it.value) {
                 currentDatabase.itemDatabase!!.getItemTypes(obsItemTypes).observe { it2 ->
                     if (it2.value){
+                        for (item in obsItems){
+                            val type = item.first.itemType
+                            if (!obsItemsMap.containsKey(type))
+                                obsItemsMap[type] = ObservableList()
+                            obsItemsMap[type]!!.add(item)
+                        }
                         recyclerView.adapter =
-                            ItemRequestAdapter(obsItemTypes,obsItems, onItemQuantityChangeListener)
+                            ItemRequestAdapter(this,obsItemTypes,obsItemsMap, onItemQuantityChangeListener)
                         recyclerView.setHasFixedSize(false)
                     }
                 }

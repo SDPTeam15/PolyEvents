@@ -1,10 +1,9 @@
 package com.github.sdpteam15.polyevents.adapter
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.Spinner
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
@@ -18,14 +17,37 @@ import com.github.sdpteam15.polyevents.model.Item
  * - A listener that will be triggered on click on a checkbox of an item view holder
  */
 class ItemRequestAdapter(
-    private val itemTypes : ObservableList<String>,
+    context: Context,
+    private val itemTypes: ObservableList<String>,
     val availableItems: Map<String, MutableList<Pair<Item, Int>>>,
     private val onItemQuantityChangeListener: (Item, Int) -> Unit
-) : RecyclerView.Adapter<ItemRequestAdapter.ItemViewHolder>() {
-    private var isCategoryOpen : MutableMap<String,Boolean> = mutableMapOf()
+) : RecyclerView.Adapter<ItemRequestAdapter.CustomViewHolder<*>>() {
+    private var isCategoryOpen: MutableMap<String, Boolean> = mutableMapOf()
+    private val inflater = LayoutInflater.from(context)
+
+
     init {
-        for (itemType in itemTypes){
+        for (itemType in itemTypes) {
             isCategoryOpen[itemType] = false
+        }
+    }
+
+
+    abstract inner class CustomViewHolder<T>(
+        private val view: View,
+        private val parent: ViewGroup
+    ) : RecyclerView.ViewHolder(view) {
+        abstract fun bind(item: T)
+    }
+
+    /**
+     * Adapted ViewHolder for each item type
+     * Takes the corresponding item type "tab" view
+     */
+    inner class ItemTypeViewHolder(private val view: View, private val parent: ViewGroup) :
+        CustomViewHolder<String>(view, parent) {
+        override fun bind(item: String) {
+
         }
     }
 
@@ -33,7 +55,8 @@ class ItemRequestAdapter(
      * Adapted ViewHolder for each item
      * Takes the corresponding item "tab" view
      */
-    inner class ItemViewHolder(private val view: View, private val parent: ViewGroup) : RecyclerView.ViewHolder(view) {
+    inner class ItemViewHolder(private val view: View, private val parent: ViewGroup) :
+        CustomViewHolder<Pair<Item,Int>>(view, parent) {
 /*
         private val itemName = view.findViewById<TextView>(R.id.id_item_name)
         private val itemQuantity = view.findViewById<EditText>(R.id.id_item_quantity)
@@ -43,8 +66,8 @@ class ItemRequestAdapter(
         /**
          * Binds the value of the item to the layout of the item tab
          */
-        fun bind(itemType: String) {
-            val items = mutableListOf<Pair<Item,Int>>()
+        override fun bind(item: Pair<Item,Int>) {
+            val items = mutableListOf<Pair<Item, Int>>()
 
 
             /*itemName.text =
@@ -117,23 +140,94 @@ class ItemRequestAdapter(
             )
         }
     }
+    //val adapterLayout = LayoutInflater.from(parent.context)
+    //            .inflate(R.layout.card_material_item_category, parent, false)
+    //        return ItemViewHolder(adapterLayout,parent)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        val adapterLayout = LayoutInflater.from(parent.context)
-            .inflate(R.layout.card_material_item_category, parent, false)
-        return ItemViewHolder(adapterLayout,parent)
-    }
-
-    override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        val itemType = itemTypes[position]
-        holder.bind(itemType)
-    }
 
     override fun getItemCount(): Int {
         var count = 0
-        for (isOpen in isCategoryOpen.entries){
+        for (isOpen in isCategoryOpen.entries) {
             count += 1 + (if (isOpen.value) 0 else availableItems[isOpen.key]?.size ?: 0)
         }
+        println("found $count items in $isCategoryOpen $availableItems")
         return count
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder<*> {
+        return when (viewType) {
+            ITEM_TYPE_HOLDER -> {
+                val view = inflater.inflate(R.layout.card_material_item_category, parent, false)
+                ItemTypeViewHolder(view, parent)
+            }
+            ITEM_HOLDER ->{
+                val view = inflater.inflate(R.layout.card_material_item, parent, false)
+                ItemViewHolder(view, parent)
+            }
+            else -> throw IllegalArgumentException("wrong itemtype $viewType")
+        }
+    }
+
+    override fun onBindViewHolder(holder: CustomViewHolder<*>, position: Int) {
+
+        when (holder) {
+
+            is ItemTypeViewHolder -> {
+                var res = 0
+                for (itemType in itemTypes) {
+                    if (res++ == position) {
+                        holder.bind(itemType)
+                        return
+                    }
+                    if (isCategoryOpen[itemType] == true) {
+                        for (item in availableItems[itemType] ?: listOf()) {
+                            res++
+                        }
+                    }
+                }
+            }
+            is ItemViewHolder -> {
+                var res = 0
+                for (itemType in itemTypes) {
+                    res++
+                    if (isCategoryOpen[itemType] == true) {
+                        for (item in availableItems[itemType] ?: listOf()) {
+                            if(res++ == position){
+                                holder.bind(item)
+                                return
+                            }
+                        }
+                    }
+                }
+            }
+            else -> throw java.lang.IllegalArgumentException("invalid position")
+
+        }
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        var res = 0
+        println(position)
+        for (itemType in itemTypes) {
+            println(itemType)
+            if (res++ == position) {
+                return ITEM_TYPE_HOLDER
+            }
+            if (isCategoryOpen[itemType] == true) {
+                for (item in availableItems[itemType] ?: listOf()) {
+                    println(item)
+                    if (res++ == position) {
+                        return ITEM_HOLDER
+                    }
+                }
+            }
+        }
+        //should never happen
+        return -1
+    }
+
+    companion object {
+        private const val ITEM_TYPE_HOLDER = 0
+        private const val ITEM_HOLDER = 1
     }
 }
