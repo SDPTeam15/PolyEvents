@@ -1,7 +1,6 @@
 package com.github.sdpteam15.polyevents.database.objects
 
 import android.annotation.SuppressLint
-import com.github.sdpteam15.polyevents.database.DatabaseConstant
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.ITEM_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.ITEM_TYPE_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.ItemConstants.ITEM_COUNT

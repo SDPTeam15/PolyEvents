@@ -16,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PolyEvents">
         <service
-            android:name=".service.Timer_Service"
+            android:name=".service.TimerService"
             android:enabled="true"
             android:exported="true"></service>
         <activity

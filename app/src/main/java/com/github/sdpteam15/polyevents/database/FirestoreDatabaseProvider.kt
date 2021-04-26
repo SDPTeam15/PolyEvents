@@ -208,7 +208,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     override fun <T : Any> addEntityAndGetId(
         element: T,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterToDocumentInterface<T>
+        adapter: AdapterToDocumentInterface<in T>
     ): Observable<String> {
         val ended = Observable<String>()
         lastAddSuccessListener =
@@ -228,14 +228,14 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     override fun <T : Any> addEntity(
         element: T,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterToDocumentInterface<T>
+        adapter: AdapterToDocumentInterface<in T>
     ): Observable<Boolean> = addEntityAndGetId(element, collection, adapter).mapOnce{ it != "" }.then
 
     override fun <T : Any> setEntity(
         element: T?,
         id: String,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterToDocumentInterface<T>?
+        adapter: AdapterToDocumentInterface<in T>?
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
 
@@ -264,7 +264,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         element: Observable<T>,
         id: String,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterFromDocumentInterface<T>
+        adapter: AdapterFromDocumentInterface<out T>
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
         lastGetSuccessListener = OnSuccessListener {
@@ -292,7 +292,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         ids: List<String>?,
         matcher: Matcher?,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterFromDocumentInterface<T>
+        adapter: AdapterFromDocumentInterface<out T>
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
 

@@ -3,8 +3,22 @@ package com.github.sdpteam15.polyevents.database.observe
 import androidx.lifecycle.LifecycleOwner
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.run
 
+/**
+ * Observable live list of type T
+ * @param
+ */
+class ObservableList<T>(
+    collection: Collection<T>? = null,
+    observable: Observable<T>? = null,
+    sender: Any? = null
+) : MutableList<T> {
 
-class ObservableList<T> : MutableList<T> {
+    init {
+        if (collection != null)
+            addAll(collection, sender)
+        if (observable != null)
+            add(observable, sender)
+    }
 
     class UpdateIndexedValue<T>(val value: T, val index: Int, val sender: Any?)
     class ObserversInfo<T>(
@@ -32,34 +46,22 @@ class ObservableList<T> : MutableList<T> {
     private val observersItemUpdate = mutableSetOf<(UpdateIndexedValue<T>) -> Boolean>()
     private val observers = mutableSetOf<(ObserversInfo<T>) -> Boolean>()
 
-    private val values: MutableList<Observable<T>> = mutableListOf()
+    private val listValues: MutableList<Observable<T>> = mutableListOf()
     private val removeItemObserver: MutableMap<Observable<T>, () -> Boolean> = mutableMapOf()
 
-    override val size get() = values.size
-
-    /**
-     * To list of T
-     */
-    val value: List<T>
-        get() {
-            val v: MutableList<T> = mutableListOf()
-            for (observableValue in values) {
-                v.add(observableValue.value!!)
-            }
-            return v
-        }
+    override val size get() = listValues.size
 
     /**
      * Returns the element at the specified index in the list.
      * @return the element at the specified index in the list.
      */
-    override operator fun get(index: Int): T = values[index].value!!
+    override operator fun get(index: Int): T = listValues[index].value!!
 
     /**
      * Returns the observable element at the specified index in the list.
      * @return the observable element at the specified index in the list.
      */
-    fun getObservable(index: Int): Observable<T> = values[index]
+    fun getObservable(index: Int): Observable<T> = listValues[index]
 
     /**
      * Replaces the element at the specified position in this list with the specified element.
@@ -69,7 +71,7 @@ class ObservableList<T> : MutableList<T> {
      */
     fun set(index: Int, value: T, sender: Any?): T {
         val res = this[index]
-        values[index].postValue(value, sender)
+        listValues[index].postValue(value, sender)
         return res
     }
 
@@ -92,15 +94,16 @@ class ObservableList<T> : MutableList<T> {
         notify: Boolean
     ): Observable<T>? {
         if (observable.value != null) {
-            if (!values.add(observable))
+            if (!listValues.add(observable))
                 return null
-            val index = values.indexOf(observable)
+            val index = listValues.indexOf(observable)
             removeItemObserver[observable] =
                 observable.observe(false) {
                     itemUpdated(
+                        observable,
                         UpdateIndexedValue(
                             it.value,
-                            index,
+                            listValues.indexOf(observable),
                             it.sender
                         )
                     )
@@ -133,10 +136,15 @@ class ObservableList<T> : MutableList<T> {
      */
     fun addAll(items: Collection<T>, sender: Any? = null): Boolean {
         var res = true
+        val added = mutableListOf<Observable<T>>()
         for (item: T in items) {
-            res = res && (add(item, sender, false) != null)
+            val ads = add(item, sender, false)
+            if (ads != null)
+                added.add(ads)
+            else
+                res = false
         }
-        notifyUpdate(sender, Info.addAll, items)
+        notifyUpdate(sender, Info.addAll, added)
         return res
     }
 
@@ -156,7 +164,7 @@ class ObservableList<T> : MutableList<T> {
         sender: Any? = null,
         notify: Boolean
     ): Observable<T>? {
-        if (!values.remove(observable)) {
+        if (!listValues.remove(observable)) {
             return null
         }
         removeItemObserver[observable]!!()
@@ -192,10 +200,16 @@ class ObservableList<T> : MutableList<T> {
      */
     fun removeAll(items: Collection<T>, sender: Any?): Boolean {
         var res = true
+
+        val removeed = mutableListOf<Observable<T>>()
         for (item: T in items) {
-            res = res && (remove(item, sender, false) != null)
+            val rms = remove(item, sender, false)
+            if (rms != null)
+                removeed.add(rms)
+            else
+                res = false
         }
-        notifyUpdate(sender, Info.removeAll, items)
+        notifyUpdate(sender, Info.removeAll, Pair(items, removeed))
         return res
     }
 
@@ -205,18 +219,18 @@ class ObservableList<T> : MutableList<T> {
      * @param sender The source of the event.
      * @return observable removed.
      */
-    fun removeAt( index: Int, sender: Any? = null) = removeAt(index, sender, true)
+    fun removeAt(index: Int, sender: Any? = null) = removeAt(index, sender, true)
     private fun removeAt(
         index: Int,
         sender: Any?,
         notify: Boolean
     ): Observable<T>? {
-        val observable = values.removeAt(index) ?: return null
+        val observable = listValues.removeAt(index) ?: return null
         removeItemObserver[observable]!!()
         removeItemObserver.remove(observable)
         itemRemoved(UpdateIndexedValue(observable.value!!, index, sender))
         if (notify) {
-            notifyUpdate(sender, Info.removeAt, index)
+            notifyUpdate(sender, Info.removeAt, Pair(index, observable))
         }
         return observable
     }
@@ -230,20 +244,20 @@ class ObservableList<T> : MutableList<T> {
      * @param sender The source of the event.
      */
     fun clear(sender: Any? = null) {
-        for (item in values.toList()) {
+        for (item in listValues.toMutableList()) {
             remove(item, sender, false)
         }
         notifyUpdate(sender, Info.clear)
     }
 
-    private fun find(item: T): Observable<T>? = values.find { it.value == item }
+    private fun find(item: T): Observable<T>? = listValues.find { it.value == item }
 
-    override fun isEmpty() = values.isEmpty()
+    override fun isEmpty() = listValues.isEmpty()
     override fun contains(element: T) = (find(element) != null)
 
     override fun indexOf(element: T): Int {
         val item = find(element) ?: return -1
-        return values.indexOf(item)
+        return listValues.indexOf(item)
     }
 
     override fun containsAll(elements: Collection<T>): Boolean {
@@ -257,7 +271,7 @@ class ObservableList<T> : MutableList<T> {
 
     override fun lastIndexOf(element: T): Int {
         val item = find(element) ?: return -1
-        return values.lastIndexOf(item)
+        return listValues.lastIndexOf(item)
     }
 
     private fun add(
@@ -267,13 +281,14 @@ class ObservableList<T> : MutableList<T> {
         notify: Boolean
     ): Observable<T>? {
         if (observable.value != null) {
-            values.add(index, observable)
+            listValues.add(index, observable)
             removeItemObserver[observable] =
                 observable.observe(false) {
                     itemUpdated(
+                        observable,
                         UpdateIndexedValue(
                             it.value,
-                            index,
+                            listValues.indexOf(observable),
                             it.sender
                         )
                     )
@@ -311,11 +326,17 @@ class ObservableList<T> : MutableList<T> {
      */
     fun addAll(index: Int, items: Collection<T>, sender: Any? = null): Boolean {
         var res = true
+
         var i = 0
+        val added = mutableListOf<Observable<T>>()
         for (item: T in items) {
-            res = res && (add((i++ + index), item, sender, false) != null)
+            val ads = add((i++ + index), item, sender, false)
+            if (ads != null)
+                added.add(ads)
+            else
+                res = false
         }
-        notifyUpdate(sender, Info.addAllIndex, Pair(index, items))
+        notifyUpdate(sender, Info.addAllIndex, Pair(index, added))
         return res
     }
 
@@ -330,14 +351,14 @@ class ObservableList<T> : MutableList<T> {
     fun retainAll(items: Collection<T>, sender: Any?): Boolean {
         var i = 0
         val toremove = mutableListOf<Observable<T>>()
-        for (item in values) {
+        for (item in listValues) {
             if (item.value !in items)
                 toremove.add(item)
         }
         for (item in toremove)
             remove(item, sender, false)
-        notifyUpdate(sender, Info.retainAll, items)
-        return values.size != 0
+        notifyUpdate(sender, Info.retainAll, Pair(items, toremove))
+        return listValues.size != 0
     }
 
     override fun retainAll(elements: Collection<T>): Boolean =
@@ -665,34 +686,35 @@ class ObservableList<T> : MutableList<T> {
                         observableList.add(index, mapper(observable.value!!), it.sender)
                     }
                     Info.addAll -> {
-                        val items = it.args as Collection<T>
-                        observableList.addAll(items.map(mapper), it.sender)
+                        val items = it.args as MutableList<Observable<T>>
+
+                        observableList.addAll(items.map { mapper(it.value!!) }, it.sender)
                     }
                     Info.addAllIndex -> {
-                        val (index, items) = it.args as Pair<Int, Collection<T>>
-                        observableList.addAll(index, items.map(mapper), it.sender)
+                        val (index, items) = it.args as Pair<Int, MutableList<Observable<T>>>
+                        observableList.addAll(index, items.map { mapper(it.value!!) }, it.sender)
                     }
                     Info.remove -> {
                         val observable = it.args as Observable<T>
                         observableList.remove(mapper(observable.value!!), it.sender)
                     }
                     Info.removeAt -> {
-                        val index = it.args as Int
+                        val (index, observable) = it.args as Pair<Int, Observable<T>>
                         observableList.removeAt(index, it.sender)
                     }
                     Info.removeAll -> {
-                        val items = it.args as Collection<T>
+                        val (items, observables) = it.args as Pair<Collection<T>, MutableList<Observable<T>>>
                         observableList.removeAll(items.map(mapper), it.sender)
                     }
                     Info.retainAll -> {
-                        val items = it.args as Collection<T>
+                        val (items, observables) = it.args as Pair<Collection<T>, MutableList<Observable<T>>>
                         observableList.retainAll(items.map(mapper), it.sender)
                     }
                     Info.clear -> {
                         observableList.clear(it.sender)
                     }
                     Info.itemUpdated -> {
-                        val value = it.args as UpdateIndexedValue<T>
+                        val (observable, value) = it.args as Pair<Observable<T>, UpdateIndexedValue<T>>
                         observableList.getObservable(value.index)
                             .postValue(mapper(value.value), it.sender)
                     }
@@ -766,6 +788,132 @@ class ObservableList<T> : MutableList<T> {
         mapper: (T) -> U
     ) = Observable.observeOnDestroy(lifecycle, mapOnce(observableList, mapper))
 
+    /**
+     *  map to an other observable while it return true
+     *  @param observableList observer for the live data
+     *  @param condition condition to continue to observe
+     *  @param mapper mapper from the live data to the new one
+     *  @return if the observer have been remove
+     */
+    fun <U> GroupWhileTrue(
+        observableMap: ObservableMap<U, ObservableList<T>> = ObservableMap(),
+        condition: () -> Boolean,
+        mapper: (T) -> U
+    ): Observable.AfterRemovable<ObservableMap<U, ObservableList<T>>> {
+        val result: (ObserversInfo<T>) -> Boolean =
+            {
+                when (it.info) {
+                    Info.add -> {
+                        val observable = it.args as Observable<T>
+                        val key = mapper(observable.value!!)
+                        if (observableMap.containsKey(key))
+                            observableMap[key]!!.add(observable, it.sender)
+                        else
+                            observableMap.put(
+                                key,
+                                ObservableList(observable = observable, sender = it.sender),
+                                it.sender
+                            )
+                    }
+                    Info.addIndex -> {
+                        val (index, observable) = it.args as Pair<Int, Observable<T>>
+                        val key = mapper(observable.value!!)
+                        if (observableMap.containsKey(key))
+                            observableMap[key]!!.add(observable, it.sender)
+                        else
+                            observableMap.put(
+                                key,
+                                ObservableList(observable = observable, sender = it.sender),
+                                it.sender
+                            )
+                    }
+                    Info.addAll -> {
+                        val items = it.args as MutableList<Observable<T>>
+                        for (item in items) {
+                            val key = mapper(item.value!!)
+                            if (observableMap.containsKey(key))
+                                observableMap[key]!!.add(item, it.sender)
+                            else
+                                observableMap.put(
+                                    key,
+                                    ObservableList(observable = item, sender = it.sender),
+                                    it.sender
+                                )
+                        }
+                    }
+                    Info.addAllIndex -> {
+                        val (index, items) = it.args as Pair<Int, MutableList<Observable<T>>>
+                        for (item in items) {
+                            val key = mapper(item.value!!)
+                            if (observableMap.containsKey(key))
+                                observableMap[key]!!.add(item, it.sender)
+                            else
+                                observableMap.put(
+                                    key,
+                                    ObservableList(observable = item, sender = it.sender),
+                                    it.sender
+                                )
+                        }
+                    }
+                    Info.remove -> {
+                        val observable = it.args as Observable<T>
+                        val key = mapper(observable.value!!)
+                        observableMap[key]!!.remove(observable, it.sender)
+                        if(observableMap[key]!!.isEmpty())
+                            observableMap.remove(key)
+                    }
+                    Info.removeAt -> {
+                        val (index, observable) = it.args as Pair<Int, Observable<T>>
+                        val key = mapper(observable.value!!)
+                        observableMap[key]!!.remove(observable, it.sender)
+                        if(observableMap[key]!!.isEmpty())
+                            observableMap.remove(key)
+                    }
+                    Info.removeAll -> {
+                        val (items, observables) = it.args as Pair<Collection<T>, MutableList<Observable<T>>>
+                        for(observable in observables){
+                            val key = mapper(observable.value!!)
+                            observableMap[key]!!.remove(observable, it.sender)
+                            if(observableMap[key]!!.isEmpty())
+                                observableMap.remove(key)
+                        }
+                    }
+                    Info.retainAll -> {
+                        val (items, observables) = it.args as Pair<Collection<T>, MutableList<Observable<T>>>
+                        for(observable in observables){
+                            val key = mapper(observable.value!!)
+                            observableMap[key]!!.remove(observable, it.sender)
+                            if(observableMap[key]!!.isEmpty())
+                                observableMap.remove(key)
+                        }
+                    }
+                    Info.clear -> {
+                        observableMap.clear(it.sender)
+                    }
+                    Info.itemUpdated -> {
+                        val (observable, value) = it.args as Pair<Observable<T>, UpdateIndexedValue<T>>
+                        val from = observableMap.filterKeys { observableMap[it]!!.contains(observable) }
+                        val to = mapper(value.value)
+                        if(from != to)
+                        {
+                            observableMap[from]!!.remove(observable)
+                            if (observableMap.containsKey(to))
+                                observableMap[to]!!.add(observable, it.sender)
+                            else
+                                observableMap.put(
+                                    to,
+                                    ObservableList(observable = observable, sender = it.sender),
+                                    it.sender
+                                )
+                        }
+                    }
+                }
+                condition()
+            }
+        observers.add(result)
+        return Observable.AfterRemovable(observableMap, { observers.remove(result) })
+    }
+
     private fun itemAdded(value: UpdateIndexedValue<T>) {
         run(Runnable {
             val toRemove = mutableListOf<(UpdateIndexedValue<T>) -> Boolean>()
@@ -788,7 +936,7 @@ class ObservableList<T> : MutableList<T> {
         })
     }
 
-    private fun itemUpdated(value: UpdateIndexedValue<T>) {
+    private fun itemUpdated(observable: Observable<T> , value: UpdateIndexedValue<T>) {
         run(Runnable {
             val toRemove = mutableListOf<(UpdateIndexedValue<T>) -> Boolean>()
             for (obs in observersItemUpdate)
@@ -796,7 +944,7 @@ class ObservableList<T> : MutableList<T> {
                     toRemove.add(obs)
             for (obs in toRemove)
                 leaveUpdate(obs)
-            notifyUpdate(value.sender, Info.itemUpdated, value)
+            notifyUpdate(value.sender, Info.itemUpdated, Pair(observable, value))
         })
     }
 
@@ -814,7 +962,7 @@ class ObservableList<T> : MutableList<T> {
     }
 
     inner class ObservableListIterator(var index: Int) : MutableListIterator<T> {
-        override fun hasNext() = values.size > index
+        override fun hasNext() = listValues.size > index
         override fun next() = get(index++)
         override fun nextIndex() = index + 1
 

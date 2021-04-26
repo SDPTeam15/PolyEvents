@@ -6,7 +6,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.run
 
-
 /**
  * Observable live data of type T
  * @param

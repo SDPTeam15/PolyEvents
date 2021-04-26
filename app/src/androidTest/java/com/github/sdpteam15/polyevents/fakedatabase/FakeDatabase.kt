@@ -52,7 +52,7 @@ object FakeDatabase : DatabaseInterface {
     override fun <T : Any> addEntityAndGetId(
         element: T,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterToDocumentInterface<T>
+        adapter: AdapterToDocumentInterface<in T>
     ): Observable<String> {
         TODO("Not yet implemented")
     }
@@ -60,7 +60,7 @@ object FakeDatabase : DatabaseInterface {
     override fun <T : Any> addEntity(
         element: T,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterToDocumentInterface<T>
+        adapter: AdapterToDocumentInterface<in T>
     ): Observable<Boolean> {
         TODO("Not yet implemented")
     }
@@ -69,7 +69,7 @@ object FakeDatabase : DatabaseInterface {
         element: T?,
         id: String,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterToDocumentInterface<T>?
+        adapter: AdapterToDocumentInterface<in T>?
     ): Observable<Boolean> {
         TODO("Not yet implemented")
     }
@@ -85,7 +85,7 @@ object FakeDatabase : DatabaseInterface {
         element: Observable<T>,
         id: String,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterFromDocumentInterface<T>
+        adapter: AdapterFromDocumentInterface<out T>
     ): Observable<Boolean> {
         TODO("Not yet implemented")
     }
@@ -95,7 +95,7 @@ object FakeDatabase : DatabaseInterface {
         ids: List<String>?,
         matcher: Matcher?,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterFromDocumentInterface<T>
+        adapter: AdapterFromDocumentInterface<out T>
     ): Observable<Boolean> {
         TODO("Not yet implemented")
     }

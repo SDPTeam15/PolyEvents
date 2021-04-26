@@ -2,26 +2,19 @@ package com.github.sdpteam15.polyevents.admin
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.github.sdpteam15.polyevents.EventActivity
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.adapter.EventItemAdapter
 import com.github.sdpteam15.polyevents.adapter.ZoneItemAdapter
 import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.DatabaseConstant
 import com.github.sdpteam15.polyevents.database.Matcher
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
-import com.github.sdpteam15.polyevents.fragments.EXTRA_EVENT_ID
 import com.github.sdpteam15.polyevents.helper.GoogleMapHelper
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
-import com.github.sdpteam15.polyevents.model.Event
 import com.github.sdpteam15.polyevents.model.Zone
-import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.Query
-import java.util.*
 
 
 class ZoneManagementListActivity : AppCompatActivity() {

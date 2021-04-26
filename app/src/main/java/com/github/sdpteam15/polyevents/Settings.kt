@@ -7,6 +7,7 @@ const val SPLIT_CHAR = ':'
 const val IS_SENDING_LOCATION_ON = "isSendingLocationOn"
 const val LOCATION_ID = "locationId"
 
+//TODO replace by local cash
 object Settings {
     var mainActivity: MainActivity? = null
     private var name: String? = null

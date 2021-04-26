@@ -20,7 +20,7 @@ object DatabaseConstant {
         ITEM_TYPE_COLLECTION("itemTypes", ItemTypeAdapter),
 
 
-        TEST_COLLECTION("test",object : AdapterInterface<StringWithID> {
+        TEST_COLLECTION("test", object : AdapterInterface<StringWithID> {
             override fun toDocument(element: StringWithID): HashMap<String, Any?> =
                 hashMapOf(TEST_STR to element.string)
             override fun fromDocument(

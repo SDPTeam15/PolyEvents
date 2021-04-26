@@ -4,7 +4,6 @@ import com.github.sdpteam15.polyevents.Settings
 import com.github.sdpteam15.polyevents.database.DatabaseConstant
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.LOCATION_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
-import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.Matcher
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList

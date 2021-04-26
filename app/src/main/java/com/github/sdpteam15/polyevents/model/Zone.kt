@@ -1,10 +1,8 @@
 package com.github.sdpteam15.polyevents.model
 
-import android.util.Log
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZoneConstant.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.IgnoreExtraProperties
-import java.lang.Exception
 
 /**
  * Entity model for a zone. Events occur inside a zone.

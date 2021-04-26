@@ -11,7 +11,7 @@ import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.fragments.*
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.UserEntity
-import com.github.sdpteam15.polyevents.service.Timer_Service
+import com.github.sdpteam15.polyevents.service.TimerService
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -48,16 +48,17 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        //TODO remove to for local cash
         Settings.mainActivity = this
         Settings.isLoaded = Settings.isLoaded
-        val intent = Intent(applicationContext, Timer_Service::class.java)
+        val intent = Intent(applicationContext, TimerService::class.java)
         startService(intent)
-        Timer_Service.instance.observeOnce {
-            it.value.addServices {
+        TimerService.instance.observeOnce {
+            it.value.addTask {
                 if (Settings.IsSendingLocationOn)
-                    HelperFunctions.getLoc(this).observeOnce {
-                        if(it.value != null)
-                            currentDatabase.heatmapDatabase!!.setLocation(it.value)
+                    HelperFunctions.getLoc(this).observeOnce { LatLng ->
+                        if(LatLng.value != null)
+                            currentDatabase.heatmapDatabase!!.setLocation(LatLng.value)
                     }
             }
         }
@@ -102,7 +103,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        val intent = Intent(applicationContext, Timer_Service::class.java)
+        val intent = Intent(applicationContext, TimerService::class.java)
         stopService(intent)
     }
 

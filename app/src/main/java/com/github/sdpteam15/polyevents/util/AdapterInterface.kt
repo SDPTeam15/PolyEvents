@@ -1,12 +1,17 @@
 package com.github.sdpteam15.polyevents.util
 
 /**
- * A class for converting between user entities in our code and
+ * A interface for converting between user entities in our code and
  * documents in the database. Not unlike the DTO (Data
  * transfer object) concept.
  */
 interface AdapterInterface<T> : AdapterToDocumentInterface<T>, AdapterFromDocumentInterface<T>
 
+/**
+ * A interface for converting between user entities in our code and
+ * documents in the database. Not unlike the DTO (Data
+ * transfer object) concept.
+ */
 interface AdapterToDocumentInterface<T>{
     /**
      * Convert an entity to a map mapping fields keys (always string in the database) to their values that we can use directly in the database
@@ -16,6 +21,11 @@ interface AdapterToDocumentInterface<T>{
     fun toDocument(element: T): HashMap<String, Any?>
 }
 
+/**
+ * A interface for converting between user entities in our code and
+ * documents in the database. Not unlike the DTO (Data
+ * transfer object) concept.
+ */
 interface AdapterFromDocumentInterface<T>{
     /**
      * Convert document data to a user entity in our model.
