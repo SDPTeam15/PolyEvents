@@ -9,6 +9,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
+import com.github.sdpteam15.polyevents.model.Event
 import com.github.sdpteam15.polyevents.model.Item
 
 /**
@@ -16,7 +17,8 @@ import com.github.sdpteam15.polyevents.model.Item
  */
 class ItemAdapter(
     lifecycleOwner: LifecycleOwner,
-    private val items: ObservableList<Pair<Item, Int>>
+    private val items: ObservableList<Pair<Item, Int>>,
+    private val listener: (Pair<Item, Int>) -> Unit
 ) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
     init {
@@ -58,6 +60,9 @@ class ItemAdapter(
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val item = items[position]
         holder.bind(item)
+        holder.itemView.setOnClickListener{
+            listener(item)
+        }
     }
 
     override fun getItemCount(): Int {

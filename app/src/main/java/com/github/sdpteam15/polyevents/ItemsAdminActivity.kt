@@ -4,8 +4,10 @@ import android.content.Context
 import android.os.Bundle
 import android.transition.Slide
 import android.transition.TransitionManager
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
@@ -14,6 +16,7 @@ import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.Item
+import com.github.sdpteam15.polyevents.model.Zone
 
 /**
  * Activity displaying Items and supports items creation and deletion
@@ -63,14 +66,19 @@ class ItemsAdminActivity : AppCompatActivity() {
             }
         }
 
+        val modifyItem = { item: Pair<Item, Int> ->
+            createItemPopup(item)
+        }
+
         recyclerView = findViewById(R.id.id_recycler_items_list)
-        recyclerView.adapter = ItemAdapter(this, items)
+        recyclerView.adapter = ItemAdapter(this, items, modifyItem)
 
         val btnAdd = findViewById<ImageButton>(R.id.id_add_item_button)
-        btnAdd.setOnClickListener { createAddItemPopup() }
+        btnAdd.setOnClickListener { createItemPopup(null) }
     }
 
-    private fun createAddItemPopup() {
+
+    private fun createItemPopup(item: Pair<Item, Int>?) {
         // Initialize a new layout inflater instance
         val inflater: LayoutInflater =
             getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -101,6 +109,13 @@ class ItemsAdminActivity : AppCompatActivity() {
         val itemQuantity = view.findViewById<EditText>(R.id.id_edittext_item_quantity)
         val itemTypeTextView = view.findViewById<AutoCompleteTextView>(R.id.id_edittext_item_type)
 
+        if(item != null){
+            itemName.setText(item.first.itemName)
+            itemQuantity.setText(item.second.toString())
+            itemTypeTextView.setText(item.first.itemType)
+        }
+
+
         //set adapter to show available item types
         val adapter = ArrayAdapter(this, android.R.layout.select_dialog_item, itemTypes)
         itemTypeTextView.setAdapter(adapter)
@@ -112,25 +127,31 @@ class ItemsAdminActivity : AppCompatActivity() {
         popupWindow.isFocusable = true
 
         // Set a click listener for popup's button widget
-        confirmButton.setOnClickListener {
+        confirmButton.setOnClickListener{
             val itemType = itemTypeTextView.text.toString()
 
             // add new item Type if not already present
             if (itemType !in itemTypes) {
                 itemTypes.add(itemType)
             }
-
-            // add new item
-            items.add(
-                Pair(
-                    Item(null, itemName.text.toString(), itemType),
-                    itemQuantity.text.toString().toInt()
-                ), this
-            )
-
+            if(item == null){
+                // add new item
+                items.add(
+                        Pair(
+                                Item(null, itemName.text.toString(), itemType),
+                                itemQuantity.text.toString().toInt()
+                        ), this
+                )
+            }else{
+                //Modify item
+                currentDatabase.itemDatabase!!.updateItem(Item(item.first.itemId, itemName.text.toString(), itemType), itemQuantity.text.toString().toInt()).observe { it1 ->
+                    if (it1.value) {
+                        currentDatabase.itemDatabase!!.getItemsList(items)
+                    }
+                }
+            }
             // Dismiss the popup window
             popupWindow.dismiss()
-
         }
 
 
@@ -138,4 +159,6 @@ class ItemsAdminActivity : AppCompatActivity() {
         TransitionManager.beginDelayedTransition(this.recyclerView)
         popupWindow.showAtLocation(this.recyclerView, Gravity.CENTER, 0, 0)
     }
+
+
 }
