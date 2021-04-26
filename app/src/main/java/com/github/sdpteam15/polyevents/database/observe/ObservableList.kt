@@ -153,7 +153,7 @@ class ObservableList<T>(
      */
     fun add(item: T, sender: Any? = null): Observable<T>? = add(Observable(item), sender, true)!!
     private fun add(item: T, sender: Any?, notify: Boolean): Observable<T>? =
-        add(Observable(item), sender)!!
+        add(Observable(item), sender, notify)!!
 
     override fun addAll(elements: Collection<T>) = addAll(elements, null)
 

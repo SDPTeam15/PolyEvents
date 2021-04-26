@@ -620,7 +620,6 @@ class ObservableMap<K, T> : MutableMap<K, T> {
 
     private fun itemUpdated(value: UpdateKeyedValue<K, T>) {
         HelperFunctions.run(Runnable {
-            val toRemove = mutableListOf<(UpdateKeyedValue<K, T>) -> Boolean>()
             for (obs in observersItemUpdate.toList())
                 if (!obs(value))
                     leaveUpdate(obs)

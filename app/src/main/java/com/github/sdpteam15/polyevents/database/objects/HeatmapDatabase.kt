@@ -45,10 +45,10 @@ class HeatmapDatabase(private val db: DatabaseInterface) : HeatmapDatabaseInterf
         usersLocations: ObservableList<LatLng>,
         userAccess: UserEntity?
     ): Observable<Boolean> {
-        val tempusersLocations = ObservableList<LatLng>()
+        val tempUsersLocations = ObservableList<LatLng>()
         val end = Observable<Boolean>()
         db.getListEntity(
-            tempusersLocations,
+            tempUsersLocations,
             null,
             object : Matcher {
                 override fun match(collection: Query) = collection.whereGreaterThan(
@@ -67,7 +67,7 @@ class HeatmapDatabase(private val db: DatabaseInterface) : HeatmapDatabaseInterf
             if (!it.value)
                 end.postValue(it.value, it.sender)
         }
-        tempusersLocations.observeOnce {
+        tempUsersLocations.observeOnce {
             val list = mutableListOf<LatLng>()
             for (e in it.value)
                 list.add(e)
