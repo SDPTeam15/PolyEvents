@@ -12,6 +12,6 @@ enum class UserRole(val userRole: String) {
 
     companion object {
         private val map = values().associateBy(UserRole::userRole)
-        fun fromString(userRole: String?) = map[null]
+        fun fromString(userRole: String) = map[userRole]
     }
 }
