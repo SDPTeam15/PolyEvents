@@ -3,13 +3,11 @@ package com.github.sdpteam15.polyevents.fragments
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -17,10 +15,10 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.admin.ZoneManagementActivity
 import com.github.sdpteam15.polyevents.admin.ZoneManagementListActivity
 import com.github.sdpteam15.polyevents.database.Database
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.helper.GoogleMapAdapter
 import com.github.sdpteam15.polyevents.helper.GoogleMapHelper
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
-import com.github.sdpteam15.polyevents.helper.HelperFunctions.isPermissionGranted
 import com.github.sdpteam15.polyevents.model.Zone
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.*
@@ -31,19 +29,21 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.Polygon
 import com.google.android.gms.maps.model.Polyline
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import java.util.*
 
-
+const val HEATMAP_PERIOD = 15L
 class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
-        OnPolygonClickListener, OnMarkerClickListener, OnInfoWindowClickListener, OnMarkerDragListener,
-        OnMyLocationButtonClickListener,  OnMapClickListener{
+    OnPolygonClickListener, OnMarkerClickListener, OnInfoWindowClickListener, OnMarkerDragListener,
+    OnMyLocationButtonClickListener, OnMapClickListener {
 
     private lateinit var locationButton: FloatingActionButton
     var locationPermissionGranted = false
     private var useUserLocation = false
-    var PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1
     var zone: Zone? = null
     var onEdit: Boolean = false
     var startId = -1
+    var drawHeatmap = false
+    var timerHeatmap: Timer? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,18 +51,18 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         savedInstanceState: Bundle?
     ): View? {
         //if(!ZoneManagementActivity.inTest) {
-            ZoneManagementListActivity.zones.observeAdd(this) {
-                GoogleMapHelper.importNewZone(requireContext(), it.value)
-            }
+        ZoneManagementListActivity.zones.observeAdd(this) {
+            GoogleMapHelper.importNewZone(requireContext(), it.value)
+        }
 
-            Database.currentDatabase.zoneDatabase!!.getAllZones(
-                null, 50,
-                ZoneManagementListActivity.zones
-            ).observe(this) {
-                if (!it.value) {
-                    HelperFunctions.showToast("Failed to get the list of zones", requireContext())
-                }
+        Database.currentDatabase.zoneDatabase!!.getAllZones(
+            null, 50,
+            ZoneManagementListActivity.zones
+        ).observe(this) {
+            if (!it.value) {
+                HelperFunctions.showToast("Failed to get the list of zones", requireContext())
             }
+        }
         //}
 
         onEdit = zone != null
@@ -81,6 +81,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         locationButton = view.findViewById(R.id.id_location_button)
         val locateMeButton = view.findViewById<FloatingActionButton>(R.id.id_locate_me_button)
         val saveButton = view.findViewById<FloatingActionButton>(R.id.saveAreas)
+        val heatmapButton = view.findViewById<FloatingActionButton>(R.id.id_heatmap)
 
         addNewAreaButton.setOnClickListener {
             GoogleMapHelper.createNewArea(requireContext())
@@ -97,13 +98,15 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
             saveButton.visibility = View.VISIBLE
             locationButton.visibility = View.INVISIBLE
             locateMeButton.visibility = View.INVISIBLE
+            heatmapButton.visibility = View.INVISIBLE
 
             saveButton.setOnClickListener {
                 GoogleMapHelper.editMode = false
                 GoogleMapHelper.clearTemp()
                 //TODO : Save the areas in the map
                 //val location = GoogleMapHelper.areasToFormattedStringLocations(from = startId)
-                val location = GoogleMapHelper.zoneAreasToFormattedStringLocation(GoogleMapHelper.editingZone!!)
+                val location =
+                    GoogleMapHelper.zoneAreasToFormattedStringLocation(GoogleMapHelper.editingZone!!)
                 zone!!.location = location
                 ZoneManagementActivity.zoneObservable.postValue(
                     Zone(
@@ -122,11 +125,31 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
             saveButton.visibility = View.INVISIBLE
             locationButton.visibility = View.VISIBLE
             locateMeButton.visibility = View.VISIBLE
+            heatmapButton.visibility = View.VISIBLE
+        }
+
+        heatmapButton.setOnClickListener {
+            drawHeatmap = !drawHeatmap
+            if (drawHeatmap) {
+                timerHeatmap = Timer("SettingUp", false)
+                val task = object : TimerTask() {
+                    override fun run() {
+                        val locations = ObservableList<LatLng>()
+                        Database.currentDatabase.heatmapDatabase!!.getLocations(locations)
+                        locations.observeOnce {
+                            GoogleMapHelper.addHeatMap(it.value)
+                        }
+                    }
+                }
+                timerHeatmap?.schedule(task, 0, HEATMAP_PERIOD * 1000)
+            } else
+                GoogleMapHelper.lastOverlay?.remove()
         }
 
         locationButton.setOnClickListener {
             switchLocationOnOff()
         }
+
         locationButton.tag = R.drawable.ic_location_on
 
 
@@ -142,9 +165,10 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     override fun onPause() {
         super.onPause()
         GoogleMapHelper.saveCamera()
-
+        timerHeatmap?.cancel()
+        drawHeatmap = false
+        GoogleMapHelper.lastOverlay?.remove()
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -152,7 +176,10 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
             childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
         if (!locationPermissionGranted) {
-            getLocationPermission()
+            HelperFunctions.getLocationPermission(requireActivity()).observeOnce {
+                locationPermissionGranted = it.value
+                activateMyLocation()
+            }
         }
     }
 
@@ -180,9 +207,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
 
     override fun onPolygonClick(polygon: Polygon) {
         if (onEdit) {
-            if(GoogleMapHelper.editMode && GoogleMapHelper.canEdit(polygon.tag.toString())){
+            if (GoogleMapHelper.editMode && GoogleMapHelper.canEdit(polygon.tag.toString())) {
                 GoogleMapHelper.editArea(requireContext(), polygon.tag.toString())
-            }else if(GoogleMapHelper.deleteMode && GoogleMapHelper.canEdit(polygon.tag.toString())){
+            } else if (GoogleMapHelper.deleteMode && GoogleMapHelper.canEdit(polygon.tag.toString())) {
                 GoogleMapHelper.removeArea(polygon.tag.toString().toInt())
             }
         } else {
@@ -198,7 +225,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
             marker.showInfoWindow()
         }
         val tag = marker.tag
-        if(tag != null){
+        if (tag != null) {
             GoogleMapHelper.setSelectedZones(tag.toString())
         }
         marker.showInfoWindow()
@@ -312,56 +339,11 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
 
     //-----------END LISTENER---------------------------------------
 
-
-    /**
-     * Asks for permission to use location
-     */
-    fun getLocationPermission() {
-        /*
-         * Request location permission, so that we can get the location of the
-         * device. The result of the permission request is handled by a callback,
-         * onRequestPermissionsResult.
-         */
-
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            )
-            == PackageManager.PERMISSION_GRANTED
-        ) {
-            locationPermissionGranted = true
-        } else {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
-            )
-        }
-    }
-
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
         grantResults: IntArray
-    ) {
-        when (requestCode) {
-            PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION -> {
-
-                // If request is denied, the result arrays are empty.
-                if (isPermissionGranted(
-                        permissions,
-                        grantResults,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                    )
-                ) {
-                    locationPermissionGranted = true
-                    activateMyLocation()
-                } else {
-                    locationPermissionGranted = false
-                }
-            }
-        }
-    }
+    ) = HelperFunctions.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
     override fun onMapClick(p0: LatLng?) {
         GoogleMapHelper.clearSelectedZone()

@@ -3,7 +3,6 @@ package com.github.sdpteam15.polyevents.model
 import android.graphics.Bitmap
 import com.github.sdpteam15.polyevents.exceptions.MaxAttendeesException
 import com.google.firebase.firestore.IgnoreExtraProperties
-import java.lang.IllegalArgumentException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 

@@ -9,7 +9,8 @@ import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.login.UserLogin
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
-import com.github.sdpteam15.polyevents.util.AdapterInterface
+import com.github.sdpteam15.polyevents.util.AdapterFromDocumentInterface
+import com.github.sdpteam15.polyevents.util.AdapterToDocumentInterface
 import com.github.sdpteam15.polyevents.util.UserAdapter
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
@@ -27,17 +28,35 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         get() = field ?: Firebase.firestore
 
     override var itemDatabase: ItemDatabaseInterface? = null
-        get() = field ?: ItemDatabaseFirestore
+        get() {
+            field = field ?: ItemDatabaseFirestore
+            return field
+        }
     override var zoneDatabase: ZoneDatabaseInterface? = null
-        get() = field ?: ZoneDatabaseFirestore
+        get() {
+            field = field ?: ZoneDatabaseFirestore
+            return field
+        }
     override var userDatabase: UserDatabaseInterface? = null
-        get() = field ?: UserDatabaseFirestore
+        get() {
+            field = field ?: UserDatabase(this)
+            return field
+        }
     override var heatmapDatabase: HeatmapDatabaseInterface? = null
-        get() = field ?: HeatmapDatabaseFirestore
+        get() {
+            field = field ?: HeatmapDatabase(this)
+            return field
+        }
     override var eventDatabase: EventDatabaseInterface? = null
-        get() = field ?: EventDatabaseFirestore
+        get() {
+            field = field ?: EventDatabaseFirestore
+            return field
+        }
     override var materialRequestDatabase: MaterialRequestDatabaseInterface? = null
-        get() = field ?: MaterialRequestDatabaseFirestore
+        get() {
+            field = field ?: MaterialRequestDatabaseFirestore
+            return field
+        }
 
     override val currentUserObservable = Observable<UserEntity>()
     var loadSuccess: Boolean? = false
@@ -152,7 +171,8 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             ended.postValue(true, this)
         }
         lastFailureListener = OnFailureListener {
-            it.message?.let { it1 -> Log.d(this::class.qualifiedName, it1) }
+            if (it.message != null)
+                Log.d(this::class.qualifiedName, it.message!!)
             ended.postValue(false, this)
         }
         task.addOnSuccessListener(lastGetSuccessListener!!)
@@ -174,7 +194,8 @@ object FirestoreDatabaseProvider : DatabaseInterface {
 
         lastSetSuccessListener = OnSuccessListener<Void> { ended.postValue(true, this) }
         lastFailureListener = OnFailureListener {
-            it.message?.let { it1 -> Log.d(this::class.qualifiedName, it1) }
+            if (it.message != null)
+                Log.d(this::class.qualifiedName, it.message!!)
             ended.postValue(false, this)
         }
         task.addOnSuccessListener(lastSetSuccessListener!!)
@@ -184,66 +205,54 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     }
 
 
-    override fun <T> addEntityAndGetId(
+    override fun <T : Any> addEntityAndGetId(
         element: T,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>
+        adapter: AdapterToDocumentInterface<in T>
     ): Observable<String> {
         val ended = Observable<String>()
-        val task = firestore!!
-            .collection(collection.value)
-            .add(adapter.toDocument(element))
-
         lastAddSuccessListener =
             OnSuccessListener<DocumentReference> { ended.postValue(it.id, this) }
         lastFailureListener = OnFailureListener {
-            it.message?.let { it1 -> Log.d(this::class.qualifiedName, it1) }
+            if (it.message != null)
+                Log.d(this::class.qualifiedName, it.message!!)
             ended.postValue("", this)
         }
-
-        task.addOnSuccessListener(lastAddSuccessListener!!)
+        firestore!!
+            .collection(collection.value)
+            .add(adapter.toDocument(element)).addOnSuccessListener(lastAddSuccessListener!!)
             .addOnFailureListener(lastFailureListener!!)
         return ended
     }
 
-    override fun <T> addEntity(
+    override fun <T : Any> addEntity(
         element: T,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>
-    ): Observable<Boolean> {
-        val ended = Observable<Boolean>()
-        addEntityAndGetId(element, collection, adapter).observeOnce {
-            ended.postValue(it.value != "", this)
-        }
-        return ended
-    }
+        adapter: AdapterToDocumentInterface<in T>
+    ): Observable<Boolean> =
+        addEntityAndGetId(element, collection, adapter).mapOnce { it != "" }.then
 
-    override fun <T> setEntity(
+    override fun <T : Any> setEntity(
         element: T?,
         id: String,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>?
+        adapter: AdapterToDocumentInterface<in T>?
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
-        val document = firestore!!
-            .collection(collection.value)
-            .document(id)
-
-        val task = if (element == null || adapter == null) {
-            document.delete()
-        } else {
-            document.set(adapter.toDocument(element))
-        }
 
         lastSetSuccessListener = OnSuccessListener<Void> { ended.postValue(true, this) }
         lastFailureListener = OnFailureListener {
-            it.message?.let { it1 -> Log.d(this::class.qualifiedName, it1) }
+            if (it.message != null)
+                Log.d(this::class.qualifiedName, it.message!!)
             ended.postValue(false, this)
         }
-
-        task.addOnSuccessListener(lastSetSuccessListener!!)
-        task.addOnFailureListener(lastFailureListener!!)
-
+        val document = firestore!!
+            .collection(collection.value)
+            .document(id)
+        (if (element == null || adapter == null) document.delete()
+        else document.set(adapter.toDocument(element)))
+            .addOnSuccessListener(lastSetSuccessListener!!)
+            .addOnFailureListener(lastFailureListener!!)
         return ended
     }
 
@@ -252,73 +261,87 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         collection: DatabaseConstant.CollectionConstant
     ): Observable<Boolean> = setEntity<Void>(null, id, collection, null)
 
-    override fun <T> getEntity(
+    override fun <T : Any> getEntity(
         element: Observable<T>,
         id: String,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>
+        adapter: AdapterFromDocumentInterface<out T>
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
-
         lastGetSuccessListener = OnSuccessListener {
             if (it.data != null) {
                 element.postValue(adapter.fromDocument(it.data!!, it.id), this)
                 ended.postValue(true, this)
-            }
-            ended.postValue(false, this)
+            } else
+                ended.postValue(false, this)
         }
-
         lastFailureListener = OnFailureListener {
-            it.message?.let { it1 -> Log.d(this::class.qualifiedName, it1) }
+            if (it.message != null)
+                Log.d(this::class.qualifiedName, it.message!!)
             ended.postValue(false, this)
         }
-
-        val task = firestore!!.collection(collection.value)
+        firestore!!.collection(collection.value)
             .document(id)
             .get()
-
-        task.addOnFailureListener(lastFailureListener!!)
-        task.addOnSuccessListener(lastGetSuccessListener!!)
+            .addOnFailureListener(lastFailureListener!!)
+            .addOnSuccessListener(lastGetSuccessListener!!)
         return ended
     }
 
-    override fun <T> getListEntity(
+    override fun <T : Any> getListEntity(
         elements: ObservableList<T>,
-        ids: List<String>,
+        ids: List<String>?,
+        matcher: Matcher?,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>
+        adapter: AdapterFromDocumentInterface<out T>
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
 
         val lastFailureListener = OnFailureListener {
-            it.message?.let { it1 -> Log.d(this::class.qualifiedName, it1) }
-            ended.postValue(false, this) }
-        val mutableList = mutableListOf<T?>()
+            if (it.message != null)
+                Log.d(this::class.qualifiedName, it.message!!)
+            ended.postValue(false, this)
+        }
         val fsCollection = firestore!!.collection(collection.value)
-        for (id in ids) {
-            mutableList.add(null)
-            fsCollection.document(id)
-                .get()
-                .addOnSuccessListener {
-                    if (it.data != null) {
-                        val index = ids.indexOf(it.id)
-                        mutableList[index] = adapter.fromDocument(it.data!!, it.id)
-                        var b = true
-                        for (p in mutableList)
-                            if (p == null) {
-                                b = false
-                                break
-                            }
-                        if (b) {
-                            elements.clear(this)
+        if (ids != null) {
+            val mutableList = mutableListOf<T?>()
+            for (id in ids) {
+                mutableList.add(null)
+                fsCollection.document(id)
+                    .get()
+                    .addOnSuccessListener {
+                        if (it.data != null) {
+                            val index = ids.indexOf(it.id)
+                            mutableList[index] = adapter.fromDocument(it.data!!, it.id)
+                            var b = true
                             for (p in mutableList)
-                                elements.add(p!!, this)
-                            ended.postValue(true, this)
-                        }
+                                if (p == null) {
+                                    b = false
+                                    break
+                                }
+                            if (b) {
+                                elements.clear(this)
+                                val list = mutableListOf<T>()
+                                for (e in mutableList)
+                                    list.add(e!!)
+                                elements.addAll(list, this)
+                                ended.postValue(true, this)
+                            }
+                        } else
+                            ended.postValue(false, this)
                     }
-                    else
-                        ended.postValue(false, this)
-                }
+                    .addOnFailureListener(lastFailureListener)
+            }
+        } else {
+            val task = matcher?.match(fsCollection)?.get() ?: fsCollection.get()
+            task.addOnSuccessListener {
+                elements.clear(this)
+                val list = mutableListOf<T>()
+                for (e in it)
+                    list.add(adapter.fromDocument(e.data, e.id))
+                elements.addAll(list, this)
+                ended.postValue(true, this)
+            }
                 .addOnFailureListener(lastFailureListener)
         }
         return ended

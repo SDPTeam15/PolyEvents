@@ -6,6 +6,7 @@ import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
 import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
+import com.github.sdpteam15.polyevents.database.objects.HeatmapDatabaseInterface
 import com.github.sdpteam15.polyevents.database.objects.ZoneDatabaseInterface
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
@@ -31,6 +32,7 @@ object HelperTestFunction {
     fun defaultMockDatabase(): DatabaseInterface{
         val database = Mockito.mock(DatabaseInterface::class.java)
         val zoneDatabase = Mockito.mock(ZoneDatabaseInterface::class.java)
+        val heatmapDatabase = Mockito.mock(HeatmapDatabaseInterface::class.java)
         Mockito.`when`(database.zoneDatabase).thenAnswer{ zoneDatabase }
         Mockito.`when`(zoneDatabase.getAllZones(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer{
             val res = it!!.arguments[2] as ObservableList<Zone>
@@ -39,6 +41,8 @@ object HelperTestFunction {
             res.add(Zone("ID3", "Esplanade3", "46.52019310644624|6.565563595852942!46.51988605963713|6.565563595852942!46.51988605963713|6.5661776894711545!46.52019310644624|6.5661776894711545", "a cool zone3"), Database.currentDatabase)
             Observable(true, Database.currentDatabase)
         }
+        Mockito.`when`(database.heatmapDatabase).thenAnswer{ heatmapDatabase }
+        Mockito.`when`(heatmapDatabase.setLocation(anyOrNull())).thenAnswer{ Observable(true) }
         return database
     }
 }
