@@ -41,7 +41,7 @@ class AdminHubFragmentTest {
 
     @Before
     fun setup() {
-        val mockedDatabase = mock(DatabaseInterface::class.java)
+        val mockedDatabase = HelperTestFunction.defaultMockDatabase()
         val mockedUserProfile = UserProfile("TestID", "TestName")
         When(mockedDatabase.currentProfile).thenReturn(mockedUserProfile)
         Database.currentDatabase = mockedDatabase
@@ -73,6 +73,7 @@ class AdminHubFragmentTest {
 
     @Test
     fun clickOnBtnItemRequestManagementDisplayCorrectActivity() {
+
         Espresso.onView(ViewMatchers.withId(R.id.btnRedirectItemReqManagement)).perform(click())
         Intents.intended(IntentMatchers.hasComponent(ItemRequestManagementActivity::class.java.name))
     }

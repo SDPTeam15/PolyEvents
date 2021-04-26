@@ -71,7 +71,7 @@
     <!-- String related to the zone management activity-->
     <string name="btn_create_zone_button_text">Create zone</string>
     <string name="btn_update_zone_button_text">Update zone</string>
-    <string name="zone_mangement_list_title">Zone Mangement List</string>
+    <string name="zone_mangement_list_title">All zones</string>
     <string name="btn_new_zone">+</string>
     <string name="tv_create_zone_text">Create a new zone</string>
     <string name="tv_update_zone_text">Update an existing zone</string>

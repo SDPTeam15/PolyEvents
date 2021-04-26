@@ -12,6 +12,7 @@ import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZoneConstant.*
 import com.github.sdpteam15.polyevents.model.Zone
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.*
+import com.google.maps.android.heatmaps.HeatmapTileProvider
 import kotlin.math.*
 
 enum class PolygonAction {
@@ -41,8 +42,9 @@ object GoogleMapHelper {
     var uidZone = 0
 
     var editMode = false
-    var editingZone = -1
-    var selectedZone = -1
+    var deleteMode = false
+    var editingZone: String? = null
+    var selectedZone: String? = null
 
     //Attributes that can change
     var minZoom = 17f
@@ -59,8 +61,9 @@ object GoogleMapHelper {
 
     var cameraPosition = LatLng(46.52010210373031, 6.566237434744834)
     var cameraZoom = 18f
-    val areasPoints: MutableMap<Int, Triple<Int, Marker, Polygon>> = mutableMapOf()
-    val zonesToArea: MutableMap<Int, Pair<Zone?, MutableList<Int>>> = mutableMapOf()
+    val areasPoints: MutableMap<Int, Triple<String, Marker, Polygon>> = mutableMapOf()
+    val zonesToArea: MutableMap<String, Pair<Zone?, MutableList<Int>>> = mutableMapOf()
+    val waitingZones: MutableList<Zone> = mutableListOf()
 
     /**
      * Temporary variables when adding and editing an area
@@ -123,64 +126,25 @@ object GoogleMapHelper {
      * Redraws all areas that were previously drawn before changing fragment or activity, draws some example
      */
     fun restoreMapState(context: Context?) {
-        if (areasPoints.isNotEmpty()) {
-            val currentEditZone = editingZone
-            val areaTemp = areasPoints.toMap()
-            val zoneTemp = zonesToArea.toMap()
-            zonesToArea.clear()
-            areasPoints.clear()
-            for ((k, v) in zoneTemp) {
-                editingZone = k
-                zonesToArea[editingZone] = Pair(null, mutableListOf())
-                for (id in v.second) {
-                    addArea(context, id, areaTemp[id]!!.third.points, areaTemp[id]!!.second.title)
-                }
+        val currentEditZone = editingZone
+        val areaTemp = areasPoints.toMap()
+        val zoneTemp = zonesToArea.toMap()
+        zonesToArea.clear()
+        areasPoints.clear()
+        for ((k, v) in zoneTemp) {
+            editingZone = k
+            zonesToArea[editingZone!!] = Pair(null, mutableListOf())
+            for (id in v.second) {
+                addArea(context, id, areaTemp[id]!!.third.points, areaTemp[id]!!.second.title)
             }
-
-            editingZone = currentEditZone
-
-        } else {
-            val currentEditZone = editingZone
-
-            //-----------Create example areas---------------
-            val zoneID1 = uidZone++
-            editingZone = zoneID1
-            zonesToArea[zoneID1] = Pair(null, mutableListOf())
-            val listEvent1 = arrayListOf<LatLng>()
-            listEvent1.add(LatLng(46.52100506978624, 6.565499156713487))
-            listEvent1.add(LatLng(46.52073238207864, 6.565499156713487))
-            listEvent1.add(LatLng(46.52073238207864, 6.565711721777915))
-            listEvent1.add(LatLng(46.52100506978624, 6.565711721777915))
-            addArea(context, uidArea++, listEvent1, "Sushi Demo")
-            val zone1 =
-                Zone(null, "Salle 1", zoneAreasToFormattedStringLocation(editingZone), "Salle 1")
-            setZone(zone1)
-
-            val zoneID2 = uidZone++
-            editingZone = zoneID2
-            zonesToArea[zoneID2] = Pair(null, mutableListOf())
-            val listEvent3 = arrayListOf<LatLng>()
-            listEvent3.add(LatLng(46.52111073013754, 6.565624214708805))
-            listEvent3.add(LatLng(46.52107750943789, 6.565624214708805))
-            listEvent3.add(LatLng(46.52108443041863, 6.566078178584576))
-            listEvent3.add(LatLng(46.521115113422766, 6.5660761669278145))
-            addArea(context, uidArea++, listEvent3, "La route en T")
-            val listEvent4 = arrayListOf<LatLng>()
-            listEvent4.add(LatLng(46.52115986905187, 6.565824374556541))
-            listEvent4.add(LatLng(46.521115113422766, 6.565824374556541))
-            listEvent4.add(LatLng(46.521115113422766, 6.565871313214302))
-            listEvent4.add(LatLng(46.52115986905187, 6.565871313214302))
-            addArea(context, uidArea++, listEvent4, "La route en T2")
-            val zoneEnT = Zone(
-                null,
-                "Route en T",
-                zoneAreasToFormattedStringLocation(editingZone),
-                "La route en T"
-            )
-            setZone(zoneEnT)
-
-            editingZone = currentEditZone
         }
+        val copyWaitingZones = waitingZones.toList()
+        for(zone in copyWaitingZones){
+            importNewZone(context, zone)
+            waitingZones.remove(zone)
+        }
+
+        editingZone = currentEditZone
     }
 
     /**
@@ -188,23 +152,24 @@ object GoogleMapHelper {
      * @param zone zone to import
      */
     fun importNewZone(context: Context?, zone: Zone) {
-        zonesToArea[uidZone++] = Pair(zone, mutableListOf())
-        for (areas in zone.getZoneCoordinates()) {
-            addArea(context, uidArea++, areas, zone.zoneName)
+        if(map == null){
+            waitingZones.add(zone)
+            return
         }
-    }
+        val temp = editingZone
+        editingZone = zone.zoneId
 
-    /**
-     * Set the texts to the areas of the zone
-     * @param zone new zone created
-     */
-    fun setZone(zone: Zone) {
-        val list = zonesToArea[editingZone]!!.second.toMutableList()
-        for (l in list) {
-            areasPoints[l]!!.second.title = zone.zoneName
+        if(zonesToArea.containsKey(zone.zoneId)){
+            removeZoneAreas(zone.zoneId!!)
         }
-        zonesToArea[editingZone] = Pair(zone, list)
-        editingZone = -1
+
+        zonesToArea[editingZone?:"zone ${uidZone++}"] = Pair(zone, mutableListOf())
+
+        val areas = zone.getZoneCoordinates()
+        for (area in areas) {
+            addArea(context, uidArea++, area, zone.zoneName)
+        }
+        editingZone = temp
     }
 
     /**
@@ -258,10 +223,9 @@ object GoogleMapHelper {
                 polygon.tag = id
                 marker.tag = editingZone
             }
-
-            areasPoints[id] = Triple(editingZone, marker, polygon)
-            if (!zonesToArea[editingZone]!!.second.contains(id)) {
-                zonesToArea[editingZone]!!.second.add(id)
+            areasPoints[id] = Triple(editingZone!!, marker, polygon)
+            if (!zonesToArea[editingZone!!]!!.second.contains(id)) {
+                zonesToArea[editingZone!!]!!.second.add(id)
             }
         }
     }
@@ -308,7 +272,7 @@ object GoogleMapHelper {
 
             }
             addArea(context, id, tempPoly!!.points, name)
-            colorAreas(editingZone, EDITED_ZONE_STROKE_COLOR)
+            colorAreas(editingZone!!, EDITED_ZONE_STROKE_COLOR)
         }
         clearTemp()
     }
@@ -340,6 +304,8 @@ object GoogleMapHelper {
 
         tempValues.clear()
         tempTitle = null
+        editMode = false
+        deleteMode = false
     }
 
     /**
@@ -644,6 +610,25 @@ object GoogleMapHelper {
         rotationPos = rotationMarker!!.position
     }
 
+    var lastOverlay : TileOverlay? = null
+
+    /**
+     * add HeatMap to the map
+     * list of points
+     */
+    fun addHeatMap(latLngs: List<LatLng>) {
+        if(latLngs.isNotEmpty()) {
+            // Create a heat map tile provider, passing it the latlngs of the police stations.
+            val provider = HeatmapTileProvider.Builder()
+                .data(latLngs)
+                .build()
+
+            lastOverlay?.remove()
+            // Add a tile overlay to the map, using the heat map tile provider.
+            lastOverlay = map!!.addTileOverlay(TileOverlayOptions().tileProvider(provider))
+        }
+    }
+
     /**
      * Rotate the current polygon according to the given Marker. It also aligns this
      * marker so that it remains on the circle around the center of rotation.
@@ -706,14 +691,15 @@ object GoogleMapHelper {
      */
     fun editMode(context: Context?) {
         editMode = !editMode
+        deleteMode = false
         if (editMode) {
             for (a in areasPoints) {
                 tempValues[a.key] = Pair(a.value.second.title, a.value.second.position)
                 a.value.second.remove()
             }
-            colorAreas(editingZone, EDITED_ZONE_STROKE_COLOR)
+            colorAreas(editingZone!!, EDITED_ZONE_STROKE_COLOR)
         } else {
-            colorAreas(editingZone, DEFAULT_ZONE_STROKE_COLOR)
+            colorAreas(editingZone!!, DEFAULT_ZONE_STROKE_COLOR)
             restoreMarkers(context)
         }
     }
@@ -792,14 +778,17 @@ object GoogleMapHelper {
      * Generate the string format for Firebase of the area points for a given zone
      * @param idZone id of the zone
      */
-    fun zoneAreasToFormattedStringLocation(idZone: Int): String {
+    fun zoneAreasToFormattedStringLocation(idZone: String): String {
         var temp = zonesToArea[idZone]!!.second.toMutableList()
         var s = ""
         for (uid in temp) {
             s += areaToFormattedStringLocation(areasPoints[uid]!!.third.points.dropLast(1))
             s += AREAS_SEP
         }
-        return s.substring(0, s.length - AREAS_SEP.value.length)
+        if(s != ""){
+            s = s.substring(0, s.length - AREAS_SEP.value.length)
+        }
+        return s
     }
 
     /**
@@ -816,20 +805,32 @@ object GoogleMapHelper {
         for (c in loc) {
             s += c.latitude.toString() + LAT_LONG_SEP.value + c.longitude.toString() + POINTS_SEP.value
         }
-        return s.substring(0, s.length - POINTS_SEP.value.length)
+        if(s != ""){
+            s = s.substring(0, s.length - AREAS_SEP.value.length)
+        }
+        return s
     }
 
     /**
      * Deletes the areas of a zone
-     * @param id id of the zone
+     * @param id id of the zone to remove areas
      */
-    fun removeZoneAreas(id: Int) {
+    fun removeZoneAreas(id: String) {
         zonesToArea[id] ?: return
         val areas = zonesToArea[id]!!.second.toList()
         for (uid in areas) {
             removeArea(uid)
         }
         zonesToArea[id] = Pair(null, mutableListOf())
+    }
+
+    /**
+     * Remove a zone from the map
+     * @param id id of the zone to remove
+     */
+    fun removeZone(id: String){
+        removeZoneAreas(id)
+        zonesToArea.remove(id)
     }
 
     /**
@@ -956,7 +957,7 @@ object GoogleMapHelper {
      * @param idZone id of the zone to color
      * @param color color target for the zone
      */
-    fun colorAreas(idZone: Int, color: Int) {
+    fun colorAreas(idZone: String, color: Int) {
         for (key in zonesToArea[idZone]!!.second) {
             areasPoints[key]!!.third.strokeColor = color
         }
@@ -966,9 +967,9 @@ object GoogleMapHelper {
      * clears the color of the current selected zone
      */
     fun clearSelectedZone() {
-        if (selectedZone != -1) {
-            colorAreas(selectedZone, DEFAULT_ZONE_STROKE_COLOR)
-            selectedZone = -1
+        if (selectedZone != null) {
+            colorAreas(selectedZone!!, DEFAULT_ZONE_STROKE_COLOR)
+            selectedZone = null
         }
     }
 
@@ -976,7 +977,7 @@ object GoogleMapHelper {
      * Set the selected zone to color it on the map
      * @param tag id of the selected zone
      */
-    fun setSelectedZones(tag: Int) {
+    fun setSelectedZones(tag: String) {
         clearSelectedZone()
         selectedZone = tag
         colorAreas(tag, SELECTED_ZONE_STROKE_COLOR)
@@ -989,5 +990,24 @@ object GoogleMapHelper {
     fun setSelectedZoneFromArea(tag: String) {
         setSelectedZones(areasPoints[tag.toInt()]!!.first)
     }
+
+    /*
+    TODO : Implement the deletion of one area while editing
+    fun deleteMode(context: Context) {
+        Log.d("DELETE AREA", "Area delete mode = $deleteMode")
+        editMode = false
+        deleteMode = !deleteMode
+        if (deleteMode) {
+            for (a in areasPoints) {
+                tempValues[a.key] = Pair(a.value.second.title, a.value.second.position)
+                a.value.second.remove()
+            }
+            colorAreas(editingZone!!, Color.RED)
+        } else {
+            colorAreas(editingZone!!, DEFAULT_ZONE_STROKE_COLOR)
+            restoreMarkers(context)
+        }
+    }
+    */
 
 }

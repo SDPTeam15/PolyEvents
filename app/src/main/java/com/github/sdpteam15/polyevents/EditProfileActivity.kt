@@ -85,7 +85,7 @@ class EditProfileActivity : AppCompatActivity() {
             profile.userRole = newRank
             profile.profileName = newName
 
-            currentDatabase.userDatabase!!.updateProfile(profile).observe {
+            currentDatabase.userDatabase!!.updateProfile(profile).observeOnce(this) {
                 if (it.value) {
                     end.postValue(true, this)
                     onBackPressed()

@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.widget.ArrayAdapter
@@ -11,6 +12,7 @@ import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.fragments.*
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.UserEntity
+import com.github.sdpteam15.polyevents.service.TimerService
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -46,6 +48,21 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        //TODO remove to for local cache
+        Settings.mainActivity = this
+        Settings.isLoaded = Settings.isLoaded
+        val intent = Intent(applicationContext, TimerService::class.java)
+        startService(intent)
+        TimerService.instance.observeOnce {
+            it.value.addTask {
+                if (Settings.IsSendingLocationOn)
+                    HelperFunctions.getLoc(this).observeOnce { LatLng ->
+                        if(LatLng.value != null)
+                            currentDatabase.heatmapDatabase!!.setLocation(LatLng.value)
+                    }
+            }
+        }
 
         //Set the basic fragment to the home one or to admin hub if it is logged in
         //TODO Add a condition to see if the user is an admin or not and if so, redirect him to the admin hub
@@ -85,6 +102,12 @@ class MainActivity : AppCompatActivity() {
         */
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        val intent = Intent(applicationContext, TimerService::class.java)
+        stopService(intent)
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.nav_menu, menu)
 
@@ -115,4 +138,6 @@ class MainActivity : AppCompatActivity() {
             HelperFunctions.changeFragment(this, fragments[R.id.id_fragment_admin_hub])
         }
     }
+
+
 }

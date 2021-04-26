@@ -2,8 +2,6 @@
 
 ## Alessio
 
-## Cyrille
-
 ## Florian 
 
 ## Mathieu

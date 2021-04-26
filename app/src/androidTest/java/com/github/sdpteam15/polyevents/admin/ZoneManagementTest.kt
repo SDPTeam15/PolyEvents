@@ -51,8 +51,8 @@ class ZoneManagementTest {
 
     @Before
     fun setup() {
-        mockedDatabase = Mockito.mock(DatabaseInterface::class.java)
-        mockedZoneDatabase = Mockito.mock(ZoneDatabaseInterface::class.java)
+        mockedDatabase = HelperTestFunction.defaultMockDatabase()
+        mockedZoneDatabase = mockedDatabase.zoneDatabase!!
         When(mockedDatabase.zoneDatabase).thenReturn(mockedZoneDatabase)
 
         val mockedUserProfile = UserProfile("TestID", "TestName")
@@ -139,7 +139,7 @@ class ZoneManagementTest {
     @Test
     fun updateInfoRedirectToCorrectActivityIfCorrect() {
 
-        val editingZone = GoogleMapHelper.uidZone++
+        val editingZone = "Zone ${GoogleMapHelper.uidZone++}"
         GoogleMapHelper.editingZone = editingZone
         GoogleMapHelper.zonesToArea[editingZone] = Pair(null, mutableListOf())
 
@@ -180,10 +180,9 @@ class ZoneManagementTest {
         onView(withId(R.id.zone_management_list_activity))
             .check(matches(isDisplayed()))
         scenario2.close()
-        GoogleMapHelper.editingZone = -1
+        GoogleMapHelper.editingZone = null
         GoogleMapHelper.zonesToArea.clear()
         GoogleMapHelper.areasPoints.clear()
-        /**/
 
     }
 
@@ -364,7 +363,7 @@ class ZoneManagementTest {
         val p2 = Polygon(mockedzzw2)
         When(mockedzzw2.points).thenReturn(listLngLat2)
         val nbAreas = 2
-        val editingZone = GoogleMapHelper.uidZone++
+        val editingZone = "Zone ${GoogleMapHelper.uidZone++}"
         val area1 = GoogleMapHelper.uidArea++
         val area2 = GoogleMapHelper.uidArea++
 
@@ -379,7 +378,7 @@ class ZoneManagementTest {
         onView(withId(R.id.btnDeleteZoneCoordinates)).perform(click())
         assert(GoogleMapHelper.zonesToArea[editingZone]!!.second.size==0)
 
-        GoogleMapHelper.editingZone = -1
+        GoogleMapHelper.editingZone = null
         GoogleMapHelper.zonesToArea.clear()
         GoogleMapHelper.areasPoints.clear()
 
