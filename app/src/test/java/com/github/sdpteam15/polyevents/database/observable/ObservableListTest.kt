@@ -202,6 +202,8 @@ class ObservableListTest {
 
     @Test
     fun listIsImplemented() {
+        assertEquals(1, ObservableList(listOf(0)).size)
+
         val list: MutableList<Int> = ObservableList()
 
         assertFailsWith<NotImplementedError> { list.subList(0,0) }
@@ -251,58 +253,58 @@ class ObservableListTest {
         var updated = false
         val observableList = ObservableList<Int>()
         val list: MutableList<Int> = observableList
-        val mapedObservableList = observableList.map{it.hashCode()}.then
+        val mappedObservableList = observableList.map{it.hashCode()}.then
 
         assertFailsWith<NotImplementedError> { list.subList(0,0) }
 
-        mapedObservableList.observeOnce { updated = true }
+        mappedObservableList.observeOnce { updated = true }
         list.add(0)
         assert(updated)
         updated = false
         list.add(1)
         list.add(2)
 
-        mapedObservableList.observeOnce { updated = true }
+        mappedObservableList.observeOnce { updated = true }
         assert(list.retainAll(mutableListOf(0)))
         assert(updated)
         updated = false
 
-        mapedObservableList.observeOnce { updated = true }
+        mappedObservableList.observeOnce { updated = true }
         assert(list.removeAll(mutableListOf(0)))
         assert(updated)
         updated = false
 
-        mapedObservableList.observeOnce { updated = true }
+        mappedObservableList.observeOnce { updated = true }
         list.addAll(listOf(0, 1, 2))
         assert(updated)
         updated = false
 
-        mapedObservableList.observeOnce { updated = true }
+        mappedObservableList.observeOnce { updated = true }
         list.remove(0)
         assert(updated)
         updated = false
 
-        mapedObservableList.observeOnce { updated = true }
+        mappedObservableList.observeOnce { updated = true }
         list.removeAt(0)
         assert(updated)
         updated = false
 
-        mapedObservableList.observeOnce { updated = true }
+        mappedObservableList.observeOnce { updated = true }
         list.add(0, 0)
         assert(updated)
         updated = false
 
-        mapedObservableList.observeOnce { updated = true }
+        mappedObservableList.observeOnce { updated = true }
         list.addAll(0, listOf(4))
         assert(updated)
         updated = false
 
-        mapedObservableList.observeOnce { updated = true }
+        mappedObservableList.observeOnce { updated = true }
         list[0] = 1
         assert(updated)
         updated = false
 
-        mapedObservableList.observeOnce { updated = true }
+        mappedObservableList.observeOnce { updated = true }
         list.clear()
         assert(updated)
         updated = false
@@ -378,6 +380,11 @@ class ObservableListTest {
         updated = false
 
         mappedObservableMap.observeOnce { updated = true }
+        list[0] = 3
+        assert(updated)
+        updated = false
+
+        mappedObservableMap.observeOnce { updated = true }
         list.clear()
         assert(updated)
         updated = false
@@ -386,11 +393,11 @@ class ObservableListTest {
         val mockedLifecycle = Mockito.mock(Lifecycle::class.java)
         Mockito.`when`(mockedLifecycleOwner.lifecycle).thenReturn(mockedLifecycle)
 
-        assertNotNull(observableList.mapWhileTrue(condition = {true}) { it })
-        assertNotNull(observableList.mapWhileTrue(mockedLifecycleOwner, condition = {true}) { it })
-        assertNotNull(observableList.map{ it })
-        assertNotNull(observableList.map(mockedLifecycleOwner) { it })
-        assertNotNull(observableList.mapOnce{ it })
-        assertNotNull(observableList.mapOnce(mockedLifecycleOwner) { it })
+        assertNotNull(observableList.groupWhileTrue(condition = {true}) { it % 2 })
+        assertNotNull(observableList.groupWhileTrue(mockedLifecycleOwner, condition = {true}) { it % 2 })
+        assertNotNull(observableList.group{ it % 2 })
+        assertNotNull(observableList.group(mockedLifecycleOwner) { it % 2 })
+        assertNotNull(observableList.groupOnce{ it % 2})
+        assertNotNull(observableList.groupOnce(mockedLifecycleOwner) { it % 2 })
     }
 }

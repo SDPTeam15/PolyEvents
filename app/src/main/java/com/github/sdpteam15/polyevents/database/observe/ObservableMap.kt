@@ -68,7 +68,13 @@ class ObservableMap<K, T> : MutableMap<K, T> {
         notify: Boolean
     ): Observable<T>? {
         if (observable.value != null) {
-            mapValues.put(key, observable)
+            var r: (() -> Boolean)? = null
+            if (mapValues[key] != null) {
+                val v = observable.map(mapValues[key]!!) { it }
+                removeItemObserver[v.then]!!()
+                r = v.remove
+            }
+            mapValues[key] = observable
             removeItemObserver[observable] =
                 observable.observe(false) {
                     itemUpdated(
@@ -79,6 +85,8 @@ class ObservableMap<K, T> : MutableMap<K, T> {
                         )
                     )
                 }.remove
+            if (r != null)
+                removeItemObserver[observable] = { r() && removeItemObserver[observable]!!() }
             itemPuted(UpdateKeyedValue(observable.value!!, key, sender))
             if (notify) {
                 notifyUpdate(sender, Info.put, Pair(key, observable))
@@ -97,8 +105,23 @@ class ObservableMap<K, T> : MutableMap<K, T> {
      */
     fun put(key: K, item: T, sender: Any?) = put(key, item, sender, true)
 
+
+    /**
+     * Add an observable.
+     * @param key key of add.
+     * @param observable Observable to add.
+     * @param sender The source of the event.
+     * @return Observable added.
+     */
+    fun put(key: K, observable: Observable<T>, sender: Any? = null): Observable<T>? =
+        put(key, observable, sender, true)
+
     private fun put(key: K, value: T, sender: Any? = null, notify: Boolean) =
-        put(key, Observable(value), sender, notify)
+        if (mapValues[key] != null) {
+            mapValues[key]!!.postValue(value, sender)
+            mapValues[key]!!
+        } else
+            put(key, Observable(value), sender, notify)
 
     override fun put(key: K, value: T): T? = put(key, value, null)?.value
 
@@ -151,7 +174,7 @@ class ObservableMap<K, T> : MutableMap<K, T> {
      * Clear all items.
      * @param sender The source of the event.
      */
-    fun clear(sender: Any? = null) {
+    fun clear(sender: Any?) {
         for (key in mapValues.keys.toList()) {
             remove(key, sender, false)
         }
@@ -159,20 +182,23 @@ class ObservableMap<K, T> : MutableMap<K, T> {
     }
 
     override val entries: MutableSet<MutableMap.MutableEntry<K, T>>
-        get() = mapValues.entries.map {
-            object : MutableMap.MutableEntry<K, T> {
-                override val key: K
-                    get() = it.key
-                override val value: T
-                    get() = it.value.value!!
+        get() {
+            val result = mutableSetOf<MutableMap.MutableEntry<K, T>>()
+            for (e in mapValues.entries)
+                result.add(object : MutableMap.MutableEntry<K, T> {
+                    override val key: K
+                        get() = e.key
+                    override val value: T
+                        get() = e.value.value!!
 
-                override fun setValue(newValue: T): T {
-                    val v = value
-                    it.value.postValue(newValue, this)
-                    return v
-                }
-            }
-        } as MutableSet<MutableMap.MutableEntry<K, T>>
+                    override fun setValue(newValue: T): T {
+                        val v = value
+                        e.value.postValue(newValue, this)
+                        return v
+                    }
+                })
+            return result
+        }
     override val keys: MutableSet<K>
         get() = mapValues.keys
     override val values: MutableCollection<T>
@@ -470,7 +496,7 @@ class ObservableMap<K, T> : MutableMap<K, T> {
 
     /**
      *  map to an other observable while it return true
-     *  @param observableList observer for the live data
+     *  @param observableMap observer for the live data
      *  @param condition condition to continue to observe
      *  @param mapper mapper from the live data to the new one
      *  @return if the observer have been remove
@@ -530,7 +556,7 @@ class ObservableMap<K, T> : MutableMap<K, T> {
 
     /**
      *  map to an other observable
-     *  @param observableList observer for the live data
+     *  @param observableMap observer for the live data
      *  @param mapper mapper from the live data to the new one
      *  @return if the observer have been remove
      */
@@ -542,7 +568,7 @@ class ObservableMap<K, T> : MutableMap<K, T> {
     /**
      *  map to an other observable
      *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
-     *  @param observableList observer for the live data
+     *  @param observableMap observer for the live data
      *  @param mapper mapper from the live data to the new one
      *  @return if the observer have been remove
      */
@@ -554,7 +580,7 @@ class ObservableMap<K, T> : MutableMap<K, T> {
 
     /**
      *  map to an other observable once
-     *  @param observableList observer for the live data
+     *  @param observableMap observer for the live data
      *  @param mapper mapper from the live data to the new one
      *  @return if the observer have been remove
      */
@@ -594,7 +620,6 @@ class ObservableMap<K, T> : MutableMap<K, T> {
 
     private fun itemUpdated(value: UpdateKeyedValue<K, T>) {
         HelperFunctions.run(Runnable {
-            val toRemove = mutableListOf<(UpdateKeyedValue<K, T>) -> Boolean>()
             for (obs in observersItemUpdate.toList())
                 if (!obs(value))
                     leaveUpdate(obs)

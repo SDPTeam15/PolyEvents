@@ -5,6 +5,7 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.run
+
 /**
  * Data that notify a set of observers on a modification
  * When adding observers and passing a lifecycleOwner in the parameters, the added observer will not be notified if the lifecycle is destroyed.
@@ -98,7 +99,10 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
      *  @param observer observer for the live data
      *  @return a method to remove the observer
      */
-    fun observeWhileTrue(updateIfNotNull : Boolean = true, observer: (UpdateValue<T>) -> Boolean): ThenOrRemove<Observable<T>> {
+    fun observeWhileTrue(
+        updateIfNotNull: Boolean = true,
+        observer: (UpdateValue<T>) -> Boolean
+    ): ThenOrRemove<Observable<T>> {
         observers.add(observer)
         if (updateIfNotNull && updateArgs != null)
             run(Runnable {
@@ -115,7 +119,11 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
      *  @param observer observer for the live data
      *  @return a method to remove the observer
      */
-    fun observeWhileTrue(lifecycle: LifecycleOwner, updateIfNotNull : Boolean = true, observer: (UpdateValue<T>) -> Boolean) =
+    fun observeWhileTrue(
+        lifecycle: LifecycleOwner,
+        updateIfNotNull: Boolean = true,
+        observer: (UpdateValue<T>) -> Boolean
+    ) =
         observeOnDestroy(lifecycle, observeWhileTrue(updateIfNotNull, observer))
 
     /**
@@ -124,10 +132,11 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
      *  @param observer observer for the live data
      *  @return a method to remove the observer
      */
-    fun observe(updateIfNotNull : Boolean = true, observer: (UpdateValue<T>) -> Unit) = observeWhileTrue(updateIfNotNull) {
-        observer(it)
-        true
-    }
+    fun observe(updateIfNotNull: Boolean = true, observer: (UpdateValue<T>) -> Unit) =
+        observeWhileTrue(updateIfNotNull) {
+            observer(it)
+            true
+        }
 
     /**
      *  Add an observer for the live data
@@ -136,7 +145,11 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
      *  @param observer observer for the live data
      *  @return a method to remove the observer
      */
-    fun observe(lifecycle: LifecycleOwner, updateIfNotNull : Boolean = true, observer: (UpdateValue<T>) -> Unit) =
+    fun observe(
+        lifecycle: LifecycleOwner,
+        updateIfNotNull: Boolean = true,
+        observer: (UpdateValue<T>) -> Unit
+    ) =
         observeOnDestroy(lifecycle, observe(updateIfNotNull, observer))
 
     /**
@@ -145,10 +158,11 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
      *  @param updateIfNotNull update if not null
      *  @return a method to remove the observer
      */
-    fun observeOnce(updateIfNotNull : Boolean = true, observer: (UpdateValue<T>) -> Unit) = observeWhileTrue(updateIfNotNull) {
-        observer(it)
-        false
-    }
+    fun observeOnce(updateIfNotNull: Boolean = true, observer: (UpdateValue<T>) -> Unit) =
+        observeWhileTrue(updateIfNotNull) {
+            observer(it)
+            false
+        }
 
     /**
      *  Add an observer for the live data once
@@ -157,7 +171,11 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
      *  @param observer observer for the live data
      *  @return a method to remove the observer
      */
-    fun observeOnce(lifecycle: LifecycleOwner, updateIfNotNull : Boolean = true, observer: (UpdateValue<T>) -> Unit) =
+    fun observeOnce(
+        lifecycle: LifecycleOwner,
+        updateIfNotNull: Boolean = true,
+        observer: (UpdateValue<T>) -> Unit
+    ) =
         observeOnDestroy(lifecycle, observeOnce(updateIfNotNull, observer))
 
     /**
@@ -242,15 +260,17 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
         mapper: (T) -> U
     ) = observeOnDestroy(lifecycle, mapOnce(observable, mapper))
 
-        /**
+    /**
      *  update to an other observable while it return true
-     *  @param decider decider for the update
+     *  @param decider decider for the updat
+     *  @param updateIfNotNull update if not null
      *  @param observable observer for the live data
      */
     fun updateWhileTrue(
         observable: Observable<T>,
+        updateIfNotNull: Boolean = true,
         decider: (T) -> Boolean
-    ) = observeWhileTrue {
+    ) = observeWhileTrue(updateIfNotNull) {
         observable.postValue(it.value, it.sender)
         decider(it.value)
     }
@@ -259,13 +279,15 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
      *  update to an other observable while it return true
      *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
      *  @param decider decider for the update
+     *  @param updateIfNotNull update if not null
      *  @param observable observer for the live data
      */
     fun updateWhileTrue(
         lifecycle: LifecycleOwner,
         observable: Observable<T>,
+        updateIfNotNull: Boolean = true,
         decider: (T) -> Boolean
-    ) = observeOnDestroy(lifecycle, updateWhileTrue(observable, decider))
+    ) = observeOnDestroy(lifecycle, updateWhileTrue(observable, updateIfNotNull, decider))
 
     /**
      *  update to an other observable
@@ -288,25 +310,27 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
      *  update to an other observable once
      *  @param observable observer for the live data
      */
-    fun updateOnce(observable: Observable<T>) =
-        updateWhileTrue(observable) { false }
+    fun updateOnce(observable: Observable<T>, updateIfNotNull: Boolean = false) =
+        updateWhileTrue(observable, updateIfNotNull) { false }
 
     /**
      *  update to an other observable once
      *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
      *  @param observable observer for the live data
+     *  @param updateIfNotNull update if not null
      */
     fun updateOnce(
         lifecycle: LifecycleOwner,
-        observable: Observable<T>
-    ) = observeOnDestroy(lifecycle, updateOnce(observable))
+        observable: Observable<T>,
+        updateIfNotNull: Boolean = false,
+    ) = observeOnDestroy(lifecycle, updateOnce(observable, updateIfNotNull))
 
     /**
      * Post a new value
      * @param newValue the new value
      * @param sender The source of the event.
      */
-    fun postValue(newValue: T, sender: Any? = null) : ThenOrRemove<Observable<T>> {
+    fun postValue(newValue: T, sender: Any? = null): ThenOrRemove<Observable<T>> {
         synchronized(this) { updateArgs = UpdateValue(newValue, sender); }
         run(Runnable {
             for (obs in observers.toList())

@@ -99,9 +99,8 @@ class ObservableList<T>(
      * @param sender The source of the event.
      */
     fun set(index: Int, value: T, sender: Any?): T {
-        val res = this[index]
         listValues[index].postValue(value, sender)
-        return res
+        return value
     }
 
     override operator fun set(index: Int, element: T): T = set(index, element, null)
@@ -119,7 +118,7 @@ class ObservableList<T>(
 
     private fun add(
         observable: Observable<T>,
-        sender: Any? = null,
+        sender: Any?,
         notify: Boolean
     ): Observable<T>? {
         if (observable.value != null) {
@@ -153,8 +152,8 @@ class ObservableList<T>(
      * @return Observable added.
      */
     fun add(item: T, sender: Any? = null): Observable<T>? = add(Observable(item), sender, true)!!
-    private fun add(item: T, sender: Any? = null, notify: Boolean): Observable<T>? =
-        add(Observable(item), sender)!!
+    private fun add(item: T, sender: Any?, notify: Boolean): Observable<T>? =
+        add(Observable(item), sender, notify)!!
 
     override fun addAll(elements: Collection<T>) = addAll(elements, null)
 
@@ -163,7 +162,7 @@ class ObservableList<T>(
      * @param items items list.
      * @param sender The source of the event.
      */
-    fun addAll(items: Collection<T>, sender: Any? = null): Boolean {
+    fun addAll(items: Collection<T>, sender: Any?): Boolean {
         var res = true
         val added = mutableListOf<Observable<T>>()
         for (item: T in items) {
@@ -190,7 +189,7 @@ class ObservableList<T>(
 
     private fun remove(
         observable: Observable<T>,
-        sender: Any? = null,
+        sender: Any?,
         notify: Boolean
     ): Observable<T>? {
         if (!listValues.remove(observable)) {
@@ -272,7 +271,7 @@ class ObservableList<T>(
      * Clear all items.
      * @param sender The source of the event.
      */
-    fun clear(sender: Any? = null) {
+    fun clear(sender: Any?) {
         for (item in listValues.toMutableList()) {
             remove(item, sender, false)
         }
@@ -309,7 +308,7 @@ class ObservableList<T>(
     private fun add(
         index: Int,
         observable: Observable<T>,
-        sender: Any? = null,
+        sender: Any?,
         notify: Boolean
     ): Observable<T>? {
         if (observable.value != null) {
@@ -343,7 +342,7 @@ class ObservableList<T>(
      */
     fun add(index: Int, item: T, sender: Any?) = add(index, item, sender, true)
 
-    private fun add(index: Int, item: T, sender: Any? = null, notify: Boolean) =
+    private fun add(index: Int, item: T, sender: Any?, notify: Boolean) =
         add(index, Observable(item), sender, notify)
 
     override fun add(index: Int, element: T) {
@@ -356,7 +355,7 @@ class ObservableList<T>(
      * @param items items list.
      * @param sender The source of the event.
      */
-    fun addAll(index: Int, items: Collection<T>, sender: Any? = null): Boolean {
+    fun addAll(index: Int, items: Collection<T>, sender: Any?): Boolean {
         var res = true
 
         var i = 0
@@ -818,7 +817,7 @@ class ObservableList<T>(
     ) = Observable.observeOnDestroy(lifecycle, mapOnce(observableList, mapper))
 
     /**
-     *  map to an other observable while it return true
+     *  group by mapper to an other observable while it return true
      *  @param observableMap observer for the live data
      *  @param condition condition to continue to observe
      *  @param mapper mapper from the live data to the new one
@@ -829,11 +828,10 @@ class ObservableList<T>(
         condition: () -> Boolean,
         mapper: (T) -> U
     ): Observable.ThenOrRemove<ObservableMap<U, ObservableList<T>>> {
-
+        observableMap.clear()
         val addLambda: (ObserversInfo<T>, Observable<T>) -> Unit = { it, observable ->
             val key = mapper(observable.value!!)
             if (observableMap.containsKey(key)) {
-                observableMap[key]!!.add(observable, it.sender)
                 val o = observableMap.getObservable(key)!!
                 o.value!!.add(observable, it.sender)
                 o.postValue(o.value!!, it.sender)
@@ -916,7 +914,7 @@ class ObservableList<T>(
     }
 
     /**
-     *  map to an other observable while it return true
+     *  group by mapper to an other observable while it return true
      *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
      *  @param observableMap observer for the live data
      *  @param condition condition to continue to observe
@@ -931,7 +929,7 @@ class ObservableList<T>(
     ) = Observable.observeOnDestroy(lifecycle, groupWhileTrue(observableMap, condition, mapper))
 
     /**
-     *  map to an other observable
+     *  group by mapper to an other observable
      *  @param observableMap observer for the live data
      *  @param mapper mapper from the live data to the new one
      *  @return if the observer have been remove
@@ -942,7 +940,7 @@ class ObservableList<T>(
     ) = groupWhileTrue(observableMap, { true }, mapper)
 
     /**
-     *  map to an other observable
+     *  group by mapper to an other observable
      *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
      *  @param observableMap observer for the live data
      *  @param mapper mapper from the live data to the new one
@@ -955,7 +953,7 @@ class ObservableList<T>(
     ) = Observable.observeOnDestroy(lifecycle, group(observableMap, mapper))
 
     /**
-     *  map to an other observable once
+     *  group by mapper to an other observable once
      *  @param observableMap observer for the live data
      *  @param mapper mapper from the live data to the new one
      *  @return if the observer have been remove
@@ -966,7 +964,7 @@ class ObservableList<T>(
     ) = groupWhileTrue(observableMap, { false }, mapper)
 
     /**
-     *  map to an other observable once
+     *  group by mapper to an other observable once
      *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
      *  @param observableMap observer for the live data
      *  @param mapper mapper from the live data to the new one
@@ -1013,6 +1011,10 @@ class ObservableList<T>(
         }
     }
 
+    /**
+     * An iterator over a mutable collection that supports indexed access. Provides the ability
+     * to add, modify and remove elements while iterating.
+     */
     inner class ObservableListIterator(var index: Int) : MutableListIterator<T> {
         override fun hasNext() = listValues.size > index
         override fun next() = get(index++)
