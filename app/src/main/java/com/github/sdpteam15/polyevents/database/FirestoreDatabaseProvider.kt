@@ -226,7 +226,8 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         element: T,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterToDocumentInterface<in T>
-    ): Observable<Boolean> = addEntityAndGetId(element, collection, adapter).mapOnce{ it != "" }.then
+    ): Observable<Boolean> =
+        addEntityAndGetId(element, collection, adapter).mapOnce { it != "" }.then
 
     override fun <T : Any> setEntity(
         element: T?,
@@ -268,8 +269,8 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             if (it.data != null) {
                 element.postValue(adapter.fromDocument(it.data!!, it.id), this)
                 ended.postValue(true, this)
-            }
-            ended.postValue(false, this)
+            } else
+                ended.postValue(false, this)
         }
         lastFailureListener = OnFailureListener {
             if (it.message != null)
