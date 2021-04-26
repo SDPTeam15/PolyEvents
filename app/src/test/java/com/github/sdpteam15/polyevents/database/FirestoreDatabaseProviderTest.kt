@@ -302,7 +302,7 @@ class FirestoreDatabaseProviderTest {
 
         lastAddSuccessListener!!.onSuccess(mockDocumentSnapshot)
         end.observeOnce {
-            assert(!it.value)
+            assert(it.value)
         }
         result.observeOnce {
             assertEquals(TEST_ID, it.value.id)
