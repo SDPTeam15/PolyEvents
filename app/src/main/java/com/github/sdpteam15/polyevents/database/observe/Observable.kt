@@ -7,17 +7,35 @@ import androidx.lifecycle.OnLifecycleEvent
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.run
 
 /**
- * Observable live data of type T
- * @param
+ * Data that notify a set of observers on a modification
+ * @param value the initial value of the data
+ * @param sender object that modified the data
  */
 class Observable<T>(value: T? = null, sender: Any? = null) {
-    class AfterRemovable<U>(val then: U, val remove: () -> Boolean)
-    class UpdateValue<T>(val value: T, val sender: Any?)
+    /**
+     * The return value of each function that need to add a observer
+     * @property then the reference of the Observable
+     * @property remove a function  to remove the added observer
+     */
+    class ThenOrRemove<U>(val then: U, val remove: () -> Boolean)
+
+    /**
+     * A value with the object that modified the data
+     * @property value the value
+     * @property  sender object that modified the data
+     */
+    open class UpdateValue<T>(val value: T, val sender: Any?)
+
     companion object {
+        /**
+         * Remove the observer on when lifecycleOwner is destroy
+         * @param lifecycle LifecycleOwner to observe
+         * @param result value to return
+         */
         fun <U> observeOnDestroy(
             lifecycle: LifecycleOwner,
-            result: AfterRemovable<U>
-        ): AfterRemovable<U> {
+            result: ThenOrRemove<U>
+        ): ThenOrRemove<U> {
             //Anonymous class to observe the ON_STOP Event ao the Activity/Fragment
             val lifecycleObserver = object : LifecycleObserver {
                 @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
@@ -59,14 +77,14 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
      *  @param observer observer for the live data
      *  @return a method to remove the observer
      */
-    fun observeWhileTrue(updateIfNotNull : Boolean = true, observer: (UpdateValue<T>) -> Boolean): AfterRemovable<Observable<T>> {
+    fun observeWhileTrue(updateIfNotNull : Boolean = true, observer: (UpdateValue<T>) -> Boolean): ThenOrRemove<Observable<T>> {
         observers.add(observer)
         if (updateIfNotNull && updateArgs != null)
             run(Runnable {
                 if (!observer(updateArgs!!))
                     observers.remove(observer)
             })
-        return AfterRemovable(this, { leave(observer) })
+        return ThenOrRemove(this, { leave(observer) })
     }
 
     /**
@@ -137,7 +155,7 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
     fun <U> mapWhileTrue(
         observable: Observable<U> = Observable(),
         mapper: (T) -> Pair<U, Boolean>
-    ) = AfterRemovable(
+    ) = ThenOrRemove(
         observable,
         this.observeWhileTrue {
             val (v, r) = mapper(it.value)
@@ -267,7 +285,7 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
      * @param newValue the new value
      * @param sender The source of the event.
      */
-    fun postValue(newValue: T, sender: Any? = null) : AfterRemovable<Observable<T>> {
+    fun postValue(newValue: T, sender: Any? = null) : ThenOrRemove<Observable<T>> {
         synchronized(this) { updateArgs = UpdateValue(newValue, sender); }
         run(Runnable {
             val toRemove = mutableListOf<(UpdateValue<T>) -> Boolean>()
@@ -277,6 +295,6 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
             for (obs in toRemove)
                 leave(obs)
         })
-        return AfterRemovable(this, { true })
+        return ThenOrRemove(this, { true })
     }
 }

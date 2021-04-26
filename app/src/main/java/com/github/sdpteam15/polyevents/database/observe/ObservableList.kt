@@ -13,14 +13,28 @@ class ObservableList<T>(
     sender: Any? = null
 ) : MutableList<T> {
 
+
+    private val observersAdd = mutableSetOf<(UpdateIndexedValue<T>) -> Boolean>()
+    private val observersRemove = mutableSetOf<(UpdateIndexedValue<T>) -> Boolean>()
+    private val observersItemUpdate = mutableSetOf<(UpdateIndexedValue<T>) -> Boolean>()
+    private val observers = mutableSetOf<(ObserversInfo<T>) -> Boolean>()
+
+    private var listValues: MutableList<Observable<T>>
+    private var removeItemObserver: MutableMap<Observable<T>, () -> Boolean>
+
     init {
+        listValues = mutableListOf()
+        removeItemObserver = mutableMapOf()
+
         if (collection != null)
             addAll(collection, sender)
         if (observable != null)
             add(observable, sender)
     }
 
-    class UpdateIndexedValue<T>(val value: T, val index: Int, val sender: Any?)
+    open class UpdateIndexedValue<T>(value: T, val index: Int, sender: Any?) :
+        Observable.UpdateValue<T>(value, sender)
+
     class ObserversInfo<T>(
         val value: Observable.UpdateValue<List<T>>,
         val info: Info,
@@ -40,14 +54,6 @@ class ObservableList<T>(
         clear,
         itemUpdated
     }
-
-    private val observersAdd = mutableSetOf<(UpdateIndexedValue<T>) -> Boolean>()
-    private val observersRemove = mutableSetOf<(UpdateIndexedValue<T>) -> Boolean>()
-    private val observersItemUpdate = mutableSetOf<(UpdateIndexedValue<T>) -> Boolean>()
-    private val observers = mutableSetOf<(ObserversInfo<T>) -> Boolean>()
-
-    private val listValues: MutableList<Observable<T>> = mutableListOf()
-    private val removeItemObserver: MutableMap<Observable<T>, () -> Boolean> = mutableMapOf()
 
     override val size get() = listValues.size
 
@@ -253,6 +259,9 @@ class ObservableList<T>(
     private fun find(item: T): Observable<T>? = listValues.find { it.value == item }
 
     override fun isEmpty() = listValues.isEmpty()
+
+    fun contains(item: Observable<T>) = listValues.contains(item)
+
     override fun contains(element: T) = (find(element) != null)
 
     override fun indexOf(element: T): Int {
@@ -375,9 +384,9 @@ class ObservableList<T>(
      */
     fun observeAddWhileTrue(
         observer: (UpdateIndexedValue<T>) -> Boolean
-    ): Observable.AfterRemovable<ObservableList<T>> {
+    ): Observable.ThenOrRemove<ObservableList<T>> {
         observersAdd.add(observer)
-        return Observable.AfterRemovable(this, { leaveAdd(observer) })
+        return Observable.ThenOrRemove(this, { leaveAdd(observer) })
     }
 
     /**
@@ -450,9 +459,9 @@ class ObservableList<T>(
      *  @param observer observer for the live data removals
      *  @return a method to remove the observer
      */
-    fun observeRemoveWhileTrue(observer: (UpdateIndexedValue<T>) -> Boolean): Observable.AfterRemovable<ObservableList<T>> {
+    fun observeRemoveWhileTrue(observer: (UpdateIndexedValue<T>) -> Boolean): Observable.ThenOrRemove<ObservableList<T>> {
         observersRemove.add(observer)
-        return Observable.AfterRemovable(this, { leaveRemove(observer) })
+        return Observable.ThenOrRemove(this, { leaveRemove(observer) })
     }
 
     /**
@@ -522,9 +531,9 @@ class ObservableList<T>(
     fun observeUpdateWhileTrue(
         observer: (UpdateIndexedValue<T>) ->
         Boolean
-    ): Observable.AfterRemovable<ObservableList<T>> {
+    ): Observable.ThenOrRemove<ObservableList<T>> {
         observersItemUpdate.add(observer)
-        return Observable.AfterRemovable(this, { leaveUpdate(observer) })
+        return Observable.ThenOrRemove(this, { leaveUpdate(observer) })
     }
 
     /**
@@ -594,12 +603,12 @@ class ObservableList<T>(
      *  @param observer observer for the live data
      *  @return a method to remove the observer
      */
-    fun observeWhileTrue(observer: (Observable.UpdateValue<List<T>>) -> Boolean): Observable.AfterRemovable<ObservableList<T>> {
+    fun observeWhileTrue(observer: (Observable.UpdateValue<List<T>>) -> Boolean): Observable.ThenOrRemove<ObservableList<T>> {
         val resultObserver: (ObserversInfo<T>) -> Boolean = {
             observer(it.value)
         }
         observers.add(resultObserver)
-        return Observable.AfterRemovable(this, { leave(resultObserver) })
+        return Observable.ThenOrRemove(this, { leave(resultObserver) })
     }
 
     /**
@@ -673,7 +682,7 @@ class ObservableList<T>(
         observableList: ObservableList<U> = ObservableList(),
         condition: () -> Boolean,
         mapper: (T) -> U
-    ): Observable.AfterRemovable<ObservableList<U>> {
+    ): Observable.ThenOrRemove<ObservableList<U>> {
         val result: (ObserversInfo<T>) -> Boolean =
             {
                 when (it.info) {
@@ -722,7 +731,7 @@ class ObservableList<T>(
                 condition()
             }
         observers.add(result)
-        return Observable.AfterRemovable(observableList, { observers.remove(result) })
+        return Observable.ThenOrRemove(observableList, { observers.remove(result) })
     }
 
     /**
@@ -790,129 +799,167 @@ class ObservableList<T>(
 
     /**
      *  map to an other observable while it return true
-     *  @param observableList observer for the live data
+     *  @param observableMap observer for the live data
      *  @param condition condition to continue to observe
      *  @param mapper mapper from the live data to the new one
      *  @return if the observer have been remove
      */
-    fun <U> GroupWhileTrue(
+    fun <U> groupWhileTrue(
         observableMap: ObservableMap<U, ObservableList<T>> = ObservableMap(),
         condition: () -> Boolean,
         mapper: (T) -> U
-    ): Observable.AfterRemovable<ObservableMap<U, ObservableList<T>>> {
+    ): Observable.ThenOrRemove<ObservableMap<U, ObservableList<T>>> {
+
+        val addLambda : (ObserversInfo<T>, Observable<T>) -> Unit = { it, observable ->
+            val key = mapper(observable.value!!)
+            if (observableMap.containsKey(key)) {
+                observableMap[key]!!.add(observable, it.sender)
+                val o = observableMap.getObservable(key)!!
+                o.value!!.add(observable, it.sender)
+                o.postValue(o.value!!, it.sender)
+            }
+            else
+                observableMap.put(
+                    key,
+                    ObservableList(observable = observable, sender = it.sender),
+                    it.sender
+                )
+        }
+        val removeLambda : (ObserversInfo<T>, Observable<T>) -> Unit = { it, observable ->
+            val key = mapper(observable.value!!)
+            observableMap[key]!!.remove(observable, it.sender)
+            if(observableMap[key]!!.isEmpty())
+                observableMap.remove(key)
+            else {
+                val o = observableMap.getObservable(key)!!
+                o.postValue(o.value!!, it.sender)
+            }
+        }
+
         val result: (ObserversInfo<T>) -> Boolean =
             {
                 when (it.info) {
-                    Info.add -> {
-                        val observable = it.args as Observable<T>
-                        val key = mapper(observable.value!!)
-                        if (observableMap.containsKey(key))
-                            observableMap[key]!!.add(observable, it.sender)
-                        else
-                            observableMap.put(
-                                key,
-                                ObservableList(observable = observable, sender = it.sender),
-                                it.sender
-                            )
-                    }
-                    Info.addIndex -> {
-                        val (index, observable) = it.args as Pair<Int, Observable<T>>
-                        val key = mapper(observable.value!!)
-                        if (observableMap.containsKey(key))
-                            observableMap[key]!!.add(observable, it.sender)
-                        else
-                            observableMap.put(
-                                key,
-                                ObservableList(observable = observable, sender = it.sender),
-                                it.sender
-                            )
-                    }
+                    Info.add -> addLambda(it, it.args as Observable<T>)
+                    Info.addIndex -> addLambda(it, (it.args as Pair<Int, Observable<T>>).second)
                     Info.addAll -> {
                         val items = it.args as MutableList<Observable<T>>
-                        for (item in items) {
-                            val key = mapper(item.value!!)
-                            if (observableMap.containsKey(key))
-                                observableMap[key]!!.add(item, it.sender)
-                            else
-                                observableMap.put(
-                                    key,
-                                    ObservableList(observable = item, sender = it.sender),
-                                    it.sender
-                                )
-                        }
+                        for (item in items)
+                            addLambda(it, item)
                     }
                     Info.addAllIndex -> {
-                        val (index, items) = it.args as Pair<Int, MutableList<Observable<T>>>
-                        for (item in items) {
-                            val key = mapper(item.value!!)
-                            if (observableMap.containsKey(key))
-                                observableMap[key]!!.add(item, it.sender)
-                            else
-                                observableMap.put(
-                                    key,
-                                    ObservableList(observable = item, sender = it.sender),
-                                    it.sender
-                                )
-                        }
+                        val (_, items) = it.args as Pair<Int, MutableList<Observable<T>>>
+                        for (item in items)
+                            addLambda(it, item)
                     }
-                    Info.remove -> {
-                        val observable = it.args as Observable<T>
-                        val key = mapper(observable.value!!)
-                        observableMap[key]!!.remove(observable, it.sender)
-                        if(observableMap[key]!!.isEmpty())
-                            observableMap.remove(key)
-                    }
-                    Info.removeAt -> {
-                        val (index, observable) = it.args as Pair<Int, Observable<T>>
-                        val key = mapper(observable.value!!)
-                        observableMap[key]!!.remove(observable, it.sender)
-                        if(observableMap[key]!!.isEmpty())
-                            observableMap.remove(key)
-                    }
+                    Info.remove -> removeLambda(it, it.args as Observable<T>)
+                    Info.removeAt -> removeLambda(it, (it.args as Pair<Int, Observable<T>>).second)
                     Info.removeAll -> {
-                        val (items, observables) = it.args as Pair<Collection<T>, MutableList<Observable<T>>>
-                        for(observable in observables){
-                            val key = mapper(observable.value!!)
-                            observableMap[key]!!.remove(observable, it.sender)
-                            if(observableMap[key]!!.isEmpty())
-                                observableMap.remove(key)
-                        }
+                        val (_, observables) = it.args as Pair<Collection<T>, MutableList<Observable<T>>>
+                        for(observable in observables)
+                            removeLambda(it, observable)
                     }
                     Info.retainAll -> {
-                        val (items, observables) = it.args as Pair<Collection<T>, MutableList<Observable<T>>>
-                        for(observable in observables){
-                            val key = mapper(observable.value!!)
-                            observableMap[key]!!.remove(observable, it.sender)
-                            if(observableMap[key]!!.isEmpty())
-                                observableMap.remove(key)
-                        }
+                        val (_, observables) = it.args as Pair<Collection<T>, MutableList<Observable<T>>>
+                        for(observable in observables)
+                            removeLambda(it, observable)
                     }
                     Info.clear -> {
                         observableMap.clear(it.sender)
                     }
                     Info.itemUpdated -> {
                         val (observable, value) = it.args as Pair<Observable<T>, UpdateIndexedValue<T>>
-                        val from = observableMap.filterKeys { observableMap[it]!!.contains(observable) }
+                        var from : U? = null
+                        for (key in observableMap.keys)
+                            if (observableMap[key]!!.contains(observable)) {
+                                from = key
+                                break
+                            }
                         val to = mapper(value.value)
-                        if(from != to)
+                        if(from!! != to)
                         {
-                            observableMap[from]!!.remove(observable)
-                            if (observableMap.containsKey(to))
-                                observableMap[to]!!.add(observable, it.sender)
-                            else
-                                observableMap.put(
-                                    to,
-                                    ObservableList(observable = observable, sender = it.sender),
-                                    it.sender
-                                )
+                            observableMap[from]!!.remove(observable, it.sender)
+                            if(observableMap[from]!!.isEmpty())
+                                observableMap.remove(from)
+                            else {
+                                val o = observableMap.getObservable(from)!!
+                                o.postValue(o.value!!, it.sender)
+                            }
+                            addLambda(it, observable)
+                        }
+                        else{
+                            val o = observableMap.getObservable(to)!!
+                            o.postValue(o.value!!, it.sender)
                         }
                     }
                 }
                 condition()
             }
         observers.add(result)
-        return Observable.AfterRemovable(observableMap, { observers.remove(result) })
+        return Observable.ThenOrRemove(observableMap, { observers.remove(result) })
     }
+
+    /**
+     *  map to an other observable while it return true
+     *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @param observableMap observer for the live data
+     *  @param condition condition to continue to observe
+     *  @param mapper mapper from the live data to the new one
+     *  @return if the observer have been remove
+     */
+    fun <U> groupWhileTrue(
+        lifecycle: LifecycleOwner,
+        observableMap: ObservableMap<U, ObservableList<T>> = ObservableMap(),
+        condition: () -> Boolean,
+        mapper: (T) -> U
+    ) = Observable.observeOnDestroy(lifecycle, groupWhileTrue(observableMap, condition, mapper))
+
+    /**
+     *  map to an other observable
+     *  @param observableMap observer for the live data
+     *  @param mapper mapper from the live data to the new one
+     *  @return if the observer have been remove
+     */
+    fun <U> group(
+        observableMap: ObservableMap<U, ObservableList<T>> = ObservableMap(),
+        mapper: (T) -> U
+    ) = groupWhileTrue(observableMap, { true }, mapper)
+
+    /**
+     *  map to an other observable
+     *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @param observableMap observer for the live data
+     *  @param mapper mapper from the live data to the new one
+     *  @return if the observer have been remove
+     */
+    fun <U> group(
+        lifecycle: LifecycleOwner,
+        observableMap: ObservableMap<U, ObservableList<T>> = ObservableMap(),
+        mapper: (T) -> U
+    ) = Observable.observeOnDestroy(lifecycle, group(observableMap, mapper))
+
+    /**
+     *  map to an other observable once
+     *  @param observableMap observer for the live data
+     *  @param mapper mapper from the live data to the new one
+     *  @return if the observer have been remove
+     */
+    fun <U> groupOnce(
+        observableMap: ObservableMap<U, ObservableList<T>> = ObservableMap(),
+        mapper: (T) -> U
+    ) = groupWhileTrue(observableMap, { false }, mapper)
+
+    /**
+     *  map to an other observable once
+     *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @param observableMap observer for the live data
+     *  @param mapper mapper from the live data to the new one
+     *  @return if the observer have been remove
+     */
+    fun <U> groupOnce(
+        lifecycle: LifecycleOwner,
+        observableMap: ObservableMap<U, ObservableList<T>> = ObservableMap(),
+        mapper: (T) -> U
+    ) = Observable.observeOnDestroy(lifecycle, group(observableMap, mapper))
 
     private fun itemAdded(value: UpdateIndexedValue<T>) {
         run(Runnable {

@@ -5,11 +5,19 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions
 
 /**
  * Observable live map of type T
- * @param
  */
 class ObservableMap<K, T> : MutableMap<K, T> {
 
-    class UpdateKeyedValue<K, T>(val value: T, val key: K, val sender: Any?)
+    private val observersPut = mutableSetOf<(UpdateKeyedValue<K, T>) -> Boolean>()
+    private val observersRemove = mutableSetOf<(UpdateKeyedValue<K, T>) -> Boolean>()
+    private val observersItemUpdate = mutableSetOf<(UpdateKeyedValue<K, T>) -> Boolean>()
+    private val observers = mutableSetOf<(ObserversInfo<K, T>) -> Boolean>()
+
+    private val mapValues: MutableMap<K, Observable<T>> = mutableMapOf()
+    private val removeItemObserver: MutableMap<Observable<T>, () -> Boolean> = mutableMapOf()
+
+    open class UpdateKeyedValue<K, T>(value: T, val key: K, sender: Any?) :
+        Observable.UpdateValue<T>(value, sender)
     class ObserversInfo<K, T>(
         val value: Observable.UpdateValue<Map<K, T>>,
         val info: Info,
@@ -24,14 +32,6 @@ class ObservableMap<K, T> : MutableMap<K, T> {
         clear,
         itemUpdated
     }
-
-    private val observersPut = mutableSetOf<(UpdateKeyedValue<K, T>) -> Boolean>()
-    private val observersRemove = mutableSetOf<(UpdateKeyedValue<K, T>) -> Boolean>()
-    private val observersItemUpdate = mutableSetOf<(UpdateKeyedValue<K, T>) -> Boolean>()
-    private val observers = mutableSetOf<(ObserversInfo<K, T>) -> Boolean>()
-
-    private val mapValues: MutableMap<K, Observable<T>> = mutableMapOf()
-    private val removeItemObserver: MutableMap<Observable<T>, () -> Boolean> = mutableMapOf()
 
     override val size get() = mapValues.size
 
@@ -183,9 +183,9 @@ class ObservableMap<K, T> : MutableMap<K, T> {
      */
     fun observePutWhileTrue(
         observer: (UpdateKeyedValue<K, T>) -> Boolean
-    ): Observable.AfterRemovable<ObservableMap<K, T>> {
+    ): Observable.ThenOrRemove<ObservableMap<K, T>> {
         observersPut.add(observer)
-        return Observable.AfterRemovable(this, { leavePut(observer) })
+        return Observable.ThenOrRemove(this, { leavePut(observer) })
     }
 
     /**
@@ -258,9 +258,9 @@ class ObservableMap<K, T> : MutableMap<K, T> {
      *  @param observer observer for the live data removals
      *  @return a method to remove the observer
      */
-    fun observeRemoveWhileTrue(observer: (UpdateKeyedValue<K, T>) -> Boolean): Observable.AfterRemovable<ObservableMap<K, T>> {
+    fun observeRemoveWhileTrue(observer: (UpdateKeyedValue<K, T>) -> Boolean): Observable.ThenOrRemove<ObservableMap<K, T>> {
         observersRemove.add(observer)
-        return Observable.AfterRemovable(this, { leaveRemove(observer) })
+        return Observable.ThenOrRemove(this, { leaveRemove(observer) })
     }
 
     /**
@@ -329,9 +329,9 @@ class ObservableMap<K, T> : MutableMap<K, T> {
      */
     fun observeUpdateWhileTrue(
         observer: (UpdateKeyedValue<K, T>) -> Boolean
-    ): Observable.AfterRemovable<ObservableMap<K, T>> {
+    ): Observable.ThenOrRemove<ObservableMap<K, T>> {
         observersItemUpdate.add(observer)
-        return Observable.AfterRemovable(this, { leaveUpdate(observer) })
+        return Observable.ThenOrRemove(this, { leaveUpdate(observer) })
     }
 
     /**
@@ -401,12 +401,12 @@ class ObservableMap<K, T> : MutableMap<K, T> {
      *  @param observer observer for the live data
      *  @return a method to remove the observer
      */
-    fun observeWhileTrue(observer: (Observable.UpdateValue<Map<K, T>>) -> Boolean): Observable.AfterRemovable<ObservableMap<K, T>> {
+    fun observeWhileTrue(observer: (Observable.UpdateValue<Map<K, T>>) -> Boolean): Observable.ThenOrRemove<ObservableMap<K, T>> {
         val resultObserver: (ObserversInfo<K, T>) -> Boolean = {
             observer(it.value)
         }
         observers.add(resultObserver)
-        return Observable.AfterRemovable(this, { leave(resultObserver) })
+        return Observable.ThenOrRemove(this, { leave(resultObserver) })
     }
 
     /**
@@ -480,7 +480,7 @@ class ObservableMap<K, T> : MutableMap<K, T> {
         observableMap: ObservableMap<K, U> = ObservableMap(),
         condition: () -> Boolean,
         mapper: (T) -> U
-    ): Observable.AfterRemovable<ObservableMap<K, U>> {
+    ): Observable.ThenOrRemove<ObservableMap<K, U>> {
         val result: (ObserversInfo<K, T>) -> Boolean =
             {
                 when (it.info) {
@@ -511,7 +511,7 @@ class ObservableMap<K, T> : MutableMap<K, T> {
                 condition()
             }
         observers.add(result)
-        return Observable.AfterRemovable(observableMap, { observers.remove(result) })
+        return Observable.ThenOrRemove(observableMap, { observers.remove(result) })
     }
 
     /**

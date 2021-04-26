@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //TODO remove to for local cash
+        //TODO remove to for local cache
         Settings.mainActivity = this
         Settings.isLoaded = Settings.isLoaded
         val intent = Intent(applicationContext, TimerService::class.java)
