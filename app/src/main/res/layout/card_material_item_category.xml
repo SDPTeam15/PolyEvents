@@ -22,9 +22,10 @@
         app:layout_constraintTop_toTopOf="parent">
 
 
-        <Spinner
-            android:id="@+id/spinner_item_type"
+        <TextView
+            android:id="@+id/id_item_category"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="50dp"
+            android:text="TextView" />
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,9 +4,12 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
+import com.github.sdpteam15.polyevents.database.observe.ObservableMap
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.model.Item
 
@@ -18,11 +21,14 @@ import com.github.sdpteam15.polyevents.model.Item
  */
 class ItemRequestAdapter(
     context: Context,
+    lifecycleOwner: LifecycleOwner,
     private val itemTypes: ObservableList<String>,
-    val availableItems: Map<String, MutableList<Pair<Item, Int>>>,
+    private val availableItems: ObservableMap<String, ObservableMap<Item, Int>>,
     private val onItemQuantityChangeListener: (Item, Int) -> Unit
 ) : RecyclerView.Adapter<ItemRequestAdapter.CustomViewHolder<*>>() {
-    private var isCategoryOpen: MutableMap<String, Boolean> = mutableMapOf()
+
+    private var isCategoryOpen: ObservableMap<String, Boolean> =
+        itemTypes.group(lifecycleOwner) { it }.then.map(lifecycleOwner) { false }.then
     private val inflater = LayoutInflater.from(context)
 
 
@@ -30,6 +36,7 @@ class ItemRequestAdapter(
         for (itemType in itemTypes) {
             isCategoryOpen[itemType] = false
         }
+        availableItems.values.forEach{println(it.keys)}
     }
 
 
@@ -46,9 +53,15 @@ class ItemRequestAdapter(
      */
     inner class ItemTypeViewHolder(private val view: View, private val parent: ViewGroup) :
         CustomViewHolder<String>(view, parent) {
+        private val itemCategory = view.findViewById<TextView>(R.id.id_item_category)
         override fun bind(item: String) {
-
+            itemCategory.text = item
+            view.setOnClickListener {
+                isCategoryOpen[item] = !isCategoryOpen[item]!!
+                notifyDataSetChanged()
+            }
         }
+
     }
 
     /**
@@ -56,7 +69,7 @@ class ItemRequestAdapter(
      * Takes the corresponding item "tab" view
      */
     inner class ItemViewHolder(private val view: View, private val parent: ViewGroup) :
-        CustomViewHolder<Pair<Item,Int>>(view, parent) {
+        CustomViewHolder<Pair<Item, Int>>(view, parent) {
 /*
         private val itemName = view.findViewById<TextView>(R.id.id_item_name)
         private val itemQuantity = view.findViewById<EditText>(R.id.id_item_quantity)
@@ -66,7 +79,7 @@ class ItemRequestAdapter(
         /**
          * Binds the value of the item to the layout of the item tab
          */
-        override fun bind(item: Pair<Item,Int>) {
+        override fun bind(item: Pair<Item, Int>) {
             val items = mutableListOf<Pair<Item, Int>>()
 
 
@@ -160,7 +173,7 @@ class ItemRequestAdapter(
                 val view = inflater.inflate(R.layout.card_material_item_category, parent, false)
                 ItemTypeViewHolder(view, parent)
             }
-            ITEM_HOLDER ->{
+            ITEM_HOLDER -> {
                 val view = inflater.inflate(R.layout.card_material_item, parent, false)
                 ItemViewHolder(view, parent)
             }
@@ -180,7 +193,7 @@ class ItemRequestAdapter(
                         return
                     }
                     if (isCategoryOpen[itemType] == true) {
-                        for (item in availableItems[itemType] ?: listOf()) {
+                        for (item in availableItems[itemType]?.keys ?: listOf()) {
                             res++
                         }
                     }
@@ -191,9 +204,9 @@ class ItemRequestAdapter(
                 for (itemType in itemTypes) {
                     res++
                     if (isCategoryOpen[itemType] == true) {
-                        for (item in availableItems[itemType] ?: listOf()) {
-                            if(res++ == position){
-                                holder.bind(item)
+                        for (item in availableItems[itemType]?.entries ?: listOf()) {
+                            if (res++ == position) {
+                                holder.bind(Pair(item.key, item.value))
                                 return
                             }
                         }
@@ -214,7 +227,7 @@ class ItemRequestAdapter(
                 return ITEM_TYPE_HOLDER
             }
             if (isCategoryOpen[itemType] == true) {
-                for (item in availableItems[itemType] ?: listOf()) {
+                for (item in availableItems[itemType]?.entries ?: listOf()) {
                     println(item)
                     if (res++ == position) {
                         return ITEM_HOLDER

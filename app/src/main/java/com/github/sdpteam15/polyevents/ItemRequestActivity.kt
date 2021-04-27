@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.adapter.ItemRequestAdapter
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
+import com.github.sdpteam15.polyevents.database.observe.ObservableMap
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.model.Item
 
@@ -18,9 +19,8 @@ import com.github.sdpteam15.polyevents.model.Item
 class ItemRequestActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
-    lateinit var mapSelectedItems: MutableMap<Item, Int>
-    private val obsItems = ObservableList<Pair<Item, Int>>()
-    private val obsItemsMap : MutableMap<String,ObservableList<Pair<Item, Int>>> = mutableMapOf()
+    lateinit var mapSelectedItems: ObservableMap<Item, Int>
+    private val obsItemsMap = ObservableMap<String, ObservableMap<Item, Int>>()
     private val obsItemTypes = ObservableList<String>()
 
 
@@ -30,7 +30,6 @@ class ItemRequestActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         recyclerView = findViewById(R.id.id_recycler_items_request)
-        mapSelectedItems = mutableMapOf()
 
 
         // Listener that update the map of selected items when the quantity is changed
@@ -45,18 +44,16 @@ class ItemRequestActivity : AppCompatActivity() {
             }
             Unit
         }
-        currentDatabase.itemDatabase!!.getAvailableItems(obsItems).observe {
+        val tempItemList = ObservableList<Pair<Item,Int>>()
+        tempItemList.group(this){ it.first.itemType }.then.map(this,obsItemsMap){ it.group(this) { it2 -> it2.first }.then.map(this) { it2 -> it2[0].second }.then }
+
+        currentDatabase.itemDatabase!!.getAvailableItems(tempItemList).observe(this){
             if (it.value) {
-                currentDatabase.itemDatabase!!.getItemTypes(obsItemTypes).observe { it2 ->
+                println("Database got :" + tempItemList.size)
+                currentDatabase.itemDatabase!!.getItemTypes(obsItemTypes).observe(this){ it2 ->
                     if (it2.value){
-                        for (item in obsItems){
-                            val type = item.first.itemType
-                            if (!obsItemsMap.containsKey(type))
-                                obsItemsMap[type] = ObservableList()
-                            obsItemsMap[type]!!.add(item)
-                        }
                         recyclerView.adapter =
-                            ItemRequestAdapter(this,obsItemTypes,obsItemsMap, onItemQuantityChangeListener)
+                            ItemRequestAdapter(this,this,obsItemTypes,obsItemsMap, onItemQuantityChangeListener)
                         recyclerView.setHasFixedSize(false)
                     }
                 }
