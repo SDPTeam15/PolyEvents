@@ -28,12 +28,12 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions.run
  *
  * @param collection initial collection of the data
  * @param observable initial observable of the data
- * @param sender last object that modified the data
+ * @param creator last object that modified the data
  */
 class ObservableList<T>(
     collection: Collection<T>? = null,
     observable: Observable<T>? = null,
-    sender: Any? = null
+    val creator : Any? = null
 ) : MutableList<T> {
 
 
@@ -50,9 +50,9 @@ class ObservableList<T>(
         removeItemObserver = mutableMapOf()
 
         if (collection != null)
-            addAll(collection, sender)
+            addAll(collection, creator)
         if (observable != null)
-            add(observable, sender)
+            add(observable, creator)
     }
 
     open class UpdateIndexedValue<T>(value: T, val index: Int, sender: Any?) :
@@ -408,7 +408,7 @@ class ObservableList<T>(
         observer: (UpdateIndexedValue<T>) -> Boolean
     ): Observable.ThenOrRemove<ObservableList<T>> {
         observersAdd.add(observer)
-        return Observable.ThenOrRemove(this, { leaveAdd(observer) })
+        return Observable.ThenOrRemove(this, creator, { leaveAdd(observer) })
     }
 
     /**
@@ -483,7 +483,7 @@ class ObservableList<T>(
      */
     fun observeRemoveWhileTrue(observer: (UpdateIndexedValue<T>) -> Boolean): Observable.ThenOrRemove<ObservableList<T>> {
         observersRemove.add(observer)
-        return Observable.ThenOrRemove(this, { leaveRemove(observer) })
+        return Observable.ThenOrRemove(this, creator,{ leaveRemove(observer) })
     }
 
     /**
@@ -555,7 +555,7 @@ class ObservableList<T>(
         Boolean
     ): Observable.ThenOrRemove<ObservableList<T>> {
         observersItemUpdate.add(observer)
-        return Observable.ThenOrRemove(this, { leaveUpdate(observer) })
+        return Observable.ThenOrRemove(this, creator, { leaveUpdate(observer) })
     }
 
     /**
@@ -627,7 +627,7 @@ class ObservableList<T>(
      */
     fun observeWhileTrue(observer: (Observable.UpdateValue<List<T>>) -> Boolean): Observable.ThenOrRemove<ObservableList<T>> {
         observers.add(observer)
-        return Observable.ThenOrRemove(this, { leave(observer) })
+        return Observable.ThenOrRemove(this,  creator,{ leave(observer) })
     }
 
     /**
@@ -698,11 +698,12 @@ class ObservableList<T>(
      *  @return if the observer have been remove
      */
     fun <U> mapWhileTrue(
-        observableList: ObservableList<U> = ObservableList(),
+        observableList: ObservableList<U> = ObservableList(creator = this),
         condition: () -> Boolean,
         mapper: (T) -> U
     ): Observable.ThenOrRemove<ObservableList<U>> {
-        observableList.addAll(listValues.map { mapper(it.value!!) }, null)//TODO set creator intead of null
+        observableList.clear()
+        observableList.addAll(listValues.map { mapper(it.value!!) }, this)
         val result: (ObserversInfo<T>) -> Boolean =
             {
                 when (it.info) {
@@ -716,7 +717,6 @@ class ObservableList<T>(
                     }
                     Info.addAll -> {
                         val items = it.args as MutableList<Observable<T>>
-
                         observableList.addAll(items.map { mapper(it.value!!) }, it.sender)
                     }
                     Info.addAllIndex -> {
@@ -728,22 +728,22 @@ class ObservableList<T>(
                         observableList.remove(mapper(observable.value!!), it.sender)
                     }
                     Info.removeAt -> {
-                        val (index, observable) = it.args as Pair<Int, Observable<T>>
+                        val (index, _) = it.args as Pair<Int, Observable<T>>
                         observableList.removeAt(index, it.sender)
                     }
                     Info.removeAll -> {
-                        val (items, observables) = it.args as Pair<Collection<T>, MutableList<Observable<T>>>
+                        val (items, _) = it.args as Pair<Collection<T>, MutableList<Observable<T>>>
                         observableList.removeAll(items.map(mapper), it.sender)
                     }
                     Info.retainAll -> {
-                        val (items, observables) = it.args as Pair<Collection<T>, MutableList<Observable<T>>>
+                        val (items, _) = it.args as Pair<Collection<T>, MutableList<Observable<T>>>
                         observableList.retainAll(items.map(mapper), it.sender)
                     }
                     Info.clear -> {
                         observableList.clear(it.sender)
                     }
                     Info.itemUpdated -> {
-                        val (observable, value) = it.args as Pair<Observable<T>, UpdateIndexedValue<T>>
+                        val (_, value) = it.args as Pair<Observable<T>, UpdateIndexedValue<T>>
                         observableList.getObservable(value.index)
                             .postValue(mapper(value.value), it.sender)
                     }
@@ -751,7 +751,7 @@ class ObservableList<T>(
                 condition()
             }
         observers.add(result)
-        return Observable.ThenOrRemove(observableList, { observers.remove(result) })
+        return Observable.ThenOrRemove(observableList, this, { observers.remove(result) })
     }
 
     /**
@@ -764,7 +764,7 @@ class ObservableList<T>(
      */
     fun <U> mapWhileTrue(
         lifecycle: LifecycleOwner,
-        observableList: ObservableList<U> = ObservableList(),
+        observableList: ObservableList<U> = ObservableList(creator = this),
         condition: () -> Boolean,
         mapper: (T) -> U
     ) = Observable.observeOnDestroy(lifecycle, mapWhileTrue(observableList, condition, mapper))
@@ -776,7 +776,7 @@ class ObservableList<T>(
      *  @return if the observer have been remove
      */
     fun <U> map(
-        observableList: ObservableList<U> = ObservableList(),
+        observableList: ObservableList<U> = ObservableList(creator = this),
         mapper: (T) -> U
     ) = mapWhileTrue(observableList, { true }, mapper)
 
@@ -789,7 +789,7 @@ class ObservableList<T>(
      */
     fun <U> map(
         lifecycle: LifecycleOwner,
-        observableList: ObservableList<U> = ObservableList(),
+        observableList: ObservableList<U> = ObservableList(creator = this),
         mapper: (T) -> U
     ) = Observable.observeOnDestroy(lifecycle, map(observableList, mapper))
 
@@ -800,7 +800,7 @@ class ObservableList<T>(
      *  @return if the observer have been remove
      */
     fun <U> mapOnce(
-        observableList: ObservableList<U> = ObservableList(),
+        observableList: ObservableList<U> = ObservableList(creator = this),
         mapper: (T) -> U
     ) = mapWhileTrue(observableList, { false }, mapper)
 
@@ -813,7 +813,7 @@ class ObservableList<T>(
      */
     fun <U> mapOnce(
         lifecycle: LifecycleOwner,
-        observableList: ObservableList<U> = ObservableList(),
+        observableList: ObservableList<U> = ObservableList(creator = this),
         mapper: (T) -> U
     ) = Observable.observeOnDestroy(lifecycle, mapOnce(observableList, mapper))
 
@@ -825,14 +825,12 @@ class ObservableList<T>(
      *  @return if the observer have been remove
      */
     fun <U> groupWhileTrue(
-        observableMap: ObservableMap<U, ObservableList<T>> = ObservableMap(),
+        observableMap: ObservableMap<U, ObservableList<T>> = ObservableMap(creator = this),
         condition: () -> Boolean,
         mapper: (T) -> U
     ): Observable.ThenOrRemove<ObservableMap<U, ObservableList<T>>> {
-        //TODO oskour check if not empty
         observableMap.clear()
-        val addLambda: (ObserversInfo<T>, Observable<T>) -> Unit = { it, observable ->
-            val key = mapper(observable.value!!)
+        val addWithKeyLambda: (ObserversInfo<T>, Observable<T>, U) -> Unit = { it, observable, key ->
             if (observableMap.containsKey(key)) {
                 val o = observableMap.getObservable(key)!!
                 o.value!!.add(observable, it.sender)
@@ -840,12 +838,14 @@ class ObservableList<T>(
             } else
                 observableMap.put(
                     key,
-                    ObservableList(observable = observable, sender = it.sender),
+                    ObservableList(observable = observable, creator = this),
                     it.sender
                 )
         }
-        val removeLambda: (ObserversInfo<T>, Observable<T>) -> Unit = { it, observable ->
-            val key = mapper(observable.value!!)
+        val addLambda: (ObserversInfo<T>, Observable<T>) -> Unit =
+            { it, observable -> addWithKeyLambda(it,observable,mapper(observable.value!!)) }
+
+        val removeWithKeyLambda : (ObserversInfo<T>, Observable<T>, U) -> Unit = { it, observable, key ->
             observableMap[key]!!.remove(observable, it.sender)
             if (observableMap[key]!!.isEmpty())
                 observableMap.remove(key)
@@ -854,6 +854,12 @@ class ObservableList<T>(
                 o.postValue(o.value!!, it.sender)
             }
         }
+        val removeLambda: (ObserversInfo<T>, Observable<T>) -> Unit =
+            { it, observable -> removeWithKeyLambda(it, observable, mapper(observable.value!!)) }
+
+        val oi = ObserversInfo(this,Info.addAll,null,this)
+        for (item in listValues)
+            addLambda(oi, item)
 
         val result: (ObserversInfo<T>) -> Boolean =
             {
@@ -895,14 +901,8 @@ class ObservableList<T>(
                             }
                         val to = mapper(value.value)
                         if (from!! != to) {
-                            observableMap[from]!!.remove(observable, it.sender)
-                            if (observableMap[from]!!.isEmpty())
-                                observableMap.remove(from)
-                            else {
-                                val o = observableMap.getObservable(from)!!
-                                o.postValue(o.value!!, it.sender)
-                            }
-                            addLambda(it, observable)
+                            removeWithKeyLambda(it, observable, from!!)
+                            addWithKeyLambda(it, observable, to)
                         } else {
                             val o = observableMap.getObservable(to)!!
                             o.postValue(o.value!!, it.sender)
@@ -912,7 +912,7 @@ class ObservableList<T>(
                 condition()
             }
         observers.add(result)
-        return Observable.ThenOrRemove(observableMap, { observers.remove(result) })
+        return Observable.ThenOrRemove(observableMap, creator, { observers.remove(result) })
     }
 
     /**
@@ -925,7 +925,7 @@ class ObservableList<T>(
      */
     fun <U> groupWhileTrue(
         lifecycle: LifecycleOwner,
-        observableMap: ObservableMap<U, ObservableList<T>> = ObservableMap(),
+        observableMap: ObservableMap<U, ObservableList<T>> = ObservableMap(creator = this),
         condition: () -> Boolean,
         mapper: (T) -> U
     ) = Observable.observeOnDestroy(lifecycle, groupWhileTrue(observableMap, condition, mapper))
@@ -937,7 +937,7 @@ class ObservableList<T>(
      *  @return if the observer have been remove
      */
     fun <U> group(
-        observableMap: ObservableMap<U, ObservableList<T>> = ObservableMap(),
+        observableMap: ObservableMap<U, ObservableList<T>> = ObservableMap(creator = this),
         mapper: (T) -> U
     ) = groupWhileTrue(observableMap, { true }, mapper)
 
@@ -950,7 +950,7 @@ class ObservableList<T>(
      */
     fun <U> group(
         lifecycle: LifecycleOwner,
-        observableMap: ObservableMap<U, ObservableList<T>> = ObservableMap(),
+        observableMap: ObservableMap<U, ObservableList<T>> = ObservableMap(creator = this),
         mapper: (T) -> U
     ) = Observable.observeOnDestroy(lifecycle, group(observableMap, mapper))
 
@@ -961,7 +961,7 @@ class ObservableList<T>(
      *  @return if the observer have been remove
      */
     fun <U> groupOnce(
-        observableMap: ObservableMap<U, ObservableList<T>> = ObservableMap(),
+        observableMap: ObservableMap<U, ObservableList<T>> = ObservableMap(creator = this),
         mapper: (T) -> U
     ) = groupWhileTrue(observableMap, { false }, mapper)
 
@@ -974,7 +974,7 @@ class ObservableList<T>(
      */
     fun <U> groupOnce(
         lifecycle: LifecycleOwner,
-        observableMap: ObservableMap<U, ObservableList<T>> = ObservableMap(),
+        observableMap: ObservableMap<U, ObservableList<T>> = ObservableMap(creator = this),
         mapper: (T) -> U
     ) = Observable.observeOnDestroy(lifecycle, group(observableMap, mapper))
 
@@ -982,7 +982,7 @@ class ObservableList<T>(
         run(Runnable {
             for (obs in observersAdd.toList())
                 if (!obs(value))
-                leaveAdd(obs)
+                    leaveAdd(obs)
         })
     }
 

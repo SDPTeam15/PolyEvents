@@ -6,7 +6,7 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions
 /**
  * Observable live map of type T
  */
-class ObservableMap<K, T> : MutableMap<K, T> {
+class ObservableMap<K, T>(val creator: Any? = null) : MutableMap<K, T> {
 
     private val observersPut = mutableSetOf<(UpdateKeyedValue<K, T>) -> Boolean>()
     private val observersRemove = mutableSetOf<(UpdateKeyedValue<K, T>) -> Boolean>()
@@ -69,8 +69,10 @@ class ObservableMap<K, T> : MutableMap<K, T> {
     ): Observable<T>? {
         if (observable.value != null) {
             var r: (() -> Boolean)? = null
-            if (mapValues[key] != null) {
-                val v = observable.map(mapValues[key]!!) { it }
+            val isNull = mapValues[key] == null
+
+            if (!isNull) {
+                val v = observable.map(true, mapValues[key]!!) { it }
                 removeItemObserver[v.then]!!()
                 r = v.remove
             }
@@ -87,9 +89,9 @@ class ObservableMap<K, T> : MutableMap<K, T> {
                 }.remove
             if (r != null)
                 removeItemObserver[observable] = { r() && removeItemObserver[observable]!!() }
-            itemPuted(UpdateKeyedValue(observable.value!!, key, sender))
+            itemPut(UpdateKeyedValue(observable.value!!, key, sender))
             if (notify) {
-                notifyUpdate(sender, Info.put, Pair(key, observable))
+                notifyUpdate(sender, Info.put, Triple(key, observable, isNull))
             }
             return observable
         }
@@ -132,10 +134,17 @@ class ObservableMap<K, T> : MutableMap<K, T> {
      */
     fun putAll(from: Map<out K, T>, sender: Any? = null): Boolean {
         var res = true
+        val added = mutableListOf<Observable<T>>()
         for (key: K in from.keys) {
-            res = res && (put(key, from[key]!!, sender, false) != null)
+            val isNull = mapValues[key] == null
+            val ads = put(key, from[key]!!, sender, false)
+            if (ads != null) {
+                if (isNull)
+                    added.add(ads)
+            } else
+                res = false
         }
-        notifyUpdate(sender, Info.putAll, from)
+        notifyUpdate(sender, Info.putAll, Pair(from, added))
         return res
     }
 
@@ -160,7 +169,7 @@ class ObservableMap<K, T> : MutableMap<K, T> {
         removeItemObserver.remove(observable)
         itemRemoved(UpdateKeyedValue(observable.value!!, key, sender))
         if (notify) {
-            notifyUpdate(sender, Info.remove, key)
+            notifyUpdate(sender, Info.remove, Pair(key, observable))
         }
         return observable
     }
@@ -202,7 +211,7 @@ class ObservableMap<K, T> : MutableMap<K, T> {
     override val keys: MutableSet<K>
         get() = mapValues.keys
     override val values: MutableCollection<T>
-        get() = mapValues.values.map { it.value!! }.toMutableList()
+        get() = valuesWhileTrue { true }.then
 
     /**
      *  Add an observer for the live data additions while it return true
@@ -213,7 +222,7 @@ class ObservableMap<K, T> : MutableMap<K, T> {
         observer: (UpdateKeyedValue<K, T>) -> Boolean
     ): Observable.ThenOrRemove<ObservableMap<K, T>> {
         observersPut.add(observer)
-        return Observable.ThenOrRemove(this, { leavePut(observer) })
+        return Observable.ThenOrRemove(this, creator, { leavePut(observer) })
     }
 
     /**
@@ -288,7 +297,7 @@ class ObservableMap<K, T> : MutableMap<K, T> {
      */
     fun observeRemoveWhileTrue(observer: (UpdateKeyedValue<K, T>) -> Boolean): Observable.ThenOrRemove<ObservableMap<K, T>> {
         observersRemove.add(observer)
-        return Observable.ThenOrRemove(this, { leaveRemove(observer) })
+        return Observable.ThenOrRemove(this, creator, { leaveRemove(observer) })
     }
 
     /**
@@ -359,7 +368,7 @@ class ObservableMap<K, T> : MutableMap<K, T> {
         observer: (UpdateKeyedValue<K, T>) -> Boolean
     ): Observable.ThenOrRemove<ObservableMap<K, T>> {
         observersItemUpdate.add(observer)
-        return Observable.ThenOrRemove(this, { leaveUpdate(observer) })
+        return Observable.ThenOrRemove(this, creator, { leaveUpdate(observer) })
     }
 
     /**
@@ -431,7 +440,7 @@ class ObservableMap<K, T> : MutableMap<K, T> {
      */
     fun observeWhileTrue(observer: (Observable.UpdateValue<Map<K, T>>) -> Boolean): Observable.ThenOrRemove<ObservableMap<K, T>> {
         observers.add(observer)
-        return Observable.ThenOrRemove(this, { leave(observer) })
+        return Observable.ThenOrRemove(this, creator, { leave(observer) })
     }
 
     /**
@@ -502,27 +511,31 @@ class ObservableMap<K, T> : MutableMap<K, T> {
      *  @return if the observer have been remove
      */
     fun <U> mapWhileTrue(
-        observableMap: ObservableMap<K, U> = ObservableMap(),
+        observableMap: ObservableMap<K, U> = ObservableMap(creator = creator),
         condition: () -> Boolean,
         mapper: (T) -> U
     ): Observable.ThenOrRemove<ObservableMap<K, U>> {
-        // TODO check if not empty
+        observableMap.clear()
+        val tempMap = mutableMapOf<K, U>()
+        for (key in mapValues.keys)
+            tempMap[key] = mapper(mapValues[key]!!.value!!)
+        observableMap.putAll(tempMap, this)
         val result: (ObserversInfo<K, T>) -> Boolean =
             {
                 when (it.info) {
                     Info.put -> {
-                        val (key, observable) = it.args as Pair<K, Observable<T>>
+                        val (key, observable, _) = it.args as Triple<K, Observable<T>, Boolean>
                         observableMap.put(key, mapper(observable.value!!), it.sender)
                     }
                     Info.putAll -> {
-                        val from = it.args as Map<out K, T>
-                        val map = mutableMapOf<K, U>()
+                        val (from, _) = it.args as Pair<Map<out K, T>, MutableList<Observable<T>>>
+                        val tempMap = mutableMapOf<K, U>()
                         for (key in from.keys)
-                            map.put(key, mapper(from[key]!!))
-                        observableMap.putAll(map, it.sender)
+                            tempMap[key] = mapper(from[key]!!)
+                        observableMap.putAll(tempMap, it.sender)
                     }
                     Info.remove -> {
-                        val key = it.args as K
+                        val (key, _) = it.args as Pair<K, Observable<T>>
                         observableMap.remove(key, it.sender)
                     }
                     Info.clear -> {
@@ -537,7 +550,7 @@ class ObservableMap<K, T> : MutableMap<K, T> {
                 condition()
             }
         observers.add(result)
-        return Observable.ThenOrRemove(observableMap, { observers.remove(result) })
+        return Observable.ThenOrRemove(observableMap, creator, { observers.remove(result) })
     }
 
     /**
@@ -550,7 +563,7 @@ class ObservableMap<K, T> : MutableMap<K, T> {
      */
     fun <U> mapWhileTrue(
         lifecycle: LifecycleOwner,
-        observableMap: ObservableMap<K, U> = ObservableMap(),
+        observableMap: ObservableMap<K, U> = ObservableMap(creator = creator),
         condition: () -> Boolean,
         mapper: (T) -> U
     ) = Observable.observeOnDestroy(lifecycle, mapWhileTrue(observableMap, condition, mapper))
@@ -575,7 +588,7 @@ class ObservableMap<K, T> : MutableMap<K, T> {
      */
     fun <U> map(
         lifecycle: LifecycleOwner,
-        observableMap: ObservableMap<K, U> = ObservableMap(),
+        observableMap: ObservableMap<K, U> = ObservableMap(creator = creator),
         mapper: (T) -> U
     ) = Observable.observeOnDestroy(lifecycle, map(observableMap, mapper))
 
@@ -586,24 +599,119 @@ class ObservableMap<K, T> : MutableMap<K, T> {
      *  @return if the observer have been remove
      */
     fun <U> mapOnce(
-        observableMap: ObservableMap<K, U> = ObservableMap(),
+        observableMap: ObservableMap<K, U> = ObservableMap(creator = creator),
         mapper: (T) -> U
     ) = mapWhileTrue(observableMap, { false }, mapper)
 
     /**
      *  map to an other observable once
      *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
-     *  @param observableList observer for the live data
+     *  @param observableMap observer for the live data
      *  @param mapper mapper from the live data to the new one
      *  @return if the observer have been remove
      */
     fun <U> mapOnce(
         lifecycle: LifecycleOwner,
-        observableMap: ObservableMap<K, U> = ObservableMap(),
+        observableMap: ObservableMap<K, U> = ObservableMap(creator = creator),
         mapper: (T) -> U
     ) = Observable.observeOnDestroy(lifecycle, mapOnce(observableMap, mapper))
 
-    private fun itemPuted(value: UpdateKeyedValue<K, T>) {
+    /**
+     *  map to an other observable while it return true
+     *  @param observableList observer for the live data
+     *  @param condition condition to continue to observe
+     *  @return if the observer have been remove
+     */
+    fun valuesWhileTrue(
+        observableList: ObservableList<T> = ObservableList(creator = creator),
+        condition: () -> Boolean
+    ): Observable.ThenOrRemove<ObservableList<T>> {
+        observableList.clear()
+        for (observable in mapValues.values)
+            observableList.add(observable, creator)
+        val result: (ObserversInfo<K, T>) -> Boolean =
+            {
+                when (it.info) {
+                    Info.put -> {
+                        val (_, observable, isNull) = it.args as Triple<K, Observable<T>, Boolean>
+                        if (isNull)
+                            observableList.add(observable, it.sender)
+                    }
+                    Info.putAll -> {
+                        val (_, observables) = it.args as Pair<Map<out K, T>, MutableList<Observable<T>>>
+                        for (observable in observables)
+                            observableList.add(observable, it.sender)
+                    }
+                    Info.remove -> {
+                        val (_, observable) = it.args as Pair<K, Observable<T>>
+                        observableList.remove(observable)
+                    }
+                    Info.clear -> {
+                        observableList.clear(it.sender)
+                    }
+                    Info.itemUpdated -> {
+                    }
+                }
+                condition()
+            }
+        observers.add(result)
+        return Observable.ThenOrRemove(observableList, this, { leave(result) })
+    }
+
+    /**
+     *  map to an other observable while it return true
+     *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @param observableList observer for the live data
+     *  @param condition condition to continue to observe
+     *  @return if the observer have been remove
+     */
+    fun valuesWhileTrue(
+        lifecycle: LifecycleOwner,
+        observableList: ObservableList<T> = ObservableList(creator = creator),
+        condition: () -> Boolean
+    ) = Observable.observeOnDestroy(lifecycle, valuesWhileTrue(observableList, condition))
+
+    /**
+     *  map to an other observable
+     *  @param observableList observer for the live data
+     *  @return if the observer have been remove
+     */
+    fun values(
+        observableList: ObservableList<T> = ObservableList(creator = creator)
+    ) = valuesWhileTrue(observableList) { true }
+
+    /**
+     *  map to an other observable
+     *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @param observableList observer for the live data
+     *  @return if the observer have been remove
+     */
+    fun value(
+        lifecycle: LifecycleOwner,
+        observableList: ObservableList<T> = ObservableList(creator = creator),
+    ) = Observable.observeOnDestroy(lifecycle, values(observableList))
+
+    /**
+     *  map to an other observable once
+     *  @param observableList observer for the live data
+     *  @return if the observer have been remove
+     */
+    fun valuesOnce(
+        observableList: ObservableList<T> = ObservableList(creator = creator)
+    ) = valuesWhileTrue(observableList) { false }
+
+    /**
+     *  map to an other observable once
+     *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @param observableList observer for the live data
+     *  @return if the observer have been remove
+     */
+    fun valueOnce(
+        lifecycle: LifecycleOwner,
+        observableList: ObservableList<T> = ObservableList(creator = creator),
+    ) = Observable.observeOnDestroy(lifecycle, valuesOnce(observableList))
+
+    private fun itemPut(value: UpdateKeyedValue<K, T>) {
         HelperFunctions.run(Runnable {
             for (obs in observersPut.toList())
                 if (!obs(value))

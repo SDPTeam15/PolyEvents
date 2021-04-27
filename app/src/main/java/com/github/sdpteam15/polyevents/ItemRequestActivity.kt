@@ -19,8 +19,8 @@ class ItemRequestActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     lateinit var mapSelectedItems: ObservableMap<Item, Int>
-    lateinit var obsItemsMap : ObservableMap<String, ObservableList<Pair<Item, Int>>>
-    private val obsItemTypes = ObservableList<String>()
+    var obsItemsMap = ObservableMap<String, ObservableMap<Item, Int>>()
+    val obsItemTypes = ObservableList<String>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,13 +43,15 @@ class ItemRequestActivity : AppCompatActivity() {
             }
             Unit
         }
-        val tempItemList = ObservableList<Pair<Item, Int>>()
-        obsItemsMap = tempItemList.group(this) { it.first.itemType }.then/*.map(this
-        ) { it.group(this) { it2 -> it2.first }.then.map(this) { it2 -> it2[0].second }.then }.then*/
-
-        currentDatabase.itemDatabase!!.getAvailableItems(tempItemList).observe(this) {
+        val requestObservable = ObservableList<Pair<Item, Int>>()
+        requestObservable
+            .group(this) { it.first.itemType }.then
+            .map(this, obsItemsMap) {
+                it.group(this) { it2 -> it2.first }.then
+                    .map(this) { it2 -> it2[0].second }.then
+            }
+        currentDatabase.itemDatabase!!.getAvailableItems(requestObservable).observe(this) {
             if (it.value) {
-                println("Database got :" + tempItemList.size)
                 currentDatabase.itemDatabase!!.getItemTypes(obsItemTypes).observe(this) { it2 ->
                     if (it2.value) {
                         println("Converted into  :" + obsItemsMap["Plante"]!![0])
