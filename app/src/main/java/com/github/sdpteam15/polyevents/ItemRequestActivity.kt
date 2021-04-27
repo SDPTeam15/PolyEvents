@@ -1,6 +1,5 @@
 package com.github.sdpteam15.polyevents
 
-import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -20,7 +19,7 @@ class ItemRequestActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     lateinit var mapSelectedItems: ObservableMap<Item, Int>
-    private val obsItemsMap = ObservableMap<String, ObservableMap<Item, Int>>()
+    lateinit var obsItemsMap : ObservableMap<String, ObservableList<Pair<Item, Int>>>
     private val obsItemTypes = ObservableList<String>()
 
 
@@ -44,16 +43,24 @@ class ItemRequestActivity : AppCompatActivity() {
             }
             Unit
         }
-        val tempItemList = ObservableList<Pair<Item,Int>>()
-        tempItemList.group(this){ it.first.itemType }.then.map(this,obsItemsMap){ it.group(this) { it2 -> it2.first }.then.map(this) { it2 -> it2[0].second }.then }
+        val tempItemList = ObservableList<Pair<Item, Int>>()
+        obsItemsMap = tempItemList.group(this) { it.first.itemType }.then/*.map(this
+        ) { it.group(this) { it2 -> it2.first }.then.map(this) { it2 -> it2[0].second }.then }.then*/
 
-        currentDatabase.itemDatabase!!.getAvailableItems(tempItemList).observe(this){
+        currentDatabase.itemDatabase!!.getAvailableItems(tempItemList).observe(this) {
             if (it.value) {
                 println("Database got :" + tempItemList.size)
-                currentDatabase.itemDatabase!!.getItemTypes(obsItemTypes).observe(this){ it2 ->
-                    if (it2.value){
+                currentDatabase.itemDatabase!!.getItemTypes(obsItemTypes).observe(this) { it2 ->
+                    if (it2.value) {
+                        println("Converted into  :" + obsItemsMap["Plante"]!![0])
                         recyclerView.adapter =
-                            ItemRequestAdapter(this,this,obsItemTypes,obsItemsMap, onItemQuantityChangeListener)
+                            ItemRequestAdapter(
+                                this,
+                                this,
+                                obsItemTypes,
+                                obsItemsMap,
+                                onItemQuantityChangeListener
+                            )
                         recyclerView.setHasFixedSize(false)
                     }
                 }

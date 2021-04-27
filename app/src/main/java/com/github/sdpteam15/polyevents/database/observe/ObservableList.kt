@@ -702,6 +702,7 @@ class ObservableList<T>(
         condition: () -> Boolean,
         mapper: (T) -> U
     ): Observable.ThenOrRemove<ObservableList<U>> {
+        observableList.addAll(listValues.map { mapper(it.value!!) }, null)//TODO set creator intead of null
         val result: (ObserversInfo<T>) -> Boolean =
             {
                 when (it.info) {
@@ -828,6 +829,7 @@ class ObservableList<T>(
         condition: () -> Boolean,
         mapper: (T) -> U
     ): Observable.ThenOrRemove<ObservableMap<U, ObservableList<T>>> {
+        //TODO oskour check if not empty
         observableMap.clear()
         val addLambda: (ObserversInfo<T>, Observable<T>) -> Unit = { it, observable ->
             val key = mapper(observable.value!!)

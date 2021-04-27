@@ -12,6 +12,8 @@ import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.database.observe.ObservableMap
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.model.Item
+import java.lang.Integer.max
+import kotlin.concurrent.thread
 
 /**
  * Adapts items to RecyclerView's ItemViewHolders
@@ -23,20 +25,24 @@ class ItemRequestAdapter(
     context: Context,
     lifecycleOwner: LifecycleOwner,
     private val itemTypes: ObservableList<String>,
-    private val availableItems: ObservableMap<String, ObservableMap<Item, Int>>,
+    private val availableItems: ObservableMap<String, ObservableList<Pair<Item, Int>>>,
     private val onItemQuantityChangeListener: (Item, Int) -> Unit
 ) : RecyclerView.Adapter<ItemRequestAdapter.CustomViewHolder<*>>() {
 
-    private var isCategoryOpen: ObservableMap<String, Boolean> =
-        itemTypes.group(lifecycleOwner) { it }.then.map(lifecycleOwner) { false }.then
+    private var isCategoryOpen = ObservableList<Pair<String, Boolean>>()
+
     private val inflater = LayoutInflater.from(context)
 
 
     init {
-        for (itemType in itemTypes) {
-            isCategoryOpen[itemType] = false
-        }
-        availableItems.values.forEach{println(it.keys)}
+        println("GROUPING ${itemTypes.size}")
+        isCategoryOpen.observe(lifecycleOwner) { println("Observed ${isCategoryOpen.size}") }
+        itemTypes.map(lifecycleOwner,isCategoryOpen) { Pair(it,false) }.then
+        println("INTO ${isCategoryOpen.size}")
+
+        availableItems.observe(lifecycleOwner) { notifyDataSetChanged() }
+        itemTypes.observe(lifecycleOwner) { notifyDataSetChanged() }
+        isCategoryOpen.observe (lifecycleOwner){ notifyDataSetChanged() }
     }
 
 
@@ -57,7 +63,8 @@ class ItemRequestAdapter(
         override fun bind(item: String) {
             itemCategory.text = item
             view.setOnClickListener {
-                isCategoryOpen[item] = !isCategoryOpen[item]!!
+                val index = max(isCategoryOpen.indexOf(Pair(item,false)),isCategoryOpen.indexOf(Pair(item,true)))
+                isCategoryOpen[index] = Pair(isCategoryOpen[index].first,isCategoryOpen[index].second)
                 notifyDataSetChanged()
             }
         }
@@ -160,8 +167,8 @@ class ItemRequestAdapter(
 
     override fun getItemCount(): Int {
         var count = 0
-        for (isOpen in isCategoryOpen.entries) {
-            count += 1 + (if (isOpen.value) 0 else availableItems[isOpen.key]?.size ?: 0)
+        for (isOpen in isCategoryOpen) {
+            count += 1 + (if (isOpen.second) 0 else availableItems[isOpen.first]?.size ?: 0)
         }
         println("found $count items in $isCategoryOpen $availableItems")
         return count
@@ -192,8 +199,9 @@ class ItemRequestAdapter(
                         holder.bind(itemType)
                         return
                     }
-                    if (isCategoryOpen[itemType] == true) {
-                        for (item in availableItems[itemType]?.keys ?: listOf()) {
+                    val index = max(isCategoryOpen.indexOf(Pair(itemType,false)),isCategoryOpen.indexOf(Pair(itemType,true)))
+                    if (isCategoryOpen[index].second) {
+                        for (item in availableItems[itemType] ?: listOf()) {
                             res++
                         }
                     }
@@ -203,10 +211,11 @@ class ItemRequestAdapter(
                 var res = 0
                 for (itemType in itemTypes) {
                     res++
-                    if (isCategoryOpen[itemType] == true) {
-                        for (item in availableItems[itemType]?.entries ?: listOf()) {
+                    val index = max(isCategoryOpen.indexOf(Pair(itemType,false)),isCategoryOpen.indexOf(Pair(itemType,true)))
+                    if (isCategoryOpen[index].second) {
+                        for (item in availableItems[itemType]?: listOf()) {
                             if (res++ == position) {
-                                holder.bind(Pair(item.key, item.value))
+                                holder.bind(item)
                                 return
                             }
                         }
@@ -226,8 +235,9 @@ class ItemRequestAdapter(
             if (res++ == position) {
                 return ITEM_TYPE_HOLDER
             }
-            if (isCategoryOpen[itemType] == true) {
-                for (item in availableItems[itemType]?.entries ?: listOf()) {
+            val index = max(isCategoryOpen.indexOf(Pair(itemType,false)),isCategoryOpen.indexOf(Pair(itemType,true)))
+            if (isCategoryOpen[index].second) {
+                for (item in availableItems[itemType]?: listOf()) {
                     println(item)
                     if (res++ == position) {
                         return ITEM_HOLDER

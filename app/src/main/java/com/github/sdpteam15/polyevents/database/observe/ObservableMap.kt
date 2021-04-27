@@ -506,6 +506,7 @@ class ObservableMap<K, T> : MutableMap<K, T> {
         condition: () -> Boolean,
         mapper: (T) -> U
     ): Observable.ThenOrRemove<ObservableMap<K, U>> {
+        // TODO check if not empty
         val result: (ObserversInfo<K, T>) -> Boolean =
             {
                 when (it.info) {
