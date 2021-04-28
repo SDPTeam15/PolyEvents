@@ -24,6 +24,7 @@ import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.objects.UserDatabaseInterface
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
+import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 import com.github.sdpteam15.polyevents.model.UserRole
@@ -122,7 +123,10 @@ class UserManagementListTest {
         Espresso.onView(withId(R.id.id_fragment_admin_hub))
             .check(ViewAssertions.matches(isDisplayed()))
         Espresso.onView(withId(R.id.btnRedirectUserManagement)).perform(ViewActions.click())
-        obs2.postValue(true)
+        When(mockUserDB.getUserProfilesList(anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
+            obs2
+        }
+       obs2.postValue(true)
     }
 
     @After

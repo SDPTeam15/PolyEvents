@@ -25,6 +25,7 @@ class UserManagementListActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recycler_view_user_activity)
         recyclerView.setHasFixedSize(false)
 
+        // Open the UserManagementActivity when we click on one element of the recycler view
         val openUser = {
             user: UserEntity ->
             val intent = Intent(this, UserManagementActivity::class.java).apply {
@@ -37,6 +38,9 @@ class UserManagementListActivity : AppCompatActivity() {
         getListUsers()
     }
 
+    /**
+     * Set observers and get users from database
+     */
     private fun getListUsers(){
         currentDatabase.userDatabase!!.getListAllUsers(users).observe {
             if(it.value){
