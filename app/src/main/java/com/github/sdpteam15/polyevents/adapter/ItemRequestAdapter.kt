@@ -16,10 +16,12 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.model.Item
 
 /**
- * Adapts items to RecyclerView's ItemViewHolders
- * Takes :
- * - The list of available items to adapt
- * - A listener that will be triggered on click on a checkbox of an item view holder
+ * Recycler Adapter for the list of items
+ * Shows each item with its available quantity
+ * @param context context of parent view used to inflate new views
+ * @param lifecycleOwner parent to enable observables to stop observing when the lifecycle is closed
+ * @param availableItems Map of each available item grouped by types
+ * @param mapSelectedItems Item counts for each item
  */
 class ItemRequestAdapter(
     context: Context,
@@ -31,11 +33,8 @@ class ItemRequestAdapter(
     private var isCategoryOpen = mutableMapOf<String, Boolean>()
     private val inflater = LayoutInflater.from(context)
 
-
     init {
-
         //itemTypes.map(lifecycleOwner,isCategoryOpen) { Pair(it,false) }.then
-
         availableItems.observe(lifecycleOwner) {
             for (k in it.value.keys) {
                 if (k !in isCategoryOpen) {
@@ -45,7 +44,6 @@ class ItemRequestAdapter(
             notifyDataSetChanged()
         }
     }
-
     // Listener that update the map of selected items when the quantity is changed
     private val onItemQuantityChangeListener = { item: Item, newQuantity: Int ->
         when {
@@ -59,9 +57,8 @@ class ItemRequestAdapter(
         Unit
     }
 
-    abstract inner class CustomViewHolder<T>(
-        private val view: View
-    ) : RecyclerView.ViewHolder(view) {
+    abstract inner class CustomViewHolder<T>(private val view: View) :
+        RecyclerView.ViewHolder(view) {
         abstract fun bind(item: T)
         abstract fun unbind()
     }
@@ -80,7 +77,6 @@ class ItemRequestAdapter(
                 notifyDataSetChanged()
             }
         }
-
         override fun unbind() {
             //do nothing
         }
@@ -99,6 +95,33 @@ class ItemRequestAdapter(
         private lateinit var item: Pair<Item, Int>
 
         private val quantityTextWatcher = object : TextWatcher {
+            private fun setNegativeQuantityToZero() {
+                // Value set it negative, change it to 0
+                // and inform the user
+                itemQuantity.setText("0")
+                showToast(
+                    view.context.getString(R.string.item_quantity_positive_text),
+                    view.context
+                )
+            }
+
+            private fun lowerQuantityToMax(item: Pair<Item, Int>) {
+                // The quantity set is too high, set it to the max quantity
+                // available and inform the user
+                val maxQuantity = item.second
+                itemQuantity.setText(maxQuantity.toString())
+
+                // Update the list with the max quantity available
+                onItemQuantityChangeListener(item.first, maxQuantity)
+
+                showToast(
+                    view.context.getString(
+                        R.string.max_item_quantity_text,
+                        item.second.toString(), item.first.itemName
+                    ), view.context
+                )
+            }
+
             override fun beforeTextChanged(
                 s: CharSequence?,
                 start: Int,
@@ -126,11 +149,12 @@ class ItemRequestAdapter(
                             onItemQuantityChangeListener(item.first, value)
                         }
                     }
-                }else{
+                } else {
                     mapSelectedItems.remove(item.first)
                 }
             }
         }
+
         /**
          * Binds the value of the item to the layout of the item tab
          */
@@ -142,41 +166,9 @@ class ItemRequestAdapter(
                     item.first.itemName,
                     item.second
                 )
-            itemQuantity.setText(mapSelectedItems[item.first]?.toString()?:"")
+            itemQuantity.setText(mapSelectedItems[item.first]?.toString() ?: "")
             itemQuantity.addTextChangedListener(quantityTextWatcher)
         }
-
-
-
-        private fun setNegativeQuantityToZero() {
-            // Value set it negative, change it to 0
-            // and inform the user
-            itemQuantity.setText("0")
-
-
-            showToast(
-                view.context.getString(R.string.item_quantity_positive_text),
-                view.context
-            )
-        }
-
-        private fun lowerQuantityToMax(item: Pair<Item, Int>) {
-            // The quantity set is too high, set it to the max quantity
-            // available and inform the user
-            val maxQuantity = item.second
-            itemQuantity.setText(maxQuantity.toString())
-
-            // Update the list with the max quantity available
-            onItemQuantityChangeListener(item.first, maxQuantity)
-
-            showToast(
-                view.context.getString(
-                    R.string.max_item_quantity_text,
-                    item.second.toString(), item.first.itemName
-                ), view.context
-            )
-        }
-
         override fun unbind() {
             itemQuantity.removeTextChangedListener(quantityTextWatcher)
         }
@@ -209,6 +201,7 @@ class ItemRequestAdapter(
         super.onViewRecycled(holder)
         holder.unbind()
     }
+
     override fun onBindViewHolder(holder: CustomViewHolder<*>, position: Int) {
 
         when (holder) {

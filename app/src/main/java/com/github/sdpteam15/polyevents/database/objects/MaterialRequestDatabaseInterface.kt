@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.database.objects
 
 import com.github.sdpteam15.polyevents.database.Database
+import com.github.sdpteam15.polyevents.model.MaterialRequest
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 
@@ -35,7 +36,7 @@ interface MaterialRequestDatabaseInterface {
         matcher: String? = null,
         userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
-
+*/
     /**
      * @param request the request we want to add in the database
      * @param userAccess the user profile to use its permission
@@ -44,6 +45,6 @@ interface MaterialRequestDatabaseInterface {
     fun createMaterialRequest(
         request: MaterialRequest,
         userAccess: UserProfile? = currentProfile
-    )*/
+    )
 
 }

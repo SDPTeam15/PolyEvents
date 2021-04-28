@@ -11,6 +11,8 @@ import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.database.observe.ObservableMap
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.model.Item
+import com.github.sdpteam15.polyevents.model.MaterialRequest
+import java.time.LocalDateTime
 
 /**
  * An activity containing items available for request
@@ -28,7 +30,6 @@ class ItemRequestActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         recyclerView = findViewById(R.id.id_recycler_items_request)
-
 
 
         val requestObservable = ObservableList<Pair<Item, Int>>()
@@ -67,7 +68,13 @@ class ItemRequestActivity : AppCompatActivity() {
         } else {
             // TODO : send the request through the db interface
             // sendRequest(listSelectedItems)
-
+            currentDatabase.materialRequestDatabase!!.createMaterialRequest(
+                MaterialRequest(
+                    null, mapSelectedItems,
+                    LocalDateTime.now(),
+                    currentDatabase.currentUser?.uid ?: ""
+                )
+            )
             showToast(getString(R.string.item_request_sent_text), this)
 
             // Go back to previous activity
