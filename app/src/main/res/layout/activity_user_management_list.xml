@@ -7,7 +7,7 @@
     tools:context=".admin.UserManagementListActivity">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view_user"
+        android:id="@+id/recycler_view_user_activity"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbarAlwaysDrawHorizontalTrack="false"

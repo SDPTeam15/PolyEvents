@@ -275,6 +275,22 @@ class UserDatabaseTest {
         assertEquals(PROFILE_COLLECTION, getList.collection)
         assertEquals(ProfileAdapter, getList.adapter)
     }
+    @Test
+    fun getUserLists() {
+        val profiles = ObservableList<UserEntity>()
+        val userAccess = UserProfile("uid")
+
+        HelperTestFunction.nextBoolean.add(true)
+        mackUserDatabase.getListAllUsers(profiles,  userAccess = userAccess)
+            .observeOnce { assert(it.value) }.then.postValue(false)
+
+        val getList = HelperTestFunction.getListEntityQueue.poll()!!
+
+        assertEquals(profiles, getList.element)
+        assertNull(getList.matcher)
+        assertEquals(USER_COLLECTION, getList.collection)
+        assertEquals(UserAdapter, getList.adapter)
+    }
 
     @Test
     fun getProfilesUserList() {
@@ -313,43 +329,4 @@ class UserDatabaseTest {
         assertEquals(ProfileAdapter, get.adapter)
     }
 
-    @Test
-    fun getListUsersWorksProperly() {
-        val mockedDatabase= mock(FirebaseFirestore::class.java)
-        FirestoreDatabaseProvider.firestore =mockedDatabase
-        val mockedTask = mock(Task::class.java) as Task<QuerySnapshot>
-        val mockedCollection = mock(CollectionReference::class.java)
-        val mockedDocument = mock(QuerySnapshot::class.java)
-
-        val userToBeAdded = mutableListOf<UserEntity>()
-        val testUser = ObservableList<UserEntity>()
-        userToBeAdded.add(UserEntity("uid1","username1","name1"))
-        userToBeAdded.add(UserEntity("uid2","username2","name2"))
-        userToBeAdded.add(UserEntity("uid3","username3","name3"))
-        userToBeAdded.add(UserEntity("uid4","username4","name4"))
-        userToBeAdded.add(UserEntity("uid5","username5","name5"))
-        userToBeAdded.add(UserEntity("uid6","username6","name6"))
-        userToBeAdded.add(UserEntity("uid7","username7","name7"))
-        userToBeAdded.add(UserEntity("uid8","username8","name8"))
-        userToBeAdded.add(UserEntity("uid9","username9","name9"))
-
-
-        Mockito.`when`(mockedDatabase.collection(USER_COLLECTION.value)).thenReturn(mockedCollection)
-        Mockito.`when`(mockedCollection.get()).thenAnswer {
-            mockedTask
-        }
-
-        Mockito.`when`(mockedTask.addOnSuccessListener(anyOrNull())).thenAnswer {
-            FirestoreDatabaseProvider.lastQuerySuccessListener!!.onSuccess(mockedDocument)
-            //set method in hard to see if the success listener is successfully called
-            testUser.addAll(userToBeAdded)
-            mockedTask
-        }
-        val result = FirestoreDatabaseProvider.userDatabase!!.getListAllUsers(testUser)
-        assert(result.value!!)
-        for (user in userToBeAdded) {
-            assert(user in testUser)
-        }
-        FirestoreDatabaseProvider.firestore=null
-    }
 }

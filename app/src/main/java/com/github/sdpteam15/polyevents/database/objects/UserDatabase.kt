@@ -57,18 +57,13 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
         USER_COLLECTION
     )
 
-    override fun getListAllUsers(users: ObservableList<UserEntity>, userAccess: UserProfile?): Observable<Boolean> {
-        return FirestoreDatabaseProvider.thenDoGet(
-                firestore!!.collection(USER_COLLECTION.value)
-                        .get()
-        ){
-            users.clear()
-            val us = it.documents.map {
-                UserAdapter.fromDocument(it.data!!, it.id)
-            }
-            users.addAll(us, this)
-        }
-    }
+    override fun getListAllUsers(users: ObservableList<UserEntity>, userAccess: UserProfile?) =
+            db.getListEntity(
+                    users,
+                    null,
+                    null,
+                    USER_COLLECTION
+            )
 
     override fun addUserProfileAndAddToUser(
         profile: UserProfile,

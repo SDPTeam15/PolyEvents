@@ -22,7 +22,7 @@ class UserManagementListActivity : AppCompatActivity() {
         setContentView(R.layout.activity_user_management_list)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
-        recyclerView = findViewById(R.id.recycler_view_user)
+        recyclerView = findViewById(R.id.recycler_view_user_activity)
         recyclerView.setHasFixedSize(false)
 
         val openUser = {

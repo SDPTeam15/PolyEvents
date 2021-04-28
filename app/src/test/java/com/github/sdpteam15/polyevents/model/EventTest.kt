@@ -46,27 +46,6 @@ class EventTest {
     }
 
     @Test
-    fun canCreateWithNullValues(){
-        event = Event(
-                eventId = null,
-                eventName = null,
-                organizer = null,
-                zoneName = null,
-                description = null,
-                icon = null,
-                startTime = null,
-                endTime = null
-        )
-        assertEquals(event.eventId, null)
-        assertEquals(event.eventName, null)
-        assertEquals(event.description, null)
-        assertEquals(event.organizer, null)
-        assertEquals(event.zoneName, null)
-        assertEquals(event.icon, null)
-        assertEquals(event.startTime, null)
-        assertEquals(event.endTime, null)
-    }
-    @Test
     fun testEventProperties() {
         assertEquals(event.eventId, eventId)
         assertEquals(event.eventName, eventName)

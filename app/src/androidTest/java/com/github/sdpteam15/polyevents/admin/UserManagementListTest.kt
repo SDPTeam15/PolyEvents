@@ -108,7 +108,9 @@ class UserManagementListTest {
             (it.arguments[0] as ObservableList<UserEntity>).addAll(users)
             obs
         }
+
         When(mockUserDB.getUserInformation(anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
+            ((it.arguments[0]) as Observable<UserEntity>).postValue(userEntity)
             obs2
         }
         val userObs = Observable<UserEntity>()
@@ -131,14 +133,14 @@ class UserManagementListTest {
     @Test
     fun correctNumberUsersDisplayed() {
         obs.postValue(true)
-        Espresso.onView(withId(R.id.recycler_view_user))
+        Espresso.onView(withId(R.id.recycler_view_user_activity))
             .check(RecyclerViewItemCountAssertion(users.size))
     }
 
     @Test
     fun getNothingStaysOnActivity() {
         obs.postValue(false)
-        Espresso.onView(withId(R.id.recycler_view_user)).check(
+        Espresso.onView(withId(R.id.recycler_view_user_activity)).check(
             ViewAssertions.matches(
                 isDisplayed()
             )
@@ -149,7 +151,7 @@ class UserManagementListTest {
     fun userManagementActivityOpensOnClick() {
         Intents.init()
         obs.postValue(true)
-        Espresso.onView(withId(R.id.recycler_view_user)).perform(
+        Espresso.onView(withId(R.id.recycler_view_user_activity)).perform(
             RecyclerViewActions.actionOnItemAtPosition<UserListAdapter.UserViewHolder>(
                 0,
                 ViewActions.click()

@@ -28,6 +28,7 @@ import java.time.format.DateTimeFormatter
 
 /**
  *  [Fragment] subclass that represents the profile page allowing the user to modify its private information
+ *  @param userId the id of the user we display the information or null if it is the current user of the application
  */
 class ProfileFragment(private val userId: String? = null) : Fragment() {
     //Return currentUser if we are not in test, but we can use a fake user in test this way
@@ -39,7 +40,7 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
     private lateinit var profileNameET: EditText
     private lateinit var profileEmailET: EditText
     private lateinit var profileUsernameET: EditText
-    val currentUID:String
+    private val currentUID:String
         get() = userId ?: currentUser!!.uid
     private lateinit var viewR: View
 
@@ -61,15 +62,19 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
             profileEmailET = viewRoot.findViewById(R.id.profileEmail)
             profileUsernameET = viewRoot.findViewById(R.id.profileUsernameET)
 
+            //call method to bind the listerner and observer to the correct fields
             addListener(viewRoot)
             addObserver(viewRoot)
 
+
             if (adminMode) {
+                //If an admin want to see the profile of somme user
                 setupAdminMode(viewRoot)
                 userInfoLiveData.observe(this) {
                     initProfileList(viewRoot, it.value)
                 }
             } else {
+                //If not an admin, display the profile information of the current user
                 setupUserMode(viewRoot)
                 currentDatabase.currentUserObservable.observe(this) {
                     initProfileList(viewRoot, it.value)
@@ -82,12 +87,17 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
     }
 
     private fun getUserInformation() {
+        //Get user information in the database
         currentDatabase.userDatabase!!.getUserInformation(
                 userInfoLiveData,
                 currentUID
         )
     }
 
+    /**
+     * Method that will make some edit text uneditable and some button invisible for the admin
+     * @param viewRoot the current view of the fragment
+     */
     private fun setupAdminMode(viewRoot: View) {
         viewRoot.findViewById<Button>(R.id.btnUpdateInfos).visibility = View.INVISIBLE
         viewRoot.findViewById<Button>(R.id.btnLogout).visibility = View.INVISIBLE
@@ -96,6 +106,10 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
 
     }
 
+    /**
+     * Method that will display the button and edit text needed to update the user information
+     * @param viewRoot the current view of the fragment
+     */
     private fun setupUserMode(viewRoot: View) {
         viewRoot.findViewById<Button>(R.id.btnUpdateInfos).visibility = View.VISIBLE
         viewRoot.findViewById<Button>(R.id.btnLogout).visibility = View.VISIBLE
@@ -103,6 +117,10 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
         viewRoot.findViewById<EditText>(R.id.profileUsernameET).isEnabled = true
     }
 
+    /**
+     * Add the observers to make the fragment works properly
+     * @param viewRoot the current view of the fragment
+     */
     private fun addObserver(viewRoot: View) {
         //When user Info live data is updated, set the correct value in the textview
         userInfoLiveData.observe(this) { userInfo ->
@@ -119,6 +137,10 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
         }
     }
 
+    /**
+     * Add the listener to the buttons to make the fragment works properly
+     * @param viewRoot the current view of the fragment
+     */
     private fun addListener(viewRoot: View) {
         viewRoot.findViewById<Button>(R.id.btnUpdateInfos).setOnClickListener {
             //Clear the previous map and add every field
