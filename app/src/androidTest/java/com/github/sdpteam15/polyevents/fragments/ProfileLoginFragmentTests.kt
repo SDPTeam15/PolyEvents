@@ -1,6 +1,8 @@
-package com.github.sdpteam15.polyevents
+package com.github.sdpteam15.polyevents.fragments
 
 import android.content.Intent
+import android.view.View
+import android.widget.EditText
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
@@ -12,7 +14,9 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
+import com.github.sdpteam15.polyevents.*
 import com.github.sdpteam15.polyevents.adapter.EventItemAdapter
+import com.github.sdpteam15.polyevents.EditProfileActivity.Companion.EDIT_PROFILE_ID
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.NUMBER_UPCOMING_EVENTS
@@ -20,9 +24,6 @@ import com.github.sdpteam15.polyevents.database.objects.EventDatabaseInterface
 import com.github.sdpteam15.polyevents.database.objects.UserDatabaseInterface
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
-import com.github.sdpteam15.polyevents.fragments.HomeFragment
-import com.github.sdpteam15.polyevents.fragments.LoginFragment
-import com.github.sdpteam15.polyevents.fragments.ProfileFragment
 import com.github.sdpteam15.polyevents.login.GoogleUserLogin
 import com.github.sdpteam15.polyevents.login.UserLogin
 import com.github.sdpteam15.polyevents.login.UserLoginInterface
@@ -79,6 +80,7 @@ class ProfileLoginFragmentTests {
 
         testRule = ActivityScenarioRule<MainActivity>(MainActivity::class.java)
         endingRequest = Observable()
+        mockedDatabaseUser = UserEntity(uid = uidTest, email = emailTest, name = displayNameTest)
 
         //Create Mock database
         mockedUserDatabase =  mock(UserDatabaseInterface::class.java)
@@ -216,7 +218,7 @@ class ProfileLoginFragmentTests {
         onView(withId(R.id.id_fragment_profile)).check(matches(isDisplayed()))
 
         onView(withId(R.id.btnLogout))
-            .perform(scrollTo());
+            .perform(scrollTo())
         onView(withId(R.id.btnLogout)).perform(click())
         onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
     }
@@ -282,7 +284,7 @@ class ProfileLoginFragmentTests {
     }
 
     @Test
-    fun updateAreCorrectlyRefreshedAndDisplayed() {/*
+    fun updateAreCorrectlyRefreshedAndDisplayed() {
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         loginFragment.currentUser = user
 
@@ -294,7 +296,7 @@ class ProfileLoginFragmentTests {
         var endingRequestUpdate = Observable<Boolean>()
         var updated = false
         When(
-            mockedUserDatabase.updateUserInformation(profileFragment.hashMapNewInfo, uidTest)
+            mockedUserDatabase.updateUserInformation(anyOrNull(), anyOrNull())
         ).thenAnswer { _ ->
             updated = true
             endingRequestUpdate
@@ -344,7 +346,7 @@ class ProfileLoginFragmentTests {
         //check that the values are still the same
         onView(withId(R.id.profileName)).check(matches(withText(Matchers.equalTo(displayNameTest2))))
         onView(withId(R.id.profileEmail)).check(matches(withText(Matchers.equalTo(emailTest2))))
-    */}
+    }
 
     private fun initDBTests() {
         //Make sure we are not connected to Firebase
@@ -585,6 +587,19 @@ class ProfileLoginFragmentTests {
         Thread.sleep(1000)
         onView(withId(R.id.id_recycler_profile_list))
             .check(RecyclerViewItemCountAssertion(1))
+    }
+
+
+    @Test
+    fun nullUserRedirectToLoginFragment(){
+        val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
+        loginFragment.currentUser = mockedDatabaseUser
+        When(mockedDatabase.currentUser).thenReturn(null)
+
+        val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
+        profileFragment.currentUser = null
+        onView(withId(R.id.ic_login)).perform(click())
+        onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
     }
 
     @Test
