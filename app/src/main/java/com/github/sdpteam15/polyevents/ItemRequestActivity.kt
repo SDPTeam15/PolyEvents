@@ -18,9 +18,8 @@ import com.github.sdpteam15.polyevents.model.Item
 class ItemRequestActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
-    lateinit var mapSelectedItems: ObservableMap<Item, Int>
+    var mapSelectedItems = ObservableMap<Item, Int>()
     var obsItemsMap = ObservableMap<String, ObservableMap<Item, Int>>()
-    val obsItemTypes = ObservableList<String>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,18 +30,7 @@ class ItemRequestActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.id_recycler_items_request)
 
 
-        // Listener that update the map of selected items when the quantity is changed
-        val onItemQuantityChangeListener = { item: Item, newQuantity: Int ->
-            when {
-                mapSelectedItems.containsKey(item) and (newQuantity == 0) -> {
-                    mapSelectedItems.remove(item)
-                }
-                newQuantity > 0 -> {
-                    mapSelectedItems[item] = newQuantity
-                }
-            }
-            Unit
-        }
+
         val requestObservable = ObservableList<Pair<Item, Int>>()
         requestObservable
             .group(this) { it.first.itemType }.then
@@ -52,23 +40,19 @@ class ItemRequestActivity : AppCompatActivity() {
             }
         currentDatabase.itemDatabase!!.getAvailableItems(requestObservable).observe(this) {
             if (it.value) {
-                currentDatabase.itemDatabase!!.getItemTypes(obsItemTypes).observe(this) { it2 ->
-                    if (it2.value) {
-                        println("Converted into  :" + obsItemsMap["Plante"]!![0])
-                        recyclerView.adapter =
-                            ItemRequestAdapter(
-                                this,
-                                this,
-                                obsItemTypes,
-                                obsItemsMap,
-                                onItemQuantityChangeListener
-                            )
-                        recyclerView.setHasFixedSize(false)
-                    }
-                }
+                recyclerView.adapter =
+                    ItemRequestAdapter(
+                        this,
+                        this,
+                        obsItemsMap,
+                        mapSelectedItems
+                    )
+                recyclerView.setHasFixedSize(false)
             }
+
         }
     }
+
 
     /**
      * Send the items request to the admins (TODO : actually send it)

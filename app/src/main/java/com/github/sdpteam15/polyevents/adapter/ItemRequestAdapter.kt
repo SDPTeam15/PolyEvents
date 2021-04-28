@@ -1,19 +1,19 @@
 package com.github.sdpteam15.polyevents.adapter
 
 import android.content.Context
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.TextView
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.database.observe.ObservableMap
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.model.Item
-import java.lang.Integer.max
-import kotlin.concurrent.thread
 
 /**
  * Adapts items to RecyclerView's ItemViewHolders
@@ -24,41 +24,54 @@ import kotlin.concurrent.thread
 class ItemRequestAdapter(
     context: Context,
     lifecycleOwner: LifecycleOwner,
-    private val itemTypes: ObservableList<String>,
     private val availableItems: ObservableMap<String, ObservableMap<Item, Int>>,
-    private val onItemQuantityChangeListener: (Item, Int) -> Unit
+    private val mapSelectedItems: ObservableMap<Item, Int>
 ) : RecyclerView.Adapter<ItemRequestAdapter.CustomViewHolder<*>>() {
-
-    private var isCategoryOpen = itemTypes.groupOnce(lifecycleOwner) { it }.then.mapOnce(lifecycleOwner) { false }.then
-
+    //private var isCategoryOpen = availableItems.keys(lifecycleOwner).then.groupOnce(lifecycleOwner) { it }.then.mapOnce(lifecycleOwner) { false }.then
+    private var isCategoryOpen = mutableMapOf<String, Boolean>()
     private val inflater = LayoutInflater.from(context)
 
 
     init {
-        println("GROUPING ${itemTypes.size}")
-        isCategoryOpen.observe(lifecycleOwner) { println("Observed ${isCategoryOpen.size}") }
-        //itemTypes.map(lifecycleOwner,isCategoryOpen) { Pair(it,false) }.then
-        println("INTO ${isCategoryOpen.size}")
 
-        availableItems.observe(lifecycleOwner) { notifyDataSetChanged() }
-        itemTypes.observe(lifecycleOwner) { notifyDataSetChanged() }
-        isCategoryOpen.observe (lifecycleOwner){ notifyDataSetChanged() }
+        //itemTypes.map(lifecycleOwner,isCategoryOpen) { Pair(it,false) }.then
+
+        availableItems.observe(lifecycleOwner) {
+            for (k in it.value.keys) {
+                if (k !in isCategoryOpen) {
+                    isCategoryOpen[k] = false
+                }
+            }
+            notifyDataSetChanged()
+        }
     }
 
+    // Listener that update the map of selected items when the quantity is changed
+    private val onItemQuantityChangeListener = { item: Item, newQuantity: Int ->
+        when {
+            mapSelectedItems.containsKey(item) and (newQuantity == 0) -> {
+                mapSelectedItems.remove(item)
+            }
+            newQuantity > 0 -> {
+                mapSelectedItems[item] = newQuantity
+            }
+        }
+        Unit
+    }
 
     abstract inner class CustomViewHolder<T>(
-        private val view: View,
-        private val parent: ViewGroup
+        private val view: View
     ) : RecyclerView.ViewHolder(view) {
         abstract fun bind(item: T)
+        abstract fun unbind()
     }
 
     /**
      * Adapted ViewHolder for each item type
      * Takes the corresponding item type "tab" view
      */
-    inner class ItemTypeViewHolder(private val view: View, private val parent: ViewGroup) :
-        CustomViewHolder<String>(view, parent) {
+    inner class ItemTypeViewHolder(private val view: View) :
+        CustomViewHolder<String>(view) {
         private val itemCategory = view.findViewById<TextView>(R.id.id_item_category)
         override fun bind(item: String) {
             itemCategory.text = item
@@ -68,73 +81,78 @@ class ItemRequestAdapter(
             }
         }
 
+        override fun unbind() {
+            //do nothing
+        }
+
     }
 
     /**
      * Adapted ViewHolder for each item
      * Takes the corresponding item "tab" view
      */
-    inner class ItemViewHolder(private val view: View, private val parent: ViewGroup) :
-        CustomViewHolder<Pair<Item, Int>>(view, parent) {
-/*
+    inner class ItemViewHolder(private val view: View) :
+        CustomViewHolder<Pair<Item, Int>>(view) {
+
         private val itemName = view.findViewById<TextView>(R.id.id_item_name)
         private val itemQuantity = view.findViewById<EditText>(R.id.id_item_quantity)
-*/
+        private lateinit var item: Pair<Item, Int>
 
+        private val quantityTextWatcher = object : TextWatcher {
+            override fun beforeTextChanged(
+                s: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int
+            ) {/* Do nothing */
+            }
 
+            override fun onTextChanged(
+                s: CharSequence?,
+                start: Int,
+                before: Int,
+                count: Int
+            ) {/* Do nothing*/
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if (s.toString().isNotEmpty()) {
+                    val value = s.toString().toInt()
+                    when {
+                        value < 0 -> setNegativeQuantityToZero()
+                        value > item.second -> lowerQuantityToMax(item)
+                        else -> {
+                            // Update the list
+                            onItemQuantityChangeListener(item.first, value)
+                        }
+                    }
+                }else{
+                    mapSelectedItems.remove(item.first)
+                }
+            }
+        }
         /**
          * Binds the value of the item to the layout of the item tab
          */
         override fun bind(item: Pair<Item, Int>) {
-            val items = mutableListOf<Pair<Item, Int>>()
-
-
-            /*itemName.text =
+            this.item = item
+            itemName.text =
                 view.context.getString(
                     R.string.item_name_quantity_text,
                     item.first.itemName,
                     item.second
                 )
-
-            // Set initial quantity to 0
-            itemQuantity.setText("0")
-            itemQuantity.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int
-                ) {/* Do nothing */
-                }
-
-                override fun onTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    before: Int,
-                    count: Int
-                ) {/* Do nothing*/
-                }
-
-                override fun afterTextChanged(s: Editable?) {
-                    if (s.toString().isNotEmpty()) {
-                        val value = s.toString().toInt()
-                        when {
-                            value < 0 -> setNegativeQuantityToZero()
-                            value > item.second -> lowerQuantityToMax(item)
-                            else -> {
-                                // Update the list
-                                onItemQuantityChangeListener(item.first, value)
-                            }
-                        }
-                    }
-                }
-            })*/
+            itemQuantity.setText(mapSelectedItems[item.first]?.toString()?:"")
+            itemQuantity.addTextChangedListener(quantityTextWatcher)
         }
+
+
 
         private fun setNegativeQuantityToZero() {
             // Value set it negative, change it to 0
             // and inform the user
-            /*itemQuantity.setText("0")*/
+            itemQuantity.setText("0")
+
 
             showToast(
                 view.context.getString(R.string.item_quantity_positive_text),
@@ -146,8 +164,8 @@ class ItemRequestAdapter(
             // The quantity set is too high, set it to the max quantity
             // available and inform the user
             val maxQuantity = item.second
-            /*itemQuantity.setText(maxQuantity.toString())
-*/
+            itemQuantity.setText(maxQuantity.toString())
+
             // Update the list with the max quantity available
             onItemQuantityChangeListener(item.first, maxQuantity)
 
@@ -158,18 +176,18 @@ class ItemRequestAdapter(
                 ), view.context
             )
         }
+
+        override fun unbind() {
+            itemQuantity.removeTextChangedListener(quantityTextWatcher)
+        }
     }
-    //val adapterLayout = LayoutInflater.from(parent.context)
-    //            .inflate(R.layout.card_material_item_category, parent, false)
-    //        return ItemViewHolder(adapterLayout,parent)
 
 
     override fun getItemCount(): Int {
         var count = 0
         for (isOpen in isCategoryOpen.entries) {
-            count += 1 + (if (isOpen.value) 0 else availableItems[isOpen.key]?.size ?: 0)
+            count += 1 + (if (!isOpen.value) 0 else availableItems[isOpen.key]?.size ?: 0)
         }
-        println("found $count items in $isCategoryOpen $availableItems")
         return count
     }
 
@@ -177,23 +195,27 @@ class ItemRequestAdapter(
         return when (viewType) {
             ITEM_TYPE_HOLDER -> {
                 val view = inflater.inflate(R.layout.card_material_item_category, parent, false)
-                ItemTypeViewHolder(view, parent)
+                ItemTypeViewHolder(view)
             }
             ITEM_HOLDER -> {
-                val view = inflater.inflate(R.layout.card_material_item, parent, false)
-                ItemViewHolder(view, parent)
+                val view = inflater.inflate(R.layout.card_item, parent, false)
+                ItemViewHolder(view)
             }
             else -> throw IllegalArgumentException("wrong itemType $viewType")
         }
     }
 
+    override fun onViewRecycled(holder: CustomViewHolder<*>) {
+        super.onViewRecycled(holder)
+        holder.unbind()
+    }
     override fun onBindViewHolder(holder: CustomViewHolder<*>, position: Int) {
 
         when (holder) {
 
             is ItemTypeViewHolder -> {
                 var res = 0
-                for (itemType in itemTypes) {
+                for (itemType in availableItems.keys) {
                     if (res++ == position) {
                         holder.bind(itemType)
                         return
@@ -208,7 +230,7 @@ class ItemRequestAdapter(
             }
             is ItemViewHolder -> {
                 var res = 0
-                for (itemType in itemTypes) {
+                for (itemType in availableItems.keys) {
                     res++
                     if (isCategoryOpen[itemType] == true) {
                         for (item in availableItems[itemType]?.keys ?: listOf()) {
@@ -227,15 +249,12 @@ class ItemRequestAdapter(
 
     override fun getItemViewType(position: Int): Int {
         var res = 0
-        println(position)
-        for (itemType in itemTypes) {
-            println(itemType)
+        for (itemType in availableItems.keys) {
             if (res++ == position) {
                 return ITEM_TYPE_HOLDER
             }
             if (isCategoryOpen[itemType] == true) {
                 for (item in availableItems[itemType]?.keys ?: listOf()) {
-                    println(item)
                     if (res++ == position) {
                         return ITEM_HOLDER
                     }
