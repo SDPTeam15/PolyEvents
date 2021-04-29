@@ -1,7 +1,6 @@
 package com.github.sdpteam15.polyevents
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -10,7 +9,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.database.observe.ObservableList
+import com.github.sdpteam15.polyevents.database.room.LocalDatabase
 import com.github.sdpteam15.polyevents.exceptions.MaxAttendeesException
 import com.github.sdpteam15.polyevents.fragments.EXTRA_EVENT_ID
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
@@ -30,12 +29,15 @@ class EventActivity : AppCompatActivity() {
         // Refactored here for tests
         var obsEvent = Observable<Event>()
         lateinit var event: Event
+        // for testing purposes
+        lateinit var database: LocalDatabase
     }
 
     private lateinit var subscribeButton: Button
 
+    // Lazily initialized view model, instantiated only when accessed for the first time
     private val localEventViewModel: EventLocalViewModel by viewModels {
-        EventLocalViewModelFactory((application as PolyEventsApplication).database.eventDao())
+        EventLocalViewModelFactory(database.eventDao())
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,16 +47,18 @@ class EventActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowHomeEnabled(true)
 
+        database = (application as PolyEventsApplication).database
+
         subscribeButton = findViewById(R.id.button_subscribe_event)
 
         getEventAndObserve()
 
-        val obs : ObservableList<EventLocal> = ObservableList()
+        /*val obs : ObservableList<EventLocal> = ObservableList()
         localEventViewModel.getAllEvents(obs)
         obs.observe(this) {
             Log.d(TAG, "Getting events!")
             Log.d(TAG, it.value.joinToString(separator = ","))
-        }
+        }*/
     }
 
     override fun onResume() {

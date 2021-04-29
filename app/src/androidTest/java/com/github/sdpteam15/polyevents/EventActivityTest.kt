@@ -1,7 +1,9 @@
 package com.github.sdpteam15.polyevents
 
 
+import android.content.Context
 import android.content.Intent
+import androidx.room.Room
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
@@ -11,14 +13,18 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
+import com.github.sdpteam15.polyevents.database.dao.EventDao
 import com.github.sdpteam15.polyevents.database.objects.EventDatabaseInterface
 import com.github.sdpteam15.polyevents.database.observe.Observable
+import com.github.sdpteam15.polyevents.database.room.LocalDatabase
 import com.github.sdpteam15.polyevents.fragments.EXTRA_EVENT_ID
 import com.github.sdpteam15.polyevents.model.Event
 import com.github.sdpteam15.polyevents.model.UserEntity
+import com.github.sdpteam15.polyevents.model.room.EventLocal
 import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertDisplayed
 import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertNotDisplayed
 import com.schibsted.spain.barista.interaction.BaristaClickInteractions.clickOn
+import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.containsString
 import org.junit.After
 import org.junit.Before
@@ -26,7 +32,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.*
 import org.mockito.junit.MockitoJUnitRunner
+import java.io.IOException
 import java.time.LocalDateTime
+import kotlin.test.assertEquals
 import org.mockito.Mockito.`when` as When
 
 
@@ -45,6 +53,8 @@ class EventActivityTest {
     lateinit var mockedEventDatabase: EventDatabaseInterface
 
     lateinit var scenario: ActivityScenario<EventActivity>
+
+    private lateinit var localDatabase: LocalDatabase
 
     @Before
     fun setup() {
@@ -72,15 +82,6 @@ class EventActivityTest {
         )
         testLimitedEvent.makeLimitedEvent(3)
 
-        // How to modify a parameter of a mocked method (Very bad workaround)
-        // https://stackoverflow.com/questions/12429169/how-to-mock-a-void-return-method-affecting-an-object
-        /*doAnswer { invocation ->
-            val args = invocation.arguments
-            (args[1] as Observable<Event>).postValue(testLimitedEvent, null)
-            Observable<Boolean>(true) // void method, so return null
-        }.`when`(mockedEventDatabase.getEventFromId("limitedEvent",
-            any()
-        ))*/
         When(
             mockedEventDatabase.getEventFromId(
                 id = limitedEventId, returnEvent = EventActivity.obsEvent
@@ -90,10 +91,20 @@ class EventActivityTest {
             Observable(true)
         }
 
+        // Create local db
+        val context: Context = ApplicationProvider.getApplicationContext()
+        // Using an in-memory database because the information stored here disappears when the
+        // process is killed.
+        localDatabase = Room.inMemoryDatabaseBuilder(context, LocalDatabase::class.java)
+            // Allowing main thread queries, just for testing.
+            .allowMainThreadQueries()
+            .build()
     }
 
     @After
     fun teardown() {
+        // close and remove the mock local database
+        localDatabase.close()
         currentDatabase = FirestoreDatabaseProvider
     }
 
@@ -141,6 +152,28 @@ class EventActivityTest {
 
         assert(!testLimitedEvent.getParticipants().contains(currentDatabase.currentUser!!.uid))
         assertDisplayed(R.id.button_subscribe_event, R.string.event_subscribe)
+
+        scenario.close()
+    }
+
+    @Test
+    fun testEventSubscriptionUpdatesLocalDatabase() = runBlocking {
+        goToEventActivityWithLimitedEventIntent()
+
+        // Subscribe to event
+        clickOn(R.id.button_subscribe_event)
+
+        val retrievedLocalEventsAfterSubscription = localDatabase.eventDao().getAll()
+        assert(retrievedLocalEventsAfterSubscription.isNotEmpty())
+        assertEquals(retrievedLocalEventsAfterSubscription[0], EventLocal.fromEvent(testLimitedEvent))
+
+        assertDisplayed(R.id.button_subscribe_event, R.string.event_unsubscribe)
+
+        // Unsubscribe from event
+        clickOn(R.id.button_subscribe_event)
+
+        val retrievedLocalEventsAfterUnSubscription = localDatabase.eventDao().getAll()
+        assert(retrievedLocalEventsAfterUnSubscription.isEmpty())
 
         scenario.close()
     }
@@ -225,7 +258,7 @@ class EventActivityTest {
         assertNotDisplayed(R.id.button_subscribe_event)
     }
 
-    fun goToEventActivityWithLimitedEventIntent() {
+    private fun goToEventActivityWithLimitedEventIntent() {
         val intent = Intent(
             ApplicationProvider.getApplicationContext(),
             EventActivity::class.java
@@ -233,7 +266,9 @@ class EventActivityTest {
             putExtra(EXTRA_EVENT_ID, limitedEventId)
         }
 
-        scenario = ActivityScenario.launch<EventActivity>(intent)
+        scenario = ActivityScenario.launch(intent)
+
+        EventActivity.database = localDatabase
 
         Thread.sleep(1000)
     }
