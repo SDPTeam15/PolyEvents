@@ -118,4 +118,8 @@
     <string name="event_subscribe_at_max_capacity">
         Event has reached the maximum number of participants</string>
     <string name="event_profile_picture">Event Profile Picture</string>
+
+    <!-- ItemAdminActivity -->
+    <string name="query_not_satisfied">Query not satisfied</string>
+
 </resources>
