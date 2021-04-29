@@ -18,7 +18,7 @@ object MaterialRequestAdapter : AdapterInterface<MaterialRequest> {
         return MaterialRequest(
             id ,
             document[MATERIAL_REQUEST_LIST.value] as Map<String, Int>,
-            HelperFunctions.dateToLocalDateTime((document[MATERIAL_REQUEST_TIME.value]  as Timestamp).toDate())!!,
+            HelperFunctions.dateToLocalDateTime((document[MATERIAL_REQUEST_TIME.value]  as Timestamp?)?.toDate()),
             document[MATERIAL_REQUEST_USER_ID.value] as String
         )
     }
