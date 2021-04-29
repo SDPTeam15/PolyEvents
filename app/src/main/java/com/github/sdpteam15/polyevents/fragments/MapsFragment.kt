@@ -142,8 +142,11 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
                     }
                 }
                 timerHeatmap?.schedule(task, 0, HEATMAP_PERIOD * 1000)
-            } else
+            } else {
                 GoogleMapHelper.lastOverlay?.remove()
+                timerHeatmap?.cancel()
+                timerHeatmap = null
+            }
         }
 
         locationButton.setOnClickListener {

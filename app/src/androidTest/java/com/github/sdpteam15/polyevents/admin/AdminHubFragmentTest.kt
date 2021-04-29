@@ -74,7 +74,7 @@ class AdminHubFragmentTest {
 
     @Test
     fun clickOnBtnItemRequestManagementDisplayCorrectActivity() {
-
+        Database.currentDatabase = FakeDatabase
         Espresso.onView(ViewMatchers.withId(R.id.btnRedirectItemReqManagement)).perform(click())
         Intents.intended(IntentMatchers.hasComponent(ItemRequestManagementActivity::class.java.name))
     }
@@ -96,6 +96,5 @@ class AdminHubFragmentTest {
         Database.currentDatabase = FakeDatabase
         Espresso.onView(ViewMatchers.withId(R.id.btnRedirectUserManagement)).perform(click())
         Intents.intended(IntentMatchers.hasComponent(UserManagementListActivity::class.java.name))
-        Database.currentDatabase = FirestoreDatabaseProvider
     }
 }

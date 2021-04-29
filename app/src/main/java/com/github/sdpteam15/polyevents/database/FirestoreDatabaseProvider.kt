@@ -55,7 +55,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         }
     override var materialRequestDatabase: MaterialRequestDatabaseInterface? = null
         get() {
-            field = field ?: MaterialRequestDatabaseFirestore
+            field = field ?: MaterialRequestDatabaseFirestore(this)
             return field
         }
 

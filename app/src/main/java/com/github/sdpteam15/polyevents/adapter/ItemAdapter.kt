@@ -33,9 +33,9 @@ class ItemAdapter(
      */
     inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        private val itemName = view.findViewById<TextView>(R.id.id_list_item_name)
-        private val itemCount = view.findViewById<TextView>(R.id.id_list_item_count)
-        private val itemType = view.findViewById<TextView>(R.id.id_list_item_type)
+        private val itemName = view.findViewById<TextView>(R.id.id_item_list_name)
+        private val itemCount = view.findViewById<TextView>(R.id.id_item_list_count)
+        private val itemType = view.findViewById<TextView>(R.id.id_item_list_type)
         private val btnRemove = view.findViewById<ImageButton>(R.id.id_remove_item)
 
         /**

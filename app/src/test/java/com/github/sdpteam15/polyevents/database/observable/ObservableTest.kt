@@ -16,7 +16,7 @@ class ObservableTest {
         assertEquals(null, Observable<Int>().value)
         assertEquals(null, Observable<Int>().sender)
         assertEquals(null, Observable<Int>(null).value)
-        assertEquals(null, Observable<Int>(sender = sender).sender)
+        assertEquals(null, Observable<Int>(creator = sender).sender)
         assertEquals(null, Observable<Int>(null, sender).sender)
         assertEquals(null, Observable<Int>(null).sender)
         assertEquals(0, Observable(0).value)

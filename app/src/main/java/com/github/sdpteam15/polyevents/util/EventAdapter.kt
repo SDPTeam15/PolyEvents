@@ -35,7 +35,7 @@ object EventAdapter : AdapterInterface<Event> {
     )
 
     override fun fromDocument(document: MutableMap<String, Any?>, id: String): Event {
-        val event = Event(
+        return Event(
             eventId = id,
             eventName = document[EVENT_NAME.value] as String?,
             organizer = document[EVENT_ORGANIZER.value] as String?,
@@ -55,7 +55,5 @@ object EventAdapter : AdapterInterface<Event> {
             maxNumberOfSlots = (document[EVENT_MAX_SLOTS.value] as Long?)?.toInt(),
             participants = (document[EVENT_PARTICIPANTS.value] as List<String>).toMutableSet()
         )
-
-        return event
     }
 }

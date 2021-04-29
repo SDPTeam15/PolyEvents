@@ -9,7 +9,6 @@ import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 import com.github.sdpteam15.polyevents.util.AdapterFromDocumentInterface
-import com.github.sdpteam15.polyevents.util.AdapterInterface
 import com.github.sdpteam15.polyevents.util.AdapterToDocumentInterface
 import kotlin.random.Random
 
@@ -22,7 +21,7 @@ object FakeDatabase : DatabaseInterface {
     var userToNull = false
     override val currentUserObservable: Observable<UserEntity> = Observable()
 
-    override var currentUser: UserEntity?=null
+    override var currentUser: UserEntity? = null
         get() = if (userToNull) {
             null
         } else {

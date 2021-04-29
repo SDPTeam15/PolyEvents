@@ -18,6 +18,7 @@ object DatabaseConstant {
         PROFILE_COLLECTION("profile", ProfileAdapter),
         USER_COLLECTION("users", UserAdapter),
         ITEM_TYPE_COLLECTION("itemTypes", ItemTypeAdapter),
+        MATERIAL_REQUEST_COLLECTION("materialRequests", MaterialRequestAdapter),
 
 
         TEST_COLLECTION("test", object : AdapterInterface<StringWithID> {
@@ -96,6 +97,14 @@ object DatabaseConstant {
         LOCATIONS_POINT_LATITUDE("latitude"),
         LOCATIONS_POINT_LONGITUDE("longitude"),
         LOCATIONS_TIME("time");
+        override fun toString(): String = value
+    }
+
+    enum class MaterialRequestConstant(val value: String){
+        MATERIAL_REQUEST_ID("mid"),
+        MATERIAL_REQUEST_TIME("time"),
+        MATERIAL_REQUEST_LIST("item_list"),
+        MATERIAL_REQUEST_USER_ID("user_id");
         override fun toString(): String = value
     }
 }
