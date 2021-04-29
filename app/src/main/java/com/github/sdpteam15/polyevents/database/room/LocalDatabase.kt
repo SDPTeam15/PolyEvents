@@ -71,7 +71,7 @@ abstract class LocalDatabase: RoomDatabase() {
                 // comment out the following line.
                 INSTANCE?.let { database ->
                     scope.launch(Dispatchers.IO) {
-                        populateDatabase(database.eventDao())
+                        populateDatabase(database.eventDao(), scope)
                     }
                 }
             }
@@ -81,11 +81,23 @@ abstract class LocalDatabase: RoomDatabase() {
          * Populate the database in a new coroutine.
          * If you want to start with more words, just add them.
          */
-        suspend fun populateDatabase(eventDao: EventDao) {
+        suspend fun populateDatabase(eventDao: EventDao, scope: CoroutineScope) {
             // Start the app with a clean database every time.
             // Not needed if you only populate on creation.
-            eventDao.deleteAll()
-
+            val ids = eventDao.getAll().map { it.eventId }
+            com.github.sdpteam15.polyevents.database.Database.currentDatabase.getListEntity(
+                ObservableList<Event>().observeOnce {
+                    scope.launch(Dispatchers.IO) {
+                        eventDao.deleteAll()
+                        for (e in it.value)
+                            eventDao.insert(EventLocal.fromEvent(e))
+                    }
+                    Unit
+                }.then,
+                ids,
+                null,
+                DatabaseConstant.CollectionConstant.EVENT_COLLECTION
+            )
             // TODO: populate the local database with that of the remote
         }
     }
