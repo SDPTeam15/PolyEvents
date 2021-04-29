@@ -24,3 +24,11 @@ This week, I implemented the Item requests feature of the app. It enables event 
 My time estimates were good for both tasks, and I spend extra time on redesigning the material request activity.
 
 Next week, I will work a bit on the map, as I didn't work much on that part of the app.
+
+# Robin
+
+This week, I implemented the heatmap and a routine to send the position of the device to the db. And in bonus ObservableMap.
+
+My time estimates were good for my tasks, and I spend extra time on ObservableMap just for my fun.
+
+Next week, I will work a path finding feature.
