@@ -16,3 +16,11 @@ coroutines and viewmodel. I've spent about double the amount of time of what I a
 as well.
 
 Next week, I'll spend some more time on the local cache, storing other information and doing more tests.
+
+# Florian
+
+This week, I implemented the Item requests feature of the app. It enables event providers to send the requests to the admins and they all appear on the admin hub. Later, we will 
+
+My time estimates were good for both tasks, and I spend extra time on redesigning the material request activity.
+
+Next week, I will work a bit on the map, as I didn't work much on that part of the app.
