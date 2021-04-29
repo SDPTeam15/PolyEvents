@@ -110,4 +110,6 @@
     <!-- EventListFragment -->
     <string name="event_attendees">%d/%d </string>
     <string name="event_schedule">at %s</string>
+    <string name="my_events">My Events</string>
+    <string name="my_events_log_in">Log in to show your upcoming events</string>
 </resources>
