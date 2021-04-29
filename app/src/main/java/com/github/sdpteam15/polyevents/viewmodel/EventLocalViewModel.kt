@@ -23,6 +23,18 @@ class EventLocalViewModel(private val eventDao: EventDao): ViewModel() {
         obs.addAll(events)
     }
 
+    /**
+     * Launch a coroutine on the viewmodelscope to remove an event from the room database.
+     * @param event the event to delete
+     */
+    fun delete(event: EventLocal) = viewModelScope.launch {
+        eventDao.delete(event)
+    }
+
+    /**
+     * Launch a coroutine on the viewmodelscope to insert an event in the room database.
+     * @param event the event to insert
+     */
     fun insert(event: EventLocal) = viewModelScope.launch {
         eventDao.insert(event)
         Log.d(TAG, "INSERTING EVENT INTO LOCAL DB")

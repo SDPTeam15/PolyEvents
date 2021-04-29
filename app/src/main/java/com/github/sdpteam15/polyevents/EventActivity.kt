@@ -137,19 +137,30 @@ class EventActivity : AppCompatActivity() {
         }
     }
 
-    fun unsubscribeFromEvent() {
+    /**
+     * Unsubscribe user from the event. The updates are done on firestore for the current event,
+     * and deletes the event from the local database.
+     */
+    private fun unsubscribeFromEvent() {
         event.removeParticipant(currentDatabase.currentUser!!.uid)
 
+        localEventViewModel.delete(EventLocal.fromEvent(event))
         currentDatabase.eventDatabase!!.updateEvents(event)
+
         showToast(resources.getString(R.string.event_successfully_unsubscribed), this)
 
         subscribeButton.setText(resources.getString(R.string.event_subscribe))
     }
 
-    fun subscribeToEvent() {
+    /**
+     * Subscribe user to the event if event still has free slots. Updates the event remotely on firestore
+     * as well as inserts the event in the local room database.
+     */
+    private fun subscribeToEvent() {
         try {
             event.addParticipant(currentDatabase.currentUser!!.uid)
 
+            localEventViewModel.insert(EventLocal.fromEvent(event))
             currentDatabase.eventDatabase!!.updateEvents(event)
             showToast(resources.getString(R.string.event_successfully_subscribed), this)
             subscribeButton.setText(resources.getString(R.string.event_unsubscribe))

@@ -1,9 +1,6 @@
 package com.github.sdpteam15.polyevents.database.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.github.sdpteam15.polyevents.model.room.EventLocal
 
 /**
@@ -20,6 +17,9 @@ interface EventDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(event: EventLocal)
+
+    @Delete
+    suspend fun delete(event: EventLocal)
 
     @Query("DELETE FROM event_table")
     suspend fun deleteAll()
