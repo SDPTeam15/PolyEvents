@@ -11,11 +11,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
+import androidx.room.TypeConverter
 import com.github.sdpteam15.polyevents.R
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.Period
-import java.time.ZoneId
+import java.time.*
 import java.util.*
 
 object HelperFunctions {
@@ -117,5 +115,45 @@ object HelperFunctions {
             }
         }
         return false
+    }
+
+    /**
+     * A class containing type converters for dealing with complex types, when persisting
+     * in Room database.
+     */
+    object Converters {
+        /**
+         * https://www.baeldung.com/java-time-milliseconds
+         */
+        @TypeConverter
+        fun fromLocalDateTime(value: LocalDateTime?): Long? {
+            return value?.let {
+                val zdt = ZonedDateTime.of(it, ZoneId.systemDefault())
+                zdt.toInstant().toEpochMilli()
+            }
+        }
+
+        /**
+         * https://stackoverflow.com/questions/44883432/long-timestamp-to-localdatetime
+         */
+        @TypeConverter
+        fun fromLong(value: Long?): LocalDateTime? {
+            return value?.let {
+                LocalDateTime.ofInstant(
+                        Instant.ofEpochMilli(it),
+                        TimeZone.getDefault().toZoneId()
+                )
+            }
+        }
+
+        @TypeConverter
+        fun fromStringSet(value: Set<String>?): String? {
+            return value?.joinToString(separator = ",")
+        }
+
+        @TypeConverter
+        fun fromString(value: String?): MutableSet<String>? {
+            return value?.split(",")?.toMutableSet()
+        }
     }
 }
