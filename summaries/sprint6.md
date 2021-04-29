@@ -19,7 +19,7 @@ Next week, I'll spend some more time on the local cache, storing other informati
 
 # Florian
 
-This week, I implemented the Item requests feature of the app. It enables event providers to send the requests to the admins and they all appear on the admin hub. Later, we will 
+This week, I implemented the Item requests feature of the app. It enables event providers to send the requests to the admins and they all appear on the admin hub. 
 
 My time estimates were good for both tasks, and I spend extra time on redesigning the material request activity.
 
