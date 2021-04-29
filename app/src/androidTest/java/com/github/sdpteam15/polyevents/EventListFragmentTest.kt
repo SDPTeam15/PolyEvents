@@ -24,6 +24,8 @@ import com.github.sdpteam15.polyevents.fragments.EXTRA_EVENT_ID
 import com.github.sdpteam15.polyevents.fragments.EventListFragment
 import com.github.sdpteam15.polyevents.model.Event
 import com.github.sdpteam15.polyevents.model.room.EventLocal
+import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModel
+import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModelFactory
 import com.schibsted.spain.barista.assertion.BaristaCheckedAssertions.assertChecked
 import com.schibsted.spain.barista.assertion.BaristaCheckedAssertions.assertUnchecked
 import com.schibsted.spain.barista.assertion.BaristaRecyclerViewAssertions.assertRecyclerViewItemCount
@@ -96,10 +98,6 @@ class EventListFragmentTest {
         )
 
         Database.currentDatabase = FakeDatabase
-        Intents.init()
-        // go to activities list fragment
-        Espresso.onView(ViewMatchers.withId(R.id.ic_list)).perform(ViewActions.click())
-        Thread.sleep(1000)
 
         // Create local db
         val context: Context = ApplicationProvider.getApplicationContext()
@@ -110,7 +108,17 @@ class EventListFragmentTest {
             .allowMainThreadQueries()
             .build()
 
+        Intents.init()
+        // go to activities list fragment
+        Espresso.onView(ViewMatchers.withId(R.id.ic_list)).perform(ViewActions.click())
+
         EventListFragment.localDatabase = localDatabase
+        EventListFragment.eventLocalViewModel = EventLocalViewModelFactory(
+            localDatabase.eventDao()).create(
+            EventLocalViewModel::class.java
+        )
+
+        Thread.sleep(1000)
     }
 
     @After

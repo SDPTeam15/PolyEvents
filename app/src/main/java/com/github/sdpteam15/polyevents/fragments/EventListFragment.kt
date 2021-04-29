@@ -3,12 +3,10 @@ package com.github.sdpteam15.polyevents.fragments
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.EventActivity
 import com.github.sdpteam15.polyevents.PolyEventsApplication
@@ -39,15 +37,18 @@ class EventListFragment : Fragment() {
 
         // for testing purposes
         lateinit var localDatabase: LocalDatabase
+        lateinit var eventLocalViewModel: EventLocalViewModel
     }
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var myEventsSwitch: SwitchMaterial
     val events = ObservableList<Event>()
     private val eventsLocal = ObservableList<EventLocal>()
-    private val localEventViewModel: EventLocalViewModel by viewModels {
+
+    // Lazily initialized view model, instantiated only when accessed for the first time
+    /*private val localEventViewModel: EventLocalViewModel by viewModels {
         EventLocalViewModelFactory(localDatabase.eventDao())
-    }
+    }*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,6 +62,9 @@ class EventListFragment : Fragment() {
         val fragmentView = inflater.inflate(R.layout.fragment_events, container, false)
 
         localDatabase = (requireActivity().application as PolyEventsApplication).database
+        eventLocalViewModel = EventLocalViewModelFactory(
+                localDatabase.eventDao()).create(EventLocalViewModel::class.java
+        )
 
         recyclerView = fragmentView.findViewById(R.id.recycler_events_list)
 
@@ -78,14 +82,18 @@ class EventListFragment : Fragment() {
 
         recyclerView.adapter = EventItemAdapter(events, openEvent)
         recyclerView.setHasFixedSize(false)
-
-        getEventsListAndDisplay(fragmentView.context)
         // Inflate the layout for this fragment
         return fragmentView
     }
 
     override fun onResume() {
         super.onResume()
+
+        myEventsSwitchCallback(myEventsSwitch.isChecked)
+    }
+
+    override fun onStart() {
+        super.onStart()
 
         myEventsSwitchCallback(myEventsSwitch.isChecked)
     }
@@ -113,7 +121,8 @@ class EventListFragment : Fragment() {
      * Get all the events the current user is subscribed to from the local cache (room database).
      */
     private fun getUserLocalSubscribedEvents() {
-        localEventViewModel.getAllEvents(eventsLocal)
+        eventLocalViewModel.getAllEvents(eventsLocal)
+
         eventsLocal.observe(this) {
             events.clear()
             events.addAll(it.value.map { it.toEvent() })
