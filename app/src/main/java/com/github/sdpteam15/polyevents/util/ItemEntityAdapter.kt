@@ -1,7 +1,6 @@
 package com.github.sdpteam15.polyevents.util
 
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.ItemConstants.*
-import com.github.sdpteam15.polyevents.model.Event
 import com.github.sdpteam15.polyevents.model.Item
 
 object ItemEntityAdapter : AdapterInterface<Pair<Item, Int>>{

@@ -65,6 +65,17 @@ interface UserDatabaseInterface {
     ): Observable<Boolean>
 
     /**
+     * Get a list of all users in the database
+     * @param users observable list that will contain all the user entity getted from the database
+     * @param userAccess the user profile to use its permission
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun getListAllUsers(
+        users: ObservableList<UserEntity>,
+        userAccess: UserProfile?=currentProfile
+    ):Observable<Boolean>
+
+    /**
      * add a UserProfile to a UserEntity
      * @param profile profile we want to add in the database
      * @param user user to add

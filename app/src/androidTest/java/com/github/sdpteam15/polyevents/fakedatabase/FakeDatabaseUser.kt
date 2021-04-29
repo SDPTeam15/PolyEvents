@@ -34,6 +34,13 @@ object FakeDatabaseUser : UserDatabaseInterface {
         userAccess: UserProfile?
     ) = Observable(true, this)
 
+    override fun getListAllUsers(
+        users: ObservableList<UserEntity>,
+        userAccess: UserProfile?
+    ): Observable<Boolean> {
+        return Observable(true)
+    }
+
     override fun addUserProfileAndAddToUser(
         profile: UserProfile,
         user: UserEntity,

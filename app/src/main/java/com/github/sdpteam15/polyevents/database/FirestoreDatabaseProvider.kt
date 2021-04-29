@@ -9,6 +9,7 @@ import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.login.UserLogin
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
+import com.github.sdpteam15.polyevents.model.UserRole
 import com.github.sdpteam15.polyevents.util.AdapterFromDocumentInterface
 import com.github.sdpteam15.polyevents.util.AdapterToDocumentInterface
 import com.github.sdpteam15.polyevents.util.UserAdapter
@@ -96,10 +97,8 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             loadSuccess = value != null
             currentUserObservable.value = value
         }
-
-
-    override var currentProfile: UserProfile? = null
-
+    //TODO change once the current profile has been developed
+    override var currentProfile: UserProfile? = UserProfile(userRole = UserRole.ADMIN)
 
     //Method used to get listener in the test set to mock and test the database
     var lastQuerySuccessListener: OnSuccessListener<QuerySnapshot>? = null
@@ -188,8 +187,6 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     fun thenDoSet(
         task: Task<Void>
     ): Observable<Boolean> {
-
-
         val ended = Observable<Boolean>()
 
         lastSetSuccessListener = OnSuccessListener<Void> { ended.postValue(true, this) }

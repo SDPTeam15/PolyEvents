@@ -3,6 +3,7 @@ package com.github.sdpteam15.polyevents.database.objects
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.PROFILE_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
+import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.HelperTestFunction
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
@@ -10,8 +11,16 @@ import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 import com.github.sdpteam15.polyevents.util.ProfileAdapter
 import com.github.sdpteam15.polyevents.util.UserAdapter
+import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.ktx.Firebase
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito
+import org.mockito.Mockito.mock
+import org.mockito.kotlin.anyOrNull
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -266,6 +275,22 @@ class UserDatabaseTest {
         assertEquals(PROFILE_COLLECTION, getList.collection)
         assertEquals(ProfileAdapter, getList.adapter)
     }
+    @Test
+    fun getUserLists() {
+        val profiles = ObservableList<UserEntity>()
+        val userAccess = UserProfile("uid")
+
+        HelperTestFunction.nextBoolean.add(true)
+        mackUserDatabase.getListAllUsers(profiles,  userAccess = userAccess)
+            .observeOnce { assert(it.value) }.then.postValue(false)
+
+        val getList = HelperTestFunction.getListEntityQueue.poll()!!
+
+        assertEquals(profiles, getList.element)
+        assertNull(getList.matcher)
+        assertEquals(USER_COLLECTION, getList.collection)
+        assertEquals(UserAdapter, getList.adapter)
+    }
 
     @Test
     fun getProfilesUserList() {
@@ -303,4 +328,5 @@ class UserDatabaseTest {
         assertEquals(PROFILE_COLLECTION, get.collection)
         assertEquals(ProfileAdapter, get.adapter)
     }
+
 }

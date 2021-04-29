@@ -3,11 +3,15 @@ package com.github.sdpteam15.polyevents
 import android.content.Intent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.closeSoftKeyboard
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.typeText
+import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.contrib.RecyclerViewActions
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import com.github.sdpteam15.polyevents.adapter.EventItemAdapter
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
@@ -15,6 +19,7 @@ import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabase
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabaseItem
 import com.github.sdpteam15.polyevents.model.Item
+import org.hamcrest.CoreMatchers
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -27,14 +32,14 @@ class ItemsAdminActivityTest {
 
     private val testItem = Item(null, "test item", "TESTITEMTYPE")
     private val testQuantity = 3
-
+    private val itemToTest =  Item(null, "Chocolat", "Food")
 
     lateinit var itemsAdminActivity: ActivityScenario<ItemsAdminActivity>
 
     @Before
     fun setup() {
         availableItems = mutableMapOf()
-        availableItems[Item(null, "Chocolat", "Food")] = 30
+        availableItems[itemToTest] = 30
         availableItems[Item(null, "Kiwis", "Food")] = 10
         availableItems[Item(null, "230V Plugs", "Plug")] = 30
         availableItems[Item(null, "Fridge (large)", "Fridge")] = 5
@@ -104,4 +109,102 @@ class ItemsAdminActivityTest {
         onView(withId(R.id.id_recycler_items_list))
             .check(RecyclerViewItemCountAssertion(availableItems.size - 1))
     }
+
+    @Test
+    fun modifyItemCorrectlyDisplays(){
+        Espresso.onView(ViewMatchers.withId(R.id.id_recycler_items_list)).perform(
+                RecyclerViewActions.actionOnItemAtPosition<EventItemAdapter.ItemViewHolder>(
+                        0,
+                        ViewActions.click()
+                )
+        )
+
+        Thread.sleep(1000)
+        Espresso.onView(ViewMatchers.withId(R.id.id_edittext_item_name))
+                .check(
+                        ViewAssertions.matches(
+                                ViewMatchers.withText(
+                                        CoreMatchers.containsString(
+                                                itemToTest.itemName
+                                        )
+                                )
+                        )
+                )
+        Espresso.onView(ViewMatchers.withId(R.id.id_edittext_item_quantity))
+                .check(
+                        ViewAssertions.matches(
+                                ViewMatchers.withText(
+                                        CoreMatchers.containsString(
+                                                availableItems[itemToTest]!!.toString()
+                                        )
+                                )
+                        )
+                )
+        Espresso.onView(ViewMatchers.withId(R.id.id_edittext_item_type))
+                .check(
+                        ViewAssertions.matches(
+                                ViewMatchers.withText(
+                                        CoreMatchers.containsString(
+                                                itemToTest.itemType
+                                        )
+                                )
+                        )
+                )
+    }
+
+    @Test
+    fun modifyItemTest(){
+        val newName = "Choco"
+        Espresso.onView(ViewMatchers.withId(R.id.id_recycler_items_list)).perform(
+                RecyclerViewActions.actionOnItemAtPosition<EventItemAdapter.ItemViewHolder>(
+                        0,
+                        ViewActions.click()
+                )
+        )
+
+        onView(withId(R.id.id_edittext_item_name)).perform(typeText(newName))
+        closeSoftKeyboard()
+        onView(withId(R.id.id_confirm_add_item_button)).perform(click())
+        Thread.sleep(1000)
+
+        Espresso.onView(ViewMatchers.withId(R.id.id_recycler_items_list)).perform(
+                RecyclerViewActions.actionOnItemAtPosition<EventItemAdapter.ItemViewHolder>(
+                        0,
+                        ViewActions.click()
+                )
+        )
+
+        Espresso.onView(ViewMatchers.withId(R.id.id_edittext_item_name))
+                .check(
+                        ViewAssertions.matches(
+                                ViewMatchers.withText(
+                                        CoreMatchers.containsString(
+                                                itemToTest.itemName + newName
+                                        )
+                                )
+                        )
+                )
+        Espresso.onView(ViewMatchers.withId(R.id.id_edittext_item_quantity))
+                .check(
+                        ViewAssertions.matches(
+                                ViewMatchers.withText(
+                                        CoreMatchers.containsString(
+                                                availableItems[itemToTest]!!.toString()
+                                        )
+                                )
+                        )
+                )
+        Espresso.onView(ViewMatchers.withId(R.id.id_edittext_item_type))
+                .check(
+                        ViewAssertions.matches(
+                                ViewMatchers.withText(
+                                        CoreMatchers.containsString(
+                                                itemToTest.itemType
+                                        )
+                                )
+                        )
+                )
+    }
+
+
 }
