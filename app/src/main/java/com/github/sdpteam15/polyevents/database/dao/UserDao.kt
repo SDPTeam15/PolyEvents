@@ -4,5 +4,5 @@ import androidx.room.Dao
 
 // TODO
 @Dao
-class UserDao {
+interface UserDao {
 }
