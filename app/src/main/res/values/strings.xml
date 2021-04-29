@@ -110,4 +110,7 @@
     <!-- EventListFragment -->
     <string name="event_attendees">%d/%d </string>
     <string name="event_schedule">at %s</string>
+
+    <!-- ItemAdminActivity -->
+    <string name="query_not_satisfied">Query not satisfied</string>
 </resources>

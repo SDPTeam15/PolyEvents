@@ -38,11 +38,11 @@ class ItemsAdminActivity : AppCompatActivity() {
 
         currentDatabase.itemDatabase!!.getItemsList(items).observe(this) {
             if (!it.value)
-                println("Query not satisfied")
+                HelperFunctions.showToast(getString(R.string.query_not_satisfied), this)
         }
         currentDatabase.itemDatabase!!.getItemTypes(itemTypes).observe(this) {
             if (!it.value)
-                HelperFunctions.showToast("Query not satisfied", this)
+                HelperFunctions.showToast(getString(R.string.query_not_satisfied), this)
         }
         items.observeRemove(this) {
             if (it.sender != currentDatabase.itemDatabase!!) {
