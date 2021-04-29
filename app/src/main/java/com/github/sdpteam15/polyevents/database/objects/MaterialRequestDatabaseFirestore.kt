@@ -3,6 +3,8 @@ package com.github.sdpteam15.polyevents.database.objects
 import android.annotation.SuppressLint
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.MATERIAL_REQUEST_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
+import com.github.sdpteam15.polyevents.database.observe.Observable
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.MaterialRequest
 import com.github.sdpteam15.polyevents.model.UserProfile
 import com.github.sdpteam15.polyevents.util.MaterialRequestAdapter
@@ -16,8 +18,21 @@ class MaterialRequestDatabaseFirestore(private val db: DatabaseInterface) :
     var firestore: FirebaseFirestore? = null
         get() = field ?: Firebase.firestore
 
-    override fun createMaterialRequest(request: MaterialRequest, userAccess: UserProfile?) {
+    override fun getMaterialRequestList(
+        materialList: ObservableList<MaterialRequest>,
+        matcher: String?,
+        userAccess: UserProfile?
+    ): Observable<Boolean> =
+        db.getListEntity(
+            materialList,
+            null,
+            null,
+            MATERIAL_REQUEST_COLLECTION,
+            MaterialRequestAdapter
+        )
+
+
+    override fun createMaterialRequest(request: MaterialRequest, userAccess: UserProfile?) =
         db.addEntity(request, MATERIAL_REQUEST_COLLECTION, MaterialRequestAdapter)
-        MaterialRequestAdapter.toDocument(request)
-    }
+
 }

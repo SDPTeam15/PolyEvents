@@ -11,7 +11,7 @@ import java.time.LocalDateTime
  */
 data class MaterialRequest(
     val requestId: String?,
-    val items: Map<Item, Int>,
+    val items: Map<String, Int>,
     val time: LocalDateTime?,
     val userId: String
 )

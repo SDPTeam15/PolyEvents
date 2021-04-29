@@ -3,6 +3,7 @@ package com.github.sdpteam15.polyevents
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.adapter.ItemRequestAdapter
@@ -20,6 +21,7 @@ import java.time.LocalDateTime
 class ItemRequestActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
+    private lateinit var sendButton: Button
     var mapSelectedItems = ObservableMap<Item, Int>()
     var obsItemsMap = ObservableMap<String, ObservableMap<Item, Int>>()
 
@@ -30,7 +32,8 @@ class ItemRequestActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         recyclerView = findViewById(R.id.id_recycler_items_request)
-
+        sendButton = findViewById(R.id.id_button_make_request)
+        sendButton.setOnClickListener { sendItemsRequest() }
 
         val requestObservable = ObservableList<Pair<Item, Int>>()
         requestObservable
@@ -56,21 +59,19 @@ class ItemRequestActivity : AppCompatActivity() {
 
 
     /**
-     * Send the items request to the admins (TODO : actually send it)
+     * Send the items request to the admins
      * and display a short message confirming the request was sent.
      * This redirect to the Main activity.
      * If the request is empty, display an error message.
-     * @param view : the button clicked
      */
-    fun sendItemsRequest(view: View) {
+    private fun sendItemsRequest() {
         if (mapSelectedItems.isEmpty()) {
             showToast(getString(R.string.item_request_empty_text), this)
         } else {
-            // TODO : send the request through the db interface
-            // sendRequest(listSelectedItems)
+
             currentDatabase.materialRequestDatabase!!.createMaterialRequest(
                 MaterialRequest(
-                    null, mapSelectedItems,
+                    null, mapSelectedItems.keys.map { Pair(it.itemId!!, mapSelectedItems[it]!!) }.toMap(),
                     LocalDateTime.now(),
                     currentDatabase.currentUser?.uid ?: ""
                 )
@@ -78,8 +79,7 @@ class ItemRequestActivity : AppCompatActivity() {
             showToast(getString(R.string.item_request_sent_text), this)
 
             // Go back to previous activity
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
+            finish()
         }
     }
 }

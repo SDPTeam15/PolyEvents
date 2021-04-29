@@ -9,7 +9,6 @@ import kotlin.collections.hashMapOf
 
 object MaterialRequestAdapter : AdapterInterface<MaterialRequest> {
     override fun toDocument(element: MaterialRequest) = hashMapOf(
-        MATERIAL_REQUEST_ID.value to element.requestId,
         MATERIAL_REQUEST_LIST.value to element.items,
         MATERIAL_REQUEST_TIME.value to HelperFunctions.localDateTimeToDate(element.time),
         MATERIAL_REQUEST_USER_ID.value to element.userId
@@ -17,8 +16,8 @@ object MaterialRequestAdapter : AdapterInterface<MaterialRequest> {
 
     override fun fromDocument(document: MutableMap<String, Any?>, id: String): MaterialRequest {
         return MaterialRequest(
-            document[MATERIAL_REQUEST_ID.value] as String ,
-            document[MATERIAL_REQUEST_LIST.value] as Map<Item, Int>,
+            id ,
+            document[MATERIAL_REQUEST_LIST.value] as Map<String, Int>,
             HelperFunctions.dateToLocalDateTime((document[MATERIAL_REQUEST_TIME.value]  as Timestamp?)?.toDate()),
             document[MATERIAL_REQUEST_USER_ID.value] as String
         )
