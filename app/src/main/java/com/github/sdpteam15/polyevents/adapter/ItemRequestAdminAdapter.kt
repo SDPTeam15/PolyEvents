@@ -30,10 +30,11 @@ class ItemRequestAdminAdapter(
     private val requests: ObservableList<MaterialRequest>,
     private val userNames: ObservableMap<String, Observable<String>>,
     private val itemNames: ObservableMap<String, String>,
-    private val onAcceptListener : (MaterialRequest)->Unit,
-    private val onRefuseListener : (MaterialRequest)->Unit
+    private val onAcceptListener: (MaterialRequest) -> Unit,
+    private val onRefuseListener: (MaterialRequest) -> Unit
 ) : RecyclerView.Adapter<ItemRequestAdminAdapter.ItemViewHolder>() {
-    private val adapterLayout =  LayoutInflater.from(context)
+    private val adapterLayout = LayoutInflater.from(context)
+
     init {
 
         requests.observe(lifecycleOwner) {
@@ -42,7 +43,7 @@ class ItemRequestAdminAdapter(
         itemNames.observe(lifecycleOwner) {
             notifyDataSetChanged()
         }
-        userNames.observe (lifecycleOwner){
+        userNames.observe(lifecycleOwner) {
             notifyDataSetChanged()
         }
     }
@@ -52,7 +53,6 @@ class ItemRequestAdminAdapter(
      * Takes the corresponding material request view
      */
     inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-
 
 
         private val organizer = view.findViewById<TextView>(R.id.id_request_organiser)
@@ -67,15 +67,21 @@ class ItemRequestAdminAdapter(
         @SuppressLint("SetTextI18n")
         fun bind(request: MaterialRequest) {
             organizer.text = userNames[request.userId]!!.value
-            time.text = request.time!!.format(DateTimeFormatter.ISO_LOCAL_DATE) +" "+ request.time.format(
-                DateTimeFormatter.ISO_LOCAL_TIME).subSequence(0,5)
-            itemList.text = request.items.map { itemNames[it.key] + " : " +it.value }.joinToString(separator = "\n") { it }
+            time.text =
+                request.time!!.format(DateTimeFormatter.ISO_LOCAL_DATE) + " " + request.time.format(
+                    DateTimeFormatter.ISO_LOCAL_TIME
+                ).subSequence(0, 5)
+            itemList.text = request.items.map { itemNames[it.key] + " : " + it.value }
+                .joinToString(separator = "\n") { it }
             btnRefuse.setOnClickListener { onRefuseListener(request) }
             btnAccept.setOnClickListener { onAcceptListener(request) }
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemRequestAdminAdapter.ItemViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): ItemRequestAdminAdapter.ItemViewHolder {
 
         val view = adapterLayout.inflate(R.layout.card_material_request, parent, false)
         return ItemViewHolder(view)
