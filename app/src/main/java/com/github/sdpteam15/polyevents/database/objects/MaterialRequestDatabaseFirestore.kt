@@ -3,6 +3,7 @@ package com.github.sdpteam15.polyevents.database.objects
 import android.annotation.SuppressLint
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.MATERIAL_REQUEST_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
+import com.github.sdpteam15.polyevents.database.Matcher
 import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.MaterialRequest
@@ -20,13 +21,13 @@ class MaterialRequestDatabaseFirestore(private val db: DatabaseInterface) :
 
     override fun getMaterialRequestList(
         materialList: ObservableList<MaterialRequest>,
-        matcher: String?,
+        matcher: Matcher?,
         userAccess: UserProfile?
     ): Observable<Boolean> =
         db.getListEntity(
             materialList,
             null,
-            null,
+            matcher,
             MATERIAL_REQUEST_COLLECTION,
             MaterialRequestAdapter
         )

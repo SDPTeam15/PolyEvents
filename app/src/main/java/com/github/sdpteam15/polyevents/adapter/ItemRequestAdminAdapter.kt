@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import com.github.sdpteam15.polyevents.database.observe.Observable
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.database.observe.ObservableMap
 import com.github.sdpteam15.polyevents.model.MaterialRequest
+import java.time.format.DateTimeFormatter
 
 /**
  * Recycler Adapter for the list of items
@@ -28,8 +30,10 @@ class ItemRequestAdminAdapter(
     private val requests: ObservableList<MaterialRequest>,
     private val userNames: ObservableMap<String, Observable<String>>,
     private val itemNames: ObservableMap<String, String>,
+    private val onAcceptListener : (MaterialRequest)->Unit,
+    private val onRefuseListener : (MaterialRequest)->Unit
 ) : RecyclerView.Adapter<ItemRequestAdminAdapter.ItemViewHolder>() {
-    val adapterLayout =  LayoutInflater.from(context)
+    private val adapterLayout =  LayoutInflater.from(context)
     init {
 
         requests.observe(lifecycleOwner) {
@@ -45,7 +49,7 @@ class ItemRequestAdminAdapter(
 
     /**
      * adapted ViewHolder for each item
-     * Takes the corresponding event view
+     * Takes the corresponding material request view
      */
     inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
@@ -58,12 +62,16 @@ class ItemRequestAdminAdapter(
         private val btnRefuse = view.findViewById<ImageButton>(R.id.id_request_refuse)
 
         /**
-         * Binds the values of each view of an event to the layout of an event
+         * Binds the values of each value of a material request to a view
          */
+        @SuppressLint("SetTextI18n")
         fun bind(request: MaterialRequest) {
             organizer.text = userNames[request.userId]!!.value
-            time.text = request.time.toString()
-            itemList.text = request.items.map { itemNames[it.key] + ":" +it.value }.joinToString(separator = "\n") { it }
+            time.text = request.time!!.format(DateTimeFormatter.ISO_LOCAL_DATE) +" "+ request.time.format(
+                DateTimeFormatter.ISO_LOCAL_TIME).subSequence(0,5)
+            itemList.text = request.items.map { itemNames[it.key] + " : " +it.value }.joinToString(separator = "\n") { it }
+            btnRefuse.setOnClickListener { onRefuseListener(request) }
+            btnAccept.setOnClickListener { onAcceptListener(request) }
         }
     }
 
