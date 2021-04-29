@@ -16,6 +16,7 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.adapter.EventItemAdapter
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
+import com.github.sdpteam15.polyevents.database.room.LocalDatabase
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.Event
 import com.github.sdpteam15.polyevents.model.room.EventLocal
@@ -35,14 +36,17 @@ class EventListFragment : Fragment() {
 
     companion object {
         const val TAG = "EventListFragment"
+
+        // for testing purposes
+        lateinit var localDatabase: LocalDatabase
     }
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var myEventsSwitch: SwitchMaterial
     val events = ObservableList<Event>()
-    val eventsLocal = ObservableList<EventLocal>()
+    private val eventsLocal = ObservableList<EventLocal>()
     private val localEventViewModel: EventLocalViewModel by viewModels {
-        EventLocalViewModelFactory((requireActivity().application as PolyEventsApplication).database.eventDao())
+        EventLocalViewModelFactory(localDatabase.eventDao())
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,6 +59,9 @@ class EventListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val fragmentView = inflater.inflate(R.layout.fragment_events, container, false)
+
+        localDatabase = (requireActivity().application as PolyEventsApplication).database
+
         recyclerView = fragmentView.findViewById(R.id.recycler_events_list)
 
         myEventsSwitch = fragmentView.findViewById(R.id.event_list_my_events_switch)
