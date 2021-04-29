@@ -85,15 +85,9 @@ class ItemRequestActivityTest {
         }
         Database.currentDatabase.itemDatabase!!.getItemsList(availableItemsList)
 
-        // go to activities more fragment
         val intent =
             Intent(ApplicationProvider.getApplicationContext(), ItemRequestActivity::class.java)
         itemsAdminActivity = ActivityScenario.launch(intent)
-        //onView(withId(R.id.ic_more)).perform(click())
-
-        // Go to items request activity
-        //onView(withId(R.id.id_request_button)).perform(click())
-        //Intents.init()
         Thread.sleep(500)
     }
 
@@ -204,7 +198,6 @@ class ItemRequestActivityTest {
         }
     }
 
-    // Somewhat hijacked test
     @Test
     fun settingEmptyStringForQuantityHasNoEffect() {
         openAllCategories()
