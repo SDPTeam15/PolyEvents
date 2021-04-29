@@ -14,36 +14,28 @@ import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.contrib.RecyclerViewActions
-import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.matcher.RootMatchers.withDecorView
-import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.espresso.matcher.ViewMatchers.assertThat
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import com.github.sdpteam15.polyevents.HelperTestFunction.getCurrentActivity
 import com.github.sdpteam15.polyevents.adapter.ItemRequestAdapter
 import com.github.sdpteam15.polyevents.database.Database
-import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabase
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabaseItem
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabaseMaterialRequest
 import com.github.sdpteam15.polyevents.model.Item
-import org.hamcrest.CoreMatchers.*
+import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.Description
 import org.hamcrest.TypeSafeMatcher
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.junit.MockitoJUnitRunner
-import java.util.regex.Pattern.matches
 
 
-@RunWith(MockitoJUnitRunner::class)
 class ItemRequestActivityTest {
     private lateinit var availableItems: MutableMap<Item, Int>
     private var availableItemsList = ObservableList<Pair<Item, Int>>()
-    private lateinit var mockedAvailableItemsProvider: DatabaseInterface
     private var nbItemTypes: Int = 0
 
     lateinit var itemsAdminActivity: ActivityScenario<ItemRequestActivity>
@@ -185,7 +177,7 @@ class ItemRequestActivityTest {
         selectItemQuantity(itemToSelect, quantityToSelect.toString())
 
         val correctMap = mutableMapOf<Item, Int>()
-        correctMap[availableItemsList[itemToSelect-1].first] = quantityToSelect
+        correctMap[availableItemsList[itemToSelect - 1].first] = quantityToSelect
 
         for (k in correctMap.keys) {
             assert(
@@ -202,7 +194,8 @@ class ItemRequestActivityTest {
         selectItemQuantity(itemToSelect, quantityToSelect.toString())
 
         val correctMap = mutableMapOf<Item, Int>()
-        correctMap[availableItemsList[itemToSelect-1].first] = availableItemsList[itemToSelect].second
+        correctMap[availableItemsList[itemToSelect - 1].first] =
+            availableItemsList[itemToSelect].second
 
         for (k in correctMap.keys) {
             assert(

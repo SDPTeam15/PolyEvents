@@ -32,7 +32,10 @@ object FakeDatabaseUser : UserDatabaseInterface {
         user: Observable<UserEntity>,
         uid: String,
         userAccess: UserProfile?
-    ) = Observable(true, this)
+    ):Observable<Boolean> {
+        user.postValue(FakeDatabase.CURRENT_USER)
+        return Observable(true,this)
+    }
 
     override fun getListAllUsers(
         users: ObservableList<UserEntity>,
