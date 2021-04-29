@@ -1,4 +1,4 @@
-package com.github.sdpteam15.polyevents
+package com.github.sdpteam15.polyevents.fragments
 
 
 import androidx.test.espresso.Espresso.onView
@@ -9,6 +9,10 @@ import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.sdpteam15.polyevents.ItemRequestActivity
+import com.github.sdpteam15.polyevents.ItemsAdminActivity
+import com.github.sdpteam15.polyevents.MainActivity
+import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabase
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabaseItem

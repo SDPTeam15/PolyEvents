@@ -1,4 +1,4 @@
-package com.github.sdpteam15.polyevents
+package com.github.sdpteam15.polyevents.admin
 
 import android.content.Intent
 import androidx.test.core.app.ActivityScenario
@@ -11,14 +11,15 @@ import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.sdpteam15.polyevents.admin.ZoneManagementActivity
+import com.github.sdpteam15.polyevents.HelperTestFunction
+import com.github.sdpteam15.polyevents.MainActivity
+import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.login.UserLogin
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
-import com.google.firebase.auth.FirebaseAuth
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -41,7 +42,7 @@ class ZoneManagementListTest {
 
     @Before
     fun setup() {
-        mockedDatabase = mock(DatabaseInterface::class.java)
+        mockedDatabase = HelperTestFunction.defaultMockDatabase()
         val mockedUserProfile = UserProfile("TestID", "TestName")
         When(mockedDatabase.currentProfile).thenReturn(mockedUserProfile)
 

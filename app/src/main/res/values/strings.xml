@@ -1,7 +1,17 @@
 <resources>
+    <!-- General string -->
+    <string name="none">None</string>
     <string name="app_name">PolyEvents</string>
-    <string name="upcoming_activities_txt">Upcoming activities</string>
-    <string name="at_hour_text">at %1$s</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- Activity Name -->
+    <string name="title_activity_item_request_management">Item Request Management</string>
+    <string name="title_activity_zone_management">Zone Management</string>
+    <string name="title_activity_user_management">User Management</string>
+    <string name="title_activity_user_list_management">User Management List</string>
+    <string name="title_activity_event_management">Event Management</string>
+    <string name="title_activity_items_admin">Items Management</string>
+    <string name="title_activity_events">Events</string>
 
     <!-- Navigation menu -->
     <string name="nav_menu_home">Home</string>
@@ -14,11 +24,21 @@
     <string name="login_failed_text">Failed to log into your account</string>
     <string name="login_button_text">Sign in with Google</string>
 
+    <!-- Item request -->
+    <string name="go_to_items_requests_button_text">Go to items requests</string>
+    <string name="send_request_button_text">Send request</string>
+    <string name="item_request_sent_text">Your request has been sent !</string>
+    <string name="item_request_empty_text">Your request is empty. Please select some items !</string>
+    <string name="item_quantity_positive_text">The quantity must be positive !</string>
+    <string name="item_name_quantity_text">%1$s (%2$d available)</string>
+    <string name="max_item_quantity_text">There are only %1$s %2$s available !</string>
 
-    <string name="label_activity_description">Description:</string>
-    <string name="text_lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse sed hendrerit quam. Phasellus sed nisl suscipit, dictum mauris et, imperdiet elit. Curabitur metus ipsum, ullamcorper sed augue quis, fermentum aliquet orci. Fusce suscipit dolor libero, et malesuada dolor viverra eget. Aenean imperdiet risus lectus, in consequat quam congue vel. Duis ut risus interdum, tincidunt lacus in, euismod dolor. Vestibulum ornare nulla nisl, vitae viverra libero finibus vitae. Nunc vitae lobortis ante. Nullam et erat sit amet erat faucibus elementum et non nisl. Aliquam convallis pellentesque nulla at luctus. Morbi rhoncus est quam, ac euismod urna cursus sed. Donec dignissim mi non est posuere vehicula.</string>
-    <string name="label_tags">Tags:</string>
-
+    <!-- Fragment Admin Hub-->
+    <string name="admin_hub_btn_item_text">Item</string>
+    <string name="admin_hub_btn_zone_text">Zone</string>
+    <string name="admin_hub_btn_event_text">Event</string>
+    <string name="admin_hub_btn_user_text">User</string>
+    <string name="admin_hub_title">Admin management options</string>
 
     <!-- All string for Profile Fragment -->
     <string name="logout_button_text">Logout</string>
@@ -30,30 +50,10 @@
     <string name="fail_to_update">A problem occurred while performing your request, please try again</string>
     <string name="profileFragmentTitle">My information</string>
     <string name="title_activity_item_request">Items Request</string>
-
-
-    <string name="go_to_items_requests_button_text">Go to items requests</string>
-    <string name="action_settings">Settings</string>
-    <string name="send_request_button_text">Send request</string>
-    <string name="item_request_sent_text">Your request has been sent !</string>
-    <string name="item_request_empty_text">Your request is empty. Please select some items !</string>
-    <string name="item_quantity_positive_text">The quantity must be positive !</string>
-    <string name="item_name_quantity_text">%1$s (%2$d available)</string>
-    <string name="max_item_quantity_text">There are only %1$s %2$s available !</string>
-    <string name="go_to_admin_item_list">go to admin item list</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="admin_hub_btn_item_text">Item</string>
-    <string name="admin_hub_btn_zone_text">Zone</string>
-    <string name="admin_hub_btn_event_text">Event</string>
-    <string name="admin_hub_btn_user_text">User</string>
-    <string name="title_activity_item_request_management">Item Request Management</string>
-    <string name="title_activity_zone_management">Zone Management</string>
-    <string name="title_activity_user_management">User Management</string>
-    <string name="title_activity_event_management">Event Management</string>
-    <string name="admin_hub_title">Admin management options</string>
-    <string name="event_info_fail">Failed to get the event information</string>
-    <string name="title_activity_items_admin">Items Management</string>
-    <string name="title_activity_events">Events</string>
+    <string name="ProfileList">Profile List</string>
+    <string name="profile_name_edit_Text">profile name</string>
+    <string name="fail_to_remove_profiles">Fail to remove profiles</string>
+    <string name="fail_to_add_profiles">Fail to add profiles</string>
 
     <!-- EditProfileActivity -->
     <string name="EditProfileActivity_Name">Name</string>
@@ -69,12 +69,11 @@
         <item>Staff</item>
         <item>Visitor</item>
     </string-array>
-    <!-- EditProfileActivity -->
 
     <!-- String related to the zone management activity-->
     <string name="btn_create_zone_button_text">Create zone</string>
     <string name="btn_update_zone_button_text">Update zone</string>
-    <string name="zone_mangement_list_title">Zone Mangement List</string>
+    <string name="zone_mangement_list_title">All zones</string>
     <string name="btn_new_zone">+</string>
     <string name="tv_create_zone_text">Create a new zone</string>
     <string name="tv_update_zone_text">Update an existing zone</string>
@@ -91,10 +90,25 @@
     <string name="btn_modify_coord_update_text">Update</string>
     <string name="btn_modify_coord_set_text">Set</string>
     <string name="btn_delete_coord_text">Delete</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="none">None</string>
-    <string name="ProfileList">Profile List</string>
-    <string name="profile_name_edit_Text">profile name</string>
+
+    <!-- Item management activity-->
+    <string name="failed_to_get_item">Failed to get items</string>
+    <string name="go_to_admin_item_list">go to admin item list</string>
+
+    <!-- User management list -->
+    <string name="failed_to_get_list_users">Failed to get users information</string>
+
+    <!-- Event list Fragment -->
+    <string name="failed_to_get_event_list">Failed to get events information</string>
+    <string name="upcoming_activities_txt">Upcoming activities</string>
+    <string name="at_hour_text">at %1$s</string>
+    <string name="label_activity_description">Description:</string>
+    <string name="label_tags">Tags:</string>
+    <string name="event_attendees">%d/%d </string>
+    <string name="event_schedule">at %s</string>
+    <string name="event_info_fail">Failed to get the event information</string>
+    <string name="my_events">My Events</string>
+    <string name="my_events_log_in">Log in to show your upcoming events</string>
 
     <!-- EventActivity -->
     <string name="event_unsubscribe">Unsubscribe</string>
@@ -106,10 +120,8 @@
     <string name="event_subscribe_at_max_capacity">
         Event has reached the maximum number of participants</string>
     <string name="event_profile_picture">Event Profile Picture</string>
-    
-    <!-- EventListFragment -->
-    <string name="event_attendees">%d/%d </string>
-    <string name="event_schedule">at %s</string>
-    <string name="my_events">My Events</string>
-    <string name="my_events_log_in">Log in to show your upcoming events</string>
+
+    <!-- ItemAdminActivity -->
+    <string name="query_not_satisfied">Query not satisfied</string>
+
 </resources>

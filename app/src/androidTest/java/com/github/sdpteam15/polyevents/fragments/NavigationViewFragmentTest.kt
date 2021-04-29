@@ -1,4 +1,4 @@
-package com.github.sdpteam15.polyevents
+package com.github.sdpteam15.polyevents.fragments
 
 
 import androidx.test.espresso.Espresso
@@ -7,6 +7,8 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
+import com.github.sdpteam15.polyevents.MainActivity
+import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.login.GoogleUserLogin

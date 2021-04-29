@@ -1,4 +1,4 @@
-package com.github.sdpteam15.polyevents
+package com.github.sdpteam15.polyevents.admin
 
 import android.content.Intent
 import androidx.test.core.app.ActivityScenario
@@ -11,14 +11,16 @@ import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.sdpteam15.polyevents.admin.*
+import com.github.sdpteam15.polyevents.HelperTestFunction
+import com.github.sdpteam15.polyevents.MainActivity
+import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
+import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabase
 import com.github.sdpteam15.polyevents.login.UserLogin
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
-import com.google.firebase.auth.FirebaseAuth
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -40,7 +42,7 @@ class AdminHubFragmentTest {
 
     @Before
     fun setup() {
-        val mockedDatabase = mock(DatabaseInterface::class.java)
+        val mockedDatabase = HelperTestFunction.defaultMockDatabase()
         val mockedUserProfile = UserProfile("TestID", "TestName")
         When(mockedDatabase.currentProfile).thenReturn(mockedUserProfile)
         Database.currentDatabase = mockedDatabase
@@ -72,6 +74,7 @@ class AdminHubFragmentTest {
 
     @Test
     fun clickOnBtnItemRequestManagementDisplayCorrectActivity() {
+
         Espresso.onView(ViewMatchers.withId(R.id.btnRedirectItemReqManagement)).perform(click())
         Intents.intended(IntentMatchers.hasComponent(ItemRequestManagementActivity::class.java.name))
     }
@@ -90,7 +93,9 @@ class AdminHubFragmentTest {
 
     @Test
     fun clickOnBtnUserManagementDisplayCorrectActivity() {
+        Database.currentDatabase = FakeDatabase
         Espresso.onView(ViewMatchers.withId(R.id.btnRedirectUserManagement)).perform(click())
-        Intents.intended(IntentMatchers.hasComponent(UserManagementActivity::class.java.name))
+        Intents.intended(IntentMatchers.hasComponent(UserManagementListActivity::class.java.name))
+        Database.currentDatabase = FirestoreDatabaseProvider
     }
 }

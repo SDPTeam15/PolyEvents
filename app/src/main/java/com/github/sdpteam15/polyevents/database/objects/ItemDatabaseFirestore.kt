@@ -1,7 +1,6 @@
 package com.github.sdpteam15.polyevents.database.objects
 
 import android.annotation.SuppressLint
-import com.github.sdpteam15.polyevents.database.DatabaseConstant
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.ITEM_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.ITEM_TYPE_COLLECTION
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.ItemConstants.ITEM_COUNT
@@ -61,7 +60,7 @@ object ItemDatabaseFirestore : ItemDatabaseInterface {
         ) { querySnapshot ->
             itemList.clear(this)
             val items = querySnapshot.documents.map {
-                ItemEntityAdapter.toItemEntity(it.data!!, it.id)
+                ItemEntityAdapter.fromDocument(it.data!!, it.id)
             }
             itemList.addAll(items, this)
         }
@@ -77,7 +76,7 @@ object ItemDatabaseFirestore : ItemDatabaseInterface {
         ) { querySnapshot ->
             itemList.clear(this)
             val items = querySnapshot.documents.map {
-                ItemEntityAdapter.toItemEntity(it.data!!, it.id)
+                ItemEntityAdapter.fromDocument(it.data!!, it.id)
             }
             itemList.addAll(items, this)
         }

@@ -1,4 +1,39 @@
+version: "2"         # required to adjust maintainability checks
+checks:
+  argument-count:
+    config:
+      threshold: 8
+  complex-logic:
+    config:
+      threshold: 100
+  file-lines:
+    config:
+      threshold: 1250
+  method-complexity:
+    config:
+      threshold: 100
+  method-count:
+    config:
+      threshold: 20
+  method-lines:
+    config:
+      threshold: 100
+  nested-control-flow:
+    config:
+      threshold: 20
+  return-statements:
+    config:
+      threshold: 20
+  similar-code:
+    config:
+      threshold: 60 # otherwise, findViewById and hashMap creation will raise an alert
+  identical-code:
+    config:
+      threshold: 60 # otherwise, findViewById and hashMap creation will raise an alert
+
 exclude_patterns:
 - "**/test/"
 - "**/androidTest/"
 - "**test"
+- "**/summaries/"
+- "**/NVM/"

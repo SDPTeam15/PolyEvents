@@ -9,32 +9,15 @@ import com.github.sdpteam15.polyevents.model.UserProfile
 object FakeDatabaseUser : UserDatabaseInterface {
     lateinit var profiles: MutableList<UserProfile>
 
-    private fun initProfiles() {
-        profiles = mutableListOf()
-    }
-
-    fun getProfilesList(uid: String, user: UserEntity?): List<UserProfile> =
-        profiles
-
-
-    fun addProfile(profile: UserProfile, uid: String, user: UserEntity?): Boolean =
-        profiles.add(profile)
-
     override var firstConnectionUser: UserEntity = UserEntity(uid = "DEFAULT")
-
-
     override fun updateUserInformation(
-        newValues: Map<String, String>,
-        uid: String,
-        userAccess: UserProfile?
-    ): Observable<Boolean> =
-        Observable(true, this)
-
-    override fun firstConnexion(
         user: UserEntity,
         userAccess: UserProfile?
-    ): Observable<Boolean> =
-        Observable(true, this)
+    ) = Observable(true, this)
+
+    override fun firstConnexion(
+        user: UserEntity
+    ) = Observable(true, this)
 
     override fun inDatabase(
         isInDb: Observable<Boolean>,
@@ -47,10 +30,15 @@ object FakeDatabaseUser : UserDatabaseInterface {
 
     override fun getUserInformation(
         user: Observable<UserEntity>,
-        uid: String?,
+        uid: String,
+        userAccess: UserProfile?
+    ) = Observable(true, this)
+
+    override fun getListAllUsers(
+        users: ObservableList<UserEntity>,
         userAccess: UserProfile?
     ): Observable<Boolean> {
-        TODO("Not yet implemented")
+        return Observable(true)
     }
 
     override fun addUserProfileAndAddToUser(
@@ -99,10 +87,4 @@ object FakeDatabaseUser : UserDatabaseInterface {
     ): Observable<Boolean> {
         TODO("Not yet implemented")
     }
-
-    override fun removeProfile(profile: UserProfile, user: UserEntity?): Observable<Boolean> {
-        TODO("Not yet implemented")
-    }
-
-
 }

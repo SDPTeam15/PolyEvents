@@ -1,8 +1,6 @@
 package com.github.sdpteam15.polyevents.database.objects
 
 import com.github.sdpteam15.polyevents.database.Database
-import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.model.MaterialRequest
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 

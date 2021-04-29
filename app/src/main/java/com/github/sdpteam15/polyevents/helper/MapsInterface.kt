@@ -58,4 +58,11 @@ interface MapsInterface {
      * @param requireContext context
      */
     fun setMyLocationEnabled(b: Boolean, requireContext: Context)
+
+    /**
+     * Add a Overlay on the map
+     * @param tileProvider tileProvider
+     * @return TileOverlay
+     */
+    fun addTileOverlay(tileProvider: TileOverlayOptions?): TileOverlay
 }

@@ -31,7 +31,13 @@ data class Zone(
                 val points = s.split(POINTS_SEP.value)
                 for (p in points) {
                     val coor = p.split(LAT_LONG_SEP.value)
-                    curList.add(LatLng(coor[0].toDouble(), coor[1].toDouble()))
+
+                    try{
+                        curList.add(LatLng(coor[0].toDouble(), coor[1].toDouble()))
+                    }catch (e: NumberFormatException){
+                        println(coor)
+                    }
+
                 }
                 listZoneCoordinates.add(curList)
             }

@@ -48,6 +48,7 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
     implementation 'com.google.android.gms:play-services-location:18.0.0'
+    implementation 'com.google.maps.android:android-maps-utils:2.1.0'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.3'
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.3'
     implementation 'androidx.gridlayout:gridlayout:1.0.0'
