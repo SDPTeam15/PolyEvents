@@ -44,6 +44,7 @@ class ItemRequestAdapter(
             notifyDataSetChanged()
         }
     }
+
     // Listener that update the map of selected items when the quantity is changed
     private val onItemQuantityChangeListener = { item: Item, newQuantity: Int ->
         when {
@@ -77,6 +78,7 @@ class ItemRequestAdapter(
                 notifyDataSetChanged()
             }
         }
+
         override fun unbind() {
             //do nothing
         }
@@ -169,6 +171,7 @@ class ItemRequestAdapter(
             itemQuantity.setText(mapSelectedItems[item.first]?.toString() ?: "")
             itemQuantity.addTextChangedListener(quantityTextWatcher)
         }
+
         override fun unbind() {
             itemQuantity.removeTextChangedListener(quantityTextWatcher)
         }
