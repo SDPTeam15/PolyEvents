@@ -32,3 +32,17 @@ This week, I implemented the heatmap and a routine to send the position of the d
 My time estimates were good for my tasks, and I spend extra time on ObservableMap just for my fun.
 
 Next week, I will work a path finding feature.
+
+# Mathieu (Scrum Master)
+
+This week, I implemented the modification of an item after having creating it.
+
+My time estimates were were not accurate for this week. The correction of the tests for the task of last sprint took more time that I imagined, but the modification of the items took less time than I planned because most of the functions I needed were already implemented and I didn't know it when I took the task.
+
+Next week, I will work on the path finding with my lovely team members :=)
+
+## Overall team
+
+Overall, everyone did their tasks well and within the time limit. We managed to finish all the user stories we took for the sprint.
+
+We had 2 stand-up meetings to discuss the problems encountered for some tasks and we also discussed about what we wanted to do in the next sprint to compleate the requirements.
