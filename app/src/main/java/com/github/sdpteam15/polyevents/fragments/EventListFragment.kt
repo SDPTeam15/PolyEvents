@@ -38,7 +38,7 @@ class EventListFragment : Fragment() {
     }
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var myEventsSpinner: SwitchMaterial
+    private lateinit var myEventsSwitch: SwitchMaterial
     val events = ObservableList<Event>()
     val eventsLocal = ObservableList<EventLocal>()
     private val localEventViewModel: EventLocalViewModel by viewModels {
@@ -57,21 +57,9 @@ class EventListFragment : Fragment() {
         val fragmentView = inflater.inflate(R.layout.fragment_events, container, false)
         recyclerView = fragmentView.findViewById(R.id.recycler_events_list)
 
-        myEventsSpinner = fragmentView.findViewById(R.id.event_list_my_events_switch)
-        myEventsSpinner.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
-                Log.d(TAG, "switch on!")
-                if (currentDatabase.currentUser == null) {
-                    // Cannot switch to my Events if no user logged in
-                    myEventsSpinner.isChecked = false
-                    HelperFunctions.showToast(resources.getString(R.string.my_events_log_in), context)
-                } else {
-                    getUserLocalSubscribedEvents()
-                }
-            } else {
-                Log.d(TAG, "switch off!")
-                getEventsListAndDisplay(fragmentView.context)
-            }
+        myEventsSwitch = fragmentView.findViewById(R.id.event_list_my_events_switch)
+        myEventsSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
+            myEventsSwitchCallback(isChecked)
         }
 
         val openEvent = { event: Event ->
@@ -92,9 +80,31 @@ class EventListFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        getEventsListAndDisplay(context)
+        myEventsSwitchCallback(myEventsSwitch.isChecked)
     }
 
+    /**
+     * Retrieve my events if switch is on, else retrieve all events from remote database
+     * @param isChecked true if the switch is on to retrieve only the events the current user $
+     * if registered to from the local database
+     */
+    private fun myEventsSwitchCallback(isChecked: Boolean) {
+        if (isChecked) {
+            if (currentDatabase.currentUser == null) {
+                // Cannot switch to my Events if no user logged in
+                myEventsSwitch.isChecked = false
+                HelperFunctions.showToast(resources.getString(R.string.my_events_log_in), context)
+            } else {
+                getUserLocalSubscribedEvents()
+            }
+        } else {
+            getEventsListAndDisplay(context)
+        }
+    }
+
+    /**
+     * Get all the events the current user is subscribed to from the local cache (room database).
+     */
     private fun getUserLocalSubscribedEvents() {
         localEventViewModel.getAllEvents(eventsLocal)
         eventsLocal.observe(this) {
