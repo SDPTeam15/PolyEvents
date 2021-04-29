@@ -102,7 +102,7 @@ dependencies {
     }
 
     // Room dependency
-    def room_version = "2.2.6"
+    def room_version = "2.3.0"
 
     implementation "androidx.room:room-runtime:$room_version"
     // kapt is Kotlin annotation processor tool
@@ -113,6 +113,13 @@ dependencies {
 
     // optional - Test helpers
     testImplementation "androidx.room:room-testing:$room_version"
+
+    // Coroutines
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3"
+
+    // ViewModel
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1"
 
     //UIAutomator
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
