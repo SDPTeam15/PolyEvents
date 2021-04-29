@@ -8,13 +8,11 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
-import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
-import com.github.sdpteam15.polyevents.adapter.EventItemAdapter
 import com.github.sdpteam15.polyevents.database.Database
+import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.database.room.LocalDatabase
@@ -37,6 +35,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnitRunner
 import java.time.LocalDateTime
 
@@ -160,7 +159,9 @@ class EventListFragmentTest {
         localDatabase.eventDao().insert(EventLocal.fromEvent(event1.copy(eventId = "1")))
         localDatabase.eventDao().insert(EventLocal.fromEvent(event2.copy(eventId = "2")))
 
-        FakeDatabase.userToNull = true
+        val mockedDatabase = Mockito.mock(DatabaseInterface::class.java)
+        Mockito.`when`(mockedDatabase.currentUser).thenReturn(null)
+        Database.currentDatabase = mockedDatabase
 
         clickOn(R.id.event_list_my_events_switch)
 
