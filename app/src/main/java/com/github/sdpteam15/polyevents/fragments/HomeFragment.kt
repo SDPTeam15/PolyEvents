@@ -46,6 +46,8 @@ class HomeFragment : Fragment() {
             updateContent()
         }
 
+        HelperFunctions.getLocationPermission(requireActivity())
+
         return fragmentView
     }
 
@@ -82,4 +84,10 @@ class HomeFragment : Fragment() {
 
         listUpcomingEventsLayout.addView(eventTab)
     }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) = HelperFunctions.onRequestPermissionsResult(requestCode, permissions, grantResults)
 }

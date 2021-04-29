@@ -16,7 +16,7 @@ class ObservableTest {
         assertEquals(null, Observable<Int>().value)
         assertEquals(null, Observable<Int>().sender)
         assertEquals(null, Observable<Int>(null).value)
-        assertEquals(null, Observable<Int>(sender = sender).sender)
+        assertEquals(null, Observable<Int>(creator = sender).sender)
         assertEquals(null, Observable<Int>(null, sender).sender)
         assertEquals(null, Observable<Int>(null).sender)
         assertEquals(0, Observable(0).value)
@@ -35,7 +35,7 @@ class ObservableTest {
         assertEquals(sender, observable.sender)
 
         isUpdate = false
-        suppressor()
+        suppressor.remove()
         observable.postValue(false, sender)
 
         assertEquals(false, isUpdate)
@@ -69,13 +69,13 @@ class ObservableTest {
         var suppressor = observable.observe(mockedLifecycleOwner) { isUpdate = it.value ?: false }
         observable.postValue(true, sender)
         assert(isUpdate)
-        assert(suppressor())
+        assert(suppressor.remove())
         isUpdate = false
 
         suppressor = observable.observeOnce(mockedLifecycleOwner) { isUpdate = it.value ?: false }
         observable.postValue(true, sender)
         assert(isUpdate)
-        assert(!suppressor())
+        assert(!suppressor.remove())
         isUpdate = false
 
         suppressor = observable.observeWhileTrue(mockedLifecycleOwner) {
@@ -84,6 +84,165 @@ class ObservableTest {
         }
         observable.postValue(true, sender)
         assert(isUpdate)
-        assert(suppressor())
+        assert(suppressor.remove())
+    }
+
+    @Test
+    fun mapUpdate(){
+        var isUpdate = false
+        val mockedLifecycleOwner = mock(LifecycleOwner::class.java)
+        val mockedLifecycle = mock(Lifecycle::class.java)
+        When(mockedLifecycleOwner.lifecycle).thenReturn(mockedLifecycle)
+
+        var v = Observable<Boolean>()
+        var observe = true
+        v.mapWhileTrue(mockedLifecycleOwner) { Pair(it, observe) }.then.observe { isUpdate = it.value }
+
+        assert(!isUpdate)
+        v.postValue(true)
+        assert(isUpdate)
+        isUpdate = false
+
+        observe = false
+        assert(!isUpdate)
+        v.postValue(true)
+        assert(isUpdate)
+        isUpdate = false
+
+        assert(!isUpdate)
+        v.postValue(true)
+        assert(!isUpdate)
+
+        v = Observable<Boolean>()
+        observe = true
+        v.mapWhileTrue { Pair(it, observe) }.then.observe { isUpdate = it.value }
+
+        assert(!isUpdate)
+        v.postValue(true)
+        assert(isUpdate)
+        isUpdate = false
+
+        observe = false
+        assert(!isUpdate)
+        v.postValue(true)
+        assert(isUpdate)
+        isUpdate = false
+
+        assert(!isUpdate)
+        v.postValue(true)
+        assert(!isUpdate)
+
+        v = Observable()
+        v.mapOnce(mockedLifecycleOwner) { it }.then.observe { isUpdate = it.value }
+        assert(!isUpdate)
+        v.postValue(true)
+        assert(isUpdate)
+        isUpdate = false
+
+        assert(!isUpdate)
+        v.postValue(true)
+        assert(!isUpdate)
+
+        v = Observable()
+        v.mapOnce { it }.then.observe { isUpdate = it.value }
+        assert(!isUpdate)
+        v.postValue(true)
+        assert(isUpdate)
+        isUpdate = false
+
+        assert(!isUpdate)
+        v.postValue(true)
+        assert(!isUpdate)
+
+        v = Observable()
+        v.map(mockedLifecycleOwner) { it }.then.observe { isUpdate = it.value }
+        assert(!isUpdate)
+        v.postValue(true)
+        assert(isUpdate)
+        isUpdate = false
+
+        assert(!isUpdate)
+        v.postValue(true)
+        assert(isUpdate)
+        isUpdate = false
+
+        assert(!isUpdate)
+        v.postValue(true)
+        assert(isUpdate)
+        isUpdate = false
+
+        v = Observable()
+        v.map { it }.then.observe { isUpdate = it.value }
+        assert(!isUpdate)
+        v.postValue(true)
+        assert(isUpdate)
+        isUpdate = false
+
+        assert(!isUpdate)
+        v.postValue(true)
+        assert(isUpdate)
+        isUpdate = false
+
+        assert(!isUpdate)
+        v.postValue(true)
+        assert(isUpdate)
+        isUpdate = false
+    }
+
+
+    @Test
+    fun updateUpdate() {
+        var isUpdate = false
+        val mockedLifecycleOwner = mock(LifecycleOwner::class.java)
+        val mockedLifecycle = mock(Lifecycle::class.java)
+        When(mockedLifecycleOwner.lifecycle).thenReturn(mockedLifecycle)
+
+        var v = Observable<Boolean>()
+        var observe = true
+        v.updateWhileTrue(mockedLifecycleOwner, Observable<Boolean>().observe { isUpdate = it.value }.then) { observe }
+
+        assert(!isUpdate)
+        v.postValue(true)
+        assert(isUpdate)
+        isUpdate = false
+
+        observe = false
+        assert(!isUpdate)
+        v.postValue(true)
+        assert(isUpdate)
+        isUpdate = false
+
+        assert(!isUpdate)
+        v.postValue(true)
+        assert(!isUpdate)
+
+        v = Observable()
+        v.updateOnce(mockedLifecycleOwner, Observable<Boolean>().observe { isUpdate = it.value }.then)
+        assert(!isUpdate)
+        v.postValue(true)
+        assert(isUpdate)
+        isUpdate = false
+
+        assert(!isUpdate)
+        v.postValue(true)
+        assert(!isUpdate)
+
+        v = Observable()
+        v.update(mockedLifecycleOwner, Observable<Boolean>().observe { isUpdate = it.value }.then)
+        assert(!isUpdate)
+        v.postValue(true)
+        assert(isUpdate)
+        isUpdate = false
+
+        assert(!isUpdate)
+        v.postValue(true)
+        assert(isUpdate)
+        isUpdate = false
+
+        assert(!isUpdate)
+        v.postValue(true)
+        assert(isUpdate)
+        isUpdate = false
+
     }
 }

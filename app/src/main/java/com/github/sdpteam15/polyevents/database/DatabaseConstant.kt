@@ -1,18 +1,36 @@
 package com.github.sdpteam15.polyevents.database
 
+import com.github.sdpteam15.polyevents.util.*
+
+const val TEST_STR = "STR"
+class StringWithID(val id: String, val string: String)
+
 /**
  * Constants of collection names and attribute names.
  */
 object DatabaseConstant {
-    enum class CollectionConstant(val value: String) {
-        LOCATION_COLLECTION("locations"),
-        ZONE_COLLECTION("zones"),
-        ITEM_COLLECTION("items"),
-        EVENT_COLLECTION("events"),
-        PROFILE_COLLECTION("profile"),
-        USER_COLLECTION("users"),
-        ITEM_TYPE_COLLECTION("itemTypes"),
-        TEST_COLLECTION("test");
+    enum class CollectionConstant(val value: String,
+                                  val adapter : AdapterInterface<out Any>) {
+        LOCATION_COLLECTION("locations", DeviceLocationAdapter),
+        ZONE_COLLECTION("zones", ZoneAdapter),
+        ITEM_COLLECTION("items", ItemEntityAdapter),
+        EVENT_COLLECTION("events", EventAdapter),
+        PROFILE_COLLECTION("profile", ProfileAdapter),
+        USER_COLLECTION("users", UserAdapter),
+        ITEM_TYPE_COLLECTION("itemTypes", ItemTypeAdapter),
+        MATERIAL_REQUEST_COLLECTION("materialRequests", MaterialRequestAdapter),
+
+
+        TEST_COLLECTION("test", object : AdapterInterface<StringWithID> {
+            override fun toDocument(element: StringWithID): HashMap<String, Any?> =
+                hashMapOf(TEST_STR to element.string)
+            override fun fromDocument(
+                document: MutableMap<String, Any?>,
+                id: String
+            ) = StringWithID(id, document[TEST_STR] as String)
+        });
+
+
         override fun toString(): String = value
     }
 
@@ -75,8 +93,18 @@ object DatabaseConstant {
     }
 
     enum class LocationConstant(val value: String) {
-        LOCATIONS_COLLECTION("locations"),
-        LOCATIONS_POINT("point");
+        LOCATIONS_DEVICE("device"),
+        LOCATIONS_POINT_LATITUDE("latitude"),
+        LOCATIONS_POINT_LONGITUDE("longitude"),
+        LOCATIONS_TIME("time");
+        override fun toString(): String = value
+    }
+
+    enum class MaterialRequestConstant(val value: String){
+        MATERIAL_REQUEST_ID("mid"),
+        MATERIAL_REQUEST_TIME("time"),
+        MATERIAL_REQUEST_LIST("item_list"),
+        MATERIAL_REQUEST_USER_ID("user_id");
         override fun toString(): String = value
     }
 }

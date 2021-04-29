@@ -14,13 +14,12 @@ import com.github.sdpteam15.polyevents.model.UserProfile
 import com.github.sdpteam15.polyevents.model.UserRole
 import com.google.android.material.textfield.TextInputEditText
 
-const val CALLER_RANK = "com.github.sdpteam15.polyevents.user.CALLER_RANK"
-const val EDIT_PROFILE_ID = "com.github.sdpteam15.polyevents.user.EDIT_PROFILE_ID"
-
 class EditProfileActivity : AppCompatActivity() {
     companion object {
         val updater = Observable<UserProfile>()
         var end = Observable<Boolean>()
+        const val CALLER_RANK = "com.github.sdpteam15.polyevents.user.CALLER_RANK"
+        const val EDIT_PROFILE_ID = "com.github.sdpteam15.polyevents.user.EDIT_PROFILE_ID"
     }
 
     private val id: TextInputEditText get() = findViewById(R.id.EditProfileActivity_ID)
@@ -86,7 +85,7 @@ class EditProfileActivity : AppCompatActivity() {
             profile.userRole = newRank
             profile.profileName = newName
 
-            currentDatabase.userDatabase!!.updateProfile(profile).observe {
+            currentDatabase.userDatabase!!.updateProfile(profile).observeOnce(this) {
                 if (it.value) {
                     end.postValue(true, this)
                     onBackPressed()
