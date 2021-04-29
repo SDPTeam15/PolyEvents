@@ -36,6 +36,7 @@ class ItemRequestManagementTest {
 
     @Before
     fun setup() {
+        Database.currentDatabase = FakeDatabase
         availableItems = mutableMapOf()
         availableItems[Item("1", "Bananas", "Fruit")] = 30
         availableItems[Item("2", "Kiwis", "Fruit")] = 10
@@ -73,7 +74,7 @@ class ItemRequestManagementTest {
                 Database.currentDatabase.currentUser!!.uid
             )
         )
-        Database.currentDatabase = FakeDatabase
+
         FakeDatabaseMaterialRequest.requests.clear()
         FakeDatabaseItem.items.clear()
 

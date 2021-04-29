@@ -31,8 +31,6 @@ object TestHelper {
     }
 }
 
-class RecyclerViewTextViewAssertion()
-
 class RecyclerViewItemCountAssertion(expectedCount: Int) : ViewAssertion {
     private val matcher: Matcher<Int> = CoreMatchers.`is`(expectedCount)
 
