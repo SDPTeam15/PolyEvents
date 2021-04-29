@@ -8,7 +8,7 @@ checks:
       threshold: 100
   file-lines:
     config:
-      threshold: 400
+      threshold: 1250
   method-complexity:
     config:
       threshold: 100
@@ -17,13 +17,13 @@ checks:
       threshold: 20
   method-lines:
     config:
-      threshold: 60
+      threshold: 100
   nested-control-flow:
     config:
-      threshold: 8
+      threshold: 20
   return-statements:
     config:
-      threshold: 8
+      threshold: 20
   similar-code:
     config:
       threshold: 60 # otherwise, findViewById and hashMap creation will raise an alert

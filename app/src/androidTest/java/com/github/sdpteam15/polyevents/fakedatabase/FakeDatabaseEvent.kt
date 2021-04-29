@@ -54,7 +54,7 @@ object FakeDatabaseEvent : EventDatabaseInterface {
 
     }
 
-    override fun createEvent(event: Event, profile: UserProfile?): Observable<Boolean> {
+    override fun createEvent(event: Event, userAccess: UserProfile?): Observable<Boolean> {
         val eventId = FakeDatabase.generateRandomKey()
         val b = events.put(
             eventId,
@@ -63,7 +63,7 @@ object FakeDatabaseEvent : EventDatabaseInterface {
         return Observable(b, this)
     }
 
-    override fun updateEvents(event: Event, profile: UserProfile?): Observable<Boolean> {
+    override fun updateEvents(event: Event, userAccess: UserProfile?): Observable<Boolean> {
         // TODO should update add item if non existent in database ?
         // if (event.eventId == null) return createEvent(event, profile)
         events[event.eventId!!] = event
@@ -71,9 +71,9 @@ object FakeDatabaseEvent : EventDatabaseInterface {
     }
 
     override fun getEventFromId(
-        id: String,
-        returnEvent: Observable<Event>,
-        profile: UserProfile?
+            id: String,
+            returnEvent: Observable<Event>,
+            userAccess: UserProfile?
     ): Observable<Boolean> {
         val event = events[id]
         if (event != null)
@@ -83,10 +83,10 @@ object FakeDatabaseEvent : EventDatabaseInterface {
 
 
     override fun getEvents(
-        matcher: Matcher?,
-        limit: Long?,
-        eventList: ObservableList<Event>,
-        profile: UserProfile?
+            matcher: Matcher?,
+            limit: Long?,
+            eventList: ObservableList<Event>,
+            userAccess: UserProfile?
     ): Observable<Boolean> {
         eventList.clear(this)
 

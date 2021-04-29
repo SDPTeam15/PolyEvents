@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.admin.EventManagementActivity
 import com.github.sdpteam15.polyevents.admin.ItemRequestManagementActivity
-import com.github.sdpteam15.polyevents.admin.UserManagementActivity
+import com.github.sdpteam15.polyevents.admin.UserManagementListActivity
 import com.github.sdpteam15.polyevents.admin.ZoneManagementListActivity
 
 
@@ -30,7 +30,7 @@ class AdminHubFragment : Fragment() {
             startActivity(intent)
         }
         viewRoot.findViewById<Button>(R.id.btnRedirectUserManagement).setOnClickListener {
-            val intent = Intent(inflater.context, UserManagementActivity::class.java)
+            val intent = Intent(inflater.context, UserManagementListActivity::class.java)
             startActivity(intent)
         }
         viewRoot.findViewById<Button>(R.id.btnRedirectItemReqManagement).setOnClickListener {

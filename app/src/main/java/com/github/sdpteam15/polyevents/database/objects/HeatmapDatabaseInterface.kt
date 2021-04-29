@@ -2,6 +2,7 @@ package com.github.sdpteam15.polyevents.database.objects
 
 import com.github.sdpteam15.polyevents.database.Database
 import com.github.sdpteam15.polyevents.database.observe.Observable
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 import com.google.android.gms.maps.model.LatLng
@@ -16,12 +17,10 @@ interface HeatmapDatabaseInterface {
      * Update, or add if it was not already in the database, the current location
      * (provided by the GeoPoint) of the user in the database.
      * @param location current location of the user
-     * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
-    fun setUserLocation(
-        location: LatLng,
-        userAccess: UserEntity? = currentUser
+    fun setLocation(
+        location: LatLng
     ): Observable<Boolean>
 
     /**
@@ -30,8 +29,8 @@ interface HeatmapDatabaseInterface {
      * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
-    fun getUsersLocations(
-        usersLocations: Observable<List<LatLng>>,
-        userAccess: UserEntity? = currentUser
+    fun getLocations(
+        usersLocations: ObservableList<LatLng>,
+        userAccess: UserEntity? = null
     ): Observable<Boolean>
 }

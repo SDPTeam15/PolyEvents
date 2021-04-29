@@ -34,7 +34,7 @@ class ItemEntityAdapterTest {
             ITEM_TYPE.value to itemType,
             ITEM_COUNT.value to itemQuantity.toLong()
         )
-        val obtainedItem = ItemEntityAdapter.toItemEntity(itemDocumentData, itemId)
+        val obtainedItem = ItemEntityAdapter.fromDocument(itemDocumentData, itemId)
 
         assertEquals(obtainedItem.first, itemEntity)
         assertEquals(obtainedItem.second, itemQuantity)

@@ -38,7 +38,8 @@ class ItemsAdminActivity : AppCompatActivity() {
 
         currentDatabase.itemDatabase!!.getItemsList(items).observe(this) {
             if (!it.value)
-                HelperFunctions.showToast(getString(R.string.query_not_satisfied), this)
+                HelperFunctions.showToast(getString(R.string.failed_to_get_item),this)
+
         }
         currentDatabase.itemDatabase!!.getItemTypes(itemTypes).observe(this) {
             if (!it.value)

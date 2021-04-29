@@ -6,13 +6,13 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.Drawable
-import android.util.Log
 import androidx.core.content.ContextCompat
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZoneConstant.*
 import com.github.sdpteam15.polyevents.model.Zone
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.*
+import com.google.maps.android.heatmaps.HeatmapTileProvider
 import kotlin.math.*
 
 enum class PolygonAction {
@@ -608,6 +608,25 @@ object GoogleMapHelper {
         rotationMarker!!.position =
             LatLng(rotationPos!!.latitude + lat2, rotationPos!!.longitude + lng2)
         rotationPos = rotationMarker!!.position
+    }
+
+    var lastOverlay : TileOverlay? = null
+
+    /**
+     * add HeatMap to the map
+     * list of points
+     */
+    fun addHeatMap(latLngs: List<LatLng>) {
+        if(latLngs.isNotEmpty()) {
+            // Create a heat map tile provider, passing it the latlngs of the police stations.
+            val provider = HeatmapTileProvider.Builder()
+                .data(latLngs)
+                .build()
+
+            lastOverlay?.remove()
+            // Add a tile overlay to the map, using the heat map tile provider.
+            lastOverlay = map!!.addTileOverlay(TileOverlayOptions().tileProvider(provider))
+        }
     }
 
     /**
