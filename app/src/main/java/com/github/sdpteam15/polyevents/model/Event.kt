@@ -27,7 +27,7 @@ import java.time.format.DateTimeFormatter
 // TODO: look into storing instances of LocalDateTime, or Long (for startTime and endTime)
 // TODO: Should the eventName be unique? (Important when writing security rules)
 // TODO: keep track of items, or just required items?
-// TODO: add location
+// TODO: add location (Zone or zoneId)
 @IgnoreExtraProperties
 data class Event(
     val eventId: String? = null,
@@ -35,6 +35,7 @@ data class Event(
     val organizer: String? = null,
     val zoneName: String? = null,
     var description: String? = null,
+    // TODO: handle event icons (probably during event creation)
     var icon: Bitmap? = null,
     val startTime: LocalDateTime? = null,
     val endTime: LocalDateTime? = null,
