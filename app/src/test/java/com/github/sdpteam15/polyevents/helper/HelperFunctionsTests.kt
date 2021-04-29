@@ -5,7 +5,9 @@ import android.content.pm.PackageManager
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
+import java.time.Instant
 import java.time.LocalDateTime
+import java.time.ZoneId
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
@@ -17,12 +19,14 @@ class HelperFunctionsTests {
         Manifest.permission.ACCESS_COARSE_LOCATION
     )
 
-    // 1st of December 2021, at 01:01:01
-    val ldt = LocalDateTime.of(
-            2021, 12, 1, 1, 1, 1
-    )
     // using https://currentmillis.com/ on the above date
     val milliseconds: Long = 1638316861000L
+
+    // 1st of December 2021, at 01:01:01
+    val ldt = LocalDateTime.ofInstant(
+        Instant.ofEpochMilli(milliseconds),
+        ZoneId.systemDefault()
+    )
 
     // test string set to string conversions
     val s = "hello,world,1,2,3"
