@@ -1,50 +1,44 @@
 package com.github.sdpteam15.polyevents
 
 
+import android.content.Intent
 import android.view.View
 import android.view.WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
 import android.view.WindowManager.LayoutParams.TYPE_TOAST
 import android.widget.EditText
+import androidx.test.core.app.ActivityScenario
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.Root
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.contrib.RecyclerViewActions
-import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.github.sdpteam15.polyevents.HelperTestFunction.getCurrentActivity
 import com.github.sdpteam15.polyevents.adapter.ItemRequestAdapter
 import com.github.sdpteam15.polyevents.database.Database
-import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabase
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabaseItem
+import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabaseMaterialRequest
 import com.github.sdpteam15.polyevents.model.Item
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.Description
 import org.hamcrest.TypeSafeMatcher
 import org.junit.After
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.junit.MockitoJUnitRunner
 
 
-@RunWith(MockitoJUnitRunner::class)
 class ItemRequestActivityTest {
     private lateinit var availableItems: MutableMap<Item, Int>
     private var availableItemsList = ObservableList<Pair<Item, Int>>()
-    private lateinit var mockedAvailableItemsProvider: DatabaseInterface
+    private var nbItemTypes: Int = 0
 
-    @Rule
-    @JvmField
-    var mainActivity = ActivityScenarioRule(MainActivity::class.java)
+    lateinit var itemsAdminActivity: ActivityScenario<ItemRequestActivity>
 
     private fun setQuantityField(viewId: Int, value: String) = object : ViewAction {
         override fun getConstraints() = null
@@ -68,21 +62,21 @@ class ItemRequestActivityTest {
     @After
     fun teardown() {
         Database.currentDatabase = FirestoreDatabaseProvider
-        Intents.release()
     }
 
     @Before
     fun setup() {
         availableItems = mutableMapOf()
-        availableItems[Item(null, "Bananas", "OTHER")] = 30
-        availableItems[Item(null, "Kiwis", "OTHER")] = 10
-        availableItems[Item(null, "230V Plugs", "PLUG")] = 30
-        availableItems[Item(null, "Fridge (large)", "PLUG")] = 5
-        availableItems[Item(null, "Cord rewinder (15m)", "PLUG")] = 30
-        availableItems[Item(null, "Cord rewinder (50m)", "PLUG")] = 10
-        availableItems[Item(null, "Cord rewinder (25m)", "PLUG")] = 20
+        availableItems[Item(null, "Bananas", "Fruit")] = 30
+        availableItems[Item(null, "Kiwis", "Fruit")] = 10
+        availableItems[Item(null, "230V Plugs", "Plug")] = 30
+        availableItems[Item(null, "Fridge (large)", "Fridge")] = 5
+        availableItems[Item(null, "Cord rewinder (15m)", "Plug")] = 30
+        availableItems[Item(null, "Cord rewinder (50m)", "Plug")] = 10
+        availableItems[Item(null, "Cord rewinder (25m)", "Plug")] = 20
 
-
+        val types = mutableSetOf<String>()
+        nbItemTypes = availableItems.count { types.add(it.key.itemType) }
         // TODO : replace by the db interface call
         Database.currentDatabase = FakeDatabase
         FakeDatabaseItem.items.clear()
@@ -91,108 +85,124 @@ class ItemRequestActivityTest {
         }
         Database.currentDatabase.itemDatabase!!.getItemsList(availableItemsList)
 
-        // go to activities more fragment
-        mainActivity = ActivityScenarioRule(MainActivity::class.java)
-        onView(withId(R.id.ic_more)).perform(click())
-
-        // Go to items request activity
-        onView(withId(R.id.id_request_button)).perform(click())
-        Intents.init()
-        Thread.sleep(1000)
+        val intent =
+            Intent(ApplicationProvider.getApplicationContext(), ItemRequestActivity::class.java)
+        itemsAdminActivity = ActivityScenario.launch(intent)
+        Thread.sleep(500)
     }
 
     @Test
-    fun correctNumberAvailableItemsDisplayed() {
+    fun correctNumberAvailableItemsTypesDisplayed() {
+
         onView(withId(R.id.id_recycler_items_request))
-            .check(RecyclerViewItemCountAssertion(availableItems.size))
+            //counts different item types
+            .check(RecyclerViewItemCountAssertion(nbItemTypes))
+    }
+
+    private fun openAllCategories() {
+        for (position in nbItemTypes - 1 downTo 0) {
+            onView(withId(R.id.id_recycler_items_request)).perform(
+                RecyclerViewActions.actionOnItemAtPosition<ItemRequestAdapter.ItemViewHolder>(
+                    position,
+                    click()
+                )
+            )
+        }
     }
 
     @Test
     fun itemsRequestListIsCorrect() {
-        val itemsToSelect = arrayOf(0, 1, 3)
-        val quantityToSelect = arrayOf(30, 3, 5, 2, 40, 4, 20)
-        val correctQuantityAfterSelection = arrayOf(30, 3, 5, 2, 30, 4, 20)
+        val itemsToSelect = arrayOf(1, 2)
+        val quantityToSelect = arrayOf(30, 3)
+        val correctQuantityAfterSelection = arrayOf(30, 3)
         val itemsSelected = mutableMapOf<Item, Int>()
+        openAllCategories()
 
         for (i in itemsToSelect) {
             // Set the quantity wanted for each item
             onView(withId(R.id.id_recycler_items_request)).perform(
                 RecyclerViewActions.actionOnItemAtPosition<ItemRequestAdapter.ItemViewHolder>(
                     i,
-                    setQuantityField(R.id.id_item_quantity, quantityToSelect[i].toString())
+                    setQuantityField(R.id.id_item_quantity, quantityToSelect[i - 1].toString())
                 )
             )
 
-            itemsSelected[availableItemsList[i].first] = correctQuantityAfterSelection[i]
+            itemsSelected[availableItemsList[i - 1].first] = correctQuantityAfterSelection[i - 1]
         }
-
-        assertThat(
-            getCurrentActivity<ItemRequestActivity>().mapSelectedItems, `is`(
-                itemsSelected
+        for (k in itemsSelected.keys) {
+            assert(
+                getCurrentActivity<ItemRequestActivity>().mapSelectedItems.contains(k)
             )
-        )
+        }
     }
 
 
     @Test
-    fun sendingNonEmptyItemRequestGoBackToMainActivity() {
-        selectItemQuantity(0, "1")
+    fun materialRequestIsSent() {
+        openAllCategories()
+        selectItemQuantity(1, "1")
         onView(withId(R.id.id_button_make_request)).perform(click())
-        Intents.intended(IntentMatchers.hasComponent(MainActivity::class.java.name))
+        assert(FakeDatabaseMaterialRequest.requests.any { it.items.any { it2 -> it2.key == availableItemsList[0].first.itemId } })
     }
 
-    /*
+/*
     @Test
     fun sendingEmptyRequestDisplayToast() {
         val context = InstrumentationRegistry.getInstrumentation().getTargetContext()
 
         onView(withId(R.id.id_button_make_request)).perform(click())
         //onView(withText(containsString(context.getString(R.string.item_request_empty_text)))).inRoot(ToastMatcher()).check(matches(isDisplayed()))
-        onView(withText(containsString(context.getString(R.string.item_request_empty_text)))).inRoot(withDecorView(not(
-            getActivity(context)?.getWindow()?.getDecorView()
-        ))).check(matches(isDisplayed()))
+        onView(withText(containsString(context.getString(R.string.item_request_empty_text)))).inRoot(
+            withDecorView(
+                not(
+                    getActivity(context)?.getWindow()?.getDecorView()
+                )
+            )
+        ).check(matches(isDisplayed()))
     }
-
-     */
+*/
 
     @Test
     fun settingNegativeQuantityMakeEmptyRequest() {
+        openAllCategories()
         val quantityToSelect = 1
         val itemToSelect = 1
-        selectItemQuantity(0, "-1")
+        selectItemQuantity(1, "-1")
         selectItemQuantity(itemToSelect, quantityToSelect.toString())
 
         val correctMap = mutableMapOf<Item, Int>()
-        correctMap[availableItemsList[itemToSelect].first] = quantityToSelect
+        correctMap[availableItemsList[itemToSelect - 1].first] = quantityToSelect
 
-        assertThat(
-            getCurrentActivity<ItemRequestActivity>().mapSelectedItems, `is`(
-                correctMap
+        for (k in correctMap.keys) {
+            assert(
+                getCurrentActivity<ItemRequestActivity>().mapSelectedItems.contains(k)
             )
-        )
+        }
     }
 
     @Test
     fun settingTooHighQuantityMakeMaxRequest() {
+        openAllCategories()
         val quantityToSelect = 10000
         val itemToSelect = 1
         selectItemQuantity(itemToSelect, quantityToSelect.toString())
 
         val correctMap = mutableMapOf<Item, Int>()
-        correctMap[availableItemsList[itemToSelect].first] = availableItemsList[itemToSelect].second
+        correctMap[availableItemsList[itemToSelect - 1].first] =
+            availableItemsList[itemToSelect].second
 
-        assertThat(
-            getCurrentActivity<ItemRequestActivity>().mapSelectedItems, `is`(
-                correctMap
+        for (k in correctMap.keys) {
+            assert(
+                getCurrentActivity<ItemRequestActivity>().mapSelectedItems.contains(k)
             )
-        )
+        }
     }
 
-    // Somewhat hijacked test
     @Test
     fun settingEmptyStringForQuantityHasNoEffect() {
+        openAllCategories()
         // Setting empty string as a quantity has no effect on anything
-        selectItemQuantity(0, "")
+        selectItemQuantity(1, "")
 
         assertThat(
             getCurrentActivity<ItemRequestActivity>().mapSelectedItems.size, `is`(
@@ -200,7 +210,9 @@ class ItemRequestActivityTest {
             )
         )
     }
+
 }
+
 
 // Source : https://stackoverflow.com/questions/28390574/checking-toast-message-in-android-espresso
 class ToastMatcher : TypeSafeMatcher<Root?>() {

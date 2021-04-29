@@ -30,15 +30,15 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions.run
  * and eventually a reference to the sender object, which can be used when we need to know who sent the update.
  *
  * @param value the initial value of the data
- * @param sender object that modified the data
+ * @param creator object that modified the data
  */
-class Observable<T>(value: T? = null, sender: Any? = null) {
+class Observable<T>(value: T? = null, val creator: Any? = null) {
     /**
      * The return value of each function that need to add a observer
      * @property then the reference of the Observable
      * @property remove a function  to remove the added observer
      */
-    class ThenOrRemove<U>(val then: U, val remove: () -> Boolean)
+    class ThenOrRemove<U>(val then: U, val creator: Any?, val remove: () -> Boolean)
 
     /**
      * Use an UpdateValue object each time we want to set a new value for the data.
@@ -74,7 +74,7 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
 
     init {
         if (value != null)
-            updateArgs = UpdateValue(value, sender)
+            updateArgs = UpdateValue(value, creator)
     }
 
     /**
@@ -109,7 +109,7 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
                 if (!observer(updateArgs!!))
                     observers.remove(observer)
             })
-        return ThenOrRemove(this, { leave(observer) })
+        return ThenOrRemove(this, creator, { leave(observer) })
     }
 
     /**
@@ -123,8 +123,7 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
         lifecycle: LifecycleOwner,
         updateIfNotNull: Boolean = true,
         observer: (UpdateValue<T>) -> Boolean
-    ) =
-        observeOnDestroy(lifecycle, observeWhileTrue(updateIfNotNull, observer))
+    ) = observeOnDestroy(lifecycle, observeWhileTrue(updateIfNotNull, observer))
 
     /**
      *  Add an observer for the live data
@@ -132,11 +131,13 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
      *  @param observer observer for the live data
      *  @return a method to remove the observer
      */
-    fun observe(updateIfNotNull: Boolean = true, observer: (UpdateValue<T>) -> Unit) =
-        observeWhileTrue(updateIfNotNull) {
-            observer(it)
-            true
-        }
+    fun observe(
+        updateIfNotNull: Boolean = true,
+        observer: (UpdateValue<T>) -> Unit
+    ) = observeWhileTrue(updateIfNotNull) {
+        observer(it)
+        true
+    }
 
     /**
      *  Add an observer for the live data
@@ -149,8 +150,7 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
         lifecycle: LifecycleOwner,
         updateIfNotNull: Boolean = true,
         observer: (UpdateValue<T>) -> Unit
-    ) =
-        observeOnDestroy(lifecycle, observe(updateIfNotNull, observer))
+    ) = observeOnDestroy(lifecycle, observe(updateIfNotNull, observer))
 
     /**
      *  Add an observer for the live data once
@@ -158,11 +158,13 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
      *  @param updateIfNotNull update if not null
      *  @return a method to remove the observer
      */
-    fun observeOnce(updateIfNotNull: Boolean = true, observer: (UpdateValue<T>) -> Unit) =
-        observeWhileTrue(updateIfNotNull) {
-            observer(it)
-            false
-        }
+    fun observeOnce(
+        updateIfNotNull: Boolean = true,
+        observer: (UpdateValue<T>) -> Unit
+    ) = observeWhileTrue(updateIfNotNull) {
+        observer(it)
+        false
+    }
 
     /**
      *  Add an observer for the live data once
@@ -175,8 +177,7 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
         lifecycle: LifecycleOwner,
         updateIfNotNull: Boolean = true,
         observer: (UpdateValue<T>) -> Unit
-    ) =
-        observeOnDestroy(lifecycle, observeOnce(updateIfNotNull, observer))
+    ) = observeOnDestroy(lifecycle, observeOnce(updateIfNotNull, observer))
 
     /**
      *  remove an observer for the live data
@@ -187,16 +188,18 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
 
     /**
      *  map to an other observable while it return true
+     *  @param updateIfNotNull update if not null
      *  @param mapper mapper from the live data to the new one
      *  @param observable observer for the live data
      *  @return if the observer have been remove
      */
     fun <U> mapWhileTrue(
-        observable: Observable<U> = Observable(),
+        updateIfNotNull: Boolean = true,
+        observable: Observable<U> = Observable(creator = this),
         mapper: (T) -> Pair<U, Boolean>
     ) = ThenOrRemove(
-        observable,
-        this.observeWhileTrue {
+        observable, creator,
+        this.observeWhileTrue(updateIfNotNull) {
             val (v, r) = mapper(it.value)
             observable.postValue(v, it.sender)
             r
@@ -206,59 +209,73 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
     /**
      *  update to an other observable while it return true
      *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @param updateIfNotNull update if not null
      *  @param mapper mapper from the live data to the new one
      *  @param observable observer for the live data
      *  @return if the observer have been remove
      */
     fun <U> mapWhileTrue(
         lifecycle: LifecycleOwner,
-        observable: Observable<U> = Observable(),
+        updateIfNotNull: Boolean = true,
+        observable: Observable<U> = Observable(creator = this),
         mapper: (T) -> Pair<U, Boolean>
-    ) = observeOnDestroy(lifecycle, mapWhileTrue(observable, mapper))
+    ) = observeOnDestroy(lifecycle, mapWhileTrue(updateIfNotNull, observable, mapper))
 
     /**
      *  map to an other observable
+     *  @param updateIfNotNull update if not null
      *  @param mapper mapper from the live data to the new one
      *  @param observable observer for the live data
      *  @return if the observer have been remove
      */
-    fun <U> map(observable: Observable<U> = Observable(), mapper: (T) -> U) =
-        mapWhileTrue(observable) { Pair(mapper(it), true) }
+    fun <U> map(
+        updateIfNotNull: Boolean = true,
+        observable: Observable<U> = Observable(creator = this),
+        mapper: (T) -> U
+    ) = mapWhileTrue(updateIfNotNull, observable) { Pair(mapper(it), true) }
 
     /**
      *  update to an other observable
      *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @param updateIfNotNull update if not null
      *  @param mapper mapper from the live data to the new one
      *  @param observable observer for the live data
      *  @return if the observer have been remove
      */
     fun <U> map(
         lifecycle: LifecycleOwner,
-        observable: Observable<U> = Observable(),
+        updateIfNotNull: Boolean = true,
+        observable: Observable<U> = Observable(creator = this),
         mapper: (T) -> U
-    ) = observeOnDestroy(lifecycle, map(observable, mapper))
+    ) = observeOnDestroy(lifecycle, map(updateIfNotNull, observable, mapper))
 
     /**
      *  map to an other observable once
+     *  @param updateIfNotNull update if not null
      *  @param mapper mapper from the live data to the new one
      *  @param observable observer for the live data
      *  @return if the observer have been remove
      */
-    fun <U> mapOnce(observable: Observable<U> = Observable(), mapper: (T) -> U) =
-        mapWhileTrue(observable) { Pair(mapper(it), false) }
+    fun <U> mapOnce(
+        updateIfNotNull: Boolean = true,
+        observable: Observable<U> = Observable(creator = this),
+        mapper: (T) -> U
+    ) = mapWhileTrue(updateIfNotNull, observable) { Pair(mapper(it), false) }
 
     /**
      *  update to an other observable once
      *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @param updateIfNotNull update if not null
      *  @param mapper mapper from the live data to the new one
      *  @param observable observer for the live data
      *  @return if the observer have been remove
      */
     fun <U> mapOnce(
         lifecycle: LifecycleOwner,
-        observable: Observable<U> = Observable(),
+        updateIfNotNull: Boolean = true,
+        observable: Observable<U> = Observable(creator = this),
         mapper: (T) -> U
-    ) = observeOnDestroy(lifecycle, mapOnce(observable, mapper))
+    ) = observeOnDestroy(lifecycle, mapOnce(updateIfNotNull, observable, mapper))
 
     /**
      *  update to an other observable while it return true
@@ -294,8 +311,10 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
      *  @param observable observer for the live data
      *  @param updateIfNotNull update if not null
      */
-    fun update(observable: Observable<T>, updateIfNotNull: Boolean = true) =
-        updateWhileTrue(observable, updateIfNotNull) { true }
+    fun update(
+        observable: Observable<T>,
+        updateIfNotNull: Boolean = true
+    ) = updateWhileTrue(observable, updateIfNotNull) { true }
 
     /**
      *  update to an other observable
@@ -314,8 +333,10 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
      *  @param observable observer for the live data
      *  @param updateIfNotNull update if not null
      */
-    fun updateOnce(observable: Observable<T>, updateIfNotNull: Boolean = true) =
-        updateWhileTrue(observable, updateIfNotNull) { false }
+    fun updateOnce(
+        observable: Observable<T>,
+        updateIfNotNull: Boolean = true
+    ) = updateWhileTrue(observable, updateIfNotNull) { false }
 
     /**
      *  update to an other observable once
@@ -341,6 +362,6 @@ class Observable<T>(value: T? = null, sender: Any? = null) {
                 if (!obs(updateArgs!!))
                     leave(obs)
         })
-        return ThenOrRemove(this, { true })
+        return ThenOrRemove(this, creator, { true })
     }
 }

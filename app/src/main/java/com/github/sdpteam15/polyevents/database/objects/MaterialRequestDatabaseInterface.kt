@@ -1,6 +1,10 @@
 package com.github.sdpteam15.polyevents.database.objects
 
 import com.github.sdpteam15.polyevents.database.Database
+import com.github.sdpteam15.polyevents.database.Matcher
+import com.github.sdpteam15.polyevents.database.observe.Observable
+import com.github.sdpteam15.polyevents.database.observe.ObservableList
+import com.github.sdpteam15.polyevents.model.MaterialRequest
 import com.github.sdpteam15.polyevents.model.UserEntity
 import com.github.sdpteam15.polyevents.model.UserProfile
 
@@ -10,6 +14,7 @@ interface MaterialRequestDatabaseInterface {
     val currentProfile: UserProfile?
         get() = Database.currentDatabase.currentProfile
 /*
+    // TODO maybe split this function into "answerMaterialRequest() and refuseMaterialRequest()"
     /**
      * Answer a material request
      * @param id id of the items
@@ -22,6 +27,7 @@ interface MaterialRequestDatabaseInterface {
         answer: Boolean,
         userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
+*/
 
     /**
      * Get the list of all material request
@@ -31,8 +37,8 @@ interface MaterialRequestDatabaseInterface {
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getMaterialRequestList(
-        materialList: Observable<MaterialRequest>,
-        matcher: String? = null,
+        materialList: ObservableList<MaterialRequest>,
+        matcher: Matcher? = null,
         userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
@@ -44,6 +50,6 @@ interface MaterialRequestDatabaseInterface {
     fun createMaterialRequest(
         request: MaterialRequest,
         userAccess: UserProfile? = currentProfile
-    )*/
+    ): Observable<Boolean>
 
 }
