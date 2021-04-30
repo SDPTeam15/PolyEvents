@@ -20,7 +20,9 @@ enum class PolygonAction {
     DOWN,
     DIAG,
     MOVE,
-    ROTATE
+    ROTATE,
+    MARKER_START,
+    MARKER_END
 }
 
 data class IconBound(
@@ -682,6 +684,8 @@ object GoogleMapHelper {
             PolygonAction.DOWN.toString() -> transformPolygon(marker)
             PolygonAction.DIAG.toString() -> transformPolygon(marker)
             PolygonAction.ROTATE.toString() -> rotatePolygon(marker)
+            PolygonAction.MARKER_START.toString() -> RouteMapHelper.moveMarker(marker)
+            PolygonAction.MARKER_END.toString() -> RouteMapHelper.moveMarker(marker)
         }
         tempPoly?.points = tempLatLng
     }

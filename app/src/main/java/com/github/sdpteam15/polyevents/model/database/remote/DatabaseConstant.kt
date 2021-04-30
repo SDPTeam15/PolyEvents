@@ -22,6 +22,8 @@ object DatabaseConstant {
         USER_COLLECTION("users", UserAdapter),
         ITEM_TYPE_COLLECTION("itemTypes", ItemTypeAdapter),
         MATERIAL_REQUEST_COLLECTION("materialRequests", MaterialRequestAdapter),
+        NODE_COLLECTION("nodes", RouteNodeAdapter),
+        EDGE_COLLECTION("edges", RouteEdgeAdapter),
 
 
         TEST_COLLECTION("test", object : AdapterInterface<StringWithID> {

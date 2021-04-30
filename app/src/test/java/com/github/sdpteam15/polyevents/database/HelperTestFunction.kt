@@ -7,12 +7,15 @@ import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterToDo
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.Matcher
+import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.anyOrNull
 import java.util.*
+import kotlin.math.atan
 import org.mockito.Mockito.`when` as When
 
 object HelperTestFunction {
+
     val nextBoolean: Queue<Boolean> = LinkedList()
     val nextString: Queue<String> = LinkedList()
 

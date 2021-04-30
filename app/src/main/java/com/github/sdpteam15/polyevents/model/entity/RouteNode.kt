@@ -1,16 +1,17 @@
 package com.github.sdpteam15.polyevents.model.entity
 
 import com.github.sdpteam15.polyevents.model.map.Attachable
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.euclideanDistance
 import com.google.android.gms.maps.model.LatLng
 
 /**
  *  TODO
  */
 data class RouteNode(
-    val id: String?,
+    var id: String?,
     val latitude: Double,
     val longitude: Double,
-    val areaId: String ? = null
+    var areaId: String ? = null
 ) : Attachable {
     fun toLatLng(): LatLng {
         return LatLng(latitude,longitude)
@@ -21,7 +22,6 @@ data class RouteNode(
             RouteNode(null,latLng.latitude,latLng.longitude,areaId)
     }
 
-    override fun getAttachedNewPoint(position: LatLng, angle: Double?): Pair<LatLng, Double>? {
-        TODO("Not yet implemented")
-    }
+    override fun getAttachedNewPoint(position: LatLng, angle: Double?): Pair<RouteNode, Double>
+        = Pair(this, euclideanDistance(position, toLatLng()))
 }
