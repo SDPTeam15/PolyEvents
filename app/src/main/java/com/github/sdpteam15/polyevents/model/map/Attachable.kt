@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.model.map
 
+import com.github.sdpteam15.polyevents.model.entity.RouteNode
 import com.google.android.gms.maps.model.LatLng
 
 /**
@@ -9,6 +10,6 @@ interface Attachable {
     /**
      * get the point on the attachable that must be projected
      */
-    fun getAttachedNewPoint(position: LatLng, angle: Double ?): Pair<LatLng, Double>?
+    fun getAttachedNewPoint(position: LatLng, angle: Double ?): Pair<RouteNode, Double>
 
 }

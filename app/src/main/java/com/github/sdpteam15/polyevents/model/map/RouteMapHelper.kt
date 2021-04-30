@@ -1,19 +1,22 @@
 package com.github.sdpteam15.polyevents.model.map
 
+import androidx.lifecycle.LifecycleOwner
 import com.github.sdpteam15.polyevents.model.entity.RouteEdge
 import com.github.sdpteam15.polyevents.model.entity.RouteNode
+import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.google.android.gms.maps.model.LatLng
-import io.grpc.KnownLength
 import kotlin.math.abs
 import kotlin.math.atan
 import kotlin.math.sqrt
 
 const val THRESHOLD = 0.001
+
 object RouteMapHelper {
     val nodes = ObservableList<RouteNode>()
     val edges = ObservableList<RouteEdge>()
+    val zone = ObservableList<Zone>()
 
     /**
      * Add a line to dataBase
@@ -30,9 +33,12 @@ object RouteMapHelper {
     }
 
     /**
-     * TODO
+     * Returns the shortest path from a point on the map to the given Zone
+     * @param startPosition the person starting position
+     * @param targetZoneId the Zone where the person wants to go to
+     * @return The list of points that the person needs to follow
      */
-    fun getShortestPath(startPosition: LatLng, targetZoneId: String): List<LatLng> {
+    fun getShortestPath(startPosition: LatLng, targetZoneId: String): List<LatLng>? {
         TODO()
     }
 
@@ -54,35 +60,49 @@ object RouteMapHelper {
     /**
      * TODO
      */
-    fun getPosOnNearestAttachable(point: LatLng, exclude: Attachable?): LatLng {
-        // TODO
-        return point
+    fun getPosOnNearestAttachable(
+        point: LatLng,
+        angle: Double? = null,
+        exclude: Attachable? = null
+    ): Pair<RouteNode, Attachable?> {
+        var res : Pair<Pair<RouteNode, Attachable?>, Double?> = Pair(Pair(RouteNode.fromLatLong(point), null), null)
+        val found : (Attachable) -> Unit = {
+            if(it!=exclude) {
+                val pair = it.getAttachedNewPoint(point, angle)
+                if(res.second == null || pair.second < res.second!!)
+                    res = Pair(Pair(pair.first, it), pair.second)
+            }
+        }
+        for (e in nodes) found(e)
+        for (e in edges) found(e)
+        for (e in zone) found(e)
+        return res.first
     }
 
     /**
      * TODO
      */
-    fun getNodesAndEdgesFromDB(): Observable<Boolean> {
+    fun getNodesAndEdgesFromDB(lifecycle: LifecycleOwner): Observable<Boolean> {
         TODO()
     }
 
-    fun edgeAddedNotification(edge: RouteEdge){TODO()}
-    fun edgeRemovedNotification(edge: RouteEdge){TODO()}
+    fun edgeAddedNotification(edge: RouteEdge) { }
+    fun edgeRemovedNotification(edge: RouteEdge) { }
 
     /**
      * TODO
      */
-    fun getNearestPoint(start: LatLng, end: LatLng, point: LatLng): LatLng {
-        var line = minus(end, start)
+    fun getNearestPoint(start: RouteNode, end: RouteNode, point: LatLng): RouteNode {
+        var line = minus(end.toLatLng(), start.toLatLng())
         val lineNorm = norm(line)
         line = divide(line, lineNorm)
-        val p = minus(point, start)
+        val p = minus(point, start.toLatLng())
         val dif = scalar(line, p)
-        if(dif <= THRESHOLD)
+        if (dif <= THRESHOLD)
             return start
-        if(THRESHOLD <= lineNorm - dif)
+        if (THRESHOLD <= lineNorm - dif)
             return end
-        return plus(start, time(line, dif))
+        return RouteNode.fromLatLong(plus(start.toLatLng(), time(line, dif)))
     }
 
     /**
@@ -107,7 +127,7 @@ object RouteMapHelper {
      * TODO
      */
     fun divide(point: LatLng, nbr: Double) =
-        LatLng(point.latitude / nbr, point.longitude /nbr)
+        LatLng(point.latitude / nbr, point.longitude / nbr)
 
     /**
      * TODO
@@ -163,6 +183,7 @@ object RouteMapHelper {
      */
     fun squaredNorm(dx: Double, dy: Double) =
         dx * dx + dy * dy
+
     /**
      * Computes the euclidean distance between 2 points
      * @param startX first point x coordinate

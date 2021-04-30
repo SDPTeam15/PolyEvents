@@ -37,7 +37,6 @@ data class Zone(
                 val points = s.split(POINTS_SEP.value)
                 for (p in points) {
                     val coor = p.split(LAT_LONG_SEP.value)
-
                     try {
                         curList.add(LatLng(coor[0].toDouble(), coor[1].toDouble()))
                     } catch (e: NumberFormatException) {
@@ -62,21 +61,22 @@ data class Zone(
     override fun getAttachedNewPoint(
         position: LatLng,
         angle: Double?
-    ): Pair<LatLng, Double>? {
+    ): Pair<RouteNode, Double> {
         val list = getDrawingPoints()
-        var res: Pair<LatLng, Double>? = null
+        var res: Pair<RouteNode, Double>? = null
         for (e in list)
             for (i in e.indices) {
                 val from = e[i]
                 val to = e[(i + 1) % e.size]
                 val lineAngle = angle(from, to)
                 if (angle == null || !isTooParallel(angle, lineAngle)) {
-                    val newPoint = getNearestPoint(from, to, position)
-                    val distance = norm(minus(position, newPoint))
+                    val newPoint = getNearestPoint(RouteNode.fromLatLong(from), RouteNode.fromLatLong(to), position)
+                    newPoint.areaId = zoneId
+                    val distance = norm(minus(position, newPoint.toLatLng()))
                     if (res == null || distance < res.second)
                         res = Pair(newPoint, distance)
                 }
             }
-        return res
+        return res!!
     }
 }
