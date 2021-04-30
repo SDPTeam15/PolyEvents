@@ -10,16 +10,19 @@ import com.google.android.gms.maps.model.LatLng
  */
 data class RouteEdge(
     val id: String?,
-    val start: RouteNode,
-    val end: RouteNode
+    val startId: String?,
+    val endId: String?
 )  : Attachable{
+    var start: RouteNode? = null
+    var end: RouteNode? = null
+
     val weight: Double
         get() {
             TODO()
         }
 
     override fun getAttachedNewPoint(position: LatLng, angle: Double?): Pair<RouteNode, Double> {
-        val newPoint = getNearestPoint(start, end, position)
+        val newPoint = getNearestPoint(start!!, end!!, position)
         return Pair(newPoint, euclideanDistance(position, newPoint.toLatLng()))
     }
 }

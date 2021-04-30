@@ -1,9 +1,9 @@
 package com.github.sdpteam15.polyevents.model.map
 
-import androidx.lifecycle.LifecycleOwner
 import android.content.Context
 import android.graphics.Color
 import android.util.Log
+import androidx.lifecycle.LifecycleOwner
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.entity.RouteEdge
@@ -19,7 +19,9 @@ import com.github.sdpteam15.polyevents.model.map.LatLngOperator.time
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.*
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.Polyline
+import com.google.android.gms.maps.model.PolylineOptions
 import kotlin.math.pow
 
 const val THRESHOLD = 0.001
@@ -40,16 +42,21 @@ object RouteMapHelper {
 
     /**
      * Add a line to dataBase
+     * TODO
      */
     fun addLine(start: LatLng, end: LatLng) {
         val s = RouteNode.fromLatLong(start, null)
         val e = RouteNode.fromLatLong(end, null)
         nodes.add(s)
         nodes.add(e)
-        edges.add(RouteEdge("Edge ${tempUid++}", s, e))
+        val l = RouteEdge("Edge ${tempUid++}", s.id, e.id)
+        l.start = s
+        l.end = e
+        edges.add(l)
     }
 
     /**
+     * Add a line from dataBase
      * TODO
      */
     fun removeLine(edge: RouteEdge) {
@@ -87,15 +94,22 @@ object RouteMapHelper {
                     if (firstStart.second == firstEnd.second) {
                         val secondStart = getPosOnNearestAttachable(start, angle, firstEnd.second)
                         val secondEnd = getPosOnNearestAttachable(start, angle, firstStart.second)
-                        if (secondStart.third != null) {
-                            if (secondEnd.third != null){
-
-                            }else
-                                return Pair(firstStart.first.toLatLng(), secondEnd.first.toLatLng())
-                        }
-                        else if (secondEnd.third != null)
+                        if (secondStart.third != null && secondStart.third!! < MAGNET_DISTANCE_THRESHOLD) {
+                            if (secondEnd.third != null && secondEnd.third!! < MAGNET_DISTANCE_THRESHOLD &&
+                                secondStart.second != secondEnd.second
+                            ) {
+                                return if (secondStart.third!! + firstEnd.third!! < firstStart.third!! + secondEnd.third!!)
+                                    Pair(secondStart.first.toLatLng(), firstEnd.first.toLatLng())
+                                else
+                                    Pair(firstStart.first.toLatLng(), secondEnd.first.toLatLng())
+                            }
                             return Pair(firstStart.first.toLatLng(), secondEnd.first.toLatLng())
-                        return if (firstEnd.third!! < firstStart.third!!) Pair(start, firstEnd.first.toLatLng())
+                        } else if (secondEnd.third != null && secondEnd.third!! < MAGNET_DISTANCE_THRESHOLD)
+                            return Pair(firstStart.first.toLatLng(), secondEnd.first.toLatLng())
+                        return if (firstEnd.third!! < firstStart.third!!) Pair(
+                            start,
+                            firstEnd.first.toLatLng()
+                        )
                         else Pair(firstStart.first.toLatLng(), end)
                     }
                     return Pair(firstStart.first.toLatLng(), firstEnd.first.toLatLng())
@@ -150,51 +164,51 @@ object RouteMapHelper {
      * TODO
      */
     fun getNodesAndEdgesFromDB(lifecycleOwner: LifecycleOwner): Observable<Boolean> {
-        edges.observeAdd(lifecycleOwner){
+        edges.observeAdd(lifecycleOwner) {
             edgeAddedNotification(it.value)
         }
-        edges.observeRemove(lifecycleOwner){
+        edges.observeRemove(lifecycleOwner) {
             edgeRemovedNotification(it.value)
         }
         return Observable(true)
     }
 
-    private fun addEdgeToMaps(){
+    private fun addEdgeToMaps() {
 
     }
 
-    fun edgeRemovedNotification(edge: RouteEdge){
+    fun edgeRemovedNotification(edge: RouteEdge) {
         lineToEdge[edge]!!.remove()
         lineToEdge.remove(edge)
     }
 
-    fun edgeAddedNotification(edge: RouteEdge){
+    fun edgeAddedNotification(edge: RouteEdge) {
         removeAllLinesToRemove()
         val option = PolylineOptions()
-        option.add(edge.start.toLatLng())
-        option.add(edge.end.toLatLng())
+        option.add(edge.start!!.toLatLng())
+        option.add(edge.end!!.toLatLng())
         val route = map!!.addPolyline(option)
         route.tag = edge.id
         lineToEdge[edge] = route
     }
 
-    fun removeAllLinesToRemove(){
-        for(line in toDeleteLines){
+    fun removeAllLinesToRemove() {
+        for (line in toDeleteLines) {
             line.remove()
         }
         toDeleteLines.clear()
     }
 
-    fun createNewRoute(context: Context?){
+    fun createNewRoute(context: Context?) {
         deleteMode = false
-        if(tempPolyline != null){
+        if (tempPolyline != null) {
             tempPolyline!!.remove()
             tempVariableClear()
         }
         setupEditLine(context, map!!.cameraPosition!!.target)
     }
 
-    fun saveNewRoute(){
+    fun saveNewRoute() {
         deleteMode = false
         toDeleteLines.add(tempPolyline!!)
         //tempPolyline!!.isClickable = true
@@ -203,17 +217,17 @@ object RouteMapHelper {
         tempVariableClear()
     }
 
-    fun removeRoute(context: Context?){
-        if(tempPolyline != null){
+    fun removeRoute(context: Context?) {
+        if (tempPolyline != null) {
             tempPolyline!!.remove()
             tempVariableClear()
-        }else{
+        } else {
             deleteMode = !deleteMode
             HelperFunctions.showToast("Deletion mode is $deleteMode", context)
         }
     }
 
-    fun tempVariableClear(){
+    fun tempVariableClear() {
         startMarker!!.remove()
         endMarker!!.remove()
 
@@ -234,7 +248,7 @@ object RouteMapHelper {
      * @param context context
      * @param pos position to create the new line
      */
-    fun setupEditLine(context: Context?, pos: LatLng){
+    fun setupEditLine(context: Context?, pos: LatLng) {
         val zoom = map!!.cameraPosition!!.zoom
         val divisor = 2.0.pow(zoom.toDouble())
         val longDiff = 188.0 / divisor / 2
@@ -253,7 +267,7 @@ object RouteMapHelper {
      * Sets up the markers for the modification of the polyline
      * @param context context
      */
-    fun setupModifyMarkers(context: Context?){
+    fun setupModifyMarkers(context: Context?) {
         val points = tempPolyline!!.points
         val startPos = points[0]
         val endPos = points[1]
@@ -295,21 +309,21 @@ object RouteMapHelper {
      * Moves the marker and redraws the polyline
      * @param marker marker that moved
      */
-    fun moveMarker(marker: Marker){
+    fun moveMarker(marker: Marker) {
         when (marker.snippet) {
-            PolygonAction.MARKER_START.toString() ->{
+            PolygonAction.MARKER_START.toString() -> {
 
             }
 
-            PolygonAction.MARKER_END.toString() ->{
+            PolygonAction.MARKER_END.toString() -> {
 
             }
         }
         tempPolyline!!.points = listOf(startMarker!!.position, endMarker!!.position)
     }
 
-    fun polylineClick(polyline:Polyline){
-        if(deleteMode){
+    fun polylineClick(polyline: Polyline) {
+        if (deleteMode) {
             Log.d("DELETE", "POLYLINE TO DELETE")
         }
     }
