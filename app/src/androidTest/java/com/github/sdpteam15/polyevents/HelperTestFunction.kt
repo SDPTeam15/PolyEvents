@@ -4,13 +4,13 @@ import android.app.Activity
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
-import com.github.sdpteam15.polyevents.database.Database
-import com.github.sdpteam15.polyevents.database.DatabaseInterface
-import com.github.sdpteam15.polyevents.database.objects.HeatmapDatabaseInterface
-import com.github.sdpteam15.polyevents.database.objects.ZoneDatabaseInterface
-import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.database.observe.ObservableList
-import com.github.sdpteam15.polyevents.model.Zone
+import com.github.sdpteam15.polyevents.model.database.remote.Database
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
+import com.github.sdpteam15.polyevents.model.database.remote.objects.HeatmapDatabaseInterface
+import com.github.sdpteam15.polyevents.model.database.remote.objects.ZoneDatabaseInterface
+import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.model.entity.Zone
 import org.mockito.Mockito
 import org.mockito.kotlin.anyOrNull
 
@@ -29,7 +29,7 @@ object HelperTestFunction {
         return currentActivity as T
     }
 
-    fun defaultMockDatabase(): DatabaseInterface{
+    fun defaultMockDatabase(): DatabaseInterface {
         val database = Mockito.mock(DatabaseInterface::class.java)
         val zoneDatabase = Mockito.mock(ZoneDatabaseInterface::class.java)
         val heatmapDatabase = Mockito.mock(HeatmapDatabaseInterface::class.java)

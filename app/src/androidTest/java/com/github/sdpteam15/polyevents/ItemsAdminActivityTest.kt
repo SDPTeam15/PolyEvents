@@ -13,12 +13,13 @@ import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import com.github.sdpteam15.polyevents.adapter.EventItemAdapter
-import com.github.sdpteam15.polyevents.database.Database.currentDatabase
-import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
+import com.github.sdpteam15.polyevents.veiw.adapter.EventItemAdapter
+import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
+import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabase
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabaseItem
-import com.github.sdpteam15.polyevents.model.Item
+import com.github.sdpteam15.polyevents.model.entity.Item
+import com.github.sdpteam15.polyevents.veiw.activity.ItemsAdminActivity
 import org.hamcrest.CoreMatchers
 import org.junit.After
 import org.junit.Before

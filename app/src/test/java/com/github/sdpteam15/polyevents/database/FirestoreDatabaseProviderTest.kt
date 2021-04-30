@@ -1,7 +1,8 @@
 package com.github.sdpteam15.polyevents.database
 
-import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.database.observe.ObservableList
+import com.github.sdpteam15.polyevents.model.database.remote.*
+import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task

@@ -5,14 +5,14 @@
     xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
-tools:context=".MainActivity" >
+tools:context=".veiw.activity.MainActivity" >
 
     <fragment
         android:id="@+id/id_fragment_map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".fragments.MapsFragment" />
+        tools:context=".veiw.fragments.MapsFragment" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/id_locate_me_button"

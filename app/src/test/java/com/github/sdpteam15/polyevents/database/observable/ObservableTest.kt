@@ -2,7 +2,7 @@ package com.github.sdpteam15.polyevents.database.observable
 
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
-import com.github.sdpteam15.polyevents.database.observe.Observable
+import com.github.sdpteam15.polyevents.model.observable.Observable
 import org.junit.Test
 import org.mockito.Mockito.mock
 import kotlin.test.assertEquals

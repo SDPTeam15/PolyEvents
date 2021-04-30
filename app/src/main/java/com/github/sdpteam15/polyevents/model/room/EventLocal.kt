@@ -4,7 +4,7 @@ import androidx.annotation.NonNull
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.github.sdpteam15.polyevents.model.Event
+import com.github.sdpteam15.polyevents.model.entity.Event
 import java.time.LocalDateTime
 
 /**

@@ -3,8 +3,8 @@ package com.github.sdpteam15.polyevents.dao
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import com.github.sdpteam15.polyevents.database.dao.EventDao
-import com.github.sdpteam15.polyevents.database.room.LocalDatabase
+import com.github.sdpteam15.polyevents.model.database.local.dao.EventDao
+import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import com.github.sdpteam15.polyevents.model.room.EventLocal
 import kotlinx.coroutines.runBlocking
 import org.junit.After

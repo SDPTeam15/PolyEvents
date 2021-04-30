@@ -1,5 +1,7 @@
 package com.github.sdpteam15.polyevents.model
 
+import com.github.sdpteam15.polyevents.model.entity.UserProfile
+import com.github.sdpteam15.polyevents.model.entity.UserRole
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test

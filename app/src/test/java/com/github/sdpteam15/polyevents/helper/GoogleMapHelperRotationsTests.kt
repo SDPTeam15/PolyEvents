@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.helper
 
+import com.github.sdpteam15.polyevents.model.map.GoogleMapHelper
 import com.google.android.gms.maps.model.LatLng
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.closeTo

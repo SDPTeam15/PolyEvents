@@ -1,10 +1,10 @@
 package com.github.sdpteam15.polyevents.fakedatabase
 
-import com.github.sdpteam15.polyevents.database.objects.UserDatabaseInterface
-import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.database.observe.ObservableList
-import com.github.sdpteam15.polyevents.model.UserEntity
-import com.github.sdpteam15.polyevents.model.UserProfile
+import com.github.sdpteam15.polyevents.model.database.remote.objects.UserDatabaseInterface
+import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.model.entity.UserEntity
+import com.github.sdpteam15.polyevents.model.entity.UserProfile
 
 object FakeDatabaseUser : UserDatabaseInterface {
     lateinit var profiles: MutableList<UserProfile>

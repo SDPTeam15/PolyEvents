@@ -1,6 +1,8 @@
 package com.github.sdpteam15.polyevents.model
 
-import com.github.sdpteam15.polyevents.exceptions.MaxAttendeesException
+import com.github.sdpteam15.polyevents.model.exceptions.MaxAttendeesException
+import com.github.sdpteam15.polyevents.model.entity.Event
+import com.github.sdpteam15.polyevents.model.entity.Item
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test

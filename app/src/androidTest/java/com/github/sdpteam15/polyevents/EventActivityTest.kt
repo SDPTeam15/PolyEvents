@@ -10,17 +10,17 @@ import androidx.test.espresso.Espresso
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
-import com.github.sdpteam15.polyevents.database.Database.currentDatabase
-import com.github.sdpteam15.polyevents.database.DatabaseInterface
-import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
-import com.github.sdpteam15.polyevents.database.dao.EventDao
-import com.github.sdpteam15.polyevents.database.objects.EventDatabaseInterface
-import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.database.room.LocalDatabase
-import com.github.sdpteam15.polyevents.fragments.EXTRA_EVENT_ID
-import com.github.sdpteam15.polyevents.model.Event
-import com.github.sdpteam15.polyevents.model.UserEntity
+import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
+import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
+import com.github.sdpteam15.polyevents.model.database.remote.objects.EventDatabaseInterface
+import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
+import com.github.sdpteam15.polyevents.veiw.fragments.EXTRA_EVENT_ID
+import com.github.sdpteam15.polyevents.model.entity.Event
+import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.room.EventLocal
+import com.github.sdpteam15.polyevents.veiw.activity.EventActivity
 import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertDisplayed
 import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertNotDisplayed
 import com.schibsted.spain.barista.interaction.BaristaClickInteractions.clickOn
@@ -32,7 +32,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.*
 import org.mockito.junit.MockitoJUnitRunner
-import java.io.IOException
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
 import org.mockito.Mockito.`when` as When

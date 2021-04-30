@@ -2,7 +2,8 @@ package com.github.sdpteam15.polyevents.helper
 
 import android.graphics.Color
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.model.Zone
+import com.github.sdpteam15.polyevents.model.entity.Zone
+import com.github.sdpteam15.polyevents.model.map.*
 import com.google.android.gms.dynamic.IObjectWrapper
 import com.google.android.gms.internal.maps.zzt
 import com.google.android.gms.internal.maps.zzw
