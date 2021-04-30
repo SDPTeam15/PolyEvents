@@ -103,7 +103,7 @@ class EventManagementTest {
     private fun clickAndCheckNotRedirect() {
         closeSoftKeyboard()
         onView(withId(R.id.btnManageEvent)).perform(scrollTo(), click())
-        onView(withId(R.id.swtLimitedEvent)).check(matches(isDisplayed()))
+        onView(withId(R.id.btnManageEvent)).check(matches(isDisplayed()))
     }
 
     private fun addAddListener(): Observable<Boolean> {
@@ -135,6 +135,7 @@ class EventManagementTest {
         onView(withId(R.id.eventManagementNameField)).perform(replaceText(eventName))
         clickAndCheckNotRedirect()
         closeSoftKeyboard()
+
         onView(withId(R.id.swtLimitedEvent)).perform(click())
         onView(withId(R.id.swtLimitedEvent)).perform(click())
         onView(withId(R.id.eventManagementDescriptionField)).perform(replaceText(eventDesc))
@@ -283,7 +284,8 @@ class EventManagementTest {
         val endDate = EventManagementActivity.dateEnd.value!!
         onView(withId(R.id.eventManagementNameField)).perform(typeText(eventName))
         onView(withId(R.id.eventManagementDescriptionField)).perform(replaceText(eventDesc))
-        onView(withId(R.id.swtLimitedEvent)).perform(scrollTo(), click())
+        onView(withId(R.id.btnManageEvent)).perform(scrollTo())
+        onView(withId(R.id.swtLimitedEvent)).perform(click())
         onView(withId(R.id.etNbPart)).perform(replaceText(eventNb))
         val obs = addAddListener()
         onView(withId(R.id.btnManageEvent)).perform(scrollTo(), click())
@@ -363,7 +365,8 @@ class EventManagementTest {
         )
         scenario = ActivityScenario.launch(intent)
         obs.postValue(true)
-        onView(withId(R.id.swtLimitedEvent)).perform(scrollTo(), click())
+        onView(withId(R.id.btnManageEvent)).perform(scrollTo())
+        onView(withId(R.id.swtLimitedEvent)).perform(click())
         onView(withId(R.id.etNbPart)).perform(replaceText(eventNb))
 
         onView(withId(R.id.btnManageEvent)).perform(click())
