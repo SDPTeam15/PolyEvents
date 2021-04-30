@@ -8,7 +8,8 @@ import com.google.type.LatLng
 data class RouteNode(
     val id: String?,
     val latitude: Double,
-    val longitude: Double
+    val longitude: Double,
+    val areaId: String ? = null
 ) {
     fun toLatLng(): LatLng {
         TODO()
