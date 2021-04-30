@@ -135,8 +135,8 @@ class EventManagementTest {
         onView(withId(R.id.eventManagementNameField)).perform(replaceText(eventName))
         clickAndCheckNotRedirect()
         closeSoftKeyboard()
-        onView(withId(R.id.swtLimitedEvent)).perform(scrollTo(), click())
-        onView(withId(R.id.swtLimitedEvent)).perform(scrollTo(), click())
+        onView(withId(R.id.swtLimitedEvent)).perform(click())
+        onView(withId(R.id.swtLimitedEvent)).perform(click())
         onView(withId(R.id.eventManagementDescriptionField)).perform(replaceText(eventDesc))
         clickAndCheckNotRedirect()
         Intents.init()
@@ -160,7 +160,6 @@ class EventManagementTest {
                 1
             )
         )
-        onView(withId(R.id.swtLimitedEvent)).check(matches(isDisplayed()))
         clickAndCheckNotRedirect()
         onView(withId(R.id.eventManagementNameField)).perform(typeText(eventName))
         clickAndCheckNotRedirect()
@@ -367,7 +366,7 @@ class EventManagementTest {
         onView(withId(R.id.swtLimitedEvent)).perform(scrollTo(), click())
         onView(withId(R.id.etNbPart)).perform(replaceText(eventNb))
 
-        onView(withId(R.id.btnManageEvent)).perform(scrollTo(), click())
+        onView(withId(R.id.btnManageEvent)).perform(click())
         Intents.init()
         obs2.postValue(true)
         Intents.intended(IntentMatchers.hasComponent(EventManagementListActivity::class.java.name))
