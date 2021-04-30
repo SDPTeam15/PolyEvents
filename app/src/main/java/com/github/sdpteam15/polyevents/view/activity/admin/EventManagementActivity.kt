@@ -20,18 +20,42 @@ import java.time.LocalDateTime
 class EventManagementActivity : AppCompatActivity() {
 
     companion object {
-        private const val MIN_PART_NB = 1
-        private const val emptyPartNb = "0"
-        private const val typeStart = "start"
-        private const val typeEnd = "END"
+        const val MIN_PART_NB = 1
+        const val emptyPartNb = "0"
+        const val typeStart = "start"
+        const val typeEnd = "END"
         private const val defaultPartNb = "10"
+        val dateStart = Observable<LocalDateTime>()
+        val dateEnd = Observable<LocalDateTime>()
+
+        fun postValueDate(type: String, year: Int, month: Int, day: Int, hour: Int, minute: Int) {
+            if (type == typeStart) {
+                dateStart.postValue(
+                    LocalDateTime.of(
+                        year,
+                        month,
+                        day,
+                        hour,
+                        minute
+                    )
+                )
+            } else {
+                dateEnd.postValue(
+                    LocalDateTime.of(
+                        year,
+                        month,
+                        day,
+                        hour,
+                        minute
+                    )
+                )
+            }
+        }
     }
 
     private val zoneName = ArrayList<String>()
     private val mapIndexToId: MutableMap<Int, String> = mutableMapOf()
     private val zoneObserver = ObservableList<Zone>()
-    private lateinit var dateStart: LocalDateTime
-    private lateinit var dateEnd: LocalDateTime
     private lateinit var dialogStartDate: DatePickerDialog
     private lateinit var dialogEndDate: DatePickerDialog
     private lateinit var dialogStartTime: TimePickerDialog
@@ -48,19 +72,28 @@ class EventManagementActivity : AppCompatActivity() {
         val id = intent.getStringExtra(EventManagementListActivity.EVENT_ID_INTENT)!!
         isCreation = id == EventManagementListActivity.NEW_EVENT_ID
         curId = id
-        dateStart = LocalDateTime.now()
-        dateEnd = LocalDateTime.now()
+
+        setupDateListener()
+        dateStart.postValue(LocalDateTime.now().withSecond(0).withNano(0))
+        dateEnd.postValue(LocalDateTime.now().withSecond(0).withNano(0))
 
         val adapter =
             ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, zoneName)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         findViewById<Spinner>(R.id.spinner_zone).adapter = adapter
 
-        setObservers(adapter)
+        zoneObserver.observeAdd(this) {
+            val name = it.value.zoneName!!
+            zoneName.add(name)
+            mapIndexToId[zoneName.indexOf(name)] = it.value.zoneId!!
+            adapter.notifyDataSetChanged()
+        }
 
         currentDatabase.zoneDatabase!!.getAllZones(null, null, zoneObserver).observe(this) {
-            if (!it.value)
+            if (!it.value) {
                 HelperFunctions.showToast(getString(R.string.failed_get_zones), this)
+                startActivity(Intent(this, EventManagementListActivity::class.java))
+            }
         }
 
         setDateListener()
@@ -69,6 +102,15 @@ class EventManagementActivity : AppCompatActivity() {
         setupSwitchListener()
         setupViewInActivity(false)
         manageButtonSetup()
+    }
+
+    private fun setupDateListener() {
+        dateStart.observe(this) {
+            updateTextDate(typeStart)
+        }
+        dateEnd.observe(this) {
+            updateTextDate(typeEnd)
+        }
     }
 
     private fun setupSwitchListener() {
@@ -124,12 +166,12 @@ class EventManagementActivity : AppCompatActivity() {
             nbpart.visibility = View.INVISIBLE
 
             if (event.isLimitedEvent()) {
-                nbpart.setText(event.getMaxNumberOfSlots()!!)
+                nbpart.setText(event.getMaxNumberOfSlots()!!.toString())
                 nbpart.visibility = View.VISIBLE
             }
-            switch.isSelected = event.isLimitedEvent()
-            dateStart = event.startTime!!
-            dateEnd = event.endTime!!
+            switch.isChecked = event.isLimitedEvent()
+            dateStart.postValue(event.startTime!!)
+            dateEnd.postValue(event.endTime!!)
             updateTextDate(typeEnd)
             updateTextDate(typeStart)
         }
@@ -165,11 +207,8 @@ class EventManagementActivity : AppCompatActivity() {
                 if (it.value) {
                     setupViewInActivity(true)
                 } else {
-                    redirectOrDisplayError(
-                        "",
-                        getString(R.string.failed_get_event_information),
-                        false
-                    )
+                    HelperFunctions.showToast(  getString(R.string.failed_get_event_information), this)
+                    startActivity(Intent(this, EventManagementListActivity::class.java))
                 }
             }
         }
@@ -177,9 +216,9 @@ class EventManagementActivity : AppCompatActivity() {
 
     private fun updateTextDate(type: String) {
         if (typeStart == type) {
-            findViewById<EditText>(R.id.et_start_date).setText(dateStart.toString())
+            findViewById<EditText>(R.id.et_start_date).setText(dateStart.value!!.toString())
         } else {
-            findViewById<EditText>(R.id.et_end_date).setText(dateEnd.toString())
+            findViewById<EditText>(R.id.et_end_date).setText(dateEnd.value!!.toString())
         }
     }
 
@@ -207,8 +246,8 @@ class EventManagementActivity : AppCompatActivity() {
             eventId = eventId,
             zoneId = zoneId,
             zoneName = zoneNa,
-            startTime = this.dateStart,
-            endTime = this.dateEnd,
+            startTime = dateStart.value,
+            endTime = dateEnd.value,
             eventName = name,
             description = desc,
             limitedEvent = limitedEvent,
@@ -219,66 +258,69 @@ class EventManagementActivity : AppCompatActivity() {
     private fun setDateListener() {
         dialogEndDate = DatePickerDialog(
             this, { _: DatePicker, year: Int, month: Int, day: Int ->
-                dateEnd =
-                    LocalDateTime.of(
-                        year,
-                        month + 1,
-                        day,
-                        dateEnd.hour,
-                        dateEnd.minute
-                    )
-                updateTextDate(typeEnd)
-            }, dateEnd.year, dateEnd.monthValue - 1, dateEnd.dayOfMonth
+                postValueDate(
+                    typeEnd,
+                    year,
+                    month + 1,
+                    day,
+                    dateEnd.value!!.hour,
+                    dateEnd.value!!.minute
+                )
+            }, dateEnd.value!!.year, dateEnd.value!!.monthValue - 1, dateEnd.value!!.dayOfMonth
         )
 
         dialogStartDate = DatePickerDialog(
-            this, { _: DatePicker, year: Int, month: Int, day: Int ->
-                dateStart =
-                    LocalDateTime.of(year, month + 1, day, dateStart.hour, dateStart.minute)
-                updateTextDate(typeStart)
-            }, dateStart.year, dateStart.monthValue - 1, dateStart.dayOfMonth
+            this,
+            { _: DatePicker, year: Int, month: Int, day: Int ->
+                postValueDate(
+                    typeStart,
+                    year,
+                    month + 1,
+                    day,
+                    dateStart.value!!.hour,
+                    dateStart.value!!.minute
+                )
+            },
+            dateStart.value!!.year,
+            dateStart.value!!.monthValue - 1,
+            dateStart.value!!.dayOfMonth
         )
     }
 
     private fun setTimeListener() {
         dialogStartTime = TimePickerDialog(
             this, { _: TimePicker, hour: Int, minute: Int ->
-                dateStart =
-                    LocalDateTime.of(
-                        dateStart.year,
-                        dateStart.month,
-                        dateStart.dayOfMonth,
-                        hour,
-                        minute
-                    )
-                updateTextDate(typeStart)
-            }, dateEnd.hour, dateEnd.minute, true
+                postValueDate(
+                    typeStart,
+                    dateStart.value!!.year,
+                    dateStart.value!!.monthValue,
+                    dateStart.value!!.dayOfMonth,
+                    hour,
+                    minute
+                )
+            },
+            dateStart.value!!.hour,
+            dateStart.value!!.minute,
+            true
         )
 
         dialogEndTime = TimePickerDialog(
             this, { _: TimePicker, hour: Int, minute: Int ->
-                dateEnd =
-                    LocalDateTime.of(dateEnd.year, dateEnd.month, dateEnd.dayOfMonth, hour, minute)
-                updateTextDate(typeEnd)
-            }, dateEnd.hour, dateEnd.minute, true
+                postValueDate(
+                    typeEnd,
+                    dateEnd.value!!.year,
+                    dateEnd.value!!.monthValue,
+                    dateEnd.value!!.dayOfMonth,
+                    hour,
+                    minute
+                )
+            },
+            dateEnd.value!!.hour,
+            dateEnd.value!!.minute,
+            true
         )
     }
 
-    private fun setObservers(adapter: ArrayAdapter<String>) {
-        zoneObserver.observeAdd(this) {
-            val name = it.value.zoneName!!
-            zoneName.add(name)
-            mapIndexToId[zoneName.indexOf(name)] = it.value.zoneId!!
-            adapter.notifyDataSetChanged()
-        }
-
-        zoneObserver.observeRemove(this) {
-            val name = it.value.zoneName!!
-            mapIndexToId.remove(zoneName.indexOf(name))
-            zoneName.remove(name)
-            adapter.notifyDataSetChanged()
-        }
-    }
 
     private fun verifyCondition(): Boolean {
         var good = true
@@ -291,7 +333,7 @@ class EventManagementActivity : AppCompatActivity() {
             HelperFunctions.showToast(getString(R.string.description_not_empty), this)
         }
 
-        if (dateEnd.isBefore(dateStart)) {
+        if (dateEnd.value!!.isBefore(dateStart.value!!)) {
             good = false
             HelperFunctions.showToast(getString(R.string.end_date_before_start_date), this)
         }
