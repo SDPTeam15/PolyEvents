@@ -9,13 +9,12 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.database.Database.currentDatabase
-import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
-import com.github.sdpteam15.polyevents.model.Event
-import com.github.sdpteam15.polyevents.model.Zone
-import java.lang.Exception
+import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
+import com.github.sdpteam15.polyevents.model.entity.Event
+import com.github.sdpteam15.polyevents.model.entity.Zone
+import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import java.time.LocalDateTime
 
 class EventManagementActivity : AppCompatActivity() {

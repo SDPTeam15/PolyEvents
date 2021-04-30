@@ -1,4 +1,4 @@
-package com.github.sdpteam15.polyevents.admin
+package com.github.sdpteam15.polyevents.view.activity.admin
 
 import android.content.Intent
 import android.os.Bundle

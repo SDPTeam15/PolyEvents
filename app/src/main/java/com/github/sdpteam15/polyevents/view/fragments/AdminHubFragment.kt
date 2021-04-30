@@ -8,10 +8,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.view.activity.admin.EventManagementActivity
-import com.github.sdpteam15.polyevents.view.activity.admin.ItemRequestManagementActivity
-import com.github.sdpteam15.polyevents.view.activity.admin.UserManagementListActivity
-import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementListActivity
+import com.github.sdpteam15.polyevents.view.activity.admin.*
 
 
 /**
