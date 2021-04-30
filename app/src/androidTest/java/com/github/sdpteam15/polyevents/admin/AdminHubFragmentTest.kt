@@ -15,7 +15,6 @@ import com.github.sdpteam15.polyevents.HelperTestFunction
 import com.github.sdpteam15.polyevents.MainActivity
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.database.Database
-import com.github.sdpteam15.polyevents.database.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabase
 import com.github.sdpteam15.polyevents.login.UserLogin
@@ -25,7 +24,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when` as When
 
 @RunWith(AndroidJUnit4::class)
@@ -88,7 +86,7 @@ class AdminHubFragmentTest {
     @Test
     fun clickOnBtnEventDisplayCorrectActivity() {
         Espresso.onView(ViewMatchers.withId(R.id.btnRedirectEventManager)).perform(click())
-        Intents.intended(IntentMatchers.hasComponent(EventManagementActivity::class.java.name))
+        Intents.intended(IntentMatchers.hasComponent(EventManagementListActivity::class.java.name))
     }
 
     @Test

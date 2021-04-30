@@ -47,7 +47,8 @@ object DatabaseConstant {
         EVENT_TAGS("tags"),
         EVENT_MAX_SLOTS("maxNumberOfSlots"),
         EVENT_LIMITED("limitedEvent"),
-        EVENT_PARTICIPANTS("participants");
+        EVENT_PARTICIPANTS("participants"),
+        EVENT_ZONE_ID("zoneId");
         override fun toString(): String = value
     }
 
