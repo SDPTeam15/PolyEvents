@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     android:id="@+id/id_fragment_event_list"
-    tools:context=".veiw.fragments.EventListFragment">
+    tools:context=".view.fragments.EventListFragment">
 
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/event_list_my_events_switch"

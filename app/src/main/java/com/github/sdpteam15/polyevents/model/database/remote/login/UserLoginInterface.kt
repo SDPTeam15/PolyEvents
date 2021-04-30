@@ -2,7 +2,7 @@ package com.github.sdpteam15.polyevents.model.database.remote.login
 
 import android.app.Activity
 import android.content.Intent
-import com.github.sdpteam15.polyevents.veiw.fragments.LoginFragment
+import com.github.sdpteam15.polyevents.view.fragments.LoginFragment
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.google.android.gms.tasks.Task
 

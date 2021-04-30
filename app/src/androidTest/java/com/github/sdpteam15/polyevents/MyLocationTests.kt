@@ -19,7 +19,7 @@ import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabasePr
 import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
-import com.github.sdpteam15.polyevents.veiw.activity.MainActivity
+import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import org.junit.Before
 import org.mockito.Mockito
 

@@ -18,12 +18,12 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabase
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabaseEvent
-import com.github.sdpteam15.polyevents.veiw.fragments.EXTRA_EVENT_ID
-import com.github.sdpteam15.polyevents.veiw.fragments.EventListFragment
+import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
+import com.github.sdpteam15.polyevents.view.fragments.EventListFragment
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.room.EventLocal
-import com.github.sdpteam15.polyevents.veiw.activity.EventActivity
-import com.github.sdpteam15.polyevents.veiw.activity.MainActivity
+import com.github.sdpteam15.polyevents.view.activity.EventActivity
+import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModel
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModelFactory
 import com.schibsted.spain.barista.assertion.BaristaCheckedAssertions.assertChecked

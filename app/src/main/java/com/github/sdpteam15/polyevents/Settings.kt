@@ -1,6 +1,6 @@
 package com.github.sdpteam15.polyevents
 
-import com.github.sdpteam15.polyevents.veiw.activity.MainActivity
+import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import java.io.File
 
 const val SPLIT_CHAR = ':'
