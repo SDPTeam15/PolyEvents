@@ -20,6 +20,7 @@ object EventAdapter : AdapterInterface<Event> {
         EVENT_DOCUMENT_ID.value to element.eventId,
         EVENT_NAME.value to element.eventName,
         EVENT_ORGANIZER.value to element.organizer,
+        EVENT_ZONE_ID.value to element.zoneId,
         EVENT_ZONE_NAME.value to element.zoneName,
         EVENT_DESCRIPTION.value to element.description,
         // LocalDateTime instances can be directly stored to the database without need of conversion
@@ -40,6 +41,7 @@ object EventAdapter : AdapterInterface<Event> {
             eventName = document[EVENT_NAME.value] as String?,
             organizer = document[EVENT_ORGANIZER.value] as String?,
             zoneName = document[EVENT_ZONE_NAME.value] as String?,
+            zoneId =  document[EVENT_ZONE_ID.value] as String?,
             description = document[EVENT_DESCRIPTION.value] as String?,
             startTime = HelperFunctions.dateToLocalDateTime(
                 (document[EVENT_START_TIME.value] as Timestamp?)?.toDate()

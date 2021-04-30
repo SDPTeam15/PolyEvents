@@ -32,6 +32,7 @@ data class Event(
     val eventId: String? = null,
     val eventName: String? = null,
     val organizer: String? = null,
+    val zoneId:String?=null,
     val zoneName: String? = null,
     var description: String? = null,
     // TODO: handle event icons (probably during event creation)
