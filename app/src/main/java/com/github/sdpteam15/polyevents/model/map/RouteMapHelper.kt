@@ -35,113 +35,149 @@ object RouteMapHelper {
      * @return The list of points that the person needs to follow, null if there is no path nearby
      */
     fun getShortestPath(startPosition: LatLng, targetZoneId: String): List<LatLng>? {
+
         val nearestPos = getPosOnNearestAttachable(startPosition)
         // if nothing to attach to, no path can be found
         if (nearestPos.second == null) {
             return null
         }
         val nodesForShortestPath = mutableSetOf<RouteNode>()
-        nodesForShortestPath.addAll(nodes)
         val edgesForShortestPath = mutableSetOf<RouteEdge>()
-        edgesForShortestPath.addAll(edges)
-
-
-        // Add current position as starting node
-
         val startingNode = RouteNode.fromLatLong(startPosition)
-        nodesForShortestPath.add(startingNode)
-        when (nearestPos.second) {
-            is RouteNode -> {
-                edgesForShortestPath.add(
-                    RouteEdge(
-                        null,
-                        startingNode,
-                        RouteNode.fromLatLong(nearestPos.first)
-                    )
-                )
-            }
-            is RouteEdge -> {
-                edgesForShortestPath.remove(nearestPos.second)
-                val splitNode = RouteNode.fromLatLong(nearestPos.first)
-                nodesForShortestPath.add(splitNode)
-                edgesForShortestPath.add(
-                    RouteEdge(
-                        null,
-                        (nearestPos.second as RouteEdge).start,
-                        splitNode
-                    )
-                )
-                edgesForShortestPath.add(
-                    RouteEdge(
-                        null,
-                        (nearestPos.second as RouteEdge).end,
-                        splitNode
-                    )
-                )
-                edgesForShortestPath.add(RouteEdge(null, startingNode, splitNode))
-            }
-            is Zone -> {
-                val areaNode =
-                    RouteNode.fromLatLong(nearestPos.first, (nearestPos.second as Zone).zoneId)
-                nodesForShortestPath.add(areaNode)
-                edgesForShortestPath.add(RouteEdge(null, startingNode, areaNode))
-            }
-        }
+        val targetZoneCenter = RouteNode.fromLatLong(zones.first { it.zoneId == targetZoneId }.getZoneCenter())
 
-        //consider zones as fully connected graphs
-        val areasnodes = nodesForShortestPath.groupBy { it.areaId }
-        for (nodesByArea in areasnodes.values) {
-            for (node in nodesByArea) {
-                for (node2 in nodesByArea) {
-                    val edge = RouteEdge(null, node, node2)
-                    if (!edgesForShortestPath.contains(edge)) {
-                        edgesForShortestPath.add(edge)
+        fun setUpGraph() {
+
+            nodesForShortestPath.addAll(nodes)
+            edgesForShortestPath.addAll(edges)
+
+            // Add current position as starting node
+
+            nodesForShortestPath.add(startingNode)
+            when (nearestPos.second) {
+                is RouteNode -> {
+                    edgesForShortestPath.add(
+                        RouteEdge(
+                            null,
+                            startingNode,
+                            RouteNode.fromLatLong(nearestPos.first.toLatLng())
+                        )
+                    )
+                }
+                is RouteEdge -> {
+                    edgesForShortestPath.remove(nearestPos.second)
+                    val splitNode = RouteNode.fromLatLong(nearestPos.first.toLatLng())
+                    nodesForShortestPath.add(splitNode)
+                    edgesForShortestPath.add(
+                        RouteEdge(
+                            null,
+                            (nearestPos.second as RouteEdge).start,
+                            splitNode
+                        )
+                    )
+                    edgesForShortestPath.add(
+                        RouteEdge(
+                            null,
+                            (nearestPos.second as RouteEdge).end,
+                            splitNode
+                        )
+                    )
+                    edgesForShortestPath.add(RouteEdge(null, startingNode, splitNode))
+                }
+                is Zone -> {
+                    val areaNode =
+                        RouteNode.fromLatLong(nearestPos.first.toLatLng(), (nearestPos.second as Zone).zoneId)
+                    nodesForShortestPath.add(areaNode)
+                    edgesForShortestPath.add(RouteEdge(null, startingNode, areaNode))
+                }
+            }
+
+            //consider zones as fully connected graphs
+            val areasnodes = nodesForShortestPath.groupBy { it.areaId }
+            for (nodesByArea in areasnodes.filter { it.key != targetZoneId }.values) {
+                for (node in nodesByArea) {
+                    for (node2 in nodesByArea) {
+                        val edge = RouteEdge(null, node, node2)
+                        if (!edgesForShortestPath.contains(edge) && node != node2) {
+                            edgesForShortestPath.add(edge)
+                        }
                     }
                 }
             }
-        }
-        RouteNode.fromLatLong()
-        val startAttachable = RouteNode.fromLatLong()
-        nodesForShortestPath.add(startAttachable)
-        edgesForShortestPath
+            //we consider target Zone center as the target node
 
-        return listOf()
+            nodesForShortestPath.add(targetZoneCenter)
+            for (node in areasnodes[targetZoneId]!!){
+                val edge = RouteEdge(null,node,targetZoneCenter)
+                edge.weight = 0.0
+                edgesForShortestPath.add(edge)
+            }
+
+        }
+
+        setUpGraph()
+        val shortestPaths = dijkstra(nodesForShortestPath, edgesForShortestPath, startingNode)
+
+        val pointlist : MutableList<LatLng> = mutableListOf()
+        var lastnode = targetZoneCenter
+        while(lastnode != startingNode){
+            lastnode = shortestPaths[lastnode]!!
+            pointlist.add(lastnode.toLatLng())
+        }
+
+
+        return pointlist.reversed()
     }
 
-    data class Graph<T>(
-        val vertices: Set<T>,
-        val edges: Map<T, Set<T>>,
-        val weights: Map<Pair<T, T>, Int>
-    )
+    fun toAdjacencyList(edges: Set<RouteEdge>): Map<RouteNode, Set<Pair<RouteNode, Double>>> {
+        val adjList: MutableMap<RouteNode, MutableSet<Pair<RouteNode, Double>>> = mutableMapOf()
+        for (edge in edges) {
+            if (!adjList.containsKey(edge.start)) {
+                adjList[edge.start] = mutableSetOf()
+            }
+            adjList[edge.start]!!.add(Pair(edge.end,edge.weight!!))
+            if (!adjList.containsKey(edge.end)) {
+                adjList[edge.end] = mutableSetOf()
+            }
+            adjList[edge.end]!!.add(Pair(edge.start,edge.weight!!))
+        }
+        return adjList
+    }
 
-    fun <T> dijkstra(graph: Graph<T>, start: T): Map<T, T?> {
-        val S: MutableSet<T> =
-            mutableSetOf() // a subset of vertices, for which we know the true distance
+    fun dijkstra(nodes: Set<RouteNode>, edges: Set<RouteEdge>, start: RouteNode): Map<RouteNode,RouteNode?> {
+        if (start !in nodes) throw IllegalArgumentException("Start route not in set of nodes for Dijkstra")
+        val done: MutableSet<RouteNode> = mutableSetOf()
 
-        val delta = graph.vertices.map { it to Int.MAX_VALUE }.toMap().toMutableMap()
-        delta[start] = 0
+        val adjList = toAdjacencyList(edges)
 
-        val previous: MutableMap<T, T?> = graph.vertices.map { it to null }.toMap().toMutableMap()
+        // costs to get to each node
+        val costs = nodes.map { it to Double.MAX_VALUE }.toMap().toMutableMap()
+        costs[start] = 0.0
 
-        while (S != graph.vertices) {
-            val v: T = delta
-                .filter { !S.contains(it.key) }
-                .minBy { it.value }!!
+        val previous: MutableMap<RouteNode, RouteNode?> =
+            nodes.map { it to null }.toMap().toMutableMap()
+
+        while (done != nodes) {
+            // get node with lowest cost
+            val v: RouteNode = costs
+                .filter { !done.contains(it.key) }
+                .minByOrNull { it.value }!!
                 .key
 
-            graph.edges.getValue(v).minus(S).forEach { neighbor ->
-                val newPath = delta.getValue(v) + graph.weights.getValue(Pair(v, neighbor))
+            for(neighbor in adjList[v]!!.filter { !done.contains(it.first) })
+            {
+                val newPath = costs[v]!! + neighbor.second
 
-                if (newPath < delta.getValue(neighbor)) {
-                    delta[neighbor] = newPath
-                    previous[neighbor] = v
+                if (newPath < costs[neighbor.first]!!) {
+                    costs[neighbor.first] = newPath
+                    previous[neighbor.first] = v
                 }
             }
 
-            S.add(v)
+            done.add(v)
         }
 
-        return previous.toMap()
+        return previous
     }
 
     fun <T> shortestPath(shortestPathTree: Map<T, T?>, start: T, end: T): List<T> {
@@ -151,10 +187,6 @@ object RouteMapHelper {
         }
 
         return pathTo(start, end)
-    }
-
-    fun dijkstra(nodes: Set<RouteNode>, edges: Set<RouteEdge>) {
-
     }
 
 
@@ -178,10 +210,11 @@ object RouteMapHelper {
      */
     fun getPosOnNearestAttachable(
         point: LatLng,
+        angle: Double? = null,
         exclude: Attachable? = null
-    ): Pair<LatLng, Attachable?> {
+    ): Triple<RouteNode, Attachable?, Double?> {
         // TODO
-        return Pair(point, RouteNode(null, 0.0, 0.0, null))
+        return Triple(RouteNode(null, 0.0, 0.0, null), RouteNode(null, 0.0, 0.0, null),null)
     }
 
     /**

@@ -52,4 +52,18 @@ data class Zone(
     ): Pair<LatLng, Double>? {
         TODO("Not yet implemented")
     }
+
+    fun getZoneCenter(): LatLng {
+        var pointCount = 0
+        var lat = 0.0
+        var lng = 0.0
+        for (latLngList in getZoneCoordinates()){
+            for (latLng in latLngList){
+                pointCount++
+                lat += latLng.latitude
+                lng += latLng.longitude
+            }
+        }
+        return LatLng(lat/pointCount,lng/pointCount)
+    }
 }
