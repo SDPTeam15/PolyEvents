@@ -5,13 +5,18 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.github.sdpteam15.polyevents.database.Database.currentDatabase
 import com.github.sdpteam15.polyevents.database.observe.Observable
+import com.github.sdpteam15.polyevents.database.room.LocalDatabase
 import com.github.sdpteam15.polyevents.exceptions.MaxAttendeesException
 import com.github.sdpteam15.polyevents.fragments.EXTRA_EVENT_ID
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.model.Event
+import com.github.sdpteam15.polyevents.model.room.EventLocal
+import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModel
+import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModelFactory
 
 /**
  * An activity containing events description
@@ -24,9 +29,16 @@ class EventActivity : AppCompatActivity() {
         // Refactored here for tests
         var obsEvent = Observable<Event>()
         lateinit var event: Event
+        // for testing purposes
+        lateinit var database: LocalDatabase
     }
 
     private lateinit var subscribeButton: Button
+
+    // Lazily initialized view model, instantiated only when accessed for the first time
+    private val localEventViewModel: EventLocalViewModel by viewModels {
+        EventLocalViewModelFactory(database.eventDao())
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,9 +47,18 @@ class EventActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowHomeEnabled(true)
 
+        database = (application as PolyEventsApplication).database
+
         subscribeButton = findViewById(R.id.button_subscribe_event)
 
         getEventAndObserve()
+
+        /*val obs : ObservableList<EventLocal> = ObservableList()
+        localEventViewModel.getAllEvents(obs)
+        obs.observe(this) {
+            Log.d(TAG, "Getting events!")
+            Log.d(TAG, it.value.joinToString(separator = ","))
+        }*/
     }
 
     override fun onResume() {
@@ -60,6 +81,21 @@ class EventActivity : AppCompatActivity() {
      * Updates the event information
      */
     private fun updateInfo(event: Event) {
+        /*Log.d(TAG, "BEGIN INSERTING INTO ROOM DATABASE")
+        eventViewModel.insert(
+                EventLocal(
+                        eventId = event.eventId!! + "2",
+                        eventName = event.eventName,
+                        organizer = event.organizer,
+                        zoneName = event.zoneName,
+                        description = event.description,
+                        startTime = event.startTime,
+                        tags = event.tags
+                )
+        ).invokeOnCompletion {
+            Log.d(TAG, "INSERTED EVENT INTO ROOM DATBASE")
+        }*/
+
         EventActivity.event = event
         // Capture the layout's TextView and set the string as its text
         findViewById<TextView>(R.id.txt_event_Name).apply {
@@ -105,19 +141,30 @@ class EventActivity : AppCompatActivity() {
         }
     }
 
-    fun unsubscribeFromEvent() {
+    /**
+     * Unsubscribe user from the event. The updates are done on firestore for the current event,
+     * and deletes the event from the local database.
+     */
+    private fun unsubscribeFromEvent() {
         event.removeParticipant(currentDatabase.currentUser!!.uid)
 
+        localEventViewModel.delete(EventLocal.fromEvent(event))
         currentDatabase.eventDatabase!!.updateEvents(event)
+
         showToast(resources.getString(R.string.event_successfully_unsubscribed), this)
 
         subscribeButton.setText(resources.getString(R.string.event_subscribe))
     }
 
-    fun subscribeToEvent() {
+    /**
+     * Subscribe user to the event if event still has free slots. Updates the event remotely on firestore
+     * as well as inserts the event in the local room database.
+     */
+    private fun subscribeToEvent() {
         try {
             event.addParticipant(currentDatabase.currentUser!!.uid)
 
+            localEventViewModel.insert(EventLocal.fromEvent(event))
             currentDatabase.eventDatabase!!.updateEvents(event)
             showToast(resources.getString(R.string.event_successfully_subscribed), this)
             subscribeButton.setText(resources.getString(R.string.event_unsubscribe))
