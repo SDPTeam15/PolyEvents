@@ -47,9 +47,9 @@ data class Zone(
     }
 
     override fun getAttachedNewPoint(
-        position: com.google.type.LatLng,
+        position: LatLng,
         angle: Double?
-    ): Pair<com.google.type.LatLng, Double>? {
+    ): Pair<LatLng, Double>? {
         TODO("Not yet implemented")
     }
 }

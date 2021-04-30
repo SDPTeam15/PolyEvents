@@ -1,7 +1,7 @@
 package com.github.sdpteam15.polyevents.model.entity
 
 import com.github.sdpteam15.polyevents.model.map.Attachable
-import com.google.type.LatLng
+import com.google.android.gms.maps.model.LatLng
 
 /**
  *  TODO
@@ -13,13 +13,12 @@ data class RouteNode(
     val areaId: String ? = null
 ) : Attachable {
     fun toLatLng(): LatLng {
-        TODO()
+        return LatLng(latitude,longitude)
     }
 
     companion object {
-        fun fromLatLong(latLng: LatLng): RouteNode {
-            TODO()
-        }
+        fun fromLatLong(latLng: LatLng, areaId: String? = null): RouteNode =
+            RouteNode(null,latLng.latitude,latLng.longitude,areaId)
     }
 
     override fun getAttachedNewPoint(position: LatLng, angle: Double?): Pair<LatLng, Double>? {
