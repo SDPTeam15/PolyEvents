@@ -1,9 +1,11 @@
 package com.github.sdpteam15.polyevents.admin
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.github.sdpteam15.polyevents.R
@@ -13,6 +15,7 @@ import com.github.sdpteam15.polyevents.database.observe.ObservableList
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.Event
 import com.github.sdpteam15.polyevents.model.Zone
+import java.lang.Exception
 import java.time.LocalDateTime
 
 class EventManagementActivity : AppCompatActivity() {
@@ -25,9 +28,12 @@ class EventManagementActivity : AppCompatActivity() {
     private lateinit var dialogEndDate: DatePickerDialog
     private lateinit var dialogStartTime: TimePickerDialog
     private lateinit var dialogEndTime: TimePickerDialog
-    private var isCreation:Boolean = true
+    private var isCreation: Boolean = true
     private var curId = ""
     private val observableEvent = Observable<Event>()
+    private val typeEnd = "END"
+    private val typeStart = "start"
+    private val MIN_PART_NB = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +41,7 @@ class EventManagementActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayShowHomeEnabled(true)
 
         val id = intent.getStringExtra(EventManagementListActivity.EVENT_ID_INTENT)!!
-        isCreation = id== EventManagementListActivity.NEW_EVENT_ID
+        isCreation = id == EventManagementListActivity.NEW_EVENT_ID
         curId = id
         dateStart = LocalDateTime.now()
         dateEnd = LocalDateTime.now()
@@ -56,7 +62,21 @@ class EventManagementActivity : AppCompatActivity() {
         setDateListener()
         setTimeListener()
         setButtonListener()
+        setupSwitchListener()
+        setupViewInActivity(false)
         manageButtonSetup()
+    }
+    private  fun setupSwitchListener() {
+        val nbpart = findViewById<EditText>(R.id.etNbPart)
+        findViewById<Switch>(R.id.swtLimitedEvent).setOnCheckedChangeListener { buttonView, isChecked ->
+            if(isChecked){
+                nbpart.visibility = View.VISIBLE
+                nbpart.setText("10")
+            }else{
+                nbpart.visibility = View.INVISIBLE
+                nbpart.setText("")
+            }
+         }
     }
 
     private fun setButtonListener() {
@@ -74,35 +94,90 @@ class EventManagementActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
+    private fun setupViewInActivity(onCallback: Boolean) {
+        val btnManage = findViewById<Button>(R.id.btnManageEvent)
+        val switch = findViewById<Switch>(R.id.swtLimitedEvent)
+        val descET = findViewById<EditText>(R.id.eventManagementDescriptionField)
+        val nameET = findViewById<EditText>(R.id.eventManagementNameField)
+        val nbpart = findViewById<EditText>(R.id.etNbPart)
+
+        if (!onCallback) {
+            btnManage.text = "Create event"
+            nameET.setText("")
+            descET.setText("")
+            switch.isSelected = false
+            nbpart.visibility = View.INVISIBLE
+        } else {
+            val event = observableEvent.value!!
+            btnManage.text = "Update event"
+            nameET.setText(event.eventName)
+            descET.setText(event.description)
+
+            nbpart.visibility = View.INVISIBLE
+
+            if (event.isLimitedEvent()) {
+                nbpart.setText(event.getMaxNumberOfSlots()!!)
+                nbpart.visibility = View.VISIBLE
+            }
+            switch.isSelected = event.isLimitedEvent()
+            dateStart = event.startTime!!
+            dateEnd = event.endTime!!
+            updateTextDate(typeEnd)
+            updateTextDate(typeStart)
+        }
+    }
+
     private fun manageButtonSetup() {
         val btnManage = findViewById<Button>(R.id.btnManageEvent)
         if (isCreation) {
-            btnManage.text = "Create event"
             btnManage.setOnClickListener {
-                if (verifyCondition()){
-                    currentDatabase.eventDatabase!!.createEvent(getInformation()).observe(this){
-                        redirectOrDisplayError("Event successfully created","Unable to create the event, please try again", it.value)
+                if (verifyCondition()) {
+                    currentDatabase.eventDatabase!!.createEvent(getInformation()).observe(this) {
+                        redirectOrDisplayError(
+                            "Event successfully created",
+                            "Unable to create the event, please try again",
+                            it.value
+                        )
                     }
                 }
             }
         } else {
-            btnManage.text = "Update event"
             btnManage.setOnClickListener {
                 if (verifyCondition()) {
-                    currentDatabase.eventDatabase!!.updateEvents(getInformation()).observe(this){
-                        redirectOrDisplayError("Event successfully updated","Unable to update the event, please try again", it.value)
+                    currentDatabase.eventDatabase!!.updateEvents(getInformation()).observe(this) {
+                        redirectOrDisplayError(
+                            "Event successfully updated",
+                            "Unable to update the event, please try again",
+                            it.value
+                        )
                     }
+                }
+            }
+            currentDatabase.eventDatabase!!.getEventFromId(curId,observableEvent).observe(this){
+                if(it.value){
+                    setupViewInActivity(true)
+                }else{
+                    redirectOrDisplayError("","Unable to get the information associated to this event", false)
                 }
             }
         }
     }
 
-    private fun redirectOrDisplayError(msgSuccess:String, msgError:String, value:Boolean){
-        if(value){
-            HelperFunctions.showToast(msgSuccess,this)
+    private fun updateTextDate(type: String) {
+        if (typeStart == type) {
+            findViewById<EditText>(R.id.et_start_date).setText(dateStart.toString())
+        } else {
+            findViewById<EditText>(R.id.et_end_date).setText(dateEnd.toString())
+        }
+    }
+
+    private fun redirectOrDisplayError(msgSuccess: String, msgError: String, value: Boolean) {
+        if (value) {
+            HelperFunctions.showToast(msgSuccess, this)
             startActivity(Intent(this, EventManagementListActivity::class.java))
-        }else{
-            HelperFunctions.showToast(msgError,this)
+        } else {
+            HelperFunctions.showToast(msgError, this)
         }
     }
 
@@ -112,6 +187,8 @@ class EventManagementActivity : AppCompatActivity() {
         val name = findViewById<EditText>(R.id.eventManagementNameField).text.toString()
         val desc = findViewById<EditText>(R.id.eventManagementDescriptionField).text.toString()
         val selectedZone = findViewById<Spinner>(R.id.spinner_zone).selectedItemPosition
+        val limitedEvent = findViewById<Switch>(R.id.swtLimitedEvent).isSelected
+        val nbParticipant = findViewById<EditText>(R.id.etNbPart).text.toString().toInt()
 
         val zoneNa = zoneName[selectedZone]
         val zoneId = mapIndexToId[selectedZone]
@@ -122,7 +199,9 @@ class EventManagementActivity : AppCompatActivity() {
             startTime = this.dateStart,
             endTime = this.dateEnd,
             eventName = name,
-            description = desc
+            description = desc,
+            limitedEvent = limitedEvent,
+            maxNumberOfSlots = nbParticipant
         )
     }
 
@@ -137,7 +216,7 @@ class EventManagementActivity : AppCompatActivity() {
                         dateEnd.hour,
                         dateEnd.minute
                     )
-                HelperFunctions.showToast("$year ${month + 1} $day", this)
+                updateTextDate(typeEnd)
             }, dateEnd.year, dateEnd.monthValue - 1, dateEnd.dayOfMonth
         )
 
@@ -145,7 +224,7 @@ class EventManagementActivity : AppCompatActivity() {
             this, { _: DatePicker, year: Int, month: Int, day: Int ->
                 dateStart =
                     LocalDateTime.of(year, month + 1, day, dateStart.hour, dateStart.minute)
-                HelperFunctions.showToast("$year ${month + 1} $day", this)
+                updateTextDate(typeStart)
             }, dateStart.year, dateStart.monthValue - 1, dateStart.dayOfMonth
         )
     }
@@ -155,6 +234,7 @@ class EventManagementActivity : AppCompatActivity() {
             this, { _: TimePicker, hour: Int, minute: Int ->
                 dateEnd =
                     LocalDateTime.of(dateEnd.year, dateEnd.month, dateEnd.dayOfMonth, hour, minute)
+                updateTextDate(typeStart)
             }, dateEnd.hour, dateEnd.minute, true
         )
 
@@ -162,6 +242,7 @@ class EventManagementActivity : AppCompatActivity() {
             this, { _: TimePicker, hour: Int, minute: Int ->
                 dateEnd =
                     LocalDateTime.of(dateEnd.year, dateEnd.month, dateEnd.dayOfMonth, hour, minute)
+                updateTextDate(typeEnd)
             }, dateEnd.hour, dateEnd.minute, true
         )
     }
@@ -183,23 +264,28 @@ class EventManagementActivity : AppCompatActivity() {
     }
 
     private fun verifyCondition(): Boolean {
-
         var good = true
-        if(findViewById<EditText>(R.id.eventManagementNameField).text.toString() == ""){
+        if (findViewById<EditText>(R.id.eventManagementNameField).text.toString() == "") {
             good = false
             HelperFunctions.showToast("Please enter a name", this)
         }
-        if(findViewById<EditText>(R.id.eventManagementDescriptionField).text.toString() == ""){
+        if (findViewById<EditText>(R.id.eventManagementDescriptionField).text.toString() == "") {
             good = false
             HelperFunctions.showToast("Please enter a description", this)
         }
 
-        if(dateEnd.isBefore(dateStart)){
+        if (dateEnd.isBefore(dateStart)) {
             good = false
             HelperFunctions.showToast("The end date is before the start date", this)
         }
 
+        if(findViewById<Switch>(R.id.swtLimitedEvent).isSelected){
+            if(findViewById<EditText>(R.id.etNbPart).text.toString().toInt()<MIN_PART_NB){
+                good = false
+                HelperFunctions.showToast("The number of participant must be greater than $MIN_PART_NB", this)
+            }
+        }
+
         return good
     }
-
 }
