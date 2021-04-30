@@ -1,16 +1,15 @@
 package com.github.sdpteam15.polyevents.viewmodel
 
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.github.sdpteam15.polyevents.database.dao.EventDao
-import com.github.sdpteam15.polyevents.database.observe.ObservableList
+import com.github.sdpteam15.polyevents.model.database.local.dao.EventDao
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.room.EventLocal
 import kotlinx.coroutines.launch
 
-class EventLocalViewModel(private val eventDao: EventDao): ViewModel() {
+class EventLocalViewModel(private val eventDao: EventDao) : ViewModel() {
 
     companion object {
         private const val TAG = "EventLocalViewModel"

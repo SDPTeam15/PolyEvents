@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.room.TypeConverter
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.database.observe.Observable
+import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import java.time.*
@@ -198,8 +198,8 @@ object HelperFunctions {
         fun fromLong(value: Long?): LocalDateTime? {
             return value?.let {
                 LocalDateTime.ofInstant(
-                        Instant.ofEpochMilli(it),
-                        TimeZone.getDefault().toZoneId()
+                    Instant.ofEpochMilli(it),
+                    TimeZone.getDefault().toZoneId()
                 )
             }
         }
