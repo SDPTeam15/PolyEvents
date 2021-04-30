@@ -17,6 +17,7 @@ import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.map.GoogleMapAdapter
 import com.github.sdpteam15.polyevents.model.map.GoogleMapHelper
+import com.github.sdpteam15.polyevents.model.map.RouteMapHelper
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementActivity
 import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementListActivity
@@ -24,10 +25,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.*
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.Polygon
-import com.google.android.gms.maps.model.Polyline
+import com.google.android.gms.maps.model.*
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.*
 
@@ -74,23 +72,32 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         val saveNewAreaButton: View = view.findViewById(R.id.acceptNewArea)
         val editAreaButton: View = view.findViewById(R.id.id_edit_area)
         //val deleteAreaButton: View = view.findViewById(R.id.id_delete_areas)
+
         addNewAreaButton.setOnClickListener { GoogleMapHelper.createNewArea(requireContext()) }
         saveNewAreaButton.setOnClickListener { GoogleMapHelper.saveNewArea(requireContext()) }
         editAreaButton.setOnClickListener { GoogleMapHelper.editMode(requireContext()) }
         //deleteAreaButton.setOnClickListener{GoogleMapHelper.deleteMode(requireContext())}
+
+        val addNewRouteButton = view.findViewById<FloatingActionButton>(R.id.addNewRoute)
+        val removeRouteButton = view.findViewById<FloatingActionButton>(R.id.removeRoute)
+        val saveNewRouteButton = view.findViewById<FloatingActionButton>(R.id.saveNewRoute)
+        addNewRouteButton.setOnClickListener { RouteMapHelper.createNewRoute(requireContext()) }
+        removeRouteButton.setOnClickListener { RouteMapHelper.removeRoute(requireContext()) }
+        saveNewRouteButton.setOnClickListener { RouteMapHelper.saveNewRoute() }
 
         locationButton = view.findViewById(R.id.id_location_button)
         val locateMeButton = view.findViewById<FloatingActionButton>(R.id.id_locate_me_button)
         val saveButton = view.findViewById<FloatingActionButton>(R.id.saveAreas)
         val heatmapButton = view.findViewById<FloatingActionButton>(R.id.id_heatmap)
 
+        /*
         addNewAreaButton.setOnClickListener {
             GoogleMapHelper.createNewArea(requireContext())
         }
         saveNewAreaButton.setOnClickListener {
             GoogleMapHelper.saveNewArea(requireContext())
         }
-
+        */
         if (onEdit) {
             addNewAreaButton.visibility = View.VISIBLE
             saveNewAreaButton.visibility = View.VISIBLE
@@ -100,6 +107,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
             locationButton.visibility = View.INVISIBLE
             locateMeButton.visibility = View.INVISIBLE
             heatmapButton.visibility = View.INVISIBLE
+            addNewRouteButton.visibility = View.INVISIBLE
+            removeRouteButton.visibility = View.INVISIBLE
+            saveNewRouteButton.visibility = View.INVISIBLE
 
             saveButton.setOnClickListener {
                 GoogleMapHelper.editMode = false
@@ -127,6 +137,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
             locationButton.visibility = View.VISIBLE
             locateMeButton.visibility = View.VISIBLE
             heatmapButton.visibility = View.VISIBLE
+            addNewRouteButton.visibility = View.VISIBLE
+            removeRouteButton.visibility = View.VISIBLE
+            saveNewRouteButton.visibility = View.VISIBLE
         }
 
         heatmapButton.setOnClickListener {
@@ -190,6 +203,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     override fun onMapReady(googleMap: GoogleMap?) {
         //GoogleMapHelper.context = context
         GoogleMapHelper.map = GoogleMapAdapter(googleMap)
+        RouteMapHelper.map = GoogleMapAdapter(googleMap)
 
         googleMap!!.setOnPolylineClickListener(this)
         googleMap.setOnPolygonClickListener(this)
@@ -204,10 +218,12 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
             activateMyLocation()
         }
         startId = GoogleMapHelper.uidArea
-
     }
 
-    override fun onPolylineClick(polyline: Polyline) {}
+    override fun onPolylineClick(polyline: Polyline) {
+        Log.d("CLIC", "CLIC")
+        RouteMapHelper.polylineClick(polyline)
+    }
 
     override fun onPolygonClick(polygon: Polygon) {
         if (onEdit) {

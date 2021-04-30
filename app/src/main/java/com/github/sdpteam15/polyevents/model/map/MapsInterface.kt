@@ -22,15 +22,21 @@ interface MapsInterface {
 
     /**
      * Add a polygon to the map
-     * @param poly polygon option to create the polygon
+     * @param option polygon option to create the polygon
      */
-    fun addPolygon(poly: PolygonOptions): Polygon
+    fun addPolygon(option: PolygonOptions): Polygon
 
     /**
      * Add a marker to the map
-     * @param icon marker option to create the marker
+     * @param option marker option to create the marker
      */
-    fun addMarker(icon: MarkerOptions): Marker
+    fun addMarker(option: MarkerOptions): Marker
+
+    /**
+     * Add a polyline to the map
+     * @param option polyline option to create the polyline
+     */
+    fun addPolyline(option: PolylineOptions): Polyline
 
     /**
      * Set the min zoom of the map
