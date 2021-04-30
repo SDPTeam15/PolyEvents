@@ -17,24 +17,31 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PolyEvents">
+        <activity
+            android:name=".admin.EventManagementActivity"
+            android:label="@string/title_activity_event_management"
+            android:parentActivityName=".admin.EventManagementListActivity" />
+
         <service
             android:name=".service.TimerService"
             android:enabled="true"
-            android:exported="true"></service>
-        <activity android:name=".admin.UserManagementActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".admin.UserManagementActivity"
             android:parentActivityName=".admin.UserManagementListActivity" />
         <activity
             android:name=".admin.ZoneManagementListActivity"
             android:parentActivityName=".MainActivity" />
         <activity
-            android:name=".admin.EventManagementActivity"
+            android:name=".admin.EventManagementListActivity"
             android:label="@string/title_activity_event_management"
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".admin.UserManagementListActivity"
             android:label="@string/title_activity_user_list_management"
-            android:parentActivityName=".MainActivity"
-            android:launchMode="singleTop"/>
+            android:launchMode="singleTop"
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".admin.ZoneManagementActivity"
             android:label="@string/title_activity_zone_management"
