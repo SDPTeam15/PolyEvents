@@ -62,6 +62,10 @@ open class GoogleMapAdapter(var map: GoogleMap?) : MapsInterface {
         return map!!.addMarker(options)
     }
 
+    override fun addPolyline(option: PolylineOptions): Polyline {
+        return map!!.addPolyline(option)
+    }
+
     override fun setMinZoomPreference(minZoomPreference: Float) {
         map!!.setMinZoomPreference(minZoomPreference)
     }

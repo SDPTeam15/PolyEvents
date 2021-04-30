@@ -46,10 +46,19 @@ data class Zone(
         return listZoneCoordinates
     }
 
+    /**
+     * Get the coordinates of all the grouped areas on the current Zone
+     * @return A list of list of LatLng points composing an area
+     */
+    fun getDrawingPoints(): List<List<LatLng>> {
+        // TODO reduce the number of element
+        return getZoneCoordinates()
+    }
+
     override fun getAttachedNewPoint(
-        position: com.google.type.LatLng,
+        position: LatLng,
         angle: Double?
-    ): Pair<com.google.type.LatLng, Double>? {
+    ): Pair<LatLng, Double>? {
         TODO("Not yet implemented")
     }
 }
