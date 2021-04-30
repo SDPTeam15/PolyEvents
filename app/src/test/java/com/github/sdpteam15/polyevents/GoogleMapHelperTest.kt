@@ -1,7 +1,7 @@
 package com.github.sdpteam15.polyevents
 
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZoneConstant.*
-import com.github.sdpteam15.polyevents.helper.GoogleMapHelper
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ZoneConstant.*
+import com.github.sdpteam15.polyevents.model.map.GoogleMapHelper
 import com.google.android.gms.internal.maps.zzt
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.internal.maps.zzw
@@ -9,9 +9,7 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.Polygon
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mock
 import org.mockito.Mockito
-import javax.annotation.meta.When
 
 class GoogleMapHelperTest {
     lateinit var listLngLat: ArrayList<LatLng>

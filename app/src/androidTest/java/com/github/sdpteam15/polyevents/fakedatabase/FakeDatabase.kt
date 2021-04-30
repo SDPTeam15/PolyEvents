@@ -1,15 +1,15 @@
 package com.github.sdpteam15.polyevents.fakedatabase
 
-import com.github.sdpteam15.polyevents.database.DatabaseConstant
-import com.github.sdpteam15.polyevents.database.DatabaseInterface
-import com.github.sdpteam15.polyevents.database.Matcher
-import com.github.sdpteam15.polyevents.database.objects.*
-import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.database.observe.ObservableList
-import com.github.sdpteam15.polyevents.model.UserEntity
-import com.github.sdpteam15.polyevents.model.UserProfile
-import com.github.sdpteam15.polyevents.util.AdapterFromDocumentInterface
-import com.github.sdpteam15.polyevents.util.AdapterToDocumentInterface
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
+import com.github.sdpteam15.polyevents.model.database.remote.Matcher
+import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.model.entity.UserEntity
+import com.github.sdpteam15.polyevents.model.entity.UserProfile
+import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
+import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterToDocumentInterface
+import com.github.sdpteam15.polyevents.model.database.remote.objects.*
 import kotlin.random.Random
 
 object FakeDatabase : DatabaseInterface {
