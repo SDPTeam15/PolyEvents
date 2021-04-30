@@ -2,6 +2,11 @@ package com.github.sdpteam15.polyevents.model.entity
 
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ZoneConstant.*
 import com.github.sdpteam15.polyevents.model.map.Attachable
+import com.github.sdpteam15.polyevents.model.map.RouteMapHelper.angle
+import com.github.sdpteam15.polyevents.model.map.RouteMapHelper.getNearestPoint
+import com.github.sdpteam15.polyevents.model.map.RouteMapHelper.isTooParallel
+import com.github.sdpteam15.polyevents.model.map.RouteMapHelper.minus
+import com.github.sdpteam15.polyevents.model.map.RouteMapHelper.norm
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.IgnoreExtraProperties
 
@@ -18,7 +23,7 @@ data class Zone(
     var zoneName: String? = null,
     var location: String? = null,
     var description: String? = null
-):Attachable {
+) : Attachable {
     /**
      * Get the coordinates of all the areas on the current Zone
      * @return A list of list of LatLng points composing an area
@@ -38,7 +43,6 @@ data class Zone(
                     } catch (e: NumberFormatException) {
                         println(coor)
                     }
-
                 }
                 listZoneCoordinates.add(curList)
             }
@@ -46,10 +50,33 @@ data class Zone(
         return listZoneCoordinates
     }
 
+    /**
+     * Get the coordinates of all the grouped areas on the current Zone
+     * @return A list of list of LatLng points composing an area
+     */
+    fun getDrawingPoints(): List<List<LatLng>> {
+        // TODO reduce the number of element
+        return getZoneCoordinates()
+    }
+
     override fun getAttachedNewPoint(
-        position: com.google.type.LatLng,
+        position: LatLng,
         angle: Double?
-    ): Pair<com.google.type.LatLng, Double>? {
-        TODO("Not yet implemented")
+    ): Pair<LatLng, Double>? {
+        val list = getDrawingPoints()
+        var res: Pair<LatLng, Double>? = null
+        for (e in list)
+            for (i in e.indices) {
+                val from = e[i]
+                val to = e[(i + 1) % e.size]
+                val lineAngle = angle(from, to)
+                if (angle == null || !isTooParallel(angle, lineAngle)) {
+                    val newPoint = getNearestPoint(from, to, position)
+                    val distance = norm(minus(position, newPoint))
+                    if (res == null || distance < res.second)
+                        res = Pair(newPoint, distance)
+                }
+            }
+        return res
     }
 }

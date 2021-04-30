@@ -1,6 +1,6 @@
 package com.github.sdpteam15.polyevents.model.map
 
-import com.google.type.LatLng
+import com.google.android.gms.maps.model.LatLng
 
 /**
  * Object that can be attached by an edge when a vertex point is close to it
