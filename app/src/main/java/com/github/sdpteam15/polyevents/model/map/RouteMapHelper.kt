@@ -9,7 +9,6 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.entity.RouteEdge
 import com.github.sdpteam15.polyevents.model.entity.RouteNode
 import com.github.sdpteam15.polyevents.model.entity.Zone
-import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.angle
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.divide
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.minus
@@ -19,8 +18,6 @@ import com.github.sdpteam15.polyevents.model.map.LatLngOperator.scalar
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.time
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.google.android.gms.maps.model.LatLng
-import kotlin.math.sqrt
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.Polyline
@@ -99,8 +96,7 @@ object RouteMapHelper {
             when (nearestPos.second) {
                 is RouteNode -> {
                     edgesForShortestPath.add(
-                        RouteEdge(
-                            null,
+                        RouteEdge.fromRouteNode(
                             startingNode,
                             RouteNode.fromLatLong(nearestPos.first.toLatLng())
                         )
@@ -111,20 +107,18 @@ object RouteMapHelper {
                     val splitNode = RouteNode.fromLatLong(nearestPos.first.toLatLng())
                     nodesForShortestPath.add(splitNode)
                     edgesForShortestPath.add(
-                        RouteEdge(
-                            null,
-                            (nearestPos.second as RouteEdge).start,
+                        RouteEdge.fromRouteNode(
+                            (nearestPos.second as RouteEdge).start!!,
                             splitNode
                         )
                     )
                     edgesForShortestPath.add(
-                        RouteEdge(
-                            null,
-                            (nearestPos.second as RouteEdge).end,
+                        RouteEdge.fromRouteNode(
+                            (nearestPos.second as RouteEdge).end!!,
                             splitNode
                         )
                     )
-                    edgesForShortestPath.add(RouteEdge(null, startingNode, splitNode))
+                    edgesForShortestPath.add(RouteEdge.fromRouteNode( startingNode, splitNode))
                 }
                 is Zone -> {
                     val areaNode =
@@ -133,7 +127,7 @@ object RouteMapHelper {
                             (nearestPos.second as Zone).zoneId
                         )
                     nodesForShortestPath.add(areaNode)
-                    edgesForShortestPath.add(RouteEdge(null, startingNode, areaNode))
+                    edgesForShortestPath.add(RouteEdge.fromRouteNode( startingNode, areaNode))
                 }
             }
 
@@ -142,7 +136,7 @@ object RouteMapHelper {
             for (nodesByArea in areasnodes.filter { it.key != targetZoneId && it.key != null }.values) {
                 for (node in nodesByArea) {
                     for (node2 in nodesByArea) {
-                        val edge = RouteEdge(null, node, node2)
+                        val edge = RouteEdge.fromRouteNode( node, node2)
                         if (!edgesForShortestPath.contains(edge) && node != node2) {
                             edgesForShortestPath.add(edge)
                         }
@@ -153,7 +147,7 @@ object RouteMapHelper {
 
             nodesForShortestPath.add(targetZoneCenter)
             for (node in areasnodes[targetZoneId]!!) {
-                val edge = RouteEdge(null, node, targetZoneCenter)
+                val edge = RouteEdge.fromRouteNode( node, targetZoneCenter)
                 edge.weight = 0.0
                 edgesForShortestPath.add(edge)
             }
@@ -214,14 +208,14 @@ object RouteMapHelper {
     fun toAdjacencyList(edges: Set<RouteEdge>): Map<RouteNode, Set<Pair<RouteNode, Double>>> {
         val adjList: MutableMap<RouteNode, MutableSet<Pair<RouteNode, Double>>> = mutableMapOf()
         for (edge in edges) {
-            if (!adjList.containsKey(edge.start)) {
-                adjList[edge.start] = mutableSetOf()
+            if (!adjList.containsKey(edge.start!!)) {
+                adjList[edge.start!!] = mutableSetOf()
             }
-            adjList[edge.start]!!.add(Pair(edge.end, edge.weight!!))
+            adjList[edge.start]!!.add(Pair(edge.end!!, edge.weight!!))
             if (!adjList.containsKey(edge.end)) {
-                adjList[edge.end] = mutableSetOf()
+                adjList[edge.end!!] = mutableSetOf()
             }
-            adjList[edge.end]!!.add(Pair(edge.start, edge.weight!!))
+            adjList[edge.end]!!.add(Pair(edge.start!!, edge.weight!!))
         }
         return adjList
     }
@@ -310,7 +304,7 @@ object RouteMapHelper {
         }
         for (e in nodes) found(e)
         for (e in edges) found(e)
-        for (e in zone) found(e)
+        for (e in zones) found(e)
         return res
     }
 

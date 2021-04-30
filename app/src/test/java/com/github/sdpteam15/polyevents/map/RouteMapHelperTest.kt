@@ -19,11 +19,11 @@ class RouteMapHelperTest {
         val node4 = RouteNode("4", 6.0, 1.0)
         val node5 = RouteNode("5", 5.0, 5.5, "2")
         val node6 = RouteNode("6", 5.5, 5.0, "2")
-        val edge1 = RouteEdge("1", node1, node3)
-        val edge2 = RouteEdge("2", node1, node5)
-        val edge3 = RouteEdge("3", node1, node4)
-        val edge4 = RouteEdge("4", node4, node6)
-        val edge5 = RouteEdge("5", node4, node2)
+        val edge1 = RouteEdge.fromRouteNode(node1, node3,"1")
+        val edge2 = RouteEdge.fromRouteNode(node1, node5,"2")
+        val edge3 = RouteEdge.fromRouteNode(node1, node4,"3")
+        val edge4 = RouteEdge.fromRouteNode(node4, node6,"4")
+        val edge5 = RouteEdge.fromRouteNode(node4, node2,"5")
         RouteMapHelper.zones.addAll(
             mutableListOf(
                 Zone(

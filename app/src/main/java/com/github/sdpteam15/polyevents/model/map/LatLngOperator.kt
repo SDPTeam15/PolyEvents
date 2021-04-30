@@ -35,7 +35,7 @@ object LatLngOperator {
      * TODO
      */
     fun angle(start: LatLng, end: LatLng) =
-        atan(start.latitude - end.latitude / start.longitude - end.longitude) / Math.PI * 180
+        (atan((start.latitude - end.latitude) / (start.longitude - end.longitude)) / Math.PI) * 180
 
     /**
      * TODO
@@ -53,7 +53,7 @@ object LatLngOperator {
      * @return distance between the points
      */
     fun scalar(point1: LatLng, point2: LatLng) =
-        point1.latitude * point2.latitude + point1.longitude * point2.latitude
+        point1.latitude * point2.latitude + point1.longitude * point2.longitude
 
     /**
      * Computes the euclidean distance between 2 points
@@ -69,7 +69,7 @@ object LatLngOperator {
      * @param point point
      */
     fun squaredNorm(point: LatLng) =
-        squaredNorm(point.longitude, point.longitude)
+        squaredNorm(point.longitude, point.latitude)
 
     /**
      * Computes the euclidean norm

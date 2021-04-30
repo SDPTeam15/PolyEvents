@@ -19,11 +19,11 @@ data class RouteEdge(
 
     var weight :Double? = null
         get() = field ?: if(start != null && end != null){
-        RouteMapHelper.euclideanDistance(
-            start.longitude,
-            start.latitude,
-            end.longitude,
-            end.latitude)}
+        euclideanDistance(
+            start!!.longitude,
+            start!!.latitude,
+            end!!.longitude,
+            end!!.latitude)}
         else{
                 0.0
         }

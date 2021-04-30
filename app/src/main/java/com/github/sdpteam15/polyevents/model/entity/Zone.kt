@@ -2,6 +2,11 @@ package com.github.sdpteam15.polyevents.model.entity
 
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ZoneConstant.*
 import com.github.sdpteam15.polyevents.model.map.Attachable
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.angle
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.isTooParallel
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.minus
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.norm
+import com.github.sdpteam15.polyevents.model.map.RouteMapHelper.getNearestPoint
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.IgnoreExtraProperties
 
