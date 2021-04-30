@@ -32,9 +32,9 @@ data class Zone(
                 for (p in points) {
                     val coor = p.split(LAT_LONG_SEP.value)
 
-                    try{
+                    try {
                         curList.add(LatLng(coor[0].toDouble(), coor[1].toDouble()))
-                    }catch (e: NumberFormatException){
+                    } catch (e: NumberFormatException) {
                         println(coor)
                     }
 

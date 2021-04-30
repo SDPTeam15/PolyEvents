@@ -7,13 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
-import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
+import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.view.activity.MainActivity
 
 /**
  * [Fragment] subclass representing the login page allowing the user to connect to the application
@@ -23,6 +23,7 @@ import com.github.sdpteam15.polyevents.model.entity.UserEntity
 class LoginFragment : Fragment() {
     val inDbObservable = Observable<Boolean>()
     val SIGN_IN_RC: Int = 200
+
     // Return CurrentUser if we are not in test, but we can use a fake user in test this way
     var currentUser: UserEntity? = null
         get() = field ?: currentDatabase.currentUser

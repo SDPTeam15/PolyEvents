@@ -3,10 +3,10 @@ package com.github.sdpteam15.polyevents.model.database.remote.objects
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.PROFILE_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
-import com.github.sdpteam15.polyevents.model.observable.Observable
-import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
+import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
 
 class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
     override var firstConnectionUser: UserEntity = UserEntity(uid = "DEFAULT")
@@ -55,12 +55,12 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
     )
 
     override fun getListAllUsers(users: ObservableList<UserEntity>, userAccess: UserProfile?) =
-            db.getListEntity(
-                    users,
-                    null,
-                    null,
-                    USER_COLLECTION
-            )
+        db.getListEntity(
+            users,
+            null,
+            null,
+            USER_COLLECTION
+        )
 
     override fun addUserProfileAndAddToUser(
         profile: UserProfile,

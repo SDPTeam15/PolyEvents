@@ -7,15 +7,15 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.entity.Event
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
 
 /**
  * Adapts events to RecyclerView's ItemViewHolders
  * @param events The list of events to adapt
  * @param listener A listener that will be triggered on click of an ItemViewHolder element
  */
-class EventItemAdapter (
+class EventItemAdapter(
     private val events: ObservableList<Event>,
     private val listener: (Event) -> Unit
 ) : RecyclerView.Adapter<EventItemAdapter.ItemViewHolder>() {
@@ -31,7 +31,8 @@ class EventItemAdapter (
         private val eventZone = view.findViewById<TextView>(R.id.id_event_zone)
         private val eventDescription = view.findViewById<TextView>(R.id.id_event_description)
         private val eventIcon = view.findViewById<ImageView>(R.id.id_event_icon)
-        private val attendeesNumberTextView = view.findViewById<TextView>(R.id.event_card_attendees_number)
+        private val attendeesNumberTextView =
+            view.findViewById<TextView>(R.id.event_card_attendees_number)
 
         /**
          * Binds the values of each field of an event to the layout of an event

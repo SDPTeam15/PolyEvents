@@ -13,18 +13,18 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
-import com.github.sdpteam15.polyevents.*
-import com.github.sdpteam15.polyevents.view.activity.EditProfileActivity
-import com.github.sdpteam15.polyevents.view.adapter.ProfileAdapter
-import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
-import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.changeFragment
+import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.entity.UserRole
+import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.view.activity.EditProfileActivity
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
+import com.github.sdpteam15.polyevents.view.adapter.ProfileAdapter
 import java.time.format.DateTimeFormatter
 
 /**
@@ -41,7 +41,7 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
     private lateinit var profileNameET: EditText
     private lateinit var profileEmailET: EditText
     private lateinit var profileUsernameET: EditText
-    private val currentUID:String
+    private val currentUID: String
         get() = userId ?: currentUser!!.uid
     private lateinit var viewR: View
 
@@ -51,8 +51,8 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
     private lateinit var recyclerView: RecyclerView
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         val viewRoot = inflater.inflate(R.layout.fragment_profile, container, false)
         //If the user is not logged in, redirect him to the login page
@@ -90,8 +90,8 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
     private fun getUserInformation() {
         //Get user information in the database
         currentDatabase.userDatabase!!.getUserInformation(
-                userInfoLiveData,
-                currentUID
+            userInfoLiveData,
+            currentUID
         )
     }
 
@@ -132,8 +132,8 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
 
             val userBirthDate = userInfoValue.birthDate
             val birthDateFormatted =
-                    if (userBirthDate == null) ""
-                    else userBirthDate.format(DateTimeFormatter.ISO_LOCAL_DATE)
+                if (userBirthDate == null) ""
+                else userBirthDate.format(DateTimeFormatter.ISO_LOCAL_DATE)
             viewRoot.findViewById<EditText>(R.id.profileBirthdayET).setText(birthDateFormatted)
         }
     }
@@ -151,12 +151,12 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
 
             //Call the DB to update the user information and getUserInformation once it is done
             currentDatabase.userDatabase!!.updateUserInformation(
-                    currentUser!!
+                currentUser!!
             ).observe(this) { newValue ->
                 if (newValue.value) {
                     currentDatabase.userDatabase!!.getUserInformation(
-                            userInfoLiveData,
-                            currentUser!!.uid
+                        userInfoLiveData,
+                        currentUser!!.uid
                     )
                 } else {
                     HelperFunctions.showToast(getString(R.string.fail_to_update), activity)
@@ -174,18 +174,26 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
     fun initProfileList(viewRoot: View, user: UserEntity) {
         user.userProfiles.observeRemove(this) {
             if (it.sender != currentDatabase) {
-                currentDatabase.userDatabase!!.removeProfileFromUser(it.value, user).observeOnce(this) {
-                    if (!it.value)
-                        HelperFunctions.showToast(getString(R.string.fail_to_remove_profiles), context)
-                }
+                currentDatabase.userDatabase!!.removeProfileFromUser(it.value, user)
+                    .observeOnce(this) {
+                        if (!it.value)
+                            HelperFunctions.showToast(
+                                getString(R.string.fail_to_remove_profiles),
+                                context
+                            )
+                    }
             }
         }
         user.userProfiles.observeAdd(this) {
             if (it.sender != currentDatabase)
-                currentDatabase.userDatabase!!.addUserProfileAndAddToUser(it.value, user).observeOnce(this) {
-                    if (!it.value)
-                        HelperFunctions.showToast(getString(R.string.fail_to_add_profiles), context)
-                }
+                currentDatabase.userDatabase!!.addUserProfileAndAddToUser(it.value, user)
+                    .observeOnce(this) {
+                        if (!it.value)
+                            HelperFunctions.showToast(
+                                getString(R.string.fail_to_add_profiles),
+                                context
+                            )
+                    }
         }
 
         recyclerView = viewRoot.findViewById(R.id.id_recycler_profile_list)
@@ -193,23 +201,23 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
         recyclerView.adapter = ProfileAdapter(this, user.userProfiles)
 
         viewRoot.findViewById<ImageButton>(R.id.id_add_profile_button)
-                .setOnClickListener { createProfilePopup(user) }
+            .setOnClickListener { createProfilePopup(user) }
     }
 
     @SuppressLint("InflateParams")
     private fun createProfilePopup(user: UserEntity) {
         // Initialize a new layout inflater instance
         val inflater: LayoutInflater =
-                (activity)!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            (activity)!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
         // Inflate a custom view using layout inflater
         val view = inflater.inflate(R.layout.popup_profile, null)
 
         // Initialize a new instance of popup window
         val popupWindow = PopupWindow(
-                view, // Custom view to show in popup window
-                LinearLayout.LayoutParams.MATCH_PARENT, // Width of popup window
-                LinearLayout.LayoutParams.WRAP_CONTENT // Window height
+            view, // Custom view to show in popup window
+            LinearLayout.LayoutParams.MATCH_PARENT, // Width of popup window
+            LinearLayout.LayoutParams.WRAP_CONTENT // Window height
         )
 
         val slideIn = Slide()
@@ -232,9 +240,9 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
         // Set a click listener for popup's button widget
         confirmButton.setOnClickListener {
             user.userProfiles.add(
-                    UserProfile(
-                            profileName = profileName.text.toString()
-                    ), this
+                UserProfile(
+                    profileName = profileName.text.toString()
+                ), this
             )
             // Dismiss the popup window
             popupWindow.dismiss()
@@ -248,8 +256,8 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
     fun editProfile(item: UserProfile) {
         val intent = Intent(activity, EditProfileActivity::class.java)
         intent.putExtra(
-                EditProfileActivity.CALLER_RANK,
-                if (currentUser!!.isAdmin()) UserRole.ADMIN.userRole else UserRole.PARTICIPANT.userRole
+            EditProfileActivity.CALLER_RANK,
+            if (currentUser!!.isAdmin()) UserRole.ADMIN.userRole else UserRole.PARTICIPANT.userRole
         )
 
         intent.putExtra(EditProfileActivity.EDIT_PROFILE_ID, item.pid.toString())

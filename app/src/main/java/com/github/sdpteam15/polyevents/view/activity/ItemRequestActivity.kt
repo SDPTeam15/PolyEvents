@@ -5,13 +5,13 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.view.adapter.ItemRequestAdapter
-import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
-import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.model.observable.ObservableMap
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
+import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.model.observable.ObservableMap
+import com.github.sdpteam15.polyevents.view.adapter.ItemRequestAdapter
 import java.time.LocalDateTime
 
 /**
@@ -70,7 +70,8 @@ class ItemRequestActivity : AppCompatActivity() {
 
             currentDatabase.materialRequestDatabase!!.createMaterialRequest(
                 MaterialRequest(
-                    null, mapSelectedItems.keys.map { Pair(it.itemId!!, mapSelectedItems[it]!!) }.toMap(),
+                    null,
+                    mapSelectedItems.keys.map { Pair(it.itemId!!, mapSelectedItems[it]!!) }.toMap(),
                     LocalDateTime.now(),
                     currentDatabase.currentUser?.uid ?: ""
                 )

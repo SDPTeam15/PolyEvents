@@ -3,9 +3,9 @@ package com.github.sdpteam15.polyevents.view.activity.admin
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.view.activity.admin.UserManagementListActivity.Companion.EXTRA_USER_ID
 import com.github.sdpteam15.polyevents.view.fragments.ProfileFragment
-import com.github.sdpteam15.polyevents.helper.HelperFunctions
 
 class UserManagementActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

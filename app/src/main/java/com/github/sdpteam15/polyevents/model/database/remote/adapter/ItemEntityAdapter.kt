@@ -25,7 +25,8 @@ object ItemEntityAdapter : AdapterInterface<Pair<Item, Int>> {
             Item(
                 id,
                 document[ITEM_NAME.value] as String?,
-                document[ITEM_TYPE.value] as String),
+                document[ITEM_TYPE.value] as String
+            ),
             (document[ITEM_COUNT.value] as Long).toInt()
         )
 }

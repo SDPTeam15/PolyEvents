@@ -9,7 +9,7 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.room.EventLocal
 import kotlinx.coroutines.launch
 
-class EventLocalViewModel(private val eventDao: EventDao): ViewModel() {
+class EventLocalViewModel(private val eventDao: EventDao) : ViewModel() {
 
     companion object {
         private const val TAG = "EventLocalViewModel"

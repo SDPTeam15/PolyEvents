@@ -198,8 +198,8 @@ object HelperFunctions {
         fun fromLong(value: Long?): LocalDateTime? {
             return value?.let {
                 LocalDateTime.ofInstant(
-                        Instant.ofEpochMilli(it),
-                        TimeZone.getDefault().toZoneId()
+                    Instant.ofEpochMilli(it),
+                    TimeZone.getDefault().toZoneId()
                 )
             }
         }

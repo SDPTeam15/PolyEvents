@@ -12,7 +12,7 @@ interface AdapterInterface<T> : AdapterToDocumentInterface<T>, AdapterFromDocume
  * documents in the database. Not unlike the DTO (Data
  * transfer object) concept.
  */
-interface AdapterToDocumentInterface<T>{
+interface AdapterToDocumentInterface<T> {
     /**
      * Convert an entity to a map mapping fields keys (always string in the database) to their values that we can use directly in the database
      * @param element the entity we're converting
@@ -26,7 +26,7 @@ interface AdapterToDocumentInterface<T>{
  * documents in the database. Not unlike the DTO (Data
  * transfer object) concept.
  */
-interface AdapterFromDocumentInterface<T>{
+interface AdapterFromDocumentInterface<T> {
     /**
      * Convert document data to a user entity in our model.
      * Data retrieved from the database are always a mutable map that maps strings (names of the fields of our entity) to their values,

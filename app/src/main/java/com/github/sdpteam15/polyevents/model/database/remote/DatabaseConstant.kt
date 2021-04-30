@@ -3,14 +3,16 @@ package com.github.sdpteam15.polyevents.model.database.remote
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.*
 
 const val TEST_STR = "STR"
+
 class StringWithID(val id: String, val string: String)
 
 /**
  * Constants of collection names and attribute names.
  */
 object DatabaseConstant {
-    enum class CollectionConstant(val value: String,
-                                  val adapter : AdapterInterface<out Any>
+    enum class CollectionConstant(
+        val value: String,
+        val adapter: AdapterInterface<out Any>
     ) {
         LOCATION_COLLECTION("locations", DeviceLocationAdapter),
         ZONE_COLLECTION("zones", ZoneAdapter),
@@ -25,6 +27,7 @@ object DatabaseConstant {
         TEST_COLLECTION("test", object : AdapterInterface<StringWithID> {
             override fun toDocument(element: StringWithID): HashMap<String, Any?> =
                 hashMapOf(TEST_STR to element.string)
+
             override fun fromDocument(
                 document: MutableMap<String, Any?>,
                 id: String
@@ -49,6 +52,7 @@ object DatabaseConstant {
         EVENT_MAX_SLOTS("maxNumberOfSlots"),
         EVENT_LIMITED("limitedEvent"),
         EVENT_PARTICIPANTS("participants");
+
         override fun toString(): String = value
     }
 
@@ -57,6 +61,7 @@ object DatabaseConstant {
         ITEM_NAME("name"),
         ITEM_TYPE("itemType"),
         ITEM_COUNT("itemCount");
+
         override fun toString(): String = value
     }
 
@@ -65,6 +70,7 @@ object DatabaseConstant {
         PROFILE_NAME("name"),
         PROFILE_RANK("rank"),
         PROFILE_USERS("users");
+
         override fun toString(): String = value
     }
 
@@ -79,6 +85,7 @@ object DatabaseConstant {
         USER_BIRTH_DATE("birthDate"),
         USER_PHONE("telephone"),
         USER_PROFILES("profiles");
+
         override fun toString(): String = value
     }
 
@@ -90,6 +97,7 @@ object DatabaseConstant {
         LAT_LONG_SEP("|"),
         POINTS_SEP("!"),
         AREAS_SEP("?");
+
         override fun toString(): String = value
     }
 
@@ -98,14 +106,16 @@ object DatabaseConstant {
         LOCATIONS_POINT_LATITUDE("latitude"),
         LOCATIONS_POINT_LONGITUDE("longitude"),
         LOCATIONS_TIME("time");
+
         override fun toString(): String = value
     }
 
-    enum class MaterialRequestConstant(val value: String){
+    enum class MaterialRequestConstant(val value: String) {
         MATERIAL_REQUEST_ID("mid"),
         MATERIAL_REQUEST_TIME("time"),
         MATERIAL_REQUEST_LIST("item_list"),
         MATERIAL_REQUEST_USER_ID("user_id");
+
         override fun toString(): String = value
     }
 }

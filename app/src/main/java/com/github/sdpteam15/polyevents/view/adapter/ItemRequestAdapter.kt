@@ -11,9 +11,9 @@ import android.widget.TextView
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.model.observable.ObservableMap
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.model.entity.Item
+import com.github.sdpteam15.polyevents.model.observable.ObservableMap
 
 /**
  * Recycler Adapter for the list of items

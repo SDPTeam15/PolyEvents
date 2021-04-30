@@ -4,9 +4,9 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.view.fragments.LoginFragment
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
+import com.github.sdpteam15.polyevents.view.fragments.LoginFragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -25,8 +25,8 @@ object GoogleUserLogin : UserLoginInterface<AuthResult> {
     @SuppressLint("StaticFieldLeak")
     var signIn: GoogleSignInClient? = null
 
-    var firebaseAuth:FirebaseAuth? = null
-        get()= field?: FirebaseAuth.getInstance()
+    var firebaseAuth: FirebaseAuth? = null
+        get() = field ?: FirebaseAuth.getInstance()
 
     override fun getResultFromIntent(
         data: Intent?,
@@ -87,7 +87,7 @@ object GoogleUserLogin : UserLoginInterface<AuthResult> {
     }
 
     override fun isConnected(): Boolean {
-        return firebaseAuth!!.currentUser!=null
+        return firebaseAuth!!.currentUser != null
     }
 
 }

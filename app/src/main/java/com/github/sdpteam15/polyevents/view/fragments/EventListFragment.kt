@@ -8,16 +8,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
-import com.github.sdpteam15.polyevents.view.activity.EventActivity
-import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.view.adapter.EventItemAdapter
-import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
-import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
+import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.entity.Event
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.room.EventLocal
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
+import com.github.sdpteam15.polyevents.view.activity.EventActivity
+import com.github.sdpteam15.polyevents.view.adapter.EventItemAdapter
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModel
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModelFactory
 import com.google.android.material.switchmaterial.SwitchMaterial
@@ -63,7 +63,9 @@ class EventListFragment : Fragment() {
 
         localDatabase = (requireActivity().application as PolyEventsApplication).database
         eventLocalViewModel = EventLocalViewModelFactory(
-                localDatabase.eventDao()).create(EventLocalViewModel::class.java
+            localDatabase.eventDao()
+        ).create(
+            EventLocalViewModel::class.java
         )
 
         recyclerView = fragmentView.findViewById(R.id.recycler_events_list)

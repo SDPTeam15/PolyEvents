@@ -139,7 +139,7 @@ object GoogleMapHelper {
             }
         }
         val copyWaitingZones = waitingZones.toList()
-        for(zone in copyWaitingZones){
+        for (zone in copyWaitingZones) {
             importNewZone(context, zone)
             waitingZones.remove(zone)
         }
@@ -152,18 +152,18 @@ object GoogleMapHelper {
      * @param zone zone to import
      */
     fun importNewZone(context: Context?, zone: Zone) {
-        if(map == null){
+        if (map == null) {
             waitingZones.add(zone)
             return
         }
         val temp = editingZone
         editingZone = zone.zoneId
 
-        if(zonesToArea.containsKey(zone.zoneId)){
+        if (zonesToArea.containsKey(zone.zoneId)) {
             removeZoneAreas(zone.zoneId!!)
         }
 
-        zonesToArea[editingZone ?:"zone ${uidZone++}"] = Pair(zone, mutableListOf())
+        zonesToArea[editingZone ?: "zone ${uidZone++}"] = Pair(zone, mutableListOf())
 
         val areas = zone.getZoneCoordinates()
         for (area in areas) {
@@ -610,14 +610,14 @@ object GoogleMapHelper {
         rotationPos = rotationMarker!!.position
     }
 
-    var lastOverlay : TileOverlay? = null
+    var lastOverlay: TileOverlay? = null
 
     /**
      * add HeatMap to the map
      * list of points
      */
     fun addHeatMap(latLngs: List<LatLng>) {
-        if(latLngs.isNotEmpty()) {
+        if (latLngs.isNotEmpty()) {
             // Create a heat map tile provider, passing it the latlngs of the police stations.
             val provider = HeatmapTileProvider.Builder()
                 .data(latLngs)
@@ -785,7 +785,7 @@ object GoogleMapHelper {
             s += areaToFormattedStringLocation(areasPoints[uid]!!.third.points.dropLast(1))
             s += AREAS_SEP
         }
-        if(s != ""){
+        if (s != "") {
             s = s.substring(0, s.length - AREAS_SEP.value.length)
         }
         return s
@@ -805,7 +805,7 @@ object GoogleMapHelper {
         for (c in loc) {
             s += c.latitude.toString() + LAT_LONG_SEP.value + c.longitude.toString() + POINTS_SEP.value
         }
-        if(s != ""){
+        if (s != "") {
             s = s.substring(0, s.length - AREAS_SEP.value.length)
         }
         return s
@@ -828,7 +828,7 @@ object GoogleMapHelper {
      * Remove a zone from the map
      * @param id id of the zone to remove
      */
-    fun removeZone(id: String){
+    fun removeZone(id: String) {
         removeZoneAreas(id)
         zonesToArea.remove(id)
     }
@@ -1009,9 +1009,6 @@ object GoogleMapHelper {
         }
     }
     */
-
-
-
 
 
 }

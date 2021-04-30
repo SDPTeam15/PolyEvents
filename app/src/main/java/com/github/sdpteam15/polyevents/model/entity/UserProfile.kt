@@ -20,9 +20,9 @@ data class UserProfile(
 ) {
 
     var loadSuccess = false
-        set(value){
+        set(value) {
             field = value
-            if(!value)
+            if (!value)
                 userEntity
         }
     var userEntity: ObservableList<UserEntity> = ObservableList()

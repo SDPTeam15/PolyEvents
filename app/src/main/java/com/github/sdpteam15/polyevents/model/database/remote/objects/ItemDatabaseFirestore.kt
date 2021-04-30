@@ -5,12 +5,12 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.Co
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.ITEM_TYPE_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ItemConstants.ITEM_COUNT
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
-import com.github.sdpteam15.polyevents.model.observable.Observable
-import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.model.entity.Item
-import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.ItemEntityAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.ItemTypeAdapter
+import com.github.sdpteam15.polyevents.model.entity.Item
+import com.github.sdpteam15.polyevents.model.entity.UserProfile
+import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -85,7 +85,8 @@ object ItemDatabaseFirestore : ItemDatabaseInterface {
     override fun createItemType(
         itemType: String,
         userAccess: UserProfile?
-    ): Observable<Boolean> = FirestoreDatabaseProvider.addEntity(itemType,ITEM_TYPE_COLLECTION,
+    ): Observable<Boolean> = FirestoreDatabaseProvider.addEntity(
+        itemType, ITEM_TYPE_COLLECTION,
         ItemTypeAdapter
     )
 
@@ -98,7 +99,7 @@ object ItemDatabaseFirestore : ItemDatabaseInterface {
         ) { querySnapshot ->
             itemTypeList.clear(this)
             val itemsTypes = querySnapshot.documents.map {
-                ItemTypeAdapter.fromDocument(it.data!!,it.id)
+                ItemTypeAdapter.fromDocument(it.data!!, it.id)
             }
             itemTypeList.addAll(itemsTypes, this)
         }

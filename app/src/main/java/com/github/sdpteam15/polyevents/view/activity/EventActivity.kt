@@ -8,15 +8,15 @@ import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
-import com.github.sdpteam15.polyevents.model.observable.Observable
-import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
-import com.github.sdpteam15.polyevents.model.exceptions.MaxAttendeesException
-import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
+import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
+import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.entity.Event
+import com.github.sdpteam15.polyevents.model.exceptions.MaxAttendeesException
+import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.room.EventLocal
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication
+import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModel
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModelFactory
 
@@ -31,6 +31,7 @@ class EventActivity : AppCompatActivity() {
         // Refactored here for tests
         var obsEvent = Observable<Event>()
         lateinit var event: Event
+
         // for testing purposes
         lateinit var database: LocalDatabase
     }
@@ -71,7 +72,10 @@ class EventActivity : AppCompatActivity() {
     }
 
     private fun getEventAndObserve() {
-        currentDatabase.eventDatabase!!.getEventFromId(intent.getStringExtra(EXTRA_EVENT_ID)!!, obsEvent)
+        currentDatabase.eventDatabase!!.getEventFromId(
+            intent.getStringExtra(EXTRA_EVENT_ID)!!,
+            obsEvent
+        )
             .observe(this) { b ->
                 if (!b.value) {
                     showToast(getString(R.string.event_info_fail), this)
@@ -79,6 +83,7 @@ class EventActivity : AppCompatActivity() {
             }
         obsEvent.observe(this) { updateInfo(it.value) }
     }
+
     /**
      * Updates the event information
      */
@@ -125,7 +130,8 @@ class EventActivity : AppCompatActivity() {
         if (event.isLimitedEvent()) {
             subscribeButton.visibility = View.VISIBLE
             if (currentDatabase.currentUser != null
-                && event.getParticipants().contains(currentDatabase.currentUser!!.uid)) {
+                && event.getParticipants().contains(currentDatabase.currentUser!!.uid)
+            ) {
                 subscribeButton.setText(resources.getString(R.string.event_unsubscribe))
             }
         } else {
@@ -136,7 +142,7 @@ class EventActivity : AppCompatActivity() {
     fun onClickEventSubscribe(view: View) {
         if (currentDatabase.currentUser == null) {
             showToast(resources.getString(R.string.toast_subscribe_warning), this)
-        } else if (event.getParticipants().contains(currentDatabase.currentUser!!.uid)){
+        } else if (event.getParticipants().contains(currentDatabase.currentUser!!.uid)) {
             unsubscribeFromEvent()
         } else {
             subscribeToEvent()

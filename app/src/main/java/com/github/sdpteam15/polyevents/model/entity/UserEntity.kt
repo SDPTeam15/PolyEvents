@@ -1,9 +1,9 @@
 package com.github.sdpteam15.polyevents.model.entity
 
+import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.google.firebase.firestore.IgnoreExtraProperties
 import java.time.LocalDate
 
@@ -37,9 +37,9 @@ data class UserEntity(
             birthDate?.let { HelperFunctions.calculateAge(it, LocalDate.now()) }
 
     var loadSuccess = false
-        set(value){
+        set(value) {
             field = value
-            if(!value)
+            if (!value)
                 userProfiles
         }
     var userProfiles: ObservableList<UserProfile> = ObservableList()
@@ -47,7 +47,7 @@ data class UserEntity(
             if (!loadSuccess)
                 Database.currentDatabase.userDatabase!!.getUserProfilesList(field, this)
                     .observeOnce {
-                        if(it.value)
+                        if (it.value)
                             loadSuccess = true
                     }
             return field
@@ -64,7 +64,7 @@ data class UserEntity(
                 .observeOnce {
                     var res = UserRole.PARTICIPANT
                     for (e in it.value)
-                        if(e.userRole < res)
+                        if (e.userRole < res)
                             res = e.userRole
                     result.postValue(res, this)
                 }

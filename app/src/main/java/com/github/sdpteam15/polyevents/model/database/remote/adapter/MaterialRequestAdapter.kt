@@ -1,10 +1,9 @@
 package com.github.sdpteam15.polyevents.model.database.remote.adapter
 
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.MaterialRequestConstant.*
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.MaterialRequestConstant.*
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
 import com.google.firebase.Timestamp
-import kotlin.collections.hashMapOf
 
 object MaterialRequestAdapter : AdapterInterface<MaterialRequest> {
     override fun toDocument(element: MaterialRequest) = hashMapOf(
@@ -15,9 +14,9 @@ object MaterialRequestAdapter : AdapterInterface<MaterialRequest> {
 
     override fun fromDocument(document: MutableMap<String, Any?>, id: String): MaterialRequest {
         return MaterialRequest(
-            id ,
+            id,
             document[MATERIAL_REQUEST_LIST.value] as Map<String, Int>,
-            HelperFunctions.dateToLocalDateTime((document[MATERIAL_REQUEST_TIME.value]  as Timestamp?)?.toDate()),
+            HelperFunctions.dateToLocalDateTime((document[MATERIAL_REQUEST_TIME.value] as Timestamp?)?.toDate()),
             document[MATERIAL_REQUEST_USER_ID.value] as String
         )
     }

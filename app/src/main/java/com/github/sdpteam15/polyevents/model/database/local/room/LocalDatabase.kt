@@ -6,11 +6,11 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
-import com.github.sdpteam15.polyevents.model.database.local.dao.EventDao
-import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.model.database.local.dao.EventDao
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.entity.Event
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.room.EventLocal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 // TODO: when user logs in, should fetch all info to store in local db
 @Database(entities = [EventLocal::class], version = 1)
 @TypeConverters(HelperFunctions.Converters::class)
-abstract class LocalDatabase: RoomDatabase() {
+abstract class LocalDatabase : RoomDatabase() {
     abstract fun eventDao(): EventDao
 
     companion object {
@@ -29,22 +29,22 @@ abstract class LocalDatabase: RoomDatabase() {
         private var INSTANCE: LocalDatabase? = null
 
         fun getDatabase(
-                context: Context,
-                scope: CoroutineScope
+            context: Context,
+            scope: CoroutineScope
         ): LocalDatabase {
             // if the INSTANCE is not null, then return it,
             // if it is, then create the database
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
-                        context.applicationContext,
-                        LocalDatabase::class.java,
-                        "polyevents_database"
+                    context.applicationContext,
+                    LocalDatabase::class.java,
+                    "polyevents_database"
                 )
-                        // Wipes and rebuilds instead of migrating if no Migration object.
-                        // Migration is not part of this codelab.
-                        .fallbackToDestructiveMigration()
-                        .addCallback(WordDatabaseCallback(scope))
-                        .build()
+                    // Wipes and rebuilds instead of migrating if no Migration object.
+                    // Migration is not part of this codelab.
+                    .fallbackToDestructiveMigration()
+                    .addCallback(WordDatabaseCallback(scope))
+                    .build()
                 INSTANCE = instance
                 // return instance
                 instance
@@ -63,7 +63,7 @@ abstract class LocalDatabase: RoomDatabase() {
          * use application scope defined in Polyevents Application
          */
         private class WordDatabaseCallback(
-                private val scope: CoroutineScope
+            private val scope: CoroutineScope
         ) : RoomDatabase.Callback() {
             /**
              * Override the onCreate method to populate the database.

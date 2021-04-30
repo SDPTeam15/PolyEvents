@@ -9,10 +9,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.Settings
-import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
-import com.github.sdpteam15.polyevents.view.fragments.*
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
+import com.github.sdpteam15.polyevents.view.fragments.*
 import com.github.sdpteam15.polyevents.view.service.TimerService
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
             it.value.addTask {
                 if (Settings.IsSendingLocationOn)
                     HelperFunctions.getLoc(this).observeOnce { LatLng ->
-                        if(LatLng.value != null)
+                        if (LatLng.value != null)
                             currentDatabase.heatmapDatabase!!.setLocation(LatLng.value)
                     }
             }

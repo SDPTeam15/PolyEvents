@@ -33,7 +33,7 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions.run
 class ObservableList<T>(
     collection: Collection<T>? = null,
     observable: Observable<T>? = null,
-    val creator : Any? = null
+    val creator: Any? = null
 ) : MutableList<T> {
 
 
@@ -483,7 +483,7 @@ class ObservableList<T>(
      */
     fun observeRemoveWhileTrue(observer: (UpdateIndexedValue<T>) -> Boolean): Observable.ThenOrRemove<ObservableList<T>> {
         observersRemove.add(observer)
-        return Observable.ThenOrRemove(this, creator,{ leaveRemove(observer) })
+        return Observable.ThenOrRemove(this, creator, { leaveRemove(observer) })
     }
 
     /**
@@ -627,7 +627,7 @@ class ObservableList<T>(
      */
     fun observeWhileTrue(observer: (Observable.UpdateValue<List<T>>) -> Boolean): Observable.ThenOrRemove<ObservableList<T>> {
         observers.add(observer)
-        return Observable.ThenOrRemove(this,  creator,{ leave(observer) })
+        return Observable.ThenOrRemove(this, creator, { leave(observer) })
     }
 
     /**
@@ -830,34 +830,36 @@ class ObservableList<T>(
         mapper: (T) -> U
     ): Observable.ThenOrRemove<ObservableMap<U, ObservableList<T>>> {
         observableMap.clear()
-        val addWithKeyLambda: (ObserversInfo<T>, Observable<T>, U) -> Unit = { it, observable, key ->
-            if (observableMap.containsKey(key)) {
-                val o = observableMap.getObservable(key)!!
-                o.value!!.add(observable, it.sender)
-                o.postValue(o.value!!, it.sender)
-            } else
-                observableMap.put(
-                    key,
-                    ObservableList(observable = observable, creator = this),
-                    it.sender
-                )
-        }
-        val addLambda: (ObserversInfo<T>, Observable<T>) -> Unit =
-            { it, observable -> addWithKeyLambda(it,observable,mapper(observable.value!!)) }
-
-        val removeWithKeyLambda : (ObserversInfo<T>, Observable<T>, U) -> Unit = { it, observable, key ->
-            observableMap[key]!!.remove(observable, it.sender)
-            if (observableMap[key]!!.isEmpty())
-                observableMap.remove(key)
-            else {
-                val o = observableMap.getObservable(key)!!
-                o.postValue(o.value!!, it.sender)
+        val addWithKeyLambda: (ObserversInfo<T>, Observable<T>, U) -> Unit =
+            { it, observable, key ->
+                if (observableMap.containsKey(key)) {
+                    val o = observableMap.getObservable(key)!!
+                    o.value!!.add(observable, it.sender)
+                    o.postValue(o.value!!, it.sender)
+                } else
+                    observableMap.put(
+                        key,
+                        ObservableList(observable = observable, creator = this),
+                        it.sender
+                    )
             }
-        }
+        val addLambda: (ObserversInfo<T>, Observable<T>) -> Unit =
+            { it, observable -> addWithKeyLambda(it, observable, mapper(observable.value!!)) }
+
+        val removeWithKeyLambda: (ObserversInfo<T>, Observable<T>, U) -> Unit =
+            { it, observable, key ->
+                observableMap[key]!!.remove(observable, it.sender)
+                if (observableMap[key]!!.isEmpty())
+                    observableMap.remove(key)
+                else {
+                    val o = observableMap.getObservable(key)!!
+                    o.postValue(o.value!!, it.sender)
+                }
+            }
         val removeLambda: (ObserversInfo<T>, Observable<T>) -> Unit =
             { it, observable -> removeWithKeyLambda(it, observable, mapper(observable.value!!)) }
 
-        val oi = ObserversInfo(this,Info.addAll,null,this)
+        val oi = ObserversInfo(this, Info.addAll, null, this)
         for (item in listValues)
             addLambda(oi, item)
 

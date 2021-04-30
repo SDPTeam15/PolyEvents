@@ -12,14 +12,14 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementActivity
-import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementListActivity
+import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
-import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.map.GoogleMapAdapter
 import com.github.sdpteam15.polyevents.model.map.GoogleMapHelper
-import com.github.sdpteam15.polyevents.helper.HelperFunctions
-import com.github.sdpteam15.polyevents.model.entity.Zone
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementActivity
+import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementListActivity
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.*
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -32,6 +32,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.*
 
 const val HEATMAP_PERIOD = 15L
+
 class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     OnPolygonClickListener, OnMarkerClickListener, OnInfoWindowClickListener, OnMarkerDragListener,
     OnMyLocationButtonClickListener, OnMapClickListener {

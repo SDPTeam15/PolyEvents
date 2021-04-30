@@ -1,10 +1,10 @@
 package com.github.sdpteam15.polyevents.model.database.remote.objects
 
 import com.github.sdpteam15.polyevents.model.database.remote.Database
-import com.github.sdpteam15.polyevents.model.observable.Observable
-import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
+import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
 
 interface UserDatabaseInterface {
     /**
@@ -72,8 +72,8 @@ interface UserDatabaseInterface {
      */
     fun getListAllUsers(
         users: ObservableList<UserEntity>,
-        userAccess: UserProfile?=currentProfile
-    ):Observable<Boolean>
+        userAccess: UserProfile? = currentProfile
+    ): Observable<Boolean>
 
     /**
      * add a UserProfile to a UserEntity
@@ -94,7 +94,7 @@ interface UserDatabaseInterface {
      * @param user user for database access
      * @param userAccess the user profile to use its permission
      * @return if the operation succeed
-    */
+     */
     fun removeProfileFromUser(
         profile: UserProfile,
         user: UserEntity,

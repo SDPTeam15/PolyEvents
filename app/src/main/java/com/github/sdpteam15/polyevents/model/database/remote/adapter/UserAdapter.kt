@@ -1,7 +1,7 @@
 package com.github.sdpteam15.polyevents.model.database.remote.adapter
 
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.UserConstants.*
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.UserConstants.*
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.google.firebase.Timestamp
 
