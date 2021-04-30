@@ -34,6 +34,7 @@ class EventManagementActivity : AppCompatActivity() {
     private val typeEnd = "END"
     private val typeStart = "start"
     private val MIN_PART_NB = 1
+    private val defaultPartNb = "10"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,11 +47,10 @@ class EventManagementActivity : AppCompatActivity() {
         dateStart = LocalDateTime.now()
         dateEnd = LocalDateTime.now()
 
-        val spinner = findViewById<Spinner>(R.id.spinner_zone)
         val adapter =
             ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, zoneName)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner.adapter = adapter
+        findViewById<Spinner>(R.id.spinner_zone).adapter = adapter
 
         setObservers(adapter)
 
@@ -71,10 +71,10 @@ class EventManagementActivity : AppCompatActivity() {
         findViewById<Switch>(R.id.swtLimitedEvent).setOnCheckedChangeListener { buttonView, isChecked ->
             if(isChecked){
                 nbpart.visibility = View.VISIBLE
-                nbpart.setText("10")
+                nbpart.setText(defaultPartNb)
             }else{
                 nbpart.visibility = View.INVISIBLE
-                nbpart.setText("")
+                nbpart.setText("0")
             }
          }
     }
@@ -106,7 +106,7 @@ class EventManagementActivity : AppCompatActivity() {
             btnManage.text = "Create event"
             nameET.setText("")
             descET.setText("")
-            switch.isSelected = false
+            switch.isChecked = false
             nbpart.visibility = View.INVISIBLE
         } else {
             val event = observableEvent.value!!
@@ -187,7 +187,7 @@ class EventManagementActivity : AppCompatActivity() {
         val name = findViewById<EditText>(R.id.eventManagementNameField).text.toString()
         val desc = findViewById<EditText>(R.id.eventManagementDescriptionField).text.toString()
         val selectedZone = findViewById<Spinner>(R.id.spinner_zone).selectedItemPosition
-        val limitedEvent = findViewById<Switch>(R.id.swtLimitedEvent).isSelected
+        val limitedEvent = findViewById<Switch>(R.id.swtLimitedEvent).isChecked
         val nbParticipant = findViewById<EditText>(R.id.etNbPart).text.toString().toInt()
 
         val zoneNa = zoneName[selectedZone]
@@ -279,10 +279,10 @@ class EventManagementActivity : AppCompatActivity() {
             HelperFunctions.showToast("The end date is before the start date", this)
         }
 
-        if(findViewById<Switch>(R.id.swtLimitedEvent).isSelected){
+        if(findViewById<Switch>(R.id.swtLimitedEvent).isChecked){
             if(findViewById<EditText>(R.id.etNbPart).text.toString().toInt()<MIN_PART_NB){
                 good = false
-                HelperFunctions.showToast("The number of participant must be greater than $MIN_PART_NB", this)
+                HelperFunctions.showToast("The number of participant must be >= $MIN_PART_NB", this)
             }
         }
 
