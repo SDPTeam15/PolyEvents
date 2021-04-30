@@ -4,10 +4,12 @@ import android.content.Intent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.database.remote.Database
@@ -100,10 +102,14 @@ class EventManagementTest {
         Database.currentDatabase = FirestoreDatabaseProvider
     }
 
-    private fun clickAndCheckNotRedirect() {
+    private fun closeKeyboard(){
         closeSoftKeyboard()
+        onView(ViewMatchers.isRoot()).perform(ViewActions.closeSoftKeyboard())
+    }
+
+    private fun clickAndCheckNotRedirect() {
+        closeKeyboard()
         onView(withId(R.id.btnManageEvent)).perform(scrollTo(), click())
-        onView(withId(R.id.btnManageEvent)).check(matches(isDisplayed()))
     }
 
     private fun addAddListener(): Observable<Boolean> {
@@ -130,16 +136,17 @@ class EventManagementTest {
                 1
             )
         )
-        onView(withId(R.id.swtLimitedEvent)).check(matches(isDisplayed()))
+        onView(withId(R.id.eventManagementNameField)).check(matches(isDisplayed()))
         clickAndCheckNotRedirect()
         onView(withId(R.id.eventManagementNameField)).perform(replaceText(eventName))
         clickAndCheckNotRedirect()
-        closeSoftKeyboard()
-
-        onView(withId(R.id.swtLimitedEvent)).perform(click())
-        onView(withId(R.id.swtLimitedEvent)).perform(click())
         onView(withId(R.id.eventManagementDescriptionField)).perform(replaceText(eventDesc))
         clickAndCheckNotRedirect()
+        closeKeyboard()
+        onView(withId(R.id.swtLimitedEvent)).perform(scrollTo())
+        onView(withId(R.id.eventManagementNameField)).check(matches(isDisplayed()))
+        onView(withId(R.id.swtLimitedEvent)).perform(click())
+        onView(withId(R.id.swtLimitedEvent)).perform(click())
         Intents.init()
         EventManagementActivity.dateEnd.postValue(
             EventManagementActivity.dateStart.value!!.plusDays(
@@ -166,6 +173,7 @@ class EventManagementTest {
         clickAndCheckNotRedirect()
         onView(withId(R.id.eventManagementDescriptionField)).perform(typeText(eventDesc))
         clickAndCheckNotRedirect()
+        closeKeyboard()
         onView(withId(R.id.swtLimitedEvent)).perform(click())
         onView(withId(R.id.etNbPart)).perform(replaceText(EventManagementActivity.emptyPartNb))
         clickAndCheckNotRedirect()
@@ -285,8 +293,6 @@ class EventManagementTest {
         onView(withId(R.id.eventManagementNameField)).perform(typeText(eventName))
         onView(withId(R.id.eventManagementDescriptionField)).perform(replaceText(eventDesc))
         onView(withId(R.id.btnManageEvent)).perform(scrollTo())
-        onView(withId(R.id.swtLimitedEvent)).perform(click())
-        onView(withId(R.id.etNbPart)).perform(replaceText(eventNb))
         val obs = addAddListener()
         onView(withId(R.id.btnManageEvent)).perform(scrollTo(), click())
         obs.postValue(true)
@@ -295,8 +301,6 @@ class EventManagementTest {
         assertEquals(event!!.startTime, startDate)
         assertEquals(event!!.eventName, eventName)
         assertEquals(event!!.description, eventDesc)
-        assertEquals(event!!.getMaxNumberOfSlots(), eventNb.toInt())
-        assertEquals(event!!.isLimitedEvent(), true)
     }
 
     @Test
@@ -365,8 +369,9 @@ class EventManagementTest {
         )
         scenario = ActivityScenario.launch(intent)
         obs.postValue(true)
+        closeKeyboard()
         onView(withId(R.id.btnManageEvent)).perform(scrollTo())
-        onView(withId(R.id.swtLimitedEvent)).perform(click())
+        onView(withId(R.id.swtLimitedEvent)).perform(scrollTo(), click())
         onView(withId(R.id.etNbPart)).perform(replaceText(eventNb))
 
         onView(withId(R.id.btnManageEvent)).perform(click())
