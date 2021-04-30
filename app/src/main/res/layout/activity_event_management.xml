@@ -88,7 +88,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:layout_constraintTop_toBottomOf="@+id/constraint_layout_date_end">
+                app:layout_constraintTop_toBottomOf="@+id/eventManagementSpinnerLayout">
 
                 <Switch
                     android:id="@+id/swtLimitedEvent"
@@ -177,7 +177,7 @@
                 android:padding="0dp"
                 android:paddingStart="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/eventManagementSpinnerLayout"
+                app:layout_constraintTop_toBottomOf="@+id/limitedEventLayout"
                 tools:ignore="RtlSymmetry">
 
                 <LinearLayout
@@ -241,10 +241,9 @@
                 android:id="@+id/btnManageEvent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="9dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/limitedEventLayout" />
+                app:layout_constraintTop_toBottomOf="@+id/constraint_layout_date_end" />
 
             <LinearLayout
                 android:id="@+id/eventManagementDescriptionLayout"
