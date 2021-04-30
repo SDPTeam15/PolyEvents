@@ -5,7 +5,7 @@ import kotlin.math.abs
 import kotlin.math.atan
 import kotlin.math.sqrt
 
-object LatLngOpperator {
+object LatLngOperator {
 
     /**
      * TODO

@@ -1,7 +1,7 @@
 package com.github.sdpteam15.polyevents.model.entity
 
 import com.github.sdpteam15.polyevents.model.map.Attachable
-import com.github.sdpteam15.polyevents.model.map.RouteMapHelper.euclideanDistance
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.euclideanDistance
 import com.google.android.gms.maps.model.LatLng
 
 /**
