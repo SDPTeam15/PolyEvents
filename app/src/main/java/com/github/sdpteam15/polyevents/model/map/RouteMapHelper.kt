@@ -10,6 +10,7 @@ import com.github.sdpteam15.polyevents.model.entity.RouteEdge
 import com.github.sdpteam15.polyevents.model.entity.RouteNode
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.fragments.MapsFragment
 import com.google.android.gms.maps.model.*
 import kotlin.math.pow
 
@@ -21,7 +22,7 @@ object RouteMapHelper {
     var map: MapsInterface? = null
     val toDeleteLines: MutableList<Polyline> = ArrayList()
     val lineToEdge: MutableMap<RouteEdge, Polyline> = mutableMapOf()
-    val idToEdge: MutableMap<RouteEdge, Polyline> = mutableMapOf()
+    val idToEdge: MutableMap<String, RouteEdge> = mutableMapOf()
 
 
 
@@ -43,7 +44,7 @@ object RouteMapHelper {
      * TODO
      */
     fun removeLine(edge: RouteEdge) {
-
+        edges.remove(edge)
     }
 
     /**
@@ -89,25 +90,39 @@ object RouteMapHelper {
         return Observable(true)
     }
 
-    private fun addEdgeToMaps(){
 
-    }
-
+    /**
+     * Function that handles the remove of a route from the database
+     * @param edge deleted edge
+     */
     fun edgeRemovedNotification(edge: RouteEdge){
         lineToEdge[edge]!!.remove()
         lineToEdge.remove(edge)
+        idToEdge.remove(edge.id)
     }
 
+    /**
+     * Function that handles the addition of a route from the database
+     * @param edge new edge
+     */
     fun edgeAddedNotification(edge: RouteEdge){
+        //Remove all creation lines when we get an answer from the database
         removeAllLinesToRemove()
         val option = PolylineOptions()
         option.add(edge.start.toLatLng())
         option.add(edge.end.toLatLng())
+        option.clickable(true)
         val route = map!!.addPolyline(option)
+
+        //tag used to know which polyline has been clicked
         route.tag = edge.id
         lineToEdge[edge] = route
+        idToEdge[edge.id!!] = edge
     }
 
+    /**
+     * Remove all the lines used for creation from the map when we get an answer from the database
+     */
     fun removeAllLinesToRemove(){
         for(line in toDeleteLines){
             line.remove()
@@ -115,6 +130,10 @@ object RouteMapHelper {
         toDeleteLines.clear()
     }
 
+    /**
+     * Adds a new route to google map and to the temporary variables
+     * @param context context
+     */
     fun createNewRoute(context: Context?){
         deleteMode = false
         if(tempPolyline != null){
@@ -122,17 +141,25 @@ object RouteMapHelper {
             tempVariableClear()
         }
         setupEditLine(context, map!!.cameraPosition!!.target)
+        MapsFragment.instance?.showSaveButton()
     }
 
+    /**
+     * Saves the route that was being created
+     */
     fun saveNewRoute(){
         deleteMode = false
         toDeleteLines.add(tempPolyline!!)
-        //tempPolyline!!.isClickable = true
         tempPolyline!!.color = Color.GREEN
         addLine(tempLatLng[0]!!, tempLatLng[1]!!)
         tempVariableClear()
+        MapsFragment.instance?.showSaveButton()
     }
 
+    /**
+     * Either removes the route that is being created, or activates the remove mode
+     * @param context context
+     */
     fun removeRoute(context: Context?){
         if(tempPolyline != null){
             tempPolyline!!.remove()
@@ -140,9 +167,14 @@ object RouteMapHelper {
         }else{
             deleteMode = !deleteMode
             HelperFunctions.showToast("Deletion mode is $deleteMode", context)
+            MapsFragment.instance?.switchIconDelete()
         }
+        MapsFragment.instance?.showSaveButton()
     }
 
+    /**
+     * Clears the variables
+     */
     fun tempVariableClear(){
         startMarker!!.remove()
         endMarker!!.remove()
@@ -224,23 +256,41 @@ object RouteMapHelper {
     /**
      * Moves the marker and redraws the polyline
      * @param marker marker that moved
+     * @param dragMode what function called the moveMarker method (DRAG_START, DRAG, DRAG_END)
      */
-    fun moveMarker(marker: Marker){
-        when (marker.snippet) {
-            PolygonAction.MARKER_START.toString() ->{
+    fun moveMarker(marker: Marker, dragMode: MarkerDragMode){
+        if(dragMode == MarkerDragMode.DRAG || dragMode == MarkerDragMode.DRAG_START){
+            //Changes the coordinates of the polyline to where it can be displayed
+            val res = getEdgeOnNearestAttachable(startMarker!!.position, endMarker!!.position)
+            when (marker.snippet) {
+                PolygonAction.MARKER_START.toString() ->{
+                    tempLatLng[0] = startMarker!!.position
+                }
 
+                PolygonAction.MARKER_END.toString() ->{
+                    tempLatLng[1] = endMarker!!.position
+                }
             }
-
-            PolygonAction.MARKER_END.toString() ->{
-
-            }
+            tempPolyline!!.points = listOf(res.first, res.second)
+        }else if(dragMode == MarkerDragMode.DRAG_END){
+            //On end drag, we set the position of the markers to the position of the line
+            val points = tempPolyline!!.points
+            startMarker!!.position = points[0]
+            endMarker!!.position = points[1]
+            tempLatLng[0] = startMarker!!.position
+            tempLatLng[1] = endMarker!!.position
         }
-        tempPolyline!!.points = listOf(startMarker!!.position, endMarker!!.position)
+
+
     }
 
+    /**
+     * Handles the click on a polyline : if on delete mode, deletes the polyline
+     * @param polyline polyline clicked
+     */
     fun polylineClick(polyline:Polyline){
         if(deleteMode){
-            Log.d("DELETE", "POLYLINE TO DELETE")
+            removeLine(idToEdge[polyline.tag]!!)
         }
     }
 }

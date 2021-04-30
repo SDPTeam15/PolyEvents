@@ -25,6 +25,12 @@ enum class PolygonAction {
     MARKER_END
 }
 
+enum class MarkerDragMode{
+    DRAG_START,
+    DRAG,
+    DRAG_END
+}
+
 data class IconBound(
     var leftBound: Int,
     var topBound: Int,
@@ -677,15 +683,15 @@ object GoogleMapHelper {
      * Redirects an interaction with an edition marker to the correct transformation
      * @param marker interaction marker that has been dragged
      */
-    fun interactionMarker(marker: Marker) {
+    fun interactionMarker(marker: Marker, dragMode:MarkerDragMode) {
         when (marker.snippet) {
             PolygonAction.MOVE.toString() -> translatePolygon(marker)
             PolygonAction.RIGHT.toString() -> transformPolygon(marker)
             PolygonAction.DOWN.toString() -> transformPolygon(marker)
             PolygonAction.DIAG.toString() -> transformPolygon(marker)
             PolygonAction.ROTATE.toString() -> rotatePolygon(marker)
-            PolygonAction.MARKER_START.toString() -> RouteMapHelper.moveMarker(marker)
-            PolygonAction.MARKER_END.toString() -> RouteMapHelper.moveMarker(marker)
+            PolygonAction.MARKER_START.toString() -> RouteMapHelper.moveMarker(marker, dragMode)
+            PolygonAction.MARKER_END.toString() -> RouteMapHelper.moveMarker(marker, dragMode)
         }
         tempPoly?.points = tempLatLng
     }
