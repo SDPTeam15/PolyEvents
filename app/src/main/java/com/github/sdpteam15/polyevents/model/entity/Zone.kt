@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.model.entity
 
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ZoneConstant.*
+import com.github.sdpteam15.polyevents.model.map.Attachable
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.IgnoreExtraProperties
 
@@ -17,7 +18,7 @@ data class Zone(
     var zoneName: String? = null,
     var location: String? = null,
     var description: String? = null
-) {
+):Attachable {
     /**
      * Get the coordinates of all the areas on the current Zone
      * @return A list of list of LatLng points composing an area
@@ -43,5 +44,12 @@ data class Zone(
             }
         }
         return listZoneCoordinates
+    }
+
+    override fun getAttachedNewPoint(
+        position: com.google.type.LatLng,
+        angle: Double?
+    ): Pair<com.google.type.LatLng, Double>? {
+        TODO("Not yet implemented")
     }
 }

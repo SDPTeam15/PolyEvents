@@ -6,6 +6,7 @@ import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.google.type.LatLng
 
+
 class RouteMapHelper {
     val nodes = ObservableList<RouteNode>()
     val edges = ObservableList<RouteEdge>()
@@ -41,9 +42,17 @@ class RouteMapHelper {
     /**
      * TODO
      */
-    fun getPosOnNearestAttachable(start: LatLng, end: LatLng): Pair<LatLng, LatLng> {
+    fun getEdgeOnNearestAttachable(start: LatLng, end: LatLng): Pair<LatLng, LatLng> {
         // TODO
         return Pair(start, end)
+    }
+
+    /**
+     * TODO
+     */
+    fun getPosOnNearestAttachable(point: LatLng, exclude : Attachable): LatLng {
+        // TODO
+        return point
     }
 
     /**
