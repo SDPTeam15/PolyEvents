@@ -8,7 +8,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:ignore="ScrollViewSize">
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -18,7 +19,8 @@
             android:layout_marginTop="10dp"
             android:paddingStart="10dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/constraint_layout_date_start">
+            app:layout_constraintTop_toBottomOf="@id/constraint_layout_date_start"
+            tools:ignore="RtlSymmetry">
 
             <LinearLayout
                 android:id="@+id/end_date_text"
@@ -34,18 +36,19 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="0"
-                    android:text="End date"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+                    android:text="@string/end_date_field"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    tools:ignore="InefficientWeight" />
 
                 <EditText
                     android:id="@+id/et_end_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:editable="false"
                     android:ems="10"
                     android:enabled="false"
-                    android:hint="Select an end date"
-                    android:inputType="textPersonName" />
+                    android:hint="@string/end_date_selection"
+                    android:inputType="textPersonName"
+                    tools:ignore="Autofill,TextFields" />
 
             </LinearLayout>
 
@@ -63,13 +66,13 @@
                     android:id="@+id/btnEndDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Pick date" />
+                    android:text="@string/pick_date_btn" />
 
                 <Button
                     android:id="@+id/btnEndTime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Pick time" />
+                    android:text="@string/pick_time_btn_text" />
 
             </LinearLayout>
 
@@ -91,7 +94,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
-                android:hint="Description"
+                android:hint="@string/description_hint"
                 app:boxBackgroundColor="@android:color/transparent">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -115,7 +118,8 @@
             android:padding="0dp"
             android:paddingStart="10dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/eventManagementSpinnerLayout">
+            app:layout_constraintTop_toBottomOf="@+id/eventManagementSpinnerLayout"
+            tools:ignore="RtlSymmetry">
 
             <LinearLayout
                 android:id="@+id/start_date_text"
@@ -131,8 +135,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="0"
-                    android:text="Start date"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+                    android:text="@string/start_date_text"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    tools:ignore="InefficientWeight" />
 
                 <EditText
                     android:id="@+id/et_start_date"
@@ -140,8 +145,10 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:enabled="false"
-                    android:hint="Select a start date"
-                    android:inputType="textPersonName" />
+                    android:hint="@string/start_date_hint"
+                    android:autofillHints=""
+                    android:inputType="text"
+                    tools:ignore="TextFields" />
 
             </LinearLayout>
 
@@ -159,14 +166,13 @@
                     android:id="@+id/btnStartDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Pick date" />
+                    android:text="@string/pick_date_btn" />
 
                 <Button
                     android:id="@+id/btnStartTime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Pick time" />
-
+                    android:text="@string/pick_time_btn_text" />
             </LinearLayout>
 
 
@@ -189,7 +195,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="2.5"
-                android:text="Choose a zone"
+                android:text="@string/choose_a_zone_hint"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
             <Spinner
@@ -215,7 +221,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
-                android:hint="Name"
+                android:hint="@string/name_field_hint"
                 app:boxBackgroundColor="@android:color/transparent">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -244,7 +250,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Limited event" />
+                android:text="@string/switch_limited_event_text"
+                tools:ignore="UseSwitchCompatOrMaterialXml" />
 
             <EditText
                 android:id="@+id/etNbPart"
@@ -252,8 +259,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:hint="Number participants"
-                android:inputType="number" />
+                android:hint="@string/number_participants_hint"
+                android:inputType="number"
+                android:autofillHints="" />
 
         </LinearLayout>
 

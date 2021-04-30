@@ -35,6 +35,7 @@ class EventManagementActivity : AppCompatActivity() {
     private val typeStart = "start"
     private val MIN_PART_NB = 1
     private val defaultPartNb = "10"
+    private val emptyPartNb ="0"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,7 +57,7 @@ class EventManagementActivity : AppCompatActivity() {
 
         currentDatabase.zoneDatabase!!.getAllZones(null, null, zoneObserver).observe(this) {
             if (!it.value)
-                HelperFunctions.showToast("Impossible to get zones from database", this)
+                HelperFunctions.showToast(getString(R.string.failed_get_zones), this)
         }
 
         setDateListener()
@@ -74,7 +75,7 @@ class EventManagementActivity : AppCompatActivity() {
                 nbpart.setText(defaultPartNb)
             }else{
                 nbpart.visibility = View.INVISIBLE
-                nbpart.setText("0")
+                nbpart.setText(emptyPartNb)
             }
          }
     }
@@ -103,17 +104,19 @@ class EventManagementActivity : AppCompatActivity() {
         val nbpart = findViewById<EditText>(R.id.etNbPart)
 
         if (!onCallback) {
-            btnManage.text = "Create event"
+            btnManage.text = getString(R.string.create_event_btn_text)
             nameET.setText("")
             descET.setText("")
             switch.isChecked = false
             nbpart.visibility = View.INVISIBLE
+            nbpart.setText(emptyPartNb)
         } else {
             val event = observableEvent.value!!
-            btnManage.text = "Update event"
+            btnManage.text = getString(R.string.update_event_btn_text)
             nameET.setText(event.eventName)
             descET.setText(event.description)
 
+            nbpart.setText(emptyPartNb)
             nbpart.visibility = View.INVISIBLE
 
             if (event.isLimitedEvent()) {
@@ -135,8 +138,8 @@ class EventManagementActivity : AppCompatActivity() {
                 if (verifyCondition()) {
                     currentDatabase.eventDatabase!!.createEvent(getInformation()).observe(this) {
                         redirectOrDisplayError(
-                            "Event successfully created",
-                            "Unable to create the event, please try again",
+                            getString(R.string.event_creation_success),
+                            getString(R.string.event_creation_failed),
                             it.value
                         )
                     }
@@ -147,8 +150,8 @@ class EventManagementActivity : AppCompatActivity() {
                 if (verifyCondition()) {
                     currentDatabase.eventDatabase!!.updateEvents(getInformation()).observe(this) {
                         redirectOrDisplayError(
-                            "Event successfully updated",
-                            "Unable to update the event, please try again",
+                            getString(R.string.event_update_success),
+                            getString(R.string.failed_to_update_event_info),
                             it.value
                         )
                     }
@@ -158,7 +161,7 @@ class EventManagementActivity : AppCompatActivity() {
                 if(it.value){
                     setupViewInActivity(true)
                 }else{
-                    redirectOrDisplayError("","Unable to get the information associated to this event", false)
+                    redirectOrDisplayError("",getString(R.string.failed_get_event_information), false)
                 }
             }
         }
@@ -267,16 +270,16 @@ class EventManagementActivity : AppCompatActivity() {
         var good = true
         if (findViewById<EditText>(R.id.eventManagementNameField).text.toString() == "") {
             good = false
-            HelperFunctions.showToast("Please enter a name", this)
+            HelperFunctions.showToast(getString(R.string.empty_name_field), this)
         }
         if (findViewById<EditText>(R.id.eventManagementDescriptionField).text.toString() == "") {
             good = false
-            HelperFunctions.showToast("Please enter a description", this)
+            HelperFunctions.showToast(getString(R.string.description_not_empty), this)
         }
 
         if (dateEnd.isBefore(dateStart)) {
             good = false
-            HelperFunctions.showToast("The end date is before the start date", this)
+            HelperFunctions.showToast(getString(R.string.end_date_before_start_date), this)
         }
 
         if(findViewById<Switch>(R.id.swtLimitedEvent).isChecked){
