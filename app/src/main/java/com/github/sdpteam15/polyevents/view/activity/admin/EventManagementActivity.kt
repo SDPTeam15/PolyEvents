@@ -18,6 +18,15 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import java.time.LocalDateTime
 
 class EventManagementActivity : AppCompatActivity() {
+
+    companion object {
+        private const val MIN_PART_NB = 1
+        private const val emptyPartNb = "0"
+        private const val typeStart = "start"
+        private const val typeEnd = "END"
+        private const val defaultPartNb = "10"
+    }
+
     private val zoneName = ArrayList<String>()
     private val mapIndexToId: MutableMap<Int, String> = mutableMapOf()
     private val zoneObserver = ObservableList<Zone>()
@@ -30,11 +39,6 @@ class EventManagementActivity : AppCompatActivity() {
     private var isCreation: Boolean = true
     private var curId = ""
     private val observableEvent = Observable<Event>()
-    private val typeEnd = "END"
-    private val typeStart = "start"
-    private val MIN_PART_NB = 1
-    private val defaultPartNb = "10"
-    private val emptyPartNb ="0"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,17 +70,18 @@ class EventManagementActivity : AppCompatActivity() {
         setupViewInActivity(false)
         manageButtonSetup()
     }
-    private  fun setupSwitchListener() {
+
+    private fun setupSwitchListener() {
         val nbpart = findViewById<EditText>(R.id.etNbPart)
-        findViewById<Switch>(R.id.swtLimitedEvent).setOnCheckedChangeListener { buttonView, isChecked ->
-            if(isChecked){
+        findViewById<Switch>(R.id.swtLimitedEvent).setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
                 nbpart.visibility = View.VISIBLE
                 nbpart.setText(defaultPartNb)
-            }else{
+            } else {
                 nbpart.visibility = View.INVISIBLE
                 nbpart.setText(emptyPartNb)
             }
-         }
+        }
     }
 
     private fun setButtonListener() {
@@ -156,11 +161,15 @@ class EventManagementActivity : AppCompatActivity() {
                     }
                 }
             }
-            currentDatabase.eventDatabase!!.getEventFromId(curId,observableEvent).observe(this){
-                if(it.value){
+            currentDatabase.eventDatabase!!.getEventFromId(curId, observableEvent).observe(this) {
+                if (it.value) {
                     setupViewInActivity(true)
-                }else{
-                    redirectOrDisplayError("",getString(R.string.failed_get_event_information), false)
+                } else {
+                    redirectOrDisplayError(
+                        "",
+                        getString(R.string.failed_get_event_information),
+                        false
+                    )
                 }
             }
         }
@@ -234,8 +243,14 @@ class EventManagementActivity : AppCompatActivity() {
     private fun setTimeListener() {
         dialogStartTime = TimePickerDialog(
             this, { _: TimePicker, hour: Int, minute: Int ->
-                dateEnd =
-                    LocalDateTime.of(dateEnd.year, dateEnd.month, dateEnd.dayOfMonth, hour, minute)
+                dateStart =
+                    LocalDateTime.of(
+                        dateStart.year,
+                        dateStart.month,
+                        dateStart.dayOfMonth,
+                        hour,
+                        minute
+                    )
                 updateTextDate(typeStart)
             }, dateEnd.hour, dateEnd.minute, true
         )
@@ -281,13 +296,19 @@ class EventManagementActivity : AppCompatActivity() {
             HelperFunctions.showToast(getString(R.string.end_date_before_start_date), this)
         }
 
-        if(findViewById<Switch>(R.id.swtLimitedEvent).isChecked){
-            if(findViewById<EditText>(R.id.etNbPart).text.toString().toInt()<MIN_PART_NB){
+        if (findViewById<Switch>(R.id.swtLimitedEvent).isChecked) {
+            if (findViewById<EditText>(R.id.etNbPart).text.toString()
+                    .toInt() < MIN_PART_NB
+            ) {
                 good = false
-                HelperFunctions.showToast("The number of participant must be >= $MIN_PART_NB", this)
+                HelperFunctions.showToast(
+                    "The number of participant must be >= $MIN_PART_NB",
+                    this
+                )
             }
         }
 
         return good
     }
+
 }
