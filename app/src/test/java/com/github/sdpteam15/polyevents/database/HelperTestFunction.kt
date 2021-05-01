@@ -1,9 +1,12 @@
 package com.github.sdpteam15.polyevents.database
 
-import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.database.observe.ObservableList
-import com.github.sdpteam15.polyevents.util.AdapterFromDocumentInterface
-import com.github.sdpteam15.polyevents.util.AdapterToDocumentInterface
+import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
+import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterToDocumentInterface
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
+import com.github.sdpteam15.polyevents.model.database.remote.Matcher
 import org.mockito.Mockito
 import org.mockito.kotlin.anyOrNull
 import java.util.*
