@@ -7,7 +7,11 @@ import com.google.android.gms.maps.model.LatLng
 import com.github.sdpteam15.polyevents.model.map.RouteMapHelper
 
 /**
- * TODO
+ * Undirected edge between two RouteNodes
+ * The weight of the node is computed by the distance between both nodes
+ * @param id RouteEdge id
+ * @param startId RouteNode id
+ * @param endId RouteNode id
  */
 data class RouteEdge(
     val id: String?,
@@ -32,6 +36,15 @@ data class RouteEdge(
 
 
     companion object {
+
+        /**
+         * Creates a RouteEdge from two RouteNodes instead of using their id
+         * Directly sets the start and end nodes instead of setting them later
+         * @param start first RouteNode
+         * @param end second RouteNode
+         * @param id optionally set the edge id
+         * @return the resulting RouteEdge
+         */
         fun fromRouteNode(start: RouteNode, end: RouteNode, id: String? = null): RouteEdge {
             val res = RouteEdge(id, start.id, start.id)
             res.start = start

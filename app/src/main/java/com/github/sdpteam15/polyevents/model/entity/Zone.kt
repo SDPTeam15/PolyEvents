@@ -3,9 +3,11 @@ package com.github.sdpteam15.polyevents.model.entity
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ZoneConstant.*
 import com.github.sdpteam15.polyevents.model.map.Attachable
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.angle
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.divide
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.isTooParallel
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.minus
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.norm
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.plus
 import com.github.sdpteam15.polyevents.model.map.RouteMapHelper.getNearestPoint
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.IgnoreExtraProperties
@@ -70,7 +72,11 @@ data class Zone(
                 val to = e[(i + 1) % e.size]
                 val lineAngle = angle(from, to)
                 if (angle == null || !isTooParallel(angle, lineAngle)) {
-                    val newPoint = getNearestPoint(RouteNode.fromLatLong(from), RouteNode.fromLatLong(to), position)
+                    val newPoint = getNearestPoint(
+                        RouteNode.fromLatLong(from),
+                        RouteNode.fromLatLong(to),
+                        position
+                    )
                     newPoint.areaId = zoneId
                     val distance = norm(minus(position, newPoint.toLatLng()))
                     if (res == null || distance < res.second)
@@ -80,17 +86,19 @@ data class Zone(
         return res!!
     }
 
+    /**
+     * Gets the center of gravity of the zone using the mean of its corners
+     * @return the center of the area
+     */
     fun getZoneCenter(): LatLng {
-        var pointCount = 0
-        var lat = 0.0
-        var lng = 0.0
-        for (latLngList in getZoneCoordinates()){
-            for (latLng in latLngList){
+        var pointCount = 0.0
+        var sumLatLng = LatLng(0.0, 0.0)
+        for (latLngList in getZoneCoordinates()) {
+            for (latLng in latLngList) {
                 pointCount++
-                lat += latLng.latitude
-                lng += latLng.longitude
+                sumLatLng = plus(sumLatLng, latLng)
             }
         }
-        return LatLng(lat/pointCount,lng/pointCount)
+        return divide(sumLatLng, pointCount)
     }
 }
