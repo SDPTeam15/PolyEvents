@@ -102,9 +102,9 @@ class EventManagementTest {
         Database.currentDatabase = FirestoreDatabaseProvider
     }
 
-    private fun closeKeyboard(){
+    private fun closeKeyboard() {
         closeSoftKeyboard()
-        onView(ViewMatchers.isRoot()).perform(ViewActions.closeSoftKeyboard())
+        onView(isRoot()).perform(closeSoftKeyboard())
     }
 
     private fun clickAndCheckNotRedirect() {
@@ -120,6 +120,7 @@ class EventManagementTest {
         }
         return obs
     }
+
     private fun addUpdateListener(): Observable<Boolean> {
         val obs = Observable<Boolean>()
         When(mockedEventDB.updateEvents(anyOrNull(), anyOrNull())).thenAnswer {
@@ -173,7 +174,7 @@ class EventManagementTest {
         clickAndCheckNotRedirect()
         closeKeyboard()
         onView(withId(R.id.swtLimitedEvent)).perform(click())
-        onView(withId(R.id.etNbPart)).perform(replaceText(EventManagementActivity.emptyPartNb))
+        onView(withId(R.id.etNbPart)).perform(replaceText(EventManagementActivity.EMPTY_PART_NB))
         clickAndCheckNotRedirect()
         onView(withId(R.id.etNbPart)).perform(replaceText(EventManagementActivity.MIN_PART_NB.toString()))
         clickAndCheckNotRedirect()
@@ -275,11 +276,43 @@ class EventManagementTest {
         )
         scenario = ActivityScenario.launch(intent)
         obs.postValue(true)
-        onView(withId(R.id.et_end_date)).check(matches(withText(CoreMatchers.containsString(event!!.endTime.toString()))))
-        onView(withId(R.id.et_start_date)).check(matches(withText(CoreMatchers.containsString(event!!.startTime.toString()))))
+        onView(withId(R.id.et_end_date)).check(
+            matches(
+                withText(
+                    CoreMatchers.containsString(
+                        event!!.endTime.toString().replace("T", " ")
+                    )
+                )
+            )
+        )
+        onView(withId(R.id.et_start_date)).check(
+            matches(
+                withText(
+                    CoreMatchers.containsString(
+                        event!!.startTime.toString().replace("T", " ")
+                    )
+                )
+            )
+        )
         onView(withId(R.id.etNbPart)).check(matches(withText(CoreMatchers.containsString(eventNb))))
-        onView(withId(R.id.eventManagementNameField)).check(matches(withText(CoreMatchers.containsString(eventName))))
-        onView(withId(R.id.eventManagementDescriptionField)).check(matches(withText(CoreMatchers.containsString(eventDesc))))
+        onView(withId(R.id.eventManagementNameField)).check(
+            matches(
+                withText(
+                    CoreMatchers.containsString(
+                        eventName
+                    )
+                )
+            )
+        )
+        onView(withId(R.id.eventManagementDescriptionField)).check(
+            matches(
+                withText(
+                    CoreMatchers.containsString(
+                        eventDesc
+                    )
+                )
+            )
+        )
         onView(withId(R.id.swtLimitedEvent)).check(matches(isChecked()))
 
     }
@@ -302,7 +335,7 @@ class EventManagementTest {
     }
 
     @Test
-    fun failToUpdateStaysOnActivity(){
+    fun failToUpdateStaysOnActivity() {
         val obs2 = addUpdateListener()
         val obs = Observable<Boolean>()
         When(
@@ -333,7 +366,7 @@ class EventManagementTest {
     }
 
     @Test
-    fun successfulUpdateRedirect(){
+    fun successfulUpdateRedirect() {
         val startTime = LocalDateTime.now()
         val endTime = LocalDateTime.now()
         event = Event(
@@ -383,9 +416,10 @@ class EventManagementTest {
         assertEquals(event!!.description, eventDesc)
         assertEquals(event!!.getMaxNumberOfSlots(), eventNb.toInt())
         assertEquals(event!!.isLimitedEvent(), true)
-        assertEquals(event!!.eventId,eventId)
+        assertEquals(event!!.eventId, eventId)
 
     }
+
     @Test
     fun clickOnTimeDatePickerWithoutChangingDontChangeDate() {
         val startDate = EventManagementActivity.dateStart.value!!
@@ -400,12 +434,20 @@ class EventManagementTest {
         onView(withId(R.id.btnEndTime)).perform(scrollTo(), click())
         onView(withText("OK")).perform(click())
 
-        onView(withId(R.id.et_end_date)).check(matches(withText(CoreMatchers.containsString(endDate.toString()))))
+        onView(withId(R.id.et_end_date)).check(
+            matches(
+                withText(
+                    CoreMatchers.containsString(
+                        endDate.toString().replace("T", " ")
+                    )
+                )
+            )
+        )
         onView(withId(R.id.et_start_date)).check(
             matches(
                 withText(
                     CoreMatchers.containsString(
-                        startDate.toString()
+                        startDate.toString().replace("T", " ")
                     )
                 )
             )
@@ -419,12 +461,20 @@ class EventManagementTest {
         EventManagementActivity.dateEnd.postValue(endDate)
         EventManagementActivity.dateStart.postValue(startDate)
 
-        onView(withId(R.id.et_end_date)).check(matches(withText(CoreMatchers.containsString(endDate.toString()))))
+        onView(withId(R.id.et_end_date)).check(
+            matches(
+                withText(
+                    CoreMatchers.containsString(
+                        endDate.toString().replace("T", " ")
+                    )
+                )
+            )
+        )
         onView(withId(R.id.et_start_date)).check(
             matches(
                 withText(
                     CoreMatchers.containsString(
-                        startDate.toString()
+                        startDate.toString().replace("T", " ")
                     )
                 )
             )
@@ -434,7 +484,7 @@ class EventManagementTest {
         val endData2 = endDate.plusDays(2).withNano(0).withSecond(0)
 
         EventManagementActivity.postValueDate(
-            EventManagementActivity.typeEnd,
+            EventManagementActivity.TYPE_END,
             endData2.year,
             endData2.monthValue,
             endData2.dayOfMonth,
@@ -442,19 +492,27 @@ class EventManagementTest {
             endData2.minute
         )
         EventManagementActivity.postValueDate(
-            EventManagementActivity.typeStart,
+            EventManagementActivity.TYPE_START,
             startDate2.year,
             startDate2.monthValue,
             startDate2.dayOfMonth,
             startDate2.hour,
             startDate2.minute
         )
-        onView(withId(R.id.et_end_date)).check(matches(withText(CoreMatchers.containsString(endData2.toString()))))
+        onView(withId(R.id.et_end_date)).check(
+            matches(
+                withText(
+                    CoreMatchers.containsString(
+                        endData2.toString().replace("T", " ")
+                    )
+                )
+            )
+        )
         onView(withId(R.id.et_start_date)).check(
             matches(
                 withText(
                     CoreMatchers.containsString(
-                        startDate2.toString()
+                        startDate2.toString().replace("T", " ")
                     )
                 )
             )
