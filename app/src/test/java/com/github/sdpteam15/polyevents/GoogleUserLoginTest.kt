@@ -1,11 +1,6 @@
 package com.github.sdpteam15.polyevents
 
-import androidx.fragment.app.Fragment
-import com.github.sdpteam15.polyevents.fragments.LoginFragment
-import com.github.sdpteam15.polyevents.login.GoogleUserLogin
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.github.sdpteam15.polyevents.model.database.remote.login.GoogleUserLogin
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import org.junit.After

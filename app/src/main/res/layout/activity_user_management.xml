@@ -4,6 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".admin.UserManagementActivity">
+    tools:context=".view.activity.admin.UserManagementActivity">
 
+    <FrameLayout
+        android:id="@+id/fl_user_management_profile"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="215dp"
+        tools:layout_editor_absoluteY="162dp">
+
+    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,19 +1,19 @@
-package objects
+package com.github.sdpteam15.polyevents.database.objects
 
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.ZONE_COLLECTION
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.ZoneConstant.*
-import com.github.sdpteam15.polyevents.database.DatabaseInterface
-import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
-import com.github.sdpteam15.polyevents.database.objects.ZoneDatabaseFirestore
-import com.github.sdpteam15.polyevents.database.objects.ZoneDatabaseInterface
-import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.login.GoogleUserLogin
-import com.github.sdpteam15.polyevents.login.UserLogin
-import com.github.sdpteam15.polyevents.login.UserLoginInterface
-import com.github.sdpteam15.polyevents.model.UserEntity
-import com.github.sdpteam15.polyevents.model.UserProfile
-import com.github.sdpteam15.polyevents.model.Zone
-import com.github.sdpteam15.polyevents.util.ZoneAdapter
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.ZONE_COLLECTION
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ZoneConstant.*
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
+import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
+import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.model.database.remote.login.GoogleUserLogin
+import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
+import com.github.sdpteam15.polyevents.model.database.remote.login.UserLoginInterface
+import com.github.sdpteam15.polyevents.model.entity.UserEntity
+import com.github.sdpteam15.polyevents.model.entity.UserProfile
+import com.github.sdpteam15.polyevents.model.entity.Zone
+import com.github.sdpteam15.polyevents.model.database.remote.adapter.ZoneAdapter
+import com.github.sdpteam15.polyevents.model.database.remote.objects.ZoneDatabaseFirestore
+import com.github.sdpteam15.polyevents.model.database.remote.objects.ZoneDatabaseInterface
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.firestore.CollectionReference
@@ -89,8 +89,8 @@ class ZoneDatabaseFirestoreTest {
         FirestoreDatabaseProvider.currentUser = user
         Mockito.`when`(mockedUserLogin.isConnected()).thenReturn(true)
         FirestoreDatabaseProvider.currentProfile = UserProfile()
-        assert(ZoneDatabaseFirestore.currentUser==FirestoreDatabaseProvider.currentUser)
-        assert(ZoneDatabaseFirestore.currentProfile==FirestoreDatabaseProvider.currentProfile)
+        assert(ZoneDatabaseFirestore.currentUser== FirestoreDatabaseProvider.currentUser)
+        assert(ZoneDatabaseFirestore.currentProfile== FirestoreDatabaseProvider.currentProfile)
         assert(ZoneDatabaseFirestore.firestore==mockedDatabase)
     }
 

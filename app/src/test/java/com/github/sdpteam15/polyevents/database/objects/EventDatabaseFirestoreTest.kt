@@ -1,18 +1,19 @@
 package com.github.sdpteam15.polyevents.database.objects
 
 import android.graphics.Bitmap
-import com.github.sdpteam15.polyevents.database.DatabaseConstant.CollectionConstant.EVENT_COLLECTION
-import com.github.sdpteam15.polyevents.database.FirestoreDatabaseProvider
-import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.database.observe.ObservableList
-import com.github.sdpteam15.polyevents.login.GoogleUserLogin
-import com.github.sdpteam15.polyevents.login.UserLogin
-import com.github.sdpteam15.polyevents.login.UserLoginInterface
-import com.github.sdpteam15.polyevents.model.Event
-import com.github.sdpteam15.polyevents.model.Item
-import com.github.sdpteam15.polyevents.model.UserEntity
-import com.github.sdpteam15.polyevents.model.UserProfile
-import com.github.sdpteam15.polyevents.util.EventAdapter
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.EVENT_COLLECTION
+import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
+import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.model.database.remote.login.GoogleUserLogin
+import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
+import com.github.sdpteam15.polyevents.model.database.remote.login.UserLoginInterface
+import com.github.sdpteam15.polyevents.model.entity.Event
+import com.github.sdpteam15.polyevents.model.entity.Item
+import com.github.sdpteam15.polyevents.model.entity.UserEntity
+import com.github.sdpteam15.polyevents.model.entity.UserProfile
+import com.github.sdpteam15.polyevents.model.database.remote.adapter.EventAdapter
+import com.github.sdpteam15.polyevents.model.database.remote.objects.EventDatabaseFirestore
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.firestore.*
@@ -72,8 +73,8 @@ class EventDatabaseFirestoreTest {
         FirestoreDatabaseProvider.currentUser = user
         Mockito.`when`(mockedUserLogin.isConnected()).thenReturn(true)
         FirestoreDatabaseProvider.currentProfile = UserProfile()
-        assert(EventDatabaseFirestore.currentUser==FirestoreDatabaseProvider.currentUser)
-        assert(EventDatabaseFirestore.currentProfile==FirestoreDatabaseProvider.currentProfile)
+        assert(EventDatabaseFirestore.currentUser== FirestoreDatabaseProvider.currentUser)
+        assert(EventDatabaseFirestore.currentProfile== FirestoreDatabaseProvider.currentProfile)
         assert(EventDatabaseFirestore.firestore==mockedDatabase)
     }
 
@@ -220,7 +221,8 @@ class EventDatabaseFirestoreTest {
         val testEvents = ObservableList<Event>()
 
         val eventsToBeAdded = mutableListOf<Event>()
-        eventsToBeAdded.add(Event(
+        eventsToBeAdded.add(
+            Event(
             eventId = "event1",
             eventName = "Sushi demo",
             description = "Super hungry activity !",
@@ -228,16 +230,20 @@ class EventDatabaseFirestoreTest {
             organizer = "The fish band",
             zoneName = "Kitchen",
             tags = mutableSetOf("sushi", "japan", "cooking")
-        ))
-        eventsToBeAdded.add(Event(
+        )
+        )
+        eventsToBeAdded.add(
+            Event(
             eventId = "event2",
             eventName = "Saxophone demo",
             description = "Super noisy activity !",
             startTime = LocalDateTime.of(2021, 3, 7, 17, 15),
             organizer = "The music band",
             zoneName = "Concert Hall"
-        ))
-        eventsToBeAdded.add(Event(
+        )
+        )
+        eventsToBeAdded.add(
+            Event(
             eventId = "event3",
             eventName = "Aqua Poney",
             description = "Super cool activity !" +
@@ -246,7 +252,8 @@ class EventDatabaseFirestoreTest {
             startTime = LocalDateTime.of(2021, 3, 7, 14, 15),
             organizer = "The Aqua Poney team",
             zoneName = "Swimming pool"
-        ))
+        )
+        )
 
 
         When(mockedDatabase.collection(EVENT_COLLECTION.value)).thenReturn(mockedCollectionReference)

@@ -1,22 +1,26 @@
 package com.github.sdpteam15.polyevents.helper
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.arch.core.executor.ArchTaskExecutor
+import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityCompat.RequestPermissionsRequestCodeValidator
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.room.TypeConverter
 import com.github.sdpteam15.polyevents.R
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.Period
-import java.time.ZoneId
+import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.LatLng
+import java.time.*
 import java.util.*
+
+const val PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1
 
 object HelperFunctions {
     /**
@@ -37,6 +41,68 @@ object HelperFunctions {
         }
     }
 
+    var end: Observable<Boolean>? = null
+
+    /**
+     * Asks for permission to use location
+     */
+    fun getLocationPermission(activity: Activity): Observable<Boolean> {
+        /*
+         * Request location permission, so that we can get the location of the
+         * device. The result of the permission request is handled by a callback,
+         * onRequestPermissionsResult.
+         */
+
+        if (ContextCompat.checkSelfPermission(
+                activity,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+            return Observable(true)
+        } else if (activity is RequestPermissionsRequestCodeValidator) {
+            end = Observable<Boolean>()
+            ActivityCompat.requestPermissions(
+                activity,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
+            )
+            return end!!
+        } else
+            return Observable(false)
+    }
+
+    fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        when (requestCode) {
+            PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION -> {
+                end?.value = isPermissionGranted(
+                    permissions,
+                    grantResults,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                )
+                end = null
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun getLoc(activity: Activity): Observable<LatLng?> {
+        val end = Observable<LatLng?>()
+        LocationServices.getFusedLocationProviderClient(activity).lastLocation.addOnSuccessListener {
+            if (it != null)
+                end.postValue(
+                    LatLng(it.latitude, it.longitude)
+                )
+            else
+                end.postValue(null)
+        }.addOnFailureListener { end.postValue(null) }
+        return end
+    }
+
     @SuppressLint("RestrictedApi")
     fun run(runnable: Runnable) {
         try {
@@ -44,16 +110,6 @@ object HelperFunctions {
         } catch (e: RuntimeException) {
             runnable.run()
         }
-    }
-
-    fun observeOnDestroy(lifecycle: LifecycleOwner, result: () -> Boolean): () -> Boolean {
-        //Anonymous class to observe the ON_STOP Event ao the Activity/Fragment
-        val lifecycleObserver = object : LifecycleObserver {
-            @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-            fun stopListener() = result()
-        }
-        lifecycle.lifecycle.addObserver(lifecycleObserver)
-        return result
     }
 
     /**
@@ -117,5 +173,45 @@ object HelperFunctions {
             }
         }
         return false
+    }
+
+    /**
+     * A class containing type converters for dealing with complex types, when persisting
+     * in Room database.
+     */
+    object Converters {
+        /**
+         * https://www.baeldung.com/java-time-milliseconds
+         */
+        @TypeConverter
+        fun fromLocalDateTime(value: LocalDateTime?): Long? {
+            return value?.let {
+                val zdt = ZonedDateTime.of(it, ZoneId.systemDefault())
+                zdt.toInstant().toEpochMilli()
+            }
+        }
+
+        /**
+         * https://stackoverflow.com/questions/44883432/long-timestamp-to-localdatetime
+         */
+        @TypeConverter
+        fun fromLong(value: Long?): LocalDateTime? {
+            return value?.let {
+                LocalDateTime.ofInstant(
+                    Instant.ofEpochMilli(it),
+                    TimeZone.getDefault().toZoneId()
+                )
+            }
+        }
+
+        @TypeConverter
+        fun fromStringSet(value: Set<String>?): String? {
+            return value?.joinToString(separator = ",")
+        }
+
+        @TypeConverter
+        fun fromString(value: String?): MutableSet<String>? {
+            return value?.split(",")?.toMutableSet()
+        }
     }
 }
