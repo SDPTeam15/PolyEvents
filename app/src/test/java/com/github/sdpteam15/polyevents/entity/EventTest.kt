@@ -14,6 +14,7 @@ class EventTest {
     val eventName = "someEvent"
     val organizer = "Student Association"
     val zoneName = "Zone A"
+    val zoneId = "ID"
     val description = "A nice little event"
     val icon = null
     val startTime =
@@ -36,6 +37,7 @@ class EventTest {
             eventName = eventName,
             organizer = organizer,
             zoneName = zoneName,
+            zoneId = zoneId,
             description = description,
             icon = icon,
             startTime = startTime,
@@ -55,6 +57,7 @@ class EventTest {
         assertEquals(event.organizer, organizer)
         assertEquals(event.zoneName, zoneName)
         assertEquals(event.icon, icon)
+        assertEquals(event.zoneId,zoneId)
         assertEquals(event.startTime, startTime)
         assertEquals(event.endTime, endTime)
     }

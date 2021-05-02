@@ -15,6 +15,7 @@ class EventAdapterTest {
     val eventName = "someEvent"
     val organizer = "Student Association"
     val zoneName = "Zone A"
+    val zoneId = "id"
     val description = "A nice little event"
     val icon = null
 
@@ -36,6 +37,7 @@ class EventAdapterTest {
             eventName = eventName,
             organizer = organizer,
             zoneName = zoneName,
+            zoneId = zoneId,
             description = description,
             icon = icon,
             startTime = startTime,
@@ -54,6 +56,7 @@ class EventAdapterTest {
 
         assertEquals(document[EVENT_DOCUMENT_ID.value], event.eventId)
         assertEquals(document[EVENT_NAME.value], event.eventName)
+        assertEquals(document[EVENT_ZONE_ID.value],event.zoneId)
         assertEquals(document[EVENT_ORGANIZER.value], event.organizer)
         assertEquals(document[EVENT_ZONE_NAME.value], event.zoneName)
         assertEquals(document[EVENT_ICON.value], event.icon)
@@ -79,6 +82,7 @@ class EventAdapterTest {
             EVENT_DOCUMENT_ID.value to testEventWithoutTimes.eventId,
             EVENT_NAME.value to testEventWithoutTimes.eventName,
             EVENT_ORGANIZER.value to testEventWithoutTimes.organizer,
+            EVENT_ZONE_ID.value to testEventWithoutTimes.zoneId,
             EVENT_ZONE_NAME.value to testEventWithoutTimes.zoneName,
             EVENT_DESCRIPTION.value to testEventWithoutTimes.description,
             EVENT_START_TIME.value to testEventWithoutTimes.startTime,
