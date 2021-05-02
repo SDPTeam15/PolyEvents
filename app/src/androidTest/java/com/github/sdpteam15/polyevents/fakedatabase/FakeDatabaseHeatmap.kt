@@ -1,25 +1,16 @@
 package com.github.sdpteam15.polyevents.fakedatabase
 
-import com.github.sdpteam15.polyevents.database.objects.HeatmapDatabaseInterface
-import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.model.UserEntity
+import com.github.sdpteam15.polyevents.model.database.remote.objects.HeatmapDatabaseInterface
+import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.google.android.gms.maps.model.LatLng
 
 object FakeDatabaseHeatmap : HeatmapDatabaseInterface {
+    override fun setLocation(location: LatLng): Observable<Boolean> = Observable(true)
 
-    override fun setUserLocation(
-        location: LatLng,
+    override fun getLocations(
+        usersLocations: ObservableList<LatLng>,
         userAccess: UserEntity?
-    ): Observable<Boolean> {
-        return Observable(true)
-    }
-
-    override fun getUsersLocations(
-        usersLocations: Observable<List<LatLng>>,
-        userAccess: UserEntity?
-    ): Observable<Boolean> {
-        // TODO : see whether we write a Python script that send fake data to our database
-        usersLocations.postValue(listOf(LatLng(46.548823, 7.017012)))
-        return Observable(true)
-    }
+    ): Observable<Boolean> = Observable(true)
 }

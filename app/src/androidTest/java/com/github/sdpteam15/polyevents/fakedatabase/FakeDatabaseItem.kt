@@ -1,10 +1,10 @@
 package com.github.sdpteam15.polyevents.fakedatabase
 
-import com.github.sdpteam15.polyevents.database.objects.ItemDatabaseInterface
-import com.github.sdpteam15.polyevents.database.observe.Observable
-import com.github.sdpteam15.polyevents.database.observe.ObservableList
-import com.github.sdpteam15.polyevents.model.Item
-import com.github.sdpteam15.polyevents.model.UserProfile
+import com.github.sdpteam15.polyevents.model.database.remote.objects.ItemDatabaseInterface
+import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.model.entity.Item
+import com.github.sdpteam15.polyevents.model.entity.UserProfile
 
 object FakeDatabaseItem : ItemDatabaseInterface {
     lateinit var items: MutableMap<String, Pair<Item, Int>>

@@ -8,7 +8,9 @@
     -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <application
+        android:name=".view.PolyEventsApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -16,41 +18,53 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PolyEvents">
         <activity
-            android:name=".admin.ZoneManagementListActivity"
-            android:parentActivityName=".MainActivity" />
-        <activity
-            android:name=".admin.EventManagementActivity"
+            android:name="com.github.sdpteam15.polyevents.view.activity.admin.EventManagementActivity"
             android:label="@string/title_activity_event_management"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".view.activity.admin.EventManagementListActivity" />
 
+        <service
+            android:name="com.github.sdpteam15.polyevents.view.service.TimerService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <activity android:name="com.github.sdpteam15.polyevents.view.activity.admin.UserManagementActivity"
+            android:parentActivityName="com.github.sdpteam15.polyevents.view.activity.admin.UserManagementListActivity" />
         <activity
-            android:name=".admin.UserManagementActivity"
-            android:label="@string/title_activity_user_management"
-            android:parentActivityName=".MainActivity"/>
-
-        <activity android:name=".admin.ZoneManagementActivity"
-            android:label="@string/title_activity_zone_management"
-            android:parentActivityName=".admin.ZoneManagementListActivity"
+            android:name="com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementListActivity"
+            android:parentActivityName=".view.activity.MainActivity" />
+        <activity
+            android:name="com.github.sdpteam15.polyevents.view.activity.admin.EventManagementListActivity"
+            android:label="@string/title_activity_event_list_management"
+            android:parentActivityName=".view.activity.MainActivity" />
+        <activity
+            android:name="com.github.sdpteam15.polyevents.view.activity.admin.UserManagementListActivity"
+            android:label="@string/title_activity_user_list_management"
+            android:parentActivityName=".view.activity.MainActivity"
             android:launchMode="singleTop"/>
         <activity
-            android:name=".admin.ItemRequestManagementActivity"
+            android:name="com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementActivity"
+            android:label="@string/title_activity_zone_management"
+            android:launchMode="singleTop"
+            android:parentActivityName="com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementListActivity" />
+        <activity
+            android:name="com.github.sdpteam15.polyevents.view.activity.admin.ItemRequestManagementActivity"
             android:label="@string/title_activity_item_request_management"
-            android:parentActivityName=".MainActivity" />
-        <activity android:name=".ItemsAdminActivity"
-            android:label= "@string/title_activity_items_admin"
-            android:parentActivityName=".MainActivity"/>
-
+            android:parentActivityName=".view.activity.MainActivity" />
         <activity
-            android:name=".EditProfileActivity"
-            android:parentActivityName=".MainActivity" />
+            android:name=".view.activity.ItemsAdminActivity"
+            android:label="@string/title_activity_items_admin"
+            android:parentActivityName=".view.activity.MainActivity" />
         <activity
-            android:name=".ItemRequestActivity"
+            android:name=".view.activity.EditProfileActivity"
+            android:parentActivityName=".view.activity.MainActivity" />
+        <activity
+            android:name=".view.activity.ItemRequestActivity"
             android:label="@string/title_activity_item_request"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".view.activity.MainActivity" />
         <activity
-            android:name=".EventActivity"
+            android:name=".view.activity.EventActivity"
             android:label="@string/title_activity_events"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".view.activity.MainActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -65,10 +79,11 @@
             android:value="@string/google_api_key" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".view.activity.MainActivity"
             android:launchMode="singleTop"> <!-- the main activity is not recreated when we press the back button. Src: https://stackoverflow.com/questions/16434445/using-actionbar-home-as-up-button-home-activity-saveinstancestate-is-always-nul -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
