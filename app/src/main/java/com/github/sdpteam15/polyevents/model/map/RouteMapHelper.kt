@@ -80,9 +80,9 @@ object RouteMapHelper {
     /**
      * TODO
      */
-    fun getNodesAndEdgesFromDB(lifecycleOwner: LifecycleOwner): Observable<Boolean> {
+    fun getNodesAndEdgesFromDB(context: Context?,lifecycleOwner: LifecycleOwner): Observable<Boolean> {
         edges.observeAdd(lifecycleOwner){
-            edgeAddedNotification(it.value)
+            edgeAddedNotification(context, it.value)
         }
         edges.observeRemove(lifecycleOwner){
             edgeRemovedNotification(it.value)
@@ -105,7 +105,7 @@ object RouteMapHelper {
      * Function that handles the addition of a route from the database
      * @param edge new edge
      */
-    fun edgeAddedNotification(edge: RouteEdge){
+    fun edgeAddedNotification(context: Context?,edge: RouteEdge){
         //Remove all creation lines when we get an answer from the database
         removeAllLinesToRemove()
         val option = PolylineOptions()
@@ -115,7 +115,10 @@ object RouteMapHelper {
         val route = map!!.addPolyline(option)
 
         //tag used to know which polyline has been clicked
-        route.tag = edge.id
+        if(context != null){
+            route.tag = edge.id
+        }
+
         lineToEdge[edge] = route
         idToEdge[edge.id!!] = edge
     }
@@ -166,7 +169,6 @@ object RouteMapHelper {
             tempVariableClear()
         }else{
             deleteMode = !deleteMode
-            HelperFunctions.showToast("Deletion mode is $deleteMode", context)
             MapsFragment.instance?.switchIconDelete()
         }
         MapsFragment.instance?.showSaveButton()
@@ -280,8 +282,6 @@ object RouteMapHelper {
             tempLatLng[0] = startMarker!!.position
             tempLatLng[1] = endMarker!!.position
         }
-
-
     }
 
     /**

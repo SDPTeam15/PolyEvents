@@ -13,6 +13,7 @@ import org.mockito.Mockito
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.anyOrNull
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
 class RouteMapHelperTest {
@@ -134,4 +135,126 @@ class RouteMapHelperTest {
         assertTrue(RouteMapHelper.endMarker != null)
         assertTrue(RouteMapHelper.startMarker != null)
     }
+
+    @Test
+    fun edgeAddedNotificationTest(){
+        val tag = "Test osterone"
+
+        val routeEdge = RouteEdge(tag, rn1, rn2)
+
+        //Fake polyline
+        val mockedzzz = mock(zzz::class.java)
+        val polyline = Polyline(mockedzzz)
+        RouteMapHelper.toDeleteLines.add(polyline)
+
+        RouteMapHelper.edgeAddedNotification(null, routeEdge)
+    }
+
+    @Test
+    fun edgeRemovedNotificationTest(){
+        val tag = "Test osterone"
+        val routeEdge = RouteEdge(tag, rn1, rn2)
+        val mockedzzz = mock(zzz::class.java)
+        val polyline = Polyline(mockedzzz)
+        RouteMapHelper.lineToEdge[routeEdge] = polyline
+        RouteMapHelper.idToEdge[tag] = routeEdge
+
+        RouteMapHelper.edgeRemovedNotification(routeEdge)
+    }
+
+    @Test
+    fun tempVariableClearTest(){
+        val mockedzzt = mock(zzt::class.java)
+        val m = Marker(mockedzzt)
+        val mockedzzt2 = mock(zzt::class.java)
+        val m2 = Marker(mockedzzt2)
+        RouteMapHelper.startMarker = m
+        RouteMapHelper.endMarker = m2
+
+        RouteMapHelper.tempVariableClear()
+    }
+
+    @Test
+    fun createNewRouteTest() {
+        val mockedzzt = mock(zzt::class.java)
+        val m = Marker(mockedzzt)
+        val mockedzzt2 = mock(zzt::class.java)
+        val m2 = Marker(mockedzzt2)
+        RouteMapHelper.startMarker = m
+        RouteMapHelper.endMarker = m2
+
+        val mockedzzz = mock(zzz::class.java)
+        val polyline = Polyline(mockedzzz)
+        val listOfPts = listOf(LatLng(lat, lng), LatLng(lat, lng))
+        RouteMapHelper.tempLatLng = mutableListOf(LatLng(lat, lng), LatLng(lat, lng))
+
+        Mockito.`when`(mockedzzz.points).thenReturn(listOfPts)
+        RouteMapHelper.tempPolyline = polyline
+        Mockito.`when`(mockedMap.addPolyline(anyOrNull())).thenReturn(polyline)
+        RouteMapHelper.createNewRoute(null)
+    }
+
+    @Test
+    fun saveNewRouteTest(){
+        val mockedzzt = mock(zzt::class.java)
+        val m = Marker(mockedzzt)
+        val mockedzzt2 = mock(zzt::class.java)
+        val m2 = Marker(mockedzzt2)
+        RouteMapHelper.startMarker = m
+        RouteMapHelper.endMarker = m2
+
+        val mockedzzz = mock(zzz::class.java)
+        val polyline = Polyline(mockedzzz)
+        val listOfPts = listOf(LatLng(lat, lng), LatLng(lat, lng))
+        RouteMapHelper.tempLatLng = mutableListOf(LatLng(lat, lng), LatLng(lat, lng))
+
+        Mockito.`when`(mockedzzz.points).thenReturn(listOfPts)
+        RouteMapHelper.tempPolyline = polyline
+        Mockito.`when`(mockedMap.addPolyline(anyOrNull())).thenReturn(polyline)
+        RouteMapHelper.saveNewRoute()
+    }
+
+    @Test
+    fun removeRouteTest(){
+        val mockedzzt = mock(zzt::class.java)
+        val m = Marker(mockedzzt)
+        val mockedzzt2 = mock(zzt::class.java)
+        val m2 = Marker(mockedzzt2)
+        RouteMapHelper.startMarker = m
+        RouteMapHelper.endMarker = m2
+
+        val mockedzzz = mock(zzz::class.java)
+        val polyline = Polyline(mockedzzz)
+        val listOfPts = listOf(LatLng(lat, lng), LatLng(lat, lng))
+        RouteMapHelper.tempLatLng = mutableListOf(LatLng(lat, lng), LatLng(lat, lng))
+
+        Mockito.`when`(mockedzzz.points).thenReturn(listOfPts)
+        RouteMapHelper.tempPolyline = polyline
+        Mockito.`when`(mockedMap.addPolyline(anyOrNull())).thenReturn(polyline)
+        RouteMapHelper.removeRoute(null)
+
+        RouteMapHelper.tempPolyline = null
+        RouteMapHelper.deleteMode = false
+        RouteMapHelper.removeRoute(null)
+        assertEquals(true, RouteMapHelper.deleteMode)
+
+    }
+
+    @Test
+    fun variablesSetterGetterTest(){
+        val id = 60
+        RouteMapHelper.tempUid = id
+        assertEquals(id, RouteMapHelper.tempUid)
+
+        val deleteMode = false
+        RouteMapHelper.deleteMode = deleteMode
+        assertEquals(deleteMode, RouteMapHelper.deleteMode)
+
+        assertEquals(mockedMap,RouteMapHelper.map)
+        RouteMapHelper.lineToEdge
+        RouteMapHelper.idToEdge
+        RouteMapHelper.tempPolyline
+    }
+
+
 }
