@@ -396,23 +396,23 @@ class GoogleMapHelperTest {
         val p = Polygon(mockedzzw)
         When(mockedzzw.points).thenReturn(listOf())
 
-        GoogleMapHelper.interactionMarker(m)
+        GoogleMapHelper.interactionMarker(m, MarkerDragMode.DRAG)
 
         When(mockedzzt.snippet).thenReturn(PolygonAction.DOWN.toString())
-        GoogleMapHelper.interactionMarker(m)
+        GoogleMapHelper.interactionMarker(m, MarkerDragMode.DRAG)
 
         When(mockedzzt.snippet).thenReturn(PolygonAction.MOVE.toString())
-        GoogleMapHelper.interactionMarker(m)
+        GoogleMapHelper.interactionMarker(m, MarkerDragMode.DRAG)
 
         When(mockedzzt.snippet).thenReturn(PolygonAction.RIGHT.toString())
-        GoogleMapHelper.interactionMarker(m)
+        GoogleMapHelper.interactionMarker(m, MarkerDragMode.DRAG)
 
         When(mockedzzt.snippet).thenReturn(PolygonAction.ROTATE.toString())
-        GoogleMapHelper.interactionMarker(m)
+        GoogleMapHelper.interactionMarker(m, MarkerDragMode.DRAG)
 
         GoogleMapHelper.tempPoly = p
         When(mockedzzt.snippet).thenReturn("TEST")
-        GoogleMapHelper.interactionMarker(m)
+        GoogleMapHelper.interactionMarker(m, MarkerDragMode.DRAG)
 
         GoogleMapHelper.areasPoints.clear()
         GoogleMapHelper.clearTemp()

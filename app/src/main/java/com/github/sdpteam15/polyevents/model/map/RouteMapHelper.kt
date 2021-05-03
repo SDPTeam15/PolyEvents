@@ -225,17 +225,17 @@ object RouteMapHelper {
         val dimension = IconDimension(100, 100)
 
         startMarker = map!!.addMarker(
-            GoogleMapHelper.newMarker(
-                context,
-                startPos,
-                anchor,
-                PolygonAction.MARKER_START.toString(),
-                null,
-                true,
-                R.drawable.ic_locate_me,
-                bound,
-                dimension
-            )
+                GoogleMapHelper.newMarker(
+                        context,
+                        startPos,
+                        anchor,
+                        PolygonAction.MARKER_START.toString(),
+                        null,
+                        true,
+                        R.drawable.ic_locate_me,
+                        bound,
+                        dimension
+                )
         )
 
         endMarker = map!!.addMarker(

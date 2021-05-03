@@ -251,7 +251,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
                 GoogleMapHelper.removeArea(polygon.tag.toString().toInt())
             }
         } else {
-            Log.d("POLYGON", "Tag : ${polygon.tag}")
             GoogleMapHelper.setSelectedZoneFromArea(polygon.tag.toString())
             //Shows the info window of the marker assigned to the area
             GoogleMapHelper.areasPoints.get(polygon.tag)!!.second.showInfoWindow()
