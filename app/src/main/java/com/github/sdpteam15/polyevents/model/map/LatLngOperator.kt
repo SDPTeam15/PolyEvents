@@ -8,37 +8,55 @@ import kotlin.math.sqrt
 object LatLngOperator {
 
     /**
-     * TODO
+     * Returns the coordinate-wise subtraction of the first point by the second one
+     * @param point1 the first point
+     * @param point2 the second point
+     * @return the subtraction of point 1 by point 2
      */
     fun minus(point1: LatLng, point2: LatLng) =
         LatLng(point1.latitude - point2.latitude, point1.longitude - point2.longitude)
 
     /**
-     * TODO
+     * Returns the coordinate-wise addition of the first point by the second one
+     * @param point1 the first point
+     * @param point2 the second point
+     * @return the addition of point 1 by point 2
      */
     fun plus(point1: LatLng, point2: LatLng) =
         LatLng(point1.latitude + point2.latitude, point1.longitude + point2.longitude)
 
     /**
-     * TODO
+     * Returns the coordinate-wise multiplication of the point by a scalar
+     * @param point the point to multiply
+     * @param nbr the scalar to multiply
+     * @return the multiplication of the point by the given scalar
      */
     fun time(point: LatLng, nbr: Double) =
         LatLng(point.latitude * nbr, point.longitude * nbr)
 
     /**
-     * TODO
+     * Returns the coordinate-wise division of the point by a scalar
+     * @param point the point to be divided
+     * @param nbr the scalar to divide by
+     * @return the division of the point by the given scalar
      */
     fun divide(point: LatLng, nbr: Double) =
         LatLng(point.latitude / nbr, point.longitude / nbr)
 
     /**
-     * TODO
+     * Returns the angle in degrees between the horizontal x axis and the line passing through the two given points
+     * @param start the first point
+     * @param end the second point
+     * @return the angle between the x axis and the line passing though start and end
      */
     fun angle(start: LatLng, end: LatLng) =
         (atan((start.latitude - end.latitude) / (start.longitude - end.longitude)) / Math.PI) * 180
 
     /**
-     * TODO
+     * Checks whether two angles are close enough to each other, i.e. if the difference between the lines described by the given angles is less than 20°.
+     * @param angle1 the first angle
+     * @param angle2 the second angle
+     * @return true if the angles are less than 20° apart, else return false
      */
     fun isTooParallel(angle1: Double, angle2: Double): Boolean {
         var dif = abs(angle1 - angle2)
