@@ -7,11 +7,11 @@ import kotlin.math.sqrt
 
 /**
  * Object containing methods to compute various metrics with LatLng
- * TODO take into account the curvature of the earth to compute distances instead of considering latitude and longitude as cartesian coordinates
+ * TODO? take into account the curvature of the earth to compute distances instead of considering latitude and longitude as cartesian coordinates
  */
 object LatLngOperator {
     /**
-     * Used to check if floating point values are closed enough to be considered as equal
+     * Used to check if floating point values are close enough to be considered as equal
      */
     private const val epsilon = 1e-10
 
@@ -62,13 +62,16 @@ object LatLngOperator {
 
     /**
      * Checks whether two angles are close enough to each other, i.e. if the difference between the lines described by the given angles is less than 20°.
+     *
      * @param angle1 the first angle
      * @param angle2 the second angle
      * @return true if the angles are less than 20° apart, else return false
      */
     fun isTooParallel(angle1: Double, angle2: Double): Boolean {
+        if (!(angle1 in -90.0..90.0 && angle2 in -90.0..90.0))
+            throw IllegalArgumentException("angles must be in the range -90.0..90.0")
         var dif = abs(angle1 - angle2)
-        dif = if (dif > 90) dif - 90 else dif
+        dif = if (dif > 90) 180 - dif else dif
         return dif < 20
     }
 
@@ -160,10 +163,10 @@ object LatLngOperator {
      * @return The intersection point of the two segments, null if the two segments do not intersect
      */
     fun getIntersection(start1: LatLng, end1: LatLng, start2: LatLng, end2: LatLng): LatLng? {
-
         val denom =
-            ((start1.latitude - end1.latitude) * (start2.longitude - end2.longitude) - (start1.longitude - end1.longitude) * (start2.latitude - end2.latitude))
-        if (denom < epsilon) {
+            (((start1.latitude - end1.latitude) * (start2.longitude - end2.longitude)) - ((start1.longitude - end1.longitude) * (start2.latitude - end2.latitude)))
+
+        if (abs(denom) < epsilon) {
             //the lines are parallel
             return null
         }
@@ -189,11 +192,15 @@ object LatLngOperator {
         val a = minus(point, start)
         val b = minus(end, start)
         //if projection on the segment is (almost) the same, return checks if the point lies inside the boundaries formed by the two points
-        return if (euclideanDistance(point, project(a, b)) > epsilon) false
-        else ((point.latitude in start.latitude..end.latitude && point.longitude in start.longitude..end.longitude) ||
-                (point.latitude in start.latitude..end.latitude && point.longitude in end.longitude..start.longitude) ||
-                (point.latitude in end.latitude..start.latitude && point.longitude in end.longitude..start.longitude) ||
-                (point.latitude in end.latitude..start.latitude && point.longitude in start.longitude..end.longitude))
+        return if (euclideanDistance(minus(point,start), project(a, b)) > epsilon) {
+            false
+        } else {
+
+            ((point.latitude in start.latitude..end.latitude && point.longitude in start.longitude..end.longitude) ||
+                    (point.latitude in start.latitude..end.latitude && point.longitude in end.longitude..start.longitude) ||
+                    (point.latitude in end.latitude..start.latitude && point.longitude in end.longitude..start.longitude) ||
+                    (point.latitude in end.latitude..start.latitude && point.longitude in start.longitude..end.longitude))
+        }
     }
 
     /**
