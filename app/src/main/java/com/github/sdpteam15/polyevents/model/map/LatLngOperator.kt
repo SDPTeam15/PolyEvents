@@ -5,7 +5,15 @@ import kotlin.math.abs
 import kotlin.math.atan
 import kotlin.math.sqrt
 
+/**
+ * Object containing methods to compute various metrics with LatLng
+ * TODO take into account the curvature of the earth to compute distances instead of considering latitude and longitude as cartesian coordinates
+ */
 object LatLngOperator {
+    /**
+     * Used to check if floating point values are closed enough to be considered as equal
+     */
+    private const val epsilon = 1e-10
 
     /**
      * Returns the coordinate-wise subtraction of the first point by the second one
@@ -142,4 +150,59 @@ object LatLngOperator {
      */
     fun squaredEuclideanDistance(start: LatLng, end: LatLng): Double =
         squaredEuclideanDistance(start.longitude, start.latitude, end.longitude, end.latitude)
+
+    /**
+     * Returns the intersection point between 2 segments
+     * @param start1 start of the first segment
+     * @param end1 end of the first segment
+     * @param start2 start of the second segment
+     * @param end2 end of the second segment
+     * @return The intersection point of the two segments, null if the two segments do not intersect
+     */
+    fun getIntersection(start1: LatLng, end1: LatLng, start2: LatLng, end2: LatLng): LatLng? {
+
+        val denom =
+            ((start1.latitude - end1.latitude) * (start2.longitude - end2.longitude) - (start1.longitude - end1.longitude) * (start2.latitude - end2.latitude))
+        if (denom < epsilon) {
+            //the lines are parallel
+            return null
+        }
+        val t =
+            ((start1.latitude - start2.latitude) * (start2.longitude - end2.longitude) - (start1.longitude - start2.longitude) * (start2.latitude - end2.latitude)) / denom
+        val s =
+            ((end1.latitude - start1.latitude) * (start1.longitude - start2.longitude) - (end1.longitude - start1.longitude) * (start1.latitude - start2.latitude)) / denom
+        if (!(t in 0.0..1.0 && s in 0.0..1.0)) {
+            //the intersection point is outside the boundaries formed by the extremities of the segments
+            return null
+        }
+        return plus(start1, time(minus(end1, start1), t))
+    }
+
+    /**
+     * Checks is a point is on a given segment
+     * @param start the segment start
+     * @param end the segment end
+     * @param point the point to be checked if on the segment or not
+     * @return true if the point is on the segment, false otherwise
+     */
+    fun isOnSegment(start: LatLng, end: LatLng, point: LatLng): Boolean {
+        val a = minus(point, start)
+        val b = minus(end, start)
+        //if projection on the segment is (almost) the same, return checks if the point lies inside the boundaries formed by the two points
+        return if (euclideanDistance(point, project(a, b)) > epsilon) false
+        else ((point.latitude in start.latitude..end.latitude && point.longitude in start.longitude..end.longitude) ||
+                (point.latitude in start.latitude..end.latitude && point.longitude in end.longitude..start.longitude) ||
+                (point.latitude in end.latitude..start.latitude && point.longitude in end.longitude..start.longitude) ||
+                (point.latitude in end.latitude..start.latitude && point.longitude in start.longitude..end.longitude))
+    }
+
+    /**
+     * Computes the projection of the vector a on the vector b
+     * @param a the vector to project
+     * @param b the vector on which we want to project
+     * @return the projection of a on b
+     */
+    fun project(a: LatLng, b: LatLng): LatLng {
+        return time(b, scalar(a, divide(b, squaredNorm(b))))
+    }
 }
