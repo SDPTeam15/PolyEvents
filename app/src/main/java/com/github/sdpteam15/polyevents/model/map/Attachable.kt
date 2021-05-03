@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.model.map
 
+import com.github.sdpteam15.polyevents.model.entity.RouteEdge
 import com.github.sdpteam15.polyevents.model.entity.RouteNode
 import com.google.android.gms.maps.model.LatLng
 
@@ -12,4 +13,10 @@ interface Attachable {
      */
     fun getAttachedNewPoint(position: LatLng, angle: Double ?): Pair<RouteNode, Double>
 
+    /**
+     * TODO
+     * @param newEdges
+     * @param removeEdges
+     */
+    fun splitOnIntersection(newEdges: MutableList<RouteEdge>, removeEdges : MutableList<RouteEdge>)
 }

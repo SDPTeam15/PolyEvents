@@ -35,7 +35,7 @@ object LatLngOperator {
      * TODO
      */
     fun angle(start: LatLng, end: LatLng) =
-        atan(start.latitude - end.latitude / start.longitude - end.longitude) / Math.PI * 180
+        (atan((start.latitude - end.latitude) / (start.longitude - end.longitude)) / Math.PI) * 180
 
     /**
      * TODO
@@ -53,7 +53,7 @@ object LatLngOperator {
      * @return distance between the points
      */
     fun scalar(point1: LatLng, point2: LatLng) =
-        point1.latitude * point2.latitude + point1.longitude * point2.latitude
+        point1.latitude * point2.latitude + point1.longitude * point2.longitude
 
     /**
      * Computes the euclidean distance between 2 points
@@ -69,7 +69,7 @@ object LatLngOperator {
      * @param point point
      */
     fun squaredNorm(point: LatLng) =
-        squaredNorm(point.longitude, point.longitude)
+        squaredNorm(point.longitude, point.latitude)
 
     /**
      * Computes the euclidean norm
@@ -124,4 +124,27 @@ object LatLngOperator {
      */
     fun squaredEuclideanDistance(start: LatLng, end: LatLng): Double =
         squaredEuclideanDistance(start.longitude, start.latitude, end.longitude, end.latitude)
+
+    /**
+     * Returns the intersection point between 2 segments
+     * @param start1 start of the first segment
+     * @param end1 end of the first segment
+     * @param start2 start of the second segment
+     * @param end2 end of the second segment
+     * @return The intersection point of the two segments, null if the two segments do not intersect
+     */
+    fun getIntersection(start1: LatLng, end1: LatLng, start2: LatLng, end2: LatLng): LatLng? {
+        return null
+    }
+
+    /**
+     * Checks is a point is on a given segment
+     * @param start the segment start
+     * @param end the segment end
+     * @param point the point to be checked if on the segment or not
+     * @return true if the point is on the segment, false otherwise
+     */
+    fun isOnSegment(start: LatLng, end: LatLng, point: LatLng): Boolean {
+        return false
+    }
 }

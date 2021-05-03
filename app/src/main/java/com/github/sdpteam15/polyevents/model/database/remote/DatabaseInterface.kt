@@ -63,6 +63,11 @@ interface DatabaseInterface {
     var materialRequestDatabase: MaterialRequestDatabaseInterface?
 
     /**
+     * The database used to handle query about to route
+     */
+    var routeDatabase: RouteDatabase?
+
+    /**
      * Add an Entity to the data base
      * @param element The element that needs to be added in the database
      * @param collection The collection to which we want to add the given element

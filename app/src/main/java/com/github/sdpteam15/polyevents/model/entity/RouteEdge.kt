@@ -2,7 +2,9 @@ package com.github.sdpteam15.polyevents.model.entity
 
 import com.github.sdpteam15.polyevents.model.map.Attachable
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.euclideanDistance
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.getIntersection
 import com.github.sdpteam15.polyevents.model.map.RouteMapHelper.getNearestPoint
+import com.github.sdpteam15.polyevents.model.map.THRESHOLD
 import com.google.android.gms.maps.model.LatLng
 
 /**
@@ -10,8 +12,8 @@ import com.google.android.gms.maps.model.LatLng
  */
 data class RouteEdge(
     val id: String?,
-    val startId: String?,
-    val endId: String?
+    val startId: String? = null,
+    val endId: String? = null
 ) : Attachable {
     var start: RouteNode? = null
     var end: RouteNode? = null
@@ -33,5 +35,46 @@ data class RouteEdge(
     override fun getAttachedNewPoint(position: LatLng, angle: Double?): Pair<RouteNode, Double> {
         val newPoint = getNearestPoint(start!!, end!!, position)
         return Pair(newPoint, euclideanDistance(position, newPoint.toLatLng()))
+    }
+
+    override fun splitOnIntersection(
+        newEdges: MutableList<RouteEdge>,
+        removeEdges: MutableList<RouteEdge>
+    ) {
+        for (e in newEdges.toList()) {
+            if (e.start != start &&
+                e.end != end &&
+                e.end != start &&
+                e.start != end
+            ) {
+                val intersection = getIntersection(
+                    e.start!!.toLatLng(),
+                    e.end!!.toLatLng(),
+                    start!!.toLatLng(),
+                    end!!.toLatLng()
+                )
+                if (intersection != null) {
+                    removeEdges.add(this)
+                    when {
+                        euclideanDistance(e.start!!.toLatLng(), intersection) < THRESHOLD -> {
+                            newEdges.add(fromRouteNode(start!!, e.start!!))
+                            newEdges.add(fromRouteNode(e.start!!, end!!))
+                        }
+                        euclideanDistance(e.end!!.toLatLng(), intersection) < THRESHOLD -> {
+                            newEdges.add(fromRouteNode(start!!, e.end!!))
+                            newEdges.add(fromRouteNode(e.end!!, end!!))
+                        }
+                        else -> {
+                            newEdges.remove(e)
+                            val mid = RouteNode.fromLatLong(intersection)
+                            newEdges.add(fromRouteNode(start!!, mid))
+                            newEdges.add(fromRouteNode(end!!, mid))
+                            newEdges.add(fromRouteNode(e.start!!, mid))
+                            newEdges.add(fromRouteNode(e.end!!, mid))
+                        }
+                    }
+                }
+            }
+        }
     }
 }

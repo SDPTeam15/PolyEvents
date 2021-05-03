@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.LifecycleOwner
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.entity.RouteEdge
 import com.github.sdpteam15.polyevents.model.entity.RouteNode
 import com.github.sdpteam15.polyevents.model.entity.Zone
@@ -45,14 +46,20 @@ object RouteMapHelper {
      * TODO
      */
     fun addLine(start: LatLng, end: LatLng) {
-        val s = RouteNode.fromLatLong(start, null)
-        val e = RouteNode.fromLatLong(end, null)
-        nodes.add(s)
-        nodes.add(e)
-        val l = RouteEdge("Edge ${tempUid++}", s.id, e.id)
-        l.start = s
-        l.end = e
-        edges.add(l)
+        val newEdges = mutableListOf<RouteEdge>()
+        val removeEdges = mutableListOf<RouteEdge>()
+
+        val (from, to) = getEdgeOnNearestAttachable(start, end)
+        val edge = RouteEdge(null)
+        edge.start = from
+        edge.end = to
+        newEdges.add(RouteEdge(null))
+
+        for (e in nodes) e.splitOnIntersection(newEdges, removeEdges)
+        for (e in edges) e.splitOnIntersection(newEdges, removeEdges)
+        for (e in zone) e.splitOnIntersection(newEdges, removeEdges)
+
+        Database.currentDatabase.routeDatabase!!.updateEdges(newEdges,removeEdges,edges,nodes)
     }
 
     /**
@@ -83,7 +90,7 @@ object RouteMapHelper {
     /**
      * TODO
      */
-    fun getEdgeOnNearestAttachable(start: LatLng, end: LatLng): Pair<LatLng, LatLng> {
+    fun getEdgeOnNearestAttachable(start: LatLng, end: LatLng): Pair<RouteNode, RouteNode> {
         val angle = angle(start, end)
         val firstStart = getPosOnNearestAttachable(start, angle)
         val firstEnd = getPosOnNearestAttachable(start, angle)
@@ -99,26 +106,26 @@ object RouteMapHelper {
                                 secondStart.second != secondEnd.second
                             ) {
                                 return if (secondStart.third!! + firstEnd.third!! < firstStart.third!! + secondEnd.third!!)
-                                    Pair(secondStart.first.toLatLng(), firstEnd.first.toLatLng())
+                                    Pair(secondStart.first, firstEnd.first)
                                 else
-                                    Pair(firstStart.first.toLatLng(), secondEnd.first.toLatLng())
+                                    Pair(firstStart.first, secondEnd.first)
                             }
-                            return Pair(firstStart.first.toLatLng(), secondEnd.first.toLatLng())
+                            return Pair(firstStart.first, secondEnd.first)
                         } else if (secondEnd.third != null && secondEnd.third!! < MAGNET_DISTANCE_THRESHOLD)
-                            return Pair(firstStart.first.toLatLng(), secondEnd.first.toLatLng())
+                            return Pair(firstStart.first, secondEnd.first)
                         return if (firstEnd.third!! < firstStart.third!!) Pair(
-                            start,
-                            firstEnd.first.toLatLng()
+                            RouteNode.fromLatLong(start),
+                            firstEnd.first
                         )
-                        else Pair(firstStart.first.toLatLng(), end)
+                        else Pair(firstStart.first, RouteNode.fromLatLong(end))
                     }
-                    return Pair(firstStart.first.toLatLng(), firstEnd.first.toLatLng())
+                    return Pair(firstStart.first, firstEnd.first)
                 }
-                return Pair(firstStart.first.toLatLng(), end)
+                return Pair(firstStart.first, RouteNode.fromLatLong(end))
             } else if (firstEnd.third!! < MAGNET_DISTANCE_THRESHOLD)
-                return Pair(start, firstEnd.first.toLatLng())
+                return Pair(RouteNode.fromLatLong(start), firstEnd.first)
         }
-        return Pair(start, end)
+        return Pair(RouteNode.fromLatLong(start), RouteNode.fromLatLong(end))
     }
 
     /**

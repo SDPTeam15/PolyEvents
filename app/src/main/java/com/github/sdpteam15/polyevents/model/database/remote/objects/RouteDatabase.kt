@@ -39,6 +39,14 @@ class RouteDatabase(private val db: DatabaseInterface) : RouteDatabaseInterface 
                             null,
                             EDGE_COLLECTION
                         ).observeOnce {
+                            if (it.value) {
+                                val keyToNode =
+                                    nodes.groupOnce { it.id }.then.mapOnce { it[0] }.then
+                                for (e in edges) {
+                                    e.start = keyToNode[e.startId]
+                                    e.end = keyToNode[e.endId]
+                                }
+                            }
                             end.postValue(it.value, it.sender)
                         }
                 }
@@ -46,14 +54,44 @@ class RouteDatabase(private val db: DatabaseInterface) : RouteDatabaseInterface 
         return end
     }
 
-    override fun addEdge(edge: RouteEdge, edges: List<RouteNode>): Observable<Boolean> {
+    override fun updateEdges(
+        newEdges: List<RouteEdge>,
+        removeEdges: List<RouteEdge>,
+        edges: ObservableList<RouteEdge>,
+        nodes: ObservableList<RouteNode>
+    ): Observable<Boolean> {
         TODO("Not yet implemented")
     }
 
     override fun removeEdge(
         edge: RouteEdge,
-        edges: List<RouteEdge>
-    ): Observable<Pair<Boolean, Boolean>> {
-        TODO("Not yet implemented")
+        edges: ObservableList<RouteEdge>
+    ): Observable<Boolean> {
+        val end = Observable<Boolean>()
+        db.deleteEntity(
+            edge.id!!,
+            EDGE_COLLECTION
+        ).observeOnce {
+            if (!it.value)
+                end.postValue(it.value, it.sender)
+            else {
+                edges.remove(edge, it.sender)
+                var startIsNotConnected = true
+                var endIsNotConnected = true
+                for (e in edges) {
+                    startIsNotConnected =
+                        startIsNotConnected && edge.start != e.start && edge.start != e.end
+                    endIsNotConnected =
+                        endIsNotConnected && edge.end != e.start && edge.end != e.end
+                }
+                if (startIsNotConnected) {
+                    TODO()
+                }
+                if (endIsNotConnected) {
+                    TODO()
+                }
+            }
+        }
+        return end
     }
 }
