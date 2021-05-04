@@ -36,7 +36,6 @@ object DatabaseConstant {
             ) = StringWithID(id, document[TEST_STR] as String)
         });
 
-
         override fun toString(): String = value
     }
 
@@ -117,6 +116,18 @@ object DatabaseConstant {
         MATERIAL_REQUEST_TIME("time"),
         MATERIAL_REQUEST_LIST("item_list"),
         MATERIAL_REQUEST_USER_ID("user_id");
+
+        override fun toString(): String = value
+    }
+
+    enum class RouteConstant(val value: String) {
+        NODE_ID("nid"),
+        LATITUDE("latitude"),
+        LONGITUDE("longitude"),
+        AREA_ID("aid"),
+        EDGE_ID("eid"),
+        START_ID("start"),
+        END_ID("end");
 
         override fun toString(): String = value
     }

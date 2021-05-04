@@ -4,6 +4,7 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.Zo
 import com.github.sdpteam15.polyevents.model.map.Attachable
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.angle
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.euclideanDistance
 import com.github.sdpteam15.polyevents.model.map.RouteMapHelper.getNearestPoint
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.isTooParallel
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.minus
@@ -74,7 +75,7 @@ data class Zone(
                 if (angle == null || !isTooParallel(angle, lineAngle)) {
                     val newPoint = getNearestPoint(RouteNode.fromLatLong(from), RouteNode.fromLatLong(to), position)
                     newPoint.areaId = zoneId
-                    val distance = norm(minus(position, newPoint.toLatLng()))
+                    val distance = euclideanDistance(position, newPoint.toLatLng())
                     if (res == null || distance < res.second)
                         res = Pair(newPoint, distance)
                 }

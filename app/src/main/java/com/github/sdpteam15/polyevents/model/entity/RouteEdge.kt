@@ -11,10 +11,15 @@ import com.google.android.gms.maps.model.LatLng
  * TODO
  */
 data class RouteEdge(
-    val id: String?,
-    val startId: String? = null,
-    val endId: String? = null
+    var id: String?,
+    private val startInitId: String? = null,
+    private val endInitId: String? = null
 ) : Attachable {
+    val startId : String?
+        get() = start?.id ?: startInitId
+    val endId : String?
+        get() = end?.id ?: endInitId
+
     var start: RouteNode? = null
     var end: RouteNode? = null
 

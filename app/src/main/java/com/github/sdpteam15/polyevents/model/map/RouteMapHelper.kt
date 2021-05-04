@@ -2,7 +2,6 @@ package com.github.sdpteam15.polyevents.model.map
 
 import android.content.Context
 import android.graphics.Color
-import android.util.Log
 import androidx.lifecycle.LifecycleOwner
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
@@ -10,7 +9,6 @@ import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.entity.RouteEdge
 import com.github.sdpteam15.polyevents.model.entity.RouteNode
 import com.github.sdpteam15.polyevents.model.entity.Zone
-import com.github.sdpteam15.polyevents.model.map.LatLngOperator.angle
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.divide
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.minus
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.norm
@@ -20,11 +18,14 @@ import com.github.sdpteam15.polyevents.model.map.LatLngOperator.time
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.fragments.MapsFragment
-import com.google.android.gms.maps.model.*
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.Polyline
+import com.google.android.gms.maps.model.PolylineOptions
 import kotlin.math.pow
 
 const val THRESHOLD = 0.001
-const val MAGNET_DISTANCE_THRESHOLD = 0.001
+const val MAGNET_DISTANCE_THRESHOLD = 0.0001
 
 object RouteMapHelper {
     val nodes = ObservableList<RouteNode>()
@@ -41,13 +42,23 @@ object RouteMapHelper {
 
     /**
      * Add a line to dataBase
-     * TODO
      */
-    fun addLine(start: LatLng, end: LatLng) {
+    fun addLine(
+        start: Pair<LatLng, Attachable?>,
+        end: Pair<LatLng, Attachable?>
+    ) {
         val newEdges = mutableListOf<RouteEdge>()
         val removeEdges = mutableListOf<RouteEdge>()
 
-        val (from, to) = getEdgeOnNearestAttachable(start, end)
+        val from = if (start.second != null)
+            start.second!!.getAttachedNewPoint(start.first).first
+        else
+            RouteNode.fromLatLong(start.first)
+        val to = if (end.second != null)
+            end.second!!.getAttachedNewPoint(end.first).first
+        else
+            RouteNode.fromLatLong(end.first)
+
         val edge = RouteEdge(null)
         edge.start = from
         edge.end = to
@@ -88,43 +99,18 @@ object RouteMapHelper {
     /**
      * TODO
      */
-    fun getEdgeOnNearestAttachable(start: LatLng, end: LatLng): Pair<RouteNode, RouteNode> {
-        val angle = angle(start, end)
-        val firstStart = getPosOnNearestAttachable(start, angle)
-        val firstEnd = getPosOnNearestAttachable(start, angle)
-
-        if (firstStart.third != null && firstEnd.third != null) {
-            if (firstStart.third!! < MAGNET_DISTANCE_THRESHOLD) {
-                if (firstEnd.third!! < MAGNET_DISTANCE_THRESHOLD) {
-                    if (firstStart.second == firstEnd.second) {
-                        val secondStart = getPosOnNearestAttachable(start, angle, firstEnd.second)
-                        val secondEnd = getPosOnNearestAttachable(start, angle, firstStart.second)
-                        if (secondStart.third != null && secondStart.third!! < MAGNET_DISTANCE_THRESHOLD) {
-                            if (secondEnd.third != null && secondEnd.third!! < MAGNET_DISTANCE_THRESHOLD &&
-                                secondStart.second != secondEnd.second
-                            ) {
-                                return if (secondStart.third!! + firstEnd.third!! < firstStart.third!! + secondEnd.third!!)
-                                    Pair(secondStart.first, firstEnd.first)
-                                else
-                                    Pair(firstStart.first, secondEnd.first)
-                            }
-                            return Pair(firstStart.first, secondEnd.first)
-                        } else if (secondEnd.third != null && secondEnd.third!! < MAGNET_DISTANCE_THRESHOLD)
-                            return Pair(firstStart.first, secondEnd.first)
-                        return if (firstEnd.third!! < firstStart.third!!) Pair(
-                            RouteNode.fromLatLong(start),
-                            firstEnd.first
-                        )
-                        else Pair(firstStart.first, RouteNode.fromLatLong(end))
-                    }
-                    return Pair(firstStart.first, firstEnd.first)
-                }
-                return Pair(firstStart.first, RouteNode.fromLatLong(end))
-            } else if (firstEnd.third!! < MAGNET_DISTANCE_THRESHOLD)
-                return Pair(RouteNode.fromLatLong(start), firstEnd.first)
-        }
-        return Pair(RouteNode.fromLatLong(start), RouteNode.fromLatLong(end))
+    fun getPosOnNearestAttachableFrom(
+        fixed: LatLng,
+        moving: LatLng,
+        attachable: Attachable?
+    ): Pair<LatLng, Attachable?> {
+        val v = getPosOnNearestAttachable(moving, LatLngOperator.angle(fixed, moving), attachable)
+        return if(v.third != null && v.third!! < MAGNET_DISTANCE_THRESHOLD)
+            Pair(v.first.toLatLng(), v.second)
+        else
+            Pair(moving, null)
     }
+
 
     /**
      * TODO
@@ -169,6 +155,7 @@ object RouteMapHelper {
      * TODO
      */
     fun getNodesAndEdgesFromDB(lifecycleOwner: LifecycleOwner): Observable<Boolean> {
+        Database.currentDatabase.routeDatabase!!.getRoute(nodes, edges, zone)
         edges.observeAdd(lifecycleOwner) {
             edgeAddedNotification(it.value)
         }
@@ -197,8 +184,8 @@ object RouteMapHelper {
         //Remove all creation lines when we get an answer from the database
         removeAllLinesToRemove()
         val option = PolylineOptions()
-        option.add(edge.start.toLatLng())
-        option.add(edge.end.toLatLng())
+        option.add(edge.start!!.toLatLng())
+        option.add(edge.end!!.toLatLng())
         option.clickable(true)
         val route = map!!.addPolyline(option)
 
@@ -239,7 +226,9 @@ object RouteMapHelper {
         deleteMode = false
         toDeleteLines.add(tempPolyline!!)
         tempPolyline!!.color = Color.GREEN
+        /*
         addLine(tempLatLng[0]!!, tempLatLng[1]!!)
+         */
         tempVariableClear()
         MapsFragment.instance?.showSaveButton()
     }
@@ -349,6 +338,7 @@ object RouteMapHelper {
     fun moveMarker(marker: Marker, dragMode: MarkerDragMode) {
         if (dragMode == MarkerDragMode.DRAG || dragMode == MarkerDragMode.DRAG_START) {
             //Changes the coordinates of the polyline to where it can be displayed
+            /*
             val res = getEdgeOnNearestAttachable(startMarker!!.position, endMarker!!.position)
             when (marker.snippet) {
                 PolygonAction.MARKER_START.toString() -> {
@@ -359,7 +349,8 @@ object RouteMapHelper {
                     tempLatLng[1] = endMarker!!.position
                 }
             }
-            tempPolyline!!.points = listOf(res.first, res.second)
+            tempPolyline!!.points = listOf(res.first.toLatLng(), res.second.toLatLng())
+            */
         } else if (dragMode == MarkerDragMode.DRAG_END) {
             //On end drag, we set the position of the markers to the position of the line
             val points = tempPolyline!!.points

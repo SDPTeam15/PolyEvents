@@ -60,7 +60,45 @@ class RouteDatabase(private val db: DatabaseInterface) : RouteDatabaseInterface 
         edges: ObservableList<RouteEdge>,
         nodes: ObservableList<RouteNode>
     ): Observable<Boolean> {
-        TODO("Not yet implemented")
+        val end = Observable<Boolean>()
+        val listNode = mutableListOf<RouteNode>()
+        for (e in newEdges.toList()) {
+            if (e.start!!.id == null && e.start!! !in listNode)
+                listNode.add(e.start!!)
+            if (e.end!!.id == null && e.end!! !in listNode)
+                listNode.add(e.end!!)
+        }
+        db.addListEntity(
+            listNode,
+            NODE_COLLECTION
+        ).observeOnce {
+            if (it.value.first) {
+                nodes.addAll(listNode, db)
+                for (n in listNode.withIndex())
+                    n.value.id = it.value.second!![n.index]
+                db.addListEntity(
+                    newEdges,
+                    EDGE_COLLECTION
+                ).observeOnce {
+                    if (it.value.first) {
+                        edges.addAll(newEdges, db)
+                        for (e in newEdges.withIndex())
+                            e.value.id = it.value.second!![e.index]
+                        db.deleteListEntity(
+                            removeEdges.map { it.id!! },
+                            EDGE_COLLECTION
+                        ).observeOnce {
+                            if (it.value)
+                                edges.removeAll(removeEdges, db)
+                            end.postValue(it.value, it.sender)
+                        }
+                    } else
+                        end.postValue(false, it.sender)
+                }
+            } else
+                end.postValue(false, it.sender)
+        }
+        return end
     }
 
     override fun removeEdge(
@@ -84,11 +122,16 @@ class RouteDatabase(private val db: DatabaseInterface) : RouteDatabaseInterface 
                     endIsNotConnected =
                         endIsNotConnected && edge.end != e.start && edge.end != e.end
                 }
-                if (startIsNotConnected) {
-                    TODO()
-                }
-                if (endIsNotConnected) {
-                    TODO()
+                val removeNode = mutableListOf<String>()
+                if (startIsNotConnected)
+                    removeNode.add(edge.startId!!)
+                if (endIsNotConnected)
+                    removeNode.add(edge.endId!!)
+                db.deleteListEntity(
+                    removeNode,
+                    NODE_COLLECTION
+                ).observeOnce {
+                    end.postValue(it.value, it.sender)
                 }
             }
         }

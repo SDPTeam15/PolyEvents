@@ -11,12 +11,12 @@ interface Attachable {
     /**
      * get the point on the attachable that must be projected
      */
-    fun getAttachedNewPoint(position: LatLng, angle: Double ?): Pair<RouteNode, Double>
+    fun getAttachedNewPoint(position: LatLng, angle: Double? = null): Pair<RouteNode, Double>
 
     /**
-     * TODO
+     * split the newEdges on an intersection
      * @param newEdges
      * @param removeEdges
      */
-    fun splitOnIntersection(newEdges: MutableList<RouteEdge>, removeEdges : MutableList<RouteEdge>)
+    fun splitOnIntersection(newEdges: MutableList<RouteEdge>, removeEdges: MutableList<RouteEdge>)
 }
