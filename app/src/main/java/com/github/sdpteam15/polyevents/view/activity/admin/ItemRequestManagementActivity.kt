@@ -50,11 +50,7 @@ class ItemRequestManagementActivity : AppCompatActivity() {
         //Wait until we have both requests accepted from the database to show the material requests
         Database.currentDatabase.materialRequestDatabase!!.getMaterialRequestList(
             requests,
-            object : Matcher {
-                override fun match(collection: Query): Query {
-                    return collection.orderBy(DatabaseConstant.MaterialRequestConstant.MATERIAL_REQUEST_TIME.value)
-                }
-            })
+                { collection -> collection.orderBy(DatabaseConstant.MaterialRequestConstant.MATERIAL_REQUEST_TIME.value) })
             .observeOnce(this) {
                 Database.currentDatabase.itemDatabase!!.getItemsList(tempItems).observeOnce(this) {
                     recyclerView.adapter =
