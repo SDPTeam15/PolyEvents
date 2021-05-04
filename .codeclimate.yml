@@ -1,4 +1,7 @@
 version: "2"         # required to adjust maintainability checks
+plugins:
+  duplication:
+    enable: false
 checks:
   argument-count:
     config:
@@ -36,4 +39,3 @@ exclude_patterns:
 - "**/androidTest/"
 - "**test"
 - "**/summaries/"
-- "**/NVM/"
