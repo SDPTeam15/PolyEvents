@@ -31,12 +31,12 @@ checks:
   return-statements:
     config:
       threshold: 20
-  #similar-code:
-  #  config:
-  #    threshold: 60 # otherwise, findViewById and hashMap creation will raise an alert
-  #identical-code:
-  #  config:
-  #    threshold: 60 # otherwise, findViewById and hashMap creation will raise an alert
+  similar-code:
+    config:
+      threshold: 100 # otherwise, findViewById and hashMap creation will raise an alert
+  identical-code:
+    config:
+      threshold: 100 # otherwise, findViewById and hashMap creation will raise an alert
 
 exclude_patterns:
 - "**/test/"
