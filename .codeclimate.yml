@@ -33,10 +33,10 @@ checks:
       threshold: 20
   similar-code:
     config:
-      threshold: 140 # otherwise, findViewById and hashMap creation will raise an alert
+      threshold: 160 # otherwise, findViewById and hashMap creation will raise an alert. Should be greater than 138 otherwise the constant in the database (enums) raise an alert for nothing 
   identical-code:
     config:
-      threshold: 140 # otherwise, findViewById and hashMap creation will raise an alert
+      threshold: 160 # otherwise, findViewById and hashMap creation will raise an alert. Should be greater than 138 otherwise the constant in the database (enums) raise an alert for nothing 
 
 exclude_patterns:
 - "**/test/"
