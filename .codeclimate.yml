@@ -5,7 +5,7 @@ plugins:
     config:
       languages:
         kotlin:
-          mass_threshold: 80
+          mass_threshold: 140
 checks:
   argument-count:
     config:
