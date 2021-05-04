@@ -1,7 +1,7 @@
 version: "2"         # required to adjust maintainability checks
 plugins:
   duplication:
-    enable: false
+    enabled: false
 checks:
   argument-count:
     config:
@@ -17,7 +17,7 @@ checks:
       threshold: 100
   method-count:
     config:
-      threshold: 20
+      threshold: 100 # For some classes, we need this count
   method-lines:
     config:
       threshold: 100
@@ -28,9 +28,11 @@ checks:
     config:
       threshold: 20
   similar-code:
+    enabled: false
     config:
       threshold: 60 # otherwise, findViewById and hashMap creation will raise an alert
   identical-code:
+    enabled: false
     config:
       threshold: 60 # otherwise, findViewById and hashMap creation will raise an alert
 
