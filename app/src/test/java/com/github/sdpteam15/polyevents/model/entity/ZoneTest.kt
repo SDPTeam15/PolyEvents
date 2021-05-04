@@ -1,7 +1,6 @@
-package com.github.sdpteam15.polyevents.entity
+package com.github.sdpteam15.polyevents.model.entity
 
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ZoneConstant.*
-import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Assert.assertEquals
 import org.junit.Before

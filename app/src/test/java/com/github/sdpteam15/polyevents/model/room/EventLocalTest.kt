@@ -1,7 +1,6 @@
-package com.github.sdpteam15.polyevents.entity.room
+package com.github.sdpteam15.polyevents.model.room
 
 import com.github.sdpteam15.polyevents.model.entity.Event
-import com.github.sdpteam15.polyevents.model.room.EventLocal
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
