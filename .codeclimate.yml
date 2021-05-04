@@ -1,7 +1,11 @@
 version: "2"         # required to adjust maintainability checks
 plugins:
   duplication:
-    enabled: false
+    enabled: true
+    config:
+      languages:
+        kotlin:
+          mass_threshold: 80
 checks:
   argument-count:
     config:
@@ -27,14 +31,12 @@ checks:
   return-statements:
     config:
       threshold: 20
-  similar-code:
-    enabled: false
-    config:
-      threshold: 60 # otherwise, findViewById and hashMap creation will raise an alert
-  identical-code:
-    enabled: false
-    config:
-      threshold: 60 # otherwise, findViewById and hashMap creation will raise an alert
+  #similar-code:
+  #  config:
+  #    threshold: 60 # otherwise, findViewById and hashMap creation will raise an alert
+  #identical-code:
+  #  config:
+  #    threshold: 60 # otherwise, findViewById and hashMap creation will raise an alert
 
 exclude_patterns:
 - "**/test/"
