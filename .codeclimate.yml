@@ -5,7 +5,7 @@ plugins:
     config:
       languages:
         kotlin:
-          mass_threshold: 140
+          mass_threshold: 80
 checks:
   argument-count:
     config:
@@ -33,10 +33,10 @@ checks:
       threshold: 20
   similar-code:
     config:
-      threshold: 100 # otherwise, findViewById and hashMap creation will raise an alert
+      threshold: 140 # otherwise, findViewById and hashMap creation will raise an alert
   identical-code:
     config:
-      threshold: 100 # otherwise, findViewById and hashMap creation will raise an alert
+      threshold: 140 # otherwise, findViewById and hashMap creation will raise an alert
 
 exclude_patterns:
 - "**/test/"
