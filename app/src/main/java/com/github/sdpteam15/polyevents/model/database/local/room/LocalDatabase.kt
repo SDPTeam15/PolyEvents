@@ -9,10 +9,13 @@ import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.local.dao.EventDao
+import com.github.sdpteam15.polyevents.model.database.local.dao.UserSettingsDao
+import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.room.EventLocal
+import com.github.sdpteam15.polyevents.model.room.UserSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,10 +23,18 @@ import kotlinx.coroutines.launch
 // TODO: consider using repositories
 // TODO: Firebase database objects are technically daos, consider refactoring?
 // TODO: when user logs in, should fetch all info to store in local db
-@Database(entities = [EventLocal::class], version = 1)
+@Database(entities = [EventLocal::class, UserSettings::class], version = 1)
 @TypeConverters(HelperFunctions.Converters::class)
 abstract class LocalDatabase : RoomDatabase() {
+    /**
+     * Get the events dao (events to which the user is registered)
+     */
     abstract fun eventDao(): EventDao
+
+    /**
+     * Get the user settings Dao
+     */
+    abstract fun userSettingsDao(): UserSettingsDao
 
     companion object {
         private const val TAG = "LocalDatabase"
@@ -76,7 +87,10 @@ abstract class LocalDatabase : RoomDatabase() {
                 // comment out the following line.
                 INSTANCE?.let { database ->
                     scope.launch(Dispatchers.IO) {
-                        populateDatabase(database.eventDao())
+                        populateDatabaseWithUserEvents(database.eventDao(), scope)
+                    }
+                    scope.launch(Dispatchers.IO) {
+                        populateDatabaseWithUserSettings(database.userSettingsDao(), scope)
                     }
                 }
             }
@@ -85,7 +99,7 @@ abstract class LocalDatabase : RoomDatabase() {
         /**
          * Populate the database in a new coroutine.
          */
-        suspend fun populateDatabase(eventDao: EventDao) {
+        suspend fun populateDatabaseWithUserEvents(eventDao: EventDao, scope: CoroutineScope) {
             // Start the app with a clean database every time.
             // Not needed if you only populate on creation.
             /*val ids = eventDao.getAll().map { it.eventId }
@@ -103,14 +117,44 @@ abstract class LocalDatabase : RoomDatabase() {
                 DatabaseConstant.CollectionConstant.EVENT_COLLECTION
             )*/
             // TODO: populate the local database with that of the remote
-            Log.d(TAG, "Populating the database")
-            if (currentDatabase.currentUser != null) {
+            Log.d(TAG, "Populating the database with user's events")
 
+            eventDao.deleteAll()
+            if (currentDatabase.currentUser != null) {
+                val eventsUserRegisteredTo = ObservableList<Event>()
+
+                eventsUserRegisteredTo.observe {
+                    it.value.forEach {
+                        Log.d(TAG, "Event retrieved from remote database! $it")
+                    }
+                    scope.launch(Dispatchers.IO) {
+                        eventDao.insertAll(it.value.map { EventLocal.fromEvent(it) })
+                    }
+                }
+
+                currentDatabase.eventDatabase!!
+                        .getEvents(
+                                eventList = eventsUserRegisteredTo,
+                                matcher = {
+                                    // Get all events to which the current user is registered to
+                                    // and order them by start date
+                                    it.whereArrayContains(
+                                            DatabaseConstant.EventConstant.EVENT_PARTICIPANTS.value,
+                                            currentDatabase.currentUser!!.uid
+                                    // TODO: why is orderby not working (need indices?)
+                                    )/*.orderBy(
+                                            DatabaseConstant.EventConstant.EVENT_START_TIME.value,
+                                            Query.Direction.ASCENDING
+                                    )*/
+                                },
+                        )
+                Log.d(TAG, "Finished retrieving from remote")
             }
-            val eventsUserRegisteredTo = ObservableList<EventLocal>()
-            //currentDatabase.eventDatabase!!.getEvents(
-            // Sort by start time, events where current user is logged in
-            //)
+        }
+
+        suspend fun populateDatabaseWithUserSettings(
+                userSettingsDao: UserSettingsDao, scope: CoroutineScope) {
+
         }
     }
 }
