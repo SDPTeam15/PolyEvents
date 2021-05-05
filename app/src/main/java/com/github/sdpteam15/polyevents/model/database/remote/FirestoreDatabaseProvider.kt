@@ -58,6 +58,11 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             field = field ?: MaterialRequestDatabaseFirestore(this)
             return field
         }
+    override var userSettingsDatabase: UserSettingsDatabaseInterface? = null
+        get() {
+            field = field ?: UserSettingsDatabaseFirestore(this)
+            return field
+        }
 
     override val currentUserObservable = Observable<UserEntity>()
     var loadSuccess: Boolean? = false
