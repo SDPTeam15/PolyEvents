@@ -13,6 +13,7 @@ import com.github.sdpteam15.polyevents.model.database.local.dao.UserSettingsDao
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.entity.Event
+import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.room.EventLocal
 import com.github.sdpteam15.polyevents.model.room.UserSettings
@@ -40,6 +41,9 @@ abstract class LocalDatabase : RoomDatabase() {
         private const val TAG = "LocalDatabase"
         @Volatile
         private var INSTANCE: LocalDatabase? = null
+
+        var eventsLocalObservable = ObservableList<Event>()
+        var userSettingsObservable = Observable<UserSettings>()
 
         fun getDatabase(
             context: Context,
@@ -100,33 +104,11 @@ abstract class LocalDatabase : RoomDatabase() {
          * Populate the database in a new coroutine.
          */
         suspend fun populateDatabaseWithUserEvents(eventDao: EventDao, scope: CoroutineScope) {
-            // Start the app with a clean database every time.
-            // Not needed if you only populate on creation.
-            /*val ids = eventDao.getAll().map { it.eventId }
-            com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase.getListEntity(
-                ObservableList<Event>().observeOnce {
-                    scope.launch(Dispatchers.IO) {
-                        eventDao.deleteAll()
-                        for (e in it.value)
-                            eventDao.insert(EventLocal.fromEvent(e))
-                    }
-                    Unit
-                }.then,
-                ids,
-                null,
-                DatabaseConstant.CollectionConstant.EVENT_COLLECTION
-            )*/
-            // TODO: populate the local database with that of the remote
             Log.d(TAG, "Populating the database with user's events")
 
             eventDao.deleteAll()
             if (currentDatabase.currentUser != null) {
-                val eventsUserRegisteredTo = ObservableList<Event>()
-
-                eventsUserRegisteredTo.observe {
-                    it.value.forEach {
-                        Log.d(TAG, "Event retrieved from remote database! $it")
-                    }
+                eventsLocalObservable.observe {
                     scope.launch(Dispatchers.IO) {
                         eventDao.insertAll(it.value.map { EventLocal.fromEvent(it) })
                     }
@@ -134,7 +116,7 @@ abstract class LocalDatabase : RoomDatabase() {
 
                 currentDatabase.eventDatabase!!
                         .getEvents(
-                                eventList = eventsUserRegisteredTo,
+                                eventList = eventsLocalObservable,
                                 matcher = {
                                     // Get all events to which the current user is registered to
                                     // and order them by start date
@@ -154,7 +136,18 @@ abstract class LocalDatabase : RoomDatabase() {
 
         suspend fun populateDatabaseWithUserSettings(
                 userSettingsDao: UserSettingsDao, scope: CoroutineScope) {
+            if (currentDatabase.currentUser != null) {
+                userSettingsObservable.observe {
+                    scope.launch(Dispatchers.IO) {
+                        userSettingsDao.insert(it.value)
+                    }
+                }
 
+                currentDatabase.userSettingsDatabase!!.getUserSettings(
+                        id = currentDatabase.currentUser!!.uid,
+                        userSettingsObservable = userSettingsObservable
+                )
+            }
         }
     }
 }

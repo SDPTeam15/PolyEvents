@@ -9,11 +9,13 @@ import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.database.remote.objects.EventDatabaseInterface
+import com.github.sdpteam15.polyevents.model.database.remote.objects.UserSettingsDatabaseInterface
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.room.EventLocal
+import com.github.sdpteam15.polyevents.model.room.UserSettings
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -29,6 +31,7 @@ class LocalDatabaseTest {
 
     private lateinit var mockedRemoteDatabase: DatabaseInterface
     private lateinit var mockedEventDatabase: EventDatabaseInterface
+    private lateinit var mockedUserSettingsDatabase: UserSettingsDatabaseInterface
 
     private lateinit var eventsLocalObservable: ObservableList<EventLocal>
     private lateinit var eventsObservable: ObservableList<Event>
@@ -36,6 +39,8 @@ class LocalDatabaseTest {
     private lateinit var mockUser: UserEntity
     private lateinit var testEvent1: Event
     private lateinit var testEvent2: Event
+
+    private lateinit var userSettingsTest: UserSettings
 
     @Before
     fun createDB() {
@@ -66,9 +71,16 @@ class LocalDatabaseTest {
                 username = "John"
         )
 
+        userSettingsTest = UserSettings(
+                isSendingLocationOn = true,
+                locationId = "here"
+        )
+
         mockedRemoteDatabase = mock(DatabaseInterface::class.java)
         mockedEventDatabase = mock(EventDatabaseInterface::class.java)
+        mockedUserSettingsDatabase = mock(UserSettingsDatabaseInterface::class.java)
 
+        When(mockedRemoteDatabase.userSettingsDatabase).thenReturn(mockedUserSettingsDatabase)
         When(mockedRemoteDatabase.eventDatabase).thenReturn(mockedEventDatabase)
         When(mockedRemoteDatabase.currentUser).thenReturn(mockUser)
 
@@ -78,9 +90,16 @@ class LocalDatabaseTest {
                 userAccess = anyOrNull(),
                 limit = anyOrNull()
         )).thenAnswer {
-            Log.d("LocalDatabaseTest", "getEvents in test")
-            // TODO: replace with observable list variable stored in local database
-            (it.arguments[2] as ObservableList<Event>).addAll(listOf(testEvent1, testEvent2))
+            LocalDatabase.eventsLocalObservable.addAll(listOf(testEvent1, testEvent2))
+            Observable(true)
+        }
+
+        When(mockedUserSettingsDatabase.getUserSettings(
+                id = anyOrNull(),
+                userSettingsObservable = anyOrNull(),
+                userAccess = anyOrNull()
+        )).then {
+            LocalDatabase.userSettingsObservable.postValue(userSettingsTest)
             Observable(true)
         }
 
@@ -111,7 +130,11 @@ class LocalDatabaseTest {
 
     @Test
     fun testPopulateLocalDatabaseWithUserSettings() = runBlocking {
+        LocalDatabase.populateDatabaseWithUserSettings(localDatabase.userSettingsDao(), this)
 
+        val retrievedUserSettings = localDatabase.userSettingsDao().get()
+
+        assertEquals(userSettingsTest, retrievedUserSettings)
     }
 
 }
