@@ -215,6 +215,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         googleMap.setOnMapClickListener(this)
         GoogleMapHelper.setUpMap(requireContext())
 
+
+
         if (useUserLocation) {
             activateMyLocation()
         }

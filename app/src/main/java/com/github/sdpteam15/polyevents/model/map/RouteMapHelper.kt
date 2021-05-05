@@ -8,6 +8,8 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.entity.RouteEdge
 import com.github.sdpteam15.polyevents.model.entity.RouteNode
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.minus
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.norm
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.fragments.MapsFragment
@@ -23,18 +25,23 @@ object RouteMapHelper {
     val toDeleteLines: MutableList<Polyline> = ArrayList()
     val lineToEdge: MutableMap<RouteEdge, Polyline> = mutableMapOf()
     val idToEdge: MutableMap<String, RouteEdge> = mutableMapOf()
-
+    var attachables: Pair<Attachable?, Attachable?> = Pair(null, null)
 
 
     var deleteMode = false
     var tempUid = 0
+    var routing = false
+    var currentTarget: LatLng? = null
+    val chemin: MutableList<LatLng> = mutableListOf()
+    val route:MutableList<Polyline> = mutableListOf()
+    val epsilon = 0.0001
 
-    /**
-     * Add a line to dataBase
-     */
-    fun addLine(start: LatLng, end: LatLng) {
-        val s = RouteNode.fromLatLong(start, null)
-        val e = RouteNode.fromLatLong(end, null)
+    fun addLine(
+            start: Pair<LatLng, Attachable?>,
+            end: Pair<LatLng, Attachable?>
+    ) {
+        val s = RouteNode.fromLatLong(start.first, null)
+        val e = RouteNode.fromLatLong(end.first, null)
         nodes.add(s)
         nodes.add(e)
         edges.add(RouteEdge("Edge ${tempUid++}", s, e))
@@ -58,7 +65,40 @@ object RouteMapHelper {
      * TODO
      */
     fun drawRoute() {
-        TODO()
+        undrawRoute()
+        if(chemin.isNotEmpty()){
+            var start = chemin[0]
+            val cheminTemp = chemin.drop(1)
+            for(end in cheminTemp){
+                route.add(map!!.addPolyline(PolylineOptions().add(start).add(end).color(Color.BLUE).width(15f)))
+                start = end
+            }
+            Log.d("TEST", "Chemin : ${chemin.size}, chemintemp : ${cheminTemp.size}, Route : ${route.size}")
+        }
+    }
+
+    fun updateRoute(){
+        if(route.isNotEmpty()){
+            val position = minus(LatLng(0.0,0.0), currentTarget!!)
+            val position2 = minus(chemin[1], currentTarget!!)
+            if(norm(minus(position, position2)) < LatLngOperator.epsilon){
+                route.first().remove()
+                route.drop(1)
+                chemin.drop(1)
+            }else{
+                route.first().points = listOf(position, )
+            }
+        }
+    }
+
+    /**
+     * Undraws the route
+     */
+    fun undrawRoute(){
+        for(r in route){
+            r.remove()
+        }
+        route.clear()
     }
 
     /**
@@ -72,9 +112,12 @@ object RouteMapHelper {
     /**
      * TODO
      */
-    fun getPosOnNearestAttachable(point: LatLng, exclude : Attachable? = null): LatLng {
-        // TODO
-        return point
+    fun getPosOnNearestAttachableFrom(
+            fixed: LatLng,
+            moving: LatLng,
+            attachable: Attachable?
+    ): Pair<LatLng, Attachable?>{
+        TODO()
     }
 
     /**
@@ -138,6 +181,19 @@ object RouteMapHelper {
      * @param context context
      */
     fun createNewRoute(context: Context?){
+        //---------------------------------------
+        RouteMapHelper.chemin.clear()
+        RouteMapHelper.routing = true
+        val p1 = map!!.cameraPosition!!.target
+        val p2 = LatLng(p1.latitude - 0.0005, p1.longitude - 0.0005)
+        val p3 = LatLng(p2.latitude + 0.00025, p2.longitude + 0.00065)
+        RouteMapHelper.chemin.add(p1)
+        RouteMapHelper.chemin.add(p2)
+        RouteMapHelper.chemin.add(p3)
+        RouteMapHelper.drawRoute()
+
+
+        //---------------------------------------
         deleteMode = false
         if(tempPolyline != null){
             tempPolyline!!.remove()
@@ -154,7 +210,7 @@ object RouteMapHelper {
         deleteMode = false
         toDeleteLines.add(tempPolyline!!)
         tempPolyline!!.color = Color.GREEN
-        addLine(tempLatLng[0]!!, tempLatLng[1]!!)
+        addLine(Pair(tempLatLng[0]!!, attachables.first), Pair(tempLatLng[1]!!, attachables.second))
         tempVariableClear()
         MapsFragment.instance?.showSaveButton()
     }
