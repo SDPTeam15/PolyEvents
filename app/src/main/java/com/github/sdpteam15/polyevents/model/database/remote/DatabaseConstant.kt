@@ -22,6 +22,7 @@ object DatabaseConstant {
         USER_COLLECTION("users", UserAdapter),
         ITEM_TYPE_COLLECTION("itemTypes", ItemTypeAdapter),
         MATERIAL_REQUEST_COLLECTION("materialRequests", MaterialRequestAdapter),
+        USER_SETTINGS_COLLECTION("userSettings", UserSettingsAdapter),
 
 
         TEST_COLLECTION("test", object : AdapterInterface<StringWithID> {
@@ -115,6 +116,14 @@ object DatabaseConstant {
         MATERIAL_REQUEST_TIME("time"),
         MATERIAL_REQUEST_LIST("item_list"),
         MATERIAL_REQUEST_USER_ID("user_id");
+
+        override fun toString(): String = value
+    }
+
+    enum class UserSettingsConstant(val value: String) {
+        USER_SETTINGS_SENDING_LOCATION_ON("sendingLocationOn"),
+        USER_SETTINGS_TRACK_LOCATION("trackLocation"),
+        USER_SETTINGS_LOCATION_ID("locationId");
 
         override fun toString(): String = value
     }
