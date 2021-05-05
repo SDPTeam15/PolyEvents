@@ -18,7 +18,6 @@ import java.time.LocalDateTime
  * @property description a description of the event
  * @property startTime the starting time of the event (as LocalDateTime)
  * @property endTime the ending time of the event (as LocalDateTime)
- * @property tags tags of the event
  */
 @Entity(tableName = "event_table")
 data class EventLocal(
@@ -40,8 +39,6 @@ data class EventLocal(
     val startTime: LocalDateTime? = null,
     @ColumnInfo(name = "end_time")
     val endTime: LocalDateTime? = null,
-    @ColumnInfo(name = "tags")
-    val tags: MutableSet<String> = mutableSetOf()
 ) {
     fun toEvent(): Event =
         Event(
@@ -51,9 +48,7 @@ data class EventLocal(
             zoneName = zoneName,
             description = description,
             startTime = startTime,
-            endTime = endTime,
-            // create a copy of the set
-            tags = tags.toMutableSet()
+            endTime = endTime
         )
 
     companion object {
@@ -65,9 +60,7 @@ data class EventLocal(
                 zoneName = e.zoneName,
                 description = e.description,
                 startTime = e.startTime,
-                endTime = e.endTime,
-                // create a copy of the set
-                tags = e.tags.toMutableSet()
+                endTime = e.endTime
             )
     }
 }

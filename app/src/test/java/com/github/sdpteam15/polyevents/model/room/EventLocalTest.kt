@@ -45,8 +45,7 @@ class EventLocalTest {
             zoneName = zoneName,
             description = description,
             startTime = startTime,
-            endTime = endTime,
-            tags = mutableSetOf(tag1, tag2)
+            endTime = endTime
         )
     }
 
@@ -59,7 +58,6 @@ class EventLocalTest {
         assertEquals(localEvent.organizer, organizer)
         assertEquals(localEvent.startTime, startTime)
         assertEquals(localEvent.endTime, endTime)
-        assertEquals(localEvent.tags, mutableSetOf(tag1, tag2))
     }
 
     @Test
