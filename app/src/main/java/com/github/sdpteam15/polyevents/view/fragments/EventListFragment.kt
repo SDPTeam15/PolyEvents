@@ -71,7 +71,7 @@ class EventListFragment : Fragment() {
         recyclerView = fragmentView.findViewById(R.id.recycler_events_list)
 
         myEventsSwitch = fragmentView.findViewById(R.id.event_list_my_events_switch)
-        myEventsSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
+        myEventsSwitch.setOnCheckedChangeListener { _, isChecked ->
             myEventsSwitchCallback(isChecked)
         }
 

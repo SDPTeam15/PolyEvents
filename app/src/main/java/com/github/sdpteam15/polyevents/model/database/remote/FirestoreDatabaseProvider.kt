@@ -242,7 +242,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         adapter: AdapterToDocumentInterface<in T>?
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
-
+        
         lastSetSuccessListener = OnSuccessListener<Void> { ended.postValue(true, this) }
         lastFailureListener = OnFailureListener {
             if (it.message != null)

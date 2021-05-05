@@ -17,18 +17,24 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PolyEvents">
+        <activity
+            android:name="com.github.sdpteam15.polyevents.view.activity.admin.EventManagementActivity"
+            android:label="@string/title_activity_event_management"
+            android:parentActivityName=".view.activity.admin.EventManagementListActivity" />
+
         <service
             android:name="com.github.sdpteam15.polyevents.view.service.TimerService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
+
         <activity android:name="com.github.sdpteam15.polyevents.view.activity.admin.UserManagementActivity"
             android:parentActivityName="com.github.sdpteam15.polyevents.view.activity.admin.UserManagementListActivity" />
         <activity
             android:name="com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementListActivity"
             android:parentActivityName=".view.activity.MainActivity" />
         <activity
-            android:name="com.github.sdpteam15.polyevents.view.activity.admin.EventManagementActivity"
-            android:label="@string/title_activity_event_management"
+            android:name="com.github.sdpteam15.polyevents.view.activity.admin.EventManagementListActivity"
+            android:label="@string/title_activity_event_list_management"
             android:parentActivityName=".view.activity.MainActivity" />
         <activity
             android:name="com.github.sdpteam15.polyevents.view.activity.admin.UserManagementListActivity"
