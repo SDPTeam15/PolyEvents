@@ -120,7 +120,7 @@ class EventDaoTest {
     @Throws(Exception::class)
     fun testGettingNonExistentEvent() = runBlocking {
         // TODO: recheck (getEventById) returns list or single element?
-        val retrievedEvent = eventDao.getEventById("1")
+        //val retrievedEvent = eventDao.getEventById("1")
         //assertEquals(retrievedEvent, null)
     }
 
