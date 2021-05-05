@@ -42,11 +42,7 @@ class ZoneManagementListActivity : AppCompatActivity() {
         }
 
         recyclerView.adapter = ZoneItemAdapter(zones, openZone)
-        val matcher = object : Matcher {
-            override fun match(collection: Query): Query {
-                return collection.orderBy(DatabaseConstant.ZoneConstant.ZONE_NAME.value)
-            }
-        }
+        val matcher = Matcher { collection -> collection.orderBy(DatabaseConstant.ZoneConstant.ZONE_NAME.value) }
 
         println(Database.currentDatabase)
         Database.currentDatabase.zoneDatabase!!.getAllZones(matcher, 50, zones).observe(this) {

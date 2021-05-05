@@ -4,9 +4,10 @@ import com.google.firebase.firestore.Query
 
 /**
  * Filters a firebase collection given some conditions and returns the corresponding Query result
- * For example keep only the first 5 items from the collection.
+ * For example keep only the first 5 items from the collection. Presented as
+ * a Functional (SAM) interface.
  */
-interface Matcher {
+fun interface Matcher {
     //TODO make the Matcher generic for any DB
     fun match(collection: Query): Query
 }

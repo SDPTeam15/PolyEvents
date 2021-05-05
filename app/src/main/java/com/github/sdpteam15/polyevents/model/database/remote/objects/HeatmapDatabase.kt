@@ -50,14 +50,14 @@ class HeatmapDatabase(private val db: DatabaseInterface) : HeatmapDatabaseInterf
         db.getListEntity(
             tempUsersLocations,
             null,
-            object : Matcher {
-                override fun match(collection: Query) = collection.whereGreaterThan(
-                    DatabaseConstant.LocationConstant.LOCATIONS_TIME.value,
-                    HelperFunctions.localDateTimeToDate(
-                        LocalDateTime.now().minusMinutes(10)
-                    )!!
-                )
-            },
+                { collection ->
+                    collection.whereGreaterThan(
+                            DatabaseConstant.LocationConstant.LOCATIONS_TIME.value,
+                            HelperFunctions.localDateTimeToDate(
+                                    LocalDateTime.now().minusMinutes(10)
+                            )!!
+                    )
+                },
             LOCATION_COLLECTION,
             object : AdapterFromDocumentInterface<LatLng> {
                 override fun fromDocument(document: MutableMap<String, Any?>, id: String): LatLng =

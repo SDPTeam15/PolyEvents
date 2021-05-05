@@ -55,13 +55,6 @@ class EventActivity : AppCompatActivity() {
         subscribeButton = findViewById(R.id.button_subscribe_event)
 
         getEventAndObserve()
-
-        /*val obs : ObservableList<EventLocal> = ObservableList()
-        localEventViewModel.getAllEvents(obs)
-        obs.observe(this) {
-            Log.d(TAG, "Getting events!")
-            Log.d(TAG, it.value.joinToString(separator = ","))
-        }*/
     }
 
     override fun onResume() {
@@ -88,21 +81,6 @@ class EventActivity : AppCompatActivity() {
      * Updates the event information
      */
     private fun updateInfo(event: Event) {
-        /*Log.d(TAG, "BEGIN INSERTING INTO ROOM DATABASE")
-        eventViewModel.insert(
-                EventLocal(
-                        eventId = event.eventId!! + "2",
-                        eventName = event.eventName,
-                        organizer = event.organizer,
-                        zoneName = event.zoneName,
-                        description = event.description,
-                        startTime = event.startTime,
-                        tags = event.tags
-                )
-        ).invokeOnCompletion {
-            Log.d(TAG, "INSERTED EVENT INTO ROOM DATBASE")
-        }*/
-
         Companion.event = event
         // Capture the layout's TextView and set the string as its text
         findViewById<TextView>(R.id.txt_event_Name).apply {

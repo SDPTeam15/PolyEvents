@@ -18,8 +18,9 @@ class EventDaoTest {
     private lateinit var eventDao: EventDao
     private lateinit var localDatabase: LocalDatabase
 
+    private val event_uid = "1"
     private val testEventLocal = EventLocal(
-        eventId = "1",
+        eventId = event_uid,
         eventName = "testEvent",
         description = "this is a test event",
         organizer = "some organizer",
@@ -44,37 +45,27 @@ class EventDaoTest {
         localDatabase.close()
     }
 
-    private fun checkEventLocalEquals(eventLocal: EventLocal, expected: EventLocal) {
-        assertEquals(eventLocal.eventId, expected.eventId)
-        assertEquals(eventLocal.eventName, expected.eventName)
-        assertEquals(eventLocal.organizer, expected.organizer)
-        assertEquals(eventLocal.zoneName, expected.zoneName)
-        assertEquals(eventLocal.description, expected.description)
-        assertEquals(eventLocal.startTime, expected.startTime)
-        assertEquals(eventLocal.endTime, expected.endTime)
-
-        //TODO: add set equality for tags
-    }
-
     @Test
     @Throws(Exception::class)
     fun testInsertEventLocal() = runBlocking {
         eventDao.insert(testEventLocal)
         val eventsLocal = eventDao.getAll()
         val retrievedEvent = eventsLocal[0]
-        checkEventLocalEquals(retrievedEvent, testEventLocal)
+        assertEquals(retrievedEvent, testEventLocal)
     }
 
     @Test
+    @Throws(Exception::class)
     fun testGetEventById() = runBlocking {
         eventDao.insert(testEventLocal)
-        checkEventLocalEquals(
+        assertEquals(
             eventDao.getEventById(testEventLocal.eventId),
             testEventLocal
         )
     }
 
     @Test
+    @Throws(Exception::class)
     fun testGetAllLocalEvents() = runBlocking {
         assert(eventDao.getAll().isEmpty())
         eventDao.insert(testEventLocal)
@@ -88,24 +79,48 @@ class EventDaoTest {
     }
 
     @Test
+    @Throws(Exception::class)
     fun testInsertingEventWithSameIdReplacesOldOne() = runBlocking {
         assert(eventDao.getAll().isEmpty())
         eventDao.insert(testEventLocal)
-        val otherEventName = "another event"
         assertEquals(eventDao.getAll().size, 1)
 
+        val otherEventName = "another event"
         val testEventLocal2 = testEventLocal.copy(eventName = otherEventName)
         assertEquals(testEventLocal2.eventName, otherEventName)
         eventDao.insert(testEventLocal2)
         val retrievedEvents = eventDao.getAll()
         assertEquals(retrievedEvents.size, 1)
-        checkEventLocalEquals(retrievedEvents[0], testEventLocal2)
+        assertEquals(retrievedEvents[0], testEventLocal2)
     }
 
     @Test
+    @Throws(Exception::class)
+    fun testInsertingAll() = runBlocking {
+        assert(eventDao.getAll().isEmpty())
+        val otherEventName = "another event"
+        val newUid = event_uid + "1"
+        val testEventLocal2 = testEventLocal.copy(
+                eventId = newUid,
+                eventName = otherEventName)
+
+        eventDao.insertAll(listOf(testEventLocal, testEventLocal2))
+
+        val retrievedEvents = eventDao.getAll()
+        assertEquals(retrievedEvents.size, 2)
+
+        val retrievedFirstEvent = eventDao.getEventById(event_uid)
+        assertEquals(testEventLocal, retrievedFirstEvent)
+
+        val retrievedSecondEvent = eventDao.getEventById(newUid)
+        assertEquals(testEventLocal2, retrievedSecondEvent)
+    }
+
+    @Test
+    @Throws(Exception::class)
     fun testGettingNonExistentEvent() = runBlocking {
         // TODO: recheck (getEventById) returns list or single element?
-        val retrievedEvent = eventDao.getEventById("1")
+        //val retrievedEvent = eventDao.getEventById("1")
         //assertEquals(retrievedEvent, null)
     }
 
