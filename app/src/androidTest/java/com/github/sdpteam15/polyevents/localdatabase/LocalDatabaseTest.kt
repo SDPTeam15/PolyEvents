@@ -128,13 +128,13 @@ class LocalDatabaseTest {
 
     }
 
-    @Test
+    /*@Test
     fun testPopulateLocalDatabaseWithUserSettings() = runBlocking {
         LocalDatabase.populateDatabaseWithUserSettings(localDatabase.userSettingsDao(), this)
 
         val retrievedUserSettings = localDatabase.userSettingsDao().get()
 
         assertEquals(userSettingsTest, retrievedUserSettings)
-    }
+    }*/
 
 }
