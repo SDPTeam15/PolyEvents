@@ -3,17 +3,22 @@ package com.github.sdpteam15.polyevents.view.fragments
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * [Fragment] subclass representing the login page allowing the user to connect to the application
@@ -27,6 +32,10 @@ class LoginFragment : Fragment() {
     // Return CurrentUser if we are not in test, but we can use a fake user in test this way
     var currentUser: UserEntity? = null
         get() = field ?: currentDatabase.currentUser
+
+    companion object {
+        const val TAG = "LoginFragment"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +62,13 @@ class LoginFragment : Fragment() {
                 )?.addOnCompleteListener(activity as Activity) { task ->
                     if (task.isSuccessful) {
                         addIfNotInDB()
+                        Log.d(TAG, "Beginning populating local database")
+                        val application = requireActivity().application as PolyEventsApplication
+                        (application).applicationScope.launch(Dispatchers.IO) {
+                            LocalDatabase.populateDatabaseWithUserEvents(
+                                    application.database.eventDao(),
+                                    application.applicationScope)
+                        }
                     } else {
                         HelperFunctions.showToast(getString(R.string.login_failed_text), activity)
                     }

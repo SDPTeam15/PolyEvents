@@ -48,6 +48,9 @@ object FakeDatabase : DatabaseInterface {
     override var materialRequestDatabase: MaterialRequestDatabaseInterface? = null
         get() = field ?: FakeDatabaseMaterialRequest
 
+    override var userSettingsDatabase: UserSettingsDatabaseInterface? = null
+        get() = field ?: FakeDatabaseUserSettings
+
     override fun <T : Any> addEntityAndGetId(
         element: T,
         collection: DatabaseConstant.CollectionConstant,

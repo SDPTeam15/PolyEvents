@@ -1,4 +1,4 @@
-package com.github.sdpteam15.polyevents.entity
+package com.github.sdpteam15.polyevents.model.entity
 
 import com.github.sdpteam15.polyevents.model.Depot
 import org.junit.Assert.assertFalse
