@@ -32,8 +32,8 @@ object RouteMapHelper {
     var tempUid = 0
     var routing = false
     var currentTarget: LatLng? = null
-    val chemin: MutableList<LatLng> = mutableListOf()
-    val route:MutableList<Polyline> = mutableListOf()
+    var chemin: MutableList<LatLng> = mutableListOf()
+    var route:MutableList<Polyline> = mutableListOf()
     val epsilon = 0.0001
 
     fun addLine(
@@ -68,12 +68,12 @@ object RouteMapHelper {
         undrawRoute()
         if(chemin.isNotEmpty()){
             var start = chemin[0]
+            currentTarget = chemin[1]
             val cheminTemp = chemin.drop(1)
             for(end in cheminTemp){
                 route.add(map!!.addPolyline(PolylineOptions().add(start).add(end).color(Color.BLUE).width(15f)))
                 start = end
             }
-            Log.d("TEST", "Chemin : ${chemin.size}, chemintemp : ${cheminTemp.size}, Route : ${route.size}")
         }
     }
 
@@ -83,10 +83,16 @@ object RouteMapHelper {
             val position2 = minus(chemin[1], currentTarget!!)
             if(norm(minus(position, position2)) < LatLngOperator.epsilon){
                 route.first().remove()
-                route.drop(1)
-                chemin.drop(1)
+                route = route.drop(1).toMutableList()
+                chemin = chemin.drop(1).toMutableList()
+                if(chemin.size > 1){
+                    currentTarget = chemin[1]
+                }else{
+                    chemin.clear()
+                    currentTarget = null
+                }
             }else{
-                route.first().points = listOf(position, )
+                //DO Projection and redraw the line with route[0].points = listOf(...)
             }
         }
     }
@@ -181,19 +187,6 @@ object RouteMapHelper {
      * @param context context
      */
     fun createNewRoute(context: Context?){
-        //---------------------------------------
-        RouteMapHelper.chemin.clear()
-        RouteMapHelper.routing = true
-        val p1 = map!!.cameraPosition!!.target
-        val p2 = LatLng(p1.latitude - 0.0005, p1.longitude - 0.0005)
-        val p3 = LatLng(p2.latitude + 0.00025, p2.longitude + 0.00065)
-        RouteMapHelper.chemin.add(p1)
-        RouteMapHelper.chemin.add(p2)
-        RouteMapHelper.chemin.add(p3)
-        RouteMapHelper.drawRoute()
-
-
-        //---------------------------------------
         deleteMode = false
         if(tempPolyline != null){
             tempPolyline!!.remove()
