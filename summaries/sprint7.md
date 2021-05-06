@@ -14,6 +14,11 @@ Next week, I will continue working on the event. I will create the list of all e
 ## Mathieu
 
 ## Robin
+This week, I implemented storing the backend for the route feature and added more generic fonction for the DB.
+
+It take 10 hours do do all the tastk, this is due to the preparation we do in common with Florian and Mathieu to not have to much issue with the merge.
+
+Next week, I will do the intersection between a edge and an area more useful for admin.
 
 ## Stephane
 This week, I implemented storing the user preferences and settings into the local cache as well as syncing
