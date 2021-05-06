@@ -1,7 +1,6 @@
 package com.github.sdpteam15.polyevents.localdatabase
 
 import android.content.Context
-import android.util.Log
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
@@ -22,9 +21,9 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.anyOrNull
-import org.mockito.Mockito.`when` as When
 import java.io.IOException
 import kotlin.test.assertEquals
+import org.mockito.Mockito.`when` as When
 
 class LocalDatabaseTest {
     private lateinit var localDatabase: LocalDatabase

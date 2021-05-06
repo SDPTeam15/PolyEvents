@@ -1,8 +1,6 @@
 package com.github.sdpteam15.polyevents.model.database.remote.adapter
 
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.RouteConstant.EDGE_ID
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.RouteConstant.START_ID
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.RouteConstant.END_ID
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.RouteConstant.*
 import com.github.sdpteam15.polyevents.model.entity.RouteEdge
 
 object RouteEdgeAdapter : AdapterInterface<RouteEdge> {

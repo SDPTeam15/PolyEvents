@@ -1,16 +1,15 @@
 package com.github.sdpteam15.polyevents.database.objects
 
+import com.github.sdpteam15.polyevents.database.HelperTestFunction
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.PROFILE_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.USER_COLLECTION
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
-import com.github.sdpteam15.polyevents.database.HelperTestFunction
-import com.github.sdpteam15.polyevents.model.observable.Observable
-import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.model.entity.UserEntity
-import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.ProfileAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.UserAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.objects.UserDatabase
+import com.github.sdpteam15.polyevents.model.entity.UserEntity
+import com.github.sdpteam15.polyevents.model.entity.UserProfile
+import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals

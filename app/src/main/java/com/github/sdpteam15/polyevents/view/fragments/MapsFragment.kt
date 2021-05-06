@@ -3,13 +3,10 @@ package com.github.sdpteam15.polyevents.view.fragments
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.SeekBar
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -28,7 +25,10 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.*
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.*
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.Polygon
+import com.google.android.gms.maps.model.Polyline
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.*
 
@@ -38,7 +38,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     OnPolygonClickListener, OnMarkerClickListener, OnInfoWindowClickListener, OnMarkerDragListener,
     OnMyLocationButtonClickListener, OnMapClickListener {
 
-    companion object{
+    companion object {
         var instance: MapsFragment? = null
     }
 
@@ -204,7 +204,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         //GoogleMapHelper.context = context
         GoogleMapHelper.map = GoogleMapAdapter(googleMap)
         RouteMapHelper.map = GoogleMapAdapter(googleMap)
-        RouteMapHelper.getNodesAndEdgesFromDB(context,this)
+        RouteMapHelper.getNodesAndEdgesFromDB(context, this)
 
         googleMap!!.setOnPolylineClickListener(this)
         googleMap.setOnPolygonClickListener(this)
@@ -227,20 +227,22 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         RouteMapHelper.polylineClick(polyline)
     }
 
-    fun switchIconDelete(){
+    fun switchIconDelete() {
         val removeRouteButton = requireView().findViewById<FloatingActionButton>(R.id.removeRoute)
-        if(RouteMapHelper.deleteMode){
-            removeRouteButton.supportBackgroundTintList = resources.getColorStateList(R.color.red, null)
-        }else{
-            removeRouteButton.supportBackgroundTintList = resources.getColorStateList(R.color.teal_200, null)
+        if (RouteMapHelper.deleteMode) {
+            removeRouteButton.supportBackgroundTintList =
+                resources.getColorStateList(R.color.red, null)
+        } else {
+            removeRouteButton.supportBackgroundTintList =
+                resources.getColorStateList(R.color.teal_200, null)
         }
     }
 
-    fun showSaveButton(){
+    fun showSaveButton() {
         val removeRouteButton = requireView().findViewById<FloatingActionButton>(R.id.saveNewRoute)
-        if(RouteMapHelper.tempPolyline != null){
+        if (RouteMapHelper.tempPolyline != null) {
             removeRouteButton.visibility = View.VISIBLE
-        }else{
+        } else {
             removeRouteButton.visibility = View.INVISIBLE
         }
     }
@@ -274,10 +276,14 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     }
 
     override fun onInfoWindowClick(p0: Marker) {
-        HelperFunctions.showToast(
-            "Info Window clicked for marker" + p0.title + ", can lanch activity here",
-            requireContext()
-        )
+
+        HelperFunctions.getLoc(requireActivity()).observeOnce(this) {
+            RouteMapHelper.chemin =
+                RouteMapHelper.getShortestPath(it.value!!, p0.tag.toString())?.toMutableList()
+                    ?: mutableListOf()
+            RouteMapHelper.drawRoute()
+        }
+
     }
 
     override fun onMarkerDragEnd(p0: Marker) {

@@ -4,7 +4,6 @@ import com.github.sdpteam15.polyevents.model.exceptions.MaxAttendeesException
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
-import java.lang.IllegalArgumentException
 import java.time.LocalDateTime
 
 class EventTest {

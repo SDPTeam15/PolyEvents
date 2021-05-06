@@ -26,7 +26,11 @@ import kotlin.math.pow
 const val THRESHOLD = 0.00002
 const val MAGNET_DISTANCE_THRESHOLD = 0.00005
 
+private val ROUTE_COLOR = Color.rgb(0, 162, 232)
+private val DEFAULT_ROAD_COLOR = Color.argb(50, 0, 0, 0)
+
 object RouteMapHelper {
+
     val nodes = ObservableList<RouteNode>()
     val edges = ObservableList<RouteEdge>()
     val zones = ObservableList<Zone>()
@@ -35,18 +39,20 @@ object RouteMapHelper {
     val toDeleteLines: MutableList<Polyline> = ArrayList()
     val lineToEdge: MutableMap<RouteEdge, Polyline> = mutableMapOf()
     val idToEdge: MutableMap<String, RouteEdge> = mutableMapOf()
+
     var attachables: Pair<Attachable?, Attachable?> = Pair(null, null)
 
     var deleteMode = false
-    var tempUid = 0
-    var routing = false
+
+    //var routing = false
     var currentTarget: LatLng? = null
     var chemin: MutableList<LatLng> = mutableListOf()
     var route: MutableList<Polyline> = mutableListOf()
-    val epsilon = 0.0001
 
     /**
      * Add a line to dataBase
+     * @param start pair containing the Position of the first point and eventually an attached object
+     * @param end pair containing the Position of the second point and eventually an attached object
      */
     fun addLine(
         start: Pair<LatLng, Attachable?>,
@@ -77,8 +83,8 @@ object RouteMapHelper {
     }
 
     /**
-     * remove a line from dataBase
-     * @param edge edge to remove
+     * Removes a line from the dataBase
+     * @param edge the line to add to the database
      */
     fun removeLine(edge: RouteEdge) =
         Database.currentDatabase.routeDatabase!!.removeEdge(edge, edges, nodes)
@@ -87,14 +93,189 @@ object RouteMapHelper {
      * Returns the shortest path from a point on the map to the given Zone
      * @param startPosition the person starting position
      * @param targetZoneId the Zone where the person wants to go to
-     * @return The list of points that the person needs to follow
+     * @return The list of points that the person needs to follow, null if there is no path nearby
      */
     fun getShortestPath(startPosition: LatLng, targetZoneId: String): List<LatLng>? {
-        TODO()
+
+        // gets the closest point on the map where we can go from our current position
+        val nearestPos = getPosOnNearestAttachable(startPosition)
+        // if nothing to attach to, no path can be found
+        if (nearestPos.second == null) {
+            return null
+        }
+        val nodesForShortestPath = mutableSetOf<RouteNode>()
+        val edgesForShortestPath = mutableSetOf<RouteEdge>()
+        val startingNode = RouteNode.fromLatLong(startPosition)
+        val targetZoneCenter =
+            RouteNode.fromLatLong(zones.first { it.zoneId == targetZoneId }.getZoneCenter())
+
+        /**
+         * Setup the graph for the execution of the shortest path
+         */
+        fun setUpGraph() {
+
+            nodesForShortestPath.addAll(nodes)
+            edgesForShortestPath.addAll(edges)
+
+            // Add current position as starting node and link to a node on the nearest attachable
+
+            nodesForShortestPath.add(startingNode)
+
+            when (nearestPos.second) {
+                is RouteNode -> {
+                    // If the nearest attachable is a node, just draw an edge between it and the starting node
+                    edgesForShortestPath.add(
+                        RouteEdge.fromRouteNode(
+                            startingNode,
+                            nearestPos.first
+                        )
+                    )
+                }
+                is RouteEdge -> {
+                    // If the nearest attachable is an edge, we split it in two parts at the point closest to our starting node
+                    // and we link our starting node to the splitting point
+                    edgesForShortestPath.remove(nearestPos.second)
+                    val splitNode = RouteNode.fromLatLong(nearestPos.first.toLatLng())
+                    nodesForShortestPath.add(splitNode)
+                    edgesForShortestPath.add(
+                        RouteEdge.fromRouteNode(
+                            (nearestPos.second as RouteEdge).start!!,
+                            splitNode
+                        )
+                    )
+                    edgesForShortestPath.add(
+                        RouteEdge.fromRouteNode(
+                            (nearestPos.second as RouteEdge).end!!,
+                            splitNode
+                        )
+                    )
+                    edgesForShortestPath.add(RouteEdge.fromRouteNode(startingNode, splitNode))
+                }
+                is Zone -> {
+                    // If the nearest attachable is an area, we create a node on it with its area id
+                    // and we link our starting point to it
+                    val areaNode =
+                        RouteNode.fromLatLong(
+                            nearestPos.first.toLatLng(),
+                            (nearestPos.second as Zone).zoneId
+                        )
+                    nodesForShortestPath.add(areaNode)
+                    edgesForShortestPath.add(RouteEdge.fromRouteNode(startingNode, areaNode))
+                }
+            }
+
+            //consider zones as fully connected graphs, so that the person can go from one entrance to all the other
+            val areasnodes = nodesForShortestPath.groupBy { it.areaId }
+            for (nodesByArea in areasnodes.filter { it.key != targetZoneId && it.key != null }.values) {
+                for (node in nodesByArea) {
+                    for (node2 in nodesByArea) {
+                        val edge = RouteEdge.fromRouteNode(node, node2)
+                        if (!edgesForShortestPath.contains(edge) && node != node2) {
+                            edgesForShortestPath.add(edge)
+                        }
+                    }
+                }
+            }
+            //we consider target Zone center as the target node
+
+            nodesForShortestPath.add(targetZoneCenter)
+            for (node in areasnodes[targetZoneId]!!) {
+                val edge = RouteEdge.fromRouteNode(node, targetZoneCenter)
+                edge.weight = 0.0
+                edgesForShortestPath.add(edge)
+            }
+
+        }
+
+        /**
+         * Applies Dijkstra algorithm on the given graph to find the shortest path from the starting
+         * node to each other node of the graph
+         * @param nodes set of nodes in the graph
+         * @param edges set of edges in the graph
+         * @param start starting node of the graph
+         * @return a map describing the shortest path tree, the root being the starting node,
+         * linking each node to its previous node on the tree
+         */
+        fun dijkstra(
+            nodes: Set<RouteNode>,
+            edges: Set<RouteEdge>,
+            start: RouteNode
+        ): Map<RouteNode, RouteNode?> {
+            if (start !in nodes) throw IllegalArgumentException("Start route not in set of nodes for Dijkstra")
+            val done: MutableSet<RouteNode> = mutableSetOf()
+
+            /**
+             * converts a set of edges to the adjacency list of a node
+             * @param edges set of edges
+             * @return adjacency list with each key being the node and the value their corresponding set of adjacent nodes
+             */
+            fun toAdjacencyList(edges: Set<RouteEdge>): Map<RouteNode, Set<Pair<RouteNode, Double>>> {
+                val adjList: MutableMap<RouteNode, MutableSet<Pair<RouteNode, Double>>> =
+                    mutableMapOf()
+                for (edge in edges) {
+                    if (!adjList.containsKey(edge.start!!)) {
+                        adjList[edge.start!!] = mutableSetOf()
+                    }
+                    adjList[edge.start]!!.add(Pair(edge.end!!, edge.weight!!))
+                    if (!adjList.containsKey(edge.end)) {
+                        adjList[edge.end!!] = mutableSetOf()
+                    }
+                    adjList[edge.end]!!.add(Pair(edge.start!!, edge.weight!!))
+                }
+                return adjList
+            }
+
+            val adjList = toAdjacencyList(edges)
+
+            // costs to get to each node
+            val costs = nodes.map { it to Double.MAX_VALUE }.toMap().toMutableMap()
+            costs[start] = 0.0
+
+            // set of predecessors on the shortest path tree
+            val previous: MutableMap<RouteNode, RouteNode?> =
+                nodes.map { it to null }.toMap().toMutableMap()
+
+            while (done != nodes) {
+                // get remaining node with lowest cost
+                val v: RouteNode = costs
+                    .filter { !done.contains(it.key) }
+                    .minByOrNull { it.value }!!
+                    .key
+
+                // compute the cost to get to neighboring nodes and update the weight and previous node if a shorter path is found
+
+                for (neighbor in adjList[v]!!.filter { !done.contains(it.first) }) {
+                    val newPath = costs[v]!! + neighbor.second
+                    if (newPath < costs[neighbor.first]!!) {
+                        costs[neighbor.first] = newPath
+                        previous[neighbor.first] = v
+                    }
+                }
+
+                done.add(v)
+            }
+
+            return previous
+        }
+
+        setUpGraph()
+
+        val shortestPaths = dijkstra(nodesForShortestPath, edgesForShortestPath, startingNode)
+
+        // convert the path to the tree to the target node into a list of point
+        val pointlist: MutableList<LatLng> = mutableListOf()
+        var lastnode = targetZoneCenter
+        while (lastnode != startingNode) {
+            //If previous node doesn't exist, that means that there is no path to the node, then return true
+            lastnode = shortestPaths[lastnode] ?: return null
+            pointlist.add(lastnode.toLatLng())
+        }
+        return pointlist.reversed()
     }
 
+
     /**
-     * TODO
+     * Draws a new route from the "chemin" variable, a list of LatLng and converts it into a Polyline
      */
     fun drawRoute() {
         undrawRoute()
@@ -105,14 +286,18 @@ object RouteMapHelper {
             for (end in cheminTemp) {
                 route.add(
                     map!!.addPolyline(
-                        PolylineOptions().add(start).add(end).color(Color.BLUE).width(15f)
+                        PolylineOptions().add(start).add(end).color(ROUTE_COLOR)
+                            .width(15f)
                     )
                 )
                 start = end
             }
         }
     }
-
+/*
+    /**
+    TODO consider using this function to update a route while walking
+    */
     fun updateRoute() {
         if (route.isNotEmpty()) {
             val position = minus(LatLng(0.0, 0.0), currentTarget!!)
@@ -132,7 +317,7 @@ object RouteMapHelper {
             }
         }
     }
-
+*/
     /**
      * Undraws the route
      */
@@ -144,14 +329,20 @@ object RouteMapHelper {
     }
 
     /**
-     * TODO
+     * Gets the location of the point on the nearest attachable object.
+     * Used when drawing a new line on the map,
+     * @param fixed Location of the fix point of the line we are drawing
+     * @param moving Location of the point we are moving
+     * @param exclude eventually the attachable to exclude, for example we can't connect a zone to itself
+     * @return A pair containing the coordinate to the point on the nearest attachable
+     * (the same point as moving if there is no attachable around) and the attached object if any.
      */
     fun getPosOnNearestAttachableFrom(
         fixed: LatLng,
         moving: LatLng,
-        attachable: Attachable?
+        exclude: Attachable?
     ): Pair<LatLng, Attachable?> {
-        val v = getPosOnNearestAttachable(moving, LatLngOperator.angle(fixed, moving), attachable)
+        val v = getPosOnNearestAttachable(moving, LatLngOperator.angle(fixed, moving), exclude)
         return if (v.third != null && v.third!! < MAGNET_DISTANCE_THRESHOLD)
             Pair(v.first.toLatLng(), v.second)
         else
@@ -159,7 +350,11 @@ object RouteMapHelper {
     }
 
     /**
-     * TODO
+     * Gets the closest point (projection) of the point given the edge going from start to end
+     * @param start the first point of the edge
+     * @param end the second point of the edge
+     * @param point the point to project on the edge
+     * @return a RouteNode which is the closest point on the edge
      */
     fun getNearestPoint(start: RouteNode, end: RouteNode, point: LatLng): RouteNode {
         var line = minus(end.toLatLng(), start.toLatLng())
@@ -175,7 +370,17 @@ object RouteMapHelper {
     }
 
     /**
-     * TODO
+     * Gets the closest point (projection) of the point to the nearest attachable
+     * If the nearest attachable is a vertex, gets the vertex
+     * If the nearest attachable is an edge, gets the projection on the edge
+     * If the nearest attachable is a zone, gets the projection on an edge or the nearest corner of the zone
+     * If the given angle is too small (< 20°)and we are attaching to an area, we decide to not attach to help the admin
+     * drawing lines near zones.
+     * @param point the point
+     * @param angle an eventual angle which represents the orientation of a line we are drawing
+     * @param point the point to project on the edge
+     * @return a triple containing :
+     * A RouteNode represents
      */
     fun getPosOnNearestAttachable(
         point: LatLng,
@@ -198,7 +403,10 @@ object RouteMapHelper {
     }
 
     /**
-     * TODO
+     * Gets the list of existing nodes and edges from the database
+     * @param context the current context
+     * @param lifecycleOwner the lifecycleowner to update observables
+     * @return Observable which is set at true when the request has been sent
      */
     fun getNodesAndEdgesFromDB(
         context: Context?,
@@ -220,7 +428,7 @@ object RouteMapHelper {
      * @param edge deleted edge
      */
     fun edgeRemovedNotification(edge: RouteEdge) {
-        lineToEdge[edge]!!.remove()
+        lineToEdge[edge]?.remove()
         lineToEdge.remove(edge)
         idToEdge.remove(edge.id)
     }
@@ -235,6 +443,7 @@ object RouteMapHelper {
         val option = PolylineOptions()
         option.add(edge.start!!.toLatLng())
         option.add(edge.end!!.toLatLng())
+        option.color(DEFAULT_ROAD_COLOR)
         option.clickable(true)
         val route = map!!.addPolyline(option)
 
@@ -259,7 +468,7 @@ object RouteMapHelper {
 
     /**
      * Adds a new route to google map and to the temporary variables
-     * @param context context
+     * @param context the current context
      */
     fun createNewRoute(context: Context?) {
         deleteMode = false
