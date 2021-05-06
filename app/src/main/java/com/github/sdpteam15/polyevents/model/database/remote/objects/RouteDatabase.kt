@@ -65,21 +65,27 @@ class RouteDatabase(private val db: DatabaseInterface) : RouteDatabaseInterface 
         nodes: ObservableList<RouteNode>
     ): Observable<Boolean> {
         val end = Observable<Boolean>()
-        val listNode = mutableListOf<RouteNode>()
+
+        //Get all new Node
+        val listNode = mutableSetOf<RouteNode>()
         for (e in newEdges.toList()) {
-            if (e.start != null && e.start!!.id == null && e.start!! !in listNode)
+            if (e.start != null && e.start!!.id == null)
                 listNode.add(e.start!!)
-            if (e.end != null && e.end!!.id == null && e.end!! !in listNode)
+            if (e.end != null && e.end!!.id == null)
                 listNode.add(e.end!!)
         }
+
+        //add new Node in db
         db.addListEntity(
-            listNode,
+            listNode.toList(),
             NODE_COLLECTION
         ).observeOnce {
             if (it.value.first) {
                 nodes.addAll(listNode, db)
                 for (n in listNode.withIndex())
                     n.value.id = it.value.second!![n.index]
+
+                //add new Edges in db
                 db.addListEntity(
                     newEdges,
                     EDGE_COLLECTION
@@ -88,6 +94,8 @@ class RouteDatabase(private val db: DatabaseInterface) : RouteDatabaseInterface 
                         edges.addAll(newEdges, db)
                         for (e in newEdges.withIndex())
                             e.value.id = it.value.second!![e.index]
+
+                        //remove Edges no more used in db
                         db.deleteListEntity(
                             removeEdges.map { it.id!! },
                             EDGE_COLLECTION
@@ -111,6 +119,8 @@ class RouteDatabase(private val db: DatabaseInterface) : RouteDatabaseInterface 
         nodes: ObservableList<RouteNode>
     ): Observable<Boolean> {
         val end = Observable<Boolean>()
+
+        //remove the edge in db
         db.deleteEntity(
             edge.id!!,
             EDGE_COLLECTION
@@ -119,6 +129,8 @@ class RouteDatabase(private val db: DatabaseInterface) : RouteDatabaseInterface 
                 end.postValue(it.value, it.sender)
             else {
                 edges.remove(edge, it.sender)
+
+                //get and remove from db Nodes no more used
                 var startIsNotConnected = true
                 var endIsNotConnected = true
                 for (e in edges) {
