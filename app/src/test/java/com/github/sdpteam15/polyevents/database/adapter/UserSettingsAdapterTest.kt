@@ -42,6 +42,8 @@ class UserSettingsAdapterTest {
     fun conversionOfDocumentToUserEntityPreservesData() {
         assertEquals(
                 userSettings,
+                // Id doesn't matter here, the user settings has only one id DEFAULT_ID,
+                // so not to have multiple instances of it in the local database
                 UserSettingsAdapter.fromDocument(userSettingsDocument, "")
         )
     }

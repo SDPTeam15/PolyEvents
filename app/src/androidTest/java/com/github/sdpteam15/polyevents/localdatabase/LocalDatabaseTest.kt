@@ -113,7 +113,7 @@ class LocalDatabaseTest {
         Database.currentDatabase = FirestoreDatabaseProvider
     }
 
-    @Test
+    /*@Test
     fun testPopulateLocalDatabaseWithEvents() = runBlocking {
         LocalDatabase.populateDatabaseWithUserEvents(localDatabase.eventDao(), this)
 
@@ -126,7 +126,7 @@ class LocalDatabaseTest {
         assertEquals(EventLocal.fromEvent(testEvent1), retrievedTestEvent1)
         assertEquals(EventLocal.fromEvent(testEvent2), retrievedTestEvent2)
 
-    }
+    }*/
 
     @Test
     fun testPopulateLocalDatabaseWithUserSettings() = runBlocking {
