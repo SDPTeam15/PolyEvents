@@ -85,7 +85,7 @@ object RouteMapHelper {
      * @param edge the line to add to the database
      */
     fun removeLine(edge: RouteEdge) =
-        Database.currentDatabase.routeDatabase!!.removeEdge(edge, edges)
+        Database.currentDatabase.routeDatabase!!.removeEdge(edge, edges, nodes)
 
     /**
      * Returns the shortest path from a point on the map to the given Zone
