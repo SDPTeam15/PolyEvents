@@ -2,7 +2,6 @@ package com.github.sdpteam15.polyevents.model.map
 
 import android.content.Context
 import android.graphics.Color
-import android.util.Log
 import androidx.lifecycle.LifecycleOwner
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.database.remote.Database
@@ -24,8 +23,8 @@ import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
 import kotlin.math.pow
 
-const val THRESHOLD = 0.001
-const val MAGNET_DISTANCE_THRESHOLD = 0.0001
+const val THRESHOLD = 0.00002
+const val MAGNET_DISTANCE_THRESHOLD = 0.00005
 
 object RouteMapHelper {
     val nodes = ObservableList<RouteNode>()
@@ -68,7 +67,7 @@ object RouteMapHelper {
         val edge = RouteEdge(null)
         edge.start = from
         edge.end = to
-        newEdges.add(RouteEdge(null))
+        newEdges.add(edge)
 
         for (e in nodes) e.splitOnIntersection(newEdges, removeEdges)
         for (e in edges) e.splitOnIntersection(newEdges, removeEdges)
@@ -81,9 +80,8 @@ object RouteMapHelper {
      * Add a line from dataBase
      * TODO
      */
-    fun removeLine(edge: RouteEdge) {
-        edges.remove(edge)
-    }
+    fun removeLine(edge: RouteEdge) =
+        Database.currentDatabase.routeDatabase!!.removeEdge(edge, edges)
 
     /**
      * Returns the shortest path from a point on the map to the given Zone
@@ -343,7 +341,7 @@ object RouteMapHelper {
         val dif = scalar(line, p)
         if (dif <= THRESHOLD)
             return start
-        if (THRESHOLD <= lineNorm - dif)
+        if (-THRESHOLD <= dif - lineNorm)
             return end
         return RouteNode.fromLatLong(plus(start.toLatLng(), time(line, dif)))
     }
@@ -374,7 +372,10 @@ object RouteMapHelper {
     /**
      * TODO
      */
-    fun getNodesAndEdgesFromDB(context: Context?,lifecycleOwner: LifecycleOwner): Observable<Boolean> {
+    fun getNodesAndEdgesFromDB(
+        context: Context?,
+        lifecycleOwner: LifecycleOwner
+    ): Observable<Boolean> {
         Database.currentDatabase.routeDatabase!!.getRoute(nodes, edges, zones)
         edges.observeAdd(lifecycleOwner) {
             edgeAddedNotification(context, it.value)
@@ -480,7 +481,7 @@ object RouteMapHelper {
         endMarker = null
         tempPolyline = null
         tempLatLng.clear()
-        attachables = Pair(null,null)
+        attachables = Pair(null, null)
     }
 
     var startMarker: Marker? = null
@@ -556,26 +557,34 @@ object RouteMapHelper {
      * @param marker marker that moved
      * @param dragMode what function called the moveMarker method (DRAG_START, DRAG, DRAG_END)
      */
-    fun moveMarker(marker: Marker, dragMode: MarkerDragMode){
-        if(dragMode == MarkerDragMode.DRAG || dragMode == MarkerDragMode.DRAG_START){
+    fun moveMarker(marker: Marker, dragMode: MarkerDragMode) {
+        if (dragMode == MarkerDragMode.DRAG || dragMode == MarkerDragMode.DRAG_START) {
             //Changes the coordinates of the polyline to where it can be displayed
             val points = tempPolyline!!.points
             when (marker.snippet) {
-                PolygonAction.MARKER_START.toString() ->{
-                    val res = getPosOnNearestAttachableFrom(endMarker!!.position, startMarker!!.position, attachables.first)
+                PolygonAction.MARKER_START.toString() -> {
+                    val res = getPosOnNearestAttachableFrom(
+                        endMarker!!.position,
+                        startMarker!!.position,
+                        attachables.second
+                    )
                     tempLatLng[0] = startMarker!!.position
                     attachables = Pair(res.second, attachables.second)
-                    tempPolyline!!.points = listOf(res.first, points[0])
+                    tempPolyline!!.points = listOf(res.first, points[1])
                 }
 
-                PolygonAction.MARKER_END.toString() ->{
-                    val res = getPosOnNearestAttachableFrom(startMarker!!.position, endMarker!!.position, attachables.second)
+                PolygonAction.MARKER_END.toString() -> {
+                    val res = getPosOnNearestAttachableFrom(
+                        startMarker!!.position,
+                        endMarker!!.position,
+                        attachables.first
+                    )
                     tempLatLng[1] = endMarker!!.position
                     attachables = Pair(attachables.first, res.second)
                     tempPolyline!!.points = listOf(points[0], res.first)
                 }
             }
-        }else if(dragMode == MarkerDragMode.DRAG_END){
+        } else if (dragMode == MarkerDragMode.DRAG_END) {
             //On end drag, we set the position of the markers to the position of the line
             val points = tempPolyline!!.points
             startMarker!!.position = points[0]

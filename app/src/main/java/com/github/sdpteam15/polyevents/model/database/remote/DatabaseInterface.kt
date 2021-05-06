@@ -69,7 +69,7 @@ interface DatabaseInterface {
     /**
      * The database used to handle query about to route
      */
-    var routeDatabase: RouteDatabase?
+    var routeDatabase: RouteDatabaseInterface?
 
     /**
      * Add an Entity to the data base

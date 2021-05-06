@@ -32,9 +32,10 @@ class RouteDatabase(private val db: DatabaseInterface) : RouteDatabaseInterface 
                 ).observeOnce {
                     if (!it.value)
                         end.postValue(it.value, it.sender)
-                    else
+                    else {
+                        val tempEdges = ObservableList<RouteEdge>()
                         db.getListEntity(
-                            edges,
+                            tempEdges,
                             null,
                             null,
                             EDGE_COLLECTION
@@ -42,13 +43,16 @@ class RouteDatabase(private val db: DatabaseInterface) : RouteDatabaseInterface 
                             if (it.value) {
                                 val keyToNode =
                                     nodes.groupOnce { it.id }.then.mapOnce { it[0] }.then
-                                for (e in edges) {
+                                for (e in tempEdges) {
                                     e.start = keyToNode[e.startId]
                                     e.end = keyToNode[e.endId]
                                 }
                             }
+                            edges.clear(it.sender)
+                            edges.addAll(tempEdges, it.sender)
                             end.postValue(it.value, it.sender)
                         }
+                    }
                 }
         }
         return end
@@ -63,9 +67,9 @@ class RouteDatabase(private val db: DatabaseInterface) : RouteDatabaseInterface 
         val end = Observable<Boolean>()
         val listNode = mutableListOf<RouteNode>()
         for (e in newEdges.toList()) {
-            if (e.start!!.id == null && e.start!! !in listNode)
+            if (e.start != null && e.start!!.id == null && e.start!! !in listNode)
                 listNode.add(e.start!!)
-            if (e.end!!.id == null && e.end!! !in listNode)
+            if (e.end != null && e.end!!.id == null && e.end!! !in listNode)
                 listNode.add(e.end!!)
         }
         db.addListEntity(

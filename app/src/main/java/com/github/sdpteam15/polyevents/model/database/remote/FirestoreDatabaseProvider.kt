@@ -58,7 +58,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             field = field ?: MaterialRequestDatabase(this)
             return field
         }
-    override var routeDatabase: RouteDatabase? = null
+    override var routeDatabase: RouteDatabaseInterface? = null
         get() {
             field = field ?: RouteDatabase(this)
             return field
