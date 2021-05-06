@@ -67,14 +67,10 @@ class RouteDatabaseTest {
         assertEquals(DatabaseConstant.CollectionConstant.NODE_COLLECTION, getListNode.collection)
         assertEquals(RouteNodeAdapter, getListNode.adapter)
 
-        assertEquals(edges, getListEdges.element)
         assertEquals(null, getListEdges.ids)
         assertEquals(null, getListEdges.matcher)
         assertEquals(DatabaseConstant.CollectionConstant.EDGE_COLLECTION, getListEdges.collection)
         assertEquals(RouteEdgeAdapter, getListEdges.adapter)
-
-        assertEquals(nodes[0], edges[0].start)
-        assertEquals(nodes[1], edges[0].end)
 
         HelperTestFunction.nextBoolean(false)
         HelperTestFunction.nextBoolean(true)
