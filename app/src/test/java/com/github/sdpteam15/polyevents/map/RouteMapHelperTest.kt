@@ -261,7 +261,7 @@ class RouteMapHelperTest {
     fun getPosOnNearestAttachableFrom() {
         RouteMapHelper.nodes.clear()
         RouteMapHelper.edges.clear()
-        RouteMapHelper.zone.clear()
+        RouteMapHelper.zones.clear()
 
         RouteMapHelper.nodes.addAll(
             listOf(

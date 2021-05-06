@@ -29,7 +29,7 @@ const val MAGNET_DISTANCE_THRESHOLD = 0.00005
 object RouteMapHelper {
     val nodes = ObservableList<RouteNode>()
     val edges = ObservableList<RouteEdge>()
-    val zone = ObservableList<Zone>()
+    val zones = ObservableList<Zone>()
 
     var map: MapsInterface? = null
     val toDeleteLines: MutableList<Polyline> = ArrayList()
@@ -71,7 +71,7 @@ object RouteMapHelper {
 
         for (e in nodes) e.splitOnIntersection(newEdges, removeEdges)
         for (e in edges) e.splitOnIntersection(newEdges, removeEdges)
-        for (e in zone) e.splitOnIntersection(newEdges, removeEdges)
+        for (e in zones) e.splitOnIntersection(newEdges, removeEdges)
 
         Database.currentDatabase.routeDatabase!!.updateEdges(newEdges, removeEdges, edges, nodes)
     }
@@ -193,7 +193,7 @@ object RouteMapHelper {
         }
         for (e in nodes) found(e)
         for (e in edges) found(e)
-        for (e in zone) found(e)
+        for (e in zones) found(e)
         return res
     }
 
@@ -204,7 +204,7 @@ object RouteMapHelper {
         context: Context?,
         lifecycleOwner: LifecycleOwner
     ): Observable<Boolean> {
-        Database.currentDatabase.routeDatabase!!.getRoute(nodes, edges, zone)
+        Database.currentDatabase.routeDatabase!!.getRoute(nodes, edges, zones)
         edges.observeAdd(lifecycleOwner) {
             edgeAddedNotification(context, it.value)
         }
