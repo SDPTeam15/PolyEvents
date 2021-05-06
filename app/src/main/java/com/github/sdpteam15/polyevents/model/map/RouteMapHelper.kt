@@ -123,7 +123,7 @@ object RouteMapHelper {
             moving: LatLng,
             attachable: Attachable?
     ): Pair<LatLng, Attachable?>{
-        TODO()
+        return Pair(moving, null)
     }
 
     /**
@@ -234,6 +234,7 @@ object RouteMapHelper {
         endMarker = null
         tempPolyline = null
         tempLatLng.clear()
+        attachables = Pair(null,null)
     }
 
     var startMarker: Marker? = null
@@ -313,16 +314,22 @@ object RouteMapHelper {
         if(dragMode == MarkerDragMode.DRAG || dragMode == MarkerDragMode.DRAG_START){
             //Changes the coordinates of the polyline to where it can be displayed
             val res = getEdgeOnNearestAttachable(startMarker!!.position, endMarker!!.position)
+            val points = tempPolyline!!.points
             when (marker.snippet) {
                 PolygonAction.MARKER_START.toString() ->{
+                    val res = getPosOnNearestAttachableFrom(endMarker!!.position, startMarker!!.position, attachables.first)
                     tempLatLng[0] = startMarker!!.position
+                    attachables = Pair(res.second, attachables.second)
+                    tempPolyline!!.points = listOf(res.first, points[0])
                 }
 
                 PolygonAction.MARKER_END.toString() ->{
+                    val res = getPosOnNearestAttachableFrom(startMarker!!.position, endMarker!!.position, attachables.second)
                     tempLatLng[1] = endMarker!!.position
+                    attachables = Pair(attachables.first, res.second)
+                    tempPolyline!!.points = listOf(points[0], res.first)
                 }
             }
-            tempPolyline!!.points = listOf(res.first, res.second)
         }else if(dragMode == MarkerDragMode.DRAG_END){
             //On end drag, we set the position of the markers to the position of the line
             val points = tempPolyline!!.points
