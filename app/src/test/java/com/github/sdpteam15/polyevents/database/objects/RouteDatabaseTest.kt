@@ -153,10 +153,14 @@ class RouteDatabaseTest {
     @Test
     fun removeEdge() {
         val edges = ObservableList<RouteEdge>()
+        val nodes = ObservableList<RouteNode>()
 
         val n1 = RouteNode("n1", 0.0, 0.0)
         val n2 = RouteNode("n2", 1.0, 1.0)
 
+        nodes.addAll(
+            listOf(n1, n2)
+        )
         edges.addAll(
             listOf(
                 RouteEdge.fromRouteNode(n1, n2, "e1"),
@@ -164,7 +168,7 @@ class RouteDatabaseTest {
             )
         )
 
-        mackRouteDatabase.removeEdge(edges[0], edges)
+        mackRouteDatabase.removeEdge(edges[0], edges, nodes)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         var deleteEdge = HelperTestFunction.deleteEntityQueue.poll()!!
@@ -182,7 +186,7 @@ class RouteDatabaseTest {
             deleteListEdges.collection
         )
 
-        mackRouteDatabase.removeEdge(edges[0], edges)
+        mackRouteDatabase.removeEdge(edges[0], edges, nodes)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         deleteEdge = HelperTestFunction.deleteEntityQueue.poll()!!
