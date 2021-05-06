@@ -43,9 +43,11 @@ interface RouteDatabaseInterface {
      * remove a single RouteEdge and the RouteNode if it's no more used
      * @param edge edge to remove
      * @param edges list of RouteEdge
+     * @param nodes list of RouteNode
      */
     fun removeEdge(
         edge: RouteEdge,
-        edges: ObservableList<RouteEdge>
+        edges: ObservableList<RouteEdge>,
+        nodes: ObservableList<RouteNode>
     ): Observable<Boolean>
 }

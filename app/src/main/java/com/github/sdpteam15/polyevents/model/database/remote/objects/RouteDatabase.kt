@@ -107,7 +107,8 @@ class RouteDatabase(private val db: DatabaseInterface) : RouteDatabaseInterface 
 
     override fun removeEdge(
         edge: RouteEdge,
-        edges: ObservableList<RouteEdge>
+        edges: ObservableList<RouteEdge>,
+        nodes: ObservableList<RouteNode>
     ): Observable<Boolean> {
         val end = Observable<Boolean>()
         db.deleteEntity(
@@ -126,15 +127,21 @@ class RouteDatabase(private val db: DatabaseInterface) : RouteDatabaseInterface 
                     endIsNotConnected =
                         endIsNotConnected && edge.end != e.start && edge.end != e.end
                 }
-                val removeNode = mutableListOf<String>()
-                if (startIsNotConnected)
-                    removeNode.add(edge.startId!!)
-                if (endIsNotConnected)
-                    removeNode.add(edge.endId!!)
+                val removeNodeID = mutableListOf<String>()
+                val removeNode = mutableListOf<RouteNode>()
+                if (startIsNotConnected) {
+                    removeNode.add(edge.start!!)
+                    removeNodeID.add(edge.startId!!)
+                }
+                if (endIsNotConnected) {
+                    removeNode.add(edge.end!!)
+                    removeNodeID.add(edge.endId!!)
+                }
                 db.deleteListEntity(
-                    removeNode,
+                    removeNodeID,
                     NODE_COLLECTION
                 ).observeOnce {
+                    nodes.removeAll(removeNode, it.sender)
                     end.postValue(it.value, it.sender)
                 }
             }
