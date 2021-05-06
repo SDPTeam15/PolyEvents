@@ -11,8 +11,10 @@ import com.github.sdpteam15.polyevents.model.database.remote.objects.ZoneDatabas
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.entity.Zone
+import com.google.android.gms.maps.model.LatLng
 import org.mockito.Mockito
 import org.mockito.kotlin.anyOrNull
+import kotlin.test.assertEquals
 
 object HelperTestFunction {
     // Source : https://stackoverflow.com/questions/38737127/espresso-how-to-get-current-activity-to-test-fragments/58684943#58684943

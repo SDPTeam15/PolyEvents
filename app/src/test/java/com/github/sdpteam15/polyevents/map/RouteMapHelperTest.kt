@@ -25,6 +25,18 @@ import kotlin.test.assertTrue
 class RouteMapHelperTest {
 
 
+    val epsilon = 1e-4
+    fun assertListLatLngCloseEnough(expected: List<LatLng>, actual: List<LatLng>) {
+        assertEquals(expected.size, actual.size)
+        for (i in expected.indices) {
+            assertLatLngCloseEnough(expected[i], actual[i])
+        }
+    }
+
+    fun assertLatLngCloseEnough(expected: LatLng, actual: LatLng) {
+        assert(LatLngOperator.euclideanDistance(expected, actual) < epsilon)
+    }
+
     @Test
     fun getShortestPathReturnsCorrectPath() {
         val node1 = RouteNode("1", 2.0, 5.0)
@@ -52,7 +64,7 @@ class RouteMapHelperTest {
                     "2",
                     "zone2",
                     "5.0|5.0!5.0|6.0!6.0|6.0!6.0|5.0",
-                    "coolZone"
+                    "coolZone2"
                 )
             )
         )
@@ -68,15 +80,46 @@ class RouteMapHelperTest {
             )
         )
 
-        val result = RouteMapHelper.getShortestPath(LatLng(5.5, 7.0), "1")!!
-        val expected = listOf(
+        val result1 = RouteMapHelper.getShortestPath(LatLng(5.5, 7.0), "1")!!
+        val expected1 = listOf(
             LatLng(5.5, 7.0),
             LatLng(5.5, 6.0),
             LatLng(5.0, 5.5),
             LatLng(2.0, 5.0),
             LatLng(1.5, 2.0)
         )
-        assertEquals(expected,result)
+
+        assertListLatLngCloseEnough(expected1,result1)
+        val result2 = RouteMapHelper.getShortestPath(LatLng(1.0, 6.0), "1")!!
+        val expected2 = listOf(
+            LatLng(1.0, 6.0),
+            LatLng(2.0, 5.0),
+            LatLng(1.5, 2.0)
+        )
+        assertListLatLngCloseEnough(expected2,result2)
+
+        val result3 = RouteMapHelper.getShortestPath(LatLng(3.5,2.5), "2")!!
+        val expected3 = listOf(
+            LatLng(3.5,2.5),
+            LatLng(4.0,3.0),
+            LatLng(2.0, 5.0),
+            LatLng(5.0, 5.5)
+        )
+        assertListLatLngCloseEnough(expected3,result3)
+
+        RouteMapHelper.edges.remove(edge1)
+        val result4 = RouteMapHelper.getShortestPath(LatLng(1.0, 6.0), "1")!!
+        val expected4 = listOf(
+            LatLng(1.0, 6.0),
+            LatLng(2.0, 5.0),
+            LatLng(6.0, 1.0),
+            LatLng(2.0, 1.5)
+        )
+        assertListLatLngCloseEnough(expected4,result4)
+
+        RouteMapHelper.zones.clear(this)
+        RouteMapHelper.nodes.clear(this)
+        RouteMapHelper.edges.clear(this)
     }
 
     lateinit var mockedMap: MapsInterface
@@ -99,7 +142,7 @@ class RouteMapHelperTest {
         RouteMapHelper.nodes.add(rn1)
         RouteMapHelper.nodes.add(rn2)
     }
-
+/*
     @Test
     fun removeLineTest() {
         val tag = "Test Edge"
@@ -108,7 +151,7 @@ class RouteMapHelperTest {
         RouteMapHelper.edges.add(routeEdge)
         RouteMapHelper.removeLine(routeEdge)
     }
-
+*/
     @Test
     fun moveMarkerTest() {
         //Marker creation

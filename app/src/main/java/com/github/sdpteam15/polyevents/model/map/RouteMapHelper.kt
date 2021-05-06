@@ -121,7 +121,7 @@ object RouteMapHelper {
                     edgesForShortestPath.add(
                         RouteEdge.fromRouteNode(
                             startingNode,
-                            RouteNode.fromLatLong(nearestPos.first.toLatLng())
+                            nearestPos.first
                         )
                     )
                 }
