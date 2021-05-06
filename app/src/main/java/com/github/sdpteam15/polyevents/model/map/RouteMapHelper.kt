@@ -25,6 +25,8 @@ import kotlin.math.pow
 
 const val THRESHOLD = 0.00002
 const val MAGNET_DISTANCE_THRESHOLD = 0.00005
+val ROUTE_COLOR = Color.rgb(0, 162, 232)
+val DEFAULT_ROAD_COLOR = Color.argb(50, 0, 0, 0)
 
 object RouteMapHelper {
     val nodes = ObservableList<RouteNode>()
@@ -282,7 +284,8 @@ object RouteMapHelper {
             for (end in cheminTemp) {
                 route.add(
                     map!!.addPolyline(
-                        PolylineOptions().add(start).add(end).color(Color.BLUE).width(15f)
+                        PolylineOptions().add(start).add(end).color(ROUTE_COLOR)
+                            .width(15f)
                     )
                 )
                 start = end
@@ -423,7 +426,7 @@ object RouteMapHelper {
      * @param edge deleted edge
      */
     fun edgeRemovedNotification(edge: RouteEdge) {
-        lineToEdge[edge]!!.remove()
+        lineToEdge[edge]?.remove()
         lineToEdge.remove(edge)
         idToEdge.remove(edge.id)
     }
@@ -438,7 +441,7 @@ object RouteMapHelper {
         val option = PolylineOptions()
         option.add(edge.start!!.toLatLng())
         option.add(edge.end!!.toLatLng())
-
+        option.color(DEFAULT_ROAD_COLOR)
         option.clickable(true)
         val route = map!!.addPolyline(option)
 

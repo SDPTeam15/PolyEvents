@@ -174,7 +174,7 @@ object LatLngOperator {
             ((start1.latitude - start2.latitude) * (start2.longitude - end2.longitude) - (start1.longitude - start2.longitude) * (start2.latitude - end2.latitude)) / denom
         val s =
             ((end1.latitude - start1.latitude) * (start1.longitude - start2.longitude) - (end1.longitude - start1.longitude) * (start1.latitude - start2.latitude)) / denom
-        if (!(t in 0.0..1.0 && s in 0.0..1.0)) {
+        if (!(t in 0.0 - epsilon..1.0 + epsilon && s in 0.0 - epsilon..1.0 + epsilon)) {
             //the intersection point is outside the boundaries formed by the extremities of the segments
             return null
         }
