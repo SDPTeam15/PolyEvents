@@ -73,7 +73,7 @@ class EventDatabaseFirestoreTest {
         FirestoreDatabaseProvider.currentUser = user
         Mockito.`when`(mockedUserLogin.isConnected()).thenReturn(true)
         FirestoreDatabaseProvider.currentProfile = UserProfile()
-        assert(EventDatabaseFirestore.currentUser== FirestoreDatabaseProvider.currentUser)
+        assert(EventDatabaseFirestore.currentUser == FirestoreDatabaseProvider.currentUser)
         assert(EventDatabaseFirestore.currentProfile== FirestoreDatabaseProvider.currentProfile)
         assert(EventDatabaseFirestore.firestore==mockedDatabase)
     }

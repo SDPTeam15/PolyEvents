@@ -2,6 +2,7 @@ package com.github.sdpteam15.polyevents.map
 
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
+import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.database.remote.objects.RouteDatabaseInterface
 import com.github.sdpteam15.polyevents.model.entity.RouteEdge
 import com.github.sdpteam15.polyevents.model.entity.RouteNode
@@ -59,6 +60,7 @@ class RouteMapHelperTest {
             mock
         }
         RouteMapHelper.removeLine(routeEdge)
+        Database.currentDatabase = FirestoreDatabaseProvider
     }
 
     @Test
