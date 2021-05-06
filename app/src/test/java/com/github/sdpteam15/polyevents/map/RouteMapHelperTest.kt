@@ -1,5 +1,9 @@
 package com.github.sdpteam15.polyevents.map
 
+import com.github.sdpteam15.polyevents.model.database.remote.Database
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
+import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
+import com.github.sdpteam15.polyevents.model.database.remote.objects.RouteDatabaseInterface
 import com.github.sdpteam15.polyevents.model.entity.RouteEdge
 import com.github.sdpteam15.polyevents.model.entity.RouteNode
 import com.github.sdpteam15.polyevents.model.entity.Zone
@@ -10,6 +14,7 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import com.github.sdpteam15.polyevents.model.map.*
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.time
+import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.google.android.gms.internal.maps.zzt
 import com.google.android.gms.internal.maps.zzz
 import com.google.android.gms.maps.model.CameraPosition
@@ -149,7 +154,16 @@ class RouteMapHelperTest {
 
         val routeEdge = RouteEdge.fromRouteNode(rn1, rn2, tag)
         RouteMapHelper.edges.add(routeEdge)
+        Database.currentDatabase = mock(DatabaseInterface::class.java)
+        Mockito.`when`(Database.currentDatabase.routeDatabase).thenAnswer{
+            val mock = mock(RouteDatabaseInterface::class.java)
+            Mockito.`when`(mock.removeEdge(anyOrNull(), anyOrNull())).thenAnswer{
+                Observable(true)
+            }
+            mock
+        }
         RouteMapHelper.removeLine(routeEdge)
+        Database.currentDatabase = FirestoreDatabaseProvider
     }
 */
     @Test
