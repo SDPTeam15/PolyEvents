@@ -317,14 +317,14 @@ object RouteMapHelper {
             val points = tempPolyline!!.points
             when (marker.snippet) {
                 PolygonAction.MARKER_START.toString() ->{
-                    val res = getPosOnNearestAttachableFrom(endMarker!!.position, startMarker!!.position, attachables.first)
+                    val res = getPosOnNearestAttachableFrom(endMarker!!.position, startMarker!!.position, attachables.second)
                     tempLatLng[0] = startMarker!!.position
                     attachables = Pair(res.second, attachables.second)
-                    tempPolyline!!.points = listOf(res.first, points[0])
+                    tempPolyline!!.points = listOf(res.first, points[1])
                 }
 
                 PolygonAction.MARKER_END.toString() ->{
-                    val res = getPosOnNearestAttachableFrom(startMarker!!.position, endMarker!!.position, attachables.second)
+                    val res = getPosOnNearestAttachableFrom(startMarker!!.position, endMarker!!.position, attachables.first)
                     tempLatLng[1] = endMarker!!.position
                     attachables = Pair(attachables.first, res.second)
                     tempPolyline!!.points = listOf(points[0], res.first)
