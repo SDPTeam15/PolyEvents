@@ -360,9 +360,6 @@ class RouteMapHelperTest {
 
     @Test
     fun variablesSetterGetterTest() {
-        val id = 60
-        RouteMapHelper.tempUid = id
-        assertEquals(id, RouteMapHelper.tempUid)
 
         val deleteMode = false
         RouteMapHelper.deleteMode = deleteMode

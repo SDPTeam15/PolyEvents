@@ -35,18 +35,20 @@ object RouteMapHelper {
     val toDeleteLines: MutableList<Polyline> = ArrayList()
     val lineToEdge: MutableMap<RouteEdge, Polyline> = mutableMapOf()
     val idToEdge: MutableMap<String, RouteEdge> = mutableMapOf()
+
     var attachables: Pair<Attachable?, Attachable?> = Pair(null, null)
 
     var deleteMode = false
-    var tempUid = 0
-    var routing = false
+
+    //var routing = false
     var currentTarget: LatLng? = null
     var chemin: MutableList<LatLng> = mutableListOf()
     var route: MutableList<Polyline> = mutableListOf()
-    val epsilon = 0.0001
 
     /**
      * Add a line to dataBase
+     * @param start pair containing the Position of the first point and eventually an attached object
+     * @param end pair containing the Position of the second point and eventually an attached object
      */
     fun addLine(
         start: Pair<LatLng, Attachable?>,
@@ -77,8 +79,8 @@ object RouteMapHelper {
     }
 
     /**
-     * Add a line from dataBase
-     * TODO
+     * Removes a line from the dataBase
+     * @param edge the line to add to the database
      */
     fun removeLine(edge: RouteEdge) =
         Database.currentDatabase.routeDatabase!!.removeEdge(edge, edges)
@@ -237,6 +239,7 @@ object RouteMapHelper {
                     .key
 
                 // compute the cost to get to neighboring nodes and update the weight and previous node if a shorter path is found
+
                 for (neighbor in adjList[v]!!.filter { !done.contains(it.first) }) {
                     val newPath = costs[v]!! + neighbor.second
                     if (newPath < costs[neighbor.first]!!) {
@@ -244,6 +247,7 @@ object RouteMapHelper {
                         previous[neighbor.first] = v
                     }
                 }
+
                 done.add(v)
             }
 
@@ -251,6 +255,7 @@ object RouteMapHelper {
         }
 
         setUpGraph()
+
         val shortestPaths = dijkstra(nodesForShortestPath, edgesForShortestPath, startingNode)
 
         // convert the path to the tree to the target node into a list of point
@@ -266,7 +271,7 @@ object RouteMapHelper {
 
 
     /**
-     * TODO
+     * Draws a new route from the "chemin" variable, a list of LatLng and converts it into a Polyline
      */
     fun drawRoute() {
         undrawRoute()
@@ -284,7 +289,10 @@ object RouteMapHelper {
             }
         }
     }
-
+/*
+    /**
+    TODO consider using this function to update a route while walking
+    */
     fun updateRoute() {
         if (route.isNotEmpty()) {
             val position = minus(LatLng(0.0, 0.0), currentTarget!!)
@@ -304,7 +312,7 @@ object RouteMapHelper {
             }
         }
     }
-
+*/
     /**
      * Undraws the route
      */
@@ -316,14 +324,20 @@ object RouteMapHelper {
     }
 
     /**
-     * TODO
+     * Gets the location of the point on the nearest attachable object.
+     * Used when drawing a new line on the map,
+     * @param fixed Location of the fix point of the line we are drawing
+     * @param moving Location of the point we are moving
+     * @param exclude eventually the attachable to exclude, for example we can't connect a zone to itself
+     * @return A pair containing the coordinate to the point on the nearest attachable
+     * (the same point as moving if there is no attachable around) and the attached object if any.
      */
     fun getPosOnNearestAttachableFrom(
         fixed: LatLng,
         moving: LatLng,
-        attachable: Attachable?
+        exclude: Attachable?
     ): Pair<LatLng, Attachable?> {
-        val v = getPosOnNearestAttachable(moving, LatLngOperator.angle(fixed, moving), attachable)
+        val v = getPosOnNearestAttachable(moving, LatLngOperator.angle(fixed, moving), exclude)
         return if (v.third != null && v.third!! < MAGNET_DISTANCE_THRESHOLD)
             Pair(v.first.toLatLng(), v.second)
         else
@@ -331,7 +345,11 @@ object RouteMapHelper {
     }
 
     /**
-     * TODO
+     * Gets the closest point (projection) of the point given the edge going from start to end
+     * @param start the first point of the edge
+     * @param end the second point of the edge
+     * @param point the point to project on the edge
+     * @return a RouteNode which is the closest point on the edge
      */
     fun getNearestPoint(start: RouteNode, end: RouteNode, point: LatLng): RouteNode {
         var line = minus(end.toLatLng(), start.toLatLng())
@@ -347,7 +365,17 @@ object RouteMapHelper {
     }
 
     /**
-     * TODO
+     * Gets the closest point (projection) of the point to the nearest attachable
+     * If the nearest attachable is a vertex, gets the vertex
+     * If the nearest attachable is an edge, gets the projection on the edge
+     * If the nearest attachable is a zone, gets the projection on an edge or the nearest corner of the zone
+     * If the given angle is too small (< 20°)and we are attaching to an area, we decide to not attach to help the admin
+     * drawing lines near zones.
+     * @param point the point
+     * @param angle an eventual angle which represents the orientation of a line we are drawing
+     * @param point the point to project on the edge
+     * @return a triple containing :
+     * A RouteNode represents
      */
     fun getPosOnNearestAttachable(
         point: LatLng,
@@ -370,7 +398,10 @@ object RouteMapHelper {
     }
 
     /**
-     * TODO
+     * Gets the list of existing nodes and edges from the database
+     * @param context the current context
+     * @param lifecycleOwner the lifecycleowner to update observables
+     * @return Observable which is set at true when the request has been sent
      */
     fun getNodesAndEdgesFromDB(
         context: Context?,
@@ -407,6 +438,7 @@ object RouteMapHelper {
         val option = PolylineOptions()
         option.add(edge.start!!.toLatLng())
         option.add(edge.end!!.toLatLng())
+
         option.clickable(true)
         val route = map!!.addPolyline(option)
 
@@ -431,7 +463,7 @@ object RouteMapHelper {
 
     /**
      * Adds a new route to google map and to the temporary variables
-     * @param context context
+     * @param context the current context
      */
     fun createNewRoute(context: Context?) {
         deleteMode = false
