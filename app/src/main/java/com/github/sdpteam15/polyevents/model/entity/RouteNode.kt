@@ -33,8 +33,8 @@ data class RouteNode(
         removeEdges: MutableList<RouteEdge>
     ) {
         for (e in newEdges.toList()) {
-            if (e.start != this &&
-                e.end !=  this &&
+            if (e.start != this && e.start != null &&
+                e.end !=  this && e.end != null &&
                 isOnSegment(e.start!!.toLatLng(),e.end!!.toLatLng(), toLatLng())
             ) {
                 newEdges.remove(e)

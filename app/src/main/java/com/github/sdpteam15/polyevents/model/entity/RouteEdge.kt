@@ -47,10 +47,10 @@ data class RouteEdge(
         removeEdges: MutableList<RouteEdge>
     ) {
         for (e in newEdges.toList()) {
-            if (e.start != start &&
-                e.end != end &&
-                e.end != start &&
-                e.start != end
+            if (e.start != start && e.start != null &&
+                e.end != end && e.end != null &&
+                e.end != start && start != null &&
+                e.start != end && end != null
             ) {
                 val intersection = getIntersection(
                     e.start!!.toLatLng(),
