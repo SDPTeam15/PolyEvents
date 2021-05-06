@@ -140,7 +140,7 @@ class RouteMapHelperTest {
     fun edgeAddedNotificationTest(){
         val tag = "Test osterone"
 
-        val routeEdge = RouteEdge(tag, rn1, rn2)
+        val routeEdge = RouteEdge.fromRouteNode(rn1, rn2, tag)
 
         //Fake polyline
         val mockedzzz = mock(zzz::class.java)
@@ -153,7 +153,7 @@ class RouteMapHelperTest {
     @Test
     fun edgeRemovedNotificationTest(){
         val tag = "Test osterone"
-        val routeEdge = RouteEdge(tag, rn1, rn2)
+        val routeEdge = RouteEdge.fromRouteNode(rn1, rn2, tag)
         val mockedzzz = mock(zzz::class.java)
         val polyline = Polyline(mockedzzz)
         RouteMapHelper.lineToEdge[routeEdge] = polyline
