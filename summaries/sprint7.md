@@ -13,6 +13,14 @@ Next week, I will continue working on the event. I will create the list of all e
 
 ## Mathieu
 
+This week, I implemented the road creation on the map and the drawing of the shortest path.
+
+My time estimate was good. I did not have any particular problem this week.
+
+The collaboration with Robin and Florian went smoothly.
+
+Next week, I will continue to have a great time estimate.
+
 ## Robin
 This week, I implemented storing the backend for the route feature and added more generic fonction for the DB.
 
