@@ -9,6 +9,7 @@ import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
 import com.github.sdpteam15.polyevents.model.map.*
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.time
 import com.google.android.gms.internal.maps.zzt
 import com.google.android.gms.internal.maps.zzz
 import com.google.android.gms.maps.model.CameraPosition
