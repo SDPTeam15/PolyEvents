@@ -23,16 +23,18 @@ interface RouteDatabaseInterface {
     /**
      * TODO
      */
-    fun addEdge(
-        edge : RouteEdge,
-        edges : List<RouteNode>
+    fun updateEdges(
+        newEdges: List<RouteEdge>,
+        removeEdges: List<RouteEdge>,
+        edges: ObservableList<RouteEdge>,
+        nodes: ObservableList<RouteNode>
     ): Observable<Boolean>
 
     /**
      * TODO
      */
     fun removeEdge(
-        edge : RouteEdge,
-        edges : List<RouteEdge>
-    ): Observable<Pair<Boolean,Boolean>>
+        edge: RouteEdge,
+        edges: ObservableList<RouteEdge>
+    ): Observable<Boolean>
 }

@@ -39,6 +39,14 @@ class RouteDatabase(private val db: DatabaseInterface) : RouteDatabaseInterface 
                             null,
                             EDGE_COLLECTION
                         ).observeOnce {
+                            if (it.value) {
+                                val keyToNode =
+                                    nodes.groupOnce { it.id }.then.mapOnce { it[0] }.then
+                                for (e in edges) {
+                                    e.start = keyToNode[e.startId]
+                                    e.end = keyToNode[e.endId]
+                                }
+                            }
                             end.postValue(it.value, it.sender)
                         }
                 }
@@ -46,14 +54,87 @@ class RouteDatabase(private val db: DatabaseInterface) : RouteDatabaseInterface 
         return end
     }
 
-    override fun addEdge(edge: RouteEdge, edges: List<RouteNode>): Observable<Boolean> {
-        TODO("Not yet implemented")
+    override fun updateEdges(
+        newEdges: List<RouteEdge>,
+        removeEdges: List<RouteEdge>,
+        edges: ObservableList<RouteEdge>,
+        nodes: ObservableList<RouteNode>
+    ): Observable<Boolean> {
+        val end = Observable<Boolean>()
+        val listNode = mutableListOf<RouteNode>()
+        for (e in newEdges.toList()) {
+            if (e.start!!.id == null && e.start!! !in listNode)
+                listNode.add(e.start!!)
+            if (e.end!!.id == null && e.end!! !in listNode)
+                listNode.add(e.end!!)
+        }
+        db.addListEntity(
+            listNode,
+            NODE_COLLECTION
+        ).observeOnce {
+            if (it.value.first) {
+                nodes.addAll(listNode, db)
+                for (n in listNode.withIndex())
+                    n.value.id = it.value.second!![n.index]
+                db.addListEntity(
+                    newEdges,
+                    EDGE_COLLECTION
+                ).observeOnce {
+                    if (it.value.first) {
+                        edges.addAll(newEdges, db)
+                        for (e in newEdges.withIndex())
+                            e.value.id = it.value.second!![e.index]
+                        db.deleteListEntity(
+                            removeEdges.map { it.id!! },
+                            EDGE_COLLECTION
+                        ).observeOnce {
+                            if (it.value)
+                                edges.removeAll(removeEdges, db)
+                            end.postValue(it.value, it.sender)
+                        }
+                    } else
+                        end.postValue(false, it.sender)
+                }
+            } else
+                end.postValue(false, it.sender)
+        }
+        return end
     }
 
     override fun removeEdge(
         edge: RouteEdge,
-        edges: List<RouteEdge>
-    ): Observable<Pair<Boolean, Boolean>> {
-        TODO("Not yet implemented")
+        edges: ObservableList<RouteEdge>
+    ): Observable<Boolean> {
+        val end = Observable<Boolean>()
+        db.deleteEntity(
+            edge.id!!,
+            EDGE_COLLECTION
+        ).observeOnce {
+            if (!it.value)
+                end.postValue(it.value, it.sender)
+            else {
+                edges.remove(edge, it.sender)
+                var startIsNotConnected = true
+                var endIsNotConnected = true
+                for (e in edges) {
+                    startIsNotConnected =
+                        startIsNotConnected && edge.start != e.start && edge.start != e.end
+                    endIsNotConnected =
+                        endIsNotConnected && edge.end != e.start && edge.end != e.end
+                }
+                val removeNode = mutableListOf<String>()
+                if (startIsNotConnected)
+                    removeNode.add(edge.startId!!)
+                if (endIsNotConnected)
+                    removeNode.add(edge.endId!!)
+                db.deleteListEntity(
+                    removeNode,
+                    NODE_COLLECTION
+                ).observeOnce {
+                    end.postValue(it.value, it.sender)
+                }
+            }
+        }
+        return end
     }
 }

@@ -47,6 +47,12 @@ object FakeDatabase : DatabaseInterface {
 
     override var materialRequestDatabase: MaterialRequestDatabaseInterface? = null
         get() = field ?: FakeDatabaseMaterialRequest
+    override var routeDatabase: RouteDatabase?
+        get() = TODO("Not yet implemented")
+        set(value) {}
+
+    override var userSettingsDatabase: UserSettingsDatabaseInterface? = null
+        get() = field ?: FakeDatabaseUserSettings
 
     override fun <T : Any> addEntityAndGetId(
         element: T,
@@ -64,18 +70,27 @@ object FakeDatabase : DatabaseInterface {
         TODO("Not yet implemented")
     }
 
+    override fun <T : Any> addListEntity(
+        elements: List<T>,
+        collection: DatabaseConstant.CollectionConstant,
+        adapter: AdapterToDocumentInterface<in T>
+    ): Observable<Pair<Boolean, List<String>?>> {
+        TODO("Not yet implemented")
+    }
+
     override fun <T : Any> setEntity(
         element: T?,
         id: String,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterToDocumentInterface<in T>?
+        adapter: AdapterToDocumentInterface<in T>
     ): Observable<Boolean> {
         TODO("Not yet implemented")
     }
 
-    override fun deleteEntity(
-        id: String,
-        collection: DatabaseConstant.CollectionConstant
+    override fun <T : Any> setListEntity(
+        elements: List<Pair<String, T?>>,
+        collection: DatabaseConstant.CollectionConstant,
+        adapter: AdapterToDocumentInterface<in T>
     ): Observable<Boolean> {
         TODO("Not yet implemented")
     }

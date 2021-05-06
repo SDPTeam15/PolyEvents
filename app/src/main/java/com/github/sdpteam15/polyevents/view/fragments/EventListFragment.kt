@@ -71,7 +71,7 @@ class EventListFragment : Fragment() {
         recyclerView = fragmentView.findViewById(R.id.recycler_events_list)
 
         myEventsSwitch = fragmentView.findViewById(R.id.event_list_my_events_switch)
-        myEventsSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
+        myEventsSwitch.setOnCheckedChangeListener { _, isChecked ->
             myEventsSwitchCallback(isChecked)
         }
 
@@ -133,7 +133,7 @@ class EventListFragment : Fragment() {
 
     private fun getEventsListAndDisplay(context: Context?) {
         // TODO: set limit or not?
-        currentDatabase.eventDatabase!!.getEvents(null, 10, events).observe(this) {
+        currentDatabase.eventDatabase!!.getEvents(null, null, events).observe(this) {
             if (!it.value) {
                 HelperFunctions.showToast("Failed to get events information", context)
             }

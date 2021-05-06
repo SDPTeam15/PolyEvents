@@ -8,7 +8,6 @@ import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import java.util.*
 
 const val NUMBER_UPCOMING_EVENTS = 3
 
@@ -63,12 +62,21 @@ interface DatabaseInterface {
     var materialRequestDatabase: MaterialRequestDatabaseInterface?
 
     /**
+     * The database used to handle queries about the current user's settings
+     */
+    var userSettingsDatabase: UserSettingsDatabaseInterface?
+
+    /**
+     * The database used to handle query about to route
+     */
+    var routeDatabase: RouteDatabase?
+
+    /**
      * Add an Entity to the data base
      * @param element The element that needs to be added in the database
      * @param collection The collection to which we want to add the given element
      * @param adapter The adapter converting the element into a HashMap recognised by the database
-     * @param userAccess the user profile to use its permission
-     * @return An observer that will be set to true if the communication with the DB is over and no error
+     * @return An observer that will be set to the id if the communication with the DB is over and no error
      */
     fun <T : Any> addEntityAndGetId(
         element: T,
@@ -81,7 +89,6 @@ interface DatabaseInterface {
      * @param element The element that needs to be added in the database
      * @param collection The collection to which we want to add the given element
      * @param adapter The adapter converting the element into a HashMap recognised by the database
-     * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun <T : Any> addEntity(
@@ -91,8 +98,21 @@ interface DatabaseInterface {
     ): Observable<Boolean>
 
     /**
+     * Add a list Entity from the database
+     * @param elements The elements that needs to be added in the database
+     * @param collection The collection from which we want to retrieve the list of entity
+     * @param adapter The adapter converting the element into a HashMap recognised by the database
+     * @return An observer that will be set to the ids if the communication with the DB is over and no error
+     */
+    fun <T : Any> addListEntity(
+        elements: List<T>,
+        collection: DatabaseConstant.CollectionConstant,
+        adapter: AdapterToDocumentInterface<in T> = collection.adapter as AdapterToDocumentInterface<T>
+    ): Observable<Pair<Boolean, List<String>?>>
+
+    /**
      * Set an Entity to the data base
-     * @param element the element to set or null to delete the element from the database
+     * @param element The element to set or null to delete the element from the database
      * @param id The id with which we will set the element
      * @param collection The collection in which we want to set the given element
      * @param adapter The adapter converting the element into a HashMap recognised by the database
@@ -102,11 +122,24 @@ interface DatabaseInterface {
         element: T?,
         id: String,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterToDocumentInterface<in T>? = collection.adapter as AdapterToDocumentInterface<T>
+        adapter: AdapterToDocumentInterface<in T> = collection.adapter as AdapterToDocumentInterface<T>
     ): Observable<Boolean>
 
     /**
-     * Set an Entity to the data base
+     * Set a list Entity to the data base
+     * @param element The id and element to set or null to delete the element from the database
+     * @param collection The collection in which we want to set the given element
+     * @param adapter The adapter converting the element into a HashMap recognised by the database
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun <T : Any> setListEntity(
+        elements: List<Pair<String, T?>>,
+        collection: DatabaseConstant.CollectionConstant,
+        adapter: AdapterToDocumentInterface<in T> = collection.adapter as AdapterToDocumentInterface<T>
+    ): Observable<Boolean>
+
+    /**
+     * Delete an Entity to the data base
      * @param id The id with which we will delete the element
      * @param collection The collection from which we want to delete the given id
      * @return An observer that will be set to true if the communication with the DB is over and no error
@@ -114,7 +147,18 @@ interface DatabaseInterface {
     fun deleteEntity(
         id: String,
         collection: DatabaseConstant.CollectionConstant
-    ): Observable<Boolean>
+    ): Observable<Boolean> = setEntity(null, id, collection)
+
+    /**
+     * Delete a list Entity to the data base
+     * @param ids The id with which we will delete the element
+     * @param collection The collection from which we want to delete the given id
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun deleteListEntity(
+        ids: List<String>,
+        collection: DatabaseConstant.CollectionConstant
+    ): Observable<Boolean> = setListEntity(ids.map { Pair(it, null) }, collection)
 
     /**
      * Get an Entity from the database

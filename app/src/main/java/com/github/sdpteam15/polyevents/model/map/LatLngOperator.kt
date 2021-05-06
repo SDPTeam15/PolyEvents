@@ -13,7 +13,7 @@ object LatLngOperator {
     /**
      * Used to check if floating point values are close enough to be considered as equal
      */
-    private const val epsilon = 1e-10
+    const val epsilon = 1e-10
 
     /**
      * Returns the coordinate-wise subtraction of the first point by the second one
@@ -192,7 +192,7 @@ object LatLngOperator {
         val a = minus(point, start)
         val b = minus(end, start)
         //if projection on the segment is (almost) the same, return checks if the point lies inside the boundaries formed by the two points
-        return if (euclideanDistance(minus(point,start), project(a, b)) > epsilon) {
+        return if (euclideanDistance(minus(point, start), project(a, b)) > epsilon) {
             false
         } else {
 

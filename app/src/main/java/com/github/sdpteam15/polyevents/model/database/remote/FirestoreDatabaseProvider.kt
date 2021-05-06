@@ -58,6 +58,16 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             field = field ?: MaterialRequestDatabase(this)
             return field
         }
+    override var routeDatabase: RouteDatabase? = null
+        get() {
+            field = field ?: RouteDatabase(this)
+            return field
+        }
+    override var userSettingsDatabase: UserSettingsDatabaseInterface? = null
+        get() {
+            field = field ?: UserSettingsDatabaseFirestore(this)
+            return field
+        }
 
     override val currentUserObservable = Observable<UserEntity>()
     var loadSuccess: Boolean? = false
@@ -202,7 +212,6 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         return ended
     }
 
-
     override fun <T : Any> addEntityAndGetId(
         element: T,
         collection: DatabaseConstant.CollectionConstant,
@@ -218,7 +227,8 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         }
         firestore!!
             .collection(collection.value)
-            .add(adapter.toDocument(element)).addOnSuccessListener(lastAddSuccessListener!!)
+            .add(adapter.toDocument(element))
+            .addOnSuccessListener(lastAddSuccessListener!!)
             .addOnFailureListener(lastFailureListener!!)
         return ended
     }
@@ -230,14 +240,44 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     ): Observable<Boolean> =
         addEntityAndGetId(element, collection, adapter).mapOnce { it != "" }.then
 
+    override fun <T : Any> addListEntity(
+        elements: List<T>,
+        collection: DatabaseConstant.CollectionConstant,
+        adapter: AdapterToDocumentInterface<in T>
+    ): Observable<Pair<Boolean, List<String>?>> {
+        if (elements.isEmpty())
+            return Observable(Pair(true, listOf()))
+        val ended = Observable<Pair<Boolean, List<String>?>>()
+        val mutableList = mutableListOf<String?>()
+        for (elementWithIndex in elements.withIndex()) {
+            mutableList.add(null)
+            firestore!!
+                .collection(collection.value)
+                .add(adapter.toDocument(elementWithIndex.value))
+                .addOnSuccessListener {
+                    synchronized(this) {
+                        mutableList[elementWithIndex.index] = it.id
+                        if (mutableList.fold(true) { a, p -> a && p != null}) {
+                            val list = mutableListOf<String>()
+                            for (e in mutableList)
+                                list.add(e!!)
+                            ended.postValue(Pair(true, list), this)
+                        }
+                    }
+                }
+                .addOnFailureListener { ended.postValue(Pair(false, null), this) }
+        }
+        return ended
+    }
+
     override fun <T : Any> setEntity(
         element: T?,
         id: String,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterToDocumentInterface<in T>?
+        adapter: AdapterToDocumentInterface<in T>
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
-
+        
         lastSetSuccessListener = OnSuccessListener<Void> { ended.postValue(true, this) }
         lastFailureListener = OnFailureListener {
             if (it.message != null)
@@ -254,10 +294,35 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         return ended
     }
 
-    override fun deleteEntity(
-        id: String,
-        collection: DatabaseConstant.CollectionConstant
-    ): Observable<Boolean> = setEntity<Void>(null, id, collection, null)
+    override fun <T : Any> setListEntity(
+        elements: List<Pair<String, T?>>,
+        collection: DatabaseConstant.CollectionConstant,
+        adapter: AdapterToDocumentInterface<in T>
+    ): Observable<Boolean> {
+        if (elements.isEmpty())
+            return Observable(true)
+        val ended = Observable<Boolean>()
+        val mutableList = mutableListOf<Boolean>()
+        for (elementWithIndex in elements.withIndex()) {
+            mutableList.add(false)
+            val document = firestore!!
+                .collection(collection.value)
+                .document(elementWithIndex.value.first)
+            val task = if (elementWithIndex.value.second != null)
+                document.set(adapter.toDocument(elementWithIndex.value.second!!))
+            else
+                document.delete()
+            task.addOnSuccessListener {
+                synchronized(this) {
+                    mutableList[elementWithIndex.index] = true
+                    if (mutableList.reduce { a, b -> a && b })
+                        ended.postValue(true, this)
+                }
+            }
+                .addOnFailureListener { ended.postValue(false, this) }
+        }
+        return ended
+    }
 
     override fun <T : Any> getEntity(
         element: Observable<T>,
@@ -309,21 +374,17 @@ object FirestoreDatabaseProvider : DatabaseInterface {
                     .get()
                     .addOnSuccessListener {
                         if (it.data != null) {
-                            val index = ids.indexOf(it.id)
-                            mutableList[index] = adapter.fromDocument(it.data!!, it.id)
-                            var b = true
-                            for (p in mutableList)
-                                if (p == null) {
-                                    b = false
-                                    break
+                            synchronized(this) {
+                                val index = ids.indexOf(it.id)
+                                mutableList[index] = adapter.fromDocument(it.data!!, it.id)
+                                if (mutableList.fold(true) { a, p -> a && p != null }) {
+                                    elements.clear(this)
+                                    val list = mutableListOf<T>()
+                                    for (e in mutableList)
+                                        list.add(e!!)
+                                    elements.addAll(list, this)
+                                    ended.postValue(true, this)
                                 }
-                            if (b) {
-                                elements.clear(this)
-                                val list = mutableListOf<T>()
-                                for (e in mutableList)
-                                    list.add(e!!)
-                                elements.addAll(list, this)
-                                ended.postValue(true, this)
                             }
                         } else
                             ended.postValue(false, this)

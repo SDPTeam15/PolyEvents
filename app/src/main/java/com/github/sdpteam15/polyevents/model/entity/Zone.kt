@@ -3,12 +3,11 @@ package com.github.sdpteam15.polyevents.model.entity
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ZoneConstant.*
 import com.github.sdpteam15.polyevents.model.map.Attachable
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.angle
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.euclideanDistance
+import com.github.sdpteam15.polyevents.model.map.RouteMapHelper.getNearestPoint
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.divide
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.isTooParallel
-import com.github.sdpteam15.polyevents.model.map.LatLngOperator.minus
-import com.github.sdpteam15.polyevents.model.map.LatLngOperator.norm
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.plus
-import com.github.sdpteam15.polyevents.model.map.RouteMapHelper.getNearestPoint
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.IgnoreExtraProperties
 
@@ -78,7 +77,7 @@ data class Zone(
                         position
                     )
                     newPoint.areaId = zoneId
-                    val distance = norm(minus(position, newPoint.toLatLng()))
+                    val distance = euclideanDistance(position, newPoint.toLatLng())
                     if (res == null || distance < res.second)
                         res = Pair(newPoint, distance)
                 }
@@ -100,5 +99,12 @@ data class Zone(
             }
         }
         return divide(sumLatLng, pointCount)
+    }
+
+    override fun splitOnIntersection(
+        newEdges: MutableList<RouteEdge>,
+        removeEdges: MutableList<RouteEdge>
+    ) {
+        //TODO
     }
 }
