@@ -23,6 +23,8 @@ object DatabaseConstant {
         ITEM_TYPE_COLLECTION("itemTypes", ItemTypeAdapter),
         MATERIAL_REQUEST_COLLECTION("materialRequests", MaterialRequestAdapter),
         USER_SETTINGS_COLLECTION("userSettings", UserSettingsAdapter),
+        NODE_COLLECTION("nodes", RouteNodeAdapter),
+        EDGE_COLLECTION("edges", RouteEdgeAdapter),
 
 
         TEST_COLLECTION("test", object : AdapterInterface<StringWithID> {
@@ -34,7 +36,6 @@ object DatabaseConstant {
                 id: String
             ) = StringWithID(id, document[TEST_STR] as String)
         });
-
 
         override fun toString(): String = value
     }
@@ -54,6 +55,7 @@ object DatabaseConstant {
         EVENT_LIMITED("limitedEvent"),
         EVENT_PARTICIPANTS("participants"),
         EVENT_ZONE_ID("zoneId");
+
         override fun toString(): String = value
     }
 
@@ -124,6 +126,18 @@ object DatabaseConstant {
         USER_SETTINGS_SENDING_LOCATION_ON("sendingLocationOn"),
         USER_SETTINGS_TRACK_LOCATION("trackLocation"),
         USER_SETTINGS_LOCATION_ID("locationId");
+
+        override fun toString(): String = value
+    }
+
+    enum class RouteConstant(val value: String) {
+        NODE_ID("nid"),
+        LATITUDE("latitude"),
+        LONGITUDE("longitude"),
+        AREA_ID("aid"),
+        EDGE_ID("eid"),
+        START_ID("start"),
+        END_ID("end");
 
         override fun toString(): String = value
     }

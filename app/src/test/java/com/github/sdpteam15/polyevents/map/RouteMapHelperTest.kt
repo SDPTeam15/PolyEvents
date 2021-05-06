@@ -1,19 +1,26 @@
 package com.github.sdpteam15.polyevents.map
 
+import com.github.sdpteam15.polyevents.model.database.remote.Database
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
+import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
+import com.github.sdpteam15.polyevents.model.database.remote.objects.RouteDatabaseInterface
 import com.github.sdpteam15.polyevents.model.entity.RouteEdge
 import com.github.sdpteam15.polyevents.model.entity.RouteNode
 import com.github.sdpteam15.polyevents.model.map.*
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.time
+import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.google.android.gms.internal.maps.zzt
-import com.google.android.gms.internal.maps.zzw
 import com.google.android.gms.internal.maps.zzz
-import com.google.android.gms.maps.model.*
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.Polyline
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.anyOrNull
 import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
 class RouteMapHelperTest {
@@ -42,13 +49,22 @@ class RouteMapHelperTest {
     fun removeLineTest() {
         val tag = "Test Edge"
 
-        val routeEdge = RouteEdge(tag, rn1, rn2)
+        val routeEdge = RouteEdge.fromRouteNode(rn1, rn2, tag)
         RouteMapHelper.edges.add(routeEdge)
+        Database.currentDatabase = mock(DatabaseInterface::class.java)
+        Mockito.`when`(Database.currentDatabase.routeDatabase).thenAnswer {
+            val mock = mock(RouteDatabaseInterface::class.java)
+            Mockito.`when`(mock.removeEdge(anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
+                Observable(true)
+            }
+            mock
+        }
         RouteMapHelper.removeLine(routeEdge)
+        Database.currentDatabase = FirestoreDatabaseProvider
     }
 
     @Test
-    fun moveMarkerTest(){
+    fun moveMarkerTest() {
         //Marker creation
         val start = LatLng(2.5, 2.2)
         val mockedzztStart = mock(zzt::class.java)
@@ -87,13 +103,13 @@ class RouteMapHelperTest {
         RouteMapHelper.moveMarker(m2, MarkerDragMode.DRAG_START)
         assertEquals(end, RouteMapHelper.tempLatLng[1])
         RouteMapHelper.moveMarker(m, MarkerDragMode.DRAG_END)
-        RouteMapHelper.moveMarker(m,MarkerDragMode.DRAG_END)
+        RouteMapHelper.moveMarker(m, MarkerDragMode.DRAG_END)
         Mockito.`when`(mockedzzt.snippet).thenReturn("TCHO")
         RouteMapHelper.moveMarker(m, MarkerDragMode.DRAG_END)
     }
 
     @Test
-    fun setUpEditLineTest(){
+    fun setUpEditLineTest() {
         val mockedzzt = mock(zzt::class.java)
         val m = Marker(mockedzzt)
         Mockito.`when`(mockedMap.addMarker(anyOrNull())).thenReturn(m)
@@ -114,7 +130,7 @@ class RouteMapHelperTest {
     }
 
     @Test
-    fun setUpModifyMarkersTest(){
+    fun setUpModifyMarkersTest() {
         val mockedzzt = mock(zzt::class.java)
         val m = Marker(mockedzzt)
         Mockito.`when`(mockedMap.addMarker(anyOrNull())).thenReturn(m)
@@ -137,10 +153,10 @@ class RouteMapHelperTest {
     }
 
     @Test
-    fun edgeAddedNotificationTest(){
+    fun edgeAddedNotificationTest() {
         val tag = "Test osterone"
 
-        val routeEdge = RouteEdge(tag, rn1, rn2)
+        val routeEdge = RouteEdge.fromRouteNode(rn1, rn2, tag)
 
         //Fake polyline
         val mockedzzz = mock(zzz::class.java)
@@ -151,9 +167,9 @@ class RouteMapHelperTest {
     }
 
     @Test
-    fun edgeRemovedNotificationTest(){
+    fun edgeRemovedNotificationTest() {
         val tag = "Test osterone"
-        val routeEdge = RouteEdge(tag, rn1, rn2)
+        val routeEdge = RouteEdge.fromRouteNode(rn1, rn2, tag)
         val mockedzzz = mock(zzz::class.java)
         val polyline = Polyline(mockedzzz)
         RouteMapHelper.lineToEdge[routeEdge] = polyline
@@ -163,7 +179,7 @@ class RouteMapHelperTest {
     }
 
     @Test
-    fun tempVariableClearTest(){
+    fun tempVariableClearTest() {
         val mockedzzt = mock(zzt::class.java)
         val m = Marker(mockedzzt)
         val mockedzzt2 = mock(zzt::class.java)
@@ -195,7 +211,7 @@ class RouteMapHelperTest {
     }
 
     @Test
-    fun saveNewRouteTest(){
+    fun saveNewRouteTest() {
         val mockedzzt = mock(zzt::class.java)
         val m = Marker(mockedzzt)
         val mockedzzt2 = mock(zzt::class.java)
@@ -211,11 +227,10 @@ class RouteMapHelperTest {
         Mockito.`when`(mockedzzz.points).thenReturn(listOfPts)
         RouteMapHelper.tempPolyline = polyline
         Mockito.`when`(mockedMap.addPolyline(anyOrNull())).thenReturn(polyline)
-        RouteMapHelper.saveNewRoute()
     }
 
     @Test
-    fun removeRouteTest(){
+    fun removeRouteTest() {
         val mockedzzt = mock(zzt::class.java)
         val m = Marker(mockedzzt)
         val mockedzzt2 = mock(zzt::class.java)
@@ -241,7 +256,7 @@ class RouteMapHelperTest {
     }
 
     @Test
-    fun variablesSetterGetterTest(){
+    fun variablesSetterGetterTest() {
         val id = 60
         RouteMapHelper.tempUid = id
         assertEquals(id, RouteMapHelper.tempUid)
@@ -250,11 +265,85 @@ class RouteMapHelperTest {
         RouteMapHelper.deleteMode = deleteMode
         assertEquals(deleteMode, RouteMapHelper.deleteMode)
 
-        assertEquals(mockedMap,RouteMapHelper.map)
+        assertEquals(mockedMap, RouteMapHelper.map)
         RouteMapHelper.lineToEdge
         RouteMapHelper.idToEdge
         RouteMapHelper.tempPolyline
     }
 
+    @Test
+    fun getPosOnNearestAttachableFrom() {
+        RouteMapHelper.nodes.clear()
+        RouteMapHelper.edges.clear()
+        RouteMapHelper.zones.clear()
 
+        RouteMapHelper.nodes.addAll(
+            listOf(
+                RouteNode.fromLatLong(time(LatLng(1.5, 0.0), MAGNET_DISTANCE_THRESHOLD)),
+                RouteNode.fromLatLong(time(LatLng(1.0, 1.5), MAGNET_DISTANCE_THRESHOLD)),
+                RouteNode.fromLatLong(time(LatLng(-1.0, 1.5), MAGNET_DISTANCE_THRESHOLD)),
+            )
+        )
+        RouteMapHelper.edges.add(
+            RouteEdge.fromRouteNode(RouteMapHelper.nodes[1], RouteMapHelper.nodes[2])
+        )
+        val res = RouteMapHelper.getPosOnNearestAttachableFrom(
+            time(LatLng(0.0, 0.0), MAGNET_DISTANCE_THRESHOLD),
+            time(LatLng(0.0, 1.0), MAGNET_DISTANCE_THRESHOLD),
+            null
+        )
+        assertEquals(RouteMapHelper.edges[0], res.second)//TODO
+    }
+
+    @Test
+    fun getNearestPoint() {
+        var exepted = LatLng(0.0, 0.0)
+        var result = LatLng(0.0, 0.0)
+        assertEquals(exepted, result)
+
+        exepted = LatLng(0.0, 0.0)
+        result =
+            RouteMapHelper.getNearestPoint(
+                RouteNode(null, 0.0, 0.0),
+                RouteNode(null, 1.0, 0.0),
+                LatLng(-1.0, 1.0)
+            ).toLatLng()
+        assertEquals(exepted, result)
+
+        exepted = LatLng(0.0, 0.0)
+        result =
+            RouteMapHelper.getNearestPoint(
+                RouteNode(null, 0.0, 0.0),
+                RouteNode(null, 1.0, 0.0),
+                LatLng(0.0, 1.0)
+            ).toLatLng()
+        assertEquals(exepted, result)
+
+        exepted = LatLng(0.5, 0.0)
+        result =
+            RouteMapHelper.getNearestPoint(
+                RouteNode(null, 0.0, 0.0),
+                RouteNode(null, 1.0, 0.0),
+                LatLng(0.5, 1.0)
+            ).toLatLng()
+        assertEquals(exepted, result)
+
+        exepted = LatLng(1.0, 0.0)
+        result =
+            RouteMapHelper.getNearestPoint(
+                RouteNode(null, 0.0, 0.0),
+                RouteNode(null, 1.0, 0.0),
+                LatLng(1.0, 1.0)
+            ).toLatLng()
+        assertEquals(exepted, result)
+
+        exepted = LatLng(1.0, 0.0)
+        result =
+            RouteMapHelper.getNearestPoint(
+                RouteNode(null, 0.0, 0.0),
+                RouteNode(null, 1.0, 0.0),
+                LatLng(2.0, 1.0)
+            ).toLatLng()
+        assertEquals(exepted, result)
+    }
 }

@@ -22,7 +22,7 @@ object LatLngOperator {
      * @return the subtraction of point 1 by point 2
      */
     fun minus(point1: LatLng, point2: LatLng) =
-            LatLng(point1.latitude - point2.latitude, point1.longitude - point2.longitude)
+        LatLng(point1.latitude - point2.latitude, point1.longitude - point2.longitude)
 
     /**
      * Returns the coordinate-wise addition of the first point by the second one
@@ -31,7 +31,7 @@ object LatLngOperator {
      * @return the addition of point 1 by point 2
      */
     fun plus(point1: LatLng, point2: LatLng) =
-            LatLng(point1.latitude + point2.latitude, point1.longitude + point2.longitude)
+        LatLng(point1.latitude + point2.latitude, point1.longitude + point2.longitude)
 
     /**
      * Returns the coordinate-wise multiplication of the point by a scalar
@@ -40,7 +40,7 @@ object LatLngOperator {
      * @return the multiplication of the point by the given scalar
      */
     fun time(point: LatLng, nbr: Double) =
-            LatLng(point.latitude * nbr, point.longitude * nbr)
+        LatLng(point.latitude * nbr, point.longitude * nbr)
 
     /**
      * Returns the coordinate-wise division of the point by a scalar
@@ -49,7 +49,7 @@ object LatLngOperator {
      * @return the division of the point by the given scalar
      */
     fun divide(point: LatLng, nbr: Double) =
-            LatLng(point.latitude / nbr, point.longitude / nbr)
+        LatLng(point.latitude / nbr, point.longitude / nbr)
 
     /**
      * Returns the angle in degrees between the horizontal x axis and the line passing through the two given points
@@ -58,7 +58,7 @@ object LatLngOperator {
      * @return the angle between the x axis and the line passing though start and end
      */
     fun angle(start: LatLng, end: LatLng) =
-            (atan((start.latitude - end.latitude) / (start.longitude - end.longitude)) / Math.PI) * 180
+        (atan((start.latitude - end.latitude) / (start.longitude - end.longitude)) / Math.PI) * 180
 
     /**
      * Checks whether two angles are close enough to each other, i.e. if the difference between the lines described by the given angles is less than 20°.
@@ -82,7 +82,7 @@ object LatLngOperator {
      * @return distance between the points
      */
     fun scalar(point1: LatLng, point2: LatLng) =
-            point1.latitude * point2.latitude + point1.longitude * point2.longitude
+        point1.latitude * point2.latitude + point1.longitude * point2.longitude
 
     /**
      * Computes the euclidean distance between 2 points
@@ -91,21 +91,21 @@ object LatLngOperator {
      * @return distance between the points
      */
     fun euclideanDistance(start: LatLng, end: LatLng): Double =
-            euclideanDistance(start.longitude, start.latitude, end.longitude, end.latitude)
+        euclideanDistance(start.longitude, start.latitude, end.longitude, end.latitude)
 
     /**
      * Computes the squared euclidean norm
      * @param point point
      */
     fun squaredNorm(point: LatLng) =
-            squaredNorm(point.longitude, point.latitude)
+        squaredNorm(point.longitude, point.latitude)
 
     /**
      * Computes the euclidean norm
      * @param point point
      */
     fun norm(point: LatLng) =
-            sqrt(squaredNorm(point))
+        sqrt(squaredNorm(point))
 
     /**
      * Computes the squared euclidean norm
@@ -113,7 +113,7 @@ object LatLngOperator {
      * @param dy distance in y
      */
     fun squaredNorm(dx: Double, dy: Double) =
-            dx * dx + dy * dy
+        dx * dx + dy * dy
 
     /**
      * Computes the euclidean distance between 2 points
@@ -124,7 +124,7 @@ object LatLngOperator {
      * @return distance between the points
      */
     fun euclideanDistance(startX: Double, startY: Double, endX: Double, endY: Double): Double =
-            sqrt(squaredEuclideanDistance(startX, startY, endX, endY))
+        sqrt(squaredEuclideanDistance(startX, startY, endX, endY))
 
     /**
      * Computes the squared euclidean distance between 2 points
@@ -135,10 +135,10 @@ object LatLngOperator {
      * @return squared euclidean distance between the points
      */
     fun squaredEuclideanDistance(
-            startX: Double,
-            startY: Double,
-            endX: Double,
-            endY: Double
+        startX: Double,
+        startY: Double,
+        endX: Double,
+        endY: Double
     ): Double {
         val dx = startX - endX
         val dy = startY - endY
@@ -152,7 +152,7 @@ object LatLngOperator {
      * @return squared euclidean distance between the points
      */
     fun squaredEuclideanDistance(start: LatLng, end: LatLng): Double =
-            squaredEuclideanDistance(start.longitude, start.latitude, end.longitude, end.latitude)
+        squaredEuclideanDistance(start.longitude, start.latitude, end.longitude, end.latitude)
 
     /**
      * Returns the intersection point between 2 segments
@@ -164,17 +164,17 @@ object LatLngOperator {
      */
     fun getIntersection(start1: LatLng, end1: LatLng, start2: LatLng, end2: LatLng): LatLng? {
         val denom =
-                (((start1.latitude - end1.latitude) * (start2.longitude - end2.longitude)) - ((start1.longitude - end1.longitude) * (start2.latitude - end2.latitude)))
+            (((start1.latitude - end1.latitude) * (start2.longitude - end2.longitude)) - ((start1.longitude - end1.longitude) * (start2.latitude - end2.latitude)))
 
         if (abs(denom) < epsilon) {
             //the lines are parallel
             return null
         }
         val t =
-                ((start1.latitude - start2.latitude) * (start2.longitude - end2.longitude) - (start1.longitude - start2.longitude) * (start2.latitude - end2.latitude)) / denom
+            ((start1.latitude - start2.latitude) * (start2.longitude - end2.longitude) - (start1.longitude - start2.longitude) * (start2.latitude - end2.latitude)) / denom
         val s =
-                ((end1.latitude - start1.latitude) * (start1.longitude - start2.longitude) - (end1.longitude - start1.longitude) * (start1.latitude - start2.latitude)) / denom
-        if (!(t in 0.0..1.0 && s in 0.0..1.0)) {
+            ((end1.latitude - start1.latitude) * (start1.longitude - start2.longitude) - (end1.longitude - start1.longitude) * (start1.latitude - start2.latitude)) / denom
+        if (!(t in 0.0 - epsilon..1.0 + epsilon && s in 0.0 - epsilon..1.0 + epsilon)) {
             //the intersection point is outside the boundaries formed by the extremities of the segments
             return null
         }
@@ -192,7 +192,7 @@ object LatLngOperator {
         val a = minus(point, start)
         val b = minus(end, start)
         //if projection on the segment is (almost) the same, return checks if the point lies inside the boundaries formed by the two points
-        return if (euclideanDistance(minus(point,start), project(a, b)) > epsilon) {
+        return if (euclideanDistance(minus(point, start), project(a, b)) > epsilon) {
             false
         } else {
 
