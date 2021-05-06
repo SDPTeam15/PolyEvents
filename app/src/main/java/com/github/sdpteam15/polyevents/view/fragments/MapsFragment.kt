@@ -3,11 +3,13 @@ package com.github.sdpteam15.polyevents.view.fragments
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SeekBar
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -17,6 +19,8 @@ import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.map.GoogleMapAdapter
 import com.github.sdpteam15.polyevents.model.map.GoogleMapHelper
+import com.github.sdpteam15.polyevents.model.map.MarkerDragMode
+import com.github.sdpteam15.polyevents.model.map.RouteMapHelper
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementActivity
 import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementListActivity
@@ -24,10 +28,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.*
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.Polygon
-import com.google.android.gms.maps.model.Polyline
+import com.google.android.gms.maps.model.*
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.*
 
@@ -36,6 +37,10 @@ const val HEATMAP_PERIOD = 15L
 class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     OnPolygonClickListener, OnMarkerClickListener, OnInfoWindowClickListener, OnMarkerDragListener,
     OnMyLocationButtonClickListener, OnMapClickListener {
+
+    companion object{
+        var instance: MapsFragment? = null
+    }
 
     private lateinit var locationButton: FloatingActionButton
     var locationPermissionGranted = false
@@ -65,7 +70,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
             }
         }
         //}
-
+        instance = this
         onEdit = zone != null
 
         val view = inflater.inflate(R.layout.fragment_maps, container, false)
@@ -74,22 +79,24 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         val saveNewAreaButton: View = view.findViewById(R.id.acceptNewArea)
         val editAreaButton: View = view.findViewById(R.id.id_edit_area)
         //val deleteAreaButton: View = view.findViewById(R.id.id_delete_areas)
+
         addNewAreaButton.setOnClickListener { GoogleMapHelper.createNewArea(requireContext()) }
         saveNewAreaButton.setOnClickListener { GoogleMapHelper.saveNewArea(requireContext()) }
         editAreaButton.setOnClickListener { GoogleMapHelper.editMode(requireContext()) }
         //deleteAreaButton.setOnClickListener{GoogleMapHelper.deleteMode(requireContext())}
+
+        val addNewRouteButton = view.findViewById<FloatingActionButton>(R.id.addNewRoute)
+        val removeRouteButton = view.findViewById<FloatingActionButton>(R.id.removeRoute)
+        val saveNewRouteButton = view.findViewById<FloatingActionButton>(R.id.saveNewRoute)
+        addNewRouteButton.setOnClickListener { RouteMapHelper.createNewRoute(requireContext()) }
+        removeRouteButton.setOnClickListener { RouteMapHelper.removeRoute(requireContext()) }
+        saveNewRouteButton.setOnClickListener { RouteMapHelper.saveNewRoute() }
 
         locationButton = view.findViewById(R.id.id_location_button)
         val locateMeButton = view.findViewById<FloatingActionButton>(R.id.id_locate_me_button)
         val saveButton = view.findViewById<FloatingActionButton>(R.id.saveAreas)
         val heatmapButton = view.findViewById<FloatingActionButton>(R.id.id_heatmap)
 
-        addNewAreaButton.setOnClickListener {
-            GoogleMapHelper.createNewArea(requireContext())
-        }
-        saveNewAreaButton.setOnClickListener {
-            GoogleMapHelper.saveNewArea(requireContext())
-        }
 
         if (onEdit) {
             addNewAreaButton.visibility = View.VISIBLE
@@ -100,6 +107,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
             locationButton.visibility = View.INVISIBLE
             locateMeButton.visibility = View.INVISIBLE
             heatmapButton.visibility = View.INVISIBLE
+            addNewRouteButton.visibility = View.INVISIBLE
+            removeRouteButton.visibility = View.INVISIBLE
+            saveNewRouteButton.visibility = View.INVISIBLE
 
             saveButton.setOnClickListener {
                 GoogleMapHelper.editMode = false
@@ -127,6 +137,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
             locationButton.visibility = View.VISIBLE
             locateMeButton.visibility = View.VISIBLE
             heatmapButton.visibility = View.VISIBLE
+            addNewRouteButton.visibility = View.VISIBLE
+            removeRouteButton.visibility = View.VISIBLE
+            saveNewRouteButton.visibility = View.INVISIBLE
         }
 
         heatmapButton.setOnClickListener {
@@ -190,6 +203,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     override fun onMapReady(googleMap: GoogleMap?) {
         //GoogleMapHelper.context = context
         GoogleMapHelper.map = GoogleMapAdapter(googleMap)
+        RouteMapHelper.map = GoogleMapAdapter(googleMap)
+        RouteMapHelper.getNodesAndEdgesFromDB(context,this)
 
         googleMap!!.setOnPolylineClickListener(this)
         googleMap.setOnPolygonClickListener(this)
@@ -200,14 +215,35 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         googleMap.setOnMapClickListener(this)
         GoogleMapHelper.setUpMap(requireContext())
 
+
+
         if (useUserLocation) {
             activateMyLocation()
         }
         startId = GoogleMapHelper.uidArea
-
     }
 
-    override fun onPolylineClick(polyline: Polyline) {}
+    override fun onPolylineClick(polyline: Polyline) {
+        RouteMapHelper.polylineClick(polyline)
+    }
+
+    fun switchIconDelete(){
+        val removeRouteButton = requireView().findViewById<FloatingActionButton>(R.id.removeRoute)
+        if(RouteMapHelper.deleteMode){
+            removeRouteButton.supportBackgroundTintList = resources.getColorStateList(R.color.red, null)
+        }else{
+            removeRouteButton.supportBackgroundTintList = resources.getColorStateList(R.color.teal_200, null)
+        }
+    }
+
+    fun showSaveButton(){
+        val removeRouteButton = requireView().findViewById<FloatingActionButton>(R.id.saveNewRoute)
+        if(RouteMapHelper.tempPolyline != null){
+            removeRouteButton.visibility = View.VISIBLE
+        }else{
+            removeRouteButton.visibility = View.INVISIBLE
+        }
+    }
 
     override fun onPolygonClick(polygon: Polygon) {
         if (onEdit) {
@@ -217,7 +253,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
                 GoogleMapHelper.removeArea(polygon.tag.toString().toInt())
             }
         } else {
-            Log.d("POLYGON", "Tag : ${polygon.tag}")
             GoogleMapHelper.setSelectedZoneFromArea(polygon.tag.toString())
             //Shows the info window of the marker assigned to the area
             GoogleMapHelper.areasPoints.get(polygon.tag)!!.second.showInfoWindow()
@@ -246,16 +281,16 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     }
 
     override fun onMarkerDragEnd(p0: Marker) {
-        GoogleMapHelper.interactionMarker(p0)
+        GoogleMapHelper.interactionMarker(p0, MarkerDragMode.DRAG_END)
     }
 
     override fun onMarkerDragStart(p0: Marker) {
-        GoogleMapHelper.interactionMarker(p0)
+        GoogleMapHelper.interactionMarker(p0, MarkerDragMode.DRAG_START)
     }
 
 
     override fun onMarkerDrag(p0: Marker) {
-        GoogleMapHelper.interactionMarker(p0)
+        GoogleMapHelper.interactionMarker(p0, MarkerDragMode.DRAG)
     }
 
     override fun onMyLocationButtonClick(): Boolean {
