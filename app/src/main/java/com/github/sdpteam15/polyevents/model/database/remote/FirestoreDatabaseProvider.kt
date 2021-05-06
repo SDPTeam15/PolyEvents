@@ -63,6 +63,11 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             field = field ?: RouteDatabase(this)
             return field
         }
+    override var userSettingsDatabase: UserSettingsDatabaseInterface? = null
+        get() {
+            field = field ?: UserSettingsDatabaseFirestore(this)
+            return field
+        }
 
     override val currentUserObservable = Observable<UserEntity>()
     var loadSuccess: Boolean? = false
@@ -272,7 +277,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         adapter: AdapterToDocumentInterface<in T>
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
-
+        
         lastSetSuccessListener = OnSuccessListener<Void> { ended.postValue(true, this) }
         lastFailureListener = OnFailureListener {
             if (it.message != null)

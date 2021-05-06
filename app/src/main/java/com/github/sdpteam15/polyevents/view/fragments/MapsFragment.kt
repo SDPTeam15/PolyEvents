@@ -204,7 +204,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         //GoogleMapHelper.context = context
         GoogleMapHelper.map = GoogleMapAdapter(googleMap)
         RouteMapHelper.map = GoogleMapAdapter(googleMap)
-        RouteMapHelper.getNodesAndEdgesFromDB(this)
+        RouteMapHelper.getNodesAndEdgesFromDB(context,this)
 
         googleMap!!.setOnPolylineClickListener(this)
         googleMap.setOnPolygonClickListener(this)
@@ -214,6 +214,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         googleMap.setOnMyLocationButtonClickListener(this)
         googleMap.setOnMapClickListener(this)
         GoogleMapHelper.setUpMap(requireContext())
+
+
 
         if (useUserLocation) {
             activateMyLocation()

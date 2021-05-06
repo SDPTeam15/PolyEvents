@@ -18,6 +18,9 @@ interface EventDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(event: EventLocal)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(events: List<EventLocal>)
+
     @Delete
     suspend fun delete(event: EventLocal)
 

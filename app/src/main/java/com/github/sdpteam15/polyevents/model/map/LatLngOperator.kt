@@ -5,44 +5,73 @@ import kotlin.math.abs
 import kotlin.math.atan
 import kotlin.math.sqrt
 
+/**
+ * Object containing methods to compute various metrics with LatLng
+ * TODO? take into account the curvature of the earth to compute distances instead of considering latitude and longitude as cartesian coordinates
+ */
 object LatLngOperator {
+    /**
+     * Used to check if floating point values are close enough to be considered as equal
+     */
+    const val epsilon = 1e-10
 
     /**
-     * TODO
+     * Returns the coordinate-wise subtraction of the first point by the second one
+     * @param point1 the first point
+     * @param point2 the second point
+     * @return the subtraction of point 1 by point 2
      */
     fun minus(point1: LatLng, point2: LatLng) =
         LatLng(point1.latitude - point2.latitude, point1.longitude - point2.longitude)
 
     /**
-     * TODO
+     * Returns the coordinate-wise addition of the first point by the second one
+     * @param point1 the first point
+     * @param point2 the second point
+     * @return the addition of point 1 by point 2
      */
     fun plus(point1: LatLng, point2: LatLng) =
         LatLng(point1.latitude + point2.latitude, point1.longitude + point2.longitude)
 
     /**
-     * TODO
+     * Returns the coordinate-wise multiplication of the point by a scalar
+     * @param point the point to multiply
+     * @param nbr the scalar to multiply
+     * @return the multiplication of the point by the given scalar
      */
     fun time(point: LatLng, nbr: Double) =
         LatLng(point.latitude * nbr, point.longitude * nbr)
 
     /**
-     * TODO
+     * Returns the coordinate-wise division of the point by a scalar
+     * @param point the point to be divided
+     * @param nbr the scalar to divide by
+     * @return the division of the point by the given scalar
      */
     fun divide(point: LatLng, nbr: Double) =
         LatLng(point.latitude / nbr, point.longitude / nbr)
 
     /**
-     * TODO
+     * Returns the angle in degrees between the horizontal x axis and the line passing through the two given points
+     * @param start the first point
+     * @param end the second point
+     * @return the angle between the x axis and the line passing though start and end
      */
     fun angle(start: LatLng, end: LatLng) =
         (atan((start.latitude - end.latitude) / (start.longitude - end.longitude)) / Math.PI) * 180
 
     /**
-     * TODO
+     * Checks whether two angles are close enough to each other, i.e. if the difference between the lines described by the given angles is less than 20°.
+     *
+     * @param angle1 the first angle
+     * @param angle2 the second angle
+     * @return true if the angles are less than 20° apart, else return false
      */
     fun isTooParallel(angle1: Double, angle2: Double): Boolean {
+        if (!(angle1 in -90.0..90.0 && angle2 in -90.0..90.0))
+            throw IllegalArgumentException("angles must be in the range -90.0..90.0")
         var dif = abs(angle1 - angle2)
-        dif = if (dif > 90) dif - 90 else dif
+        dif = if (dif > 90) 180 - dif else dif
         return dif < 20
     }
 
@@ -134,7 +163,22 @@ object LatLngOperator {
      * @return The intersection point of the two segments, null if the two segments do not intersect
      */
     fun getIntersection(start1: LatLng, end1: LatLng, start2: LatLng, end2: LatLng): LatLng? {
-        return null
+        val denom =
+            (((start1.latitude - end1.latitude) * (start2.longitude - end2.longitude)) - ((start1.longitude - end1.longitude) * (start2.latitude - end2.latitude)))
+
+        if (abs(denom) < epsilon) {
+            //the lines are parallel
+            return null
+        }
+        val t =
+            ((start1.latitude - start2.latitude) * (start2.longitude - end2.longitude) - (start1.longitude - start2.longitude) * (start2.latitude - end2.latitude)) / denom
+        val s =
+            ((end1.latitude - start1.latitude) * (start1.longitude - start2.longitude) - (end1.longitude - start1.longitude) * (start1.latitude - start2.latitude)) / denom
+        if (!(t in 0.0..1.0 && s in 0.0..1.0)) {
+            //the intersection point is outside the boundaries formed by the extremities of the segments
+            return null
+        }
+        return plus(start1, time(minus(end1, start1), t))
     }
 
     /**
@@ -145,6 +189,27 @@ object LatLngOperator {
      * @return true if the point is on the segment, false otherwise
      */
     fun isOnSegment(start: LatLng, end: LatLng, point: LatLng): Boolean {
-        return false
+        val a = minus(point, start)
+        val b = minus(end, start)
+        //if projection on the segment is (almost) the same, return checks if the point lies inside the boundaries formed by the two points
+        return if (euclideanDistance(minus(point, start), project(a, b)) > epsilon) {
+            false
+        } else {
+
+            ((point.latitude in start.latitude..end.latitude && point.longitude in start.longitude..end.longitude) ||
+                    (point.latitude in start.latitude..end.latitude && point.longitude in end.longitude..start.longitude) ||
+                    (point.latitude in end.latitude..start.latitude && point.longitude in end.longitude..start.longitude) ||
+                    (point.latitude in end.latitude..start.latitude && point.longitude in start.longitude..end.longitude))
+        }
+    }
+
+    /**
+     * Computes the projection of the vector a on the vector b
+     * @param a the vector to project
+     * @param b the vector on which we want to project
+     * @return the projection of a on b
+     */
+    fun project(a: LatLng, b: LatLng): LatLng {
+        return time(b, scalar(a, divide(b, squaredNorm(b))))
     }
 }

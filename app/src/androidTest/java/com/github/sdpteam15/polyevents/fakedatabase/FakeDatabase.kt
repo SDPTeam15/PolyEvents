@@ -51,6 +51,9 @@ object FakeDatabase : DatabaseInterface {
         get() = TODO("Not yet implemented")
         set(value) {}
 
+    override var userSettingsDatabase: UserSettingsDatabaseInterface? = null
+        get() = field ?: FakeDatabaseUserSettings
+
     override fun <T : Any> addEntityAndGetId(
         element: T,
         collection: DatabaseConstant.CollectionConstant,

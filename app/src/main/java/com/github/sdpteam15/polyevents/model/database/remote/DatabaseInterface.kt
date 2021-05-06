@@ -62,6 +62,11 @@ interface DatabaseInterface {
     var materialRequestDatabase: MaterialRequestDatabaseInterface?
 
     /**
+     * The database used to handle queries about the current user's settings
+     */
+    var userSettingsDatabase: UserSettingsDatabaseInterface?
+
+    /**
      * The database used to handle query about to route
      */
     var routeDatabase: RouteDatabase?
@@ -71,7 +76,6 @@ interface DatabaseInterface {
      * @param element The element that needs to be added in the database
      * @param collection The collection to which we want to add the given element
      * @param adapter The adapter converting the element into a HashMap recognised by the database
-     * @param userAccess the user profile to use its permission
      * @return An observer that will be set to the id if the communication with the DB is over and no error
      */
     fun <T : Any> addEntityAndGetId(
@@ -85,7 +89,6 @@ interface DatabaseInterface {
      * @param element The element that needs to be added in the database
      * @param collection The collection to which we want to add the given element
      * @param adapter The adapter converting the element into a HashMap recognised by the database
-     * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun <T : Any> addEntity(

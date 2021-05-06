@@ -86,7 +86,7 @@ class AdminHubFragmentTest {
     @Test
     fun clickOnBtnEventDisplayCorrectActivity() {
         Espresso.onView(ViewMatchers.withId(R.id.btnRedirectEventManager)).perform(click())
-        Intents.intended(IntentMatchers.hasComponent(EventManagementActivity::class.java.name))
+        Intents.intended(IntentMatchers.hasComponent(EventManagementListActivity::class.java.name))
     }
 
     @Test

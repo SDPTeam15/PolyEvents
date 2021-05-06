@@ -655,9 +655,7 @@ class FirestoreDatabaseProviderTest {
         end = FirestoreDatabaseProvider.getListEntity(
             result,
             null,
-            object : Matcher {
-                override fun match(collection: Query): Query = collection
-            },
+                { collection -> collection },
             DatabaseConstant.CollectionConstant.TEST_COLLECTION
         )
 

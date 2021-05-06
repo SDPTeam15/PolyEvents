@@ -8,6 +8,8 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.entity.RouteEdge
 import com.github.sdpteam15.polyevents.model.entity.RouteNode
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.minus
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.norm
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.divide
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.minus
@@ -36,9 +38,15 @@ object RouteMapHelper {
     val toDeleteLines: MutableList<Polyline> = ArrayList()
     val lineToEdge: MutableMap<RouteEdge, Polyline> = mutableMapOf()
     val idToEdge: MutableMap<String, RouteEdge> = mutableMapOf()
+    var attachables: Pair<Attachable?, Attachable?> = Pair(null, null)
 
     var deleteMode = false
     var tempUid = 0
+    var routing = false
+    var currentTarget: LatLng? = null
+    var chemin: MutableList<LatLng> = mutableListOf()
+    var route:MutableList<Polyline> = mutableListOf()
+    val epsilon = 0.0001
 
     /**
      * Add a line to dataBase
@@ -93,7 +101,46 @@ object RouteMapHelper {
      * TODO
      */
     fun drawRoute() {
-        TODO()
+        undrawRoute()
+        if(chemin.isNotEmpty()){
+            var start = chemin[0]
+            currentTarget = chemin[1]
+            val cheminTemp = chemin.drop(1)
+            for(end in cheminTemp){
+                route.add(map!!.addPolyline(PolylineOptions().add(start).add(end).color(Color.BLUE).width(15f)))
+                start = end
+            }
+        }
+    }
+
+    fun updateRoute(){
+        if(route.isNotEmpty()){
+            val position = minus(LatLng(0.0,0.0), currentTarget!!)
+            val position2 = minus(chemin[1], currentTarget!!)
+            if(norm(minus(position, position2)) < LatLngOperator.epsilon){
+                route.first().remove()
+                route = route.drop(1).toMutableList()
+                chemin = chemin.drop(1).toMutableList()
+                if(chemin.size > 1){
+                    currentTarget = chemin[1]
+                }else{
+                    chemin.clear()
+                    currentTarget = null
+                }
+            }else{
+                //DO Projection and redraw the line with route[0].points = listOf(...)
+            }
+        }
+    }
+
+    /**
+     * Undraws the route
+     */
+    fun undrawRoute(){
+        for(r in route){
+            r.remove()
+        }
+        route.clear()
     }
 
     /**
@@ -110,7 +157,6 @@ object RouteMapHelper {
         else
             Pair(moving, null)
     }
-
 
     /**
      * TODO
@@ -180,7 +226,7 @@ object RouteMapHelper {
      * Function that handles the addition of a route from the database
      * @param edge new edge
      */
-    fun edgeAddedNotification(edge: RouteEdge) {
+    fun edgeAddedNotification(context: Context?,edge: RouteEdge){
         //Remove all creation lines when we get an answer from the database
         removeAllLinesToRemove()
         val option = PolylineOptions()
@@ -190,7 +236,10 @@ object RouteMapHelper {
         val route = map!!.addPolyline(option)
 
         //tag used to know which polyline has been clicked
-        route.tag = edge.id
+        if(context != null){
+            route.tag = edge.id
+        }
+
         lineToEdge[edge] = route
         idToEdge[edge.id!!] = edge
     }
@@ -226,9 +275,7 @@ object RouteMapHelper {
         deleteMode = false
         toDeleteLines.add(tempPolyline!!)
         tempPolyline!!.color = Color.GREEN
-        /*
-        addLine(tempLatLng[0]!!, tempLatLng[1]!!)
-         */
+        addLine(Pair(tempLatLng[0]!!, attachables.first), Pair(tempLatLng[1]!!, attachables.second))
         tempVariableClear()
         MapsFragment.instance?.showSaveButton()
     }
@@ -243,7 +290,6 @@ object RouteMapHelper {
             tempVariableClear()
         } else {
             deleteMode = !deleteMode
-            HelperFunctions.showToast("Deletion mode is $deleteMode", context)
             MapsFragment.instance?.switchIconDelete()
         }
         MapsFragment.instance?.showSaveButton()
@@ -338,7 +384,6 @@ object RouteMapHelper {
     fun moveMarker(marker: Marker, dragMode: MarkerDragMode) {
         if (dragMode == MarkerDragMode.DRAG || dragMode == MarkerDragMode.DRAG_START) {
             //Changes the coordinates of the polyline to where it can be displayed
-            /*
             val res = getEdgeOnNearestAttachable(startMarker!!.position, endMarker!!.position)
             when (marker.snippet) {
                 PolygonAction.MARKER_START.toString() -> {
@@ -350,7 +395,6 @@ object RouteMapHelper {
                 }
             }
             tempPolyline!!.points = listOf(res.first.toLatLng(), res.second.toLatLng())
-            */
         } else if (dragMode == MarkerDragMode.DRAG_END) {
             //On end drag, we set the position of the markers to the position of the line
             val points = tempPolyline!!.points

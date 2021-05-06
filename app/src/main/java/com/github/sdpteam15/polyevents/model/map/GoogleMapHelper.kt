@@ -115,6 +115,9 @@ object GoogleMapHelper {
         restoreCameraState()
         restoreMapState(context)
         setMapStyle(context)
+        selectedZone = null
+        deleteMode = false
+        editMode = false
         //setBoundaries()
         //setMinAndMaxZoom()
 
