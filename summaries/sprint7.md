@@ -16,6 +16,13 @@ Next week, I will continue working on the event. I will create the list of all e
 ## Robin
 
 ## Stephane
+This week, I implemented storing the user preferences and settings into the local cache as well as syncing
+the local database with the remote Firestore on user login.
+
+This task took me around 8 hours which is what I estimated it would take. I took this week an easy task, to make sure
+the local cache works and to test it well.
+
+Next week, I will look into displaying the events in each zone of the map.
 
 ## Overall team
 
