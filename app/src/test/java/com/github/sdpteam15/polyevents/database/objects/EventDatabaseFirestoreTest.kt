@@ -3,17 +3,17 @@ package com.github.sdpteam15.polyevents.database.objects
 import android.graphics.Bitmap
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.EVENT_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
-import com.github.sdpteam15.polyevents.model.observable.Observable
-import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.model.database.remote.adapter.EventAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.login.GoogleUserLogin
 import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
 import com.github.sdpteam15.polyevents.model.database.remote.login.UserLoginInterface
+import com.github.sdpteam15.polyevents.model.database.remote.objects.EventDatabaseFirestore
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
-import com.github.sdpteam15.polyevents.model.database.remote.adapter.EventAdapter
-import com.github.sdpteam15.polyevents.model.database.remote.objects.EventDatabaseFirestore
+import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.firestore.*
@@ -73,7 +73,7 @@ class EventDatabaseFirestoreTest {
         FirestoreDatabaseProvider.currentUser = user
         Mockito.`when`(mockedUserLogin.isConnected()).thenReturn(true)
         FirestoreDatabaseProvider.currentProfile = UserProfile()
-        assert(EventDatabaseFirestore.currentUser== FirestoreDatabaseProvider.currentUser)
+        assert(EventDatabaseFirestore.currentUser == FirestoreDatabaseProvider.currentUser)
         assert(EventDatabaseFirestore.currentProfile== FirestoreDatabaseProvider.currentProfile)
         assert(EventDatabaseFirestore.firestore==mockedDatabase)
     }

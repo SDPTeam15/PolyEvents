@@ -14,7 +14,6 @@ import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.map.GoogleMapHelper
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.adapter.ZoneItemAdapter
-import com.google.firebase.firestore.Query
 
 
 class ZoneManagementListActivity : AppCompatActivity() {

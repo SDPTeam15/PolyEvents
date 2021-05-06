@@ -1,13 +1,12 @@
 package com.github.sdpteam15.polyevents.database.objects
 
 import com.github.sdpteam15.polyevents.Settings
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.database.HelperTestFunction
-import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.model.entity.DeviceLocation
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.DeviceLocationAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.objects.HeatmapDatabase
+import com.github.sdpteam15.polyevents.model.entity.DeviceLocation
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Before
 import org.junit.Test
@@ -16,12 +15,10 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 class HeatmapDatabaseTest {
-
     lateinit var mackHeatmapDatabase : HeatmapDatabase
-    lateinit var mockDatabaseInterface : DatabaseInterface
     @Before
     fun setup() {
-        mockDatabaseInterface = HelperTestFunction.mockFor()
+        val mockDatabaseInterface = HelperTestFunction.mockFor()
         mackHeatmapDatabase = HeatmapDatabase(mockDatabaseInterface)
         HelperTestFunction.clearQueue()
     }
@@ -31,7 +28,7 @@ class HeatmapDatabaseTest {
         Settings.LocationId = ""
         val latLng = LatLng(1.0,1.0)
 
-        HelperTestFunction.nextString.add("ici")
+        HelperTestFunction.nextString("ici")
         mackHeatmapDatabase.setLocation(latLng).observeOnce { assert(it.value) }
 
         val add = HelperTestFunction.addEntityAndGetIdQueue.peek()!!
@@ -41,7 +38,7 @@ class HeatmapDatabaseTest {
         assertEquals(DeviceLocationAdapter, add.adapter)
 
         Settings.LocationId = "id"
-        HelperTestFunction.nextBoolean.add(true)
+        HelperTestFunction.nextBoolean(true)
         mackHeatmapDatabase.setLocation(latLng).observeOnce { assert(it.value) }
 
         val set = HelperTestFunction.setEntityQueue.peek()!!
@@ -54,7 +51,7 @@ class HeatmapDatabaseTest {
 
     @Test
     fun getLocations(){
-        HelperTestFunction.nextBoolean.add(true)
+        HelperTestFunction.nextBoolean(true)
         mackHeatmapDatabase.getLocations(ObservableList()).observeOnce { assert(it.value) }
 
         val getlist = HelperTestFunction.getListEntityQueue.peek()!!

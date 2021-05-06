@@ -201,7 +201,7 @@ object GoogleMapHelper {
     fun addArea(context: Context?, id: Int, coords: List<LatLng>, name: String?) {
         if (coords.isNotEmpty()) {
             val poly = PolygonOptions()
-            poly.addAll(coords).clickable(true)
+            poly.addAll(coords).clickable(true).strokeColor(DEFAULT_ZONE_STROKE_COLOR)
 
             val polygon = map!!.addPolygon(poly)
 

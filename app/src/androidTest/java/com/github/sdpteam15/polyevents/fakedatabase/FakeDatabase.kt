@@ -3,13 +3,13 @@ package com.github.sdpteam15.polyevents.fakedatabase
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.Matcher
-import com.github.sdpteam15.polyevents.model.observable.Observable
-import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.model.entity.UserEntity
-import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterToDocumentInterface
 import com.github.sdpteam15.polyevents.model.database.remote.objects.*
+import com.github.sdpteam15.polyevents.model.entity.UserEntity
+import com.github.sdpteam15.polyevents.model.entity.UserProfile
+import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import kotlin.random.Random
 
 object FakeDatabase : DatabaseInterface {
@@ -47,6 +47,9 @@ object FakeDatabase : DatabaseInterface {
 
     override var materialRequestDatabase: MaterialRequestDatabaseInterface? = null
         get() = field ?: FakeDatabaseMaterialRequest
+    override var routeDatabase: RouteDatabaseInterface?
+        get() = TODO("Not yet implemented")
+        set(value) {}
 
     override var userSettingsDatabase: UserSettingsDatabaseInterface? = null
         get() = field ?: FakeDatabaseUserSettings
@@ -67,18 +70,27 @@ object FakeDatabase : DatabaseInterface {
         TODO("Not yet implemented")
     }
 
+    override fun <T : Any> addListEntity(
+        elements: List<T>,
+        collection: DatabaseConstant.CollectionConstant,
+        adapter: AdapterToDocumentInterface<in T>
+    ): Observable<Pair<Boolean, List<String>?>> {
+        TODO("Not yet implemented")
+    }
+
     override fun <T : Any> setEntity(
         element: T?,
         id: String,
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterToDocumentInterface<in T>?
+        adapter: AdapterToDocumentInterface<in T>
     ): Observable<Boolean> {
         TODO("Not yet implemented")
     }
 
-    override fun deleteEntity(
-        id: String,
-        collection: DatabaseConstant.CollectionConstant
+    override fun <T : Any> setListEntity(
+        elements: List<Pair<String, T?>>,
+        collection: DatabaseConstant.CollectionConstant,
+        adapter: AdapterToDocumentInterface<in T>
     ): Observable<Boolean> {
         TODO("Not yet implemented")
     }

@@ -1,6 +1,6 @@
 package com.github.sdpteam15.polyevents.model.database.remote
 
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class DatabaseConstantTest {

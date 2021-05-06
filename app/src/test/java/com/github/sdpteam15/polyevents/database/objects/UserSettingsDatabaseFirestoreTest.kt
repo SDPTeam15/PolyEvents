@@ -11,7 +11,6 @@ import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.room.UserSettings
 import org.junit.Before
 import org.junit.Test
-import java.util.*
 import kotlin.test.assertEquals
 import org.mockito.Mockito.`when` as When
 
@@ -37,7 +36,7 @@ class UserSettingsDatabaseFirestoreTest {
     @Test
     fun testUpdatingUserSettings() {
         val userSettings = UserSettings()
-        HelperTestFunction.nextBoolean.add(true)
+        HelperTestFunction.nextBoolean(true)
         mockUserSettingsDatabase.updateUserSettings(userSettings, userAccess = UserProfile())
                 .observeOnce { assert(it.value) }.then.postValue(false)
 
@@ -53,7 +52,7 @@ class UserSettingsDatabaseFirestoreTest {
         val userSettingsObservable = Observable<UserSettings>()
         val userAccess = UserProfile()
 
-        HelperTestFunction.nextBoolean.add(true)
+        HelperTestFunction.nextBoolean(true)
         mockUserSettingsDatabase.getUserSettings(
                 id = mockUserId,
                 userSettingsObservable = userSettingsObservable,

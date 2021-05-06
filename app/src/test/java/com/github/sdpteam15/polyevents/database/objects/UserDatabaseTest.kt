@@ -1,16 +1,15 @@
 package com.github.sdpteam15.polyevents.database.objects
 
+import com.github.sdpteam15.polyevents.database.HelperTestFunction
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.PROFILE_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.USER_COLLECTION
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
-import com.github.sdpteam15.polyevents.database.HelperTestFunction
-import com.github.sdpteam15.polyevents.model.observable.Observable
-import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.model.entity.UserEntity
-import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.ProfileAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.UserAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.objects.UserDatabase
+import com.github.sdpteam15.polyevents.model.entity.UserEntity
+import com.github.sdpteam15.polyevents.model.entity.UserProfile
+import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -19,11 +18,10 @@ import kotlin.test.assertNull
 
 class UserDatabaseTest {
     lateinit var mackUserDatabase: UserDatabase
-    lateinit var mockDatabaseInterface: DatabaseInterface
 
     @Before
     fun setup() {
-        mockDatabaseInterface = HelperTestFunction.mockFor()
+        val mockDatabaseInterface = HelperTestFunction.mockFor()
         mackUserDatabase = UserDatabase(mockDatabaseInterface)
         HelperTestFunction.clearQueue()
     }
@@ -33,7 +31,7 @@ class UserDatabaseTest {
         val user = UserEntity("uid")
         val userAccess = UserProfile()
 
-        HelperTestFunction.nextBoolean.add(true)
+        HelperTestFunction.nextBoolean(true)
         mackUserDatabase.updateUserInformation(user, userAccess)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
@@ -49,7 +47,7 @@ class UserDatabaseTest {
     fun firstConnexion() {
         val user = UserEntity("uid")
 
-        HelperTestFunction.nextBoolean.add(true)
+        HelperTestFunction.nextBoolean(true)
         mackUserDatabase.firstConnexion(user).observeOnce { assert(it.value) }.then.postValue(false)
 
         val set = HelperTestFunction.setEntityQueue.poll()!!
@@ -66,7 +64,7 @@ class UserDatabaseTest {
         val uid = "uid"
         val userAccess = UserProfile()
 
-        HelperTestFunction.nextBoolean.add(true)
+        HelperTestFunction.nextBoolean(true)
         mackUserDatabase.inDatabase(isInDb.observeOnce { assert(it.value) }.then, uid, userAccess)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
@@ -84,7 +82,7 @@ class UserDatabaseTest {
         val uid = "uid"
         val userAccess = UserProfile()
 
-        HelperTestFunction.nextBoolean.add(true)
+        HelperTestFunction.nextBoolean(true)
         mackUserDatabase.getUserInformation(user, uid, userAccess)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
@@ -102,8 +100,8 @@ class UserDatabaseTest {
         val user = UserEntity("uid")
         val userAccess = UserEntity("uid")
 
-        HelperTestFunction.nextString.add("pid")
-        HelperTestFunction.nextBoolean.add(true)
+        HelperTestFunction.nextString("pid")
+        HelperTestFunction.nextBoolean(true)
         mackUserDatabase.addUserProfileAndAddToUser(profile, user, userAccess)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
@@ -126,7 +124,7 @@ class UserDatabaseTest {
         val user = UserEntity("uid")
         val userAccess = UserEntity("uid")
 
-        HelperTestFunction.nextString.add("")
+        HelperTestFunction.nextString("")
         mackUserDatabase.addUserProfileAndAddToUser(profile, user, userAccess)
             .observeOnce { assert(!it.value) }.then.postValue(true)
 
@@ -143,8 +141,8 @@ class UserDatabaseTest {
         val user = UserEntity("uid")
         val userAccess = UserEntity("uid")
 
-        HelperTestFunction.nextString.add("pid")
-        HelperTestFunction.nextBoolean.add(true)
+        HelperTestFunction.nextString("pid")
+        HelperTestFunction.nextBoolean(true)
         mackUserDatabase.addUserProfileAndAddToUser(profile, user, userAccess)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
@@ -168,8 +166,8 @@ class UserDatabaseTest {
         val user = UserEntity("uid")
         val userAccess = UserProfile()
 
-        HelperTestFunction.nextBoolean.add(true)
-        HelperTestFunction.nextBoolean.add(true)
+        HelperTestFunction.nextBoolean(true)
+        HelperTestFunction.nextBoolean(true)
         mackUserDatabase.removeProfileFromUser(profile, user, userAccess)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
@@ -193,7 +191,7 @@ class UserDatabaseTest {
         val user = UserEntity("uid")
         val userAccess = UserProfile()
 
-        HelperTestFunction.nextBoolean.add(false)
+        HelperTestFunction.nextBoolean(false)
         mackUserDatabase.removeProfileFromUser(profile, user, userAccess)
             .observeOnce { assert(!it.value) }.then.postValue(true)
 
@@ -212,8 +210,8 @@ class UserDatabaseTest {
         val user = UserEntity("uid")
         val userAccess = UserProfile()
 
-        HelperTestFunction.nextBoolean.add(true)
-        HelperTestFunction.nextBoolean.add(true)
+        HelperTestFunction.nextBoolean(true)
+        HelperTestFunction.nextBoolean(true)
         mackUserDatabase.removeProfileFromUser(profile, user, userAccess)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
@@ -237,7 +235,7 @@ class UserDatabaseTest {
         val profile = UserProfile("pid")
         val userAccess = UserEntity("uid")
 
-        HelperTestFunction.nextBoolean.add(true)
+        HelperTestFunction.nextBoolean(true)
         mackUserDatabase.updateProfile(profile, userAccess)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
@@ -255,7 +253,7 @@ class UserDatabaseTest {
         val user = UserEntity("uid", profiles = mutableListOf("pid"))
         val userAccess = UserEntity("uid")
 
-        HelperTestFunction.nextBoolean.add(true)
+        HelperTestFunction.nextBoolean(true)
         mackUserDatabase.getUserProfilesList(profiles, user, userAccess)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
@@ -272,7 +270,7 @@ class UserDatabaseTest {
         val profiles = ObservableList<UserEntity>()
         val userAccess = UserProfile("uid")
 
-        HelperTestFunction.nextBoolean.add(true)
+        HelperTestFunction.nextBoolean(true)
         mackUserDatabase.getListAllUsers(profiles,  userAccess = userAccess)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
@@ -290,7 +288,7 @@ class UserDatabaseTest {
         val profile = UserProfile("pid", users = mutableListOf("uid"))
         val userAccess = UserEntity("uid")
 
-        HelperTestFunction.nextBoolean.add(true)
+        HelperTestFunction.nextBoolean(true)
         mackUserDatabase.getProfilesUserList(users, profile, userAccess)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
@@ -309,7 +307,7 @@ class UserDatabaseTest {
         val pid = "pid"
         val userAccess = UserEntity("uid")
 
-        HelperTestFunction.nextBoolean.add(true)
+        HelperTestFunction.nextBoolean(true)
         mackUserDatabase.getProfileById(profile, pid, userAccess)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
