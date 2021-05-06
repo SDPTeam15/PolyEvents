@@ -1,7 +1,6 @@
-package com.github.sdpteam15.polyevents.entity.room
+package com.github.sdpteam15.polyevents.model.room
 
 import com.github.sdpteam15.polyevents.model.entity.Event
-import com.github.sdpteam15.polyevents.model.room.EventLocal
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -46,8 +45,7 @@ class EventLocalTest {
             zoneName = zoneName,
             description = description,
             startTime = startTime,
-            endTime = endTime,
-            tags = mutableSetOf(tag1, tag2)
+            endTime = endTime
         )
     }
 
@@ -60,7 +58,6 @@ class EventLocalTest {
         assertEquals(localEvent.organizer, organizer)
         assertEquals(localEvent.startTime, startTime)
         assertEquals(localEvent.endTime, endTime)
-        assertEquals(localEvent.tags, mutableSetOf(tag1, tag2))
     }
 
     @Test
