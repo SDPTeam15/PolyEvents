@@ -25,10 +25,12 @@ import kotlin.math.pow
 
 const val THRESHOLD = 0.00002
 const val MAGNET_DISTANCE_THRESHOLD = 0.00005
-val ROUTE_COLOR = Color.rgb(0, 162, 232)
-val DEFAULT_ROAD_COLOR = Color.argb(50, 0, 0, 0)
+
+private val ROUTE_COLOR = Color.rgb(0, 162, 232)
+private val DEFAULT_ROAD_COLOR = Color.argb(50, 0, 0, 0)
 
 object RouteMapHelper {
+
     val nodes = ObservableList<RouteNode>()
     val edges = ObservableList<RouteEdge>()
     val zones = ObservableList<Zone>()

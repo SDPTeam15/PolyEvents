@@ -1,9 +1,6 @@
 package com.github.sdpteam15.polyevents.model.database.remote.adapter
 
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.RouteConstant.NODE_ID
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.RouteConstant.LATITUDE
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.RouteConstant.LONGITUDE
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.RouteConstant.AREA_ID
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.RouteConstant.*
 import com.github.sdpteam15.polyevents.model.entity.RouteNode
 
 object RouteNodeAdapter :AdapterInterface<RouteNode> {

@@ -1,10 +1,8 @@
 package com.github.sdpteam15.polyevents.model.entity
 
 import com.github.sdpteam15.polyevents.model.map.Attachable
-import com.github.sdpteam15.polyevents.model.map.LatLngOperator
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.euclideanDistance
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.isOnSegment
-import com.github.sdpteam15.polyevents.model.map.THRESHOLD
 import com.google.android.gms.maps.model.LatLng
 
 /**
