@@ -52,9 +52,9 @@ class RouteMapHelperTest {
         val routeEdge = RouteEdge.fromRouteNode(rn1, rn2, tag)
         RouteMapHelper.edges.add(routeEdge)
         Database.currentDatabase = mock(DatabaseInterface::class.java)
-        Mockito.`when`(Database.currentDatabase.routeDatabase).thenAnswer{
+        Mockito.`when`(Database.currentDatabase.routeDatabase).thenAnswer {
             val mock = mock(RouteDatabaseInterface::class.java)
-            Mockito.`when`(mock.removeEdge(anyOrNull(), anyOrNull())).thenAnswer{
+            Mockito.`when`(mock.removeEdge(anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
                 Observable(true)
             }
             mock
