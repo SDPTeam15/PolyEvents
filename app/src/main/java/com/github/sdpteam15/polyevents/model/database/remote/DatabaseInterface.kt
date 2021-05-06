@@ -158,7 +158,7 @@ interface DatabaseInterface {
     fun deleteListEntity(
         ids: List<String>,
         collection: DatabaseConstant.CollectionConstant
-    ): Observable<Boolean> = setListEntity(ids.map { Pair(it,null) }, collection)
+    ): Observable<Boolean> = setListEntity(ids.map { Pair(it, null) }, collection)
 
     /**
      * Get an Entity from the database
