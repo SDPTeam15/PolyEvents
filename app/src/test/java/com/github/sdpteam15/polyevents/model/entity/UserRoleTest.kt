@@ -1,6 +1,6 @@
 package com.github.sdpteam15.polyevents.model.entity
 
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class UserRoleTest {

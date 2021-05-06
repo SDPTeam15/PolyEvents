@@ -1,31 +1,22 @@
 package com.github.sdpteam15.polyevents.map
 
-import android.graphics.Color
-import com.github.sdpteam15.polyevents.model.database.remote.Database
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
-import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
-import com.github.sdpteam15.polyevents.model.database.remote.objects.RouteDatabaseInterface
 import com.github.sdpteam15.polyevents.model.entity.RouteEdge
 import com.github.sdpteam15.polyevents.model.entity.RouteNode
 import com.github.sdpteam15.polyevents.model.entity.Zone
-import com.github.sdpteam15.polyevents.model.map.RouteMapHelper
-import com.google.android.gms.maps.model.LatLng
-import org.junit.Before
-import org.junit.Test
-import kotlin.test.assertEquals
 import com.github.sdpteam15.polyevents.model.map.*
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.time
-import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.google.android.gms.internal.maps.zzt
 import com.google.android.gms.internal.maps.zzz
 import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.Polyline
-
+import org.junit.Before
+import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.anyOrNull
-
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class RouteMapHelperTest {

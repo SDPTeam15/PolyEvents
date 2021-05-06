@@ -1,7 +1,7 @@
 package com.github.sdpteam15.polyevents.model.room
 
 import com.github.sdpteam15.polyevents.model.entity.Event
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import java.time.LocalDateTime

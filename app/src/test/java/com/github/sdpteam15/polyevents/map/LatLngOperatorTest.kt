@@ -9,11 +9,11 @@ import com.github.sdpteam15.polyevents.model.map.LatLngOperator.isTooParallel
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.minus
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.norm
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.plus
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.project
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.scalar
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.squaredEuclideanDistance
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.squaredNorm
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.time
-import com.github.sdpteam15.polyevents.model.map.LatLngOperator.project
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Test
 import kotlin.math.sqrt

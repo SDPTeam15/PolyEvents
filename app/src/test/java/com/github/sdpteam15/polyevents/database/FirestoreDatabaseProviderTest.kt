@@ -1,6 +1,9 @@
 package com.github.sdpteam15.polyevents.database
 
-import com.github.sdpteam15.polyevents.model.database.remote.*
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
+import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
+import com.github.sdpteam15.polyevents.model.database.remote.StringWithID
+import com.github.sdpteam15.polyevents.model.database.remote.TEST_STR
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.google.android.gms.tasks.OnFailureListener
