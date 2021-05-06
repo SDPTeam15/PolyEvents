@@ -72,7 +72,7 @@ object RouteMapHelper {
 
         for (e in nodes) e.splitOnIntersection(newEdges, removeEdges)
         for (e in edges) e.splitOnIntersection(newEdges, removeEdges)
-        for (e in zone) e.splitOnIntersection(newEdges, removeEdges)
+        for (e in zones) e.splitOnIntersection(newEdges, removeEdges)
 
         Database.currentDatabase.routeDatabase!!.updateEdges(newEdges, removeEdges, edges, nodes)
     }
@@ -375,7 +375,7 @@ object RouteMapHelper {
      * TODO
      */
     fun getNodesAndEdgesFromDB(context: Context?,lifecycleOwner: LifecycleOwner): Observable<Boolean> {
-        Database.currentDatabase.routeDatabase!!.getRoute(nodes, edges, zone)
+        Database.currentDatabase.routeDatabase!!.getRoute(nodes, edges, zones)
         edges.observeAdd(lifecycleOwner) {
             edgeAddedNotification(context, it.value)
         }
@@ -559,7 +559,6 @@ object RouteMapHelper {
     fun moveMarker(marker: Marker, dragMode: MarkerDragMode){
         if(dragMode == MarkerDragMode.DRAG || dragMode == MarkerDragMode.DRAG_START){
             //Changes the coordinates of the polyline to where it can be displayed
-            val res = getEdgeOnNearestAttachable(startMarker!!.position, endMarker!!.position)
             val points = tempPolyline!!.points
             when (marker.snippet) {
                 PolygonAction.MARKER_START.toString() ->{

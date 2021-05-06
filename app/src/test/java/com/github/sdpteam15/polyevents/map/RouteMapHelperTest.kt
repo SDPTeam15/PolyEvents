@@ -62,8 +62,6 @@ class RouteMapHelperTest {
                 edge1, edge2, edge3, edge4, edge5
             )
         )
-    }
-
 
         val result = RouteMapHelper.getShortestPath(LatLng(5.5, 7.0), "1")!!
         val expected = listOf(
