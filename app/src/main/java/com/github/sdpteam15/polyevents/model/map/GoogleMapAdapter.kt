@@ -22,12 +22,13 @@ open class GoogleMapAdapter(var map: GoogleMap?) : MapsInterface {
         }
 
     //Could be done as set to the isMyLocationEnabled but it would neet the context stored in this class
-    override fun setMyLocationEnabled(value: Boolean, context: Context) {
+    override fun setMyLocationEnabled(b: Boolean, requireContext: Context) {
+
         if (ActivityCompat.checkSelfPermission(
-                context,
+                requireContext,
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                context,
+                requireContext,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
@@ -40,38 +41,38 @@ open class GoogleMapAdapter(var map: GoogleMap?) : MapsInterface {
             // for ActivityCompat#requestPermissions for more details.
             return
         }
-        map!!.isMyLocationEnabled = value
+        map!!.isMyLocationEnabled = b
     }
 
     override fun addTileOverlay(tileProvider: TileOverlayOptions?): TileOverlay =
         map!!.addTileOverlay(tileProvider)
 
-    override fun moveCamera(cameraUpdate: CameraUpdate) {
-        map!!.moveCamera(cameraUpdate)
+    override fun moveCamera(newLatLngZoom: CameraUpdate) {
+        map!!.moveCamera(newLatLngZoom)
     }
 
-    override fun setMapStyle(style: MapStyleOptions) {
-        map!!.setMapStyle(style)
+    override fun setMapStyle(mapStyleOptions: MapStyleOptions) {
+        map!!.setMapStyle(mapStyleOptions)
     }
 
-    override fun addPolygon(options: PolygonOptions): Polygon {
-        return map!!.addPolygon(options)
+    override fun addPolygon(option: PolygonOptions): Polygon {
+        return map!!.addPolygon(option)
     }
 
-    override fun addMarker(options: MarkerOptions): Marker {
-        return map!!.addMarker(options)
+    override fun addMarker(option: MarkerOptions): Marker {
+        return map!!.addMarker(option)
     }
 
     override fun addPolyline(option: PolylineOptions): Polyline {
         return map!!.addPolyline(option)
     }
 
-    override fun setMinZoomPreference(minZoomPreference: Float) {
-        map!!.setMinZoomPreference(minZoomPreference)
+    override fun setMinZoomPreference(minZoom: Float) {
+        map!!.setMinZoomPreference(minZoom)
     }
 
-    override fun setMaxZoomPreference(maxZoomPreference: Float) {
-        map!!.setMaxZoomPreference(maxZoomPreference)
+    override fun setMaxZoomPreference(maxZoom: Float) {
+        map!!.setMaxZoomPreference(maxZoom)
     }
 
     override fun setLatLngBoundsForCameraTarget(bounds: LatLngBounds) {

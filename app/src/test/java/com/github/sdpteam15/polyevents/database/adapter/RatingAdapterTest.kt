@@ -16,7 +16,6 @@ class RatingAdapterTest {
     val eventId = "eventId"
     val feedback = "feedback"
     val rate = 3.5F
-    val rateD = 3.5
 
     lateinit var rating: Rating
 
