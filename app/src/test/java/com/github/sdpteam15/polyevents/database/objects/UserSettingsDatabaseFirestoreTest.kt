@@ -4,7 +4,7 @@ import com.github.sdpteam15.polyevents.database.HelperTestFunction
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.UserSettingsAdapter
-import com.github.sdpteam15.polyevents.model.database.remote.objects.UserSettingsDatabaseFirestore
+import com.github.sdpteam15.polyevents.model.database.remote.objects.UserSettingsDatabase
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
@@ -15,14 +15,14 @@ import kotlin.test.assertEquals
 import org.mockito.Mockito.`when` as When
 
 class UserSettingsDatabaseFirestoreTest {
-    lateinit var mockUserSettingsDatabase: UserSettingsDatabaseFirestore
+    lateinit var mockUserSettingsDatabase: UserSettingsDatabase
     lateinit var mockRemoteDatabase: DatabaseInterface
     val mockUserId = "mockId"
 
     @Before
     fun setup() {
         mockRemoteDatabase = HelperTestFunction.mockFor()
-        mockUserSettingsDatabase = UserSettingsDatabaseFirestore(mockRemoteDatabase)
+        mockUserSettingsDatabase = UserSettingsDatabase(mockRemoteDatabase)
 
         When(mockRemoteDatabase.currentUser).thenReturn(
                 UserEntity(
