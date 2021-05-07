@@ -226,8 +226,6 @@ class ObservableListTest {
         list.add(2)
 
         val iterator = list.iterator() as MutableListIterator<Int>
-        val iterator2 = list.listIterator()
-        val iterator3 = list.listIterator(0)
 
         assert(iterator.hasNext())
         assertNotNull(iterator.nextIndex())

@@ -57,6 +57,7 @@ private const val uidTest2 = "Test uid2"
 private const val pidTest = "Test pid"
 
 @RunWith(MockitoJUnitRunner::class)
+@Suppress("UNCHECKED_CAST")
 class ProfileLoginFragmentTests {
     @Rule
     @JvmField

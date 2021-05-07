@@ -47,9 +47,9 @@ object FakeDatabase : DatabaseInterface {
 
     override var materialRequestDatabase: MaterialRequestDatabaseInterface? = null
         get() = field ?: FakeDatabaseMaterialRequest
-    override var routeDatabase: RouteDatabaseInterface?
-        get() = TODO("Not yet implemented")
-        set(value) {}
+
+    override var routeDatabase: RouteDatabaseInterface?=null
+        get() = field ?: FakeDatabaseRoute
 
     override var userSettingsDatabase: UserSettingsDatabaseInterface? = null
         get() = field ?: FakeDatabaseUserSettings

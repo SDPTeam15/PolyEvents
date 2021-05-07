@@ -21,6 +21,7 @@ import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.anyOrNull
 
+@Suppress("UNCHECKED_CAST","TYPE_INFERENCE_ONLY_INPUT_TYPES_WARNING")
 class EventManagementListTest {
     lateinit var mockedDatabase: DatabaseInterface
     lateinit var mockedZoneDB: ZoneDatabaseInterface

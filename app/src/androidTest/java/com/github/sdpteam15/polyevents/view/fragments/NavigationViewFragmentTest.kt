@@ -25,6 +25,7 @@ import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.Mockito.`when` as When
 
 @RunWith(MockitoJUnitRunner::class)
+@Suppress("UNCHECKED_CAST")
 class NavigationViewFragmentTest {
 
     @Rule

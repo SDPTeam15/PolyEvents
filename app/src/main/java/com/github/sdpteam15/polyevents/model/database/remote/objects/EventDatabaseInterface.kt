@@ -119,5 +119,11 @@ interface EventDatabaseInterface {
             userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
+    fun getUserRatingFromEvent(
+        userId:String,
+        eventId:String,
+        returnedRating:Observable<Rating>,
+        userAccess: UserProfile?
+    ):Observable<Boolean>
 
 }

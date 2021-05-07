@@ -89,7 +89,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         val removeRouteButton = view.findViewById<FloatingActionButton>(R.id.removeRoute)
         val saveNewRouteButton = view.findViewById<FloatingActionButton>(R.id.saveNewRoute)
         addNewRouteButton.setOnClickListener { RouteMapHelper.createNewRoute(requireContext()) }
-        removeRouteButton.setOnClickListener { RouteMapHelper.removeRoute(requireContext()) }
+        removeRouteButton.setOnClickListener { RouteMapHelper.removeRoute() }
         saveNewRouteButton.setOnClickListener { RouteMapHelper.saveNewRoute() }
 
         locationButton = view.findViewById(R.id.id_location_button)

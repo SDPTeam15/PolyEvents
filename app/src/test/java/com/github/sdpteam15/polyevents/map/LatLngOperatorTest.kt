@@ -135,7 +135,6 @@ class LatLngOperatorTest {
         val a = LatLng(1.0,0.0)
         val b = LatLng(3.0,4.0)
         val c = LatLng(3.0,0.0)
-        val d = LatLng(1.0,4.0)
         val mid = LatLng(2.0,2.0)
         assertEquals(minus(mid,a),project(minus(mid,a), minus(b,a)))
         assertEquals(c, project(b,a))

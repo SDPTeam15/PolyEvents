@@ -34,7 +34,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
-
+@Suppress("UNCHECKED_CAST")
 class ItemRequestActivityTest {
     private lateinit var availableItems: MutableMap<Item, Int>
     private var availableItemsList = ObservableList<Pair<Item, Int>>()
