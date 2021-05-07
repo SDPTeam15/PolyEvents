@@ -494,9 +494,8 @@ object RouteMapHelper {
 
     /**
      * Either removes the route that is being created, or activates the remove mode
-     * @param context context
      */
-    fun removeRoute(context: Context?) {
+    fun removeRoute() {
         if (tempPolyline != null) {
             tempPolyline!!.remove()
             tempVariableClear()

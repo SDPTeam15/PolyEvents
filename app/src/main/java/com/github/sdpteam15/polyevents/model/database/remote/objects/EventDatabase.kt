@@ -119,7 +119,7 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
             it.whereEqualTo(DatabaseConstant.RatingConstant.RATING_EVENT_ID.value, eventId)
                 .whereEqualTo(DatabaseConstant.RatingConstant.RATING_USER_ID.value, userId)
                 .limit(1)
-        }, RATING_COLLECTION).observeOnce { it ->
+        }, RATING_COLLECTION).observeOnce {
             if (it.value) {
                 rating.observeOnce { it2 ->
                     returnedRating.postValue(it2.value[0])
