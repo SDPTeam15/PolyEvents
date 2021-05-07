@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.model.database.remote.objects
 
+import android.util.Log
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.EVENT_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.RATING_COLLECTION
@@ -89,7 +90,6 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
         userAccess: UserProfile?
     ): Observable<Boolean> {
         val end = Observable<Boolean>()
-
         val rating = ObservableList<Rating>()
 
         getRatingsForEvent(eventId, null, rating, userAccess).observeOnce {
@@ -116,18 +116,19 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
         val rating = ObservableList<Rating>()
 
         db.getListEntity(rating, null, {
+            Log.d(TAG, "ça passe")
+            Log.d(TAG, "ça passe")
             it.whereEqualTo(DatabaseConstant.RatingConstant.RATING_EVENT_ID.value, eventId)
                 .whereEqualTo(DatabaseConstant.RatingConstant.RATING_USER_ID.value, userId)
                 .limit(1)
         }, RATING_COLLECTION).observeOnce {
+            Log.d(TAG, "On est là")
             if (it.value) {
-                if(rating.size==0){
+                if (rating.size == 0) {
                     end.postValue(false, db)
-                }else{
-                    rating.observeOnce { it2 ->
-                        returnedRating.postValue(it2.value[0])
-                        end.postValue(true, db)
-                    }
+                } else {
+                    returnedRating.postValue(rating[0])
+                    end.postValue(true, db)
                 }
             } else {
                 end.postValue(false, db)

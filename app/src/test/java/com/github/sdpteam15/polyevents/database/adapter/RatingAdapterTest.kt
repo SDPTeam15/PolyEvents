@@ -8,6 +8,7 @@ import com.github.sdpteam15.polyevents.model.entity.UserRole
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import kotlin.test.assertNull
 
 class RatingAdapterTest {
     val userID = "userId"
@@ -24,6 +25,16 @@ class RatingAdapterTest {
             ratingId, rate, feedback, eventId, userID
 
         )
+    }
+
+    @Test
+    fun canCreateWithoutAnyValues(){
+        val rating2 = Rating()
+        assertNull(rating2.rate)
+        assertNull(rating2.feedback)
+        assertNull(rating2.userId)
+        assertNull(rating2.eventId)
+        assertNull(rating2.ratingId)
     }
 
     @Test

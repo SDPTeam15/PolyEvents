@@ -12,16 +12,16 @@ object RatingAdapter: AdapterInterface<Rating> {
     override fun toDocument(element: Rating): HashMap<String, Any?> =
         hashMapOf(
             RATING_DESCRIPTION.value to  element.feedback,
-            RATING_SCORE.value to element.rate,
+            RATING_SCORE.value to  element.rate,
             RATING_USER_ID.value to  element.userId,
             RATING_EVENT_ID.value to  element.eventId
         )
 
     override fun fromDocument(document: MutableMap<String, Any?>, id: String): Rating = Rating(
         ratingId = id,
-        feedback = document[RATING_DESCRIPTION.value] as String?,
-        rate = (document[RATING_SCORE.value] as Double?)?.toFloat(),
-        userId = document[RATING_USER_ID.value] as String?,
-        eventId = document[RATING_EVENT_ID.value] as String?
+        feedback = document[RATING_DESCRIPTION.value] as String,
+        rate = (document[RATING_SCORE.value] as Double).toFloat(),
+        userId = document[RATING_USER_ID.value] as String,
+        eventId = document[RATING_EVENT_ID.value] as String
     )
 }
