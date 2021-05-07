@@ -30,6 +30,7 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions.run
  * @param observable initial observable of the data
  * @param creator last object that modified the data
  */
+@Suppress("UNCHECKED_CAST")
 class ObservableList<T>(
     collection: Collection<T>? = null,
     observable: Observable<T>? = null,

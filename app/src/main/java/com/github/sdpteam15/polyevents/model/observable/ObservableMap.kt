@@ -6,6 +6,7 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions
 /**
  * Observable live map of type T
  */
+@Suppress("UNCHECKED_CAST")
 class ObservableMap<K, T>(val creator: Any? = null) : MutableMap<K, T> {
 
     private val observersPut = mutableSetOf<(UpdateKeyedValue<K, T>) -> Boolean>()
