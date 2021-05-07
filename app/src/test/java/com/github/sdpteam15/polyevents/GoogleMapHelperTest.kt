@@ -19,7 +19,6 @@ class GoogleMapHelperTest {
     val map: MutableMap<Int, List<LatLng>> = mutableMapOf()
     val id1 = 0
     val id2 = 1
-    val id3 = 2
 
     @Before
     fun setup() {

@@ -14,7 +14,7 @@ import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
 
-@Suppress("UNCHECKED_CAST")
+@Suppress("UNCHECKED_CAST", "TYPE_INFERENCE_ONLY_INPUT_TYPES_WARNING")
 class RouteDatabaseTest {
     lateinit var mackRouteDatabase: RouteDatabase
 
@@ -52,9 +52,9 @@ class RouteDatabaseTest {
         mackRouteDatabase.getRoute(nodes, edges, zone)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
-        var getListZone = HelperTestFunction.getListEntityQueue.poll()!!
-        var getListNode = HelperTestFunction.getListEntityQueue.poll()!!
-        var getListEdges = HelperTestFunction.getListEntityQueue.poll()!!
+        val getListZone = HelperTestFunction.getListEntityQueue.poll()!!
+        val getListNode = HelperTestFunction.getListEntityQueue.poll()!!
+        val getListEdges = HelperTestFunction.getListEntityQueue.poll()!!
 
         assertEquals(zone, getListZone.element)
         assertEquals(null, getListZone.ids)
