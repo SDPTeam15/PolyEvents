@@ -3,6 +3,7 @@ package com.github.sdpteam15.polyevents.model.database.remote.objects
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.Matcher
 import com.github.sdpteam15.polyevents.model.entity.Event
+import com.github.sdpteam15.polyevents.model.entity.Rating
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
@@ -21,8 +22,8 @@ interface EventDatabaseInterface {
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun createEvent(
-        event: Event,
-        userAccess: UserProfile? = currentProfile
+            event: Event,
+            userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**
@@ -32,8 +33,8 @@ interface EventDatabaseInterface {
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun updateEvents(
-        event: Event,
-        userAccess: UserProfile? = currentProfile
+            event: Event,
+            userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**
@@ -44,9 +45,9 @@ interface EventDatabaseInterface {
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getEventFromId(
-        id: String,
-        returnEvent: Observable<Event>,
-        userAccess: UserProfile? = currentProfile
+            id: String,
+            returnEvent: Observable<Event>,
+            userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**
@@ -58,9 +59,39 @@ interface EventDatabaseInterface {
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getEvents(
-        matcher: Matcher? = null,
-        limit: Long? = null,
-        eventList: ObservableList<Event>,
-        userAccess: UserProfile? = currentProfile
+            matcher: Matcher? = null,
+            limit: Long? = null,
+            eventList: ObservableList<Event>,
+            userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
+
+    fun getRatingsForEvent(
+            id: String,
+            limit: Long? = null,
+            ratingList: ObservableList<Rating>,
+            userAccess: UserProfile? = currentProfile
+    ): Observable<Boolean>
+
+    fun addRatingToEvent(
+            rating: Rating,
+            userAccess: UserProfile? = currentProfile
+    ): Observable<Boolean>
+
+    fun removeRating(
+            rating: Rating,
+            userAccess: UserProfile? = currentProfile
+    ): Observable<Boolean>
+
+    fun updateRating(
+            rating: Rating,
+            userAccess: UserProfile? = currentProfile
+    ): Observable<Boolean>
+
+    fun getMeanRatingForEvent(
+            id: String,
+            mean: Observable<Double>,
+            userAccess: UserProfile? = currentProfile
+    ): Observable<Boolean>
+
+
 }
