@@ -8,8 +8,7 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.matcher.ViewMatchers.*
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
@@ -23,6 +22,7 @@ import com.github.sdpteam15.polyevents.model.room.EventLocal
 import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
 import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertDisplayed
 import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertNotDisplayed
+import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertNotExist
 import com.schibsted.spain.barista.interaction.BaristaClickInteractions.clickOn
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.containsString
@@ -256,11 +256,49 @@ class EventActivityTest {
         goToEventActivityWithIntent()
         assertDisplayed(R.id.event_leave_review_button)
 
+        // Click review event
         clickOn(R.id.event_leave_review_button)
+        assertDisplayed(R.id.leave_review_dialog_fragment)
         assertDisplayed(R.id.leave_review_fragment_save_button)
         assertDisplayed(R.id.leave_review_fragment_title)
         assertDisplayed(R.id.leave_review_fragment_rating)
         assertDisplayed(R.id.leave_review_fragment_feedback_text)
+        assertDisplayed(R.id.leave_review_fragment_cancel_button)
+
+        // Click on cancel
+        clickOn(R.id.leave_review_fragment_cancel_button)
+        assertNotExist(R.id.leave_review_fragment_save_button)
+        assertNotExist(R.id.leave_review_fragment_title)
+        assertNotExist(R.id.leave_review_fragment_rating)
+        assertNotExist(R.id.leave_review_fragment_feedback_text)
+        assertNotExist(R.id.leave_review_fragment_cancel_button)
+    }
+
+    @Test
+    fun testUserNotLoggedInCantLeaveReview() {
+        When(mockedDatabase.currentUser).thenReturn(null)
+        goToEventActivityWithIntent()
+
+        assertNotExist(R.id.leave_review_fragment_save_button)
+        assertNotExist(R.id.leave_review_fragment_title)
+        assertNotExist(R.id.leave_review_fragment_rating)
+        assertNotExist(R.id.leave_review_fragment_feedback_text)
+        assertNotExist(R.id.leave_review_fragment_cancel_button)
+    }
+
+    @Test
+    fun testUserShouldNotBeAbleToStoreRatingIfHasNotRatedYet() {
+        goToEventActivityWithIntent()
+        assertDisplayed(R.id.event_leave_review_button)
+
+        // Click review event
+        clickOn(R.id.event_leave_review_button)
+        assertDisplayed(R.id.leave_review_dialog_fragment)
+
+        // Try to save rating
+        clickOn(R.id.leave_review_fragment_save_button)
+        // Dialog should still be displayed since the save shouldn't have worked
+        assertDisplayed(R.id.leave_review_dialog_fragment)
     }
 
     private fun goToEventActivityWithIntent() {
