@@ -16,6 +16,7 @@ class RatingAdapterTest {
     val eventId = "eventId"
     val feedback = "feedback"
     val rate = 3.5F
+    val rateD = 3.5
 
     lateinit var rating: Rating
 
@@ -53,12 +54,12 @@ class RatingAdapterTest {
     }
 
     @Test
-    fun conversionOfDocumentToEventPreservesData() {
+    fun conversionToRatingDocumentPreservesData() {
         val rat: HashMap<String, Any?> = hashMapOf(
             DatabaseConstant.RatingConstant.RATING_EVENT_ID.value to rating.eventId,
             DatabaseConstant.RatingConstant.RATING_USER_ID.value to rating.userId,
             DatabaseConstant.RatingConstant.RATING_DESCRIPTION.value to rating.feedback,
-            DatabaseConstant.RatingConstant.RATING_SCORE.value to rating.rate
+            DatabaseConstant.RatingConstant.RATING_SCORE.value to rating.rate!!.toDouble()
         )
 
         val obtainedRating =
