@@ -50,7 +50,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         }
     override var eventDatabase: EventDatabaseInterface? = null
         get() {
-            field = field ?: EventDatabaseFirestore(this)
+            field = field ?: EventDatabase(this)
             return field
         }
     override var materialRequestDatabase: MaterialRequestDatabaseInterface? = null

@@ -17,9 +17,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
-const val TAG = "EventDatabaseFirestore"
+const val TAG = "EventDatabase"
 
-class EventDatabaseFirestore(private val db: DatabaseInterface) : EventDatabaseInterface {
+class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface {
     override fun createEvent(event: Event, userAccess: UserProfile?): Observable<Boolean> =
         db.addEntity(event, EVENT_COLLECTION, EventAdapter)
 

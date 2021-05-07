@@ -14,6 +14,7 @@ import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
 
+@Suppress("UNCHECKED_CAST")
 class RouteDatabaseTest {
     lateinit var mackRouteDatabase: RouteDatabase
 

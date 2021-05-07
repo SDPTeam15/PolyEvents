@@ -35,6 +35,7 @@ private const val displayNameTest = "Test displayName"
 private const val emailTest = "Test email"
 private const val uidTest = "Test uid"
 
+@Suppress("UNCHECKED_CAST")
 class ZoneDatabaseFirestoreTest {
     lateinit var user: UserEntity
     lateinit var mockedDatabase: FirebaseFirestore

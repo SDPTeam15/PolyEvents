@@ -16,6 +16,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
+@Suppress("UNCHECKED_CAST")
 class UserDatabaseTest {
     lateinit var mackUserDatabase: UserDatabase
 

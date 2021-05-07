@@ -14,6 +14,7 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import org.mockito.Mockito.`when` as When
 
+@Suppress("UNCHECKED_CAST")
 class UserSettingsDatabaseFirestoreTest {
     lateinit var mockUserSettingsDatabase: UserSettingsDatabase
     lateinit var mockRemoteDatabase: DatabaseInterface
