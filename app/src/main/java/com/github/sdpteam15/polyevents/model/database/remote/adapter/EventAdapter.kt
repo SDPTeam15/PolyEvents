@@ -17,7 +17,6 @@ import com.google.firebase.Timestamp
  */
 object EventAdapter : AdapterInterface<Event> {
     override fun toDocument(element: Event): HashMap<String, Any?> = hashMapOf(
-        EVENT_DOCUMENT_ID.value to element.eventId,
         EVENT_NAME.value to element.eventName,
         EVENT_ORGANIZER.value to element.organizer,
         EVENT_ZONE_ID.value to element.zoneId,
