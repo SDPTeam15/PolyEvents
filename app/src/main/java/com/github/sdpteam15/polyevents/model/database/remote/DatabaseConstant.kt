@@ -25,6 +25,7 @@ object DatabaseConstant {
         USER_SETTINGS_COLLECTION("userSettings", UserSettingsAdapter),
         NODE_COLLECTION("nodes", RouteNodeAdapter),
         EDGE_COLLECTION("edges", RouteEdgeAdapter),
+        RATING_COLLECTION("ratings", RatingAdapter),
 
 
         TEST_COLLECTION("test", object : AdapterInterface<StringWithID> {
@@ -144,7 +145,7 @@ object DatabaseConstant {
 
     enum class RatingConstant(val value:String){
         RATING_ID("rid"),
-        EVENT_ID("eventId"),
+        RATING_EVENT_ID("eventId"),
         RATING_USER_ID("uid"),
         RATING_DESCRIPTION("ratingDescription"),
         RATING_SCORE("score");
