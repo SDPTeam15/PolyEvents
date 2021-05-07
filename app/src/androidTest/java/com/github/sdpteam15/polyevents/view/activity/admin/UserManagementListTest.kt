@@ -37,6 +37,7 @@ val nameTest = "nameTest"
 val usernameTest = "usernameTest"
 val emailTest = "emailTest"
 
+@Suppress("UNCHECKED_CAST")
 class UserManagementListTest {
     lateinit var users: MutableList<UserEntity>
 
