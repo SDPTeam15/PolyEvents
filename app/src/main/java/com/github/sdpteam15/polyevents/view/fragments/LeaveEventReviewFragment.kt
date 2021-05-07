@@ -10,12 +10,22 @@ import android.widget.EditText
 import android.widget.RatingBar
 import androidx.fragment.app.DialogFragment
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
+import com.github.sdpteam15.polyevents.model.entity.Rating
 
-class LeaveEventReviewFragment: DialogFragment(R.layout.fragment_leave_review) {
+/**
+ * A Dialog Fragment that is displayed over an EventActivity, to leave a review for the event.
+ */
+class LeaveEventReviewFragment(val eventId: String?):
+    DialogFragment(R.layout.fragment_leave_review) {
 
     private lateinit var leaveReviewDialogConfirmButton: Button
     private lateinit var userFeedbackDialogEditText: EditText
     private lateinit var leaveReviewDialogRatingBar: RatingBar
+    private lateinit var leaveReviewDialogCancelButton: Button
+
+    private var rated = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -25,10 +35,38 @@ class LeaveEventReviewFragment: DialogFragment(R.layout.fragment_leave_review) {
         val view = super.onCreateView(inflater, container, savedInstanceState)
         leaveReviewDialogConfirmButton = view!!.findViewById(R.id.leave_review_fragment_save_button)
         userFeedbackDialogEditText = view.findViewById(R.id.leave_review_fragment_feedback_text)
+
         leaveReviewDialogRatingBar = view.findViewById(R.id.leave_review_fragment_rating)
+        leaveReviewDialogRatingBar.setOnRatingBarChangeListener { _, _, _ ->
+            rated = true
+        }
+
+        leaveReviewDialogCancelButton = view.findViewById(R.id.leave_review_fragment_cancel_button)
+        leaveReviewDialogCancelButton.setOnClickListener {
+            // Dimiss the dialog if canceled
+            dismiss()
+        }
+
         leaveReviewDialogConfirmButton.setOnClickListener {
-            // TODO: Save review
-            Log.d(TAG, "Ok left review")
+            if (!rated) {
+                // Check if user has rated, to avoid storing a rating with zero stars.
+                HelperFunctions.showToast(getString(R.string.event_review_leave_rating_warning),
+                    activity?.applicationContext
+                )
+            } else {
+                Log.d(TAG, "Leaving a review")
+                // TODO: Get current rating
+                val rating = Rating(
+                    rate = leaveReviewDialogRatingBar.rating,
+                    feedback = userFeedbackDialogEditText.text.toString(),
+                    eventId = eventId,
+                    userId = currentDatabase.currentUser!!.uid
+                )
+                currentDatabase.eventDatabase?.addRatingToEvent(
+                    rating
+                )
+                dismiss()
+            }
         }
         return view
     }

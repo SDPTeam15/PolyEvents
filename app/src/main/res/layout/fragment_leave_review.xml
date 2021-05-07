@@ -42,12 +42,21 @@
     </EditText>
 
     <Button
+        android:id="@+id/leave_review_fragment_cancel_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:layout_constraintTop_toBottomOf="@id/leave_review_fragment_feedback_text"
+        app:layout_constraintStart_toStartOf="parent"
+        android:text="@string/EditProfileActivity_Cancel"/>
+
+
+    <Button
         android:id="@+id/leave_review_fragment_save_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/leave_review_fragment_feedback_text"
         android:text="@string/EditProfileActivity_Save"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
