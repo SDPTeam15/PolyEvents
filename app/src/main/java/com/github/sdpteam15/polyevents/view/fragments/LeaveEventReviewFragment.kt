@@ -13,6 +13,7 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.entity.Rating
+import com.github.sdpteam15.polyevents.model.observable.Observable
 
 /**
  * A Dialog Fragment that is displayed over an EventActivity, to leave a review for the event.
@@ -65,9 +66,42 @@ class LeaveEventReviewFragment(val eventId: String?):
                 currentDatabase.eventDatabase?.addRatingToEvent(
                     rating
                 )
+                // TODO: show toast to confirm
                 dismiss()
             }
         }
+
+        /*val ratingObservable = Observable<Rating>()
+        Log.d(TAG, "Here!")
+        ratingObservable.observe(this) {
+            Log.d(TAG, "Retrieved Rating for $eventId and ${currentDatabase.currentUser!!.uid}!")
+            val rating = it.value
+            leaveReviewDialogRatingBar.rating = rating.rate!!
+            if (rating.feedback != null) {
+                if (rating.feedback.isEmpty()) {
+                    userFeedbackDialogEditText.setText("")
+                } else {
+                    userFeedbackDialogEditText.setText(rating.feedback)
+                }
+            }
+        }
+
+        Log.d(TAG, "Retrieving rating for $eventId and ${currentDatabase.currentUser!!.uid}!")
+        val obs = currentDatabase.eventDatabase!!.getUserRatingFromEvent(
+            userId = currentDatabase.currentUser!!.uid,
+            eventId = eventId!!,
+            returnedRating = ratingObservable,
+            userAccess = null
+        )
+
+        obs.observe(this) {
+            if(it.value) {
+                Log.d(TAG, "Managed to retrieve rating for ${eventId} and ${currentDatabase.currentUser!!.uid}!")
+            } else {
+                Log.d(TAG, "Failed to retrieve rating for ${eventId} and ${currentDatabase.currentUser!!.uid}!")
+            }
+        }*/
+
         return view
     }
 
