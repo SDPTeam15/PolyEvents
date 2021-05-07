@@ -1,19 +1,23 @@
 package com.github.sdpteam15.polyevents.database.objects
 
 import android.graphics.Bitmap
+import com.github.sdpteam15.polyevents.database.HelperTestFunction
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.EVENT_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
-import com.github.sdpteam15.polyevents.model.observable.Observable
-import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.model.database.remote.adapter.EventAdapter
+import com.github.sdpteam15.polyevents.model.database.remote.adapter.UserAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.login.GoogleUserLogin
 import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
 import com.github.sdpteam15.polyevents.model.database.remote.login.UserLoginInterface
+import com.github.sdpteam15.polyevents.model.database.remote.objects.EventDatabase
+import com.github.sdpteam15.polyevents.model.database.remote.objects.UserDatabase
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
-import com.github.sdpteam15.polyevents.model.database.remote.adapter.EventAdapter
-import com.github.sdpteam15.polyevents.model.database.remote.objects.EventDatabaseFirestore
+import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.firestore.*
@@ -25,6 +29,7 @@ import org.mockito.Mockito
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.anyOrNull
 import java.time.LocalDateTime
+import kotlin.test.assertEquals
 import org.mockito.Mockito.`when` as When
 
 private const val displayNameTest = "Test displayName"
@@ -32,9 +37,11 @@ private const val emailTest = "Test email"
 private const val uidTest = "Test uid"
 private val listProfile = ArrayList<String>()
 
-class EventDatabaseFirestoreTest {
+@Suppress("UNCHECKED_CAST")
+class EventDatabaseTest {
     lateinit var user: UserEntity
     lateinit var mockedDatabase: FirebaseFirestore
+    lateinit var mockedEventdatabase: EventDatabase
 
     @Before
     fun setup() {
@@ -48,7 +55,6 @@ class EventDatabaseFirestoreTest {
         //Mock the database and set it as the default database
         mockedDatabase = mock(FirebaseFirestore::class.java)
         FirestoreDatabaseProvider.firestore = mockedDatabase
-        EventDatabaseFirestore.firestore = mockedDatabase
 
         FirestoreDatabaseProvider.lastQuerySuccessListener = null
         FirestoreDatabaseProvider.lastSetSuccessListener = null
@@ -58,11 +64,16 @@ class EventDatabaseFirestoreTest {
 
 
     }
+    @Before
+    fun setup2() {
+        val mockDatabaseInterface = HelperTestFunction.mockFor()
+        mockedEventdatabase = EventDatabase(mockDatabaseInterface)
+        HelperTestFunction.clearQueue()
+    }
 
     @After
     fun teardown() {
         FirestoreDatabaseProvider.firestore = null
-        EventDatabaseFirestore.firestore = null
         UserLogin.currentUserLogin = GoogleUserLogin
     }
 
@@ -73,10 +84,10 @@ class EventDatabaseFirestoreTest {
         FirestoreDatabaseProvider.currentUser = user
         Mockito.`when`(mockedUserLogin.isConnected()).thenReturn(true)
         FirestoreDatabaseProvider.currentProfile = UserProfile()
-        assert(EventDatabaseFirestore.currentUser== FirestoreDatabaseProvider.currentUser)
-        assert(EventDatabaseFirestore.currentProfile== FirestoreDatabaseProvider.currentProfile)
-        assert(EventDatabaseFirestore.firestore==mockedDatabase)
     }
+
+
+
 
     @Test
     fun updateEventInDatabaseWorks() {

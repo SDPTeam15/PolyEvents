@@ -5,16 +5,16 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.Co
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.ITEM_TYPE_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
-import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.model.database.remote.adapter.ItemEntityAdapter
+import com.github.sdpteam15.polyevents.model.database.remote.adapter.ItemTypeAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.login.GoogleUserLogin
 import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
 import com.github.sdpteam15.polyevents.model.database.remote.login.UserLoginInterface
+import com.github.sdpteam15.polyevents.model.database.remote.objects.ItemDatabaseFirestore
 import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
-import com.github.sdpteam15.polyevents.model.database.remote.adapter.ItemEntityAdapter
-import com.github.sdpteam15.polyevents.model.database.remote.adapter.ItemTypeAdapter
-import com.github.sdpteam15.polyevents.model.database.remote.objects.ItemDatabaseFirestore
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.firestore.CollectionReference
@@ -34,6 +34,7 @@ private const val emailTest = "Test email"
 private const val uidTest = "Test uid"
 private val listProfile = ArrayList<String>()
 
+@Suppress("UNCHECKED_CAST")
 class ItemDatabaseFirestoreTest {
     lateinit var user: UserEntity
     lateinit var mockedDatabase: FirebaseFirestore

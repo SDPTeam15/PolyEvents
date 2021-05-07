@@ -10,8 +10,6 @@ import com.google.firebase.Timestamp
  * A class for converting between device location entities in our code and
  * documents in the Firebase database. Not unlike the conversion to
  * DTO (Data transfer object) concept.
- *
- * IMPORTANT: This should be updated whenever we add, remove or update fields of Event.
  */
 object DeviceLocationAdapter : AdapterInterface<DeviceLocation> {
     override fun toDocument(element: DeviceLocation): HashMap<String, Any?> = hashMapOf(

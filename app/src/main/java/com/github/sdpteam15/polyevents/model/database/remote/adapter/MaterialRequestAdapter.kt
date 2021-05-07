@@ -5,6 +5,11 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.Ma
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
 import com.google.firebase.Timestamp
 
+/**
+ * A class for converting between material request entities in our code and
+ * documents in the Firebase database. Not unlike the conversion to
+ * DTO (Data transfer object) concept.
+ */
 object MaterialRequestAdapter : AdapterInterface<MaterialRequest> {
     override fun toDocument(element: MaterialRequest) = hashMapOf(
         MATERIAL_REQUEST_LIST.value to element.items,

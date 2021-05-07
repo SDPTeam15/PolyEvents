@@ -4,26 +4,26 @@ import com.github.sdpteam15.polyevents.database.HelperTestFunction
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.UserSettingsAdapter
-import com.github.sdpteam15.polyevents.model.database.remote.objects.UserSettingsDatabaseFirestore
+import com.github.sdpteam15.polyevents.model.database.remote.objects.UserSettingsDatabase
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.room.UserSettings
 import org.junit.Before
 import org.junit.Test
-import java.util.*
 import kotlin.test.assertEquals
 import org.mockito.Mockito.`when` as When
 
+@Suppress("UNCHECKED_CAST")
 class UserSettingsDatabaseFirestoreTest {
-    lateinit var mockUserSettingsDatabase: UserSettingsDatabaseFirestore
+    lateinit var mockUserSettingsDatabase: UserSettingsDatabase
     lateinit var mockRemoteDatabase: DatabaseInterface
     val mockUserId = "mockId"
 
     @Before
     fun setup() {
         mockRemoteDatabase = HelperTestFunction.mockFor()
-        mockUserSettingsDatabase = UserSettingsDatabaseFirestore(mockRemoteDatabase)
+        mockUserSettingsDatabase = UserSettingsDatabase(mockRemoteDatabase)
 
         When(mockRemoteDatabase.currentUser).thenReturn(
                 UserEntity(
@@ -37,7 +37,7 @@ class UserSettingsDatabaseFirestoreTest {
     @Test
     fun testUpdatingUserSettings() {
         val userSettings = UserSettings()
-        HelperTestFunction.nextBoolean.add(true)
+        HelperTestFunction.nextBoolean(true)
         mockUserSettingsDatabase.updateUserSettings(userSettings, userAccess = UserProfile())
                 .observeOnce { assert(it.value) }.then.postValue(false)
 
@@ -53,7 +53,7 @@ class UserSettingsDatabaseFirestoreTest {
         val userSettingsObservable = Observable<UserSettings>()
         val userAccess = UserProfile()
 
-        HelperTestFunction.nextBoolean.add(true)
+        HelperTestFunction.nextBoolean(true)
         mockUserSettingsDatabase.getUserSettings(
                 id = mockUserId,
                 userSettingsObservable = userSettingsObservable,

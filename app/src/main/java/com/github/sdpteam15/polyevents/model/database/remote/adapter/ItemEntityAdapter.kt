@@ -3,6 +3,11 @@ package com.github.sdpteam15.polyevents.model.database.remote.adapter
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ItemConstants.*
 import com.github.sdpteam15.polyevents.model.entity.Item
 
+/**
+ * A class for converting between item entities in our code and
+ * documents in the Firebase database. Not unlike the conversion to
+ * DTO (Data transfer object) concept.
+ */
 object ItemEntityAdapter : AdapterInterface<Pair<Item, Int>> {
 
     fun toItemDocument(item: Item, count: Int): HashMap<String, Any?> {

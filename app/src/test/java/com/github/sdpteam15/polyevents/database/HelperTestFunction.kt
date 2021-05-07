@@ -1,20 +1,27 @@
 package com.github.sdpteam15.polyevents.database
 
-import com.github.sdpteam15.polyevents.model.observable.Observable
-import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
-import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterToDocumentInterface
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.Matcher
+import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
+import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterToDocumentInterface
+import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import org.mockito.Mockito
 import org.mockito.kotlin.anyOrNull
 import java.util.*
 import org.mockito.Mockito.`when` as When
 
+@Suppress("UNCHECKED_CAST")
 object HelperTestFunction {
-    val nextBoolean: Queue<Boolean> = LinkedList()
-    val nextString: Queue<String> = LinkedList()
+
+    val nextBooleanFun: Queue<() -> Boolean> = LinkedList()
+    val nextStringFun: Queue<() -> String> = LinkedList()
+    val nextPairStringListFun: Queue<() -> Pair<Boolean, List<String>?>> = LinkedList()
+
+    fun nextBoolean(boolean: Boolean) = nextBooleanFun.add { boolean }
+    fun nextString(string: String) = nextStringFun.add { string }
+    fun nextPairStringList(pair: Pair<Boolean, List<String>?>) = nextPairStringListFun.add { pair }
 
     class addEntityAndGetIdArgs(
         val element: Any,
@@ -32,6 +39,14 @@ object HelperTestFunction {
 
     val addEntityQueue: Queue<addEntityArgs> = LinkedList()
 
+    class addListEntityArgs(
+        val elements: List<Any>,
+        val collection: DatabaseConstant.CollectionConstant,
+        val adapter: AdapterToDocumentInterface<in Any>
+    )
+
+    val addListEntityQueue: Queue<addListEntityArgs> = LinkedList()
+
     class setEntityArgs(
         val element: Any?,
         val id: String,
@@ -41,12 +56,28 @@ object HelperTestFunction {
 
     val setEntityQueue: Queue<setEntityArgs> = LinkedList()
 
+    class setListEntityArgs(
+        val elements: List<Pair<String, Any?>>,
+        val collection: DatabaseConstant.CollectionConstant,
+        val adapter: AdapterToDocumentInterface<in Any>
+    )
+
+    val setListEntityQueue: Queue<setListEntityArgs> = LinkedList()
+
     class deleteEntityArgs(
         val id: String,
         val collection: DatabaseConstant.CollectionConstant
     )
 
+
     val deleteEntityQueue: Queue<deleteEntityArgs> = LinkedList()
+
+    class deleteListEntityArgs(
+        val ids: List<String>,
+        val collection: DatabaseConstant.CollectionConstant
+    )
+
+    val deleteListEntityQueue: Queue<deleteListEntityArgs> = LinkedList()
 
     class getEntityArgs(
         val element: Observable<out Any>,
@@ -68,8 +99,8 @@ object HelperTestFunction {
     val getListEntityQueue: Queue<getListEntityArgs> = LinkedList()
 
     fun clearQueue() {
-        (nextBoolean as LinkedList).clear()
-        (nextString as LinkedList).clear()
+        (nextBooleanFun as LinkedList).clear()
+        (nextStringFun as LinkedList).clear()
         (addEntityAndGetIdQueue as LinkedList).clear()
         (addEntityQueue as LinkedList).clear()
         (setEntityQueue as LinkedList).clear()
@@ -78,7 +109,7 @@ object HelperTestFunction {
         (getListEntityQueue as LinkedList).clear()
     }
 
-    fun mockFor() : DatabaseInterface {
+    fun mockFor(): DatabaseInterface {
         val mokeDatabaseInterface = Mockito.mock(DatabaseInterface::class.java)
         When(
             mokeDatabaseInterface.addEntityAndGetId(
@@ -95,7 +126,7 @@ object HelperTestFunction {
                     iterator.next() as AdapterToDocumentInterface<Any>,
                 )
             )
-            Observable(nextString.poll() ?: "")
+            Observable((nextStringFun.poll() ?: { "" })())
         }
         When(
             mokeDatabaseInterface.addEntity(
@@ -104,14 +135,32 @@ object HelperTestFunction {
                 anyOrNull()
             )
         ).thenAnswer {
+            val iterator = it!!.arguments.iterator()
             addEntityQueue.add(
                 addEntityArgs(
-                    it!!.arguments[0] as Any,
-                    it!!.arguments[1] as DatabaseConstant.CollectionConstant,
-                    it!!.arguments[2] as AdapterToDocumentInterface<Any>,
+                    iterator.next() as Any,
+                    iterator.next() as DatabaseConstant.CollectionConstant,
+                    iterator.next() as AdapterToDocumentInterface<Any>,
                 )
             )
-            Observable(nextBoolean.poll() ?: true)
+            Observable((nextBooleanFun.poll() ?: { true })())
+        }
+        When(
+            mokeDatabaseInterface.addListEntity<Any>(
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenAnswer {
+            val iterator = it!!.arguments.iterator()
+            addListEntityQueue.add(
+                addListEntityArgs(
+                    iterator.next() as List<Any>,
+                    iterator.next() as DatabaseConstant.CollectionConstant,
+                    iterator.next() as AdapterToDocumentInterface<in Any>
+                )
+            )
+            Observable((nextPairStringListFun.poll() ?: { Pair(true, listOf()) })())
         }
         When(
             mokeDatabaseInterface.setEntity(
@@ -130,7 +179,24 @@ object HelperTestFunction {
                     iterator.next() as AdapterToDocumentInterface<Any>?,
                 )
             )
-            Observable(nextBoolean.poll() ?: true)
+            Observable((nextBooleanFun.poll() ?: { true })())
+        }
+        When(
+            mokeDatabaseInterface.setListEntity<Any>(
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenAnswer {
+            val iterator = it!!.arguments.iterator()
+            setListEntityQueue.add(
+                setListEntityArgs(
+                    iterator.next() as List<Pair<String, Any?>>,
+                    iterator.next() as DatabaseConstant.CollectionConstant,
+                    iterator.next() as AdapterToDocumentInterface<in Any>
+                )
+            )
+            Observable((nextBooleanFun.poll() ?: { true })())
         }
         When(
             mokeDatabaseInterface.deleteEntity(
@@ -145,7 +211,22 @@ object HelperTestFunction {
                     iterator.next() as DatabaseConstant.CollectionConstant,
                 )
             )
-            Observable(nextBoolean.poll() ?: true)
+            Observable((nextBooleanFun.poll() ?: { true })())
+        }
+        When(
+            mokeDatabaseInterface.deleteListEntity(
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenAnswer {
+            val iterator = it!!.arguments.iterator()
+            deleteListEntityQueue.add(
+                deleteListEntityArgs(
+                    iterator.next() as List<String>,
+                    iterator.next() as DatabaseConstant.CollectionConstant,
+                )
+            )
+            Observable((nextBooleanFun.poll() ?: { true })())
         }
         When(
             mokeDatabaseInterface.getEntity<Any>(
@@ -164,7 +245,7 @@ object HelperTestFunction {
                     iterator.next() as AdapterFromDocumentInterface<Any>?,
                 )
             )
-            Observable(nextBoolean.poll() ?: true)
+            Observable((nextBooleanFun.poll() ?: { true })())
         }
         When(
             mokeDatabaseInterface.getListEntity<Any>(
@@ -185,7 +266,7 @@ object HelperTestFunction {
                     iterator.next() as AdapterFromDocumentInterface<Any>?,
                 )
             )
-            Observable(nextBoolean.poll() ?: true)
+            Observable((nextBooleanFun.poll() ?: { true })())
         }
         return mokeDatabaseInterface
     }

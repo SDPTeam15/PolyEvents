@@ -3,13 +3,10 @@ package com.github.sdpteam15.polyevents.view.fragments
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.SeekBar
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -28,17 +25,20 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.*
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.*
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.Polygon
+import com.google.android.gms.maps.model.Polyline
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.*
 
 const val HEATMAP_PERIOD = 15L
 
 class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
-    OnPolygonClickListener, OnMarkerClickListener, OnInfoWindowClickListener, OnMarkerDragListener,
-    OnMyLocationButtonClickListener, OnMapClickListener {
+        OnPolygonClickListener, OnMarkerClickListener, OnInfoWindowClickListener, OnMarkerDragListener,
+        OnMyLocationButtonClickListener, OnMapClickListener {
 
-    companion object{
+    companion object {
         var instance: MapsFragment? = null
     }
 
@@ -52,9 +52,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     var timerHeatmap: Timer? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         //if(!ZoneManagementActivity.inTest) {
         ZoneManagementListActivity.zones.observeAdd(this) {
@@ -62,8 +62,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         }
 
         Database.currentDatabase.zoneDatabase!!.getAllZones(
-            null, 50,
-            ZoneManagementListActivity.zones
+                null, 50,
+                ZoneManagementListActivity.zones
         ).observe(this) {
             if (!it.value) {
                 HelperFunctions.showToast("Failed to get the list of zones", requireContext())
@@ -97,7 +97,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         val saveButton = view.findViewById<FloatingActionButton>(R.id.saveAreas)
         val heatmapButton = view.findViewById<FloatingActionButton>(R.id.id_heatmap)
 
-
         if (onEdit) {
             addNewAreaButton.visibility = View.VISIBLE
             saveNewAreaButton.visibility = View.VISIBLE
@@ -117,15 +116,15 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
                 //TODO : Save the areas in the map
                 //val location = GoogleMapHelper.areasToFormattedStringLocations(from = startId)
                 val location =
-                    GoogleMapHelper.zoneAreasToFormattedStringLocation(GoogleMapHelper.editingZone!!)
+                        GoogleMapHelper.zoneAreasToFormattedStringLocation(GoogleMapHelper.editingZone!!)
                 zone!!.location = location
                 ZoneManagementActivity.zoneObservable.postValue(
-                    Zone(
-                        zoneName = zone!!.zoneName,
-                        zoneId = zone!!.zoneId,
-                        location = location,
-                        description = zone!!.description
-                    )
+                        Zone(
+                                zoneName = zone!!.zoneName,
+                                zoneId = zone!!.zoneId,
+                                location = location,
+                                description = zone!!.description
+                        )
                 )
             }
         } else {
@@ -190,7 +189,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val mapFragment =
-            childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
+                childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
         if (!locationPermissionGranted) {
             HelperFunctions.getLocationPermission(requireActivity()).observeOnce {
@@ -204,7 +203,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         //GoogleMapHelper.context = context
         GoogleMapHelper.map = GoogleMapAdapter(googleMap)
         RouteMapHelper.map = GoogleMapAdapter(googleMap)
-        RouteMapHelper.getNodesAndEdgesFromDB(context,this)
+        RouteMapHelper.getNodesAndEdgesFromDB(context, this)
 
         googleMap!!.setOnPolylineClickListener(this)
         googleMap.setOnPolygonClickListener(this)
@@ -227,20 +226,22 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         RouteMapHelper.polylineClick(polyline)
     }
 
-    fun switchIconDelete(){
+    fun switchIconDelete() {
         val removeRouteButton = requireView().findViewById<FloatingActionButton>(R.id.removeRoute)
-        if(RouteMapHelper.deleteMode){
-            removeRouteButton.supportBackgroundTintList = resources.getColorStateList(R.color.red, null)
-        }else{
-            removeRouteButton.supportBackgroundTintList = resources.getColorStateList(R.color.teal_200, null)
+        if (RouteMapHelper.deleteMode) {
+            removeRouteButton.supportBackgroundTintList =
+                    resources.getColorStateList(R.color.red, null)
+        } else {
+            removeRouteButton.supportBackgroundTintList =
+                    resources.getColorStateList(R.color.teal_200, null)
         }
     }
 
-    fun showSaveButton(){
+    fun showSaveButton() {
         val removeRouteButton = requireView().findViewById<FloatingActionButton>(R.id.saveNewRoute)
-        if(RouteMapHelper.tempPolyline != null){
+        if (RouteMapHelper.tempPolyline != null) {
             removeRouteButton.visibility = View.VISIBLE
-        }else{
+        } else {
             removeRouteButton.visibility = View.INVISIBLE
         }
     }
@@ -274,10 +275,14 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     }
 
     override fun onInfoWindowClick(p0: Marker) {
-        HelperFunctions.showToast(
-            "Info Window clicked for marker" + p0.title + ", can lanch activity here",
-            requireContext()
-        )
+
+        HelperFunctions.getLoc(requireActivity()).observeOnce(this) {
+            RouteMapHelper.chemin =
+                    RouteMapHelper.getShortestPath(it.value!!, p0.tag.toString())?.toMutableList()
+                            ?: mutableListOf()
+            RouteMapHelper.drawRoute()
+        }
+
     }
 
     override fun onMarkerDragEnd(p0: Marker) {
@@ -305,12 +310,12 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
      */
     private fun activateMyLocation() {
         if (context?.let {
-                ContextCompat.checkSelfPermission(
-                    it,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                )
-            }
-            == PackageManager.PERMISSION_GRANTED) {
+                    ContextCompat.checkSelfPermission(
+                            it,
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                    )
+                }
+                == PackageManager.PERMISSION_GRANTED) {
             GoogleMapHelper.map!!.isMyLocationEnabled = true
 
             // Hide the built-in location button (but DO NOT disable it !)
@@ -333,7 +338,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
             R.drawable.ic_location_off
         }
         requireView().findViewById<FloatingActionButton>(R.id.id_location_button)
-            .setImageResource(idOfResource)
+                .setImageResource(idOfResource)
         locationButton.tag = idOfResource
     }
 
@@ -360,12 +365,12 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
      */
     private fun getBuiltInLocationButton(): View {
         val mapFragment =
-            childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
+                childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
 
         // Magic : https://stackoverflow.com/questions/36785542/how-to-change-the-position-of-my-location-button-in-google-maps-using-android-st
         return (mapFragment!!.requireView()
-            .findViewById<View>(Integer.parseInt("1")).parent as View)
-            .findViewById(Integer.parseInt("2"))
+                .findViewById<View>(Integer.parseInt("1")).parent as View)
+                .findViewById(Integer.parseInt("2"))
     }
 
     /**
@@ -379,9 +384,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     //-----------END LISTENER---------------------------------------
 
     override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
+            requestCode: Int,
+            permissions: Array<String>,
+            grantResults: IntArray
     ) = HelperFunctions.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
     override fun onMapClick(p0: LatLng?) {
