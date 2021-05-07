@@ -6,6 +6,4 @@ data class Rating(
     val feedback: String? = null,
     val eventId: String? = null,
     val userId: String? = null
-) {
-
-}
+)
