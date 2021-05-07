@@ -2,6 +2,7 @@ package com.github.sdpteam15.polyevents.model.database.remote.objects
 
 import android.annotation.SuppressLint
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.EVENT_COLLECTION
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.database.remote.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.EventAdapter
@@ -16,7 +17,7 @@ import com.google.firebase.ktx.Firebase
 
 const val TAG = "EventDatabaseFirestore"
 
-object EventDatabaseFirestore : EventDatabaseInterface {
+class EventDatabaseFirestore(private val db: DatabaseInterface) : EventDatabaseInterface {
     @SuppressLint("StaticFieldLeak")
     var firestore: FirebaseFirestore? = null
         get() = field ?: Firebase.firestore
