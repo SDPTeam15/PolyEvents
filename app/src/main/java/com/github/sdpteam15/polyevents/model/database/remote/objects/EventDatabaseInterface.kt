@@ -22,8 +22,8 @@ interface EventDatabaseInterface {
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun createEvent(
-            event: Event,
-            userAccess: UserProfile? = currentProfile
+        event: Event,
+        userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**
@@ -33,8 +33,8 @@ interface EventDatabaseInterface {
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun updateEvents(
-            event: Event,
-            userAccess: UserProfile? = currentProfile
+        event: Event,
+        userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**
@@ -45,9 +45,9 @@ interface EventDatabaseInterface {
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getEventFromId(
-            id: String,
-            returnEvent: Observable<Event>,
-            userAccess: UserProfile? = currentProfile
+        id: String,
+        returnEvent: Observable<Event>,
+        userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**
@@ -59,10 +59,10 @@ interface EventDatabaseInterface {
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getEvents(
-            matcher: Matcher? = null,
-            limit: Long? = null,
-            eventList: ObservableList<Event>,
-            userAccess: UserProfile? = currentProfile
+        matcher: Matcher? = null,
+        limit: Long? = null,
+        eventList: ObservableList<Event>,
+        userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**
@@ -74,10 +74,10 @@ interface EventDatabaseInterface {
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getRatingsForEvent(
-            eventId: String,
-            limit: Long? = null,
-            ratingList: ObservableList<Rating>,
-            userAccess: UserProfile? = currentProfile
+        eventId: String,
+        limit: Long? = null,
+        ratingList: ObservableList<Rating>,
+        userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**
@@ -87,8 +87,8 @@ interface EventDatabaseInterface {
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun addRatingToEvent(
-            rating: Rating,
-            userAccess: UserProfile? = currentProfile
+        rating: Rating,
+        userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**
@@ -98,8 +98,8 @@ interface EventDatabaseInterface {
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun removeRating(
-            rating: Rating,
-            userAccess: UserProfile? = currentProfile
+        rating: Rating,
+        userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**
@@ -109,21 +109,36 @@ interface EventDatabaseInterface {
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun updateRating(
-            rating: Rating,
-            userAccess: UserProfile? = currentProfile
+        rating: Rating,
+        userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
+    /**
+     * Get the mean rating score for a specific event
+     * @param eventId The event we want to retrieve the ratings
+     * @param mean The rating that will be set when the DB returns the information
+     * @param userAccess The user profile to use its permission
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
     fun getMeanRatingForEvent(
-            id: String,
-            mean: Observable<Double>,
-            userAccess: UserProfile? = currentProfile
+        eventId: String,
+        mean: Observable<Double>,
+        userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
+    /**
+     * Get the rating from an user for an event from the database
+     * @param userId The user from whom we want to retrieve the rating
+     * @param eventId The event we want to retrieve the rating from
+     * @param returnedRating The rating that will be set when the DB returns the information
+     * @param userAccess The user profile to use its permission
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
     fun getUserRatingFromEvent(
-        userId:String,
-        eventId:String,
-        returnedRating:Observable<Rating>,
-        userAccess: UserProfile?
-    ):Observable<Boolean>
+        userId: String,
+        eventId: String,
+        returnedRating: Observable<Rating>,
+        userAccess: UserProfile? = currentProfile
+    ): Observable<Boolean>
 
 }

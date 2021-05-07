@@ -84,7 +84,7 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
 
 
     override fun getMeanRatingForEvent(
-        id: String,
+        eventId: String,
         mean: Observable<Double>,
         userAccess: UserProfile?
     ): Observable<Boolean> {
@@ -92,7 +92,7 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
 
         val rating = ObservableList<Rating>()
 
-        getRatingsForEvent(id, null, rating, userAccess).observeOnce {
+        getRatingsForEvent(eventId, null, rating, userAccess).observeOnce {
             if (it.value) {
                 rating.observeOnce { it2 ->
                     val sum = it2.value.fold(0.0, { a, b -> a + b.rate!! })

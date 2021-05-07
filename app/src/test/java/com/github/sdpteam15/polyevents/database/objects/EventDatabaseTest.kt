@@ -1,14 +1,17 @@
 package com.github.sdpteam15.polyevents.database.objects
 
 import com.github.sdpteam15.polyevents.database.HelperTestFunction
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.EVENT_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.RATING_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.EventAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.RatingAdapter
+import com.github.sdpteam15.polyevents.model.database.remote.adapter.UserAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.objects.EventDatabase
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Rating
+import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
@@ -173,7 +176,7 @@ class EventDatabaseTest {
         val getList = HelperTestFunction.getListEntityQueue.poll()!!
 
         assertEquals(ratings, getList.element)
-        assert(getList.matcher != null)
+        assertNotNull(getList.matcher)
         assertEquals(RATING_COLLECTION, getList.collection)
         assertEquals(RatingAdapter, getList.adapter)
     }
@@ -194,6 +197,62 @@ class EventDatabaseTest {
         assertNotNull(getList.matcher)
         assertEquals(EVENT_COLLECTION, getList.collection)
         assertEquals(EventAdapter, getList.adapter)
+    }
+    @Test
+    fun getEventListWithMatcherAndLimitNotNull() {
+        val events = ObservableList<Event>()
+        val userAccess = UserProfile("uid")
+        val matcher = Matcher{ q: Query -> q.limit(1000) }
+
+        HelperTestFunction.nextBoolean(true)
+        mockedEventdatabase.getEvents(matcher, 20, events, userAccess)
+            .observeOnce { assert(it.value) }.then.postValue(false)
+
+        val getList = HelperTestFunction.getListEntityQueue.poll()!!
+
+        assertEquals(events, getList.element)
+        assertNotNull(getList.matcher)
+        assertEquals(EVENT_COLLECTION, getList.collection)
+        assertEquals(EventAdapter, getList.adapter)
+    }
+
+    @Test
+    fun removeRating() {
+        val rating = Rating(
+            ratingId = ratingId,
+            eventId = eventId,
+            userId = userId,
+            rate = rate,
+            feedback = feedback
+        )
+        val userAccess = UserProfile("uid")
+
+        HelperTestFunction.nextBoolean(true)
+        mockedEventdatabase.removeRating(rating, userAccess)
+            .observeOnce { assert(it.value) }.then.postValue(false)
+
+
+        val del = HelperTestFunction.deleteEntityQueue.poll()!!
+
+        assertEquals(rating.ratingId, del.id)
+        assertEquals(RATING_COLLECTION, del.collection)
+    }
+
+    @Test
+    fun getRatingWithLimit() {
+        val ratings = ObservableList<Rating>()
+        val userAccess = UserProfile("uid")
+
+        HelperTestFunction.nextBoolean(true)
+        mockedEventdatabase.getRatingsForEvent(eventId, null, ratings, userAccess)
+            .observeOnce { assert(it.value) }.then.postValue(false)
+
+        val getList = HelperTestFunction.getListEntityQueue.poll()!!
+
+        assertEquals(ratings, getList.element)
+        assertNotNull(getList.matcher)
+        assertEquals(RATING_COLLECTION, getList.collection)
+        assertEquals(RatingAdapter, getList.adapter)
     }
 
     @Test
