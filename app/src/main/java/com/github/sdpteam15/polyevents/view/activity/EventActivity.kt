@@ -29,7 +29,7 @@ class EventActivity : AppCompatActivity() {
         const val TAG = "EventActivity"
 
         // Refactored here for tests
-        var obsEvent = Observable<Event>()
+        val obsEvent: Observable<Event> = Observable()
         lateinit var event: Event
 
         // for testing purposes
@@ -69,8 +69,6 @@ class EventActivity : AppCompatActivity() {
     }
 
     private fun getEventAndObserve() {
-        // reinit observable
-        obsEvent = Observable()
         currentDatabase.eventDatabase!!.getEventFromId(
             intent.getStringExtra(EXTRA_EVENT_ID)!!,
             obsEvent
@@ -80,7 +78,7 @@ class EventActivity : AppCompatActivity() {
                     showToast(getString(R.string.event_info_fail), this)
                 }
             }
-        obsEvent.observe(this) { updateInfo(it.value) }
+        obsEvent.observeOnce(this, updateIfNotNull = false){ updateInfo(it.value) }
     }
 
     /**
