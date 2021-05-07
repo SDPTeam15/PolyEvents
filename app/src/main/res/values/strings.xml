@@ -102,8 +102,8 @@
     <string name="failed_to_get_event_list">Failed to get events information</string>
     <string name="upcoming_activities_txt">Upcoming activities</string>
     <string name="at_hour_text">at %1$s</string>
-    <string name="label_activity_description">Description:</string>
-    <string name="label_tags">Tags:</string>
+    <string name="label_activity_description">Description</string>
+    <string name="label_tags">Tags</string>
     <string name="event_attendees">%d/%d </string>
     <string name="event_schedule">at %s</string>
     <string name="event_info_fail">Failed to get the event information</string>
@@ -120,6 +120,10 @@
     <string name="event_subscribe_at_max_capacity">
         Event has reached the maximum number of participants</string>
     <string name="event_profile_picture">Event Profile Picture</string>
+    <string name="leave_a_review">Leave a review!</string>
+    <string name="ok">OK</string>
+    <string name="your_review">Your review!</string>
+    <string name="leave_a_review_hint">Leave a review…</string>
 
     <!-- ItemAdminActivity -->
     <string name="query_not_satisfied">Query not satisfied</string>
