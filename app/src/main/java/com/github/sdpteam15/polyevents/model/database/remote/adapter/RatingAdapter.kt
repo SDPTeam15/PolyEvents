@@ -15,7 +15,7 @@ object RatingAdapter: AdapterInterface<Rating> {
             RATING_DESCRIPTION.value to  element.feedback,
             RATING_SCORE.value to  element.rate,
             RATING_USER_ID.value to  element.userId,
-            RATING_EVENT_ID.value to  element.eventId,
+            RATING_EVENT_ID.value to  element.eventId
         )
 
     override fun fromDocument(document: MutableMap<String, Any?>, id: String): Rating = Rating(
