@@ -2,24 +2,27 @@ package com.github.sdpteam15.polyevents.database.objects
 
 import android.util.Log
 import com.github.sdpteam15.polyevents.database.HelperTestFunction
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
+import com.github.sdpteam15.polyevents.model.database.remote.*
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.EVENT_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.RATING_COLLECTION
-import com.github.sdpteam15.polyevents.model.database.remote.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.EventAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.RatingAdapter
+import com.github.sdpteam15.polyevents.model.database.remote.login.UserLoginInterface
 import com.github.sdpteam15.polyevents.model.database.remote.objects.EventDatabase
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Rating
+import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.firestore.Query
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.anyOrNull
 import java.time.LocalDateTime
+import javax.annotation.meta.When
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -256,6 +259,15 @@ class EventDatabaseTest {
         assertEquals(RATING_COLLECTION, del.collection)
     }
 
+
+    @Test
+    fun getCurrentUserReturnCorrectOne(){
+        val mockedDatabase = Mockito.mock(DatabaseInterface::class.java)
+        Mockito.`when`(mockedDatabase.currentUser).thenReturn(UserEntity(""))
+        Database.currentDatabase=mockedDatabase
+        assertEquals(mockedEventdatabase.currentUser, UserEntity(""))
+        Database.currentDatabase = FirestoreDatabaseProvider
+    }
     @Test
     fun getRatingWithoutLimit() {
         val ratings = ObservableList<Rating>()
@@ -267,9 +279,15 @@ class EventDatabaseTest {
 
 
         val getList = HelperTestFunction.getListEntityQueue.poll()!!
+        assertNotNull(getList.matcher)
+
         val mockQuery = Mockito.mock(Query::class.java)
         assertNotNull(getList.matcher)
 
+        Mockito.`when`(mockQuery.whereEqualTo(anyOrNull<String>(), anyOrNull())).then {
+            mockQuery
+        }
+        getList.matcher.match(mockQuery)
         assertEquals(ratings, getList.element)
         assertEquals(RATING_COLLECTION, getList.collection)
         assertEquals(RatingAdapter, getList.adapter)
@@ -280,17 +298,28 @@ class EventDatabaseTest {
         val userAccess = UserProfile("uid")
 
         HelperTestFunction.nextBoolean(true)
-        mockedEventdatabase.getRatingsForEvent(eventId, 100L, ratings, userAccess)
+        mockedEventdatabase.getRatingsForEvent(eventId, 20L, ratings, userAccess)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         val getList = HelperTestFunction.getListEntityQueue.poll()!!
-
-        assertEquals(ratings, getList.element)
         assertNotNull(getList.matcher)
+
+        val mockQuery = Mockito.mock(Query::class.java)
+        assertNotNull(getList.matcher)
+
+        Mockito.`when`(mockQuery.limit(anyOrNull())).then {
+            assertEquals(it.arguments[0] as Long,20L)
+            mockQuery
+        }
+        Mockito.`when`(mockQuery.whereEqualTo(anyOrNull<String>(), anyOrNull())).then {
+            mockQuery
+        }
+        getList.matcher.match(mockQuery)
+        assertEquals(ratings, getList.element)
         assertEquals(RATING_COLLECTION, getList.collection)
         assertEquals(RatingAdapter, getList.adapter)
     }
-/*
+
     @Test
     fun getRatingMean() {
         val mean = Observable<Float>()
@@ -298,10 +327,92 @@ class EventDatabaseTest {
 
         HelperTestFunction.nextBoolean(true)
         mockedEventdatabase.getMeanRatingForEvent(eventId, mean, userAccess)
-            .observeOnce { assert(it.value) }.then.postValue(false)
+            .observeOnce { assert(it.value) }.then.postValue(true)
+
+        val getList = HelperTestFunction.getListEntityQueue.poll()!!
+        assertNotNull(getList.matcher)
+
+        val mockQuery = Mockito.mock(Query::class.java)
+
+        Mockito.`when`(mockQuery.whereEqualTo(anyOrNull<String>(), anyOrNull())).then {
+            mockQuery
+        }
+        getList.matcher.match(mockQuery)
+        assertEquals(mean.value,0.0F)
+
+    }
+    @Test
+    fun getRatingMeanFailedDoesntChange() {
+        val mean = Observable<Float>(-1.0F)
+        val userAccess = UserProfile("uid")
+
+        HelperTestFunction.nextBoolean(false)
+        mockedEventdatabase.getMeanRatingForEvent(eventId, mean, userAccess)
+            .observeOnce { assert(!it.value) }.then.postValue(false)
+
+        val getList = HelperTestFunction.getListEntityQueue.poll()!!
+        assertNotNull(getList.matcher)
+
+        val mockQuery = Mockito.mock(Query::class.java)
+
+        Mockito.`when`(mockQuery.whereEqualTo(anyOrNull<String>(), anyOrNull())).then {
+            mockQuery
+        }
+        getList.matcher.match(mockQuery)
+        assertEquals(mean.value,-1.0F)
+    }
+
+    @Test
+    fun getUserRatingFromEventFailedDoesntChange() {
+        val rat = Observable(Rating("default",0.0F))
+        val userAccess = UserProfile("uid")
+
+        HelperTestFunction.nextBoolean(false)
+        mockedEventdatabase.getUserRatingFromEvent(userId, eventId, rat, userAccess)
+            .observeOnce { assert(!it.value) }.then.postValue(false)
+
+        val getList = HelperTestFunction.getListEntityQueue.poll()!!
+        assertNotNull(getList.matcher)
+
+        val mockQuery = Mockito.mock(Query::class.java)
+
+        Mockito.`when`(mockQuery.whereEqualTo(anyOrNull<String>(), anyOrNull())).then {
+            mockQuery
+        }
+        Mockito.`when`(mockQuery.limit(anyOrNull())).then {
+            mockQuery
+        }
+        getList.matcher.match(mockQuery)
+        assertEquals(rat.value!!.ratingId,"default")
+        assertEquals(rat.value!!.rate,0.0F)
+    }
+
+    @Test
+    fun getUserRatingFromEventFailedToGetAnyEvent() {
+        val rat = Observable(Rating("default",0.0F))
+        val userAccess = UserProfile("uid")
+
+        HelperTestFunction.nextBoolean(true)
+        mockedEventdatabase.getUserRatingFromEvent(userId, eventId, rat, userAccess)
+            .observeOnce { assert(!it.value) }.then.postValue(false)
+
+        val getList = HelperTestFunction.getListEntityQueue.poll()!!
+        assertNotNull(getList.matcher)
+
+        val mockQuery = Mockito.mock(Query::class.java)
+
+        Mockito.`when`(mockQuery.whereEqualTo(anyOrNull<String>(), anyOrNull())).then {
+            mockQuery
+        }
+        Mockito.`when`(mockQuery.limit(anyOrNull())).then {
+            mockQuery
+        }
+        getList.matcher.match(mockQuery)
+        assertEquals(rat.value!!.ratingId,"default")
+        assertEquals(rat.value!!.rate,0.0F)
+    }
 
 
-    }*/
 
     @Test
     fun getEventFromId() {
