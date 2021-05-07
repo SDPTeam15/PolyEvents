@@ -6,6 +6,7 @@ import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabasePr
 import com.github.sdpteam15.polyevents.model.database.remote.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.EventAdapter
 import com.github.sdpteam15.polyevents.model.entity.Event
+import com.github.sdpteam15.polyevents.model.entity.Rating
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
@@ -72,5 +73,34 @@ object EventDatabaseFirestore : EventDatabaseInterface {
                 }
             }
         }
+    }
+
+    override fun getRatingsForEvent(
+        id: String,
+        limit: Long?,
+        ratingList: ObservableList<Rating>,
+        userAccess: UserProfile?
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun addRatingToEvent(rating: Rating, userAccess: UserProfile?): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun removeRating(rating: Rating, userAccess: UserProfile?): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateRating(rating: Rating, userAccess: UserProfile?): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getMeanRatingForEvent(
+        id: String,
+        mean: Observable<Double>,
+        userAccess: UserProfile?
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
     }
 }
