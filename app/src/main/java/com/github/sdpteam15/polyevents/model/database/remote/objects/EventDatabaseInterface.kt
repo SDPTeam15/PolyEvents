@@ -122,7 +122,7 @@ interface EventDatabaseInterface {
      */
     fun getMeanRatingForEvent(
         eventId: String,
-        mean: Observable<Double>,
+        mean: Observable<Float>,
         userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 

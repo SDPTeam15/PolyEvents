@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.database.objects
 
+import android.util.Log
 import com.github.sdpteam15.polyevents.database.HelperTestFunction
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.EVENT_COLLECTION
@@ -7,17 +8,17 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.Co
 import com.github.sdpteam15.polyevents.model.database.remote.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.EventAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.RatingAdapter
-import com.github.sdpteam15.polyevents.model.database.remote.adapter.UserAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.objects.EventDatabase
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Rating
-import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.google.firebase.firestore.Query
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito
+import org.mockito.kotlin.anyOrNull
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -185,7 +186,7 @@ class EventDatabaseTest {
     fun getEventListWithMatcher() {
         val events = ObservableList<Event>()
         val userAccess = UserProfile("uid")
-        val matcher = Matcher{ q: Query -> q.limit(1000) }
+        val matcher = Matcher{ q: Query -> q.limit(1000L) }
 
         HelperTestFunction.nextBoolean(true)
         mockedEventdatabase.getEvents(matcher, null, events, userAccess)
@@ -195,6 +196,12 @@ class EventDatabaseTest {
 
         assertEquals(events, getList.element)
         assertNotNull(getList.matcher)
+        val mockQuery = Mockito.mock(Query::class.java)
+        Mockito.`when`(mockQuery.limit(anyOrNull())).then {
+            assertEquals(it.arguments[0] as Long,1000L)
+            mockQuery
+        }
+        getList.matcher.match(mockQuery)
         assertEquals(EVENT_COLLECTION, getList.collection)
         assertEquals(EventAdapter, getList.adapter)
     }
@@ -202,7 +209,7 @@ class EventDatabaseTest {
     fun getEventListWithMatcherAndLimitNotNull() {
         val events = ObservableList<Event>()
         val userAccess = UserProfile("uid")
-        val matcher = Matcher{ q: Query -> q.limit(1000) }
+        val matcher = Matcher{ q: Query -> q.limitToLast(1000L) }
 
         HelperTestFunction.nextBoolean(true)
         mockedEventdatabase.getEvents(matcher, 20, events, userAccess)
@@ -210,8 +217,19 @@ class EventDatabaseTest {
 
         val getList = HelperTestFunction.getListEntityQueue.poll()!!
 
-        assertEquals(events, getList.element)
+        val mockQuery = Mockito.mock(Query::class.java)
         assertNotNull(getList.matcher)
+
+        Mockito.`when`(mockQuery.limit(anyOrNull())).then {
+            assertEquals(it.arguments[0] as Long,20L)
+            mockQuery
+        }
+        Mockito.`when`(mockQuery.limitToLast(anyOrNull())).then {
+            assertEquals(it.arguments[0] as Long,1000L)
+            mockQuery
+        }
+        getList.matcher.match(mockQuery)
+        assertEquals(events, getList.element)
         assertEquals(EVENT_COLLECTION, getList.collection)
         assertEquals(EventAdapter, getList.adapter)
     }
@@ -239,12 +257,30 @@ class EventDatabaseTest {
     }
 
     @Test
-    fun getRatingWithLimit() {
+    fun getRatingWithoutLimit() {
         val ratings = ObservableList<Rating>()
         val userAccess = UserProfile("uid")
 
         HelperTestFunction.nextBoolean(true)
         mockedEventdatabase.getRatingsForEvent(eventId, null, ratings, userAccess)
+            .observeOnce { assert(it.value) }.then.postValue(false)
+
+
+        val getList = HelperTestFunction.getListEntityQueue.poll()!!
+        val mockQuery = Mockito.mock(Query::class.java)
+        assertNotNull(getList.matcher)
+
+        assertEquals(ratings, getList.element)
+        assertEquals(RATING_COLLECTION, getList.collection)
+        assertEquals(RatingAdapter, getList.adapter)
+    }
+    @Test
+    fun getRatingWithLimit() {
+        val ratings = ObservableList<Rating>()
+        val userAccess = UserProfile("uid")
+
+        HelperTestFunction.nextBoolean(true)
+        mockedEventdatabase.getRatingsForEvent(eventId, 100L, ratings, userAccess)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         val getList = HelperTestFunction.getListEntityQueue.poll()!!
@@ -254,6 +290,18 @@ class EventDatabaseTest {
         assertEquals(RATING_COLLECTION, getList.collection)
         assertEquals(RatingAdapter, getList.adapter)
     }
+/*
+    @Test
+    fun getRatingMean() {
+        val mean = Observable<Float>()
+        val userAccess = UserProfile("uid")
+
+        HelperTestFunction.nextBoolean(true)
+        mockedEventdatabase.getMeanRatingForEvent(eventId, mean, userAccess)
+            .observeOnce { assert(it.value) }.then.postValue(false)
+
+
+    }*/
 
     @Test
     fun getEventFromId() {

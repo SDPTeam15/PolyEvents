@@ -14,6 +14,7 @@ const val NUMBER_UPCOMING_EVENTS = 3
 /**
  * Database interface
  */
+@Suppress("UNCHECKED_CAST")
 interface DatabaseInterface {
 
     /**

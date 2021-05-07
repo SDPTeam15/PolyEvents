@@ -14,6 +14,7 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import org.mockito.Mockito
 import org.mockito.kotlin.anyOrNull
 
+@Suppress("UNCHECKED_CAST")
 object HelperTestFunction {
     // Source : https://stackoverflow.com/questions/38737127/espresso-how-to-get-current-activity-to-test-fragments/58684943#58684943
     fun <T : Activity> getCurrentActivity(): T {

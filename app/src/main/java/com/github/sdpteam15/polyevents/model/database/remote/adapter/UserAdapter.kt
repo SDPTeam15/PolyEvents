@@ -10,6 +10,7 @@ import com.google.firebase.Timestamp
  * documents in the Firebase database. Not unlike the DTO (Data
  * transfer object) concept.
  */
+@Suppress("UNCHECKED_CAST")
 object UserAdapter : AdapterInterface<UserEntity> {
     override fun toDocument(element: UserEntity): HashMap<String, Any?> = hashMapOf(
         USER_UID.value to element.uid,

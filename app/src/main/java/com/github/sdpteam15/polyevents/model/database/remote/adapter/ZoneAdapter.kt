@@ -10,6 +10,7 @@ import com.github.sdpteam15.polyevents.model.entity.Zone
  *
  * IMPORTANT: This should be updated whenever we add, remove or update fields of UserEntity.
  */
+@Suppress("UNCHECKED_CAST")
 object ZoneAdapter : AdapterInterface<Zone> {
     override fun toDocument(element: Zone): HashMap<String, Any?> {
         val map = hashMapOf(
