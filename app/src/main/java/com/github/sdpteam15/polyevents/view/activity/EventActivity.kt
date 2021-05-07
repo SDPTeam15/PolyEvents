@@ -2,9 +2,7 @@ package com.github.sdpteam15.polyevents.view.activity
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.github.sdpteam15.polyevents.R
@@ -17,6 +15,7 @@ import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.room.EventLocal
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
+import com.github.sdpteam15.polyevents.view.fragments.LeaveEventReviewFragment
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModel
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModelFactory
 
@@ -39,6 +38,8 @@ class EventActivity : AppCompatActivity() {
 
     private lateinit var subscribeButton: Button
 
+    private lateinit var leaveReviewDialogFragment: LeaveEventReviewFragment
+
     // Lazily initialized view model, instantiated only when accessed for the first time
     private val localEventViewModel: EventLocalViewModel by viewModels {
         EventLocalViewModelFactory(database.eventDao())
@@ -54,6 +55,8 @@ class EventActivity : AppCompatActivity() {
         database = (application as PolyEventsApplication).database
 
         subscribeButton = findViewById(R.id.button_subscribe_event)
+
+        leaveReviewDialogFragment = LeaveEventReviewFragment()
 
         getEventAndObserve()
     }
@@ -160,6 +163,15 @@ class EventActivity : AppCompatActivity() {
         } catch (e: MaxAttendeesException) {
             showToast(resources.getString(R.string.event_subscribe_at_max_capacity), this)
         }
+    }
+
+    /**
+     * Show the leave review dialog upon click
+     */
+    fun onClickEventLeaveReview(view: View) {
+        leaveReviewDialogFragment.show(
+               supportFragmentManager, LeaveEventReviewFragment.TAG
+        )
     }
 
 }
