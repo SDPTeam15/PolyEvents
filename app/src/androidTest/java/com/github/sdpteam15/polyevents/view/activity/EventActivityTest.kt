@@ -71,7 +71,7 @@ class EventActivityTest {
         currentDatabase = mockedDatabase
 
         testLimitedEvent = Event(
-            eventId = "limitedEvent",
+            eventId = limitedEventId,
             eventName = "limited Event only",
             description = "Super noisy activity !",
             startTime = LocalDateTime.of(2021, 3, 7, 21, 15),
@@ -102,6 +102,7 @@ class EventActivityTest {
 
     @After
     fun teardown() {
+        scenario.close()
         // close and remove the mock local database
         localDatabase.close()
         currentDatabase = FirestoreDatabaseProvider
@@ -109,7 +110,7 @@ class EventActivityTest {
 
     @Test
     fun eventActivityCorrectlyShowsEvent() {
-        goToEventActivityWithLimitedEventIntent()
+        goToEventActivityWithIntent()
 
         Espresso.onView(withId(R.id.txt_event_Name))
             .check(matches(withText(containsString(testLimitedEvent.eventName))))
@@ -136,7 +137,7 @@ class EventActivityTest {
 
     @Test
     fun testEventSubscription() {
-        goToEventActivityWithLimitedEventIntent()
+        goToEventActivityWithIntent()
 
         clickOn(R.id.button_subscribe_event)
 
@@ -151,13 +152,11 @@ class EventActivityTest {
 
         assert(!testLimitedEvent.getParticipants().contains(currentDatabase.currentUser!!.uid))
         assertDisplayed(R.id.button_subscribe_event, R.string.event_subscribe)
-
-        scenario.close()
     }
 
     @Test
     fun testEventSubscriptionUpdatesLocalDatabase() = runBlocking {
-        goToEventActivityWithLimitedEventIntent()
+        goToEventActivityWithIntent()
 
         // Subscribe to event
         clickOn(R.id.button_subscribe_event)
@@ -173,8 +172,6 @@ class EventActivityTest {
 
         val retrievedLocalEventsAfterUnSubscription = localDatabase.eventDao().getAll()
         assert(retrievedLocalEventsAfterUnSubscription.isEmpty())
-
-        scenario.close()
     }
 
     @Test
@@ -183,7 +180,7 @@ class EventActivityTest {
         testLimitedEvent.addParticipant("bogusId")
         assert(testLimitedEvent.getMaxNumberOfSlots() == testLimitedEvent.getParticipants().size)
 
-        goToEventActivityWithLimitedEventIntent()
+        goToEventActivityWithIntent()
 
         assertDisplayed(R.id.button_subscribe_event, R.string.event_subscribe)
 
@@ -191,14 +188,13 @@ class EventActivityTest {
 
         // Nothing happens, button subscribe should not have changed
         assertDisplayed(R.id.button_subscribe_event, R.string.event_subscribe)
-        scenario.close()
     }
 
     @Test
     fun testSubscriptionToEventWithNoUserLoggedIn() {
         When(mockedDatabase.currentUser).thenReturn(null)
 
-        goToEventActivityWithLimitedEventIntent()
+        goToEventActivityWithIntent()
 
         assertDisplayed(R.id.button_subscribe_event, R.string.event_subscribe)
 
@@ -206,15 +202,13 @@ class EventActivityTest {
         // Nothing happens, button subscribe should not have changed (Show should toast to login)
         assert(testLimitedEvent.getParticipants().isEmpty())
         assertDisplayed(R.id.button_subscribe_event, R.string.event_subscribe)
-
-        scenario.close()
     }
 
     @Test
     fun testEventActivityWhenAlreadySubscribedToEvent() {
         testLimitedEvent.addParticipant(uid)
 
-        goToEventActivityWithLimitedEventIntent()
+        goToEventActivityWithIntent()
         assert(EventActivity.obsEvent.value!!.getParticipants().contains(uid))
 
         assertDisplayed(R.id.button_subscribe_event, R.string.event_unsubscribe)
@@ -232,7 +226,7 @@ class EventActivityTest {
         When(mockedEventDatabase.getEventFromId(id = limitedEventId,
             returnEvent = EventActivity.obsEvent)).thenReturn(Observable(false))
 
-        goToEventActivityWithLimitedEventIntent()
+        goToEventActivityWithIntent()
 
         // Nothing displayed
         Espresso.onView(withId(R.id.txt_event_Name))
@@ -252,12 +246,24 @@ class EventActivityTest {
             Observable(true)
         }
 
-        goToEventActivityWithLimitedEventIntent()
+        goToEventActivityWithIntent()
 
         assertNotDisplayed(R.id.button_subscribe_event)
     }
 
-    private fun goToEventActivityWithLimitedEventIntent() {
+    @Test
+    fun testLeaveReviewIsCorrectlyDisplayed() {
+        goToEventActivityWithIntent()
+        assertDisplayed(R.id.event_leave_review_button)
+
+        clickOn(R.id.event_leave_review_button)
+        assertDisplayed(R.id.leave_review_fragment_save_button)
+        assertDisplayed(R.id.leave_review_fragment_title)
+        assertDisplayed(R.id.leave_review_fragment_rating)
+        assertDisplayed(R.id.leave_review_fragment_feedback_text)
+    }
+
+    private fun goToEventActivityWithIntent() {
         val intent = Intent(
             ApplicationProvider.getApplicationContext(),
             EventActivity::class.java
