@@ -1,118 +1,151 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
-    <androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:fillViewport="true"
         tools:context=".view.activity.EventActivity">
 
-        <ImageView
-            android:id="@+id/img_event_logo"
-            android:contentDescription="@string/event_profile_picture"
-            android:layout_width="130dp"
-            android:layout_height="130dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@android:mipmap/sym_def_app_icon"
-            tools:srcCompat="@tools:sample/avatars" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/txt_event_Name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            app:layout_constraintBottom_toTopOf="@+id/txt_event_date"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/img_event_logo"
-            app:layout_constraintTop_toTopOf="@+id/img_event_logo"
-            app:layout_constraintVertical_bias="0.552" />
+            <ImageView
+                android:id="@+id/img_event_logo"
+                android:contentDescription="@string/event_profile_picture"
+                android:layout_width="130dp"
+                android:layout_height="130dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@android:mipmap/sym_def_app_icon"
+                tools:srcCompat="@tools:sample/avatars" />
 
-        <TextView
-            android:id="@+id/txt_event_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="@+id/img_event_logo"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.502"
-            app:layout_constraintStart_toEndOf="@+id/img_event_logo"
-            app:layout_constraintTop_toTopOf="@+id/img_event_logo" />
+            <View
+                android:id="@+id/event_divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?android:attr/listDivider"
+                android:layout_margin="10dp"
+                app:layout_constraintTop_toBottomOf="@id/button_subscribe_event"
+                app:layout_constraintBottom_toTopOf="@id/event_description_subsection_text_view"/>
 
-        <TextView
-            android:id="@+id/txt_event_zone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@+id/txt_event_organizer"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.502"
-            app:layout_constraintStart_toEndOf="@+id/img_event_logo"
-            app:layout_constraintTop_toBottomOf="@+id/txt_event_date" />
+            <TextView
+                android:id="@+id/txt_event_Name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                app:layout_constraintBottom_toTopOf="@+id/txt_event_date"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/img_event_logo"
+                app:layout_constraintTop_toTopOf="@+id/img_event_logo"
+                app:layout_constraintVertical_bias="0.552" />
 
-        <TextView
-            android:id="@+id/event_description_subsection_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:text="@string/label_activity_description"
-            app:layout_constraintStart_toStartOf="@+id/img_event_logo"
-            app:layout_constraintTop_toBottomOf="@+id/button_subscribe_event" />
+            <TextView
+                android:id="@+id/txt_event_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="@+id/img_event_logo"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.502"
+                app:layout_constraintStart_toEndOf="@+id/img_event_logo"
+                app:layout_constraintTop_toTopOf="@+id/img_event_logo" />
 
-    <TextView
-        android:id="@+id/txt_event_description"
+            <TextView
+                android:id="@+id/txt_event_zone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toTopOf="@+id/txt_event_organizer"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.502"
+                app:layout_constraintStart_toEndOf="@+id/img_event_logo"
+                app:layout_constraintTop_toBottomOf="@+id/txt_event_date" />
+
+            <TextView
+                android:id="@+id/event_description_subsection_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="10dp"
+                android:text="@string/label_activity_description"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                app:layout_constraintStart_toStartOf="@+id/img_event_logo"
+                app:layout_constraintTop_toBottomOf="@+id/button_subscribe_event" />
+
+            <TextView
+                android:id="@+id/txt_event_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/event_description_subsection_text_view" />
+
+            <TextView
+                android:id="@+id/event_tags_subsection_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/label_tags"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                app:layout_constraintStart_toStartOf="@+id/txt_event_description"
+                app:layout_constraintTop_toBottomOf="@+id/txt_event_description" />
+
+            <TextView
+                android:id="@+id/txt_event_tags"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/event_tags_subsection_text_view"
+                />
+
+            <TextView
+                android:id="@+id/txt_event_organizer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="@+id/img_event_logo"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/img_event_logo" />
+
+            <Button
+                android:id="@+id/button_subscribe_event"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.502"
+                app:layout_constraintStart_toEndOf="@+id/img_event_logo"
+                app:layout_constraintTop_toBottomOf="@+id/txt_event_organizer"
+                android:onClick="onClickEventSubscribe"
+                android:text="@string/event_subscribe"
+                android:visibility="gone"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/event_leave_review_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="20dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/event_description_subsection_text_view" />
-
-        <TextView
-            android:id="@+id/event_tags_subsection_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="@string/label_tags"
-            app:layout_constraintStart_toStartOf="@+id/txt_event_description"
-            app:layout_constraintTop_toBottomOf="@+id/txt_event_description" />
-
-    <TextView
-        android:id="@+id/txt_event_tags"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/event_tags_subsection_text_view"
-        />
-
-        <TextView
-            android:id="@+id/txt_event_organizer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="@+id/img_event_logo"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/img_event_logo" />
-
-        <Button
-            android:id="@+id/button_subscribe_event"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.502"
-            app:layout_constraintStart_toEndOf="@+id/img_event_logo"
-            app:layout_constraintTop_toBottomOf="@+id/txt_event_organizer"
-            android:onClick="onClickEventSubscribe"
-            android:text="@string/event_subscribe"
-            android:visibility="gone"
-            />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+        android:text="@string/leave_a_review"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:onClick="onClickEventLeaveReview">
+    </Button>
+</androidx.constraintlayout.widget.ConstraintLayout>
