@@ -118,7 +118,7 @@ object FakeDatabaseEvent : EventDatabaseInterface {
 
     override fun getMeanRatingForEvent(
         eventId: String,
-        mean: Observable<Double>,
+        mean: Observable<Float>,
         userAccess: UserProfile?
     ): Observable<Boolean> {
         TODO("Not yet implemented")

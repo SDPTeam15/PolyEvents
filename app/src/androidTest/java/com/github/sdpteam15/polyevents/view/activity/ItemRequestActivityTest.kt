@@ -216,26 +216,3 @@ class ItemRequestActivityTest {
 }
 
 
-// Source : https://stackoverflow.com/questions/28390574/checking-toast-message-in-android-espresso
-class ToastMatcher : TypeSafeMatcher<Root?>() {
-
-    private var currentFailures: Int = 0
-
-    override fun describeTo(description: Description) {
-        description.appendText("no toast found after")
-    }
-
-    override fun matchesSafely(item: Root?): Boolean {
-        val type: Int? = item?.windowLayoutParams?.get()?.type
-
-        if (TYPE_TOAST == type || TYPE_APPLICATION_OVERLAY == type) {
-            val windowToken = item.decorView.windowToken
-            val appToken = item.decorView.applicationWindowToken
-
-            if (windowToken == appToken) {
-                return true
-            }
-        }
-        return ++currentFailures >= 5
-    }
-}
