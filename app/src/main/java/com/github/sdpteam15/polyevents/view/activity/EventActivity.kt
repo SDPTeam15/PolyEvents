@@ -36,6 +36,8 @@ class EventActivity : AppCompatActivity() {
         lateinit var database: LocalDatabase
     }
 
+    private lateinit var eventId: String
+
     private lateinit var subscribeButton: Button
 
     private lateinit var leaveReviewDialogFragment: LeaveEventReviewFragment
@@ -52,11 +54,13 @@ class EventActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowHomeEnabled(true)
 
+        eventId = intent.getStringExtra(EXTRA_EVENT_ID)!!
+
         database = (application as PolyEventsApplication).database
 
         subscribeButton = findViewById(R.id.button_subscribe_event)
 
-        leaveReviewDialogFragment = LeaveEventReviewFragment()
+        leaveReviewDialogFragment = LeaveEventReviewFragment(eventId)
 
         getEventAndObserve()
     }
@@ -70,7 +74,7 @@ class EventActivity : AppCompatActivity() {
 
     private fun getEventAndObserve() {
         currentDatabase.eventDatabase!!.getEventFromId(
-            intent.getStringExtra(EXTRA_EVENT_ID)!!,
+            eventId,
             obsEvent
         )
             .observe(this) { b ->
@@ -164,12 +168,16 @@ class EventActivity : AppCompatActivity() {
     }
 
     /**
-     * Show the leave review dialog upon click
+     * Show the leave review dialog upon click, if user is logged in.
      */
     fun onClickEventLeaveReview(view: View) {
-        leaveReviewDialogFragment.show(
-               supportFragmentManager, LeaveEventReviewFragment.TAG
-        )
+        if (currentDatabase.currentUser == null) {
+            showToast(getString(R.string.event_review_warning), this)
+        } else {
+            leaveReviewDialogFragment.show(
+                supportFragmentManager, LeaveEventReviewFragment.TAG
+            )
+        }
     }
 
 }
