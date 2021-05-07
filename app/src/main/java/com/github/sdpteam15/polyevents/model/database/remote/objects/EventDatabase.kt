@@ -116,13 +116,10 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
         val rating = ObservableList<Rating>()
 
         db.getListEntity(rating, null, {
-            Log.d(TAG, "ça passe")
-            Log.d(TAG, "ça passe")
             it.whereEqualTo(DatabaseConstant.RatingConstant.RATING_EVENT_ID.value, eventId)
                 .whereEqualTo(DatabaseConstant.RatingConstant.RATING_USER_ID.value, userId)
                 .limit(1)
         }, RATING_COLLECTION).observeOnce {
-            Log.d(TAG, "On est là")
             if (it.value) {
                 if (rating.size == 0) {
                     end.postValue(false, db)
