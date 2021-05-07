@@ -121,10 +121,14 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
                 .limit(1)
         }, RATING_COLLECTION).observeOnce {
             if (it.value) {
-                rating.observeOnce { it2 ->
-                    returnedRating.postValue(it2.value[0])
+                if(rating.size==0){
+                    end.postValue(false, db)
+                }else{
+                    rating.observeOnce { it2 ->
+                        returnedRating.postValue(it2.value[0])
+                        end.postValue(true, db)
+                    }
                 }
-                end.postValue(true, db)
             } else {
                 end.postValue(false, db)
             }
