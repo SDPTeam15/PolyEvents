@@ -24,6 +24,7 @@ import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModelFactory
  * An activity containing events description
  */
 class EventActivity : AppCompatActivity() {
+    // TODO: view on map functionality?
 
     companion object {
         const val TAG = "EventActivity"
@@ -65,6 +66,8 @@ class EventActivity : AppCompatActivity() {
     }
 
     private fun getEventAndObserve() {
+        // reinit observable
+        obsEvent = Observable()
         currentDatabase.eventDatabase!!.getEventFromId(
             intent.getStringExtra(EXTRA_EVENT_ID)!!,
             obsEvent
@@ -110,7 +113,7 @@ class EventActivity : AppCompatActivity() {
             if (currentDatabase.currentUser != null
                 && event.getParticipants().contains(currentDatabase.currentUser!!.uid)
             ) {
-                subscribeButton.setText(resources.getString(R.string.event_unsubscribe))
+                subscribeButton.text = resources.getString(R.string.event_unsubscribe)
             }
         } else {
             subscribeButton.visibility = View.GONE
