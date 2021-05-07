@@ -141,4 +141,14 @@ object DatabaseConstant {
 
         override fun toString(): String = value
     }
+
+    enum class RatingConstant(val value:String){
+        RATING_ID("rid"),
+        EVENT_ID("eventId"),
+        RATING_USER_ID("uid"),
+        RATING_DESCRIPTION("ratingDescription"),
+        RATING_SCORE("score");
+
+        override fun toString(): String = value
+    }
 }
