@@ -32,7 +32,7 @@ class LeaveEventReviewFragment(val eventId: String?):
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val view = super.onCreateView(inflater, container, savedInstanceState)
         leaveReviewDialogConfirmButton = view!!.findViewById(R.id.leave_review_fragment_save_button)
         userFeedbackDialogEditText = view.findViewById(R.id.leave_review_fragment_feedback_text)
