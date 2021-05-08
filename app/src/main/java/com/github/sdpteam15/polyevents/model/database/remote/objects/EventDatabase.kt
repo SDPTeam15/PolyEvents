@@ -1,6 +1,5 @@
 package com.github.sdpteam15.polyevents.model.database.remote.objects
 
-import android.util.Log
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.EVENT_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.RATING_COLLECTION
@@ -40,17 +39,10 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
             eventList,
             null,
             {
-                if (matcher != null) {
-                    if (limit != null)
-                        matcher.match(it).limit(limit)
-                    else
-                        matcher.match(it)
-                } else {
-                    if (limit != null)
-                        it.limit(limit)
-                    else
-                        it
-                }
+                var query = it
+                if (matcher != null) query = matcher.match(it)
+                if (limit != null) query = query.limit(limit)
+                query
             },
             EVENT_COLLECTION
         )
@@ -94,12 +86,17 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
 
         getRatingsForEvent(eventId, null, rating, userAccess).observeOnce {
             if (it.value) {
-                rating.observeOnce { it2 ->
-                    val sum = it2.value.fold(0.0F, { a, b -> a + b.rate!! })
-                    mean.postValue(sum / it2.value.size,db)
-                }
+                val m = rating.fold(
+                    Pair(0.0F, 0),
+                    { a, b ->
+                        Pair(
+                            (a.first * a.second + b.rate!!) / (a.second + 1),
+                            a.second + 1
+                        )
+                    })
+                mean.postValue(m.first, it.sender)
             } else {
-                end.postValue(false, db)
+                end.postValue(false, it.sender)
             }
         }
 
