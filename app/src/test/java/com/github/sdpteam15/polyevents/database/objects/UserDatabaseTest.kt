@@ -22,7 +22,7 @@ class UserDatabaseTest {
 
     @Before
     fun setup() {
-        val mockDatabaseInterface = HelperTestFunction.mockFor()
+        val mockDatabaseInterface = HelperTestFunction.mockDatabaseInterface()
         mockUserDatabase = UserDatabase(mockDatabaseInterface)
         HelperTestFunction.clearQueue()
     }

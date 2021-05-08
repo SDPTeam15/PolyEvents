@@ -20,7 +20,7 @@ class RouteDatabaseTest {
 
     @Before
     fun setup() {
-        val mockDatabaseInterface = HelperTestFunction.mockFor()
+        val mockDatabaseInterface = HelperTestFunction.mockDatabaseInterface()
         mackRouteDatabase = RouteDatabase(mockDatabaseInterface)
         HelperTestFunction.clearQueue()
     }

@@ -1,13 +1,11 @@
 package com.github.sdpteam15.polyevents.database.objects
 
-import android.util.Log
 import com.github.sdpteam15.polyevents.database.HelperTestFunction
 import com.github.sdpteam15.polyevents.model.database.remote.*
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.EVENT_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.RATING_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.EventAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.RatingAdapter
-import com.github.sdpteam15.polyevents.model.database.remote.login.UserLoginInterface
 import com.github.sdpteam15.polyevents.model.database.remote.objects.EventDatabase
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Rating
@@ -15,14 +13,12 @@ import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.google.firebase.auth.AuthResult
 import com.google.firebase.firestore.Query
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.anyOrNull
 import java.time.LocalDateTime
-import javax.annotation.meta.When
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -48,7 +44,7 @@ class EventDatabaseTest {
 
     @Before
     fun setup() {
-        val mockDatabaseInterface = HelperTestFunction.mockFor()
+        val mockDatabaseInterface = HelperTestFunction.mockDatabaseInterface()
         mockedEventdatabase = EventDatabase(mockDatabaseInterface)
         HelperTestFunction.clearQueue()
     }
@@ -68,7 +64,7 @@ class EventDatabaseTest {
         )
         val userAccess = UserProfile()
 
-        HelperTestFunction.nextBoolean(true)
+        HelperTestFunction.nextSetEntity{true}
         mockedEventdatabase.updateEvents(event, userAccess)
             .observeOnce { assert(it.value) }.then.postValue(true)
 
@@ -325,7 +321,12 @@ class EventDatabaseTest {
         val mean = Observable<Float>()
         val userAccess = UserProfile("uid")
 
-        HelperTestFunction.nextBoolean(true)
+        HelperTestFunction.nextGetListEntity{
+            it.element.addAll(
+                listOf<Rating>() //TODO ICI
+            )
+            true
+        }
         mockedEventdatabase.getMeanRatingForEvent(eventId, mean, userAccess)
             .observeOnce { assert(it.value) }.then.postValue(true)
 
@@ -346,7 +347,7 @@ class EventDatabaseTest {
         val mean = Observable<Float>(-1.0F)
         val userAccess = UserProfile("uid")
 
-        HelperTestFunction.nextBoolean(false)
+        HelperTestFunction.getListEntity{false}
         mockedEventdatabase.getMeanRatingForEvent(eventId, mean, userAccess)
             .observeOnce { assert(!it.value) }.then.postValue(false)
 
@@ -367,7 +368,7 @@ class EventDatabaseTest {
         val rat = Observable(Rating("default",0.0F))
         val userAccess = UserProfile("uid")
 
-        HelperTestFunction.nextBoolean(false)
+        HelperTestFunction.nextGetListEntity{false}
         mockedEventdatabase.getUserRatingFromEvent(userId, eventId, rat, userAccess)
             .observeOnce { assert(!it.value) }.then.postValue(false)
 

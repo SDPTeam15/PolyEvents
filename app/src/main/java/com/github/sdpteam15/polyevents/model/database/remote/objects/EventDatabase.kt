@@ -94,9 +94,9 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
                             a.second + 1
                         )
                     })
-                mean.postValue(m.first, db)
+                mean.postValue(m.first, it.sender)
             } else {
-                end.postValue(false, db)
+                end.postValue(false, it.sender)
             }
         }
 

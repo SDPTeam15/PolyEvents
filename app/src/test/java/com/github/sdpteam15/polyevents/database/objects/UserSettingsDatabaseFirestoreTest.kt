@@ -22,7 +22,7 @@ class UserSettingsDatabaseFirestoreTest {
 
     @Before
     fun setup() {
-        mockRemoteDatabase = HelperTestFunction.mockFor()
+        mockRemoteDatabase = HelperTestFunction.mockDatabaseInterface()
         mockUserSettingsDatabase = UserSettingsDatabase(mockRemoteDatabase)
 
         When(mockRemoteDatabase.currentUser).thenReturn(

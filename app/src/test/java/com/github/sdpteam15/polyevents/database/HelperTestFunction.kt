@@ -15,101 +15,126 @@ import org.mockito.Mockito.`when` as When
 @Suppress("UNCHECKED_CAST")
 object HelperTestFunction {
 
-    val nextBooleanFun: Queue<() -> Boolean> = LinkedList()
-    val nextStringFun: Queue<() -> String> = LinkedList()
-    val nextPairStringListFun: Queue<() -> Pair<Boolean, List<String>?>> = LinkedList()
-
-    fun nextBoolean(boolean: Boolean) = nextBooleanFun.add { boolean }
-    fun nextString(string: String) = nextStringFun.add { string }
-    fun nextPairStringList(pair: Pair<Boolean, List<String>?>) = nextPairStringListFun.add { pair }
-
-    class addEntityAndGetIdArgs(
+    class AddEntityAndGetIdArgs(
         val element: Any,
         val collection: DatabaseConstant.CollectionConstant,
         val adapter: AdapterToDocumentInterface<out Any> //'out E' is '? extends E' in java
     )
+    private val nextAddEntityAndGetIdQueue: Queue<(AddEntityAndGetIdArgs) -> String> = LinkedList()
+    fun nextAddEntityAndGetId(function: (AddEntityAndGetIdArgs) -> String) =
+        nextAddEntityAndGetIdQueue.add(function)
+    private val lastAddEntityAndGetIdQueue: Queue<AddEntityAndGetIdArgs> = LinkedList()
+    fun lastAddEntityAndGetId() = lastAddEntityAndGetIdQueue.poll()
 
-    val addEntityAndGetIdQueue: Queue<addEntityAndGetIdArgs> = LinkedList()
-
-    class addEntityArgs(
+    class AddEntityArgs(
         val element: Any,
         val collection: DatabaseConstant.CollectionConstant,
         val adapter: AdapterToDocumentInterface<out Any> //'out E' is '? extends E' in java
     )
+    private val nextAddEntityQueue: Queue<(AddEntityArgs) -> Boolean> = LinkedList()
+    fun nextAddEntity(function: (AddEntityArgs) -> Boolean) = nextAddEntityQueue.add(function)
+    private val lastAddEntityQueue: Queue<AddEntityArgs> = LinkedList()
+    fun lastAddEntity() = lastAddEntityQueue.poll()
 
-    val addEntityQueue: Queue<addEntityArgs> = LinkedList()
-
-    class addListEntityArgs(
+    class AddListEntityArgs(
         val elements: List<Any>,
         val collection: DatabaseConstant.CollectionConstant,
         val adapter: AdapterToDocumentInterface<in Any>
     )
+    private val nextAddListEntityQueue: Queue<(AddListEntityArgs) -> Pair<Boolean, List<String>?>> = LinkedList()
+    fun nextAddListEntity(function: (AddListEntityArgs) -> Pair<Boolean, List<String>?>) =
+        nextAddListEntityQueue.add(function)
+    private val lastAddListEntityQueue: Queue<AddListEntityArgs> = LinkedList()
+    fun lastAddListEntity() = lastAddListEntityQueue.poll()
 
-    val addListEntityQueue: Queue<addListEntityArgs> = LinkedList()
-
-    class setEntityArgs(
+    class SetEntityArgs(
         val element: Any?,
         val id: String,
         val collection: DatabaseConstant.CollectionConstant,
         val adapter: AdapterToDocumentInterface<out Any>? //'out E' is '? extends E' in java
     )
+    private val nextSetEntityQueue: Queue<(SetEntityArgs) -> Boolean> = LinkedList()
+    fun nextSetEntity(function: (SetEntityArgs) -> Boolean) = nextSetEntityQueue.add(function)
+    private val lastSetEntityQueue: Queue<SetEntityArgs> = LinkedList()
+    fun lastSetEntity() = lastSetEntityQueue.poll()
 
-    val setEntityQueue: Queue<setEntityArgs> = LinkedList()
-
-    class setListEntityArgs(
+    class SetListEntityArgs(
         val elements: List<Pair<String, Any?>>,
         val collection: DatabaseConstant.CollectionConstant,
         val adapter: AdapterToDocumentInterface<in Any>
     )
+    private val nextSetListEntityQueue: Queue<(SetListEntityArgs) -> Boolean> = LinkedList()
+    fun nextSetListEntity(function: (SetListEntityArgs) -> Boolean) =
+        nextSetListEntityQueue.add(function)
+    private val lastSetListEntityQueue: Queue<SetListEntityArgs> = LinkedList()
+    fun lastSetListEntity() = lastSetListEntityQueue.poll()
 
-    val setListEntityQueue: Queue<setListEntityArgs> = LinkedList()
-
-    class deleteEntityArgs(
+    class DeleteEntityArgs(
         val id: String,
         val collection: DatabaseConstant.CollectionConstant
     )
+    private val nextDeleteEntityQueue: Queue<(DeleteEntityArgs) -> Boolean> = LinkedList()
+    fun nextDeleteEntity(function: (DeleteEntityArgs) -> Boolean) =
+        nextDeleteEntityQueue.add(function)
+    private val lastDeleteEntityQueue: Queue<DeleteEntityArgs> = LinkedList()
+    fun lastDeleteEntity() = lastDeleteEntityQueue.poll()
 
-
-    val deleteEntityQueue: Queue<deleteEntityArgs> = LinkedList()
-
-    class deleteListEntityArgs(
+    class DeleteListEntityArgs(
         val ids: List<String>,
         val collection: DatabaseConstant.CollectionConstant
     )
+    private val nextDeleteListEntityQueue: Queue<(DeleteListEntityArgs) -> Boolean> = LinkedList()
+    fun nextDeleteListEntity(function: (DeleteListEntityArgs) -> Boolean) =
+        nextDeleteListEntityQueue.add(function)
+    private val lastDeleteListEntityQueue: Queue<DeleteListEntityArgs> = LinkedList()
+    fun lastDeleteListEntity() = lastDeleteListEntityQueue.poll()
 
-    val deleteListEntityQueue: Queue<deleteListEntityArgs> = LinkedList()
-
-    class getEntityArgs(
+    class GetEntityArgs(
         val element: Observable<out Any>,
         val id: String,
         val collection: DatabaseConstant.CollectionConstant,
         val adapter: AdapterFromDocumentInterface<in Any>? //'in E' is '? super E' in java
     )
+    private val nextGetEntityQueue: Queue<(GetEntityArgs) -> Boolean> = LinkedList()
+    fun nextGetEntity(function: (GetEntityArgs) -> Boolean) = nextGetEntityQueue.add(function)
+    private val lastGetEntityQueue: Queue<GetEntityArgs> = LinkedList()
+    fun lastGetEntity() = lastGetEntityQueue.poll()
 
-    val getEntityQueue: Queue<getEntityArgs> = LinkedList()
-
-    class getListEntityArgs(
+    class GetListEntityArgs(
         val element: ObservableList<out Any>,
         val ids: MutableList<String>?,
         val matcher: Matcher?,
         val collection: DatabaseConstant.CollectionConstant,
         val adapter: AdapterFromDocumentInterface<in Any>? //'in E' is '? super E' in java
     )
-
-    val getListEntityQueue: Queue<getListEntityArgs> = LinkedList()
+    private val nextGetListEntityQueue: Queue<(GetListEntityArgs) -> Boolean> = LinkedList()
+    fun nextGetListEntity(function: (GetListEntityArgs) -> Boolean) =
+        nextGetListEntityQueue.add(function)
+    private val lastGetListEntityQueue: Queue<GetListEntityArgs> = LinkedList()
+    fun lastGetListEntity() = lastGetListEntityQueue.poll()
 
     fun clearQueue() {
-        (nextBooleanFun as LinkedList).clear()
-        (nextStringFun as LinkedList).clear()
-        (addEntityAndGetIdQueue as LinkedList).clear()
-        (addEntityQueue as LinkedList).clear()
-        (setEntityQueue as LinkedList).clear()
-        (deleteEntityQueue as LinkedList).clear()
-        (getEntityQueue as LinkedList).clear()
-        (getListEntityQueue as LinkedList).clear()
+        (nextAddEntityAndGetIdQueue as LinkedList).clear()
+        (lastAddEntityAndGetIdQueue as LinkedList).clear()
+        (nextAddEntityQueue as LinkedList).clear()
+        (lastAddEntityQueue as LinkedList).clear()
+        (nextAddListEntityQueue as LinkedList).clear()
+        (lastAddListEntityQueue as LinkedList).clear()
+        (nextSetEntityQueue as LinkedList).clear()
+        (lastSetEntityQueue as LinkedList).clear()
+        (nextSetListEntityQueue as LinkedList).clear()
+        (lastSetListEntityQueue as LinkedList).clear()
+        (nextDeleteEntityQueue as LinkedList).clear()
+        (lastDeleteEntityQueue as LinkedList).clear()
+        (nextDeleteListEntityQueue as LinkedList).clear()
+        (lastDeleteListEntityQueue as LinkedList).clear()
+        (nextGetEntityQueue as LinkedList).clear()
+        (lastGetEntityQueue as LinkedList).clear()
+        (nextGetListEntityQueue as LinkedList).clear()
+        (lastGetListEntityQueue as LinkedList).clear()
     }
 
-    fun mockFor(): DatabaseInterface {
+    fun mockDatabaseInterface(): DatabaseInterface {
         val mokeDatabaseInterface = Mockito.mock(DatabaseInterface::class.java)
         When(
             mokeDatabaseInterface.addEntityAndGetId(
@@ -119,14 +144,16 @@ object HelperTestFunction {
             )
         ).thenAnswer {
             val iterator = it!!.arguments.iterator()
-            addEntityAndGetIdQueue.add(
-                addEntityAndGetIdArgs(
+            lastAddEntityAndGetIdQueue.add(
+                AddEntityAndGetIdArgs(
                     iterator.next() as Any,
                     iterator.next() as DatabaseConstant.CollectionConstant,
                     iterator.next() as AdapterToDocumentInterface<Any>,
                 )
             )
-            Observable((nextStringFun.poll() ?: { "" })())
+            Observable(
+                (nextAddEntityAndGetIdQueue.poll() ?: { "" })(lastAddEntityAndGetIdQueue.peek()!!)
+            )
         }
         When(
             mokeDatabaseInterface.addEntity(
@@ -136,14 +163,14 @@ object HelperTestFunction {
             )
         ).thenAnswer {
             val iterator = it!!.arguments.iterator()
-            addEntityQueue.add(
-                addEntityArgs(
+            lastAddEntityQueue.add(
+                AddEntityArgs(
                     iterator.next() as Any,
                     iterator.next() as DatabaseConstant.CollectionConstant,
                     iterator.next() as AdapterToDocumentInterface<Any>,
                 )
             )
-            Observable((nextBooleanFun.poll() ?: { true })())
+            Observable((nextAddEntityQueue.poll() ?: { true })(lastAddEntityQueue.peek()!!))
         }
         When(
             mokeDatabaseInterface.addListEntity<Any>(
@@ -153,14 +180,14 @@ object HelperTestFunction {
             )
         ).thenAnswer {
             val iterator = it!!.arguments.iterator()
-            addListEntityQueue.add(
-                addListEntityArgs(
+            lastAddListEntityQueue.add(
+                AddListEntityArgs(
                     iterator.next() as List<Any>,
                     iterator.next() as DatabaseConstant.CollectionConstant,
                     iterator.next() as AdapterToDocumentInterface<in Any>
                 )
             )
-            Observable((nextPairStringListFun.poll() ?: { Pair(true, listOf()) })())
+            Observable((nextAddListEntityQueue.poll() ?: { Pair(true, listOf<String>()) })(lastAddListEntityQueue.peek()!!))
         }
         When(
             mokeDatabaseInterface.setEntity(
@@ -171,15 +198,15 @@ object HelperTestFunction {
             )
         ).thenAnswer {
             val iterator = it!!.arguments.iterator()
-            setEntityQueue.add(
-                setEntityArgs(
+            lastSetEntityQueue.add(
+                SetEntityArgs(
                     iterator.next() as Any,
                     iterator.next() as String,
                     iterator.next() as DatabaseConstant.CollectionConstant,
                     iterator.next() as AdapterToDocumentInterface<Any>?,
                 )
             )
-            Observable((nextBooleanFun.poll() ?: { true })())
+            Observable((nextSetEntityQueue.poll() ?: { true })(lastSetEntityQueue.peek()!!))
         }
         When(
             mokeDatabaseInterface.setListEntity<Any>(
@@ -189,14 +216,14 @@ object HelperTestFunction {
             )
         ).thenAnswer {
             val iterator = it!!.arguments.iterator()
-            setListEntityQueue.add(
-                setListEntityArgs(
+            lastSetListEntityQueue.add(
+                SetListEntityArgs(
                     iterator.next() as List<Pair<String, Any?>>,
                     iterator.next() as DatabaseConstant.CollectionConstant,
                     iterator.next() as AdapterToDocumentInterface<in Any>
                 )
             )
-            Observable((nextBooleanFun.poll() ?: { true })())
+            Observable((nextSetListEntityQueue.poll() ?: { true })(lastSetListEntityQueue.peek()!!))
         }
         When(
             mokeDatabaseInterface.deleteEntity(
@@ -205,13 +232,13 @@ object HelperTestFunction {
             )
         ).thenAnswer {
             val iterator = it!!.arguments.iterator()
-            deleteEntityQueue.add(
-                deleteEntityArgs(
+            lastDeleteEntityQueue.add(
+                DeleteEntityArgs(
                     iterator.next() as String,
                     iterator.next() as DatabaseConstant.CollectionConstant,
                 )
             )
-            Observable((nextBooleanFun.poll() ?: { true })())
+            Observable((nextDeleteEntityQueue.poll() ?: { true })(lastDeleteEntityQueue.peek()!!))
         }
         When(
             mokeDatabaseInterface.deleteListEntity(
@@ -220,13 +247,13 @@ object HelperTestFunction {
             )
         ).thenAnswer {
             val iterator = it!!.arguments.iterator()
-            deleteListEntityQueue.add(
-                deleteListEntityArgs(
+            lastDeleteListEntityQueue.add(
+                DeleteListEntityArgs(
                     iterator.next() as List<String>,
                     iterator.next() as DatabaseConstant.CollectionConstant,
                 )
             )
-            Observable((nextBooleanFun.poll() ?: { true })())
+            Observable((nextDeleteListEntityQueue.poll() ?: { true })(lastDeleteListEntityQueue.peek()!!))
         }
         When(
             mokeDatabaseInterface.getEntity<Any>(
@@ -237,15 +264,15 @@ object HelperTestFunction {
             )
         ).thenAnswer {
             val iterator = it!!.arguments.iterator()
-            getEntityQueue.add(
-                getEntityArgs(
+            lastGetEntityQueue.add(
+                GetEntityArgs(
                     iterator.next() as Observable<Any>,
                     iterator.next() as String,
                     iterator.next() as DatabaseConstant.CollectionConstant,
                     iterator.next() as AdapterFromDocumentInterface<Any>?,
                 )
             )
-            Observable((nextBooleanFun.poll() ?: { true })())
+            Observable((nextGetEntityQueue.poll() ?: { true })(lastGetEntityQueue.peek()!!))
         }
         When(
             mokeDatabaseInterface.getListEntity<Any>(
@@ -257,8 +284,8 @@ object HelperTestFunction {
             )
         ).thenAnswer {
             val iterator = it!!.arguments.iterator()
-            getListEntityQueue.add(
-                getListEntityArgs(
+            lastGetListEntityQueue.add(
+                GetListEntityArgs(
                     iterator.next() as ObservableList<Any>,
                     iterator.next() as MutableList<String>?,
                     iterator.next() as Matcher?,
@@ -266,7 +293,7 @@ object HelperTestFunction {
                     iterator.next() as AdapterFromDocumentInterface<Any>?,
                 )
             )
-            Observable((nextBooleanFun.poll() ?: { true })())
+            Observable((nextGetListEntityQueue.poll() ?: { true })(lastGetListEntityQueue.peek()!!))
         }
         return mokeDatabaseInterface
     }

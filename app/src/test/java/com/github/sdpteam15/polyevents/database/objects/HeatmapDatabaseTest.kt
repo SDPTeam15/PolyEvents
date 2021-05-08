@@ -19,7 +19,7 @@ class HeatmapDatabaseTest {
     lateinit var mackHeatmapDatabase : HeatmapDatabase
     @Before
     fun setup() {
-        val mockDatabaseInterface = HelperTestFunction.mockFor()
+        val mockDatabaseInterface = HelperTestFunction.mockDatabaseInterface()
         mackHeatmapDatabase = HeatmapDatabase(mockDatabaseInterface)
         HelperTestFunction.clearQueue()
     }
