@@ -106,7 +106,7 @@ class EventListFragmentTest {
             .allowMainThreadQueries()
             .build()
 
-        val scenario = launchFragmentInContainer<EventListFragment>(themeResId = R.style.Theme_PolyEvents)
+        launchFragmentInContainer<EventListFragment>(themeResId = R.style.Theme_PolyEvents)
 
         EventListFragment.localDatabase = localDatabase
         EventListFragment.eventLocalViewModel = EventLocalViewModelFactory(

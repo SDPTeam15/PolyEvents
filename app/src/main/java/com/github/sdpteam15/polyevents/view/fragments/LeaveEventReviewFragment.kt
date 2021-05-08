@@ -49,58 +49,30 @@ class LeaveEventReviewFragment(val eventId: String?):
         }
 
         leaveReviewDialogConfirmButton.setOnClickListener {
-            if (!rated) {
-                // Check if user has rated, to avoid storing a rating with zero stars.
-                HelperFunctions.showToast(getString(R.string.event_review_leave_rating_warning),
-                    activity?.applicationContext
-                )
-            } else {
-                Log.d(TAG, "Leaving a review")
-                // TODO: Get current rating
-                val rating = Rating(
-                    rate = leaveReviewDialogRatingBar.rating,
-                    feedback = userFeedbackDialogEditText.text.toString(),
-                    eventId = eventId,
-                    userId = currentDatabase.currentUser!!.uid
-                )
-                currentDatabase.eventDatabase?.addRatingToEvent(
-                    rating
-                )
-                // TODO: show toast to confirm
-                dismiss()
-            }
+            onClickAdd()
         }
 
-        /*val ratingObservable = Observable<Rating>()
-        Log.d(TAG, "Here!")
+        val ratingObservable = Observable<Rating>()
         ratingObservable.observe(this) {
             Log.d(TAG, "Retrieved Rating for $eventId and ${currentDatabase.currentUser!!.uid}!")
             val rating = it.value
             leaveReviewDialogRatingBar.rating = rating.rate!!
             if (rating.feedback != null) {
-                if (rating.feedback.isEmpty()) {
-                    userFeedbackDialogEditText.setText("")
-                } else {
+                if (!rating.feedback.isEmpty()) {
                     userFeedbackDialogEditText.setText(rating.feedback)
                 }
             }
+            leaveReviewDialogConfirmButton.setOnClickListener {
+                onClickUpdate(rating)
+            }
         }
 
-        Log.d(TAG, "Retrieving rating for $eventId and ${currentDatabase.currentUser!!.uid}!")
-        val obs = currentDatabase.eventDatabase!!.getUserRatingFromEvent(
+        currentDatabase.eventDatabase!!.getUserRatingFromEvent(
             userId = currentDatabase.currentUser!!.uid,
             eventId = eventId!!,
             returnedRating = ratingObservable,
             userAccess = null
         )
-
-        obs.observe(this) {
-            if(it.value) {
-                Log.d(TAG, "Managed to retrieve rating for ${eventId} and ${currentDatabase.currentUser!!.uid}!")
-            } else {
-                Log.d(TAG, "Failed to retrieve rating for ${eventId} and ${currentDatabase.currentUser!!.uid}!")
-            }
-        }*/
 
         return view
     }
@@ -111,6 +83,59 @@ class LeaveEventReviewFragment(val eventId: String?):
         /*val width = ConstraintLayout.LayoutParams.MATCH_PARENT
         val height = ConstraintLayout.LayoutParams.MATCH_PARENT
         dialog!!.window!!.setLayout(width, height)*/
+    }
+
+    private fun onClickUpdate(rating: Rating) {
+        if (!rated) {
+            // Check if user has rated, to avoid storing a rating with zero stars.
+            HelperFunctions.showToast(getString(R.string.event_review_leave_rating_warning),
+                context
+            )
+        } else {
+            Log.d(TAG, "Leaving a review")
+            val ratingCopy = rating.copy(
+                rate = leaveReviewDialogRatingBar.rating,
+                feedback = userFeedbackDialogEditText.text.toString()
+            )
+
+            currentDatabase.eventDatabase!!.updateRating(
+                ratingCopy
+            ).observe(this) {
+               if (it.value) {
+                   HelperFunctions.showToast(getString(R.string.event_review_saved), context)
+               } else {
+                   HelperFunctions.showToast(getString(R.string.event_review_failed), context)
+               }
+                dismiss()
+            }
+        }
+    }
+
+    private fun onClickAdd() {
+        if (!rated) {
+            // Check if user has rated, to avoid storing a rating with zero stars.
+            HelperFunctions.showToast(getString(R.string.event_review_leave_rating_warning),
+                context
+            )
+        } else {
+            Log.d(TAG, "Leaving a review")
+            val rating = Rating(
+                rate = leaveReviewDialogRatingBar.rating,
+                feedback = userFeedbackDialogEditText.text.toString(),
+                eventId = eventId,
+                userId = currentDatabase.currentUser!!.uid
+            )
+            currentDatabase.eventDatabase!!.addRatingToEvent(
+                rating
+            ).observe(this) {
+                if (it.value) {
+                    HelperFunctions.showToast(getString(R.string.event_review_saved), context)
+                } else {
+                    HelperFunctions.showToast(getString(R.string.event_review_failed), context)
+                }
+                dismiss()
+            }
+        }
     }
 
     companion object {
