@@ -9,13 +9,11 @@ import com.google.firebase.Timestamp
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import java.time.LocalDateTime
 
 class DeviceLocationAdapterTest {
     val device = "device"
     val longitude = 42.0
     val latitude = 23.5
-    val time = LocalDateTime.now()
     val timestamp = Timestamp.now()
 
     lateinit var deviceLocation: DeviceLocation
@@ -26,14 +24,14 @@ class DeviceLocationAdapterTest {
         deviceLocation = DeviceLocation(
             device = device,
             location = LatLng(latitude, longitude),
-            time = time
+            time = HelperFunctions.dateToLocalDateTime(timestamp.toDate())
         )
+
         document = DeviceLocationAdapter.toDocument(deviceLocation)
     }
 
-
     @Test
-    fun conversionOfDocumentToItemEntityPreservesData() {
+    fun conversionOfDocumentToDeviceLocationPreservesData() {
         val deviceLocationDocument: HashMap<String, Any?> = hashMapOf(
             DatabaseConstant.LocationConstant.LOCATIONS_DEVICE.value to device,
             DatabaseConstant.LocationConstant.LOCATIONS_POINT_LATITUDE.value to latitude,
@@ -42,7 +40,9 @@ class DeviceLocationAdapterTest {
         )
         val obtainedLocation = DeviceLocationAdapter.fromDocument(deviceLocationDocument, "id")
 
-        Assert.assertEquals(obtainedLocation, deviceLocation)
+        Assert.assertEquals(obtainedLocation.device, deviceLocation.device)
+        Assert.assertEquals(obtainedLocation.location, deviceLocation.location)
+        Assert.assertEquals(obtainedLocation.time.toString(), deviceLocation.time.toString())
     }
 
     @Test
@@ -64,5 +64,4 @@ class DeviceLocationAdapterTest {
             timestamp.toDate().toString()
         )
     }
-
 }
