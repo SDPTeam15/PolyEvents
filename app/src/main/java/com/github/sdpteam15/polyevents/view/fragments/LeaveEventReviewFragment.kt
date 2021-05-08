@@ -85,6 +85,10 @@ class LeaveEventReviewFragment(val eventId: String?):
         dialog!!.window!!.setLayout(width, height)*/
     }
 
+    /**
+     * A listener to update a rating in the database. Used when we have an already found
+     * rating for the current user.
+     */
     private fun onClickUpdate(rating: Rating) {
         if (!rated) {
             // Check if user has rated, to avoid storing a rating with zero stars.
@@ -101,16 +105,14 @@ class LeaveEventReviewFragment(val eventId: String?):
             currentDatabase.eventDatabase!!.updateRating(
                 ratingCopy
             ).observe(this) {
-               if (it.value) {
-                   HelperFunctions.showToast(getString(R.string.event_review_saved), context)
-               } else {
-                   HelperFunctions.showToast(getString(R.string.event_review_failed), context)
-               }
-                dismiss()
+               showSuccessToastAndDismiss(it.value)
             }
         }
     }
 
+    /**
+     * A listener to save a new rating in the database.
+     */
     private fun onClickAdd() {
         if (!rated) {
             // Check if user has rated, to avoid storing a rating with zero stars.
@@ -128,14 +130,22 @@ class LeaveEventReviewFragment(val eventId: String?):
             currentDatabase.eventDatabase!!.addRatingToEvent(
                 rating
             ).observe(this) {
-                if (it.value) {
-                    HelperFunctions.showToast(getString(R.string.event_review_saved), context)
-                } else {
-                    HelperFunctions.showToast(getString(R.string.event_review_failed), context)
-                }
-                dismiss()
+                showSuccessToastAndDismiss(it.value)
             }
         }
+    }
+
+    /**
+     * Show a success or fail toast on the result of saving the rating to the database
+     * @param resultStatus true if the rating was saved or updated successfully
+     */
+    private fun showSuccessToastAndDismiss(resultStatus: Boolean) {
+        if (resultStatus) {
+            HelperFunctions.showToast(getString(R.string.event_review_saved), context)
+        } else {
+            HelperFunctions.showToast(getString(R.string.event_review_failed), context)
+        }
+        dismiss()
     }
 
     companion object {
