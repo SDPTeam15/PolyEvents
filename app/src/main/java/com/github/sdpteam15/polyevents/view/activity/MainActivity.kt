@@ -117,6 +117,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.nav_menu, menu)
 
+        // TODO: replace with settings menu option
         val search = menu.findItem(R.id.nav_search)
         val searchView = search.actionView as SearchView
         searchView.queryHint = "Search something!"
