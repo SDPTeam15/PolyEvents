@@ -32,47 +32,50 @@ class LeaveEventReviewFragment(val eventId: String?):
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
         val view = super.onCreateView(inflater, container, savedInstanceState)
-        leaveReviewDialogConfirmButton = view!!.findViewById(R.id.leave_review_fragment_save_button)
-        userFeedbackDialogEditText = view.findViewById(R.id.leave_review_fragment_feedback_text)
+        if (view != null) {
+            leaveReviewDialogConfirmButton = view.findViewById(R.id.leave_review_fragment_save_button)
 
-        leaveReviewDialogRatingBar = view.findViewById(R.id.leave_review_fragment_rating)
-        leaveReviewDialogRatingBar.setOnRatingBarChangeListener { _, _, _ ->
-            rated = true
-        }
+            userFeedbackDialogEditText = view.findViewById(R.id.leave_review_fragment_feedback_text)
 
-        leaveReviewDialogCancelButton = view.findViewById(R.id.leave_review_fragment_cancel_button)
-        leaveReviewDialogCancelButton.setOnClickListener {
-            // Dimiss the dialog if canceled
-            dismiss()
-        }
+            leaveReviewDialogRatingBar = view.findViewById(R.id.leave_review_fragment_rating)
+            leaveReviewDialogRatingBar.setOnRatingBarChangeListener { _, _, _ ->
+                rated = true
+            }
 
-        leaveReviewDialogConfirmButton.setOnClickListener {
-            onClickAdd()
-        }
+            leaveReviewDialogCancelButton = view.findViewById(R.id.leave_review_fragment_cancel_button)
+            leaveReviewDialogCancelButton.setOnClickListener {
+                // Dimiss the dialog if canceled
+                dismiss()
+            }
 
-        val ratingObservable = Observable<Rating>()
-        ratingObservable.observe(this) {
-            Log.d(TAG, "Retrieved Rating for $eventId and ${currentDatabase.currentUser!!.uid}!")
-            val rating = it.value
-            leaveReviewDialogRatingBar.rating = rating.rate!!
-            if (rating.feedback != null) {
-                if (!rating.feedback.isEmpty()) {
-                    userFeedbackDialogEditText.setText(rating.feedback)
+            leaveReviewDialogConfirmButton.setOnClickListener {
+                onClickAdd()
+            }
+
+            val ratingObservable = Observable<Rating>()
+            ratingObservable.observe(this) {
+                Log.d(TAG, "Retrieved Rating for $eventId and ${currentDatabase.currentUser!!.uid}!")
+                val rating = it.value
+                leaveReviewDialogRatingBar.rating = rating.rate!!
+                if (rating.feedback != null) {
+                    if (!rating.feedback.isEmpty()) {
+                        userFeedbackDialogEditText.setText(rating.feedback)
+                    }
+                }
+                leaveReviewDialogConfirmButton.setOnClickListener {
+                    onClickUpdate(rating)
                 }
             }
-            leaveReviewDialogConfirmButton.setOnClickListener {
-                onClickUpdate(rating)
-            }
-        }
 
-        currentDatabase.eventDatabase!!.getUserRatingFromEvent(
-            userId = currentDatabase.currentUser!!.uid,
-            eventId = eventId!!,
-            returnedRating = ratingObservable,
-            userAccess = null
-        )
+            currentDatabase.eventDatabase!!.getUserRatingFromEvent(
+                userId = currentDatabase.currentUser!!.uid,
+                eventId = eventId!!,
+                returnedRating = ratingObservable,
+                userAccess = null
+            )
+        }
 
         return view
     }
