@@ -39,17 +39,10 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
             eventList,
             null,
             {
-                if (matcher != null) {
-                    if (limit != null)
-                        matcher.match(it).limit(limit)
-                    else
-                        matcher.match(it)
-                } else {
-                    if (limit != null)
-                        it.limit(limit)
-                    else
-                        it
-                }
+                var query = it
+                if (matcher != null) query = matcher.match(it)
+                if (limit != null) query = query.limit(limit)
+                query
             },
             EVENT_COLLECTION
         )
