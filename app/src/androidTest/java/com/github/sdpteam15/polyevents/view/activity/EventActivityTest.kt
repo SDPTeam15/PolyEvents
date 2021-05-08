@@ -26,6 +26,7 @@ import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.room.EventLocal
 import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
+import com.schibsted.spain.barista.assertion.BaristaProgressBarAssertions.assertProgress
 import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertDisplayed
 import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertNotDisplayed
 import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertNotExist
@@ -406,6 +407,10 @@ class EventActivityTest {
         clickOn(R.id.event_leave_review_button)
         assertDisplayed(R.id.leave_review_dialog_fragment)
 
+        // Check fetched rating is displayed
+        assertDisplayed(R.id.leave_review_fragment_feedback_text, existingRating.feedback!!)
+        assertProgress(R.id.leave_review_fragment_rating, existingRating.rate!!.toInt())
+
         onView(withId(R.id.leave_review_fragment_rating)).perform(SetRating(3.0f))
         clickOn(R.id.leave_review_fragment_save_button)
 
@@ -449,6 +454,10 @@ class EventActivityTest {
         // Click review event
         clickOn(R.id.event_leave_review_button)
         assertDisplayed(R.id.leave_review_dialog_fragment)
+
+        // Check fetched rating is displayed
+        assertDisplayed(R.id.leave_review_fragment_feedback_text, existingRating.feedback!!)
+        assertProgress(R.id.leave_review_fragment_rating, existingRating.rate!!.toInt())
 
         onView(withId(R.id.leave_review_fragment_rating)).perform(SetRating(3.0f))
         clickOn(R.id.leave_review_fragment_save_button)
