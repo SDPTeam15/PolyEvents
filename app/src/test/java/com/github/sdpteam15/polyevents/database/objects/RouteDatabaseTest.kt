@@ -31,8 +31,8 @@ class RouteDatabaseTest {
         val edges = ObservableList<RouteEdge>()
         val zone = ObservableList<Zone>()
 
-        HelperTestFunction.nextBoolean(true)
-        HelperTestFunction.nextBooleanFun.add {
+        HelperTestFunction.nextGetListEntity{true}
+        HelperTestFunction.nextGetListEntity  {
             nodes.addAll(
                 listOf(
                     RouteNode("id1", 0.0, 0.0),
@@ -41,7 +41,7 @@ class RouteDatabaseTest {
             )
             true
         }
-        HelperTestFunction.nextBooleanFun.add {
+        HelperTestFunction.nextGetListEntity  {
             edges.addAll(
                 listOf(
                     RouteEdge("id0", "id1", "id2"),
@@ -52,9 +52,9 @@ class RouteDatabaseTest {
         mackRouteDatabase.getRoute(nodes, edges, zone)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
-        val getListZone = HelperTestFunction.getListEntityQueue.poll()!!
-        val getListNode = HelperTestFunction.getListEntityQueue.poll()!!
-        val getListEdges = HelperTestFunction.getListEntityQueue.poll()!!
+        val getListZone = HelperTestFunction.lastGetListEntity()!!
+        val getListNode = HelperTestFunction.lastGetListEntity()!!
+        val getListEdges = HelperTestFunction.lastGetListEntity()!!
 
         assertEquals(zone, getListZone.element)
         assertEquals(null, getListZone.ids)
@@ -73,12 +73,12 @@ class RouteDatabaseTest {
         assertEquals(DatabaseConstant.CollectionConstant.EDGE_COLLECTION, getListEdges.collection)
         assertEquals(RouteEdgeAdapter, getListEdges.adapter)
 
-        HelperTestFunction.nextBoolean(false)
-        HelperTestFunction.nextBoolean(true)
-        HelperTestFunction.nextBoolean(false)
-        HelperTestFunction.nextBoolean(true)
-        HelperTestFunction.nextBoolean(true)
-        HelperTestFunction.nextBoolean(false)
+        HelperTestFunction.nextGetListEntity { false }
+        HelperTestFunction.nextGetListEntity { true }
+        HelperTestFunction.nextGetListEntity { false }
+        HelperTestFunction.nextGetListEntity { true }
+        HelperTestFunction.nextGetListEntity { true }
+        HelperTestFunction.nextGetListEntity { false }
 
         mackRouteDatabase.getRoute(nodes, edges, zone)
             .observeOnce { assert(!it.value) }.then.postValue(true)
@@ -119,15 +119,15 @@ class RouteDatabaseTest {
         newEdges.add(RouteEdge.fromRouteNode(n3, n4))
         removeEdges.add(edges[0])
 
-        HelperTestFunction.nextPairStringList(Pair(true, listOf("n2", "n3")))
-        HelperTestFunction.nextPairStringList(Pair(true, listOf("e3", "e4")))
-        HelperTestFunction.nextBoolean(true)
+        HelperTestFunction.nextAddListEntity { Pair(true, listOf("n2", "n3"))}
+        HelperTestFunction.nextAddListEntity { Pair(true, listOf("e3", "e4"))}
+        HelperTestFunction.nextDeleteListEntity { true }
         mackRouteDatabase.updateEdges(newEdges, removeEdges, edges, nodes)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
-        val addListNode = HelperTestFunction.addListEntityQueue.poll()!!
-        val addListEdges = HelperTestFunction.addListEntityQueue.poll()!!
-        val deleteListEdges = HelperTestFunction.deleteListEntityQueue.poll()!!
+        val addListNode = HelperTestFunction.lastAddListEntity()!!
+        val addListEdges = HelperTestFunction.lastAddListEntity()!!
+        val deleteListEdges = HelperTestFunction.lastDeleteListEntity()!!
 
 
         assertEquals(2, addListNode.elements.size)
@@ -172,8 +172,8 @@ class RouteDatabaseTest {
         mackRouteDatabase.removeEdge(edges[0], edges, nodes)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
-        var deleteEdge = HelperTestFunction.deleteEntityQueue.poll()!!
-        var deleteListEdges = HelperTestFunction.deleteListEntityQueue.poll()!!
+        var deleteEdge = HelperTestFunction.lastDeleteEntity()!!
+        var deleteListEdges = HelperTestFunction.lastDeleteListEntity()!!
 
         assertEquals("e1", deleteEdge.id)
         assertEquals(
@@ -190,8 +190,8 @@ class RouteDatabaseTest {
         mackRouteDatabase.removeEdge(edges[0], edges, nodes)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
-        deleteEdge = HelperTestFunction.deleteEntityQueue.poll()!!
-        deleteListEdges = HelperTestFunction.deleteListEntityQueue.poll()!!
+        deleteEdge = HelperTestFunction.lastDeleteEntity()!!
+        deleteListEdges = HelperTestFunction.lastDeleteListEntity()!!
 
         assertEquals("e2", deleteEdge.id)
         assertEquals(

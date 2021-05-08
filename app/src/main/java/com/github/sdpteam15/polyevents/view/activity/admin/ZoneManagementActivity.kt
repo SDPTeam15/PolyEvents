@@ -132,7 +132,7 @@ class ZoneManagementActivity : AppCompatActivity() {
         btnDelete: Button,
         locationText: String?
     ) {
-        var text = ""
+        val text: String
         if (locationText == null || locationText == "") {
             //If the location is not currently set, delete button invisible and set the correct text
             text = getString(R.string.zone_management_coordinates_not_set)

@@ -90,7 +90,7 @@ object HelperTestFunction {
     fun lastDeleteListEntity() = lastDeleteListEntityQueue.poll()
 
     class GetEntityArgs(
-        val element: Observable<out Any>,
+        val element: Observable<in Any>,
         val id: String,
         val collection: DatabaseConstant.CollectionConstant,
         val adapter: AdapterFromDocumentInterface<in Any>? //'in E' is '? super E' in java
@@ -101,7 +101,7 @@ object HelperTestFunction {
     fun lastGetEntity() = lastGetEntityQueue.poll()
 
     class GetListEntityArgs(
-        val element: ObservableList<out Any>,
+        val element: ObservableList<in Any>,
         val ids: MutableList<String>?,
         val matcher: Matcher?,
         val collection: DatabaseConstant.CollectionConstant,
