@@ -20,7 +20,7 @@ class RatingAdapterTest {
     lateinit var rating: Rating
 
     @Before
-    fun setupProfile() {
+    fun setupRating() {
         rating = Rating(
             ratingId, rate, feedback, eventId, userID
 
