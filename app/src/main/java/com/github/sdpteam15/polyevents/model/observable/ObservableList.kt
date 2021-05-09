@@ -30,6 +30,7 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions.run
  * @param observable initial observable of the data
  * @param creator last object that modified the data
  */
+@Suppress("UNCHECKED_CAST")
 class ObservableList<T>(
     collection: Collection<T>? = null,
     observable: Observable<T>? = null,
@@ -253,7 +254,7 @@ class ObservableList<T>(
         sender: Any?,
         notify: Boolean
     ): Observable<T>? {
-        val observable = listValues.removeAt(index) ?: return null
+        val observable = listValues.removeAt(index)
         removeItemObserver[observable]!!()
         removeItemObserver.remove(observable)
         itemRemoved(UpdateIndexedValue(observable.value!!, index, sender))
@@ -380,7 +381,6 @@ class ObservableList<T>(
      * @return true if any element was removed from the collection.
      */
     fun retainAll(items: Collection<T>, sender: Any?): Boolean {
-        var i = 0
         val toremove = mutableListOf<Observable<T>>()
         for (item in listValues) {
             if (item.value !in items)
@@ -903,7 +903,7 @@ class ObservableList<T>(
                             }
                         val to = mapper(value.value)
                         if (from!! != to) {
-                            removeWithKeyLambda(it, observable, from!!)
+                            removeWithKeyLambda(it, observable, from)
                             addWithKeyLambda(it, observable, to)
                         } else {
                             val o = observableMap.getObservable(to)!!

@@ -28,6 +28,7 @@ import org.mockito.Mockito.`when` as When
 
 
 @RunWith(MockitoJUnitRunner::class)
+@Suppress("UNCHECKED_CAST")
 class UpcomingEventsHomeFragmentTest {
 
     var events = ObservableList<Event>()

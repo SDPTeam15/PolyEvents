@@ -35,8 +35,8 @@ import java.util.*
 const val HEATMAP_PERIOD = 15L
 
 class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
-    OnPolygonClickListener, OnMarkerClickListener, OnInfoWindowClickListener, OnMarkerDragListener,
-    OnMyLocationButtonClickListener, OnMapClickListener {
+        OnPolygonClickListener, OnMarkerClickListener, OnInfoWindowClickListener, OnMarkerDragListener,
+        OnMyLocationButtonClickListener, OnMapClickListener {
 
     companion object {
         var instance: MapsFragment? = null
@@ -52,9 +52,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     var timerHeatmap: Timer? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         //if(!ZoneManagementActivity.inTest) {
         ZoneManagementListActivity.zones.observeAdd(this) {
@@ -62,8 +62,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         }
 
         Database.currentDatabase.zoneDatabase!!.getAllZones(
-            null, 50,
-            ZoneManagementListActivity.zones
+                null, 50,
+                ZoneManagementListActivity.zones
         ).observe(this) {
             if (!it.value) {
                 HelperFunctions.showToast("Failed to get the list of zones", requireContext())
@@ -89,14 +89,13 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         val removeRouteButton = view.findViewById<FloatingActionButton>(R.id.removeRoute)
         val saveNewRouteButton = view.findViewById<FloatingActionButton>(R.id.saveNewRoute)
         addNewRouteButton.setOnClickListener { RouteMapHelper.createNewRoute(requireContext()) }
-        removeRouteButton.setOnClickListener { RouteMapHelper.removeRoute(requireContext()) }
+        removeRouteButton.setOnClickListener { RouteMapHelper.removeRoute() }
         saveNewRouteButton.setOnClickListener { RouteMapHelper.saveNewRoute() }
 
         locationButton = view.findViewById(R.id.id_location_button)
         val locateMeButton = view.findViewById<FloatingActionButton>(R.id.id_locate_me_button)
         val saveButton = view.findViewById<FloatingActionButton>(R.id.saveAreas)
         val heatmapButton = view.findViewById<FloatingActionButton>(R.id.id_heatmap)
-
 
         if (onEdit) {
             addNewAreaButton.visibility = View.VISIBLE
@@ -117,15 +116,15 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
                 //TODO : Save the areas in the map
                 //val location = GoogleMapHelper.areasToFormattedStringLocations(from = startId)
                 val location =
-                    GoogleMapHelper.zoneAreasToFormattedStringLocation(GoogleMapHelper.editingZone!!)
+                        GoogleMapHelper.zoneAreasToFormattedStringLocation(GoogleMapHelper.editingZone!!)
                 zone!!.location = location
                 ZoneManagementActivity.zoneObservable.postValue(
-                    Zone(
-                        zoneName = zone!!.zoneName,
-                        zoneId = zone!!.zoneId,
-                        location = location,
-                        description = zone!!.description
-                    )
+                        Zone(
+                                zoneName = zone!!.zoneName,
+                                zoneId = zone!!.zoneId,
+                                location = location,
+                                description = zone!!.description
+                        )
                 )
             }
         } else {
@@ -190,7 +189,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val mapFragment =
-            childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
+                childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
         if (!locationPermissionGranted) {
             HelperFunctions.getLocationPermission(requireActivity()).observeOnce {
@@ -231,10 +230,10 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
         val removeRouteButton = requireView().findViewById<FloatingActionButton>(R.id.removeRoute)
         if (RouteMapHelper.deleteMode) {
             removeRouteButton.supportBackgroundTintList =
-                resources.getColorStateList(R.color.red, null)
+                    resources.getColorStateList(R.color.red, null)
         } else {
             removeRouteButton.supportBackgroundTintList =
-                resources.getColorStateList(R.color.teal_200, null)
+                    resources.getColorStateList(R.color.teal_200, null)
         }
     }
 
@@ -279,8 +278,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
 
         HelperFunctions.getLoc(requireActivity()).observeOnce(this) {
             RouteMapHelper.chemin =
-                RouteMapHelper.getShortestPath(it.value!!, p0.tag.toString())?.toMutableList()
-                    ?: mutableListOf()
+                    RouteMapHelper.getShortestPath(it.value!!, p0.tag.toString())?.toMutableList()
+                            ?: mutableListOf()
             RouteMapHelper.drawRoute()
         }
 
@@ -311,12 +310,12 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
      */
     private fun activateMyLocation() {
         if (context?.let {
-                ContextCompat.checkSelfPermission(
-                    it,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                )
-            }
-            == PackageManager.PERMISSION_GRANTED) {
+                    ContextCompat.checkSelfPermission(
+                            it,
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                    )
+                }
+                == PackageManager.PERMISSION_GRANTED) {
             GoogleMapHelper.map!!.isMyLocationEnabled = true
 
             // Hide the built-in location button (but DO NOT disable it !)
@@ -339,7 +338,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
             R.drawable.ic_location_off
         }
         requireView().findViewById<FloatingActionButton>(R.id.id_location_button)
-            .setImageResource(idOfResource)
+                .setImageResource(idOfResource)
         locationButton.tag = idOfResource
     }
 
@@ -366,12 +365,12 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
      */
     private fun getBuiltInLocationButton(): View {
         val mapFragment =
-            childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
+                childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
 
         // Magic : https://stackoverflow.com/questions/36785542/how-to-change-the-position-of-my-location-button-in-google-maps-using-android-st
         return (mapFragment!!.requireView()
-            .findViewById<View>(Integer.parseInt("1")).parent as View)
-            .findViewById(Integer.parseInt("2"))
+                .findViewById<View>(Integer.parseInt("1")).parent as View)
+                .findViewById(Integer.parseInt("2"))
     }
 
     /**
@@ -385,9 +384,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, OnPolylineClickListener,
     //-----------END LISTENER---------------------------------------
 
     override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
+            requestCode: Int,
+            permissions: Array<String>,
+            grantResults: IntArray
     ) = HelperFunctions.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
     override fun onMapClick(p0: LatLng?) {

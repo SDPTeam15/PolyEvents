@@ -24,6 +24,7 @@ const val TEST_ID = "test_id"
 const val TEST_ID1 = "test_id1"
 const val TEST_ID2 = "test_id2"
 
+@Suppress("UNCHECKED_CAST", "TYPE_INFERENCE_ONLY_INPUT_TYPES_WARNING")
 class FirestoreDatabaseProviderTest {
     lateinit var mokeFirestore: FirebaseFirestore
 
@@ -202,17 +203,17 @@ class FirestoreDatabaseProviderTest {
             assertNull(it.value.second)
         }.then.postValue(Pair(true, null))
 
-        val mokeDocumentReference1 = mock(DocumentReference::class.java)
-        When(mokeDocumentReference1.id).thenAnswer {
+        val mockDocumentReference1 = mock(DocumentReference::class.java)
+        When(mockDocumentReference1.id).thenAnswer {
             TEST_ID1
         }
-        val mokeDocumentReference2 = mock(DocumentReference::class.java)
-        When(mokeDocumentReference2.id).thenAnswer {
+        val mockDocumentReference2 = mock(DocumentReference::class.java)
+        When(mockDocumentReference2.id).thenAnswer {
             TEST_ID2
         }
 
-        lastAddSuccessListener[0].onSuccess(mokeDocumentReference1)
-        lastAddSuccessListener[1].onSuccess(mokeDocumentReference2)
+        lastAddSuccessListener[0].onSuccess(mockDocumentReference1)
+        lastAddSuccessListener[1].onSuccess(mockDocumentReference2)
         end.observeOnce {
             assert(it.value.first)
             assertEquals(2, it.value.second!!.size)
@@ -286,9 +287,9 @@ class FirestoreDatabaseProviderTest {
                 When(mock2.set(anyOrNull())).thenAnswer {
                     hashMap.add(it!!.arguments[0] as HashMap<String, Any?>)
                     val mock3 = mock(Task::class.java) as Task<DocumentReference>
-                    When(mock3.addOnSuccessListener(anyOrNull())).thenAnswer {
+                    When(mock3.addOnSuccessListener(anyOrNull())).thenAnswer {it2->
                         lastAddSuccessListener.add(
-                            it!!.arguments[0] as OnSuccessListener<Void>
+                            it2!!.arguments[0] as OnSuccessListener<Void>
                         )
                         mock3
                     }

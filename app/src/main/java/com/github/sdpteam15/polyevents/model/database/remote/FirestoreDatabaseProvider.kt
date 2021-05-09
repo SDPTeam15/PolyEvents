@@ -50,7 +50,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         }
     override var eventDatabase: EventDatabaseInterface? = null
         get() {
-            field = field ?: EventDatabaseFirestore
+            field = field ?: EventDatabase(this)
             return field
         }
     override var materialRequestDatabase: MaterialRequestDatabaseInterface? = null
@@ -65,7 +65,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         }
     override var userSettingsDatabase: UserSettingsDatabaseInterface? = null
         get() {
-            field = field ?: UserSettingsDatabaseFirestore(this)
+            field = field ?: UserSettingsDatabase(this)
             return field
         }
 
@@ -287,7 +287,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         val document = firestore!!
             .collection(collection.value)
             .document(id)
-        (if (element == null || adapter == null) document.delete()
+        (if (element == null) document.delete()
         else document.set(adapter.toDocument(element)))
             .addOnSuccessListener(lastSetSuccessListener!!)
             .addOnFailureListener(lastFailureListener!!)

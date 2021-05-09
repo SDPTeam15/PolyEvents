@@ -34,6 +34,7 @@ private const val emailTest = "Test email"
 private const val uidTest = "Test uid"
 private val listProfile = ArrayList<String>()
 
+@Suppress("UNCHECKED_CAST")
 class ItemDatabaseFirestoreTest {
     lateinit var user: UserEntity
     lateinit var mockedDatabase: FirebaseFirestore

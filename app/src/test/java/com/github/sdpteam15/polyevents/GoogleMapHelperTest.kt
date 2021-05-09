@@ -19,7 +19,6 @@ class GoogleMapHelperTest {
     val map: MutableMap<Int, List<LatLng>> = mutableMapOf()
     val id1 = 0
     val id2 = 1
-    val id3 = 2
 
     @Before
     fun setup() {
@@ -90,7 +89,7 @@ class GoogleMapHelperTest {
         val mutableList = mutableListOf<zzw>()
         val areas = mutableListOf<Int>()
         val mockedzzt = Mockito.mock(zzt::class.java)
-        var areaId = -1
+        var areaId: Int
         for(i in 0 until map.size){
             mutableList.add(i,Mockito.mock(zzw::class.java))
             Mockito.`when`((mutableList[i]).points).thenReturn(map[i])

@@ -272,8 +272,8 @@ object GoogleMapHelper {
      */
     fun saveNewArea(context: Context?) {
         if (tempPoly != null) {
-            var name = ""
-            var id = -1
+            val name: String
+            val id: Int
             if (tempTitle != null) {
                 name = tempTitle!!
                 id = modifyingArea

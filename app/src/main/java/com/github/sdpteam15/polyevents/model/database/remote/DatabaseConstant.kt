@@ -25,6 +25,7 @@ object DatabaseConstant {
         USER_SETTINGS_COLLECTION("userSettings", UserSettingsAdapter),
         NODE_COLLECTION("nodes", RouteNodeAdapter),
         EDGE_COLLECTION("edges", RouteEdgeAdapter),
+        RATING_COLLECTION("ratings", RatingAdapter),
 
 
         TEST_COLLECTION("test", object : AdapterInterface<StringWithID> {
@@ -138,6 +139,15 @@ object DatabaseConstant {
         EDGE_ID("eid"),
         START_ID("start"),
         END_ID("end");
+
+        override fun toString(): String = value
+    }
+
+    enum class RatingConstant(val value:String){
+        RATING_EVENT_ID("eventId"),
+        RATING_USER_ID("uid"),
+        RATING_DESCRIPTION("ratingDescription"),
+        RATING_SCORE("score");
 
         override fun toString(): String = value
     }

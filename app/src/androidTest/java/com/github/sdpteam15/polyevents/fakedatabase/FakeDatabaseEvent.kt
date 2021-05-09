@@ -3,6 +3,7 @@ package com.github.sdpteam15.polyevents.fakedatabase
 import com.github.sdpteam15.polyevents.model.database.remote.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.objects.EventDatabaseInterface
 import com.github.sdpteam15.polyevents.model.entity.Event
+import com.github.sdpteam15.polyevents.model.entity.Rating
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
@@ -92,5 +93,43 @@ object FakeDatabaseEvent : EventDatabaseInterface {
 
         eventList.addAll(events.values, this)
         return Observable(true, this)
+    }
+
+    override fun getRatingsForEvent(
+        eventId: String,
+        limit: Long?,
+        ratingList: ObservableList<Rating>,
+        userAccess: UserProfile?
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun addRatingToEvent(rating: Rating, userAccess: UserProfile?): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun removeRating(rating: Rating, userAccess: UserProfile?): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateRating(rating: Rating, userAccess: UserProfile?): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getMeanRatingForEvent(
+        eventId: String,
+        mean: Observable<Float>,
+        userAccess: UserProfile?
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getUserRatingFromEvent(
+        userId: String,
+        eventId: String,
+        returnedRating: Observable<Rating>,
+        userAccess: UserProfile?
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
     }
 }

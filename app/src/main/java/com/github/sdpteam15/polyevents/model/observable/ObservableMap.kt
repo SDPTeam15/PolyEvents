@@ -6,6 +6,7 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions
 /**
  * Observable live map of type T
  */
+@Suppress("UNCHECKED_CAST")
 class ObservableMap<K, T>(val creator: Any? = null) : MutableMap<K, T> {
 
     private val observersPut = mutableSetOf<(UpdateKeyedValue<K, T>) -> Boolean>()
@@ -529,10 +530,10 @@ class ObservableMap<K, T>(val creator: Any? = null) : MutableMap<K, T> {
                     }
                     Info.putAll -> {
                         val (from, _) = it.args as Pair<Map<out K, T>, MutableList<Observable<T>>>
-                        val tempMap = mutableMapOf<K, U>()
+                        val tempMap2 = mutableMapOf<K, U>()
                         for (key in from.keys)
-                            tempMap[key] = mapper(from[key]!!)
-                        observableMap.putAll(tempMap, it.sender)
+                            tempMap2[key] = mapper(from[key]!!)
+                        observableMap.putAll(tempMap2, it.sender)
                     }
                     Info.remove -> {
                         val (key, _) = it.args as Pair<K, Observable<T>>

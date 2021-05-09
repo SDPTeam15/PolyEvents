@@ -29,7 +29,7 @@ import org.mockito.kotlin.anyOrNull
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
 import org.mockito.Mockito.`when` as When
-
+@Suppress("UNCHECKED_CAST")
 class EventManagementTest {
     lateinit var scenario: ActivityScenario<MainActivity>
     lateinit var mockedDatabase: DatabaseInterface
