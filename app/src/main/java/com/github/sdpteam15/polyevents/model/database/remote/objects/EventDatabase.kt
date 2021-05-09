@@ -95,6 +95,7 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
                         )
                     })
                 mean.postValue(m.first, it.sender)
+                end.postValue(true,it.sender)
             } else {
                 end.postValue(false, it.sender)
             }
