@@ -56,7 +56,6 @@ class LeaveEventReviewFragment(val eventId: String?):
 
             val ratingObservable = Observable<Rating>()
             ratingObservable.observe(this) {
-                Log.d(TAG, "Retrieved Rating for $eventId and ${currentDatabase.currentUser!!.uid}!")
                 val rating = it.value
                 leaveReviewDialogRatingBar.rating = rating.rate!!
                 if (rating.feedback != null) {
@@ -99,7 +98,6 @@ class LeaveEventReviewFragment(val eventId: String?):
                 context
             )
         } else {
-            Log.d(TAG, "Leaving a review")
             val ratingCopy = rating.copy(
                 rate = leaveReviewDialogRatingBar.rating,
                 feedback = userFeedbackDialogEditText.text.toString()
@@ -123,7 +121,6 @@ class LeaveEventReviewFragment(val eventId: String?):
                 context
             )
         } else {
-            Log.d(TAG, "Leaving a review")
             val rating = Rating(
                 rate = leaveReviewDialogRatingBar.rating,
                 feedback = userFeedbackDialogEditText.text.toString(),
