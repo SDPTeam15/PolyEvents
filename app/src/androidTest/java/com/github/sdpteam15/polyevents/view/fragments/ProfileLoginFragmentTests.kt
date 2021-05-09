@@ -18,6 +18,7 @@ import com.github.sdpteam15.polyevents.RecyclerViewItemCountAssertion
 import com.github.sdpteam15.polyevents.TestHelper
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
+import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.database.remote.NUMBER_UPCOMING_EVENTS
 import com.github.sdpteam15.polyevents.model.database.remote.login.GoogleUserLogin
 import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
@@ -36,6 +37,7 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import org.hamcrest.Matchers
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -120,6 +122,11 @@ class ProfileLoginFragmentTests {
         currentDatabase = mockedDatabase
     }
 
+    @After
+    fun teardown() {
+        currentDatabase = FirestoreDatabaseProvider
+    }
+
 
     @Test
     fun signInCalledTheCorrectMethod() {
@@ -171,8 +178,7 @@ class ProfileLoginFragmentTests {
 
         var set = false
         When(mockedUserLogin.signIn(anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
-            set = true
-            Unit
+            true.also { set = it }
         }
         onView(withId(R.id.btnLogin)).perform(click())
         assert(set)
@@ -596,7 +602,7 @@ class ProfileLoginFragmentTests {
     @Test
     fun nullUserRedirectToLoginFragment(){
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
-        loginFragment.currentUser = mockedDatabaseUser
+        loginFragment.currentUser = null
         When(mockedDatabase.currentUser).thenReturn(null)
 
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
