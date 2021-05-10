@@ -2,9 +2,7 @@ package com.github.sdpteam15.polyevents.view.activity
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.github.sdpteam15.polyevents.R
@@ -17,6 +15,7 @@ import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.room.EventLocal
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
+import com.github.sdpteam15.polyevents.view.fragments.LeaveEventReviewFragment
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModel
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModelFactory
 
@@ -24,19 +23,24 @@ import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModelFactory
  * An activity containing events description
  */
 class EventActivity : AppCompatActivity() {
+    // TODO: view on map functionality?
 
     companion object {
         const val TAG = "EventActivity"
 
         // Refactored here for tests
-        var obsEvent = Observable<Event>()
+        val obsEvent: Observable<Event> = Observable()
         lateinit var event: Event
 
         // for testing purposes
         lateinit var database: LocalDatabase
     }
 
+    private lateinit var eventId: String
+
     private lateinit var subscribeButton: Button
+
+    private lateinit var leaveReviewDialogFragment: LeaveEventReviewFragment
 
     // Lazily initialized view model, instantiated only when accessed for the first time
     private val localEventViewModel: EventLocalViewModel by viewModels {
@@ -50,9 +54,13 @@ class EventActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowHomeEnabled(true)
 
+        eventId = intent.getStringExtra(EXTRA_EVENT_ID)!!
+
         database = (application as PolyEventsApplication).database
 
         subscribeButton = findViewById(R.id.button_subscribe_event)
+
+        leaveReviewDialogFragment = LeaveEventReviewFragment(eventId)
 
         getEventAndObserve()
     }
@@ -66,7 +74,7 @@ class EventActivity : AppCompatActivity() {
 
     private fun getEventAndObserve() {
         currentDatabase.eventDatabase!!.getEventFromId(
-            intent.getStringExtra(EXTRA_EVENT_ID)!!,
+            eventId,
             obsEvent
         )
             .observe(this) { b ->
@@ -74,7 +82,7 @@ class EventActivity : AppCompatActivity() {
                     showToast(getString(R.string.event_info_fail), this)
                 }
             }
-        obsEvent.observe(this) { updateInfo(it.value) }
+        obsEvent.observeOnce(this, updateIfNotNull = false){ updateInfo(it.value) }
     }
 
     /**
@@ -110,7 +118,7 @@ class EventActivity : AppCompatActivity() {
             if (currentDatabase.currentUser != null
                 && event.getParticipants().contains(currentDatabase.currentUser!!.uid)
             ) {
-                subscribeButton.setText(resources.getString(R.string.event_unsubscribe))
+                subscribeButton.text = resources.getString(R.string.event_unsubscribe)
             }
         } else {
             subscribeButton.visibility = View.GONE
@@ -156,6 +164,19 @@ class EventActivity : AppCompatActivity() {
             subscribeButton.setText(resources.getString(R.string.event_unsubscribe))
         } catch (e: MaxAttendeesException) {
             showToast(resources.getString(R.string.event_subscribe_at_max_capacity), this)
+        }
+    }
+
+    /**
+     * Show the leave review dialog upon click, if user is logged in.
+     */
+    fun onClickEventLeaveReview(view: View) {
+        if (currentDatabase.currentUser == null) {
+            showToast(getString(R.string.event_review_warning), this)
+        } else {
+            leaveReviewDialogFragment.show(
+                supportFragmentManager, LeaveEventReviewFragment.TAG
+            )
         }
     }
 
