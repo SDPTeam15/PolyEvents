@@ -66,20 +66,20 @@ class ObservableTest {
         val mockedLifecycle = mock(Lifecycle::class.java)
         When(mockedLifecycleOwner.lifecycle).thenReturn(mockedLifecycle)
 
-        var suppressor = observable.observe(mockedLifecycleOwner) { isUpdate = it.value ?: false }
+        var suppressor = observable.observe(mockedLifecycleOwner) { isUpdate = it.value }
         observable.postValue(true, sender)
         assert(isUpdate)
         assert(suppressor.remove())
         isUpdate = false
 
-        suppressor = observable.observeOnce(mockedLifecycleOwner) { isUpdate = it.value ?: false }
+        suppressor = observable.observeOnce(mockedLifecycleOwner) { isUpdate = it.value }
         observable.postValue(true, sender)
         assert(isUpdate)
         assert(!suppressor.remove())
         isUpdate = false
 
         suppressor = observable.observeWhileTrue(mockedLifecycleOwner) {
-            isUpdate = it.value ?: false
+            isUpdate = it.value
             true
         }
         observable.postValue(true, sender)

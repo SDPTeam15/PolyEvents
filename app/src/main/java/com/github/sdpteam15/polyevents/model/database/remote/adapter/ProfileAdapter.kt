@@ -9,6 +9,7 @@ import com.github.sdpteam15.polyevents.model.entity.UserRole
  * documents in the Firebase database. Not unlike the DTO (Data
  * transfer object) concept.
  */
+@Suppress("UNCHECKED_CAST")
 object ProfileAdapter : AdapterInterface<UserProfile> {
 
     override fun toDocument(element: UserProfile): HashMap<String, Any?> = hashMapOf(

@@ -61,14 +61,15 @@ class LoginFragment : Fragment() {
                     getString(R.string.login_failed_text)
                 )?.addOnCompleteListener(activity as Activity) { task ->
                     if (task.isSuccessful) {
-                        addIfNotInDB()
                         Log.d(TAG, "Beginning populating local database")
                         val application = requireActivity().application as PolyEventsApplication
                         (application).applicationScope.launch(Dispatchers.IO) {
                             LocalDatabase.populateDatabaseWithUserEvents(
-                                    application.database.eventDao(),
-                                    application.applicationScope)
+                                application.database.eventDao(),
+                                application.applicationScope)
                         }
+
+                        addIfNotInDB()
                     } else {
                         HelperFunctions.showToast(getString(R.string.login_failed_text), activity)
                     }

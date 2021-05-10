@@ -2,39 +2,38 @@ package com.github.sdpteam15.polyevents.view.fragments
 
 import android.content.Context
 import android.content.Intent
+import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.room.Room
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
-import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.RecyclerViewItemCountAssertion
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabase
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabaseEvent
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
-import com.github.sdpteam15.polyevents.model.database.remote.Database
+import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.room.EventLocal
 import com.github.sdpteam15.polyevents.view.activity.EventActivity
-import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModel
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModelFactory
 import com.schibsted.spain.barista.assertion.BaristaCheckedAssertions.assertChecked
 import com.schibsted.spain.barista.assertion.BaristaCheckedAssertions.assertUnchecked
+import com.schibsted.spain.barista.assertion.BaristaListAssertions.assertDisplayedAtPosition
 import com.schibsted.spain.barista.assertion.BaristaRecyclerViewAssertions.assertRecyclerViewItemCount
+import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertDisplayed
 import com.schibsted.spain.barista.interaction.BaristaClickInteractions.clickOn
+import com.schibsted.spain.barista.interaction.BaristaListInteractions.clickListItem
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers
 import org.junit.After
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
@@ -44,20 +43,18 @@ import java.time.LocalDateTime
 // TODO: test room with internet off?
 @RunWith(MockitoJUnitRunner::class)
 class EventListFragmentTest {
-    @Rule
-    @JvmField
-    var mainActivity = ActivityScenarioRule(MainActivity::class.java)
-
     lateinit var event1: Event
     lateinit var event2: Event
     lateinit var event3 : Event
+
+    val firstEventName = "Sushi demo"
 
     private lateinit var localDatabase: LocalDatabase
 
     @Before
     fun setup() {
         event1 = Event(
-            eventName = "Sushi demo",
+            eventName = firstEventName,
             description = "Super hungry activity !",
             startTime = LocalDateTime.of(2021, 3, 7, 12, 15),
             endTime = LocalDateTime.of(2021, 3, 7, 13, 0, 0),
@@ -98,7 +95,7 @@ class EventListFragmentTest {
             event3
         )
 
-        Database.currentDatabase = FakeDatabase
+        currentDatabase = FakeDatabase
 
         // Create local db
         val context: Context = ApplicationProvider.getApplicationContext()
@@ -109,25 +106,20 @@ class EventListFragmentTest {
             .allowMainThreadQueries()
             .build()
 
-        Intents.init()
-        // go to activities list fragment
-        Espresso.onView(ViewMatchers.withId(R.id.ic_list)).perform(ViewActions.click())
+        launchFragmentInContainer<EventListFragment>(themeResId = R.style.Theme_PolyEvents)
 
         EventListFragment.localDatabase = localDatabase
         EventListFragment.eventLocalViewModel = EventLocalViewModelFactory(
             localDatabase.eventDao()).create(
             EventLocalViewModel::class.java
         )
-
-        Thread.sleep(1000)
     }
 
     @After
     fun teardown() {
         // close and remove the mock local database
         localDatabase.close()
-        Database.currentDatabase = FirestoreDatabaseProvider
-        Intents.release()
+        currentDatabase = FirestoreDatabaseProvider
     }
 
     @Test
@@ -163,7 +155,7 @@ class EventListFragmentTest {
 
         val mockedDatabase = Mockito.mock(DatabaseInterface::class.java)
         Mockito.`when`(mockedDatabase.currentUser).thenReturn(null)
-        Database.currentDatabase = mockedDatabase
+        currentDatabase = mockedDatabase
 
         clickOn(R.id.event_list_my_events_switch)
 
@@ -177,14 +169,14 @@ class EventListFragmentTest {
     }
 
     @Test
-    fun eventActivityOpensOnClick() {/*
-        Espresso.onView(ViewMatchers.withId(R.id.recycler_events_list)).perform(
-            RecyclerViewActions.actionOnItemAtPosition<EventItemAdapter.ItemViewHolder>(
-                0,
-                ViewActions.click()
-            )
+    fun eventActivityOpensOnClick() {
+        assertDisplayedAtPosition(
+            R.id.recycler_events_list, 0, R.id.id_event_name_text, firstEventName
         )
-        Intents.intended(IntentMatchers.hasComponent(EventActivity::class.java.name))*/
+
+        clickListItem(R.id.recycler_events_list, 0)
+
+        assertDisplayed(R.id.txt_event_Name)
     }
 
     @Test
@@ -194,7 +186,7 @@ class EventListFragmentTest {
             EventActivity::class.java
         )
         val events = ObservableList<Event>()
-        Database.currentDatabase.eventDatabase!!.getEvents(null, 1, events)
+        currentDatabase.eventDatabase!!.getEvents(null, 1, events)
 
         val eventToTest = events[0]
         intent.putExtra(EXTRA_EVENT_ID, eventToTest.eventId!!)

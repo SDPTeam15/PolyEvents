@@ -287,7 +287,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         val document = firestore!!
             .collection(collection.value)
             .document(id)
-        (if (element == null || adapter == null) document.delete()
+        (if (element == null) document.delete()
         else document.set(adapter.toDocument(element)))
             .addOnSuccessListener(lastSetSuccessListener!!)
             .addOnFailureListener(lastFailureListener!!)

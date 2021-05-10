@@ -10,6 +10,7 @@ import com.google.firebase.Timestamp
  * documents in the Firebase database. Not unlike the conversion to
  * DTO (Data transfer object) concept.
  */
+@Suppress("UNCHECKED_CAST")
 object MaterialRequestAdapter : AdapterInterface<MaterialRequest> {
     override fun toDocument(element: MaterialRequest) = hashMapOf(
         MATERIAL_REQUEST_LIST.value to element.items,

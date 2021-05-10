@@ -11,10 +11,13 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.Settings
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
+import com.github.sdpteam15.polyevents.model.entity.Rating
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
+import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.view.fragments.*
 import com.github.sdpteam15.polyevents.view.service.TimerService
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlin.collections.HashMap
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -87,6 +90,7 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
+
 /*
         adapter = ArrayAdapter(
             this,
@@ -113,6 +117,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.nav_menu, menu)
 
+        // TODO: replace with settings menu option
         val search = menu.findItem(R.id.nav_search)
         val searchView = search.actionView as SearchView
         searchView.queryHint = "Search something!"

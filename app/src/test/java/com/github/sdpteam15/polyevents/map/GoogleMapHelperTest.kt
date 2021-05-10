@@ -291,7 +291,7 @@ class GoogleMapHelperTest {
         GoogleMapHelper.tempTitle = title
 
         val mockedzzt2 = Mockito.mock(zzt::class.java)
-        val m2 = Marker(mockedzzt)
+        val m2 = Marker(mockedzzt2)
         When(mockedMap.addMarker(anyOrNull())).thenReturn(m2)
 
         val uidZone2 = "Zone ${GoogleMapHelper.uidZone++}"
@@ -511,7 +511,7 @@ class GoogleMapHelperTest {
     fun setUpMapTest() {
         val title = "Title"
         val mockedzzt = Mockito.mock(zzt::class.java)
-        var m = Marker(mockedzzt)
+        val m = Marker(mockedzzt)
         When(mockedzzt.title).thenReturn(title)
         When(mockedzzt.position).thenReturn(position)
         val mockedzzw = Mockito.mock(zzw::class.java)

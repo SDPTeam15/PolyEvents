@@ -19,7 +19,7 @@ class HeatmapDatabaseTest {
     lateinit var mackHeatmapDatabase : HeatmapDatabase
     @Before
     fun setup() {
-        val mockDatabaseInterface = HelperTestFunction.mockFor()
+        val mockDatabaseInterface = HelperTestFunction.mockDatabaseInterface()
         mackHeatmapDatabase = HeatmapDatabase(mockDatabaseInterface)
         HelperTestFunction.clearQueue()
     }
@@ -29,20 +29,20 @@ class HeatmapDatabaseTest {
         Settings.LocationId = ""
         val latLng = LatLng(1.0,1.0)
 
-        HelperTestFunction.nextString("ici")
+        HelperTestFunction.nextAddEntityAndGetId { "ici" }
         mackHeatmapDatabase.setLocation(latLng).observeOnce { assert(it.value) }
 
-        val add = HelperTestFunction.addEntityAndGetIdQueue.peek()!!
+        val add = HelperTestFunction.lastAddEntityAndGetId()!!
 
         assertEquals(latLng, (add.element as DeviceLocation).location)
         assertEquals(DatabaseConstant.CollectionConstant.LOCATION_COLLECTION, add.collection)
         assertEquals(DeviceLocationAdapter, add.adapter)
 
         Settings.LocationId = "id"
-        HelperTestFunction.nextBoolean(true)
+        HelperTestFunction.nextSetEntity { true }
         mackHeatmapDatabase.setLocation(latLng).observeOnce { assert(it.value) }
 
-        val set = HelperTestFunction.setEntityQueue.peek()!!
+        val set = HelperTestFunction.lastSetEntity()!!
 
         assertEquals(latLng, (set.element as DeviceLocation).location)
         assertEquals("id", set.id)
@@ -52,10 +52,10 @@ class HeatmapDatabaseTest {
 
     @Test
     fun getLocations(){
-        HelperTestFunction.nextBoolean(true)
+        HelperTestFunction.nextGetListEntity { true }
         mackHeatmapDatabase.getLocations(ObservableList()).observeOnce { assert(it.value) }
 
-        val getlist = HelperTestFunction.getListEntityQueue.peek()!!
+        val getlist = HelperTestFunction.lastGetListEntity()!!
 
         assertNull(getlist.ids)
         assertNotNull(getlist.matcher)

@@ -144,7 +144,6 @@ object DatabaseConstant {
     }
 
     enum class RatingConstant(val value:String){
-        RATING_ID("rid"),
         RATING_EVENT_ID("eventId"),
         RATING_USER_ID("uid"),
         RATING_DESCRIPTION("ratingDescription"),

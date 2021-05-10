@@ -340,11 +340,11 @@ class RouteMapHelperTest {
         Mockito.`when`(mockedzzz.points).thenReturn(listOfPts)
         RouteMapHelper.tempPolyline = polyline
         Mockito.`when`(mockedMap.addPolyline(anyOrNull())).thenReturn(polyline)
-        RouteMapHelper.removeRoute(null)
+        RouteMapHelper.removeRoute()
 
         RouteMapHelper.tempPolyline = null
         RouteMapHelper.deleteMode = false
-        RouteMapHelper.removeRoute(null)
+        RouteMapHelper.removeRoute()
         assertEquals(true, RouteMapHelper.deleteMode)
 
     }

@@ -124,6 +124,10 @@
     <string name="ok">OK</string>
     <string name="your_review">Your review!</string>
     <string name="leave_a_review_hint">Leave a review…</string>
+    <string name="event_review_warning">"You need to login to leave a review"</string>
+    <string name="event_review_leave_rating_warning">Please leave a rating before leaving</string>
+    <string name="event_review_saved">Review saved!</string>
+    <string name="event_review_failed">Could not save review</string>
 
     <!-- ItemAdminActivity -->
     <string name="query_not_satisfied">Query not satisfied</string>

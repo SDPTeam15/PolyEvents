@@ -14,7 +14,7 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import org.mockito.Mockito.`when` as When
 
-@Suppress("UNCHECKED_CAST")
+@Suppress("UNCHECKED_CAST", "TYPE_INFERENCE_ONLY_INPUT_TYPES_WARNING")
 class UserSettingsDatabaseFirestoreTest {
     lateinit var mockUserSettingsDatabase: UserSettingsDatabase
     lateinit var mockRemoteDatabase: DatabaseInterface
@@ -22,7 +22,7 @@ class UserSettingsDatabaseFirestoreTest {
 
     @Before
     fun setup() {
-        mockRemoteDatabase = HelperTestFunction.mockFor()
+        mockRemoteDatabase = HelperTestFunction.mockDatabaseInterface()
         mockUserSettingsDatabase = UserSettingsDatabase(mockRemoteDatabase)
 
         When(mockRemoteDatabase.currentUser).thenReturn(
@@ -37,11 +37,11 @@ class UserSettingsDatabaseFirestoreTest {
     @Test
     fun testUpdatingUserSettings() {
         val userSettings = UserSettings()
-        HelperTestFunction.nextBoolean(true)
+        HelperTestFunction.nextSetEntity { true }
         mockUserSettingsDatabase.updateUserSettings(userSettings, userAccess = UserProfile())
                 .observeOnce { assert(it.value) }.then.postValue(false)
 
-        val setUserSettings = HelperTestFunction.setEntityQueue.poll()!!
+        val setUserSettings = HelperTestFunction.lastSetEntity()!!
 
         assertEquals(userSettings, setUserSettings.element)
         assertEquals(DatabaseConstant.CollectionConstant.USER_SETTINGS_COLLECTION, setUserSettings.collection)
@@ -53,7 +53,7 @@ class UserSettingsDatabaseFirestoreTest {
         val userSettingsObservable = Observable<UserSettings>()
         val userAccess = UserProfile()
 
-        HelperTestFunction.nextBoolean(true)
+        HelperTestFunction.nextGetListEntity { true }
         mockUserSettingsDatabase.getUserSettings(
                 id = mockUserId,
                 userSettingsObservable = userSettingsObservable,
@@ -62,7 +62,7 @@ class UserSettingsDatabaseFirestoreTest {
             assert(it.value)
         }.then.postValue(false)
 
-        val retrievedUserSettings = HelperTestFunction.getEntityQueue.poll()!!
+        val retrievedUserSettings = HelperTestFunction.lastGetEntity()!!
 
         assertEquals(userSettingsObservable, retrievedUserSettings.element)
         assertEquals(mockUserId, retrievedUserSettings.id)

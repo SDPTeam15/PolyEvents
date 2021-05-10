@@ -16,14 +16,14 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
-@Suppress("UNCHECKED_CAST")
+@Suppress("UNCHECKED_CAST", "TYPE_INFERENCE_ONLY_INPUT_TYPES_WARNING")
 class UserDatabaseTest {
-    lateinit var mackUserDatabase: UserDatabase
+    lateinit var mockUserDatabase: UserDatabase
 
     @Before
     fun setup() {
-        val mockDatabaseInterface = HelperTestFunction.mockFor()
-        mackUserDatabase = UserDatabase(mockDatabaseInterface)
+        val mockDatabaseInterface = HelperTestFunction.mockDatabaseInterface()
+        mockUserDatabase = UserDatabase(mockDatabaseInterface)
         HelperTestFunction.clearQueue()
     }
 
@@ -32,11 +32,11 @@ class UserDatabaseTest {
         val user = UserEntity("uid")
         val userAccess = UserProfile()
 
-        HelperTestFunction.nextBoolean(true)
-        mackUserDatabase.updateUserInformation(user, userAccess)
-            .observeOnce { assert(it.value) }.then.postValue(false)
+        HelperTestFunction.nextSetEntity { true }
+        mockUserDatabase.updateUserInformation(user, userAccess)
+                .observeOnce { assert(it.value) }.then.postValue(false)
 
-        val set = HelperTestFunction.setEntityQueue.poll()!!
+        val set = HelperTestFunction.lastSetEntity()!!
 
         assertEquals(user, set.element)
         assertEquals(user.uid, set.id)
@@ -48,10 +48,10 @@ class UserDatabaseTest {
     fun firstConnexion() {
         val user = UserEntity("uid")
 
-        HelperTestFunction.nextBoolean(true)
-        mackUserDatabase.firstConnexion(user).observeOnce { assert(it.value) }.then.postValue(false)
+        HelperTestFunction.nextSetEntity { true }
+        mockUserDatabase.firstConnexion(user).observeOnce { assert(it.value) }.then.postValue(false)
 
-        val set = HelperTestFunction.setEntityQueue.poll()!!
+        val set = HelperTestFunction.lastSetEntity()!!
 
         assertEquals(user, set.element)
         assertEquals(user.uid, set.id)
@@ -65,11 +65,11 @@ class UserDatabaseTest {
         val uid = "uid"
         val userAccess = UserProfile()
 
-        HelperTestFunction.nextBoolean(true)
-        mackUserDatabase.inDatabase(isInDb.observeOnce { assert(it.value) }.then, uid, userAccess)
-            .observeOnce { assert(it.value) }.then.postValue(false)
+        HelperTestFunction.nextGetEntity { true }
+        mockUserDatabase.inDatabase(isInDb.observeOnce { assert(it.value) }.then, uid, userAccess)
+                .observeOnce { assert(it.value) }.then.postValue(false)
 
-        val get = HelperTestFunction.getEntityQueue.poll()!!
+        val get = HelperTestFunction.lastGetEntity()!!
 
         assertNotNull(get.element)
         assertEquals(uid, get.id)
@@ -83,11 +83,11 @@ class UserDatabaseTest {
         val uid = "uid"
         val userAccess = UserProfile()
 
-        HelperTestFunction.nextBoolean(true)
-        mackUserDatabase.getUserInformation(user, uid, userAccess)
-            .observeOnce { assert(it.value) }.then.postValue(false)
+        HelperTestFunction.nextGetEntity { true }
+        mockUserDatabase.getUserInformation(user, uid, userAccess)
+                .observeOnce { assert(it.value) }.then.postValue(false)
 
-        val get = HelperTestFunction.getEntityQueue.poll()!!
+        val get = HelperTestFunction.lastGetEntity()!!
 
         assertEquals(user, get.element)
         assertEquals(uid, get.id)
@@ -101,13 +101,13 @@ class UserDatabaseTest {
         val user = UserEntity("uid")
         val userAccess = UserEntity("uid")
 
-        HelperTestFunction.nextString("pid")
-        HelperTestFunction.nextBoolean(true)
-        mackUserDatabase.addUserProfileAndAddToUser(profile, user, userAccess)
-            .observeOnce { assert(it.value) }.then.postValue(false)
+        HelperTestFunction.nextAddEntityAndGetId { "pid" }
+        HelperTestFunction.nextSetEntity { true }
+        mockUserDatabase.addUserProfileAndAddToUser(profile, user, userAccess)
+                .observeOnce { assert(it.value) }.then.postValue(false)
 
-        val add = HelperTestFunction.addEntityAndGetIdQueue.poll()!!
-        val set = HelperTestFunction.setEntityQueue.poll()!!
+        val add = HelperTestFunction.lastAddEntityAndGetId()!!
+        val set = HelperTestFunction.lastSetEntity()!!
 
         assertEquals(profile, add.element)
         assertEquals(PROFILE_COLLECTION, add.collection)
@@ -125,11 +125,11 @@ class UserDatabaseTest {
         val user = UserEntity("uid")
         val userAccess = UserEntity("uid")
 
-        HelperTestFunction.nextString("")
-        mackUserDatabase.addUserProfileAndAddToUser(profile, user, userAccess)
-            .observeOnce { assert(!it.value) }.then.postValue(true)
+        HelperTestFunction.nextAddEntityAndGetId{""}
+        mockUserDatabase.addUserProfileAndAddToUser(profile, user, userAccess)
+                .observeOnce { assert(!it.value) }.then.postValue(true)
 
-        val add = HelperTestFunction.addEntityAndGetIdQueue.poll()!!
+        val add = HelperTestFunction.lastAddEntityAndGetId()!!
 
         assertEquals(profile, add.element)
         assertEquals(PROFILE_COLLECTION, add.collection)
@@ -142,13 +142,13 @@ class UserDatabaseTest {
         val user = UserEntity("uid")
         val userAccess = UserEntity("uid")
 
-        HelperTestFunction.nextString("pid")
-        HelperTestFunction.nextBoolean(true)
-        mackUserDatabase.addUserProfileAndAddToUser(profile, user, userAccess)
-            .observeOnce { assert(it.value) }.then.postValue(false)
+        HelperTestFunction.nextAddEntityAndGetId{"pid"}
+        HelperTestFunction.nextSetEntity { true }
+        mockUserDatabase.addUserProfileAndAddToUser(profile, user, userAccess)
+                .observeOnce { assert(it.value) }.then.postValue(false)
 
-        val set1 = HelperTestFunction.setEntityQueue.poll()!!
-        val set2 = HelperTestFunction.setEntityQueue.poll()!!
+        val set1 = HelperTestFunction.lastSetEntity()!!
+        val set2 = HelperTestFunction.lastSetEntity()!!
 
         assertEquals(profile, set1.element)
         assertEquals(profile.pid, set1.id)
@@ -167,14 +167,14 @@ class UserDatabaseTest {
         val user = UserEntity("uid")
         val userAccess = UserProfile()
 
-        HelperTestFunction.nextBoolean(true)
-        HelperTestFunction.nextBoolean(true)
-        mackUserDatabase.removeProfileFromUser(profile, user, userAccess)
-            .observeOnce { assert(it.value) }.then.postValue(false)
+        HelperTestFunction.nextSetEntity { true }
+        HelperTestFunction.nextDeleteEntity { true }
+        mockUserDatabase.removeProfileFromUser(profile, user, userAccess)
+                .observeOnce { assert(it.value) }.then.postValue(false)
 
 
-        val set = HelperTestFunction.setEntityQueue.poll()!!
-        val del = HelperTestFunction.deleteEntityQueue.poll()!!
+        val set = HelperTestFunction.lastSetEntity()!!
+        val del = HelperTestFunction.lastDeleteEntity()!!
 
         assertEquals(user, set.element)
         assertEquals(user.uid, set.id)
@@ -192,12 +192,12 @@ class UserDatabaseTest {
         val user = UserEntity("uid")
         val userAccess = UserProfile()
 
-        HelperTestFunction.nextBoolean(false)
-        mackUserDatabase.removeProfileFromUser(profile, user, userAccess)
-            .observeOnce { assert(!it.value) }.then.postValue(true)
+        HelperTestFunction.nextSetEntity { false }
+        mockUserDatabase.removeProfileFromUser(profile, user, userAccess)
+                .observeOnce { assert(!it.value) }.then.postValue(true)
 
 
-        val set = HelperTestFunction.setEntityQueue.poll()!!
+        val set = HelperTestFunction.lastSetEntity()!!
 
         assertEquals(user, set.element)
         assertEquals(user.uid, set.id)
@@ -211,14 +211,14 @@ class UserDatabaseTest {
         val user = UserEntity("uid")
         val userAccess = UserProfile()
 
-        HelperTestFunction.nextBoolean(true)
-        HelperTestFunction.nextBoolean(true)
-        mackUserDatabase.removeProfileFromUser(profile, user, userAccess)
-            .observeOnce { assert(it.value) }.then.postValue(false)
+        HelperTestFunction.nextSetEntity { true }
+        HelperTestFunction.nextSetEntity { true }
+        mockUserDatabase.removeProfileFromUser(profile, user, userAccess)
+                .observeOnce { assert(it.value) }.then.postValue(false)
 
 
-        val set1 = HelperTestFunction.setEntityQueue.poll()!!
-        val set2 = HelperTestFunction.setEntityQueue.poll()!!
+        val set1 = HelperTestFunction.lastSetEntity()!!
+        val set2 = HelperTestFunction.lastSetEntity()!!
 
         assertEquals(user, set1.element)
         assertEquals(user.uid, set1.id)
@@ -236,11 +236,11 @@ class UserDatabaseTest {
         val profile = UserProfile("pid")
         val userAccess = UserEntity("uid")
 
-        HelperTestFunction.nextBoolean(true)
-        mackUserDatabase.updateProfile(profile, userAccess)
-            .observeOnce { assert(it.value) }.then.postValue(false)
+        HelperTestFunction.nextSetEntity { true }
+        mockUserDatabase.updateProfile(profile, userAccess)
+                .observeOnce { assert(it.value) }.then.postValue(false)
 
-        val set = HelperTestFunction.setEntityQueue.poll()!!
+        val set = HelperTestFunction.lastSetEntity()!!
 
         assertEquals(profile, set.element)
         assertEquals(profile.pid, set.id)
@@ -254,11 +254,11 @@ class UserDatabaseTest {
         val user = UserEntity("uid", profiles = mutableListOf("pid"))
         val userAccess = UserEntity("uid")
 
-        HelperTestFunction.nextBoolean(true)
-        mackUserDatabase.getUserProfilesList(profiles, user, userAccess)
-            .observeOnce { assert(it.value) }.then.postValue(false)
+        HelperTestFunction.nextGetListEntity { true }
+        mockUserDatabase.getUserProfilesList(profiles, user, userAccess)
+                .observeOnce { assert(it.value) }.then.postValue(false)
 
-        val getList = HelperTestFunction.getListEntityQueue.poll()!!
+        val getList = HelperTestFunction.lastGetListEntity()!!
 
         assertEquals(profiles, getList.element)
         assertEquals(user.profiles, getList.ids)
@@ -266,18 +266,19 @@ class UserDatabaseTest {
         assertEquals(PROFILE_COLLECTION, getList.collection)
         assertEquals(ProfileAdapter, getList.adapter)
     }
+
     @Test
     fun getUserLists() {
-        val profiles = ObservableList<UserEntity>()
+        val users = ObservableList<UserEntity>()
         val userAccess = UserProfile("uid")
 
-        HelperTestFunction.nextBoolean(true)
-        mackUserDatabase.getListAllUsers(profiles,  userAccess = userAccess)
-            .observeOnce { assert(it.value) }.then.postValue(false)
+        HelperTestFunction.nextGetListEntity { true }
+        mockUserDatabase.getListAllUsers(users, userAccess = userAccess)
+                .observeOnce { assert(it.value) }.then.postValue(false)
 
-        val getList = HelperTestFunction.getListEntityQueue.poll()!!
+        val getList = HelperTestFunction.lastGetListEntity()!!
 
-        assertEquals(profiles, getList.element)
+        assertEquals(users, getList.element)
         assertNull(getList.matcher)
         assertEquals(USER_COLLECTION, getList.collection)
         assertEquals(UserAdapter, getList.adapter)
@@ -289,11 +290,11 @@ class UserDatabaseTest {
         val profile = UserProfile("pid", users = mutableListOf("uid"))
         val userAccess = UserEntity("uid")
 
-        HelperTestFunction.nextBoolean(true)
-        mackUserDatabase.getProfilesUserList(users, profile, userAccess)
-            .observeOnce { assert(it.value) }.then.postValue(false)
+        HelperTestFunction.nextGetListEntity { true }
+        mockUserDatabase.getProfilesUserList(users, profile, userAccess)
+                .observeOnce { assert(it.value) }.then.postValue(false)
 
-        val getList = HelperTestFunction.getListEntityQueue.poll()!!
+        val getList = HelperTestFunction.lastGetListEntity()!!
 
         assertEquals(users, getList.element)
         assertEquals(profile.users, getList.ids)
@@ -308,11 +309,11 @@ class UserDatabaseTest {
         val pid = "pid"
         val userAccess = UserEntity("uid")
 
-        HelperTestFunction.nextBoolean(true)
-        mackUserDatabase.getProfileById(profile, pid, userAccess)
-            .observeOnce { assert(it.value) }.then.postValue(false)
+        HelperTestFunction.nextGetEntity { true }
+        mockUserDatabase.getProfileById(profile, pid, userAccess)
+                .observeOnce { assert(it.value) }.then.postValue(false)
 
-        val get = HelperTestFunction.getEntityQueue.poll()!!
+        val get = HelperTestFunction.lastGetEntity()!!
 
         assertEquals(profile, get.element)
         assertEquals(pid, get.id)

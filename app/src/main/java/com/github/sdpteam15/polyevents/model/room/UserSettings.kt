@@ -26,7 +26,9 @@ data class UserSettings(
         @ColumnInfo(name = "is_sending_location_on")
         val isSendingLocationOn: Boolean = false,
         @ColumnInfo(name = "location_id")
-        val locationId: String? = null
+        val locationId: String? = null,
+        @ColumnInfo(name = "enable_notifications")
+        val enableNotifications:Boolean = false
 ) {
         companion object {
                 const val DEFAULT_ID = 0
