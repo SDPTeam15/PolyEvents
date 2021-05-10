@@ -125,6 +125,7 @@ class EventActivity : AppCompatActivity() {
         }
     }
 
+    @Suppress("UNUSED_PARAMETER")
     fun onClickEventSubscribe(view: View) {
         if (currentDatabase.currentUser == null) {
             showToast(resources.getString(R.string.toast_subscribe_warning), this)
@@ -170,6 +171,7 @@ class EventActivity : AppCompatActivity() {
     /**
      * Show the leave review dialog upon click, if user is logged in.
      */
+    @Suppress("UNUSED_PARAMETER")
     fun onClickEventLeaveReview(view: View) {
         if (currentDatabase.currentUser == null) {
             showToast(getString(R.string.event_review_warning), this)
