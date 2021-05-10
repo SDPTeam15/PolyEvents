@@ -19,24 +19,39 @@
 
             <ImageView
                 android:id="@+id/img_event_logo"
-                android:contentDescription="@string/event_profile_picture"
                 android:layout_width="130dp"
                 android:layout_height="130dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
+                android:contentDescription="@string/event_profile_picture"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@android:mipmap/sym_def_app_icon"
                 tools:srcCompat="@tools:sample/avatars" />
 
+            <RatingBar
+                android:id="@+id/ratingBar_event"
+                style="@android:style/Widget.DeviceDefault.RatingBar.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:numStars="5"
+                android:rating="2.5"
+                app:layout_constraintBottom_toTopOf="@+id/event_divider"
+                app:layout_constraintEnd_toEndOf="@+id/img_event_logo"
+                app:layout_constraintStart_toStartOf="@+id/img_event_logo"
+                app:layout_constraintTop_toBottomOf="@+id/img_event_logo" />
+
             <View
                 android:id="@+id/event_divider"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="?android:attr/listDivider"
                 android:layout_margin="10dp"
+                android:background="?android:attr/listDivider"
+                app:layout_constraintBottom_toTopOf="@id/event_description_subsection_text_view"
                 app:layout_constraintTop_toBottomOf="@id/button_subscribe_event"
-                app:layout_constraintBottom_toTopOf="@id/event_description_subsection_text_view"/>
+                app:layout_constraintVertical_bias="1.0"
+                tools:layout_editor_absoluteX="9dp" />
 
             <TextView
                 android:id="@+id/txt_event_Name"
@@ -84,8 +99,8 @@
                 android:id="@+id/txt_event_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginEnd="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -109,8 +124,7 @@
                 android:layout_marginEnd="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/event_tags_subsection_text_view"
-                />
+                app:layout_constraintTop_toBottomOf="@+id/event_tags_subsection_text_view" />
 
             <TextView
                 android:id="@+id/txt_event_organizer"
@@ -125,14 +139,31 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:onClick="onClickEventSubscribe"
+                android:text="@string/event_subscribe"
+                android:visibility="invisible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.502"
                 app:layout_constraintStart_toEndOf="@+id/img_event_logo"
-                app:layout_constraintTop_toBottomOf="@+id/txt_event_organizer"
-                android:onClick="onClickEventSubscribe"
-                android:text="@string/event_subscribe"
-                android:visibility="gone"
-                />
+                app:layout_constraintTop_toBottomOf="@+id/txt_event_organizer" />
+
+            <RelativeLayout
+                android:id="@+id/relativeLayout"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintStart_toEndOf="@+id/txt_event_tags"
+                app:layout_constraintTop_toBottomOf="@+id/txt_event_tags"
+                app:layout_constraintBottom_toBottomOf="parent"
+                >
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/id_recycler_comment_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scrollbars="vertical"
+                    app:layoutManager="LinearLayoutManager" />
+
+            </RelativeLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

@@ -5,15 +5,21 @@ import android.view.View
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.entity.Event
+import com.github.sdpteam15.polyevents.model.entity.Rating
 import com.github.sdpteam15.polyevents.model.exceptions.MaxAttendeesException
 import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.room.EventLocal
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication
+import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementListActivity
+import com.github.sdpteam15.polyevents.view.adapter.CommentItemAdapter
+import com.github.sdpteam15.polyevents.view.adapter.EventItemAdapter
 import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
 import com.github.sdpteam15.polyevents.view.fragments.LeaveEventReviewFragment
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModel
@@ -30,6 +36,8 @@ class EventActivity : AppCompatActivity() {
 
         // Refactored here for tests
         val obsEvent: Observable<Event> = Observable()
+        val obsRating: Observable<Double> = Observable()
+        val obsComments: ObservableList<Rating> = ObservableList()
         lateinit var event: Event
 
         // for testing purposes
@@ -37,7 +45,7 @@ class EventActivity : AppCompatActivity() {
     }
 
     private lateinit var subscribeButton: Button
-
+    private lateinit var recyclerView: RecyclerView
     private lateinit var leaveReviewDialogFragment: LeaveEventReviewFragment
 
     // Lazily initialized view model, instantiated only when accessed for the first time
@@ -55,10 +63,15 @@ class EventActivity : AppCompatActivity() {
         database = (application as PolyEventsApplication).database
 
         subscribeButton = findViewById(R.id.button_subscribe_event)
-
+        recyclerView = findViewById(R.id.id_recycler_comment_list)
         leaveReviewDialogFragment = LeaveEventReviewFragment()
 
+        recyclerView.adapter = CommentItemAdapter(obsComments)
+        recyclerView.setHasFixedSize(false)
+
         getEventAndObserve()
+        getEventRating()
+        getCommentsAndObserve()
     }
 
     override fun onResume() {
@@ -66,6 +79,31 @@ class EventActivity : AppCompatActivity() {
 
         // Get event again in case of changes
         getEventAndObserve()
+        getEventRating()
+        getCommentsAndObserve()
+    }
+
+
+    private fun getEventRating(){
+        /*currentDatabase.eventDatabase!!.getMeanRatingForEvent(
+            intent.getStringExtra(EXTRA_EVENT_ID)!!,
+            obsRating
+        )*/
+        obsRating.observeOnce(this, updateIfNotNull = false) { updateRating(it.value.toFloat()) }
+        obsRating.postValue(4.0)
+    }
+
+    private fun getCommentsAndObserve(){
+        /*currentDatabase.eventDatabase!!.getRatingsForEvent(
+            intent.getStringExtra(EXTRA_EVENT_ID)!!,
+            null,
+            obsComments
+        )*/
+        obsComments.observe(this) { recyclerView.adapter!!.notifyDataSetChanged() }
+        obsComments.add(Rating(null, 4.0, "I loved it", null, null))
+        obsComments.add(Rating(null, 3.0, "I loved it2", null, null))
+        obsComments.add(Rating(null, 2.0, "I loved it3", null, null))
+        obsComments.add(Rating(null, 1.0, "I loved it4", null, null))
     }
 
     private fun getEventAndObserve() {
@@ -79,6 +117,12 @@ class EventActivity : AppCompatActivity() {
                 }
             }
         obsEvent.observeOnce(this, updateIfNotNull = false){ updateInfo(it.value) }
+    }
+
+    private fun updateRating(rating: Float){
+        findViewById<RatingBar>(R.id.ratingBar_event).apply {
+            setRating(rating)
+        }
     }
 
     /**
@@ -101,6 +145,7 @@ class EventActivity : AppCompatActivity() {
         }
         findViewById<TextView>(R.id.txt_event_description).apply {
             text = event.description
+            //text = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
         }
         findViewById<TextView>(R.id.txt_event_tags).apply {
             text = event.tags.joinToString { s -> s }
@@ -108,6 +153,7 @@ class EventActivity : AppCompatActivity() {
         findViewById<ImageView>(R.id.img_event_logo).apply {
             //TODO : change image
         }
+
 
         if (event.isLimitedEvent()) {
             subscribeButton.visibility = View.VISIBLE
@@ -117,7 +163,7 @@ class EventActivity : AppCompatActivity() {
                 subscribeButton.text = resources.getString(R.string.event_unsubscribe)
             }
         } else {
-            subscribeButton.visibility = View.GONE
+            subscribeButton.visibility = View.INVISIBLE
         }
     }
 
