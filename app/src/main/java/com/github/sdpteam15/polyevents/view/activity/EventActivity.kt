@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.view.activity
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.activity.viewModels
@@ -22,13 +23,14 @@ import com.github.sdpteam15.polyevents.view.adapter.CommentItemAdapter
 import com.github.sdpteam15.polyevents.view.adapter.EventItemAdapter
 import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
 import com.github.sdpteam15.polyevents.view.fragments.LeaveEventReviewFragment
+import com.github.sdpteam15.polyevents.view.service.ReviewHasChanged
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModel
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModelFactory
 
 /**
  * An activity containing events description
  */
-class EventActivity : AppCompatActivity() {
+class EventActivity : AppCompatActivity(), ReviewHasChanged {
     // TODO: view on map functionality?
 
     companion object {
@@ -36,7 +38,7 @@ class EventActivity : AppCompatActivity() {
 
         // Refactored here for tests
         val obsEvent: Observable<Event> = Observable()
-        val obsRating: Observable<Double> = Observable()
+        val obsRating: Observable<Float> = Observable()
         val obsComments: ObservableList<Rating> = ObservableList()
         lateinit var event: Event
 
@@ -68,20 +70,23 @@ class EventActivity : AppCompatActivity() {
 
         subscribeButton = findViewById(R.id.button_subscribe_event)
         recyclerView = findViewById(R.id.id_recycler_comment_list)
-        leaveReviewDialogFragment = LeaveEventReviewFragment(eventId)
+        leaveReviewDialogFragment = LeaveEventReviewFragment(eventId, this)
 
         recyclerView.adapter = CommentItemAdapter(obsComments)
         recyclerView.setHasFixedSize(false)
 
-        getEventAndObserve()
-        getEventRating()
-        getCommentsAndObserve()
+        refreshEvent()
     }
 
     override fun onResume() {
         super.onResume()
 
         // Get event again in case of changes
+        refreshEvent()
+    }
+
+    fun refreshEvent(){
+        //obsComments.clear()
         getEventAndObserve()
         getEventRating()
         getCommentsAndObserve()
@@ -89,25 +94,26 @@ class EventActivity : AppCompatActivity() {
 
 
     private fun getEventRating(){
-        /*currentDatabase.eventDatabase!!.getMeanRatingForEvent(
-            intent.getStringExtra(EXTRA_EVENT_ID)!!,
+        currentDatabase.eventDatabase!!.getMeanRatingForEvent(
+            eventId,
             obsRating
-        )*/
-        obsRating.observeOnce(this, updateIfNotNull = false) { updateRating(it.value.toFloat()) }
-        obsRating.postValue(4.0)
+        )
+        obsRating.observeOnce(this, updateIfNotNull = false) { updateRating(it.value) }
     }
 
     private fun getCommentsAndObserve(){
-        /*currentDatabase.eventDatabase!!.getRatingsForEvent(
-            intent.getStringExtra(EXTRA_EVENT_ID)!!,
+        currentDatabase.eventDatabase!!.getRatingsForEvent(
+            eventId,
             null,
             obsComments
-        )*/
-        obsComments.observe(this) { recyclerView.adapter!!.notifyDataSetChanged() }
-        obsComments.add(Rating(null, 4.0, "I loved it", null, null))
-        obsComments.add(Rating(null, 3.0, "I loved it2", null, null))
-        obsComments.add(Rating(null, 2.0, "I loved it3", null, null))
-        obsComments.add(Rating(null, 1.0, "I loved it4", null, null))
+        )
+        obsComments.observeAdd(this){
+            if(it.value.feedback == ""){
+                obsComments.remove(it.value)
+            }else{
+                recyclerView.adapter!!.notifyDataSetChanged()
+            }
+        }
     }
 
     private fun getEventAndObserve() {
@@ -149,7 +155,6 @@ class EventActivity : AppCompatActivity() {
         }
         findViewById<TextView>(R.id.txt_event_description).apply {
             text = event.description
-            //text = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
         }
         findViewById<TextView>(R.id.txt_event_tags).apply {
             text = event.tags.joinToString { s -> s }
@@ -223,6 +228,10 @@ class EventActivity : AppCompatActivity() {
                 supportFragmentManager, LeaveEventReviewFragment.TAG
             )
         }
+    }
+
+    override fun onLeaveReview() {
+        refreshEvent()
     }
 
 }

@@ -150,14 +150,21 @@
                 app:layout_constraintHorizontal_bias="0.502"
                 app:layout_constraintStart_toEndOf="@+id/img_event_logo"
                 app:layout_constraintTop_toBottomOf="@+id/txt_event_organizer" />
-                app:layout_constraintTop_toBottomOf="@+id/txt_event_organizer" />
-
+            <TextView
+                android:id="@+id/event_comments_subsection_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/label_comments"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                app:layout_constraintStart_toStartOf="@+id/txt_event_tags"
+                app:layout_constraintTop_toBottomOf="@+id/txt_event_tags" />
             <RelativeLayout
                 android:id="@+id/relativeLayout"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                app:layout_constraintStart_toEndOf="@+id/txt_event_tags"
-                app:layout_constraintTop_toBottomOf="@+id/txt_event_tags"
+                android:layout_height="230dp"
+                app:layout_constraintStart_toEndOf="@+id/event_comments_subsection_text_view"
+                app:layout_constraintTop_toBottomOf="@+id/event_comments_subsection_text_view"
                 app:layout_constraintBottom_toBottomOf="parent"
                 >
 

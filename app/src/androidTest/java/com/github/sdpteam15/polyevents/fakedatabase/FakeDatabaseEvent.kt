@@ -101,19 +101,19 @@ object FakeDatabaseEvent : EventDatabaseInterface {
         ratingList: ObservableList<Rating>,
         userAccess: UserProfile?
     ): Observable<Boolean> {
-        TODO("Not yet implemented")
+        return Observable(true)
     }
 
     override fun addRatingToEvent(rating: Rating, userAccess: UserProfile?): Observable<Boolean> {
-        TODO("Not yet implemented")
+        return Observable(true)
     }
 
     override fun removeRating(rating: Rating, userAccess: UserProfile?): Observable<Boolean> {
-        TODO("Not yet implemented")
+        return Observable(true)
     }
 
     override fun updateRating(rating: Rating, userAccess: UserProfile?): Observable<Boolean> {
-        TODO("Not yet implemented")
+        return Observable(true)
     }
 
     override fun getMeanRatingForEvent(
@@ -121,7 +121,8 @@ object FakeDatabaseEvent : EventDatabaseInterface {
         mean: Observable<Float>,
         userAccess: UserProfile?
     ): Observable<Boolean> {
-        TODO("Not yet implemented")
+        mean.postValue(4f, this)
+        return Observable(true)
     }
 
     override fun getUserRatingFromEvent(
@@ -130,6 +131,6 @@ object FakeDatabaseEvent : EventDatabaseInterface {
         returnedRating: Observable<Rating>,
         userAccess: UserProfile?
     ): Observable<Boolean> {
-        TODO("Not yet implemented")
+        return Observable(true)
     }
 }

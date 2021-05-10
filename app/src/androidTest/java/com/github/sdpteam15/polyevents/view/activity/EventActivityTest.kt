@@ -46,6 +46,7 @@ import java.time.LocalDateTime
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import org.mockito.Mockito.`when` as When
 
 
@@ -118,6 +119,21 @@ class EventActivityTest {
         // close and remove the mock local database
         localDatabase.close()
         currentDatabase = FirestoreDatabaseProvider
+    }
+
+    @Test
+    fun newCommentAdded(){
+        goToEventActivityWithIntent()
+
+        assertEquals(0, EventActivity.obsComments.size)
+        val comment = Rating("Rating 1", 5f, "TROP COOL yes")
+        EventActivity.obsComments.add(comment, this)
+        assertEquals(1, EventActivity.obsComments.size)
+        EventActivity.obsComments.clear()
+        val comment2 = Rating("Rating 2", 5f, "")
+        EventActivity.obsComments.add(comment2, this)
+        Thread.sleep(1000)
+        assertEquals(0, EventActivity.obsComments.size)
     }
 
     @Test
@@ -466,6 +482,8 @@ class EventActivityTest {
         assertNotEquals(existingRating.rate, 3.0f)
     }
 
+
+
     /**
      * Idea taken from StackOverflow
      * https://stackoverflow.com/questions/25209508/how-to-set-a-specific-rating-on-ratingbar-in-espresso/25226081
@@ -499,5 +517,7 @@ class EventActivityTest {
 
         Thread.sleep(1000)
     }
+
+
 }
 
