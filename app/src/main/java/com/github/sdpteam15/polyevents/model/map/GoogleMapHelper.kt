@@ -25,7 +25,7 @@ enum class PolygonAction {
     MARKER_END
 }
 
-enum class MarkerDragMode{
+enum class MarkerDragMode {
     DRAG_START,
     DRAG,
     DRAG_END
@@ -110,10 +110,10 @@ object GoogleMapHelper {
     /**
      * Setup the map to the desired look
      */
-    fun setUpMap(context: Context?) {
+    fun setUpMap(context: Context?, drawingMod: Boolean) {
         //Restoring the map state
         restoreCameraState()
-        restoreMapState(context)
+        restoreMapState(context, drawingMod)
         setMapStyle(context)
         selectedZone = null
         deleteMode = false
@@ -136,7 +136,7 @@ object GoogleMapHelper {
     /**
      * Redraws all areas that were previously drawn before changing fragment or activity, draws some example
      */
-    fun restoreMapState(context: Context?) {
+    fun restoreMapState(context: Context?, drawingMod: Boolean) {
         val currentEditZone = editingZone
         val areaTemp = areasPoints.toMap()
         val zoneTemp = zonesToArea.toMap()
@@ -146,12 +146,17 @@ object GoogleMapHelper {
             editingZone = k
             zonesToArea[editingZone!!] = Pair(null, mutableListOf())
             for (id in v.second) {
-                addArea(context, id, areaTemp[id]!!.third.points, areaTemp[id]!!.second.title)
+                addArea(
+                    context,
+                    id,
+                    Pair(areaTemp[id]!!.third.points, areaTemp[id]!!.third.holes),
+                    areaTemp[id]!!.second.title
+                )
             }
         }
         val copyWaitingZones = waitingZones.toList()
         for (zone in copyWaitingZones) {
-            importNewZone(context, zone)
+            importNewZone(context, zone, drawingMod)
             waitingZones.remove(zone)
         }
 
@@ -162,7 +167,7 @@ object GoogleMapHelper {
      * Import zone from database
      * @param zone zone to import
      */
-    fun importNewZone(context: Context?, zone: Zone) {
+    fun importNewZone(context: Context?, zone: Zone, drawingMod: Boolean) {
         if (map == null) {
             waitingZones.add(zone)
             return
@@ -176,10 +181,15 @@ object GoogleMapHelper {
 
         zonesToArea[editingZone ?: "zone ${uidZone++}"] = Pair(zone, mutableListOf())
 
-        val areas = zone.getZoneCoordinates()
-        for (area in areas) {
-            addArea(context, uidArea++, area, zone.zoneName)
-        }
+        if (drawingMod)
+            for (area in zone.getDrawingPolygons()) {
+
+                addArea(context, uidArea++, area, zone.zoneName)
+            }
+        else
+            for (area in zone.getZoneCoordinates()) {
+                addArea(context, uidArea++, Pair(area, null), zone.zoneName)
+            }
         editingZone = temp
     }
 
@@ -198,17 +208,28 @@ object GoogleMapHelper {
      * @param coords coordinates coordinates of the area
      * @param name name of the area
      */
-    fun addArea(context: Context?, id: Int, coords: List<LatLng>, name: String?) {
-        if (coords.isNotEmpty()) {
+    fun addArea(
+        context: Context?,
+        id: Int,
+        coords: Pair<List<LatLng>, List<List<LatLng>>?>,
+        name: String?
+    ) {
+        if (coords.first.isNotEmpty()) {
             val poly = PolygonOptions()
-            poly.addAll(coords).clickable(true).strokeColor(DEFAULT_ZONE_STROKE_COLOR)
+            poly.addAll(coords.first)
+
+            if (coords.second != null)
+                for (hole in coords.second!!)
+                    if (hole.isNotEmpty())
+                        poly.addHole(hole)
+
+            poly.clickable(true).strokeColor(DEFAULT_ZONE_STROKE_COLOR)
 
             val polygon = map!!.addPolygon(poly)
 
-            var list = coords
-            if (list.first() == list.last()) {
-                list = coords.subList(0, coords.size - 1)
-            }
+            var list = coords.first
+            if (list.first() == list.last())
+                list = coords.first.dropLast(1)
 
             val anchor = IconAnchor(0f, 0f)
             val bound = IconBound(0, 0, 0, 0)
@@ -282,7 +303,7 @@ object GoogleMapHelper {
                 name = "Area $id"
 
             }
-            addArea(context, id, tempPoly!!.points, name)
+            addArea(context, id, Pair(tempPoly!!.points, null), name)
             colorAreas(editingZone!!, EDITED_ZONE_STROKE_COLOR)
         }
         clearTemp()
@@ -686,7 +707,7 @@ object GoogleMapHelper {
      * Redirects an interaction with an edition marker to the correct transformation
      * @param marker interaction marker that has been dragged
      */
-    fun interactionMarker(marker: Marker, dragMode:MarkerDragMode) {
+    fun interactionMarker(marker: Marker, dragMode: MarkerDragMode) {
         when (marker.snippet) {
             PolygonAction.MOVE.toString() -> translatePolygon(marker)
             PolygonAction.RIGHT.toString() -> transformPolygon(marker)
