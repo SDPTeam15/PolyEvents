@@ -35,6 +35,7 @@
 
     <!-- Fragment Admin Hub-->
     <string name="admin_hub_btn_item_text">Item</string>
+    <string name="admin_hub_btn_route_text">Route</string>
     <string name="admin_hub_btn_zone_text">Zone</string>
     <string name="admin_hub_btn_event_text">Event</string>
     <string name="admin_hub_btn_user_text">User</string>

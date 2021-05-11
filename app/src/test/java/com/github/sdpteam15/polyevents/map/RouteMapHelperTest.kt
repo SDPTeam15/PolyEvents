@@ -1,10 +1,17 @@
 package com.github.sdpteam15.polyevents.map
 
+import com.github.sdpteam15.polyevents.model.database.remote.Database
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
+import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
+import com.github.sdpteam15.polyevents.model.database.remote.objects.RouteDatabaseInterface
 import com.github.sdpteam15.polyevents.model.entity.RouteEdge
 import com.github.sdpteam15.polyevents.model.entity.RouteNode
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.map.*
+import com.github.sdpteam15.polyevents.model.map.GoogleMapHelper.areaToFormattedStringLocation
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.time
+import com.github.sdpteam15.polyevents.model.map.RouteMapHelper.addLine
+import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.google.android.gms.internal.maps.zzt
 import com.google.android.gms.internal.maps.zzz
 import com.google.android.gms.maps.model.CameraPosition
@@ -42,11 +49,11 @@ class RouteMapHelperTest {
         val node4 = RouteNode("4", 6.0, 1.0)
         val node5 = RouteNode("5", 5.0, 5.5, "2")
         val node6 = RouteNode("6", 5.5, 5.0, "2")
-        val edge1 = RouteEdge.fromRouteNode(node1, node3,"1")
-        val edge2 = RouteEdge.fromRouteNode(node1, node5,"2")
-        val edge3 = RouteEdge.fromRouteNode(node1, node4,"3")
-        val edge4 = RouteEdge.fromRouteNode(node4, node6,"4")
-        val edge5 = RouteEdge.fromRouteNode(node4, node2,"5")
+        val edge1 = RouteEdge.fromRouteNode(node1, node3, "1")
+        val edge2 = RouteEdge.fromRouteNode(node1, node5, "2")
+        val edge3 = RouteEdge.fromRouteNode(node1, node4, "3")
+        val edge4 = RouteEdge.fromRouteNode(node4, node6, "4")
+        val edge5 = RouteEdge.fromRouteNode(node4, node2, "5")
         RouteMapHelper.zones.clear(this)
         RouteMapHelper.nodes.clear(this)
         RouteMapHelper.edges.clear(this)
@@ -86,23 +93,23 @@ class RouteMapHelperTest {
             LatLng(1.5, 2.0)
         )
 
-        assertListLatLngCloseEnough(expected1,result1)
+        assertListLatLngCloseEnough(expected1, result1)
         val result2 = RouteMapHelper.getShortestPath(LatLng(1.0, 6.0), "1")!!
         val expected2 = listOf(
             LatLng(1.0, 6.0),
             LatLng(2.0, 5.0),
             LatLng(1.5, 2.0)
         )
-        assertListLatLngCloseEnough(expected2,result2)
+        assertListLatLngCloseEnough(expected2, result2)
 
-        val result3 = RouteMapHelper.getShortestPath(LatLng(3.5,2.5), "2")!!
+        val result3 = RouteMapHelper.getShortestPath(LatLng(3.5, 2.5), "2")!!
         val expected3 = listOf(
-            LatLng(3.5,2.5),
-            LatLng(4.0,3.0),
+            LatLng(3.5, 2.5),
+            LatLng(4.0, 3.0),
             LatLng(2.0, 5.0),
             LatLng(5.0, 5.5)
         )
-        assertListLatLngCloseEnough(expected3,result3)
+        assertListLatLngCloseEnough(expected3, result3)
 
         RouteMapHelper.edges.remove(edge1)
         val result4 = RouteMapHelper.getShortestPath(LatLng(1.0, 6.0), "1")!!
@@ -112,7 +119,7 @@ class RouteMapHelperTest {
             LatLng(6.0, 1.0),
             LatLng(2.0, 1.5)
         )
-        assertListLatLngCloseEnough(expected4,result4)
+        assertListLatLngCloseEnough(expected4, result4)
 
         RouteMapHelper.zones.clear(this)
         RouteMapHelper.nodes.clear(this)
@@ -139,7 +146,7 @@ class RouteMapHelperTest {
         RouteMapHelper.nodes.add(rn1)
         RouteMapHelper.nodes.add(rn2)
     }
-/*
+
     @Test
     fun removeLineTest() {
         val tag = "Test Edge"
@@ -157,7 +164,7 @@ class RouteMapHelperTest {
         RouteMapHelper.removeLine(routeEdge)
         Database.currentDatabase = FirestoreDatabaseProvider
     }
-*/
+
     @Test
     fun moveMarkerTest() {
         //Marker creation
@@ -246,20 +253,22 @@ class RouteMapHelperTest {
         assertTrue(RouteMapHelper.endMarker != null)
         assertTrue(RouteMapHelper.startMarker != null)
     }
-/* cannot be tested here because we define a Color.rgb() method which can not be mocked
-    @Test
-    fun edgeAddedNotificationTest() {
-        val tag = "Test osterone"
 
-        val routeEdge = RouteEdge.fromRouteNode(rn1, rn2, tag)
-        //Fake polyline
-        val mockedzzz = mock(zzz::class.java)
-        val polyline = Polyline(mockedzzz)
-        RouteMapHelper.toDeleteLines.add(polyline)
+    /* cannot be tested here because we define a Color.rgb() method which can not be mocked
+        @Test
+        fun edgeAddedNotificationTest() {
+            val tag = "Test osterone"
 
-        RouteMapHelper.edgeAddedNotification(null, routeEdge)
-    }
-*/
+            val routeEdge = RouteEdge.fromRouteNode(rn1, rn2, tag)
+            //Fake polyline
+            val mockedzzz = mock(zzz::class.java)
+            val polyline = Polyline(mockedzzz)
+            RouteMapHelper.toDeleteLines.add(polyline)
+
+            RouteMapHelper.edgeAddedNotification(null, routeEdge)
+        }
+    */
+
     @Test
     fun edgeRemovedNotificationTest() {
         val tag = "Test osterone"
@@ -436,5 +445,227 @@ class RouteMapHelperTest {
                 LatLng(2.0, 1.0)
             ).toLatLng()
         assertEquals(exepted, result)
+    }
+
+    @Test
+    fun edgePassesThroughAZone() {
+        RouteMapHelper.edges.clear()
+        RouteMapHelper.nodes.clear()
+        RouteMapHelper.zones.clear()
+
+        RouteMapHelper.zones.add(
+            Zone(
+                zoneId = "id",
+                zoneName = "name",
+                location = areaToFormattedStringLocation(
+                    listOf(
+                        LatLng(0.0, 0.0),
+                        LatLng(2.0, 0.0),
+                        LatLng(2.0, 2.0),
+                        LatLng(0.0, 2.0),
+                    )
+                ),
+                description = "description"
+            )
+        )
+
+        Database.currentDatabase = mock(DatabaseInterface::class.java)
+        Mockito.`when`(Database.currentDatabase.routeDatabase).thenAnswer {
+            val mock = mock(RouteDatabaseInterface::class.java)
+            Mockito.`when`(
+                mock.updateEdges(
+                    anyOrNull(),
+                    anyOrNull(),
+                    anyOrNull(),
+                    anyOrNull()
+                )
+            ).thenAnswer {
+                val iterator = it!!.arguments.iterator()
+                val newEdges = iterator.next() as List<RouteEdge>
+                val removeEdges = iterator.next() as List<RouteEdge>
+
+                assertEquals(2, newEdges.size)
+
+                assertEquals(2.0, newEdges[0].start!!.latitude)
+                assertEquals(3.0, newEdges[0].end!!.latitude)
+                assertEquals(-1.0, newEdges[1].start!!.latitude)
+                assertEquals(0.0, newEdges[1].end!!.latitude)
+
+                assertEquals(0, removeEdges.size)
+
+                Observable(true)
+            }
+            mock
+        }
+
+        addLine(
+            start = Pair(LatLng(-1.0, 1.0), null),
+            end = Pair(LatLng(3.0, 1.0), null)
+        ).observeOnce { assert(it.value) }.then.postValue(false)
+
+        Mockito.`when`(Database.currentDatabase.routeDatabase).thenAnswer {
+            val mock = mock(RouteDatabaseInterface::class.java)
+            Mockito.`when`(
+                mock.updateEdges(
+                    anyOrNull(),
+                    anyOrNull(),
+                    anyOrNull(),
+                    anyOrNull()
+                )
+            ).thenAnswer {
+                val iterator = it!!.arguments.iterator()
+                val newEdges = iterator.next() as List<RouteEdge>
+                val removeEdges = iterator.next() as List<RouteEdge>
+
+                assertEquals(2, newEdges.size)
+
+
+                assertEquals(-1.0, newEdges[0].start!!.latitude)
+                assertEquals(1.0, newEdges[0].start!!.longitude)
+                assertEquals(0.0, newEdges[0].end!!.latitude)
+                assertEquals(2.0, newEdges[0].end!!.longitude)
+                assertEquals(0.0, newEdges[1].start!!.latitude)
+                assertEquals(2.0, newEdges[1].start!!.longitude)
+                assertEquals(1.0, newEdges[1].end!!.latitude)
+                assertEquals(3.0, newEdges[1].end!!.longitude)
+
+
+                println(newEdges[0].start!!)
+                println(newEdges[0].end!!)
+                println(newEdges[1].start!!)
+                println(newEdges[1].end!!)
+
+                assertEquals(0, removeEdges.size)
+
+                Observable(true)
+            }
+            mock
+        }
+
+        addLine(
+            start = Pair(LatLng(-1.0, 1.0), null),
+            end = Pair(LatLng(1.0, 3.0), null)
+        ).observeOnce { assert(it.value) }.then.postValue(false)
+
+        Database.currentDatabase = FirestoreDatabaseProvider
+    }
+
+
+    @Test
+    fun edgeIntersection() {
+        RouteMapHelper.edges.clear()
+        RouteMapHelper.nodes.clear()
+        RouteMapHelper.zones.clear()
+
+        RouteMapHelper.nodes.addAll(
+            listOf(
+                RouteNode(id = null, latitude = -2.0, longitude = 1.0),
+                RouteNode(id = null, latitude = -2.0, longitude = -1.0),
+                RouteNode(id = null, latitude = -1.0, longitude = 1.0),
+                RouteNode(id = null, latitude = -1.0, longitude = 0.0),
+                RouteNode(id = null, latitude = 0.0, longitude = 1.0),
+                RouteNode(id = null, latitude = 0.0, longitude = -1.0),
+                RouteNode(id = null, latitude = 1.0, longitude = 0.0),
+                RouteNode(id = null, latitude = 1.0, longitude = -1.0),
+                RouteNode(id = null, latitude = 2.0, longitude = 1.0),
+                RouteNode(id = null, latitude = 2.0, longitude = -1.0),
+            ),
+            null
+        )
+
+        var i = 0
+        RouteMapHelper.edges.addAll(
+            listOf(
+                RouteEdge.fromRouteNode(RouteMapHelper.nodes[i++], RouteMapHelper.nodes[i++]),
+                RouteEdge.fromRouteNode(RouteMapHelper.nodes[i++], RouteMapHelper.nodes[i++]),
+                RouteEdge.fromRouteNode(RouteMapHelper.nodes[i++], RouteMapHelper.nodes[i++]),
+                RouteEdge.fromRouteNode(RouteMapHelper.nodes[i++], RouteMapHelper.nodes[i++]),
+                RouteEdge.fromRouteNode(RouteMapHelper.nodes[i++], RouteMapHelper.nodes[i++]),
+            )
+        )
+
+        // │ │ │   │
+        // ├─┴─┼─┬─┤
+        // │   │ │ │
+
+        Database.currentDatabase = mock(DatabaseInterface::class.java)
+        Mockito.`when`(Database.currentDatabase.routeDatabase).thenAnswer {
+            val mock = mock(RouteDatabaseInterface::class.java)
+            Mockito.`when`(
+                mock.updateEdges(
+                    anyOrNull(),
+                    anyOrNull(),
+                    anyOrNull(),
+                    anyOrNull()
+                )
+            ).thenAnswer {
+                val iterator = it!!.arguments.iterator()
+                val newEdges = iterator.next() as List<RouteEdge>
+                val removeEdges = iterator.next() as List<RouteEdge>
+
+                assertEquals(10, newEdges.size)
+                assertEquals(3, removeEdges.size)
+
+                assertEquals(LatLng(-2.0, 1.0), newEdges[0].start!!.toLatLng())
+                assertEquals(LatLng(-2.0, 0.0), newEdges[0].end!!.toLatLng())
+
+                assertEquals(LatLng(-2.0, 0.0), newEdges[1].start!!.toLatLng())
+                assertEquals(LatLng(-2.0, -1.0), newEdges[1].end!!.toLatLng())
+
+                assertEquals(LatLng(-2.0, 0.0), newEdges[2].start!!.toLatLng())
+                assertEquals(LatLng(-1.0, 0.0), newEdges[2].end!!.toLatLng())
+
+                assertEquals(LatLng(0.0, 1.0), newEdges[3].start!!.toLatLng())
+                assertEquals(LatLng(0.0, 0.0), newEdges[3].end!!.toLatLng())
+
+                assertEquals(LatLng(0.0, 0.0), newEdges[4].start!!.toLatLng())
+                assertEquals(LatLng(0.0, -1.0), newEdges[4].end!!.toLatLng())
+
+                assertEquals(LatLng(-1.0, 0.0), newEdges[5].start!!.toLatLng())
+                assertEquals(LatLng(0.0, 0.0), newEdges[5].end!!.toLatLng())
+
+                assertEquals(LatLng(0.0, 0.0), newEdges[6].start!!.toLatLng())
+                assertEquals(LatLng(1.0, 0.0), newEdges[6].end!!.toLatLng())
+
+                assertEquals(LatLng(1.0, 0.0), newEdges[7].start!!.toLatLng())
+                assertEquals(LatLng(2.0, 0.0), newEdges[7].end!!.toLatLng())
+
+                assertEquals(LatLng(2.0, 1.0), newEdges[8].start!!.toLatLng())
+                assertEquals(LatLng(2.0, 0.0), newEdges[8].end!!.toLatLng())
+
+                assertEquals(LatLng(2.0, 0.0), newEdges[9].start!!.toLatLng())
+                assertEquals(LatLng(2.0, -1.0), newEdges[9].end!!.toLatLng())
+
+
+                assertEquals(newEdges[0].end, newEdges[1].start)
+                assertEquals(newEdges[0].end, newEdges[2].start)
+
+                assertEquals(newEdges[2].end, newEdges[5].start)
+
+                assertEquals(newEdges[3].end, newEdges[4].start)
+                assertEquals(newEdges[3].end, newEdges[5].end)
+                assertEquals(newEdges[3].end, newEdges[6].start)
+
+                assertEquals(newEdges[6].end, newEdges[7].start)
+
+                assertEquals(newEdges[7].end, newEdges[8].end)
+                assertEquals(newEdges[7].end, newEdges[9].start)
+
+
+                assertEquals(RouteMapHelper.edges[0], removeEdges[0])
+                assertEquals(RouteMapHelper.edges[2], removeEdges[1])
+                assertEquals(RouteMapHelper.edges[4], removeEdges[2])
+
+                Observable(true)
+            }
+            mock
+        }
+
+        addLine(
+            start = Pair(LatLng(-2.0, 0.0), null),
+            end = Pair(LatLng(2.0, 0.0), null)
+        ).observeOnce { assert(it.value) }.then.postValue(false)
+
+        Database.currentDatabase = FirestoreDatabaseProvider
     }
 }

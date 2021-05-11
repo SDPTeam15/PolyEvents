@@ -49,7 +49,7 @@ class ZoneManagementActivity : AppCompatActivity() {
         //Get the views needed in the code
         val int = intent
         zoneId = int.getStringExtra(EXTRA_ID).toString()
-        val mapFragment = MapsFragment()
+        val mapFragment = MapsFragment(MapsFragment.MapsFragmentMod.EditZone)
         mapFragment.zone = zone
         zoneObservable = Observable()
         zoneObservable.observe(this) {

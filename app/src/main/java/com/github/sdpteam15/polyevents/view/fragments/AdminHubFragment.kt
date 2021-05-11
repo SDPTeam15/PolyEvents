@@ -41,7 +41,10 @@ class AdminHubFragment : Fragment() {
             val intent = Intent(inflater.context, ZoneManagementListActivity::class.java)
             startActivity(intent)
         }
+        viewRoot.findViewById<Button>(R.id.btnRedirectRouteManager).setOnClickListener {
+            //TODO val intent = Intent(inflater.context, RouteManagerActivity::class.java)
+            //TODO startActivity(intent)
+        }
         return viewRoot
     }
-
 }

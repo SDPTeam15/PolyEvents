@@ -51,7 +51,7 @@ class ZoneManagementListActivity : AppCompatActivity() {
         }
 
         zones.observe(this) { recyclerView.adapter!!.notifyDataSetChanged() }
-        zones.observeAdd(this) { GoogleMapHelper.importNewZone(this, it.value) }
+        zones.observeAdd(this) { GoogleMapHelper.importNewZone(this, it.value, false) }
         findViewById<Button>(R.id.btnNewZone).setOnClickListener {
             startActivityZone(NEW_ZONE)
         }
