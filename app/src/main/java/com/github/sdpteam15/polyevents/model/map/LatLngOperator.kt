@@ -52,6 +52,26 @@ object LatLngOperator {
         LatLng(point.latitude / nbr, point.longitude / nbr)
 
     /**
+     * Returns the mean of the points
+     * @param points list of points
+     * @return the mean of the points
+     */
+    fun mean(points: List<LatLng>): LatLng {
+        var latitude = 0.0
+        var longitude = 0.0
+        var nbr = 0
+        for (point in points) {
+            latitude += point.latitude
+            longitude += point.longitude
+            nbr += 1
+        }
+        return if (nbr != 0)
+            LatLng(latitude / nbr, longitude / nbr)
+        else
+            LatLng(0.0, 0.0)
+    }
+
+    /**
      * Returns the angle in degrees between the horizontal x axis and the line passing through the two given points
      * @param start the first point
      * @param end the second point
