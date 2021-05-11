@@ -53,8 +53,6 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
     private var useUserLocation = false
     var zone: Zone? = null
     var startId = -1
-    var drawHeatmap = false
-    var timerHeatmap: Timer? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -152,24 +150,7 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
         saveNewRouteButton.setOnClickListener { RouteMapHelper.saveNewRoute() }
 
         heatmapButton.setOnClickListener {
-            drawHeatmap = !drawHeatmap
-            if (drawHeatmap) {
-                timerHeatmap = Timer("SettingUp", false)
-                val task = object : TimerTask() {
-                    override fun run() {
-                        val locations = ObservableList<LatLng>()
-                        Database.currentDatabase.heatmapDatabase!!.getLocations(locations)
-                        locations.observeOnce {
-                            GoogleMapHelper.addHeatMap(it.value)
-                        }
-                    }
-                }
-                timerHeatmap?.schedule(task, 0, HEATMAP_PERIOD * 1000)
-            } else {
-                GoogleMapHelper.lastOverlay?.remove()
-                timerHeatmap?.cancel()
-                timerHeatmap = null
-            }
+            GoogleMapHelper.heatmap()
         }
 
         saveButton.setOnClickListener {
@@ -209,9 +190,7 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
     override fun onPause() {
         super.onPause()
         GoogleMapHelper.saveCamera()
-        timerHeatmap?.cancel()
-        drawHeatmap = false
-        GoogleMapHelper.lastOverlay?.remove()
+        GoogleMapHelper.resetHeatmap()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

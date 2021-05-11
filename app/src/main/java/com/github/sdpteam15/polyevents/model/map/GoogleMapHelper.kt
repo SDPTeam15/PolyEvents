@@ -8,11 +8,17 @@ import android.graphics.Color
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ZoneConstant.*
 import com.github.sdpteam15.polyevents.model.entity.Zone
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementActivity
+import com.github.sdpteam15.polyevents.view.fragments.HEATMAP_PERIOD
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.*
 import com.google.maps.android.heatmaps.HeatmapTileProvider
+import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.*
 
 enum class PolygonAction {
@@ -1029,5 +1035,51 @@ object GoogleMapHelper {
     }
     */
 
+    fun saveArea(zone: Zone){
+        editMode = false
+        clearTemp()
+        //TODO : Save the areas in the map
+        //val location = GoogleMapHelper.areasToFormattedStringLocations(from = startId)
+        val location =
+            GoogleMapHelper.zoneAreasToFormattedStringLocation(GoogleMapHelper.editingZone!!)
+        zone.location = location
+        ZoneManagementActivity.zoneObservable.postValue(
+            Zone(
+                zoneName = zone.zoneName,
+                zoneId = zone.zoneId,
+                location = location,
+                description = zone.description
+            )
+        )
+    }
 
+    var drawHeatmap = false
+    var timerHeatmap: Timer? = null
+
+    fun heatmap(){
+        drawHeatmap = !drawHeatmap
+        if (drawHeatmap) {
+            timerHeatmap = Timer("SettingUp", false)
+            val task = object : TimerTask() {
+                override fun run() {
+                    val locations = ObservableList<LatLng>()
+                    Database.currentDatabase.heatmapDatabase!!.getLocations(locations)
+                    locations.observeOnce {
+                        GoogleMapHelper.addHeatMap(it.value)
+                    }
+                }
+            }
+            timerHeatmap?.schedule(task, 0, HEATMAP_PERIOD * 1000)
+        } else {
+            GoogleMapHelper.lastOverlay?.remove()
+            timerHeatmap?.cancel()
+            timerHeatmap = null
+        }
+    }
+
+    fun resetHeatmap() {
+        timerHeatmap?.cancel()
+        drawHeatmap = false
+        lastOverlay?.remove()
+    }
 }
