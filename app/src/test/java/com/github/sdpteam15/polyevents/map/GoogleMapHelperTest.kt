@@ -378,45 +378,7 @@ class GoogleMapHelperTest {
     }
     /**/
 
-    //Depends on setupEditZone or create the edit zone markers by hand
-    @Test
-    fun interactionMarkerTest() {
-        val mockedzzt = Mockito.mock(zzt::class.java)
-        val m = Marker(mockedzzt)
-        When(mockedMap.addMarker(anyOrNull())).thenReturn(m)
-        assertEquals(m.hashCode(), mockedMap.addMarker(MarkerOptions()).hashCode())
-        When(mockedzzt.snippet).thenReturn(PolygonAction.DIAG.toString())
-        assertNotNull(position)
-        When(mockedzzt.position).thenReturn(position)
-        assertNotNull(mockedzzt.position)
-        assertNotNull(mockedMap.addMarker(MarkerOptions()).position)
-        GoogleMapHelper.setupEditZone(null, LatLng(lat, lng))
 
-        val mockedzzw = Mockito.mock(zzw::class.java)
-        val p = Polygon(mockedzzw)
-        When(mockedzzw.points).thenReturn(listOf())
-
-        GoogleMapHelper.interactionMarker(m, MarkerDragMode.DRAG)
-
-        When(mockedzzt.snippet).thenReturn(PolygonAction.DOWN.toString())
-        GoogleMapHelper.interactionMarker(m, MarkerDragMode.DRAG)
-
-        When(mockedzzt.snippet).thenReturn(PolygonAction.MOVE.toString())
-        GoogleMapHelper.interactionMarker(m, MarkerDragMode.DRAG)
-
-        When(mockedzzt.snippet).thenReturn(PolygonAction.RIGHT.toString())
-        GoogleMapHelper.interactionMarker(m, MarkerDragMode.DRAG)
-
-        When(mockedzzt.snippet).thenReturn(PolygonAction.ROTATE.toString())
-        GoogleMapHelper.interactionMarker(m, MarkerDragMode.DRAG)
-
-        GoogleMapHelper.tempPoly = p
-        When(mockedzzt.snippet).thenReturn("TEST")
-        GoogleMapHelper.interactionMarker(m, MarkerDragMode.DRAG)
-
-        GoogleMapHelper.areasPoints.clear()
-        GoogleMapHelper.clearTemp()
-    }
 
     @Test
     fun createNewAreaTest() {

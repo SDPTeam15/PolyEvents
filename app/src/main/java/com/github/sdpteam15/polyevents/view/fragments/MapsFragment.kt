@@ -14,10 +14,7 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.entity.Zone
-import com.github.sdpteam15.polyevents.model.map.GoogleMapAdapter
-import com.github.sdpteam15.polyevents.model.map.GoogleMapHelper
-import com.github.sdpteam15.polyevents.model.map.MarkerDragMode
-import com.github.sdpteam15.polyevents.model.map.RouteMapHelper
+import com.github.sdpteam15.polyevents.model.map.*
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementActivity
 import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementListActivity
@@ -231,7 +228,6 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
     }
 
     override fun onMapReady(googleMap: GoogleMap?) {
-        //GoogleMapHelper.context = context
         GoogleMapHelper.map = GoogleMapAdapter(googleMap)
         RouteMapHelper.map = GoogleMapAdapter(googleMap)
         RouteMapHelper.getNodesAndEdgesFromDB(context, this)
@@ -245,17 +241,14 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
         googleMap.setOnMapClickListener(this)
         GoogleMapHelper.setUpMap(requireContext(), mod != EditZone)
 
-
-
         if (useUserLocation) {
             activateMyLocation()
         }
         startId = GoogleMapHelper.uidArea
     }
 
-    override fun onPolylineClick(polyline: Polyline) {
-        RouteMapHelper.polylineClick(polyline)
-    }
+    override fun onPolylineClick(polyline: Polyline) =
+        GoogleMapActionHandler.polylineClick(polyline)
 
     fun switchIconDelete() {
         val removeRouteButton = requireView().findViewById<FloatingActionButton>(R.id.removeRoute)
@@ -277,57 +270,27 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
         }
     }
 
-    override fun onPolygonClick(polygon: Polygon) {
-        if (mod == EditZone) {
-            if (GoogleMapHelper.editMode && GoogleMapHelper.canEdit(polygon.tag.toString())) {
-                GoogleMapHelper.editArea(requireContext(), polygon.tag.toString())
-            } else if (GoogleMapHelper.deleteMode && GoogleMapHelper.canEdit(polygon.tag.toString())) {
-                GoogleMapHelper.removeArea(polygon.tag.toString().toInt())
-            }
-        } else {
-            GoogleMapHelper.setSelectedZoneFromArea(polygon.tag.toString())
-            //Shows the info window of the marker assigned to the area
-            GoogleMapHelper.areasPoints.get(polygon.tag)!!.second.showInfoWindow()
-        }
-    }
+    override fun onPolygonClick(polygon: Polygon) =
+        GoogleMapActionHandler.onPolygonClickHandler(mod, requireContext(), polygon)
 
     override fun onMarkerClick(marker: Marker): Boolean {
-        if (!GoogleMapHelper.editMode) {
-            marker.showInfoWindow()
-        }
-        val tag = marker.tag
-        if (tag != null) {
-            GoogleMapHelper.setSelectedZones(tag.toString())
-        }
-        marker.showInfoWindow()
+        GoogleMapActionHandler.onMarkerClickHandler(marker)
 
         //Return true to say that we don't want the event to go further (to the usual event when a marker is clicked)
         return true
     }
 
-    override fun onInfoWindowClick(p0: Marker) {
+    override fun onInfoWindowClick(marker: Marker) =
+        GoogleMapActionHandler.onInfoWindowClickHandler(requireActivity(), this, marker)
 
-        HelperFunctions.getLoc(requireActivity()).observeOnce(this) {
-            RouteMapHelper.chemin =
-                RouteMapHelper.getShortestPath(it.value!!, p0.tag.toString())?.toMutableList()
-                    ?: mutableListOf()
-            RouteMapHelper.drawRoute()
-        }
+    override fun onMarkerDragEnd(marker: Marker) =
+        GoogleMapActionHandler.interactionMarkerHandler(marker, MarkerDragMode.DRAG_END)
 
-    }
+    override fun onMarkerDragStart(marker: Marker) =
+        GoogleMapActionHandler.interactionMarkerHandler(marker, MarkerDragMode.DRAG_START)
 
-    override fun onMarkerDragEnd(p0: Marker) {
-        GoogleMapHelper.interactionMarker(p0, MarkerDragMode.DRAG_END)
-    }
-
-    override fun onMarkerDragStart(p0: Marker) {
-        GoogleMapHelper.interactionMarker(p0, MarkerDragMode.DRAG_START)
-    }
-
-
-    override fun onMarkerDrag(p0: Marker) {
-        GoogleMapHelper.interactionMarker(p0, MarkerDragMode.DRAG)
-    }
+    override fun onMarkerDrag(marker: Marker) =
+        GoogleMapActionHandler.interactionMarkerHandler(marker, MarkerDragMode.DRAG)
 
     override fun onMyLocationButtonClick(): Boolean {
         // Return false to indicate that we did not consume the event. So the default behavior
@@ -408,9 +371,8 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
      * Click on the built-in my location button so that
      * the default effect occurs (move camera to current location).
      */
-    private fun moveToMyLocation() {
+    private fun moveToMyLocation() =
         getBuiltInLocationButton().performClick()
-    }
 
     //-----------END LISTENER---------------------------------------
 
@@ -420,7 +382,6 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
         grantResults: IntArray
     ) = HelperFunctions.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-    override fun onMapClick(p0: LatLng?) {
-        GoogleMapHelper.clearSelectedZone()
-    }
+    override fun onMapClick(pos: LatLng?) =
+        GoogleMapActionHandler.onMapClickHandler(pos)
 }

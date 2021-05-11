@@ -242,7 +242,6 @@ object RouteMapHelper {
                     .key
 
                 // compute the cost to get to neighboring nodes and update the weight and previous node if a shorter path is found
-
                 for (neighbor in adjList[v]!!.filter { !done.contains(it.first) }) {
                     val newPath = costs[v]!! + neighbor.second
                     if (newPath < costs[neighbor.first]!!) {
@@ -626,16 +625,6 @@ object RouteMapHelper {
             endMarker!!.position = points[1]
             tempLatLng[0] = startMarker!!.position
             tempLatLng[1] = endMarker!!.position
-        }
-    }
-
-    /**
-     * Handles the click on a polyline : if on delete mode, deletes the polyline
-     * @param polyline polyline clicked
-     */
-    fun polylineClick(polyline: Polyline) {
-        if (deleteMode) {
-            removeLine(idToEdge[polyline.tag]!!)
         }
     }
 }

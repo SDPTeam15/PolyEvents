@@ -706,23 +706,6 @@ object GoogleMapHelper {
     }
 
     /**
-     * Redirects an interaction with an edition marker to the correct transformation
-     * @param marker interaction marker that has been dragged
-     */
-    fun interactionMarker(marker: Marker, dragMode: MarkerDragMode) {
-        when (marker.snippet) {
-            PolygonAction.MOVE.toString() -> translatePolygon(marker)
-            PolygonAction.RIGHT.toString() -> transformPolygon(marker)
-            PolygonAction.DOWN.toString() -> transformPolygon(marker)
-            PolygonAction.DIAG.toString() -> transformPolygon(marker)
-            PolygonAction.ROTATE.toString() -> rotatePolygon(marker)
-            PolygonAction.MARKER_START.toString() -> RouteMapHelper.moveMarker(marker, dragMode)
-            PolygonAction.MARKER_END.toString() -> RouteMapHelper.moveMarker(marker, dragMode)
-        }
-        tempPoly?.points = tempLatLng
-    }
-
-    /**
      * Switches the edit mode, and remove/recreates the markers for edition purpose
      */
     fun editMode(context: Context?) {
