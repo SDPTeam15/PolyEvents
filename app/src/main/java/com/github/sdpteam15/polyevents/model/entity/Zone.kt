@@ -55,7 +55,11 @@ data class Zone(
         return listZoneCoordinates
     }
 
-    fun getDrawingPolygons(): List<Pair<List<LatLng>,List<List<LatLng>>?>> {
+    /**
+     * get the list of polygons in drawing mod
+     * @return a list of polygons with the hole Pair(outside, list of holes)
+     */
+    fun getDrawingPolygons(): List<Pair<List<LatLng>, List<List<LatLng>>?>> {
         // TODO reduce the number of element
         return getZoneCoordinates().map { Pair(it, null) }
     }

@@ -109,6 +109,8 @@ object GoogleMapHelper {
 
     /**
      * Setup the map to the desired look
+     * @param context Context of the fragment
+     * @param drawingMod if we draw the zone in rectangles or in polygons
      */
     fun setUpMap(context: Context?, drawingMod: Boolean) {
         //Restoring the map state
@@ -205,7 +207,7 @@ object GoogleMapHelper {
     /**
      * Helper method to add a area to the map and generate an invisible marker in its center to display the area infos
      * @param id id of the area
-     * @param coords coordinates coordinates of the area
+     * @param coords coordinates of the area (polygons)
      * @param name name of the area
      */
     fun addArea(
