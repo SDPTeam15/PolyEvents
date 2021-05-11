@@ -104,6 +104,7 @@
     <string name="at_hour_text">at %1$s</string>
     <string name="label_activity_description">Description</string>
     <string name="label_tags">Tags</string>
+    <string name="label_comments">Comments</string>
     <string name="event_attendees">%d/%d </string>
     <string name="event_schedule">at %s</string>
     <string name="event_info_fail">Failed to get the event information</string>

@@ -105,11 +105,11 @@ object FakeDatabase : DatabaseInterface {
     }
 
     override fun <T : Any> getListEntity(
-        elements: ObservableList<T>,
-        ids: List<String>?,
-        matcher: Matcher?,
-        collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterFromDocumentInterface<out T>
+            elements: ObservableList<T>,
+            ids: List<String>?,
+            matcher: Matcher?,
+            collection: DatabaseConstant.CollectionConstant,
+            adapter: AdapterFromDocumentInterface<out T>
     ): Observable<Boolean> {
         TODO("Not yet implemented")
     }

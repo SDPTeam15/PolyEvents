@@ -2,27 +2,35 @@ package com.github.sdpteam15.polyevents.view.activity
 
 import android.os.Bundle
 import android.view.View
-import android.widget.*
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.RatingBar
+import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.entity.Event
+import com.github.sdpteam15.polyevents.model.entity.Rating
 import com.github.sdpteam15.polyevents.model.exceptions.MaxAttendeesException
 import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.room.EventLocal
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication
+import com.github.sdpteam15.polyevents.view.adapter.CommentItemAdapter
 import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
 import com.github.sdpteam15.polyevents.view.fragments.LeaveEventReviewFragment
+import com.github.sdpteam15.polyevents.view.service.ReviewHasChanged
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModel
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModelFactory
 
 /**
  * An activity containing events description
  */
-class EventActivity : AppCompatActivity() {
+class EventActivity : AppCompatActivity(), ReviewHasChanged {
     // TODO: view on map functionality?
 
     companion object {
@@ -30,6 +38,8 @@ class EventActivity : AppCompatActivity() {
 
         // Refactored here for tests
         val obsEvent: Observable<Event> = Observable()
+        val obsRating: Observable<Float> = Observable()
+        val obsComments: ObservableList<Rating> = ObservableList()
         lateinit var event: Event
 
         // for testing purposes
@@ -39,7 +49,7 @@ class EventActivity : AppCompatActivity() {
     private lateinit var eventId: String
 
     private lateinit var subscribeButton: Button
-
+    private lateinit var recyclerView: RecyclerView
     private lateinit var leaveReviewDialogFragment: LeaveEventReviewFragment
 
     // Lazily initialized view model, instantiated only when accessed for the first time
@@ -59,30 +69,87 @@ class EventActivity : AppCompatActivity() {
         database = (application as PolyEventsApplication).database
 
         subscribeButton = findViewById(R.id.button_subscribe_event)
+        recyclerView = findViewById(R.id.id_recycler_comment_list)
+        leaveReviewDialogFragment = LeaveEventReviewFragment(eventId, this)
 
-        leaveReviewDialogFragment = LeaveEventReviewFragment(eventId)
+        recyclerView.adapter = CommentItemAdapter(obsComments)
+        recyclerView.setHasFixedSize(false)
 
-        getEventAndObserve()
+        refreshEvent()
     }
 
     override fun onResume() {
         super.onResume()
 
         // Get event again in case of changes
-        getEventAndObserve()
+        refreshEvent()
     }
 
+    /**
+     * Refreshes the activity
+     */
+    private fun refreshEvent() {
+        obsComments.clear()
+        getEventAndObserve()
+        getEventRating()
+        getCommentsAndObserve()
+    }
+
+
+    /**
+     * get the rating of the event
+     */
+    private fun getEventRating() {
+        currentDatabase.eventDatabase!!.getMeanRatingForEvent(
+                eventId,
+                obsRating
+        )
+        obsRating.observeOnce(this, updateIfNotNull = false) { updateRating(it.value) }
+    }
+
+    /**
+     * Get the comments of an event
+     */
+    private fun getCommentsAndObserve() {
+        currentDatabase.eventDatabase!!.getRatingsForEvent(
+                eventId,
+                null,
+                obsComments
+        )
+        obsComments.observeAdd(this) {
+            //If the comment doesn't have a review, we don't want to display it
+            if (it.value.feedback == "") {
+                obsComments.remove(it.value)
+            } else {
+                recyclerView.adapter!!.notifyDataSetChanged()
+            }
+        }
+    }
+
+    /**
+     * Get all the informations of the event
+     */
     private fun getEventAndObserve() {
         currentDatabase.eventDatabase!!.getEventFromId(
-            eventId,
-            obsEvent
+                eventId,
+                obsEvent
         )
-            .observe(this) { b ->
-                if (!b.value) {
-                    showToast(getString(R.string.event_info_fail), this)
+                .observe(this) { b ->
+                    if (!b.value) {
+                        showToast(getString(R.string.event_info_fail), this)
+                    }
                 }
-            }
-        obsEvent.observeOnce(this, updateIfNotNull = false){ updateInfo(it.value) }
+        obsEvent.observeOnce(this, updateIfNotNull = false) { updateInfo(it.value) }
+    }
+
+    /**
+     * Updates the rating of the event
+     * @param rating rating of the event
+     */
+    private fun updateRating(rating: Float) {
+        findViewById<RatingBar>(R.id.ratingBar_event).apply {
+            setRating(rating)
+        }
     }
 
     /**
@@ -116,15 +183,18 @@ class EventActivity : AppCompatActivity() {
         if (event.isLimitedEvent()) {
             subscribeButton.visibility = View.VISIBLE
             if (currentDatabase.currentUser != null
-                && event.getParticipants().contains(currentDatabase.currentUser!!.uid)
+                    && event.getParticipants().contains(currentDatabase.currentUser!!.uid)
             ) {
                 subscribeButton.text = resources.getString(R.string.event_unsubscribe)
             }
         } else {
-            subscribeButton.visibility = View.GONE
+            subscribeButton.visibility = View.INVISIBLE
         }
     }
 
+    /**
+     * Launches the popup to leave a review
+     */
     fun onClickEventSubscribe(view: View) {
         if (currentDatabase.currentUser == null) {
             showToast(resources.getString(R.string.toast_subscribe_warning), this)
@@ -175,9 +245,13 @@ class EventActivity : AppCompatActivity() {
             showToast(getString(R.string.event_review_warning), this)
         } else {
             leaveReviewDialogFragment.show(
-                supportFragmentManager, LeaveEventReviewFragment.TAG
+                    supportFragmentManager, LeaveEventReviewFragment.TAG
             )
         }
+    }
+
+    override fun onLeaveReview() {
+        refreshEvent()
     }
 
 }
