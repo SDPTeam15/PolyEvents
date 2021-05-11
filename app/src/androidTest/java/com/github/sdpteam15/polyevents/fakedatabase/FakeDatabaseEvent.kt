@@ -101,6 +101,7 @@ object FakeDatabaseEvent : EventDatabaseInterface {
         ratingList: ObservableList<Rating>,
         userAccess: UserProfile?
     ): Observable<Boolean> {
+        ratingList.add(Rating("TEST", 2f, "TEXT"))
         return Observable(true)
     }
 
