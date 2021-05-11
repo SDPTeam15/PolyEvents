@@ -14,11 +14,13 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.entity.Rating
 import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.view.activity.EventActivity
+import com.github.sdpteam15.polyevents.view.service.ReviewHasChanged
 
 /**
  * A Dialog Fragment that is displayed over an EventActivity, to leave a review for the event.
  */
-class LeaveEventReviewFragment(val eventId: String?):
+class LeaveEventReviewFragment(val eventId: String?, val reviewHasChanged: ReviewHasChanged):
     DialogFragment(R.layout.fragment_leave_review) {
 
     private lateinit var leaveReviewDialogConfirmButton: Button
@@ -142,6 +144,7 @@ class LeaveEventReviewFragment(val eventId: String?):
     private fun showSuccessToastAndDismiss(resultStatus: Boolean) {
         if (resultStatus) {
             HelperFunctions.showToast(getString(R.string.event_review_saved), context)
+            reviewHasChanged.onLeaveReview()
         } else {
             HelperFunctions.showToast(getString(R.string.event_review_failed), context)
         }
