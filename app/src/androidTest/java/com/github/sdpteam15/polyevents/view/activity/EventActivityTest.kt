@@ -8,7 +8,6 @@ import android.widget.RatingBar
 import androidx.room.Room
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
@@ -31,7 +30,6 @@ import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertD
 import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertNotDisplayed
 import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertNotExist
 import com.schibsted.spain.barista.interaction.BaristaClickInteractions.clickOn
-import com.schibsted.spain.barista.internal.performAction
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.containsString
 import org.hamcrest.Matcher
@@ -46,7 +44,6 @@ import java.time.LocalDateTime
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
 import org.mockito.Mockito.`when` as When
 
 
@@ -71,9 +68,9 @@ class EventActivityTest {
     @Before
     fun setup() {
         testUser = UserEntity(
-            uid = uid,
-            username = username,
-            email = email
+                uid = uid,
+                username = username,
+                email = email
         )
 
         mockedDatabase = mock(DatabaseInterface::class.java)
@@ -84,20 +81,20 @@ class EventActivityTest {
         currentDatabase = mockedDatabase
 
         testLimitedEvent = Event(
-            eventId = limitedEventId,
-            eventName = "limited Event only",
-            description = "Super noisy activity !",
-            startTime = LocalDateTime.of(2021, 3, 7, 21, 15),
-            organizer = "AcademiC DeCibel",
-            zoneName = "Concert Hall",
-            tags = mutableSetOf("music", "live", "pogo")
+                eventId = limitedEventId,
+                eventName = "limited Event only",
+                description = "Super noisy activity !",
+                startTime = LocalDateTime.of(2021, 3, 7, 21, 15),
+                organizer = "AcademiC DeCibel",
+                zoneName = "Concert Hall",
+                tags = mutableSetOf("music", "live", "pogo")
         )
         testLimitedEvent.makeLimitedEvent(3)
 
         When(
-            mockedEventDatabase.getEventFromId(
-                id = limitedEventId, returnEvent = EventActivity.obsEvent
-            )
+                mockedEventDatabase.getEventFromId(
+                        id = limitedEventId, returnEvent = EventActivity.obsEvent
+                )
         ).then {
             EventActivity.obsEvent.postValue(testLimitedEvent)
             Observable(true)
@@ -108,9 +105,9 @@ class EventActivityTest {
         // Using an in-memory database because the information stored here disappears when the
         // process is killed.
         localDatabase = Room.inMemoryDatabaseBuilder(context, LocalDatabase::class.java)
-            // Allowing main thread queries, just for testing.
-            .allowMainThreadQueries()
-            .build()
+                // Allowing main thread queries, just for testing.
+                .allowMainThreadQueries()
+                .build()
     }
 
     @After
@@ -122,7 +119,7 @@ class EventActivityTest {
     }
 
     @Test
-    fun newCommentAdded(){
+    fun newCommentAdded() {
         goToEventActivityWithIntent()
 
         assertEquals(0, EventActivity.obsComments.size)
@@ -141,23 +138,23 @@ class EventActivityTest {
         goToEventActivityWithIntent()
 
         onView(withId(R.id.txt_event_Name))
-            .check(matches(withText(containsString(testLimitedEvent.eventName))))
+                .check(matches(withText(containsString(testLimitedEvent.eventName))))
 
         onView(withId(R.id.txt_event_description))
-            .check(matches(withText(containsString(testLimitedEvent.description))))
+                .check(matches(withText(containsString(testLimitedEvent.description))))
 
 
         onView(withId(R.id.txt_event_organizer))
-            .check(matches(withText(containsString(testLimitedEvent.organizer))))
+                .check(matches(withText(containsString(testLimitedEvent.organizer))))
 
         onView(withId(R.id.txt_event_zone))
-            .check(matches(withText(containsString(testLimitedEvent.zoneName))))
+                .check(matches(withText(containsString(testLimitedEvent.zoneName))))
 
         onView(withId(R.id.txt_event_date))
-            .check(matches(withText(containsString(testLimitedEvent.formattedStartTime()))))
+                .check(matches(withText(containsString(testLimitedEvent.formattedStartTime()))))
 
         onView(withId(R.id.txt_event_tags))
-            .check(matches(withText(containsString(testLimitedEvent.tags.joinToString { s -> s }))))
+                .check(matches(withText(containsString(testLimitedEvent.tags.joinToString { s -> s }))))
 
         assertDisplayed(R.id.button_subscribe_event, R.string.event_subscribe)
         //TODO check image is correct
@@ -192,8 +189,8 @@ class EventActivityTest {
         val retrievedLocalEventsAfterSubscription = localDatabase.eventDao().getAll()
         assert(retrievedLocalEventsAfterSubscription.isNotEmpty())
         assertEquals(
-            retrievedLocalEventsAfterSubscription[0],
-            EventLocal.fromEvent(testLimitedEvent)
+                retrievedLocalEventsAfterSubscription[0],
+                EventLocal.fromEvent(testLimitedEvent)
         )
 
         assertDisplayed(R.id.button_subscribe_event, R.string.event_unsubscribe)
@@ -255,30 +252,30 @@ class EventActivityTest {
     @Test
     fun testEventFetchFailedDoesNotDisplayAnything() {
         When(
-            mockedEventDatabase.getEventFromId(
-                id = limitedEventId,
-                returnEvent = EventActivity.obsEvent
-            )
+                mockedEventDatabase.getEventFromId(
+                        id = limitedEventId,
+                        returnEvent = EventActivity.obsEvent
+                )
         ).thenReturn(Observable(false))
 
         goToEventActivityWithIntent()
 
         // Nothing displayed
         onView(withId(R.id.txt_event_Name))
-            .check(matches(withText(containsString(""))))
+                .check(matches(withText(containsString(""))))
     }
 
     @Test
     fun testPublicEventShouldHaveNoSubscribeButton() {
         When(
-            mockedEventDatabase.getEventFromId(
-                id = limitedEventId, returnEvent = EventActivity.obsEvent
-            )
+                mockedEventDatabase.getEventFromId(
+                        id = limitedEventId, returnEvent = EventActivity.obsEvent
+                )
         ).then {
             EventActivity.obsEvent.postValue(
-                testLimitedEvent.copy(
-                    limitedEvent = false, maxNumberOfSlots = null
-                )
+                    testLimitedEvent.copy(
+                            limitedEvent = false, maxNumberOfSlots = null
+                    )
             )
             Observable(true)
         }
@@ -342,7 +339,7 @@ class EventActivityTest {
     fun testUserShouldBeAbleToLeaveRating() {
         var createdRating: Rating? = null
         When(mockedEventDatabase.addRatingToEvent(
-            anyOrNull(), anyOrNull()
+                anyOrNull(), anyOrNull()
         )).thenAnswer {
             createdRating = (it.arguments[0] as Rating?)
             Observable(true)
@@ -367,7 +364,7 @@ class EventActivityTest {
     fun testUserCanCancelLeavingRating() {
         var createdRating: Rating? = null
         When(mockedEventDatabase.addRatingToEvent(
-            anyOrNull(), anyOrNull()
+                anyOrNull(), anyOrNull()
         )).thenAnswer {
             createdRating = (it.arguments[0] as Rating?)
             Observable(true)
@@ -390,28 +387,28 @@ class EventActivityTest {
     @Test
     fun testShouldUpdateRatingIfUserRatedAlready() {
         var existingRating = Rating(
-            ratingId = "1",
-            userId = testUser.uid,
-            eventId = limitedEventId,
-            rate = 4.0f,
-            feedback = "Noice"
+                ratingId = "1",
+                userId = testUser.uid,
+                eventId = limitedEventId,
+                rate = 4.0f,
+                feedback = "Noice"
         )
         When(mockedEventDatabase.getUserRatingFromEvent(
-            userId = anyOrNull(),
-            eventId = anyOrNull(),
-            returnedRating = anyOrNull(),
-            userAccess = anyOrNull()
+                userId = anyOrNull(),
+                eventId = anyOrNull(),
+                returnedRating = anyOrNull(),
+                userAccess = anyOrNull()
         )).thenAnswer {
             // Not very robust, need to change if changed method signature
             (it.arguments[2] as Observable<Rating>).postValue(
-                existingRating
+                    existingRating
             )
             Observable(true)
         }
 
         When(mockedEventDatabase.updateRating(
-            rating = anyOrNull(),
-            userAccess = anyOrNull()
+                rating = anyOrNull(),
+                userAccess = anyOrNull()
         )).then {
             existingRating = it.arguments[0] as Rating
             Observable(true)
@@ -438,28 +435,28 @@ class EventActivityTest {
     @Test
     fun testUpdateRatingWhenFailed() {
         val existingRating = Rating(
-            ratingId = "1",
-            userId = testUser.uid,
-            eventId = limitedEventId,
-            rate = 4.0f,
-            feedback = "Noice"
+                ratingId = "1",
+                userId = testUser.uid,
+                eventId = limitedEventId,
+                rate = 4.0f,
+                feedback = "Noice"
         )
         When(mockedEventDatabase.getUserRatingFromEvent(
-            userId = anyOrNull(),
-            eventId = anyOrNull(),
-            returnedRating = anyOrNull(),
-            userAccess = anyOrNull()
+                userId = anyOrNull(),
+                eventId = anyOrNull(),
+                returnedRating = anyOrNull(),
+                userAccess = anyOrNull()
         )).thenAnswer {
             // Not very robust, need to change if changed method signature
             (it.arguments[2] as Observable<Rating>).postValue(
-                existingRating
+                    existingRating
             )
             Observable(true)
         }
 
         When(mockedEventDatabase.updateRating(
-            rating = anyOrNull(),
-            userAccess = anyOrNull()
+                rating = anyOrNull(),
+                userAccess = anyOrNull()
         )).then {
             // Update failed
             Observable(false)
@@ -483,7 +480,6 @@ class EventActivityTest {
     }
 
 
-
     /**
      * Idea taken from StackOverflow
      * https://stackoverflow.com/questions/25209508/how-to-set-a-specific-rating-on-ratingbar-in-espresso/25226081
@@ -505,8 +501,8 @@ class EventActivityTest {
 
     private fun goToEventActivityWithIntent() {
         val intent = Intent(
-            ApplicationProvider.getApplicationContext(),
-            EventActivity::class.java
+                ApplicationProvider.getApplicationContext(),
+                EventActivity::class.java
         ).apply {
             putExtra(EXTRA_EVENT_ID, limitedEventId)
         }

@@ -1,9 +1,11 @@
 package com.github.sdpteam15.polyevents.view.activity
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.*
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.RatingBar
+import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
@@ -18,9 +20,7 @@ import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.room.EventLocal
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication
-import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementListActivity
 import com.github.sdpteam15.polyevents.view.adapter.CommentItemAdapter
-import com.github.sdpteam15.polyevents.view.adapter.EventItemAdapter
 import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
 import com.github.sdpteam15.polyevents.view.fragments.LeaveEventReviewFragment
 import com.github.sdpteam15.polyevents.view.service.ReviewHasChanged
@@ -85,51 +85,68 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         refreshEvent()
     }
 
-    fun refreshEvent(){
-        //obsComments.clear()
+    /**
+     * Refreshes the activity
+     */
+    private fun refreshEvent() {
+        obsComments.clear()
         getEventAndObserve()
         getEventRating()
         getCommentsAndObserve()
     }
 
 
-    private fun getEventRating(){
+    /**
+     * get the rating of the event
+     */
+    private fun getEventRating() {
         currentDatabase.eventDatabase!!.getMeanRatingForEvent(
-            eventId,
-            obsRating
+                eventId,
+                obsRating
         )
         obsRating.observeOnce(this, updateIfNotNull = false) { updateRating(it.value) }
     }
 
-    private fun getCommentsAndObserve(){
+    /**
+     * Get the comments of an event
+     */
+    private fun getCommentsAndObserve() {
         currentDatabase.eventDatabase!!.getRatingsForEvent(
-            eventId,
-            null,
-            obsComments
+                eventId,
+                null,
+                obsComments
         )
-        obsComments.observeAdd(this){
-            if(it.value.feedback == ""){
+        obsComments.observeAdd(this) {
+            //If the comment doesn't have a review, we don't want to display it
+            if (it.value.feedback == "") {
                 obsComments.remove(it.value)
-            }else{
+            } else {
                 recyclerView.adapter!!.notifyDataSetChanged()
             }
         }
     }
 
+    /**
+     * Get all the informations of the event
+     */
     private fun getEventAndObserve() {
         currentDatabase.eventDatabase!!.getEventFromId(
-            eventId,
-            obsEvent
+                eventId,
+                obsEvent
         )
-            .observe(this) { b ->
-                if (!b.value) {
-                    showToast(getString(R.string.event_info_fail), this)
+                .observe(this) { b ->
+                    if (!b.value) {
+                        showToast(getString(R.string.event_info_fail), this)
+                    }
                 }
-            }
-        obsEvent.observeOnce(this, updateIfNotNull = false){ updateInfo(it.value) }
+        obsEvent.observeOnce(this, updateIfNotNull = false) { updateInfo(it.value) }
     }
 
-    private fun updateRating(rating: Float){
+    /**
+     * Updates the rating of the event
+     * @param rating rating of the event
+     */
+    private fun updateRating(rating: Float) {
         findViewById<RatingBar>(R.id.ratingBar_event).apply {
             setRating(rating)
         }
@@ -166,7 +183,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         if (event.isLimitedEvent()) {
             subscribeButton.visibility = View.VISIBLE
             if (currentDatabase.currentUser != null
-                && event.getParticipants().contains(currentDatabase.currentUser!!.uid)
+                    && event.getParticipants().contains(currentDatabase.currentUser!!.uid)
             ) {
                 subscribeButton.text = resources.getString(R.string.event_unsubscribe)
             }
@@ -175,6 +192,9 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         }
     }
 
+    /**
+     * Launches the popup to leave a review
+     */
     fun onClickEventSubscribe(view: View) {
         if (currentDatabase.currentUser == null) {
             showToast(resources.getString(R.string.toast_subscribe_warning), this)
@@ -225,7 +245,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
             showToast(getString(R.string.event_review_warning), this)
         } else {
             leaveReviewDialogFragment.show(
-                supportFragmentManager, LeaveEventReviewFragment.TAG
+                    supportFragmentManager, LeaveEventReviewFragment.TAG
             )
         }
     }
