@@ -17,37 +17,41 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PolyEvents">
+        <uses-library android:name="com.google.android.things" />
+
+        <activity android:name=".view.activity.admin.RouteManagementActivity"></activity>
         <activity
-            android:name="com.github.sdpteam15.polyevents.view.activity.admin.EventManagementActivity"
+            android:name=".view.activity.admin.EventManagementActivity"
             android:label="@string/title_activity_event_management"
             android:parentActivityName=".view.activity.admin.EventManagementListActivity" />
 
         <service
-            android:name="com.github.sdpteam15.polyevents.view.service.TimerService"
+            android:name=".view.service.TimerService"
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name="com.github.sdpteam15.polyevents.view.activity.admin.UserManagementActivity"
-            android:parentActivityName="com.github.sdpteam15.polyevents.view.activity.admin.UserManagementListActivity" />
         <activity
-            android:name="com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementListActivity"
+            android:name=".view.activity.admin.UserManagementActivity"
+            android:parentActivityName=".view.activity.admin.UserManagementListActivity" />
+        <activity
+            android:name=".view.activity.admin.ZoneManagementListActivity"
             android:parentActivityName=".view.activity.MainActivity" />
         <activity
-            android:name="com.github.sdpteam15.polyevents.view.activity.admin.EventManagementListActivity"
+            android:name=".view.activity.admin.EventManagementListActivity"
             android:label="@string/title_activity_event_list_management"
             android:parentActivityName=".view.activity.MainActivity" />
         <activity
-            android:name="com.github.sdpteam15.polyevents.view.activity.admin.UserManagementListActivity"
+            android:name=".view.activity.admin.UserManagementListActivity"
             android:label="@string/title_activity_user_list_management"
-            android:parentActivityName=".view.activity.MainActivity"
-            android:launchMode="singleTop"/>
+            android:launchMode="singleTop"
+            android:parentActivityName=".view.activity.MainActivity" />
         <activity
-            android:name="com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementActivity"
+            android:name=".view.activity.admin.ZoneManagementActivity"
             android:label="@string/title_activity_zone_management"
             android:launchMode="singleTop"
-            android:parentActivityName="com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementListActivity" />
+            android:parentActivityName=".view.activity.admin.ZoneManagementListActivity" />
         <activity
-            android:name="com.github.sdpteam15.polyevents.view.activity.admin.ItemRequestManagementActivity"
+            android:name=".view.activity.admin.ItemRequestManagementActivity"
             android:label="@string/title_activity_item_request_management"
             android:parentActivityName=".view.activity.MainActivity" />
         <activity
