@@ -321,7 +321,7 @@ class GoogleMapHelperTest {
         val mockedzzw = Mockito.mock(zzw::class.java)
 
         val list: MutableList<LatLng> = mutableListOf()
-        GoogleMapHelper.addArea(null, areaId, list, areaName)
+        GoogleMapHelper.addArea(null, areaId, Pair(list, null), areaName)
         assertTrue(GoogleMapHelper.areasPoints.isEmpty())
 
         list.add(LatLng(lat, lng))
@@ -332,7 +332,7 @@ class GoogleMapHelperTest {
         val poly = PolygonOptions()
         poly.addAll(list).clickable(true)
         When(mockedMap.addPolygon(poly)).thenReturn(Polygon(mockedzzw))
-        GoogleMapHelper.addArea(null, areaId, list, areaName)
+        GoogleMapHelper.addArea(null, areaId, Pair(list, null), areaName)
         assertTrue(GoogleMapHelper.areasPoints.isNotEmpty())
 
         GoogleMapHelper.areasPoints.clear()
@@ -367,11 +367,11 @@ class GoogleMapHelperTest {
         val id = newZone.zoneId
         newZone.location = "46.52028185590883|6.565878853201865!46.51992327436586|6.565878853201865!46.51992327436586|6.566596016287803!46.52028185590883|6.566596016287803"
         GoogleMapHelper.waitingZones.add(newZone)
-        GoogleMapHelper.restoreMapState(null)
+        GoogleMapHelper.restoreMapState(null, false)
         assertTrue(GoogleMapHelper.areasPoints.isNotEmpty())
         assertEquals(newZone.hashCode(), GoogleMapHelper.zonesToArea[id]!!.first.hashCode())
         //To test the second part, we need to find how to mock map.addMarker(any) and map.addPolygon(any)
-        GoogleMapHelper.restoreMapState(null)
+        GoogleMapHelper.restoreMapState(null, false)
 
         GoogleMapHelper.areasPoints.clear()
         GoogleMapHelper.clearTemp()
@@ -530,7 +530,7 @@ class GoogleMapHelperTest {
         GoogleMapHelper.areasPoints.clear()
         GoogleMapHelper.zonesToArea.clear()
         GoogleMapHelper.editingZone = null
-        GoogleMapHelper.setUpMap(null)
+        GoogleMapHelper.setUpMap(null, false)
     }
 
     @Test
@@ -657,10 +657,10 @@ class GoogleMapHelperTest {
         newZone.zoneId = "Zone ${GoogleMapHelper.uidZone++}"
         val id = newZone.zoneId
         newZone.location = "46.52028185590883|6.565878853201865!46.51992327436586|6.565878853201865!46.51992327436586|6.566596016287803!46.52028185590883|6.566596016287803"
-        GoogleMapHelper.importNewZone(null, newZone)
+        GoogleMapHelper.importNewZone(null, newZone, false)
 
         assertEquals(newZone.hashCode(), GoogleMapHelper.zonesToArea[id]!!.first.hashCode())
-        GoogleMapHelper.importNewZone(null, newZone)
+        GoogleMapHelper.importNewZone(null, newZone, false)
         assertEquals(newZone.hashCode(), GoogleMapHelper.zonesToArea[id]!!.first.hashCode())
     }
 }

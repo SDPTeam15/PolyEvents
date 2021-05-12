@@ -57,7 +57,7 @@ object RouteMapHelper {
     fun addLine(
         start: Pair<LatLng, Attachable?>,
         end: Pair<LatLng, Attachable?>
-    ) {
+    ) : Observable<Boolean> {
         val newEdges = mutableListOf<RouteEdge>()
         val removeEdges = mutableListOf<RouteEdge>()
 
@@ -75,11 +75,10 @@ object RouteMapHelper {
         edge.end = to
         newEdges.add(edge)
 
-        for (e in nodes) e.splitOnIntersection(newEdges, removeEdges)
         for (e in edges) e.splitOnIntersection(newEdges, removeEdges)
         for (e in zones) e.splitOnIntersection(newEdges, removeEdges)
 
-        Database.currentDatabase.routeDatabase!!.updateEdges(newEdges, removeEdges, edges, nodes)
+        return Database.currentDatabase.routeDatabase!!.updateEdges(newEdges, removeEdges, edges, nodes)
     }
 
     /**
