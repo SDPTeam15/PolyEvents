@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import androidx.lifecycle.LifecycleOwner
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
-import com.github.sdpteam15.polyevents.view.fragments.MapsFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.Polygon
@@ -22,11 +21,11 @@ object GoogleMapActionHandler {
      * @param polygon polygon clicked
      */
     fun onPolygonClickHandler(
-        mode: MapsFragment.MapsFragmentMod,
+        mode: MapsFragmentMod,
         context: Context,
         polygon: Polygon
     ) {
-        if (mode == MapsFragment.MapsFragmentMod.EditZone) {
+        if (mode == MapsFragmentMod.EditZone) {
             if (GoogleMapHelper.editMode && GoogleMapHelper.canEdit(polygon.tag.toString())) {
                 GoogleMapHelper.editArea(context, polygon.tag.toString())
             } else if (GoogleMapHelper.deleteMode && GoogleMapHelper.canEdit(polygon.tag.toString())) {

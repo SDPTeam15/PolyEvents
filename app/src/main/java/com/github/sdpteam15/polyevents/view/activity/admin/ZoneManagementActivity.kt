@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.model.map.MapsFragmentMod
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.map.GoogleMapHelper
@@ -49,7 +50,7 @@ class ZoneManagementActivity : AppCompatActivity() {
         //Get the views needed in the code
         val int = intent
         zoneId = int.getStringExtra(EXTRA_ID).toString()
-        val mapFragment = MapsFragment(MapsFragment.MapsFragmentMod.EditZone)
+        val mapFragment = MapsFragment(MapsFragmentMod.EditZone)
         GoogleMapHelper.zone = zone
         zoneObservable = Observable()
         zoneObservable.observe(this) {

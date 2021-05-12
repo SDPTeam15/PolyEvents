@@ -12,10 +12,9 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
-import com.github.sdpteam15.polyevents.model.database.remote.Database
+import com.github.sdpteam15.polyevents.model.map.MapsFragmentMod
+import com.github.sdpteam15.polyevents.model.map.MarkerDragMode
 import com.github.sdpteam15.polyevents.model.map.*
-import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementListActivity
-import com.github.sdpteam15.polyevents.view.fragments.MapsFragment.MapsFragmentMod.*
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.*
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -34,11 +33,7 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
     OnPolygonClickListener, OnMarkerClickListener, OnInfoWindowClickListener, OnMarkerDragListener,
     OnMyLocationButtonClickListener, OnMapClickListener {
 
-    enum class MapsFragmentMod {
-        Visitor,
-        EditZone,
-        EditRoute
-    }
+
 
     companion object {
         var instance: MapsFragment? = null
@@ -113,7 +108,7 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
         RouteMapHelper.getNodesAndEdgesFromDB(context, this)
 
         setMapListeners(googleMap!!)
-        GoogleMapHelper.setUpMap(requireContext(), mod != EditZone)
+        GoogleMapHelper.setUpMap(requireContext(), mod != MapsFragmentMod.EditZone)
 
         if (useUserLocation) {
             activateMyLocation()
@@ -149,7 +144,7 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
      */
     private fun setUpButtonsVisibility(){
         when (mod) {
-            Visitor -> {
+            MapsFragmentMod.Visitor -> {
                 locateMeButton.visibility = View.VISIBLE
                 heatmapButton.visibility = View.VISIBLE
                 locationButton.visibility = View.VISIBLE
@@ -164,7 +159,7 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
                 removeRouteButton.visibility = View.INVISIBLE
                 saveNewRouteButton.visibility = View.INVISIBLE
             }
-            EditZone -> {
+            MapsFragmentMod.EditZone -> {
                 locateMeButton.visibility = View.INVISIBLE
                 heatmapButton.visibility = View.INVISIBLE
                 locationButton.visibility = View.INVISIBLE
@@ -179,7 +174,7 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
                 removeRouteButton.visibility = View.INVISIBLE
                 saveNewRouteButton.visibility = View.INVISIBLE
             }
-            EditRoute -> {
+            MapsFragmentMod.EditRoute -> {
                 locateMeButton.visibility = View.INVISIBLE
                 heatmapButton.visibility = View.INVISIBLE
                 locationButton.visibility = View.INVISIBLE

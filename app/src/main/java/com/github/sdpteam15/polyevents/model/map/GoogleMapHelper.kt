@@ -17,7 +17,6 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementActivity
 import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementListActivity
 import com.github.sdpteam15.polyevents.view.fragments.HEATMAP_PERIOD
-import com.github.sdpteam15.polyevents.view.fragments.MapsFragment
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.*
 import com.google.maps.android.heatmaps.HeatmapTileProvider
@@ -25,31 +24,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.*
 
-enum class PolygonAction {
-    RIGHT,
-    DOWN,
-    DIAG,
-    MOVE,
-    ROTATE,
-    MARKER_START,
-    MARKER_END
-}
 
-enum class MarkerDragMode {
-    DRAG_START,
-    DRAG,
-    DRAG_END
-}
-
-data class IconBound(
-    var leftBound: Int,
-    var topBound: Int,
-    var rightBound: Int,
-    var bottomBound: Int
-)
-
-data class IconDimension(var width: Int, var height: Int)
-data class IconAnchor(var anchorWidth: Float, var anchorHeight: Float)
 
 //TODO : Refactor file, it is too long
 
@@ -1047,7 +1022,7 @@ object GoogleMapHelper {
         //TODO : Save the areas in the map
         //val location = GoogleMapHelper.areasToFormattedStringLocations(from = startId)
         val location =
-            GoogleMapHelper.zoneAreasToFormattedStringLocation(GoogleMapHelper.editingZone!!)
+            zoneAreasToFormattedStringLocation(editingZone!!)
         zone!!.location = location
         ZoneManagementActivity.zoneObservable.postValue(
             Zone(
@@ -1062,6 +1037,9 @@ object GoogleMapHelper {
     var drawHeatmap = false
     var timerHeatmap: Timer? = null
 
+    /**
+     * Draws the heatmap
+     */
     fun heatmap(){
         drawHeatmap = !drawHeatmap
         if (drawHeatmap) {
@@ -1071,27 +1049,36 @@ object GoogleMapHelper {
                     val locations = ObservableList<LatLng>()
                     Database.currentDatabase.heatmapDatabase!!.getLocations(locations)
                     locations.observeOnce {
-                        GoogleMapHelper.addHeatMap(it.value)
+                        addHeatMap(it.value)
                     }
                 }
             }
             timerHeatmap?.schedule(task, 0, HEATMAP_PERIOD * 1000)
         } else {
-            GoogleMapHelper.lastOverlay?.remove()
+            lastOverlay?.remove()
             timerHeatmap?.cancel()
             timerHeatmap = null
         }
     }
 
+    /**
+     * Undraws the heatmap
+     */
     fun resetHeatmap() {
         timerHeatmap?.cancel()
         drawHeatmap = false
         lastOverlay?.remove()
     }
 
-    fun getAllZonesFromDB(context: Context, lifecycleOwner: LifecycleOwner, mode: MapsFragment.MapsFragmentMod){
+    /**
+     * Get all zones from the database
+     * @param context context
+     * @param lifecycleOwner lifecycleOwner
+     * @param mode map display mode
+     */
+    fun getAllZonesFromDB(context: Context, lifecycleOwner: LifecycleOwner, mode: MapsFragmentMod){
         ZoneManagementListActivity.zones.observeAdd(lifecycleOwner) {
-            importNewZone(context, it.value, mode != MapsFragment.MapsFragmentMod.EditZone)
+            importNewZone(context, it.value, mode != MapsFragmentMod.EditZone)
         }
 
         Database.currentDatabase.zoneDatabase!!.getAllZones(

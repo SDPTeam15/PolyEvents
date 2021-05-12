@@ -16,7 +16,6 @@ import com.github.sdpteam15.polyevents.model.map.LatLngOperator.scalar
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.time
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementActivity
 import com.github.sdpteam15.polyevents.view.fragments.MapsFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
@@ -520,6 +519,7 @@ object RouteMapHelper {
         attachables = Pair(null, null)
     }
 
+    //TODO move variables
     var startMarker: Marker? = null
     var endMarker: Marker? = null
 
@@ -629,7 +629,4 @@ object RouteMapHelper {
             tempLatLng[1] = endMarker!!.position
         }
     }
-
-
-
 }
