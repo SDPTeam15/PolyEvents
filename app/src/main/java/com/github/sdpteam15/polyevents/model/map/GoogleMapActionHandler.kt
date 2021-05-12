@@ -13,6 +13,12 @@ import com.google.android.gms.maps.model.Polyline
 
 object GoogleMapActionHandler {
 
+    /**
+     * Handles the click on a polygon
+     * @param mode mode of the map
+     * @param context context
+     * @param polygon polygon clicked
+     */
     fun onPolygonClickHandler(mode: MapsFragment.MapsFragmentMod, context: Context, polygon: Polygon){
         if (mode == MapsFragment.MapsFragmentMod.EditZone) {
             if (GoogleMapHelper.editMode && GoogleMapHelper.canEdit(polygon.tag.toString())) {
@@ -37,6 +43,10 @@ object GoogleMapActionHandler {
         }
     }
 
+    /**
+     * Handles the marker click
+     * @param marker marker clicked
+     */
     fun onMarkerClickHandler(marker: Marker){
         if (!GoogleMapHelper.editMode) {
             marker.showInfoWindow()
@@ -47,6 +57,13 @@ object GoogleMapActionHandler {
         }
     }
 
+    /**
+     * Handles infoWindow click
+     * @param activity activity
+     * @param lifecycle lifecycleOwner
+     * @param marker marker that ownes the info window
+     * @param locationActivated is location of the visitor activated
+     */
     fun onInfoWindowClickHandler(activity:Activity, lifecycle: LifecycleOwner, marker: Marker, locationActivated: Boolean){
         HelperFunctions.getLoc(activity).observeOnce(lifecycle) {
             RouteMapHelper.chemin =
@@ -56,10 +73,19 @@ object GoogleMapActionHandler {
         }
     }
 
+    /**
+     * Handles click on map
+     * @param pos position of the click
+     */
     fun onMapClickHandler(pos: LatLng?){
         GoogleMapHelper.clearSelectedZone()
     }
 
+    /**
+     * Handles all interaction of drag of the markers
+     * @param marker dragged marker
+     * @param dragMode which drag mode is used (DRAG_START, DRAG, DRAG_END)
+     */
     fun interactionMarkerHandler(marker: Marker, dragMode: MarkerDragMode){
         when (marker.snippet) {
             PolygonAction.MOVE.toString() -> GoogleMapHelper.translatePolygon(marker)
