@@ -273,7 +273,7 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
         GoogleMapActionHandler.polylineClick(polyline)
 
     override fun onInfoWindowClick(marker: Marker) =
-        GoogleMapActionHandler.onInfoWindowClickHandler(requireActivity(), this, marker)
+        GoogleMapActionHandler.onInfoWindowClickHandler(requireActivity(), this, marker, useUserLocation)
 
     override fun onMarkerDragEnd(marker: Marker) =
         GoogleMapActionHandler.interactionMarkerHandler(marker, MarkerDragMode.DRAG_END)

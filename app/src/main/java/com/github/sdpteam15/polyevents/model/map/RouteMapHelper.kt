@@ -95,8 +95,9 @@ object RouteMapHelper {
      * @param targetZoneId the Zone where the person wants to go to
      * @return The list of points that the person needs to follow, null if there is no path nearby
      */
-    fun getShortestPath(startPosition: LatLng, targetZoneId: String): List<LatLng>? {
-
+    fun getShortestPath(startPosition: LatLng, targetZoneId: String, locationActivated: Boolean): List<LatLng>? {
+        if(!locationActivated)
+            return null
         // gets the closest point on the map where we can go from our current position
         val nearestPos = getPosOnNearestAttachable(startPosition)
         // if nothing to attach to, no path can be found

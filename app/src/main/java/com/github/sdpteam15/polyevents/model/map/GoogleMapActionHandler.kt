@@ -47,10 +47,10 @@ object GoogleMapActionHandler {
         }
     }
 
-    fun onInfoWindowClickHandler(activity:Activity, lifecycle: LifecycleOwner, marker: Marker){
+    fun onInfoWindowClickHandler(activity:Activity, lifecycle: LifecycleOwner, marker: Marker, locationActivated: Boolean){
         HelperFunctions.getLoc(activity).observeOnce(lifecycle) {
             RouteMapHelper.chemin =
-                RouteMapHelper.getShortestPath(it.value!!, marker.tag.toString())?.toMutableList()
+                RouteMapHelper.getShortestPath(it.value!!, marker.tag.toString(), locationActivated)?.toMutableList()
                     ?: mutableListOf()
             RouteMapHelper.drawRoute()
         }
