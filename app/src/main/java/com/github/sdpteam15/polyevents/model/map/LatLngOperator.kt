@@ -385,9 +385,10 @@ object LatLngOperator {
     }
 
 
-    fun polygonUnion(
+    fun polygonOperation(
         subject: Polygon,
-        clip: Polygon
+        clip: Polygon,
+        polygonOperationType: polygonOperationType
     ): MutableList<Pair<MutableList<LatLng>, MutableList<MutableList<LatLng>>?>> {
         // https://dl.acm.org/doi/abs/10.1145/274363.274364
         val subjectIntersections = mutableListOf<Polygon.Vertex>()
@@ -451,20 +452,36 @@ object LatLngOperator {
             if (pointInsidePolygon(it.xy, subject)) subjectAndClipSeparated = false
             else clipInSubject = false
         }
-        if (subjectInClip) return mutableListOf(
-            Pair(
-                clip.toLatLongList(), null
+
+
+        if (polygonOperationType == LatLngOperator.polygonOperationType.UNION) {
+            if (subjectInClip) return mutableListOf(
+                Pair(
+                    clip.toLatLongList(), null
+                )
             )
-        )
-        if (clipInSubject) return mutableListOf(
-            Pair(
-                subject.toLatLongList(),null
+            if (clipInSubject) return mutableListOf(
+                Pair(
+                    subject.toLatLongList(), null
+                )
             )
-        )
-        if (subjectAndClipSeparated) return mutableListOf(
-            Pair(subject.toLatLongList(), null),
-            Pair(clip.toLatLongList(), null)
-        )
+            if (subjectAndClipSeparated) return mutableListOf(
+                Pair(subject.toLatLongList(), null),
+                Pair(clip.toLatLongList(), null)
+            )
+        } else if (polygonOperationType == LatLngOperator.polygonOperationType.INTERSECTION) {
+            if (subjectInClip) return mutableListOf(
+                Pair(
+                    subject.toLatLongList(), null
+                )
+            )
+            if (clipInSubject) return mutableListOf(
+                Pair(
+                    clip.toLatLongList(), null
+                )
+            )
+            if (subjectAndClipSeparated) return mutableListOf()
+        }
 
 
         //phase 2 set entry and exit points
@@ -503,7 +520,9 @@ object LatLngOperator {
                 println(""+current.xy + " equals "+ i.xy + isCloseTo(current.xy , i.xy))
             }*/
                 subjectIntersections.removeIf { isCloseTo(it.xy, current.xy) }
-                if (!current.entry_exit!!) {
+                if ((polygonOperationType == LatLngOperator.polygonOperationType.UNION && !current.entry_exit!!)
+                    || (polygonOperationType == LatLngOperator.polygonOperationType.INTERSECTION && current.entry_exit!!)
+                ) {
                     do {
                         current = current.next!!
                         newPolygon.add(current.xy)
@@ -537,13 +556,18 @@ object LatLngOperator {
             polygons.remove(outside)
             return Pair(outside, polygons)
         }
-
-        return mutableListOf(
-            separateOutsidePolygonFromHoles(
-                polygons
+        if (polygonOperationType == LatLngOperator.polygonOperationType.UNION) {
+            //union of 2 overlapping polygons can only give a single zone with holes inside
+            return mutableListOf(
+                separateOutsidePolygonFromHoles(
+                    polygons
+                )
             )
-        )
-
-
+        } else if (polygonOperationType == LatLngOperator.polygonOperationType.INTERSECTION) {
+            //intersection of 2 polygons without holes can only give polygons without holes
+            return polygons.map { Pair(it, null) }.toMutableList()
+        } else {
+            throw UnsupportedOperationException(polygonOperationType.toString())
+        }
     }
 }

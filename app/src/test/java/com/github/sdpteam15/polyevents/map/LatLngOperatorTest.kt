@@ -11,7 +11,9 @@ import com.github.sdpteam15.polyevents.model.map.LatLngOperator.isTooParallel
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.minus
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.norm
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.plus
-import com.github.sdpteam15.polyevents.model.map.LatLngOperator.polygonUnion
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.polygonOperation
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.polygonOperationType.INTERSECTION
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.polygonOperationType.UNION
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.project
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.scalar
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.squaredEuclideanDistance
@@ -19,6 +21,7 @@ import com.github.sdpteam15.polyevents.model.map.LatLngOperator.squaredNorm
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.time
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Test
+import java.lang.AssertionError
 import kotlin.math.sqrt
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -166,7 +169,7 @@ class LatLngOperatorTest {
 
 
     @Test
-    fun polygonUnionWorksInTrivialCases(){
+    fun polygonUnionWorksInTrivialCases() {
         var subject = LatLngOperator.Polygon(
             listOf(
                 LatLng(0.0, 1.0), LatLng(0.0, 2.0), LatLng(3.0, 2.0), LatLng(3.0, 1.0)
@@ -181,7 +184,7 @@ class LatLngOperatorTest {
             LatLng(0.0, 1.0), LatLng(0.0, 2.0), LatLng(3.0, 2.0), LatLng(3.0, 1.0)
         )
 
-        var polygon = polygonUnion(subject, clip)
+        var polygon = polygonOperation(subject, clip, UNION)
         assertPolygonsEquivalent(polygon[0].first, expected)
         assertNull(polygon[0].second)
 
@@ -203,7 +206,7 @@ class LatLngOperatorTest {
             LatLng(5.0, 1.0), LatLng(5.0, 2.0), LatLng(8.0, 2.0), LatLng(8.0, 1.0)
         )
 
-        polygon = polygonUnion(subject, clip)
+        polygon = polygonOperation(subject, clip, UNION)
         assertPolygonsEquivalent(polygon[0].first, expected)
         assertNull(polygon[0].second)
         assertPolygonsEquivalent(polygon[1].first, expected2)
@@ -225,10 +228,70 @@ class LatLngOperatorTest {
             LatLng(0.0, 1.0), LatLng(0.0, 2.0), LatLng(3.0, 2.0), LatLng(3.0, 1.0)
         )
 
-        polygon = polygonUnion(subject, clip)
+        polygon = polygonOperation(subject, clip, UNION)
         assertPolygonsEquivalent(polygon[0].first, expected)
         assertNull(polygon[0].second)
     }
+
+    @Test
+    fun polygonIntersectionWorksInTrivialCases() {
+        var subject = LatLngOperator.Polygon(
+            listOf(
+                LatLng(0.0, 1.0), LatLng(0.0, 2.0), LatLng(3.0, 2.0), LatLng(3.0, 1.0)
+            )
+        )
+        var clip = LatLngOperator.Polygon(
+            listOf(
+                LatLng(0.0, 1.0), LatLng(0.0, 2.0), LatLng(3.0, 2.0), LatLng(3.0, 1.0)
+            )
+        )
+        var expected = listOf(
+            LatLng(0.0, 1.0), LatLng(0.0, 2.0), LatLng(3.0, 2.0), LatLng(3.0, 1.0)
+        )
+
+        var polygon = polygonOperation(subject, clip, INTERSECTION)
+        assertPolygonsEquivalent(polygon[0].first, expected)
+        assertNull(polygon[0].second)
+
+        /////////////////////////////////////////////////////////////////////////////////////
+        subject = LatLngOperator.Polygon(
+            listOf(
+                LatLng(0.0, 1.0), LatLng(0.0, 2.0), LatLng(3.0, 2.0), LatLng(3.0, 1.0)
+            )
+        )
+        clip = LatLngOperator.Polygon(
+            listOf(
+                LatLng(5.0, 1.0), LatLng(5.0, 2.0), LatLng(8.0, 2.0), LatLng(8.0, 1.0)
+            )
+        )
+
+        var expected2 =
+            mutableListOf<Pair<MutableList<LatLng>, MutableList<MutableList<LatLng>>?>>()
+
+        polygon = polygonOperation(subject, clip, INTERSECTION)
+        assertEquals(expected2, polygon)
+
+        /////////////////////////////////////////////////////////////////////////////////////
+
+        subject = LatLngOperator.Polygon(
+            listOf(
+                LatLng(0.2, 1.2), LatLng(0.2, 1.8), LatLng(2.8, 1.8), LatLng(2.8, 1.2)
+            )
+        )
+        clip = LatLngOperator.Polygon(
+            listOf(
+                LatLng(0.0, 1.0), LatLng(0.0, 2.0), LatLng(3.0, 2.0), LatLng(3.0, 1.0)
+            )
+        )
+        expected = listOf(
+            LatLng(0.2, 1.2), LatLng(0.2, 1.8), LatLng(2.8, 1.8), LatLng(2.8, 1.2)
+        )
+
+        polygon = polygonOperation(subject, clip, INTERSECTION)
+        assertPolygonsEquivalent(polygon[0].first, expected)
+        assertNull(polygon[0].second)
+    }
+
 
     @Test
     fun polygonUnionTestWithOverlappingZones() {
@@ -256,7 +319,7 @@ class LatLngOperatorTest {
             LatLng(2.0, 1.0),
             LatLng(2.0, 0.0)
         )
-        var polygon = polygonUnion(subject, clip)
+        var polygon = polygonOperation(subject, clip, UNION)
         assertPolygonsEquivalent(polygon[0].first, expected)
         assertNull(polygon[0].second)
 
@@ -296,7 +359,7 @@ class LatLngOperatorTest {
             LatLng(4.0, 1.0),
             LatLng(4.0, 0.0)
         )
-        polygon = polygonUnion(subject, clip)
+        polygon = polygonOperation(subject, clip, UNION)
         assertPolygonsEquivalent(polygon[0].first, expected)
         assertNull(polygon[0].second)
 
@@ -337,17 +400,38 @@ class LatLngOperatorTest {
             LatLng(3.0, 10.0),
             LatLng(2.0, 10.0),
             LatLng(2.0, 9.0),
-            LatLng(0.0,9.0)
+            LatLng(0.0, 9.0)
         )
-        polygon = polygonUnion(subject, clip)
+        var holes = mutableListOf(
+            mutableListOf(
+                LatLng(1.0, 3.0),
+                LatLng(2.0, 2.5),
+                LatLng(2.0, 3.5)
+            ),
+            mutableListOf(
+                LatLng(1.0, 7.0),
+                LatLng(2.0, 6.5),
+                LatLng(2.0, 7.5)
+            )
+        )
+
+        polygon = polygonOperation(subject, clip, UNION)
         assertPolygonsEquivalent(polygon[0].first, expected)
-        println(polygon[0].second)
+
+        try {
+            assertPolygonsEquivalent(polygon[0].second!![0], holes[0])
+        }catch (e:AssertionError){
+            assertPolygonsEquivalent(polygon[0].second!![0], holes[1])
+            assertPolygonsEquivalent(polygon[0].second!![1], holes[0])
+            return
+        }
+        assertPolygonsEquivalent(polygon[0].second!![1], holes[1])
     }
 
 
     fun assertPolygonsEquivalent(list1: List<LatLng>, list2: List<LatLng>) {
-        println(list1)
-        println(list2)
+        //println(list1)
+        //println(list2)
         if (list1.isEmpty() && list2.isEmpty()) {
             return
         } else {
