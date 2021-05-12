@@ -5,6 +5,8 @@ import com.github.sdpteam15.polyevents.model.map.Attachable
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.angle
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.divide
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.euclideanDistance
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.getIntersection
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.isInRectangle
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.isTooParallel
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.plus
 import com.github.sdpteam15.polyevents.model.map.RouteMapHelper.getNearestPoint
@@ -54,9 +56,37 @@ data class Zone(
      * Get the coordinates of all the grouped areas on the current Zone
      * @return A list of list of LatLng points composing an area
      */
-    fun getDrawingPoints(): List<List<LatLng>> {
+    fun getDrawingPolygons(): List<Pair<List<LatLng>, List<List<LatLng>>?>> {
+        val rectangles = getZoneCoordinates()
+        val outputZones: List<Pair<List<LatLng>, List<List<LatLng>>?>> =
+            listOf(Pair(rectangles[0].toList(), listOf()))
         // TODO reduce the number of element
-        return getZoneCoordinates()
+        for (rectangle in rectangles.drop(1)) {
+            for (zone in outputZones) {
+                var lastNode = zone.first[zone.first.lastIndex]
+                for (node in zone.first) {
+                    if (isInRectangle(node, rectangle)) {
+                        var lastRectNode = rectangle[rectangle.lastIndex]
+                        val intersections: MutableList<LatLng> = mutableListOf()
+                        for (rectNode in rectangle) {
+                            val intersection  = getIntersection(lastNode, node, lastRectNode, rectNode)
+                            if(intersection!=null) {
+                                intersections.add(intersection)
+                            }
+                            lastRectNode = rectNode
+                        }
+
+                    }
+                    lastNode = node
+                }
+            }
+        }
+        return listOf()
+    }
+
+
+    fun getDrawingPoints(): List<List<LatLng>> {
+        return listOf()
     }
 
     override fun getAttachedNewPoint(

@@ -1,6 +1,8 @@
 package com.github.sdpteam15.polyevents.model.map
 
+import android.util.Log
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Polygon
 import kotlin.math.abs
 import kotlin.math.atan
 import kotlin.math.sqrt
@@ -163,22 +165,9 @@ object LatLngOperator {
      * @return The intersection point of the two segments, null if the two segments do not intersect
      */
     fun getIntersection(start1: LatLng, end1: LatLng, start2: LatLng, end2: LatLng): LatLng? {
-        val denom =
-            (((start1.latitude - end1.latitude) * (start2.longitude - end2.longitude)) - ((start1.longitude - end1.longitude) * (start2.latitude - end2.latitude)))
 
-        if (abs(denom) < epsilon) {
-            //the lines are parallel
-            return null
-        }
-        val t =
-            ((start1.latitude - start2.latitude) * (start2.longitude - end2.longitude) - (start1.longitude - start2.longitude) * (start2.latitude - end2.latitude)) / denom
-        val s =
-            ((end1.latitude - start1.latitude) * (start1.longitude - start2.longitude) - (end1.longitude - start1.longitude) * (start1.latitude - start2.latitude)) / denom
-        if (!(t in 0.0 - epsilon..1.0 + epsilon && s in 0.0 - epsilon..1.0 + epsilon)) {
-            //the intersection point is outside the boundaries formed by the extremities of the segments
-            return null
-        }
-        return plus(start1, time(minus(end1, start1), t))
+        val coefs = getIntersectionCoefficients(start1, end1, start2, end2) ?: return null
+        return plus(start1, time(minus(end1, start1), coefs.first))
     }
 
     /**
@@ -211,5 +200,304 @@ object LatLngOperator {
      */
     fun project(a: LatLng, b: LatLng): LatLng {
         return time(b, scalar(a, divide(b, squaredNorm(b))))
+    }
+
+    /**
+     * Checks if a point lies inside a Rectangle
+     * https://math.stackexchange.com/questions/190111/how-to-check-if-a-point-is-inside-a-rectangle
+     * @param point the point
+     * @param rectangle the rectangle
+     * @return true if the point is inside the rectangle, else false
+     */
+    fun isInRectangle(point: LatLng, rectangle: List<LatLng>): Boolean {
+        val ab = minus(rectangle[1], rectangle[0])
+        val ad = minus(rectangle[3], rectangle[0])
+        val am = minus(point, rectangle[0])
+        return (scalar(am, ab) in -epsilon..squaredNorm(ab) + epsilon &&
+                scalar(am, ad) in -epsilon..squaredNorm(ad) + epsilon)
+    }
+
+    fun isCloseTo(p1: LatLng, p2: LatLng): Boolean {
+        return (euclideanDistance(p1, p2) < epsilon)
+    }
+
+
+    class Polygon(points: List<LatLng>) {
+        private var vertices: List<Vertex> = points.map {
+            Vertex(
+                xy = it,
+                next = null,
+                prev = null,
+                intersect = false,
+                entry_exit = null,
+                neighbor = null,
+                alpha = null
+            )
+        }
+
+        init {
+            for (idx in vertices.indices) {
+                vertices[idx].next = vertices[(idx + 1) % vertices.size]
+                vertices[idx].prev = vertices[(idx - 1 + vertices.size) % vertices.size]
+            }
+        }
+
+        val start = vertices[0]
+
+        fun foreach(function: (Vertex) -> Unit) {
+            var v = start
+            do {
+                function(v)
+                v = v.next!!
+            } while (v != start)
+        }
+
+
+        data class Vertex(
+            val xy: LatLng,
+            var next: Vertex?,
+            var prev: Vertex?,
+            var intersect: Boolean,
+            var entry_exit: Boolean?,
+            var neighbor: Vertex?,
+            var alpha: Double?
+        ){
+            override fun toString(): String {
+                return xy.toString()
+            }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) return true
+                if (javaClass != other?.javaClass) return false
+
+                other as Vertex
+
+                if (xy != other.xy) return false
+                if (next != other.next) return false
+                if (prev != other.prev) return false
+                if (intersect != other.intersect) return false
+                if (entry_exit != other.entry_exit) return false
+                if (neighbor != other.neighbor) return false
+                if (alpha != other.alpha) return false
+
+                return true
+            }
+
+            override fun hashCode(): Int {
+                var result = xy.hashCode()
+                result = 31 * result + (entry_exit?.hashCode() ?: 0)
+                result = 31 * result + (alpha?.hashCode() ?: 0)
+                return result
+            }
+        }
+    }
+
+    /**
+     * Returns the coefficients between 0.0 and 1.0 representing the distance between the starts and the intersection point
+     * @param start1 start of the first segment
+     * @param end1 end of the first segment
+     * @param start2 start of the second segment
+     * @param end2 end of the second segment
+     * @return null if no intersection, else returns the pair of ratios
+     */
+    fun getIntersectionCoefficients(
+        start1: LatLng,
+        end1: LatLng,
+        start2: LatLng,
+        end2: LatLng
+    ): Pair<Double, Double>? {
+        val denom =
+            (((start1.latitude - end1.latitude) * (start2.longitude - end2.longitude)) - ((start1.longitude - end1.longitude) * (start2.latitude - end2.latitude)))
+
+        if (abs(denom) < epsilon) {
+            //the lines are parallel
+            return null
+        }
+        val t =
+            ((start1.latitude - start2.latitude) * (start2.longitude - end2.longitude) - (start1.longitude - start2.longitude) * (start2.latitude - end2.latitude)) / denom
+        val s =
+            ((end1.latitude - start1.latitude) * (start1.longitude - start2.longitude) - (end1.longitude - start1.longitude) * (start1.latitude - start2.latitude)) / denom
+        if (!(t in 0.0 - epsilon..1.0 + epsilon && s in 0.0 - epsilon..1.0 + epsilon)) {
+            //the intersection point is outside the boundaries formed by the extremities of the segments
+            return null
+        }
+        return Pair(t, s)
+    }
+
+    fun createVertex(start: Polygon.Vertex, stop: Polygon.Vertex, alpha: Double) = Polygon.Vertex(
+        xy = plus(start.xy, time(minus(stop.xy, start.xy), alpha)),
+        next = null,
+        prev = null,
+        intersect = true,
+        entry_exit = false,
+        neighbor = null,
+        alpha = alpha
+    )
+
+    fun pointInsidePolygon(point: LatLng, polygon: Polygon): Boolean {
+        /*
+        fun findMaxLat(polygon: Polygon): Double {
+            var maxLat = Double.NEGATIVE_INFINITY
+            var nextVertex = polygon.start
+            do {
+                maxLat = max(maxLat, nextVertex.xy.latitude)
+                nextVertex = nextVertex.next!!
+            } while (nextVertex != polygon.start)
+            return maxLat
+        }
+        val maxLat = findMaxLat(polygon)*/
+        val maxLat = 90.0
+
+        var curVertex = polygon.start
+        var nbOfIntersections = 0
+        do {
+            //if point is on a segment, immediately we consider the point inside the polygon
+            if (isOnSegment(curVertex.xy, curVertex.next!!.xy, point)) return true
+
+            //if intersection add to the count,
+
+            if (
+                getIntersectionCoefficients(
+                    curVertex.xy,
+                    curVertex.next!!.xy,
+                    point,
+                    LatLng(maxLat, point.longitude)
+                ) != null
+            ) {
+                nbOfIntersections++
+            }
+            curVertex = curVertex.next!!
+        } while (curVertex != polygon.start)
+        return nbOfIntersections % 2 == 1
+
+    }
+
+    private const val entry = true
+    private const val exit = false
+    fun polygonUnion(subject: Polygon, clip: Polygon): Pair<MutableList<LatLng>, MutableList<MutableList<LatLng>>?> {
+        // https://dl.acm.org/doi/abs/10.1145/274363.274364
+        val subjectIntersections = mutableListOf<Polygon.Vertex>()
+        //phase1 find intersection points and put them in the linked lists
+        var curVertP1 = subject.start
+        var curVertP2 = clip.start
+        do {
+            //we don't want to take into account when a point we used is too close
+            if (!(isCloseTo(curVertP1.xy, curVertP2.xy) ||
+                        isCloseTo(curVertP1.next!!.xy, curVertP2.xy) ||
+                        isCloseTo(curVertP1.xy, curVertP2.next!!.xy) ||
+                        isCloseTo(curVertP1.next!!.xy, curVertP2.next!!.xy))
+            ) {
+
+                val inter = getIntersectionCoefficients(
+                    curVertP1.xy,
+                    curVertP1.next!!.xy,
+                    curVertP2.xy,
+                    curVertP2.next!!.xy
+                )
+                if (inter != null) {
+                    //create a vertex for each list at the intersection point
+                    val v1 = createVertex(curVertP1, curVertP1.next!!, inter.first)
+                    val v2 = createVertex(curVertP2, curVertP2.next!!, inter.second)
+                    //link v1 and v2
+                    v1.neighbor = v2
+                    v2.neighbor = v1
+
+                    //place v1 in first linked list, v2 in second linkedlist
+                    v1.next = curVertP1.next
+                    v1.prev = curVertP1
+                    curVertP1.next!!.prev = v1
+                    curVertP1.next = v1
+
+                    v2.next = curVertP2.next
+                    v2.prev = curVertP2
+                    curVertP2.next!!.prev = v2
+                    curVertP2.next = v2
+
+
+
+                }
+            }
+            curVertP2 = curVertP2.next!!
+            if (curVertP2 == clip.start) {
+                curVertP1 = curVertP1.next!!
+            }
+        } while (curVertP1 != subject.start || curVertP2 != clip.start)
+
+        //phase 2 set entry and exit points
+
+        fun setEntriesExits(polygon1: Polygon, polygon2: Polygon) {
+            var status = if (pointInsidePolygon(polygon1.start.xy, polygon2)) {
+                exit
+            } else {
+                entry
+            }
+            polygon1.foreach {
+                if (it.intersect){
+                    it.entry_exit = status
+                    status = !status
+                    // add all intersections of the first polygon for phase 3
+                    if(polygon1 == subject) {
+                        subjectIntersections.add(it)
+                    }
+                }
+            }
+        }
+        setEntriesExits(subject,clip)
+        setEntriesExits(clip,subject)
+
+        //phase3 draw the resulting polygons and holes
+
+        val polygons = mutableListOf<MutableList<LatLng>>()
+        while (subjectIntersections.isNotEmpty()){
+            val firstIntersection = subjectIntersections.first()
+            val newPolygon = mutableListOf(firstIntersection.xy)
+            var current = firstIntersection
+            do {
+                //println("set$subjectIntersections")
+                    /*
+                for(i in subjectIntersections){
+                    println(""+current.xy + " equals "+ i.xy + isCloseTo(current.xy , i.xy))
+                }*/
+                subjectIntersections.removeIf{ isCloseTo(it.xy,current.xy)}
+                if(!current.entry_exit!!){
+                    do {
+                        current = current.next!!
+                        newPolygon.add(current.xy)
+                    }while(!current.intersect)
+                }else{
+                    do {
+                        current = current.prev!!
+                        newPolygon.add(current.xy)
+                    }while(!current.intersect)
+                }
+                current = current.neighbor!!
+            }while(current != firstIntersection)
+            polygons.add(newPolygon)
+        }
+
+        fun separateOutsidePolygonFromHoles(polygons : MutableList<MutableList<LatLng>>): Pair<MutableList<LatLng>, MutableList<MutableList<LatLng>>?>{
+            if(polygons.size == 1){
+                return Pair(polygons[0],null)
+            }
+            fun findOutsidePolygon (polygons : MutableList<MutableList<LatLng>>) : MutableList<LatLng>{
+                var outsidePolygon = polygons[0]
+                for (polygon in polygons.drop(1)){
+                    if(pointInsidePolygon(outsidePolygon[0], Polygon(polygon))){
+                        outsidePolygon = polygon
+                    }
+                }
+                return outsidePolygon
+            }
+            val outside = findOutsidePolygon(polygons)
+            polygons.remove(outside)
+            return Pair(outside,polygons)
+        }
+
+        return separateOutsidePolygonFromHoles(
+            polygons
+        )
+
+
+
     }
 }
