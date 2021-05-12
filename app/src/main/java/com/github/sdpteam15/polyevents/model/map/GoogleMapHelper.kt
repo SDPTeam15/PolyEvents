@@ -2,29 +2,20 @@ package com.github.sdpteam15.polyevents.model.map
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.drawable.Drawable
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.LifecycleOwner
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ZoneConstant.*
 import com.github.sdpteam15.polyevents.model.entity.Zone
+import com.github.sdpteam15.polyevents.model.map.GoogleMapHelperFunctions.newMarker
+import com.github.sdpteam15.polyevents.model.map.GoogleMapHelperFunctions.zoneAreasToFormattedStringLocation
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementActivity
-import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementListActivity
 import com.github.sdpteam15.polyevents.view.fragments.HEATMAP_PERIOD
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.*
 import com.google.maps.android.heatmaps.HeatmapTileProvider
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.*
-
-
 
 //TODO : Refactor file, it is too long
 
@@ -40,8 +31,6 @@ object GoogleMapHelper {
     var selectedZone: String? = null
 
     //Attributes that can change
-    var minZoom = 17f
-    var maxZoom = 21f
     const val EARTH_RADIUS = 6371000
     const val TOUPIE = 2 * PI
     private const val INDEX_ROTATION_MARKER = 3
@@ -49,11 +38,7 @@ object GoogleMapHelper {
     private const val SELECTED_ZONE_STROKE_COLOR = Color.BLUE
     private const val EDITED_ZONE_STROKE_COLOR = Color.GREEN
 
-    var swBound = LatLng(46.519941764550545, 6.564997248351575)  // SW bounds
-    var neBound = LatLng(46.5213428130699, 6.566603220999241)    // NE bounds
 
-    var cameraPosition = LatLng(46.52010210373031, 6.566237434744834)
-    var cameraZoom = 18f
     val areasPoints: MutableMap<Int, Triple<String, Marker, Polygon>> = mutableMapOf()
     val zonesToArea: MutableMap<String, Pair<Zone?, MutableList<Int>>> = mutableMapOf()
     val waitingZones: MutableList<Zone> = mutableListOf()
@@ -82,43 +67,6 @@ object GoogleMapHelper {
     val tempValues: MutableMap<Int, Pair<String, LatLng>> = mutableMapOf()
 
     //----------START FUNCTIONS----------------------------------------
-
-    /**
-     * Saves the current camera position and zoom when changing fragment
-     */
-    fun saveCamera() {
-        //Saves the last position of the camera
-        cameraPosition = map!!.cameraPosition!!.target
-        cameraZoom = map!!.cameraPosition!!.zoom
-    }
-
-    /**
-     * Setup the map to the desired look
-     * @param context Context of the fragment
-     * @param drawingMod if we draw the zone in rectangles or in polygons
-     */
-    fun setUpMap(context: Context?, drawingMod: Boolean) {
-        //Restoring the map state
-        restoreCameraState()
-        restoreMapState(context, drawingMod)
-        setMapStyle(context)
-        selectedZone = null
-        deleteMode = false
-        editMode = false
-        //setBoundaries()
-        //setMinAndMaxZoom()
-
-        //To deactivate the 3d buildings
-        //map!!.isBuildingsEnabled = false
-    }
-
-    /**
-     * Restores the camera to the location it was before changing fragment or activity, goes to a initial position if it is the first time the map is opened
-     */
-    fun restoreCameraState() {
-        map!!.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraPosition, cameraZoom))
-    }
-
 
     /**
      * Redraws all areas that were previously drawn before changing fragment or activity, draws some example
@@ -181,15 +129,6 @@ object GoogleMapHelper {
     }
 
     /**
-     * Changes the style of the map
-     */
-    fun setMapStyle(context: Context?) {
-        if (context != null) {
-            map!!.setMapStyle(MapStyleOptions(context.resources.getString(R.string.style_test3)))
-        }
-    }
-
-    /**
      * Helper method to add a area to the map and generate an invisible marker in its center to display the area infos
      * @param id id of the area
      * @param coords coordinates of the area (polygons)
@@ -247,24 +186,6 @@ object GoogleMapHelper {
                 zonesToArea[editingZone!!]!!.second.add(id)
             }
         }
-    }
-
-    /**
-     * Sets the minimal and the maximal zoom
-     */
-    fun setMinAndMaxZoom() {
-        map!!.setMinZoomPreference(minZoom)
-        map!!.setMaxZoomPreference(maxZoom)
-    }
-
-    /**
-     * Set the boundaries of the event
-     */
-    fun setBoundaries() {
-        val bounds = LatLngBounds(swBound, neBound)
-
-        // Constrain the camera target to the bounds.
-        map!!.setLatLngBoundsForCameraTarget(bounds)
     }
 
     /**
@@ -445,64 +366,6 @@ object GoogleMapHelper {
             )
         )
         rotationPos = rotationMarker!!.position
-    }
-
-    /**
-     * Sets the values for the markers
-     * @param pos position of the marker
-     * @param anchor position of the icon with respect to the marker
-     * @param snippet subtitle of the info window
-     * @param title title of the info window
-     * @param draggable is the marker draggable
-     * @param idDrawable id of the icon
-     * @param bound bounds of the icon
-     * @param dim dimensions of the icon
-     */
-    fun newMarker(
-        context: Context?,
-        pos: LatLng,
-        anchor: IconAnchor,
-        snippet: String?,
-        title: String?,
-        draggable: Boolean,
-        idDrawable: Int,
-        bound: IconBound,
-        dim: IconDimension
-    ): MarkerOptions {
-        var mo = MarkerOptions().position(pos).anchor(anchor.anchorWidth, anchor.anchorHeight)
-            .draggable(draggable).snippet(snippet).title(title)
-        if (context != null) {
-            mo = mo.icon(getMarkerRessource(context, idDrawable, bound, dim))
-        }
-
-        return mo
-    }
-
-    /**
-     * Generates the icon for the invisible icons
-     * @param id id of the icon
-     * @param bound bounds of the icon
-     * @param dim dimensions of the icon
-     * ref : https://stackoverflow.com/questions/35718103/how-to-specify-the-size-of-the-icon-on-the-marker-in-google-maps-v2-android
-     * TODO : Check if we should make it a singleton to save memory/performance
-     */
-    private fun getMarkerRessource(
-        context: Context?,
-        id: Int,
-        bound: IconBound,
-        dim: IconDimension
-    ): BitmapDescriptor {
-        val vectorDrawable: Drawable? = ContextCompat.getDrawable(context!!, id)
-        vectorDrawable?.setBounds(
-            bound.leftBound,
-            bound.topBound,
-            bound.rightBound,
-            bound.bottomBound
-        )
-        val bitmap = Bitmap.createBitmap(dim.width, dim.height, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-        vectorDrawable?.draw(canvas)
-        return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 
     /**
@@ -779,43 +642,6 @@ object GoogleMapHelper {
     }
 
     /**
-     * Generate the string format for Firebase of the area points for a given zone
-     * @param idZone id of the zone
-     */
-    fun zoneAreasToFormattedStringLocation(idZone: String): String {
-        var temp = zonesToArea[idZone]!!.second.toMutableList()
-        var s = ""
-        for (uid in temp) {
-            s += areaToFormattedStringLocation(areasPoints[uid]!!.third.points.dropLast(1))
-            s += AREAS_SEP
-        }
-        if (s != "") {
-            s = s.substring(0, s.length - AREAS_SEP.value.length)
-        }
-        return s
-    }
-
-    /**
-     * Generate the string format of a list of points
-     * @param loc list of the points to save into a string
-     * @return formatted string of the points
-     */
-    fun areaToFormattedStringLocation(loc: List<LatLng>?): String {
-        if (loc == null) {
-            return ""
-        }
-        var s = ""
-
-        for (c in loc) {
-            s += c.latitude.toString() + LAT_LONG_SEP.value + c.longitude.toString() + POINTS_SEP.value
-        }
-        if (s != "") {
-            s = s.substring(0, s.length - AREAS_SEP.value.length)
-        }
-        return s
-    }
-
-    /**
      * Deletes the areas of a zone
      * @param id id of the zone to remove areas
      */
@@ -1016,7 +842,7 @@ object GoogleMapHelper {
 
 
     var zone: Zone? = null
-    fun saveArea(){
+    fun saveArea() {
         editMode = false
         clearTemp()
         //TODO : Save the areas in the map
@@ -1040,7 +866,7 @@ object GoogleMapHelper {
     /**
      * Draws the heatmap
      */
-    fun heatmap(){
+    fun heatmap() {
         drawHeatmap = !drawHeatmap
         if (drawHeatmap) {
             timerHeatmap = Timer("SettingUp", false)
@@ -1068,26 +894,5 @@ object GoogleMapHelper {
         timerHeatmap?.cancel()
         drawHeatmap = false
         lastOverlay?.remove()
-    }
-
-    /**
-     * Get all zones from the database
-     * @param context context
-     * @param lifecycleOwner lifecycleOwner
-     * @param mode map display mode
-     */
-    fun getAllZonesFromDB(context: Context, lifecycleOwner: LifecycleOwner, mode: MapsFragmentMod){
-        ZoneManagementListActivity.zones.observeAdd(lifecycleOwner) {
-            importNewZone(context, it.value, mode != MapsFragmentMod.EditZone)
-        }
-
-        Database.currentDatabase.zoneDatabase!!.getAllZones(
-            null, 50,
-            ZoneManagementListActivity.zones
-        ).observe(lifecycleOwner) {
-            if (!it.value) {
-                HelperFunctions.showToast("Failed to get the list of zones", context)
-            }
-        }
     }
 }

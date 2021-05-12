@@ -41,20 +41,20 @@ class GoogleMapHelperTest {
         mockedMap = Mockito.mock(MapsInterface::class.java)
         GoogleMapHelper.map = mockedMap
         When(mockedMap.cameraPosition).thenReturn(camera)
-        When(mockedMap.setMinZoomPreference(GoogleMapHelper.minZoom)).then {}
+        When(mockedMap.setMinZoomPreference(GoogleMapOptions.minZoom)).then {}
     }
 
     @Test
     fun saveCameraTest() {
-        GoogleMapHelper.saveCamera()
+        GoogleMapOptions.saveCamera()
         assertEquals(lat, GoogleMapHelper.map!!.cameraPosition!!.target.latitude)
         assertEquals(lng, GoogleMapHelper.map!!.cameraPosition!!.target.longitude)
     }
 
     @Test
     fun restoreCameraStateTest() {
-        GoogleMapHelper.cameraPosition = LatLng(lat, lng)
-        GoogleMapHelper.cameraZoom = zoom
+        GoogleMapOptions.cameraPosition = LatLng(lat, lng)
+        GoogleMapOptions.cameraZoom = zoom
 
 
         val mockedwesh = Mockito.mock(IObjectWrapper::class.java)
@@ -64,42 +64,42 @@ class GoogleMapHelperTest {
         CameraUpdateFactory.zza(mockedF)
         When(
             mockedF.newLatLngZoom(
-                GoogleMapHelper.cameraPosition,
-                GoogleMapHelper.cameraZoom
+                GoogleMapOptions.cameraPosition,
+                GoogleMapOptions.cameraZoom
             )
         ).thenReturn(mockedwesh)
 
-        println("${GoogleMapHelper.cameraPosition}")
+        println("${GoogleMapOptions.cameraPosition}")
 
-        GoogleMapHelper.restoreCameraState()
+        GoogleMapOptions.restoreCameraState()
         assertEquals(lat, GoogleMapHelper.map!!.cameraPosition!!.target.latitude)
         assertEquals(lng, GoogleMapHelper.map!!.cameraPosition!!.target.longitude)
     }
 
     @Test
     fun setBounds() {
-        GoogleMapHelper.swBound = LatLng(lat, lng)
-        GoogleMapHelper.neBound = LatLng(lat, lng)
+        GoogleMapOptions.swBound = LatLng(lat, lng)
+        GoogleMapOptions.neBound = LatLng(lat, lng)
 
-        assertEquals(lat, GoogleMapHelper.swBound.latitude)
-        assertEquals(lng, GoogleMapHelper.swBound.longitude)
-        assertEquals(lat, GoogleMapHelper.neBound.latitude)
-        assertEquals(lng, GoogleMapHelper.neBound.longitude)
+        assertEquals(lat, GoogleMapOptions.swBound.latitude)
+        assertEquals(lng, GoogleMapOptions.swBound.longitude)
+        assertEquals(lat, GoogleMapOptions.neBound.latitude)
+        assertEquals(lng, GoogleMapOptions.neBound.longitude)
     }
 
     @Test
     fun setMinAndMaxZoom() {
         var zoomMin = false
         var zoomMax = false
-        When(mockedMap.setMaxZoomPreference(GoogleMapHelper.maxZoom)).then {
+        When(mockedMap.setMaxZoomPreference(GoogleMapOptions.maxZoom)).then {
             zoomMax = true
             Unit
         }
-        When(mockedMap.setMinZoomPreference(GoogleMapHelper.minZoom)).then {
+        When(mockedMap.setMinZoomPreference(GoogleMapOptions.minZoom)).then {
             zoomMin = true
             Unit
         }
-        GoogleMapHelper.setMinAndMaxZoom()
+        GoogleMapOptions.setMinAndMaxZoom()
 
         assertTrue(zoomMax)
         assertTrue(zoomMin)
@@ -111,15 +111,15 @@ class GoogleMapHelperTest {
         When(
             GoogleMapHelper.map!!.setLatLngBoundsForCameraTarget(
                 LatLngBounds(
-                    GoogleMapHelper.swBound,
-                    GoogleMapHelper.neBound
+                    GoogleMapOptions.swBound,
+                    GoogleMapOptions.neBound
                 )
             )
         ).then {
             bound = true
             Unit
         }
-        GoogleMapHelper.setBoundaries()
+        GoogleMapOptions.setBoundaries()
 
         assertTrue(bound)
     }
@@ -174,7 +174,7 @@ class GoogleMapHelperTest {
         val anchor = IconAnchor(0f, 0f)
         val bound = IconBound(0, 0, 100, 100)
         val dimension = IconDimension(100, 100)
-        GoogleMapHelper.newMarker(
+        GoogleMapHelperFunctions.newMarker(
             null,
             LatLng(lat, lng),
             anchor,
@@ -492,7 +492,7 @@ class GoogleMapHelperTest {
         GoogleMapHelper.areasPoints.clear()
         GoogleMapHelper.zonesToArea.clear()
         GoogleMapHelper.editingZone = null
-        GoogleMapHelper.setUpMap(null, false)
+        GoogleMapOptions.setUpMap(null, false)
     }
 
     @Test
@@ -503,10 +503,10 @@ class GoogleMapHelperTest {
         GoogleMapHelper.rotationPos = position
         assertEquals(position, GoogleMapHelper.rotationPos)
 
-        GoogleMapHelper.minZoom = minZoom
-        GoogleMapHelper.maxZoom = maxZoom
-        assertEquals(minZoom, GoogleMapHelper.minZoom)
-        assertEquals(maxZoom, GoogleMapHelper.maxZoom)
+        GoogleMapOptions.minZoom = minZoom
+        GoogleMapOptions.maxZoom = maxZoom
+        assertEquals(minZoom, GoogleMapOptions.minZoom)
+        assertEquals(maxZoom, GoogleMapOptions.maxZoom)
 
         val nextUidZone = 5
         GoogleMapHelper.uidZone = 5

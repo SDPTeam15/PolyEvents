@@ -72,7 +72,7 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
 
         setUpButtonsVisibility()
 
-        GoogleMapHelper.getAllZonesFromDB(requireContext(), this, mod)
+        GoogleMapHelperFunctions.getAllZonesFromDB(requireContext(), this, mod)
 
         setUpButtonsListeners()
 
@@ -85,7 +85,7 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
 
     override fun onPause() {
         super.onPause()
-        GoogleMapHelper.saveCamera()
+        GoogleMapOptions.saveCamera()
         GoogleMapHelper.resetHeatmap()
     }
 
@@ -108,7 +108,7 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
         RouteMapHelper.getNodesAndEdgesFromDB(context, this)
 
         setMapListeners(googleMap!!)
-        GoogleMapHelper.setUpMap(requireContext(), mod != MapsFragmentMod.EditZone)
+        GoogleMapOptions.setUpMap(requireContext(), mod != MapsFragmentMod.EditZone)
 
         if (useUserLocation) {
             activateMyLocation()

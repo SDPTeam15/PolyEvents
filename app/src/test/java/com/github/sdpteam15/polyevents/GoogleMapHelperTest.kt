@@ -2,6 +2,7 @@ package com.github.sdpteam15.polyevents
 
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ZoneConstant.*
 import com.github.sdpteam15.polyevents.model.map.GoogleMapHelper
+import com.github.sdpteam15.polyevents.model.map.GoogleMapHelperFunctions
 import com.google.android.gms.internal.maps.zzt
 import com.google.android.gms.internal.maps.zzw
 import com.google.android.gms.maps.model.LatLng
@@ -53,12 +54,12 @@ class GoogleMapHelperTest {
         }
         correctString =
             correctString.substring(0, correctString.length - POINTS_SEP.value.length)
-        assert(correctString == GoogleMapHelper.areaToFormattedStringLocation(listLngLat.dropLast(1)))
+        assert(correctString == GoogleMapHelperFunctions.areaToFormattedStringLocation(listLngLat.dropLast(1)))
     }
 
     @Test
     fun areaToFormattedStringLocationReturnEmptyStringIfNullArgument() {
-        assert(GoogleMapHelper.areaToFormattedStringLocation(null) == "")
+        assert(GoogleMapHelperFunctions.areaToFormattedStringLocation(null) == "")
     }
 
     @Test
@@ -98,6 +99,6 @@ class GoogleMapHelperTest {
             areas.add(areaId)
         }
         GoogleMapHelper.zonesToArea[zoneId] = Pair(null, areas)
-        assert(correctString == GoogleMapHelper.zoneAreasToFormattedStringLocation(zoneId))
+        assert(correctString == GoogleMapHelperFunctions.zoneAreasToFormattedStringLocation(zoneId))
     }
 }

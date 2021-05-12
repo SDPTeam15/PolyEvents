@@ -33,7 +33,7 @@ class GoogleMapActionHandlerTest {
         mockedMap = Mockito.mock(MapsInterface::class.java)
         GoogleMapHelper.map = mockedMap
         Mockito.`when`(mockedMap.cameraPosition).thenReturn(camera)
-        Mockito.`when`(mockedMap.setMinZoomPreference(GoogleMapHelper.minZoom)).then {}
+        Mockito.`when`(mockedMap.setMinZoomPreference(GoogleMapOptions.minZoom)).then {}
     }
     //Depends on setupEditZone or create the edit zone markers by hand
     @Test

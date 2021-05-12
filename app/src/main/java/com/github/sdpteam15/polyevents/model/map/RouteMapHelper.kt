@@ -8,6 +8,7 @@ import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.entity.RouteEdge
 import com.github.sdpteam15.polyevents.model.entity.RouteNode
 import com.github.sdpteam15.polyevents.model.entity.Zone
+import com.github.sdpteam15.polyevents.model.map.GoogleMapHelperFunctions.newMarker
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.divide
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.minus
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.norm
@@ -57,7 +58,7 @@ object RouteMapHelper {
     fun addLine(
         start: Pair<LatLng, Attachable?>,
         end: Pair<LatLng, Attachable?>
-    ) : Observable<Boolean> {
+    ): Observable<Boolean> {
         val newEdges = mutableListOf<RouteEdge>()
         val removeEdges = mutableListOf<RouteEdge>()
 
@@ -78,7 +79,12 @@ object RouteMapHelper {
         for (e in edges) e.splitOnIntersection(newEdges, removeEdges)
         for (e in zones) e.splitOnIntersection(newEdges, removeEdges)
 
-        return Database.currentDatabase.routeDatabase!!.updateEdges(newEdges, removeEdges, edges, nodes)
+        return Database.currentDatabase.routeDatabase!!.updateEdges(
+            newEdges,
+            removeEdges,
+            edges,
+            nodes
+        )
     }
 
     /**
@@ -94,8 +100,12 @@ object RouteMapHelper {
      * @param targetZoneId the Zone where the person wants to go to
      * @return The list of points that the person needs to follow, null if there is no path nearby
      */
-    fun getShortestPath(startPosition: LatLng, targetZoneId: String, locationActivated: Boolean): List<LatLng>? {
-        if(!locationActivated)
+    fun getShortestPath(
+        startPosition: LatLng,
+        targetZoneId: String,
+        locationActivated: Boolean
+    ): List<LatLng>? {
+        if (!locationActivated)
             return null
         // gets the closest point on the map where we can go from our current position
         val nearestPos = getPosOnNearestAttachable(startPosition)
@@ -560,7 +570,7 @@ object RouteMapHelper {
         val dimension = IconDimension(100, 100)
 
         startMarker = map!!.addMarker(
-            GoogleMapHelper.newMarker(
+            newMarker(
                 context,
                 startPos,
                 anchor,
@@ -574,7 +584,7 @@ object RouteMapHelper {
         )
 
         endMarker = map!!.addMarker(
-            GoogleMapHelper.newMarker(
+            newMarker(
                 context,
                 endPos,
                 anchor,
