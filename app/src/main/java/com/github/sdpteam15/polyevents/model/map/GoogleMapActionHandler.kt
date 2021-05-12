@@ -2,7 +2,6 @@ package com.github.sdpteam15.polyevents.model.map
 
 import android.app.Activity
 import android.content.Context
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.view.fragments.MapsFragment
@@ -11,6 +10,9 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.Polygon
 import com.google.android.gms.maps.model.Polyline
 
+/**
+ * Object that has all functions that handle interactions with the google map
+ */
 object GoogleMapActionHandler {
 
     /**
@@ -19,7 +21,11 @@ object GoogleMapActionHandler {
      * @param context context
      * @param polygon polygon clicked
      */
-    fun onPolygonClickHandler(mode: MapsFragment.MapsFragmentMod, context: Context, polygon: Polygon){
+    fun onPolygonClickHandler(
+        mode: MapsFragment.MapsFragmentMod,
+        context: Context,
+        polygon: Polygon
+    ) {
         if (mode == MapsFragment.MapsFragmentMod.EditZone) {
             if (GoogleMapHelper.editMode && GoogleMapHelper.canEdit(polygon.tag.toString())) {
                 GoogleMapHelper.editArea(context, polygon.tag.toString())
@@ -47,7 +53,7 @@ object GoogleMapActionHandler {
      * Handles the marker click
      * @param marker marker clicked
      */
-    fun onMarkerClickHandler(marker: Marker){
+    fun onMarkerClickHandler(marker: Marker) {
         if (!GoogleMapHelper.editMode) {
             marker.showInfoWindow()
         }
@@ -64,10 +70,16 @@ object GoogleMapActionHandler {
      * @param marker marker that ownes the info window
      * @param locationActivated is location of the visitor activated
      */
-    fun onInfoWindowClickHandler(activity:Activity, lifecycle: LifecycleOwner, marker: Marker, locationActivated: Boolean){
+    fun onInfoWindowClickHandler(
+        activity: Activity,
+        lifecycle: LifecycleOwner,
+        marker: Marker,
+        locationActivated: Boolean
+    ) {
         HelperFunctions.getLoc(activity).observeOnce(lifecycle) {
             RouteMapHelper.chemin =
-                RouteMapHelper.getShortestPath(it.value!!, marker.tag.toString(), locationActivated)?.toMutableList()
+                RouteMapHelper.getShortestPath(it.value!!, marker.tag.toString(), locationActivated)
+                    ?.toMutableList()
                     ?: mutableListOf()
             RouteMapHelper.drawRoute()
         }
@@ -77,7 +89,7 @@ object GoogleMapActionHandler {
      * Handles click on map
      * @param pos position of the click
      */
-    fun onMapClickHandler(pos: LatLng?){
+    fun onMapClickHandler(pos: LatLng?) {
         GoogleMapHelper.clearSelectedZone()
     }
 
@@ -86,7 +98,7 @@ object GoogleMapActionHandler {
      * @param marker dragged marker
      * @param dragMode which drag mode is used (DRAG_START, DRAG, DRAG_END)
      */
-    fun interactionMarkerHandler(marker: Marker, dragMode: MarkerDragMode){
+    fun interactionMarkerHandler(marker: Marker, dragMode: MarkerDragMode) {
         when (marker.snippet) {
             PolygonAction.MOVE.toString() -> GoogleMapHelper.translatePolygon(marker)
             PolygonAction.RIGHT.toString() -> GoogleMapHelper.transformPolygon(marker)
