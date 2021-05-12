@@ -6,15 +6,13 @@ import com.github.sdpteam15.polyevents.model.map.LatLngOperator
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.angle
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.divide
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.euclideanDistance
-import com.github.sdpteam15.polyevents.model.map.LatLngOperator.getIntersection
-import com.github.sdpteam15.polyevents.model.map.LatLngOperator.isInRectangle
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.isTooParallel
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.plus
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.polygonOperation
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.shapePolygonUnion
 import com.github.sdpteam15.polyevents.model.map.RouteMapHelper.getNearestPoint
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.IgnoreExtraProperties
-import com.google.firebase.firestore.model.mutation.ArrayTransformOperation
 
 /**
  * Entity model for a zone. Events occur inside a zone.
@@ -60,19 +58,7 @@ data class Zone(
      * @return A list of list of LatLng points composing an area
      */
     fun getDrawingPolygons(): List<Pair<List<LatLng>, List<List<LatLng>>?>> {
-        var finalShape = mutableListOf<Pair<List<LatLng>, List<List<LatLng>>?>>()
-        var rectangles = getZoneCoordinates()
-        if(rectangles.isEmpty()) return listOf()
-        finalShape.add(Pair(rectangles[0],null))
-        for (rectangle in rectangles.drop(1)){
-            for(zone in finalShape){
-                var union = polygonOperation(LatLngOperator.Polygon(zone.first),LatLngOperator.Polygon(rectangle),LatLngOperator.polygonOperationType.UNION)
-
-            }
-
-        }
-
-        return finalShape
+        return shapePolygonUnion(getZoneCoordinates())
     }
 
 

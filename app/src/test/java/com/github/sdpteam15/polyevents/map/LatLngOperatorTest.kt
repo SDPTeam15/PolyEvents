@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.map
 
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.PolygonOperationType.*
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.angle
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.divide
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.epsilon
@@ -12,8 +13,6 @@ import com.github.sdpteam15.polyevents.model.map.LatLngOperator.minus
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.norm
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.plus
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.polygonOperation
-import com.github.sdpteam15.polyevents.model.map.LatLngOperator.polygonOperationType.INTERSECTION
-import com.github.sdpteam15.polyevents.model.map.LatLngOperator.polygonOperationType.UNION
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.project
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.scalar
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.squaredEuclideanDistance
@@ -294,6 +293,44 @@ class LatLngOperatorTest {
 
 
     @Test
+    fun polygonDifferenceWithOverlappingZones(){
+        var subject = LatLngOperator.Polygon(
+            listOf(
+                LatLng(0.0, 1.0), LatLng(0.0, 2.0), LatLng(3.0, 2.0), LatLng(3.0, 1.0)
+            )
+        )
+        var clip = LatLngOperator.Polygon(
+            listOf(
+                LatLng(1.0, 0.0), LatLng(2.0, 0.0), LatLng(2.0, 3.0), LatLng(1.0, 3.0)
+            )
+        )
+        var expected = listOf(
+            LatLng(0.0, 1.0),
+            LatLng(0.0, 2.0),
+            LatLng(1.0, 2.0),
+            LatLng(1.0, 1.0)
+        )
+        var expected2 = listOf(
+            LatLng(2.0, 2.0),
+            LatLng(3.0, 2.0),
+            LatLng(3.0, 1.0),
+            LatLng(2.0, 1.0)
+        )
+
+
+        var polygon = polygonOperation(subject, clip, DIFFERENCE)
+        print(polygon)
+        try {
+            assertPolygonsEquivalent(polygon[0].first, expected)
+        }catch (e:AssertionError){
+            assertPolygonsEquivalent(polygon[0].first, expected2)
+            assertPolygonsEquivalent(polygon[1].first, expected)
+            return
+        }
+        assertPolygonsEquivalent(polygon[1].first, expected2)
+    }
+
+    @Test
     fun polygonUnionTestWithOverlappingZones() {
         var subject = LatLngOperator.Polygon(
             listOf(
@@ -430,8 +467,8 @@ class LatLngOperatorTest {
 
 
     fun assertPolygonsEquivalent(list1: List<LatLng>, list2: List<LatLng>) {
-        //println(list1)
-        //println(list2)
+        println(list1)
+        println(list2)
         if (list1.isEmpty() && list2.isEmpty()) {
             return
         } else {

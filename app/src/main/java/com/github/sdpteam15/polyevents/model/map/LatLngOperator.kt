@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.model.map
 
 import com.google.android.gms.maps.model.LatLng
+import java.util.*
 import kotlin.math.abs
 import kotlin.math.atan
 import kotlin.math.sqrt
@@ -221,7 +222,8 @@ object LatLngOperator {
 
 
     class Polygon(points: List<LatLng>) {
-        private var vertices: List<Vertex> = points.map {
+        // removes last vertex if it is the same as the first one
+        private var vertices: List<Vertex> = points.dropLastWhile { points[0] == it }.map {
             Vertex(
                 xy = it,
                 next = null,
@@ -379,16 +381,61 @@ object LatLngOperator {
     private const val entry = true
     private const val exit = false
 
-    enum class polygonOperationType {
+    enum class PolygonOperationType {
         UNION,
-        INTERSECTION
+        INTERSECTION,
+        DIFFERENCE
     }
 
+    fun shapePolygonUnion(rectangles: List<List<LatLng>>): MutableList<Pair<MutableList<LatLng>, MutableList<MutableList<LatLng>>?>> {
+        //rectangles that have not been merged
+        val remainingRectangles = rectangles.map { it }.toMutableList() //deep copy
+        val finalShape =
+            mutableListOf<Pair<MutableList<LatLng>, MutableList<MutableList<LatLng>>?>>()
+        while (remainingRectangles.isNotEmpty()) {
+            var outerShape = remainingRectangles.removeFirst().toMutableList()
+
+            var holes = mutableListOf<MutableList<LatLng>>()
+
+            val queuedRectangles = ArrayDeque(remainingRectangles)
+            val notIntersecting = mutableListOf<List<LatLng>>()
+            while (queuedRectangles.isNotEmpty()) {
+                val rectangle = queuedRectangles.pollFirst()!!
+                val unionShape = polygonOperation(
+                    Polygon(outerShape),
+                    Polygon(rectangle),
+                    PolygonOperationType.UNION
+                )
+                // if union is disjoint
+                if (unionShape.size > 1) {
+                    notIntersecting.add(rectangle)
+                    continue
+                }
+                // there is an intersection
+                while (notIntersecting.isNotEmpty()) {
+                    queuedRectangles.addLast(notIntersecting.removeFirst())
+                }
+                remainingRectangles.remove(rectangle)
+                holes = holes.map {
+                    polygonOperation(
+                        Polygon(it),
+                        Polygon(rectangle),
+                        PolygonOperationType.DIFFERENCE
+                    ).flatMap { it2 -> it2.first }.toMutableList()
+                }.toMutableList()
+                holes.addAll(unionShape[0].second?: listOf())
+                outerShape = unionShape[0].first
+            }
+            finalShape.add(Pair(outerShape,holes))
+        }
+
+        return finalShape
+    }
 
     fun polygonOperation(
         subject: Polygon,
         clip: Polygon,
-        polygonOperationType: polygonOperationType
+        polygonOperationType: PolygonOperationType
     ): MutableList<Pair<MutableList<LatLng>, MutableList<MutableList<LatLng>>?>> {
         // https://dl.acm.org/doi/abs/10.1145/274363.274364
         val subjectIntersections = mutableListOf<Polygon.Vertex>()
@@ -454,7 +501,7 @@ object LatLngOperator {
         }
 
 
-        if (polygonOperationType == LatLngOperator.polygonOperationType.UNION) {
+        if (polygonOperationType == PolygonOperationType.UNION) {
             if (subjectInClip) return mutableListOf(
                 Pair(
                     clip.toLatLongList(), null
@@ -469,7 +516,7 @@ object LatLngOperator {
                 Pair(subject.toLatLongList(), null),
                 Pair(clip.toLatLongList(), null)
             )
-        } else if (polygonOperationType == LatLngOperator.polygonOperationType.INTERSECTION) {
+        } else if (polygonOperationType == PolygonOperationType.INTERSECTION) {
             if (subjectInClip) return mutableListOf(
                 Pair(
                     subject.toLatLongList(), null
@@ -481,6 +528,18 @@ object LatLngOperator {
                 )
             )
             if (subjectAndClipSeparated) return mutableListOf()
+        } else if (polygonOperationType == PolygonOperationType.DIFFERENCE) {
+            if (subjectInClip) return mutableListOf()
+            if (clipInSubject) return mutableListOf(
+                Pair(
+                    subject.toLatLongList(), mutableListOf(clip.toLatLongList())
+                )
+            )
+            if (subjectAndClipSeparated) return mutableListOf(
+                Pair(
+                    subject.toLatLongList(), null
+                )
+            )
         }
 
 
@@ -513,15 +572,18 @@ object LatLngOperator {
             val firstIntersection = subjectIntersections.first()
             val newPolygon = mutableListOf(firstIntersection.xy)
             var current = firstIntersection
+            var isOnSubject = true
             do {
                 //println("set$subjectIntersections")
                 /*
             for(i in subjectIntersections){
                 println(""+current.xy + " equals "+ i.xy + isCloseTo(current.xy , i.xy))
             }*/
+
                 subjectIntersections.removeIf { isCloseTo(it.xy, current.xy) }
-                if ((polygonOperationType == LatLngOperator.polygonOperationType.UNION && !current.entry_exit!!)
-                    || (polygonOperationType == LatLngOperator.polygonOperationType.INTERSECTION && current.entry_exit!!)
+                if ((polygonOperationType == PolygonOperationType.UNION && !current.entry_exit!!)
+                    || (polygonOperationType == PolygonOperationType.INTERSECTION && current.entry_exit!!)
+                    || (polygonOperationType == PolygonOperationType.DIFFERENCE && (current.entry_exit!! != isOnSubject))
                 ) {
                     do {
                         current = current.next!!
@@ -534,6 +596,7 @@ object LatLngOperator {
                     } while (!current.intersect)
                 }
                 current = current.neighbor!!
+                isOnSubject = !isOnSubject
             } while (current != firstIntersection)
             polygons.add(newPolygon)
         }
@@ -556,17 +619,21 @@ object LatLngOperator {
             polygons.remove(outside)
             return Pair(outside, polygons)
         }
-        if (polygonOperationType == LatLngOperator.polygonOperationType.UNION) {
+        if (polygonOperationType == PolygonOperationType.UNION) {
             //union of 2 overlapping polygons can only give a single zone with holes inside
             return mutableListOf(
                 separateOutsidePolygonFromHoles(
                     polygons
                 )
             )
-        } else if (polygonOperationType == LatLngOperator.polygonOperationType.INTERSECTION) {
+        } else if (polygonOperationType == PolygonOperationType.INTERSECTION
+            || polygonOperationType == PolygonOperationType.DIFFERENCE
+        ) {
             //intersection of 2 polygons without holes can only give polygons without holes
             return polygons.map { Pair(it, null) }.toMutableList()
         } else {
+
+
             throw UnsupportedOperationException(polygonOperationType.toString())
         }
     }
