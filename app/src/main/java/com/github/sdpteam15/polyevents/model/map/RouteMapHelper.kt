@@ -27,9 +27,6 @@ import kotlin.math.pow
 const val THRESHOLD = 0.00002
 const val MAGNET_DISTANCE_THRESHOLD = 0.00005
 
-private val ROUTE_COLOR = Color.rgb(0, 162, 232)
-private val DEFAULT_ROAD_COLOR = Color.argb(50, 0, 0, 0)
-
 object RouteMapHelper {
 
     val nodes = ObservableList<RouteNode>()
@@ -282,7 +279,6 @@ object RouteMapHelper {
         return pointlist.reversed()
     }
 
-
     /**
      * Draws a new route from the "chemin" variable, a list of LatLng and converts it into a Polyline
      */
@@ -295,7 +291,7 @@ object RouteMapHelper {
             for (end in cheminTemp) {
                 route.add(
                     map!!.addPolyline(
-                        PolylineOptions().add(start).add(end).color(ROUTE_COLOR)
+                        PolylineOptions().add(start).add(end).color(Color.rgb(0, 162, 232))
                             .width(15f)
                     )
                 )
@@ -452,7 +448,7 @@ object RouteMapHelper {
         val option = PolylineOptions()
         option.add(edge.start!!.toLatLng())
         option.add(edge.end!!.toLatLng())
-        option.color(DEFAULT_ROAD_COLOR)
+        option.color(Color.argb(50, 0, 0, 0))
         option.clickable(true)
         val route = map!!.addPolyline(option)
 

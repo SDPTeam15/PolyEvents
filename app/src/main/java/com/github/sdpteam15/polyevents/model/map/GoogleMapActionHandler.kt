@@ -4,6 +4,9 @@ import android.app.Activity
 import android.content.Context
 import androidx.lifecycle.LifecycleOwner
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.model.map.GoogleMapMode.clearSelectedZone
+import com.github.sdpteam15.polyevents.model.map.GoogleMapMode.setSelectedZoneFromArea
+import com.github.sdpteam15.polyevents.model.map.GoogleMapMode.setSelectedZones
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.Polygon
@@ -32,7 +35,7 @@ object GoogleMapActionHandler {
                 GoogleMapHelper.removeArea(polygon.tag.toString().toInt())
             }
         } else {
-            GoogleMapHelper.setSelectedZoneFromArea(polygon.tag.toString())
+            setSelectedZoneFromArea(polygon.tag.toString())
             //Shows the info window of the marker assigned to the area
             GoogleMapHelper.areasPoints.get(polygon.tag)!!.second.showInfoWindow()
         }
@@ -58,7 +61,7 @@ object GoogleMapActionHandler {
         }
         val tag = marker.tag
         if (tag != null) {
-            GoogleMapHelper.setSelectedZones(tag.toString())
+            setSelectedZones(tag.toString())
         }
     }
 
@@ -89,7 +92,7 @@ object GoogleMapActionHandler {
      * @param pos position of the click
      */
     fun onMapClickHandler(pos: LatLng?) {
-        GoogleMapHelper.clearSelectedZone()
+        clearSelectedZone()
     }
 
     /**

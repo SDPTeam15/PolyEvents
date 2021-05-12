@@ -4,6 +4,9 @@ import android.graphics.Color
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.map.*
+import com.github.sdpteam15.polyevents.model.map.GoogleMapMode.clearSelectedZone
+import com.github.sdpteam15.polyevents.model.map.GoogleMapMode.setSelectedZoneFromArea
+import com.github.sdpteam15.polyevents.model.map.GoogleMapMode.setSelectedZones
 import com.google.android.gms.dynamic.IObjectWrapper
 import com.google.android.gms.internal.maps.zzt
 import com.google.android.gms.internal.maps.zzw
@@ -538,7 +541,7 @@ class GoogleMapHelperTest {
     @Test
     fun clearSelectedZoneTest(){
         GoogleMapHelper.selectedZone = null
-        GoogleMapHelper.clearSelectedZone()
+        clearSelectedZone()
         assertEquals(null, GoogleMapHelper.selectedZone)
         val selected = "Zone ${GoogleMapHelper.uidZone++}"
         GoogleMapHelper.selectedZone = selected
@@ -553,7 +556,7 @@ class GoogleMapHelperTest {
 
         GoogleMapHelper.areasPoints[elem1] = Triple(selected, m, p)
         GoogleMapHelper.zonesToArea[selected] = Pair(null, list)
-        GoogleMapHelper.clearSelectedZone()
+        clearSelectedZone()
         assertEquals(null, GoogleMapHelper.selectedZone)
     }
 
@@ -572,7 +575,7 @@ class GoogleMapHelperTest {
 
         GoogleMapHelper.areasPoints[elem1] = Triple(selected, m, p)
         GoogleMapHelper.zonesToArea[selected] = Pair(null, list)
-        GoogleMapHelper.setSelectedZones(selected)
+        setSelectedZones(selected)
         assertEquals(selected, GoogleMapHelper.selectedZone)
     }
 
@@ -591,7 +594,7 @@ class GoogleMapHelperTest {
 
         GoogleMapHelper.areasPoints[elem1] = Triple(selected, m, p)
         GoogleMapHelper.zonesToArea[selected] = Pair(null, list)
-        GoogleMapHelper.setSelectedZoneFromArea(elem1.toString())
+        setSelectedZoneFromArea(elem1.toString())
         assertEquals(selected, GoogleMapHelper.selectedZone)
     }
 

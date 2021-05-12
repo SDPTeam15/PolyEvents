@@ -25,8 +25,6 @@ import com.google.android.gms.maps.model.Polygon
 import com.google.android.gms.maps.model.Polyline
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-const val HEATMAP_PERIOD = 15L
-
 class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
     OnMapReadyCallback,
     OnPolylineClickListener,
@@ -86,7 +84,7 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
     override fun onPause() {
         super.onPause()
         GoogleMapOptions.saveCamera()
-        GoogleMapHelper.resetHeatmap()
+        GoogleMapHeatmap.resetHeatmap()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -205,7 +203,7 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
         removeRouteButton.setOnClickListener { RouteMapHelper.removeRoute() }
         saveNewRouteButton.setOnClickListener { RouteMapHelper.saveNewRoute() }
 
-        heatmapButton.setOnClickListener { GoogleMapHelper.heatmap() }
+        heatmapButton.setOnClickListener { GoogleMapHeatmap.heatmap() }
 
         saveButton.setOnClickListener { GoogleMapHelper.saveArea() }
 

@@ -4,17 +4,23 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.map.GoogleMapHelperFunctions.newMarker
 import com.github.sdpteam15.polyevents.model.map.GoogleMapHelperFunctions.zoneAreasToFormattedStringLocation
-import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.model.map.GoogleMapMode.DEFAULT_ZONE_STROKE_COLOR
+import com.github.sdpteam15.polyevents.model.map.GoogleMapMode.EDITED_ZONE_STROKE_COLOR
+import com.github.sdpteam15.polyevents.model.map.GoogleMapMode.colorAreas
+import com.github.sdpteam15.polyevents.model.map.GoogleMapVectorHelper.applyRotation
+import com.github.sdpteam15.polyevents.model.map.GoogleMapVectorHelper.equirectangularProjection
+import com.github.sdpteam15.polyevents.model.map.GoogleMapVectorHelper.getCenter
+import com.github.sdpteam15.polyevents.model.map.GoogleMapVectorHelper.getDirection
+import com.github.sdpteam15.polyevents.model.map.GoogleMapVectorHelper.projectionVector
+import com.github.sdpteam15.polyevents.model.map.GoogleMapVectorHelper.radianToDegree
 import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementActivity
-import com.github.sdpteam15.polyevents.view.fragments.HEATMAP_PERIOD
-import com.google.android.gms.maps.model.*
-import com.google.maps.android.heatmaps.HeatmapTileProvider
-import java.util.*
-import kotlin.collections.ArrayList
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.Polygon
+import com.google.android.gms.maps.model.PolygonOptions
 import kotlin.math.*
 
 //TODO : Refactor file, it is too long
@@ -30,13 +36,7 @@ object GoogleMapHelper {
     var editingZone: String? = null
     var selectedZone: String? = null
 
-    //Attributes that can change
-    const val EARTH_RADIUS = 6371000
-    const val TOUPIE = 2 * PI
     private const val INDEX_ROTATION_MARKER = 3
-    private const val DEFAULT_ZONE_STROKE_COLOR = Color.BLACK
-    private const val SELECTED_ZONE_STROKE_COLOR = Color.BLUE
-    private const val EDITED_ZONE_STROKE_COLOR = Color.GREEN
 
 
     val areasPoints: MutableMap<Int, Triple<String, Marker, Polygon>> = mutableMapOf()
@@ -405,19 +405,6 @@ object GoogleMapHelper {
     }
 
     /**
-     * Projection of vector on the perpendicular of the two positions
-     * @param vector vector to project
-     * @param pos1 position of the first point to compute the perpendicular
-     * @param pos2 position of the second point to compute the perpendicular
-     */
-    fun projectionVector(vector: LatLng, pos1: LatLng, pos2: LatLng): LatLng {
-        val v = LatLng(pos1.longitude - pos2.longitude, pos2.latitude - pos1.latitude)
-        val norm = v.latitude * v.latitude + v.longitude * v.longitude
-        val scalar = (vector.latitude * v.latitude + vector.longitude * v.longitude) / norm
-        return LatLng(scalar * v.latitude, scalar * v.longitude)
-    }
-
-    /**
      * Transforms the size of the rectangle, either by moving the the right wall(right), the down wall(down) or both(diag)
      * @param pos marker that has been dragged : target position for the area
      */
@@ -492,24 +479,6 @@ object GoogleMapHelper {
         rotationPos = rotationMarker!!.position
     }
 
-    var lastOverlay: TileOverlay? = null
-
-    /**
-     * add HeatMap to the map
-     * list of points
-     */
-    fun addHeatMap(latLngs: List<LatLng>) {
-        if (latLngs.isNotEmpty()) {
-            // Create a heat map tile provider, passing it the latlngs of the police stations.
-            val provider = HeatmapTileProvider.Builder()
-                .data(latLngs)
-                .build()
-
-            lastOverlay?.remove()
-            // Add a tile overlay to the map, using the heat map tile provider.
-            lastOverlay = map!!.addTileOverlay(TileOverlayOptions().tileProvider(provider))
-        }
-    }
 
     /**
      * Rotate the current polygon according to the given Marker. It also aligns this
@@ -663,164 +632,6 @@ object GoogleMapHelper {
         zonesToArea.remove(id)
     }
 
-    /**
-     * Compute the center (mean) of the given points.
-     * @param list: the list of the latitude/longitude pairs of the points
-     * to compute the center of.
-     * @return the center of these points
-     */
-    fun getCenter(list: List<LatLng?>): LatLng {
-        var lat = 0.0
-        var lng = 0.0
-        for (coord in list) {
-            lat += coord!!.latitude
-            lng += coord.longitude
-        }
-
-        return LatLng(lat / list.size, lng / list.size)
-    }
-
-    /**
-     * Projects a point in lat/lng format onto a cartesian coordinates using the
-     * equirectangular projection (approximation).
-     * @param point: the point to project
-     * @param center: the center of the projection
-     * @return the cartesian coordinates of the points in meter wrt to the given center.
-     */
-    fun equirectangularProjection(point: LatLng?, center: LatLng): Pair<Double, Double> {
-        val x = EARTH_RADIUS * (degreeToRadian(point!!.longitude - center.longitude)) * cos(
-            degreeToRadian(center.latitude)
-        )
-        val y = EARTH_RADIUS * (degreeToRadian(point.latitude - center.latitude))
-        return Pair(x, y)
-    }
-
-    /**
-     * Convert cartesian coordinates back to lat/lng coordinates using the
-     * equirectangular transformation.
-     * @param point: the point to convert in cartesian coordinates
-     * @param center: the center of the projection used in lat/lng coordinates
-     * @return point in lat/lng coordinates
-     */
-    fun inverseEquirectangularProjection(point: Pair<Double, Double>, center: LatLng): LatLng {
-        val lng =
-            radianToDegree(point.first / (EARTH_RADIUS * cos(degreeToRadian(center.latitude)))) + center.longitude
-        val lat = radianToDegree(point.second / EARTH_RADIUS) + center.latitude
-
-        return LatLng(lat, lng)
-    }
-
-    /**
-     * Convert an angle in degrees to radians
-     * @param angle: angle in degrees to convert
-     * @return angle in radians
-     */
-    fun degreeToRadian(angle: Double): Double {
-        return angle * TOUPIE / 360.0
-    }
-
-    /**
-     * Convert an angle in radians to degrees
-     * @param angle: angle in radians to convert
-     * @return angle in degrees
-     */
-    fun radianToDegree(angle: Double): Double {
-        return angle * 360.0 / TOUPIE
-    }
-
-    /**
-     * Compute the direction (angle wrt x-axis) of the given point
-     * @param point: the point in cartesian coordinates to compute the direction of
-     * @return direction in radians
-     */
-    fun getDirection(point: Pair<Double, Double>): Double {
-        val direction = atan(point.second / point.first)
-        return if (point.first < 0) PI + direction else direction
-    }
-
-    /**
-     * Compute the rotation of the given point in cartesian coordinates by
-     * the given angle
-     * @param point: point in cartesian coordinates to rotate
-     * @param angle: rotation angle in radians
-     * @return rotated point in cartesian coordinates
-     */
-    fun computeRotation(point: Pair<Double, Double>, angle: Double): Pair<Double, Double> {
-        val cosA = cos(angle)
-        val sinA = sin(angle)
-
-        return Pair(
-            point.first * cosA - point.second * sinA,
-            point.first * sinA + point.second * cosA
-        )
-    }
-
-    /**
-     * Compute the mean radius radius of the given points
-     * forming a polygon wrt its center (implicitely).
-     * @param points: the points forming the polygon
-     * @return the mean radius from the center of the polygon
-     */
-    fun computeMeanRadius(points: List<Pair<Double, Double>>): Double {
-        var runningRadius = 0.0
-        points.forEach {
-            runningRadius += sqrt(it.first * it.first + it.second * it.second)
-        }
-        return runningRadius / points.size
-    }
-
-    /**
-     * Apply the whole transformation needed to rotate a point in lat/lng coordinates.
-     * @param point: the point in lat/lng coordinates to rotate
-     * @param angle: the angle of the rotation
-     * @param center: the center of the rotation in lat/lng coordinates
-     * @return the rotated point in lat/lng coordinates
-     */
-    fun applyRotation(point: LatLng?, angle: Double, center: LatLng): LatLng {
-        val pointCartesian = equirectangularProjection(point, center)
-        val rotatedCartesian = computeRotation(pointCartesian, angle)
-        return inverseEquirectangularProjection(rotatedCartesian, center)
-    }
-
-    /**
-     * Color all the areas of a zone to a certain color
-     * @param idZone id of the zone to color
-     * @param color color target for the zone
-     */
-    fun colorAreas(idZone: String, color: Int) {
-        for (key in zonesToArea[idZone]!!.second) {
-            areasPoints[key]!!.third.strokeColor = color
-        }
-    }
-
-    /**
-     * clears the color of the current selected zone
-     */
-    fun clearSelectedZone() {
-        if (selectedZone != null) {
-            colorAreas(selectedZone!!, DEFAULT_ZONE_STROKE_COLOR)
-            selectedZone = null
-        }
-    }
-
-    /**
-     * Set the selected zone to color it on the map
-     * @param tag id of the selected zone
-     */
-    fun setSelectedZones(tag: String) {
-        clearSelectedZone()
-        selectedZone = tag
-        colorAreas(tag, SELECTED_ZONE_STROKE_COLOR)
-    }
-
-    /**
-     * Set the selected zone from to color it on the map from the id of the area
-     * @param tag id of the area to find the zone it belongs
-     */
-    fun setSelectedZoneFromArea(tag: String) {
-        setSelectedZones(areasPoints[tag.toInt()]!!.first)
-    }
-
     /*
     TODO : Implement the deletion of one area while editing
     fun deleteMode(context: Context) {
@@ -840,7 +651,6 @@ object GoogleMapHelper {
     }
     */
 
-
     var zone: Zone? = null
     fun saveArea() {
         editMode = false
@@ -858,41 +668,5 @@ object GoogleMapHelper {
                 description = zone!!.description
             )
         )
-    }
-
-    var drawHeatmap = false
-    var timerHeatmap: Timer? = null
-
-    /**
-     * Draws the heatmap
-     */
-    fun heatmap() {
-        drawHeatmap = !drawHeatmap
-        if (drawHeatmap) {
-            timerHeatmap = Timer("SettingUp", false)
-            val task = object : TimerTask() {
-                override fun run() {
-                    val locations = ObservableList<LatLng>()
-                    Database.currentDatabase.heatmapDatabase!!.getLocations(locations)
-                    locations.observeOnce {
-                        addHeatMap(it.value)
-                    }
-                }
-            }
-            timerHeatmap?.schedule(task, 0, HEATMAP_PERIOD * 1000)
-        } else {
-            lastOverlay?.remove()
-            timerHeatmap?.cancel()
-            timerHeatmap = null
-        }
-    }
-
-    /**
-     * Undraws the heatmap
-     */
-    fun resetHeatmap() {
-        timerHeatmap?.cancel()
-        drawHeatmap = false
-        lastOverlay?.remove()
     }
 }
