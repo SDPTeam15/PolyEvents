@@ -50,7 +50,7 @@ class ZoneManagementActivity : AppCompatActivity() {
         val int = intent
         zoneId = int.getStringExtra(EXTRA_ID).toString()
         val mapFragment = MapsFragment(MapsFragment.MapsFragmentMod.EditZone)
-        mapFragment.zone = zone
+        GoogleMapHelper.zone = zone
         zoneObservable = Observable()
         zoneObservable.observe(this) {
             //Reactive the back button and make the map fragment invisible

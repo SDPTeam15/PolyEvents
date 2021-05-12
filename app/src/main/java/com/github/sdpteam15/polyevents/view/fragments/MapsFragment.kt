@@ -13,10 +13,7 @@ import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
-import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.map.*
-import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementActivity
 import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementListActivity
 import com.github.sdpteam15.polyevents.view.fragments.MapsFragment.MapsFragmentMod.*
 import com.google.android.gms.maps.GoogleMap
@@ -28,7 +25,6 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.Polygon
 import com.google.android.gms.maps.model.Polyline
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import java.util.*
 
 const val HEATMAP_PERIOD = 15L
 
@@ -49,10 +45,23 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
     }
 
     private lateinit var locationButton: FloatingActionButton
+
+    private lateinit var addNewAreaButton: FloatingActionButton
+    private lateinit var deleteAreaButton: FloatingActionButton
+    private lateinit var saveNewAreaButton: FloatingActionButton
+    private lateinit var editAreaButton: FloatingActionButton
+
+    private lateinit var locateMeButton: FloatingActionButton
+    private lateinit var saveButton: FloatingActionButton
+    private lateinit var heatmapButton: FloatingActionButton
+
+    private lateinit var addNewRouteButton: FloatingActionButton
+    private lateinit var removeRouteButton: FloatingActionButton
+    private lateinit var saveNewRouteButton: FloatingActionButton
+
+
     var locationPermissionGranted = false
     private var useUserLocation = false
-    var zone: Zone? = null
-    var startId = -1
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -64,21 +73,81 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
 
         instance = this
 
+        setUpButtons(view)
+
+        setUpButtonsVisibility()
+
+        GoogleMapHelper.getAllZonesFromDB(requireContext(), this, mod)
+
+        setUpButtonsListeners()
+
+        locationButton.tag = R.drawable.ic_location_on
+
+        locateMeButton.tag = R.drawable.ic_locate_me
+
+        return view
+    }
+
+    override fun onPause() {
+        super.onPause()
+        GoogleMapHelper.saveCamera()
+        GoogleMapHelper.resetHeatmap()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val mapFragment =
+            childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
+        mapFragment?.getMapAsync(this)
+        if (!locationPermissionGranted) {
+            HelperFunctions.getLocationPermission(requireActivity()).observeOnce {
+                locationPermissionGranted = it.value
+                activateMyLocation()
+            }
+        }
+    }
+
+    override fun onMapReady(googleMap: GoogleMap?) {
+        GoogleMapHelper.map = GoogleMapAdapter(googleMap)
+        RouteMapHelper.map = GoogleMapAdapter(googleMap)
+        RouteMapHelper.getNodesAndEdgesFromDB(context, this)
+
+        setMapListeners(googleMap!!)
+        GoogleMapHelper.setUpMap(requireContext(), mod != EditZone)
+
+        if (useUserLocation) {
+            activateMyLocation()
+        }
+    }
+
+
+    //----- HELPER FUNCTIONS -------
+
+    /**
+     * Gets the references of the floating buttons to set listeners and visibility
+     * @param view view on which the buttons are
+     */
+    private fun setUpButtons(view: View){
         locationButton = view.findViewById(R.id.id_location_button)
 
-        val addNewAreaButton: View = view.findViewById(R.id.addNewArea)
-        //val deleteAreaButton: View = view.findViewById(R.id.id_delete_areas)
-        val saveNewAreaButton: View = view.findViewById(R.id.acceptNewArea)
-        val editAreaButton: View = view.findViewById(R.id.id_edit_area)
+        addNewAreaButton = view.findViewById(R.id.addNewArea)
+        //deleteAreaButton= view.findViewById(R.id.id_delete_areas)
+        saveNewAreaButton = view.findViewById(R.id.acceptNewArea)
+        editAreaButton = view.findViewById(R.id.id_edit_area)
 
-        val locateMeButton = view.findViewById<FloatingActionButton>(R.id.id_locate_me_button)
-        val saveButton = view.findViewById<FloatingActionButton>(R.id.saveAreas)
-        val heatmapButton = view.findViewById<FloatingActionButton>(R.id.id_heatmap)
+        locateMeButton = view.findViewById(R.id.id_locate_me_button)
+        saveButton = view.findViewById(R.id.saveAreas)
+        heatmapButton = view.findViewById(R.id.id_heatmap)
 
-        val addNewRouteButton = view.findViewById<FloatingActionButton>(R.id.addNewRoute)
-        val removeRouteButton = view.findViewById<FloatingActionButton>(R.id.removeRoute)
-        val saveNewRouteButton = view.findViewById<FloatingActionButton>(R.id.saveNewRoute)
+        addNewRouteButton = view.findViewById(R.id.addNewRoute)
+        removeRouteButton = view.findViewById(R.id.removeRoute)
+        saveNewRouteButton = view.findViewById(R.id.saveNewRoute)
+    }
 
+    /**
+     * Sets the visibility of the buttons acording to the mode
+     */
+    private fun setUpButtonsVisibility(){
         when (mod) {
             Visitor -> {
                 locateMeButton.visibility = View.VISIBLE
@@ -126,20 +195,12 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
                 saveNewRouteButton.visibility = View.VISIBLE
             }
         }
+    }
 
-        ZoneManagementListActivity.zones.observeAdd(this) {
-            GoogleMapHelper.importNewZone(requireContext(), it.value, mod != EditZone)
-        }
-
-        Database.currentDatabase.zoneDatabase!!.getAllZones(
-            null, 50,
-            ZoneManagementListActivity.zones
-        ).observe(this) {
-            if (!it.value) {
-                HelperFunctions.showToast("Failed to get the list of zones", requireContext())
-            }
-        }
-
+    /**
+     * Sets the onClickListeners to the buttons
+     */
+    private fun setUpButtonsListeners(){
         addNewAreaButton.setOnClickListener { GoogleMapHelper.createNewArea(requireContext()) }
         saveNewAreaButton.setOnClickListener { GoogleMapHelper.saveNewArea(requireContext()) }
         editAreaButton.setOnClickListener { GoogleMapHelper.editMode(requireContext()) }
@@ -149,86 +210,30 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
         removeRouteButton.setOnClickListener { RouteMapHelper.removeRoute() }
         saveNewRouteButton.setOnClickListener { RouteMapHelper.saveNewRoute() }
 
-        heatmapButton.setOnClickListener {
-            GoogleMapHelper.heatmap()
-        }
+        heatmapButton.setOnClickListener { GoogleMapHelper.heatmap() }
 
-        saveButton.setOnClickListener {
-            GoogleMapHelper.editMode = false
-            GoogleMapHelper.clearTemp()
-            //TODO : Save the areas in the map
-            //val location = GoogleMapHelper.areasToFormattedStringLocations(from = startId)
-            val location =
-                GoogleMapHelper.zoneAreasToFormattedStringLocation(GoogleMapHelper.editingZone!!)
-            zone!!.location = location
-            ZoneManagementActivity.zoneObservable.postValue(
-                Zone(
-                    zoneName = zone!!.zoneName,
-                    zoneId = zone!!.zoneId,
-                    location = location,
-                    description = zone!!.description
-                )
-            )
-        }
+        saveButton.setOnClickListener { GoogleMapHelper.saveArea() }
 
-        locationButton.setOnClickListener {
-            switchLocationOnOff()
-        }
-
-        locationButton.tag = R.drawable.ic_location_on
-
-
-        locateMeButton.setOnClickListener {
-            moveToMyLocation()
-        }
-
-        locateMeButton.tag = R.drawable.ic_locate_me
-
-        return view
+        locationButton.setOnClickListener { switchLocationOnOff() }
+        locateMeButton.setOnClickListener { moveToMyLocation() }
     }
 
-    override fun onPause() {
-        super.onPause()
-        GoogleMapHelper.saveCamera()
-        GoogleMapHelper.resetHeatmap()
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val mapFragment =
-            childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
-        mapFragment?.getMapAsync(this)
-        if (!locationPermissionGranted) {
-            HelperFunctions.getLocationPermission(requireActivity()).observeOnce {
-                locationPermissionGranted = it.value
-                activateMyLocation()
-            }
-        }
-    }
-
-    override fun onMapReady(googleMap: GoogleMap?) {
-        GoogleMapHelper.map = GoogleMapAdapter(googleMap)
-        RouteMapHelper.map = GoogleMapAdapter(googleMap)
-        RouteMapHelper.getNodesAndEdgesFromDB(context, this)
-
-        googleMap!!.setOnPolylineClickListener(this)
+    /**
+     * Sets the listeners of the map
+     */
+    fun setMapListeners(googleMap: GoogleMap){
+        googleMap.setOnPolylineClickListener(this)
         googleMap.setOnPolygonClickListener(this)
         googleMap.setOnMarkerClickListener(this)
         googleMap.setOnMarkerDragListener(this)
         googleMap.setOnInfoWindowClickListener(this)
         googleMap.setOnMyLocationButtonClickListener(this)
         googleMap.setOnMapClickListener(this)
-        GoogleMapHelper.setUpMap(requireContext(), mod != EditZone)
-
-        if (useUserLocation) {
-            activateMyLocation()
-        }
-        startId = GoogleMapHelper.uidArea
     }
 
-    override fun onPolylineClick(polyline: Polyline) =
-        GoogleMapActionHandler.polylineClick(polyline)
-
+    /**
+     * Switches the style of the delete button for routes
+     */
     fun switchIconDelete() {
         val removeRouteButton = requireView().findViewById<FloatingActionButton>(R.id.removeRoute)
         if (RouteMapHelper.deleteMode) {
@@ -240,6 +245,9 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
         }
     }
 
+    /**
+     * Set the visibility of the save button for routes
+     */
     fun showSaveButton() {
         val removeRouteButton = requireView().findViewById<FloatingActionButton>(R.id.saveNewRoute)
         if (RouteMapHelper.tempPolyline != null) {
@@ -248,6 +256,8 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
             removeRouteButton.visibility = View.INVISIBLE
         }
     }
+
+    //-----------START LISTENER---------------------------------------
 
     override fun onPolygonClick(polygon: Polygon) =
         GoogleMapActionHandler.onPolygonClickHandler(mod, requireContext(), polygon)
@@ -258,6 +268,9 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
         //Return true to say that we don't want the event to go further (to the usual event when a marker is clicked)
         return true
     }
+
+    override fun onPolylineClick(polyline: Polyline) =
+        GoogleMapActionHandler.polylineClick(polyline)
 
     override fun onInfoWindowClick(marker: Marker) =
         GoogleMapActionHandler.onInfoWindowClickHandler(requireActivity(), this, marker)
@@ -276,6 +289,11 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
         // still occurs (which is to move the camera to the current location.
         return false
     }
+
+    override fun onMapClick(pos: LatLng?) =
+        GoogleMapActionHandler.onMapClickHandler(pos)
+
+    //-----------END LISTENER---------------------------------------
 
     /**
      * Activate "my location" tracking.
@@ -353,14 +371,9 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
     private fun moveToMyLocation() =
         getBuiltInLocationButton().performClick()
 
-    //-----------END LISTENER---------------------------------------
-
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
         grantResults: IntArray
     ) = HelperFunctions.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-    override fun onMapClick(pos: LatLng?) =
-        GoogleMapActionHandler.onMapClickHandler(pos)
 }

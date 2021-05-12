@@ -7,13 +7,17 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.LifecycleOwner
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ZoneConstant.*
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementActivity
+import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementListActivity
 import com.github.sdpteam15.polyevents.view.fragments.HEATMAP_PERIOD
+import com.github.sdpteam15.polyevents.view.fragments.MapsFragment
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.*
 import com.google.maps.android.heatmaps.HeatmapTileProvider
@@ -1035,20 +1039,22 @@ object GoogleMapHelper {
     }
     */
 
-    fun saveArea(zone: Zone){
+
+    var zone: Zone? = null
+    fun saveArea(){
         editMode = false
         clearTemp()
         //TODO : Save the areas in the map
         //val location = GoogleMapHelper.areasToFormattedStringLocations(from = startId)
         val location =
             GoogleMapHelper.zoneAreasToFormattedStringLocation(GoogleMapHelper.editingZone!!)
-        zone.location = location
+        zone!!.location = location
         ZoneManagementActivity.zoneObservable.postValue(
             Zone(
-                zoneName = zone.zoneName,
-                zoneId = zone.zoneId,
+                zoneName = zone!!.zoneName,
+                zoneId = zone!!.zoneId,
                 location = location,
-                description = zone.description
+                description = zone!!.description
             )
         )
     }
@@ -1081,5 +1087,20 @@ object GoogleMapHelper {
         timerHeatmap?.cancel()
         drawHeatmap = false
         lastOverlay?.remove()
+    }
+
+    fun getAllZonesFromDB(context: Context, lifecycleOwner: LifecycleOwner, mode: MapsFragment.MapsFragmentMod){
+        ZoneManagementListActivity.zones.observeAdd(lifecycleOwner) {
+            importNewZone(context, it.value, mode != MapsFragment.MapsFragmentMod.EditZone)
+        }
+
+        Database.currentDatabase.zoneDatabase!!.getAllZones(
+            null, 50,
+            ZoneManagementListActivity.zones
+        ).observe(lifecycleOwner) {
+            if (!it.value) {
+                HelperFunctions.showToast("Failed to get the list of zones", context)
+            }
+        }
     }
 }
