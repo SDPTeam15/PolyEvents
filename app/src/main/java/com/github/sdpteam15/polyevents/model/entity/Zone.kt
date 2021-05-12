@@ -2,6 +2,7 @@ package com.github.sdpteam15.polyevents.model.entity
 
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ZoneConstant.*
 import com.github.sdpteam15.polyevents.model.map.Attachable
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.angle
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.divide
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.euclideanDistance
@@ -9,9 +10,11 @@ import com.github.sdpteam15.polyevents.model.map.LatLngOperator.getIntersection
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.isInRectangle
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.isTooParallel
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.plus
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.polygonOperation
 import com.github.sdpteam15.polyevents.model.map.RouteMapHelper.getNearestPoint
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.IgnoreExtraProperties
+import com.google.firebase.firestore.model.mutation.ArrayTransformOperation
 
 /**
  * Entity model for a zone. Events occur inside a zone.
@@ -57,36 +60,24 @@ data class Zone(
      * @return A list of list of LatLng points composing an area
      */
     fun getDrawingPolygons(): List<Pair<List<LatLng>, List<List<LatLng>>?>> {
-        val rectangles = getZoneCoordinates()
-        val outputZones: List<Pair<List<LatLng>, List<List<LatLng>>?>> =
-            listOf(Pair(rectangles[0].toList(), listOf()))
-        // TODO reduce the number of element
-        for (rectangle in rectangles.drop(1)) {
-            for (zone in outputZones) {
-                var lastNode = zone.first[zone.first.lastIndex]
-                for (node in zone.first) {
-                    if (isInRectangle(node, rectangle)) {
-                        var lastRectNode = rectangle[rectangle.lastIndex]
-                        val intersections: MutableList<LatLng> = mutableListOf()
-                        for (rectNode in rectangle) {
-                            val intersection  = getIntersection(lastNode, node, lastRectNode, rectNode)
-                            if(intersection!=null) {
-                                intersections.add(intersection)
-                            }
-                            lastRectNode = rectNode
-                        }
+        var finalShape = mutableListOf<Pair<List<LatLng>, List<List<LatLng>>?>>()
+        var rectangles = getZoneCoordinates()
+        if(rectangles.isEmpty()) return listOf()
+        finalShape.add(Pair(rectangles[0],null))
+        for (rectangle in rectangles.drop(1)){
+            for(zone in finalShape){
+                var union = polygonOperation(LatLngOperator.Polygon(zone.first),LatLngOperator.Polygon(rectangle),LatLngOperator.polygonOperationType.UNION)
 
-                    }
-                    lastNode = node
-                }
             }
+
         }
-        return listOf()
+
+        return finalShape
     }
 
 
     fun getDrawingPoints(): List<List<LatLng>> {
-        return listOf()
+        return getZoneCoordinates()
     }
 
     override fun getAttachedNewPoint(
