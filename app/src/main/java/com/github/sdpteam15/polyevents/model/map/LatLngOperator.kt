@@ -1,8 +1,6 @@
 package com.github.sdpteam15.polyevents.model.map
 
-import android.util.Log
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Polygon
 import kotlin.math.abs
 import kotlin.math.atan
 import kotlin.math.sqrt
@@ -252,6 +250,12 @@ object LatLngOperator {
             } while (v != start)
         }
 
+        fun toLatLongList(): MutableList<LatLng> {
+            val list = mutableListOf<LatLng>()
+            foreach { list.add(it.xy) }
+            return list
+        }
+
 
         data class Vertex(
             val xy: LatLng,
@@ -261,7 +265,7 @@ object LatLngOperator {
             var entry_exit: Boolean?,
             var neighbor: Vertex?,
             var alpha: Double?
-        ){
+        ) {
             override fun toString(): String {
                 return xy.toString()
             }
@@ -374,9 +378,20 @@ object LatLngOperator {
 
     private const val entry = true
     private const val exit = false
-    fun polygonUnion(subject: Polygon, clip: Polygon): Pair<MutableList<LatLng>, MutableList<MutableList<LatLng>>?> {
+
+    enum class polygonOperationType {
+        UNION,
+        INTERSECTION
+    }
+
+
+    fun polygonUnion(
+        subject: Polygon,
+        clip: Polygon
+    ): MutableList<Pair<MutableList<LatLng>, MutableList<MutableList<LatLng>>?>> {
         // https://dl.acm.org/doi/abs/10.1145/274363.274364
         val subjectIntersections = mutableListOf<Polygon.Vertex>()
+
         //phase1 find intersection points and put them in the linked lists
         var curVertP1 = subject.start
         var curVertP2 = clip.start
@@ -414,7 +429,6 @@ object LatLngOperator {
                     curVertP2.next = v2
 
 
-
                 }
             }
             curVertP2 = curVertP2.next!!
@@ -422,6 +436,36 @@ object LatLngOperator {
                 curVertP1 = curVertP1.next!!
             }
         } while (curVertP1 != subject.start || curVertP2 != clip.start)
+
+
+        // Check if the resulting zones are one inside an other or disjoint
+        // In this case we can return directly
+        var subjectInClip = true
+        var clipInSubject = true
+        var subjectAndClipSeparated = true
+        subject.foreach {
+            if (pointInsidePolygon(it.xy, clip)) subjectAndClipSeparated = false
+            else subjectInClip = false
+        }
+        clip.foreach {
+            if (pointInsidePolygon(it.xy, subject)) subjectAndClipSeparated = false
+            else clipInSubject = false
+        }
+        if (subjectInClip) return mutableListOf(
+            Pair(
+                clip.toLatLongList(), null
+            )
+        )
+        if (clipInSubject) return mutableListOf(
+            Pair(
+                subject.toLatLongList(),null
+            )
+        )
+        if (subjectAndClipSeparated) return mutableListOf(
+            Pair(subject.toLatLongList(), null),
+            Pair(clip.toLatLongList(), null)
+        )
+
 
         //phase 2 set entry and exit points
 
@@ -432,71 +476,73 @@ object LatLngOperator {
                 entry
             }
             polygon1.foreach {
-                if (it.intersect){
+                if (it.intersect) {
                     it.entry_exit = status
                     status = !status
                     // add all intersections of the first polygon for phase 3
-                    if(polygon1 == subject) {
+                    if (polygon1 == subject) {
                         subjectIntersections.add(it)
                     }
                 }
             }
         }
-        setEntriesExits(subject,clip)
-        setEntriesExits(clip,subject)
+        setEntriesExits(subject, clip)
+        setEntriesExits(clip, subject)
 
         //phase3 draw the resulting polygons and holes
 
         val polygons = mutableListOf<MutableList<LatLng>>()
-        while (subjectIntersections.isNotEmpty()){
+        while (subjectIntersections.isNotEmpty()) {
             val firstIntersection = subjectIntersections.first()
             val newPolygon = mutableListOf(firstIntersection.xy)
             var current = firstIntersection
             do {
                 //println("set$subjectIntersections")
-                    /*
-                for(i in subjectIntersections){
-                    println(""+current.xy + " equals "+ i.xy + isCloseTo(current.xy , i.xy))
-                }*/
-                subjectIntersections.removeIf{ isCloseTo(it.xy,current.xy)}
-                if(!current.entry_exit!!){
+                /*
+            for(i in subjectIntersections){
+                println(""+current.xy + " equals "+ i.xy + isCloseTo(current.xy , i.xy))
+            }*/
+                subjectIntersections.removeIf { isCloseTo(it.xy, current.xy) }
+                if (!current.entry_exit!!) {
                     do {
                         current = current.next!!
                         newPolygon.add(current.xy)
-                    }while(!current.intersect)
-                }else{
+                    } while (!current.intersect)
+                } else {
                     do {
                         current = current.prev!!
                         newPolygon.add(current.xy)
-                    }while(!current.intersect)
+                    } while (!current.intersect)
                 }
                 current = current.neighbor!!
-            }while(current != firstIntersection)
+            } while (current != firstIntersection)
             polygons.add(newPolygon)
         }
 
-        fun separateOutsidePolygonFromHoles(polygons : MutableList<MutableList<LatLng>>): Pair<MutableList<LatLng>, MutableList<MutableList<LatLng>>?>{
-            if(polygons.size == 1){
-                return Pair(polygons[0],null)
+        fun separateOutsidePolygonFromHoles(polygons: MutableList<MutableList<LatLng>>): Pair<MutableList<LatLng>, MutableList<MutableList<LatLng>>?> {
+            if (polygons.size == 1) {
+                return Pair(polygons[0], null)
             }
-            fun findOutsidePolygon (polygons : MutableList<MutableList<LatLng>>) : MutableList<LatLng>{
+            fun findOutsidePolygon(polygons: MutableList<MutableList<LatLng>>): MutableList<LatLng> {
                 var outsidePolygon = polygons[0]
-                for (polygon in polygons.drop(1)){
-                    if(pointInsidePolygon(outsidePolygon[0], Polygon(polygon))){
+                for (polygon in polygons.drop(1)) {
+                    if (pointInsidePolygon(outsidePolygon[0], Polygon(polygon))) {
                         outsidePolygon = polygon
                     }
                 }
                 return outsidePolygon
             }
+
             val outside = findOutsidePolygon(polygons)
             polygons.remove(outside)
-            return Pair(outside,polygons)
+            return Pair(outside, polygons)
         }
 
-        return separateOutsidePolygonFromHoles(
-            polygons
+        return mutableListOf(
+            separateOutsidePolygonFromHoles(
+                polygons
+            )
         )
-
 
 
     }
