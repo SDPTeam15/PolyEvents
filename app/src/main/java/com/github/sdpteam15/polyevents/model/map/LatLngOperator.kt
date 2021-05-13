@@ -1,5 +1,7 @@
 package com.github.sdpteam15.polyevents.model.map
 
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.Polygon.Vertex
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.PolygonOperationType.*
 import com.google.android.gms.maps.model.LatLng
 import java.util.*
 import kotlin.math.abs
@@ -216,11 +218,21 @@ object LatLngOperator {
                 scalar(am, ad) in -epsilon..squaredNorm(ad) + epsilon)
     }
 
-    fun isCloseTo(p1: LatLng, p2: LatLng): Boolean {
+    /**
+     * Check if a point is very close to an other one (used to compensate floating point error)
+     * @param p1 first point
+     * @param p2 second point
+     * @return true is the points are very close, else false
+     */
+    private fun isCloseTo(p1: LatLng, p2: LatLng): Boolean {
         return (euclideanDistance(p1, p2) < epsilon)
     }
 
 
+    /**
+     * Represents a polygon by a linked list of vertices.
+     * @param points initial list of points
+     */
     class Polygon(points: List<LatLng>) {
         // removes last vertex if it is the same as the first one
         private var vertices: List<Vertex> = points.dropLastWhile { points[0] == it }.map {
@@ -230,8 +242,7 @@ object LatLngOperator {
                 prev = null,
                 intersect = false,
                 entry_exit = null,
-                neighbor = null,
-                alpha = null
+                neighbor = null
             )
         }
 
@@ -244,6 +255,10 @@ object LatLngOperator {
 
         val start = vertices[0]
 
+        /**
+         * Iterates over the polygon from start and going to the "next" Vertex at each iteration
+         * @param function function to apply at each iteration
+         */
         fun foreach(function: (Vertex) -> Unit) {
             var v = start
             do {
@@ -252,6 +267,9 @@ object LatLngOperator {
             } while (v != start)
         }
 
+        /**
+         * Gets the list of LatLng from the polygon
+         */
         fun toLatLongList(): MutableList<LatLng> {
             val list = mutableListOf<LatLng>()
             foreach { list.add(it.xy) }
@@ -259,43 +277,24 @@ object LatLngOperator {
         }
 
 
+        /**
+         * Represents a polygon vertex as a linked list element
+         * @param xy latitude and longitude coordinates
+         * @param next next linked list element
+         * @param prev previous linked list element
+         * @param intersect true if the point is an intersection point with an other polygon, else false
+         * @param entry_exit null if not on an intersection point, true if the intersection is an entry point to the other polygon,
+         *      regarding the "next" path of the current polygon, false if the intersection is an exit point from the other polygon.
+         * @param neighbor if the point is an intersection, represents the copy of this point on the other polygon
+         */
         data class Vertex(
             val xy: LatLng,
             var next: Vertex?,
             var prev: Vertex?,
             var intersect: Boolean,
             var entry_exit: Boolean?,
-            var neighbor: Vertex?,
-            var alpha: Double?
-        ) {
-            override fun toString(): String {
-                return xy.toString()
-            }
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) return true
-                if (javaClass != other?.javaClass) return false
-
-                other as Vertex
-
-                if (xy != other.xy) return false
-                if (next != other.next) return false
-                if (prev != other.prev) return false
-                if (intersect != other.intersect) return false
-                if (entry_exit != other.entry_exit) return false
-                if (neighbor != other.neighbor) return false
-                if (alpha != other.alpha) return false
-
-                return true
-            }
-
-            override fun hashCode(): Int {
-                var result = xy.hashCode()
-                result = 31 * result + (entry_exit?.hashCode() ?: 0)
-                result = 31 * result + (alpha?.hashCode() ?: 0)
-                return result
-            }
-        }
+            var neighbor: Vertex?
+        )
     }
 
     /**
@@ -306,7 +305,7 @@ object LatLngOperator {
      * @param end2 end of the second segment
      * @return null if no intersection, else returns the pair of ratios
      */
-    fun getIntersectionCoefficients(
+    private fun getIntersectionCoefficients(
         start1: LatLng,
         end1: LatLng,
         start2: LatLng,
@@ -330,39 +329,43 @@ object LatLngOperator {
         return Pair(t, s)
     }
 
-    fun createVertex(start: Polygon.Vertex, stop: Polygon.Vertex, alpha: Double) = Polygon.Vertex(
+    /**
+     * creates a new intersection vertex between start and stop at a distance alpha (0 < alpha < 1)
+     * @param start starting node
+     * @param stop ending node
+     * @param alpha distance between start and stop
+     * @return new intersection vertex
+     */
+    private fun createIntersectionVertex(start: Vertex, stop: Vertex, alpha: Double) = Vertex(
         xy = plus(start.xy, time(minus(stop.xy, start.xy), alpha)),
         next = null,
         prev = null,
         intersect = true,
-        entry_exit = false,
-        neighbor = null,
-        alpha = alpha
+        entry_exit = null,
+        neighbor = null
     )
 
-    fun pointInsidePolygon(point: LatLng, polygon: Polygon): Boolean {
-        /*
-        fun findMaxLat(polygon: Polygon): Double {
-            var maxLat = Double.NEGATIVE_INFINITY
-            var nextVertex = polygon.start
-            do {
-                maxLat = max(maxLat, nextVertex.xy.latitude)
-                nextVertex = nextVertex.next!!
-            } while (nextVertex != polygon.start)
-            return maxLat
-        }
-        val maxLat = findMaxLat(polygon)*/
-        val maxLat = 90.0
-
+    /**
+     * Checks if the given point is in the given polygon
+     * Draws a line from the point to infinity, if the ray crosses the polygon an even number of times, the point lies inside the polygon
+     * @param point the point
+     * @param polygon the polygon
+     * @return true if the point is in the polygon, else retun false
+     */
+    private fun pointInsidePolygon(point: LatLng, polygon: Polygon): Boolean {
+        // https://en.wikipedia.org/wiki/Point_in_polygon#:~:text=One%20simple%20way%20of%20finding,an%20even%20number%20of%20times.
+        val maxLat = 90.0 // LatLng does not have a positive infinity for Lat, 90.0 is the max value
         var curVertex = polygon.start
         var nbOfIntersections = 0
+
+        // keep track of the last intersection we crossed, to not count twice when the ray crosses a node
         var lastIntersection: LatLng?
         var currentIntersection: LatLng? = null
         do {
             //if point is on a segment, immediately we consider the point inside the polygon
             if (isOnSegment(curVertex.xy, curVertex.next!!.xy, point)) return true
 
-            //if intersection add to the count,
+
             lastIntersection = currentIntersection
             currentIntersection = getIntersection(
                 curVertex.xy,
@@ -374,15 +377,16 @@ object LatLngOperator {
                     point.longitude + 0.123456
                 )
             )
+
             if (
                 currentIntersection != null &&
                 if (lastIntersection != null) {
-                    // don't count twice a node
+                    // don't count twice when the ray crosses a node
                     !isCloseTo(lastIntersection, currentIntersection)
                 } else {
                     true
                 }
-            //inter != null
+            //if intersection add to the count
             ) {
                 nbOfIntersections++
             }
@@ -392,8 +396,6 @@ object LatLngOperator {
 
     }
 
-    private const val entry = true
-    private const val exit = false
 
     /**
      * Represents theoretical set operation we can make on polygons
@@ -405,9 +407,11 @@ object LatLngOperator {
     }
 
     /**
-     * Computes the theoretical set union between polygons.
+     * Computes the theoretical set union between polygons (just like in Venn diagrams).
      * @param polygons List of polygons, each polygon is represented by a list of its corners (in LatLng)
-     * @return
+     * @return a list of disjoint shapes. Each shape is a Pair,
+     *      the first element is a single polygon representing the outside border of the shape,
+     *      the second element is the list of disjoint holes (polygon) in that shape.
      */
     fun polygonsUnion(polygons: List<List<LatLng>>): MutableList<Pair<MutableList<LatLng>, MutableList<MutableList<LatLng>>?>> {
         //rectangles that have not been merged
@@ -427,7 +431,7 @@ object LatLngOperator {
                 val unionShape = polygonOperation(
                     Polygon(outerShape),
                     Polygon(rectangle),
-                    PolygonOperationType.UNION
+                    UNION
                 )
                 // if union is disjoint
                 if (unionShape.size > 1) {
@@ -440,9 +444,11 @@ object LatLngOperator {
                 }
                 remainingRectangles.remove(rectangle)
                 val newHoles = unionShape[0].second ?: mutableListOf()
-                for(hole in holes.toMutableList()){
-                    for (newHole in polygonOperation(Polygon(hole),
-                        Polygon(rectangle),PolygonOperationType.DIFFERENCE)){
+                for (hole in holes.toMutableList()) {
+                    for (newHole in polygonOperation(
+                        Polygon(hole),
+                        Polygon(rectangle), DIFFERENCE
+                    )) {
                         newHoles.add(newHole.first)
                     }
                 }
@@ -460,15 +466,38 @@ object LatLngOperator {
         return finalShape
     }
 
+
+    /**
+     * Useful for the polygonOperation algorithm
+     */
+    private const val entry = true
+    private const val exit = false
+
+    /**
+     * Computes theoretical set operations between the subject and the clip polygon
+     * As the polygons can be non convex, the resulting shape may have holes, this is why we use this return type.
+     * Inspired from : https://dl.acm.org/doi/abs/10.1145/274363.274364
+     * @param subject "subject" polygon
+     * @param clip "clip" polygon
+     * @param polygonOperationType
+     *      UNION :         subject ∪ clip
+     *      INTERSECTION :  subject ∩ clip
+     *      DIFFERENCE      subject \ clip
+     * @return a list of disjoint shapes. Each shape is a Pair,
+     *      the first element is a single polygon representing the outside border of the shape,
+     *      the second element is the list of disjoint holes (polygon) in that shape.
+     */
     fun polygonOperation(
         subject: Polygon,
         clip: Polygon,
         polygonOperationType: PolygonOperationType
     ): MutableList<Pair<MutableList<LatLng>, MutableList<MutableList<LatLng>>?>> {
-        // https://dl.acm.org/doi/abs/10.1145/274363.274364
-        val subjectIntersections = mutableListOf<Polygon.Vertex>()
 
-        //phase1 find intersection points and put them in the linked lists
+        /** Phase 1 : find intersection points between subject and clip, and setup them in double linked lists
+         * Each double linked list contains all the points of a polygon.
+         * There is a link from one linked list to an other at each intersection point of the polygons so we can jump from one to the other
+         */
+
         var curVertP1 = subject.start
         var curVertP2 = clip.start
         do {
@@ -487,8 +516,8 @@ object LatLngOperator {
                 )
                 if (inter != null) {
                     //create a vertex for each list at the intersection point
-                    val v1 = createVertex(curVertP1, curVertP1.next!!, inter.first)
-                    val v2 = createVertex(curVertP2, curVertP2.next!!, inter.second)
+                    val v1 = createIntersectionVertex(curVertP1, curVertP1.next!!, inter.first)
+                    val v2 = createIntersectionVertex(curVertP2, curVertP2.next!!, inter.second)
                     //link v1 and v2
                     v1.neighbor = v2
                     v2.neighbor = v1
@@ -514,69 +543,98 @@ object LatLngOperator {
         } while (curVertP1 != subject.start || curVertP2 != clip.start)
 
 
-        var intersections = false
-        subject.foreach { intersections = intersections || it.intersect }
-        clip.foreach { intersections = intersections || it.intersect }
+        // Check if the resulting zones are one inside an other or disjoint
+        // In this case we can return directly the trivial value relative to each operation
+        // for example union of disjoint polygons is simply both polygons
+        // or intersection of disjoint polygons is empty
+        // or subtraction of a zone by an inner zone is the enclosing zone with the inner zone as its hole
 
-        if (!intersections) {
-            // Check if the resulting zones are one inside an other or disjoint
-            // In this case we can return directly
-            var subjectInClip = true
-            var clipInSubject = true
-            var subjectAndClipSeparated = true
-            subject.foreach {
-                if (pointInsidePolygon(it.xy, clip)) subjectAndClipSeparated = false
-                else subjectInClip = false
-            }
-            clip.foreach {
-                if (pointInsidePolygon(it.xy, subject)) subjectAndClipSeparated = false
-                else clipInSubject = false
-            }
+        var existingIntersections = false
+        var subjectInClip = true
+        var clipInSubject = true
+        var subjectAndClipSeparated = true
+        subject.foreach {
+            existingIntersections = existingIntersections || it.intersect
+            if (pointInsidePolygon(it.xy, clip)) subjectAndClipSeparated = false
+            else subjectInClip = false
+        }
+        clip.foreach {
+            existingIntersections = existingIntersections || it.intersect
+            if (pointInsidePolygon(it.xy, subject)) subjectAndClipSeparated = false
+            else clipInSubject = false
+        }
 
-
-            if (polygonOperationType == PolygonOperationType.UNION) {
-                if (subjectInClip) return mutableListOf(
-                    Pair(
-                        clip.toLatLongList(), null
-                    )
-                )
-                if (clipInSubject) return mutableListOf(
+        if (subjectInClip && clipInSubject) {
+            return when (polygonOperationType) {
+                UNION -> mutableListOf(
                     Pair(
                         subject.toLatLongList(), null
                     )
                 )
-                if (subjectAndClipSeparated) return mutableListOf(
-                    Pair(subject.toLatLongList(), null),
-                    Pair(clip.toLatLongList(), null)
-                )
-            } else if (polygonOperationType == PolygonOperationType.INTERSECTION) {
-                if (subjectInClip) return mutableListOf(
+                INTERSECTION -> mutableListOf(
                     Pair(
                         subject.toLatLongList(), null
                     )
                 )
-                if (clipInSubject) return mutableListOf(
-                    Pair(
-                        clip.toLatLongList(), null
-                    )
-                )
-                if (subjectAndClipSeparated) return mutableListOf()
-            } else if (polygonOperationType == PolygonOperationType.DIFFERENCE) {
-                if (subjectInClip) return mutableListOf()
-                if (clipInSubject) return mutableListOf(
-                    Pair(
-                        subject.toLatLongList(), mutableListOf(clip.toLatLongList())
-                    )
-                )
-                if (subjectAndClipSeparated) return mutableListOf(
-                    Pair(
-                        subject.toLatLongList(), null
-                    )
-                )
+                DIFFERENCE -> mutableListOf()
             }
         }
 
-        //phase 2 set entry and exit points
+        if (!existingIntersections) {
+            when (polygonOperationType) {
+                UNION -> {
+                    if (subjectInClip) return mutableListOf(
+                        Pair(
+                            clip.toLatLongList(), null
+                        )
+                    )
+                    if (clipInSubject) return mutableListOf(
+                        Pair(
+                            subject.toLatLongList(), null
+                        )
+                    )
+                    if (subjectAndClipSeparated) return mutableListOf(
+                        Pair(subject.toLatLongList(), null),
+                        Pair(clip.toLatLongList(), null)
+                    )
+                }
+                INTERSECTION -> {
+                    if (subjectInClip) return mutableListOf(
+                        Pair(
+                            subject.toLatLongList(), null
+                        )
+                    )
+                    if (clipInSubject) return mutableListOf(
+                        Pair(
+                            clip.toLatLongList(), null
+                        )
+                    )
+                    if (subjectAndClipSeparated) return mutableListOf()
+                }
+                DIFFERENCE -> {
+                    if (subjectInClip) return mutableListOf()
+                    if (clipInSubject) return mutableListOf(
+                        Pair(
+                            subject.toLatLongList(), mutableListOf(clip.toLatLongList())
+                        )
+                    )
+                    if (subjectAndClipSeparated) return mutableListOf(
+                        Pair(
+                            subject.toLatLongList(), null
+                        )
+                    )
+                }
+            }
+        }
+
+        /** Phase 2 : Set entry and exit points
+         * Let's see polygons as directed graph represented by the linked lists in the "next" direction
+         * At each intersection, if we enter in the other polygon, we place an "entry" marker,
+         *      if we leave the other polygon interior, we place an "exit" marker
+         */
+
+        // list that keeps track of intersections on subject polygon, useful for Phase 3
+        val subjectIntersections = mutableListOf<Vertex>()
 
         fun setEntriesExits(polygon1: Polygon, polygon2: Polygon) {
             var status = if (pointInsidePolygon(polygon1.start.xy, polygon2)) {
@@ -598,7 +656,16 @@ object LatLngOperator {
         setEntriesExits(subject, clip)
         setEntriesExits(clip, subject)
 
-        //phase3 draw the resulting polygons and holes
+        /** Phase 3 Draw the resulting polygons and holes
+         * We start at an intersection point and given the operation.
+         * We follow the polygons and switch from one to the other to "draw" the resulting polygon
+         * For union, at each intersection, we switch to the other polygon and we must follow the "outside" path
+         * For intersection, at each intersection, we switch to the other polygon and we must follow the "inside" path
+         * For difference, at each intersection, we switch to the other polygon and
+         *      we follow the "outside" path of the subject polygon and "inside" path of the clip polygon
+         *
+         * The result is a list of disjoint polygons.
+         */
 
         val polygons = mutableListOf<MutableList<LatLng>>()
         while (subjectIntersections.isNotEmpty()) {
@@ -607,33 +674,47 @@ object LatLngOperator {
             var current = firstIntersection
             var isOnSubject = true
             do {
-                //println("set$subjectIntersections")
-                /*
-            for(i in subjectIntersections){
-                println(""+current.xy + " equals "+ i.xy + isCloseTo(current.xy , i.xy))
-            }*/
-
                 subjectIntersections.removeIf { isCloseTo(it.xy, current.xy) }
-                if ((polygonOperationType == PolygonOperationType.UNION && !current.entry_exit!!)
-                    || (polygonOperationType == PolygonOperationType.INTERSECTION && current.entry_exit!!)
-                    || (polygonOperationType == PolygonOperationType.DIFFERENCE && (current.entry_exit!! != isOnSubject))
+                if (when (polygonOperationType) {
+                        UNION -> !current.entry_exit!!
+                        INTERSECTION -> current.entry_exit!!
+                        DIFFERENCE -> current.entry_exit!! != isOnSubject
+                    }
                 ) {
+                    // draw the line over next values until the next intersection
                     do {
                         current = current.next!!
                         newPolygon.add(current.xy)
                     } while (!current.intersect)
+
                 } else {
+                    // draw the line over prev values until the next intersection
                     do {
                         current = current.prev!!
                         newPolygon.add(current.xy)
                     } while (!current.intersect)
                 }
+                // switch to the corresponding vertex on the other polygon
                 current = current.neighbor!!
                 isOnSubject = !isOnSubject
+                // repeat until a polygon is closed
             } while (current != firstIntersection)
             polygons.add(newPolygon)
         }
 
+
+        /** Phase 4 : Return in correct format
+         * We must now return the correct values from our drawing of phase 3
+         * If we are in UNION mode, there can only be a single shape with holes at this point
+         * If we are in INTERSECTION mode, there can only be disjoint polygons without holes
+         * If we are in DIFFERENCE mode, there can only be disjoint polygons without holes
+         */
+
+        /**
+         * Used only in union mode, to find the enclosing outside polygon and its holes.
+         * @param polygons list of polygons from phase 3
+         * @return the enclosing shape with its holes
+         */
         fun separateOutsidePolygonFromHoles(polygons: MutableList<MutableList<LatLng>>): Pair<MutableList<LatLng>, MutableList<MutableList<LatLng>>?> {
             if (polygons.size == 1) {
                 return Pair(polygons[0], null)
@@ -652,22 +733,18 @@ object LatLngOperator {
             polygons.remove(outside)
             return Pair(outside, polygons)
         }
-        if (polygonOperationType == PolygonOperationType.UNION) {
+
+        return when (polygonOperationType) {
             //union of 2 overlapping polygons can only give a single zone with holes inside
-            return mutableListOf(
+            UNION -> mutableListOf(
                 separateOutsidePolygonFromHoles(
                     polygons
                 )
             )
-        } else if (polygonOperationType == PolygonOperationType.INTERSECTION
-            || polygonOperationType == PolygonOperationType.DIFFERENCE
-        ) {
             //intersection of 2 polygons without holes can only give polygons without holes
-            return polygons.map { Pair(it, null) }.toMutableList()
-        } else {
-
-
-            throw UnsupportedOperationException(polygonOperationType.toString())
+            INTERSECTION, DIFFERENCE ->
+                polygons.map { Pair(it, null) }.toMutableList()
         }
     }
+
 }
