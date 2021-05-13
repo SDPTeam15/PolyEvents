@@ -580,25 +580,9 @@ object LatLngOperator {
         // list that keeps track of intersections on subject polygon, useful for Phase 3
         val subjectIntersections = mutableListOf<Vertex>()
 
-        fun setEntriesExits(polygon1: Polygon, polygon2: Polygon) {
-            var status = if (pointInsidePolygon(polygon1.start.xy, polygon2)) {
-                exit
-            } else {
-                entry
-            }
-            polygon1.foreach {
-                if (it.intersect) {
-                    it.entry_exit = status
-                    status = !status
-                    // add all intersections of the first polygon for phase 3
-                    if (polygon1 == subject) {
-                        subjectIntersections.add(it)
-                    }
-                }
-            }
-        }
-        setEntriesExits(subject, clip)
-        setEntriesExits(clip, subject)
+
+        setEntriesExits(subject, clip, subjectIntersections)
+        setEntriesExits(clip, subject, null)
 
         /** Phase 3 Draw the resulting polygons and holes
          * We start at an intersection point and given the operation.
@@ -654,29 +638,6 @@ object LatLngOperator {
          * If we are in DIFFERENCE mode, there can only be disjoint polygons without holes
          */
 
-        /**
-         * Used only in union mode, to find the enclosing outside polygon and its holes.
-         * @param polygons list of polygons from phase 3
-         * @return the enclosing shape with its holes
-         */
-        fun separateOutsidePolygonFromHoles(polygons: MutableList<MutableList<LatLng>>): Pair<MutableList<LatLng>, MutableList<MutableList<LatLng>>?> {
-            if (polygons.size == 1) {
-                return Pair(polygons[0], null)
-            }
-            fun findOutsidePolygon(polygons: MutableList<MutableList<LatLng>>): MutableList<LatLng> {
-                var outsidePolygon = polygons[0]
-                for (polygon in polygons.drop(1)) {
-                    if (pointInsidePolygon(outsidePolygon[0], Polygon(polygon))) {
-                        outsidePolygon = polygon
-                    }
-                }
-                return outsidePolygon
-            }
-
-            val outside = findOutsidePolygon(polygons)
-            polygons.remove(outside)
-            return Pair(outside, polygons)
-        }
 
         return when (polygonOperationType) {
             //union of 2 overlapping polygons can only give a single zone with holes inside
@@ -785,6 +746,51 @@ object LatLngOperator {
             }
         }
         return null
+    }
+
+    private fun setEntriesExits(
+        polygon1: Polygon,
+        polygon2: Polygon,
+        subjectIntersections: MutableList<Vertex>?
+    ) {
+        var status = if (pointInsidePolygon(polygon1.start.xy, polygon2)) {
+            exit
+        } else {
+            entry
+        }
+        polygon1.foreach {
+            if (it.intersect) {
+                it.entry_exit = status
+                status = !status
+                // add all intersections of the first polygon for phase 3
+                subjectIntersections?.add(it)
+
+            }
+        }
+    }
+
+    /**
+     * Used only in union mode, to find the enclosing outside polygon and its holes.
+     * @param polygons list of polygons from phase 3
+     * @return the enclosing shape with its holes
+     */
+    private fun separateOutsidePolygonFromHoles(polygons: MutableList<MutableList<LatLng>>): Pair<MutableList<LatLng>, MutableList<MutableList<LatLng>>?> {
+        if (polygons.size == 1) {
+            return Pair(polygons[0], null)
+        }
+        fun findOutsidePolygon(polygons: MutableList<MutableList<LatLng>>): MutableList<LatLng> {
+            var outsidePolygon = polygons[0]
+            for (polygon in polygons.drop(1)) {
+                if (pointInsidePolygon(outsidePolygon[0], Polygon(polygon))) {
+                    outsidePolygon = polygon
+                }
+            }
+            return outsidePolygon
+        }
+
+        val outside = findOutsidePolygon(polygons)
+        polygons.remove(outside)
+        return Pair(outside, polygons)
     }
 
 }
