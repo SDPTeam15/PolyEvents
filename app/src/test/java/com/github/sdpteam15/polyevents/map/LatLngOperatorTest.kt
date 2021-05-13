@@ -15,7 +15,7 @@ import com.github.sdpteam15.polyevents.model.map.LatLngOperator.plus
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.polygonOperation
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.project
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.scalar
-import com.github.sdpteam15.polyevents.model.map.LatLngOperator.shapePolygonUnion
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.polygonsUnion
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.squaredEuclideanDistance
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.squaredNorm
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.time
@@ -561,7 +561,7 @@ class LatLngOperatorTest {
                 LatLng(5.0, 5.0)
             )
         )
-        val union = shapePolygonUnion(rectangles)
+        val union = polygonsUnion(rectangles)
         println(union)
         var expected = listOf(
             LatLng(2.0, 4.0),

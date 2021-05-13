@@ -11,7 +11,7 @@ import com.github.sdpteam15.polyevents.model.map.LatLngOperator.minus
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.plus
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.scalar
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.squaredNorm
-import com.github.sdpteam15.polyevents.model.map.LatLngOperator.shapePolygonUnion
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.polygonsUnion
 import com.github.sdpteam15.polyevents.model.map.RouteMapHelper.getNearestPoint
 import com.github.sdpteam15.polyevents.model.map.THRESHOLD
 import com.google.android.gms.maps.model.LatLng
@@ -61,7 +61,7 @@ data class Zone(
      * @return A list of list of LatLng points composing an area
      */
     fun getDrawingPolygons(): List<Pair<List<LatLng>, List<List<LatLng>>?>> {
-        return shapePolygonUnion(getZoneCoordinates())
+        return polygonsUnion(getZoneCoordinates())
     }
 
 

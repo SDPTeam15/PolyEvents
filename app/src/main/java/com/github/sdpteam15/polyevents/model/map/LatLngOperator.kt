@@ -356,7 +356,7 @@ object LatLngOperator {
 
         var curVertex = polygon.start
         var nbOfIntersections = 0
-        var lastIntersection: LatLng? = null
+        var lastIntersection: LatLng?
         var currentIntersection: LatLng? = null
         do {
             //if point is on a segment, immediately we consider the point inside the polygon
@@ -368,12 +368,16 @@ object LatLngOperator {
                 curVertex.xy,
                 curVertex.next!!.xy,
                 point,
-                LatLng(maxLat, point.longitude)
+                LatLng(
+                    maxLat,
+                    // trick to prevent vertical lines intersections
+                    point.longitude + 0.123456
+                )
             )
             if (
-            //only count once
                 currentIntersection != null &&
                 if (lastIntersection != null) {
+                    // don't count twice a node
                     !isCloseTo(lastIntersection, currentIntersection)
                 } else {
                     true
@@ -391,15 +395,24 @@ object LatLngOperator {
     private const val entry = true
     private const val exit = false
 
+    /**
+     * Represents theoretical set operation we can make on polygons
+     */
     enum class PolygonOperationType {
-        UNION,
-        INTERSECTION,
-        DIFFERENCE
+        UNION,          // A ∪ B
+        INTERSECTION,   // A ∩ B
+        DIFFERENCE      // A \ B
     }
 
-    fun shapePolygonUnion(rectangles: List<List<LatLng>>): MutableList<Pair<MutableList<LatLng>, MutableList<MutableList<LatLng>>?>> {
+    /**
+     * Computes the theoretical set union between polygons.
+     * @param polygons List of polygons, each polygon is represented by a list of its corners (in LatLng)
+     * @return
+     */
+    fun polygonsUnion(polygons: List<List<LatLng>>): MutableList<Pair<MutableList<LatLng>, MutableList<MutableList<LatLng>>?>> {
         //rectangles that have not been merged
-        val remainingRectangles = rectangles.map { it }.toMutableList() //deep copy
+        val remainingRectangles = polygons.toMutableList() //deep copy
+
         val finalShape =
             mutableListOf<Pair<MutableList<LatLng>, MutableList<MutableList<LatLng>>?>>()
         while (remainingRectangles.isNotEmpty()) {
@@ -426,14 +439,15 @@ object LatLngOperator {
                     queuedRectangles.addLast(notIntersecting.removeFirst())
                 }
                 remainingRectangles.remove(rectangle)
-                /*holes = holes.map {
-                    polygonOperation(
-                        Polygon(it),
-                        Polygon(rectangle),
-                        PolygonOperationType.DIFFERENCE
-                    ).flatMap { it2 -> it2.first }.toMutableList()
-                }.toMutableList()*/
-                //holes.addAll(unionShape[0].second?: listOf())
+                val newHoles = unionShape[0].second ?: mutableListOf()
+                for(hole in holes.toMutableList()){
+                    for (newHole in polygonOperation(Polygon(hole),
+                        Polygon(rectangle),PolygonOperationType.DIFFERENCE)){
+                        newHoles.add(newHole.first)
+                    }
+                }
+                holes = newHoles
+
                 outerShape = unionShape[0].first
             }
             if (holes.isEmpty()) {
