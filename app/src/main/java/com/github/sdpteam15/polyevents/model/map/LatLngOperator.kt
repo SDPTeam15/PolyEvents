@@ -314,7 +314,11 @@ object LatLngOperator {
             var intersect: Boolean,
             var entry_exit: Boolean?,
             var neighbor: Vertex?
-        )
+        ) {
+            override fun toString(): String {
+                return xy.toString()
+            }
+        }
     }
 
     /**
@@ -476,6 +480,7 @@ object LatLngOperator {
 
                 outerShape = unionShape[0].first
             }
+
             if (holes.isEmpty()) {
                 finalShape.add(Pair(outerShape, null))
             } else {
@@ -526,6 +531,7 @@ object LatLngOperator {
                         isCloseTo(curVertP1.next!!.xy, curVertP2.xy) ||
                         isCloseTo(curVertP1.xy, curVertP2.next!!.xy) ||
                         isCloseTo(curVertP1.next!!.xy, curVertP2.next!!.xy))
+
             ) {
 
                 val inter = getIntersectionCoefficients(
@@ -568,84 +574,87 @@ object LatLngOperator {
         // for example union of disjoint polygons is simply both polygons
         // or intersection of disjoint polygons is empty
         // or subtraction of a zone by an inner zone is the enclosing zone with the inner zone as its hole
-
-        var existingIntersections = false
-        var subjectInClip = true
-        var clipInSubject = true
-        var subjectAndClipSeparated = true
-        subject.foreach {
-            existingIntersections = existingIntersections || it.intersect
-            if (pointInsidePolygon(it.xy, clip)) subjectAndClipSeparated = false
-            else subjectInClip = false
-        }
-        clip.foreach {
-            existingIntersections = existingIntersections || it.intersect
-            if (pointInsidePolygon(it.xy, subject)) subjectAndClipSeparated = false
-            else clipInSubject = false
-        }
-
-        if (subjectInClip && clipInSubject) {
-            return when (polygonOperationType) {
-                UNION -> mutableListOf(
-                    Pair(
-                        subject.toLatLongList(), null
-                    )
-                )
-                INTERSECTION -> mutableListOf(
-                    Pair(
-                        subject.toLatLongList(), null
-                    )
-                )
-                DIFFERENCE -> mutableListOf()
+        fun checkForTrivialCases(
+            subject: Polygon,
+            clip: Polygon
+        ): MutableList<Pair<MutableList<LatLng>, MutableList<MutableList<LatLng>>?>>? {
+            var existingIntersections = false
+            var subjectInClip = true
+            var clipInSubject = true
+            var subjectAndClipSeparated = true
+            subject.foreach {
+                existingIntersections = existingIntersections || it.intersect
+                if (pointInsidePolygon(it.xy, clip)) subjectAndClipSeparated = false
+                else subjectInClip = false
             }
-        }
+            clip.foreach {
+                existingIntersections = existingIntersections || it.intersect
+                if (pointInsidePolygon(it.xy, subject)) subjectAndClipSeparated = false
+                else clipInSubject = false
+            }
 
-        if (!existingIntersections) {
-            when (polygonOperationType) {
-                UNION -> {
-                    if (subjectInClip) return mutableListOf(
-                        Pair(
-                            clip.toLatLongList(), null
-                        )
-                    )
-                    if (clipInSubject) return mutableListOf(
+            if (subjectInClip && clipInSubject) {
+                return when (polygonOperationType) {
+                    UNION, INTERSECTION -> mutableListOf(
                         Pair(
                             subject.toLatLongList(), null
                         )
                     )
-                    if (subjectAndClipSeparated) return mutableListOf(
-                        Pair(subject.toLatLongList(), null),
-                        Pair(clip.toLatLongList(), null)
-                    )
-                }
-                INTERSECTION -> {
-                    if (subjectInClip) return mutableListOf(
-                        Pair(
-                            subject.toLatLongList(), null
-                        )
-                    )
-                    if (clipInSubject) return mutableListOf(
-                        Pair(
-                            clip.toLatLongList(), null
-                        )
-                    )
-                    if (subjectAndClipSeparated) return mutableListOf()
-                }
-                DIFFERENCE -> {
-                    if (subjectInClip) return mutableListOf()
-                    if (clipInSubject) return mutableListOf(
-                        Pair(
-                            subject.toLatLongList(), mutableListOf(clip.toLatLongList())
-                        )
-                    )
-                    if (subjectAndClipSeparated) return mutableListOf(
-                        Pair(
-                            subject.toLatLongList(), null
-                        )
-                    )
+                    DIFFERENCE -> mutableListOf()
                 }
             }
+
+            if (!existingIntersections) {
+                when (polygonOperationType) {
+                    UNION -> {
+                        if (subjectInClip) return mutableListOf(
+                            Pair(
+                                clip.toLatLongList(), null
+                            )
+                        )
+                        if (clipInSubject) return mutableListOf(
+                            Pair(
+                                subject.toLatLongList(), null
+                            )
+                        )
+                        if (subjectAndClipSeparated) return mutableListOf(
+                            Pair(subject.toLatLongList(), null),
+                            Pair(clip.toLatLongList(), null)
+                        )
+                    }
+                    INTERSECTION -> {
+                        if (subjectInClip) return mutableListOf(
+                            Pair(
+                                subject.toLatLongList(), null
+                            )
+                        )
+                        if (clipInSubject) return mutableListOf(
+                            Pair(
+                                clip.toLatLongList(), null
+                            )
+                        )
+                        if (subjectAndClipSeparated) return mutableListOf()
+                    }
+                    DIFFERENCE -> {
+                        if (subjectInClip) return mutableListOf()
+                        if (clipInSubject) return mutableListOf(
+                            Pair(
+                                subject.toLatLongList(), mutableListOf(clip.toLatLongList())
+                            )
+                        )
+                        if (subjectAndClipSeparated) return mutableListOf(
+                            Pair(
+                                subject.toLatLongList(), null
+                            )
+                        )
+                    }
+                }
+            }
+            return null
         }
+
+        val shape = checkForTrivialCases(subject, clip)
+        if (shape != null) return shape
 
         /** Phase 2 : Set entry and exit points
          * Let's see polygons as directed graph represented by the linked lists in the "next" direction
