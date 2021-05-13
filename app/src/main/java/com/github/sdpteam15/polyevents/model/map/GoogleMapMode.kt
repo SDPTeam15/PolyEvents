@@ -13,8 +13,8 @@ object GoogleMapMode {
      * @param color color target for the zone
      */
     fun colorAreas(idZone: String, color: Int) {
-        for (key in GoogleMapHelper.zonesToArea[idZone]!!.second) {
-            GoogleMapHelper.areasPoints[key]!!.third.strokeColor = color
+        for (key in ZoneAreaMapHelper.zonesToArea[idZone]!!.second) {
+            ZoneAreaMapHelper.areasPoints[key]!!.third.strokeColor = color
         }
     }
 
@@ -43,6 +43,6 @@ object GoogleMapMode {
      * @param tag id of the area to find the zone it belongs
      */
     fun setSelectedZoneFromArea(tag: String) {
-        setSelectedZones(GoogleMapHelper.areasPoints[tag.toInt()]!!.first)
+        setSelectedZones(ZoneAreaMapHelper.areasPoints[tag.toInt()]!!.first)
     }
 }

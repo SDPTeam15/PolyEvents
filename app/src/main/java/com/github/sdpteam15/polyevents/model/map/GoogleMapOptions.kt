@@ -37,8 +37,8 @@ object GoogleMapOptions {
         GoogleMapHelper.restoreMapState(context, drawingMod)
         setMapStyle(context)
         GoogleMapHelper.selectedZone = null
-        GoogleMapHelper.deleteMode = false
-        GoogleMapHelper.editMode = false
+        ZoneAreaMapHelper.deleteMode = false
+        ZoneAreaMapHelper.editMode = false
         //setBoundaries()
         //setMinAndMaxZoom()
 

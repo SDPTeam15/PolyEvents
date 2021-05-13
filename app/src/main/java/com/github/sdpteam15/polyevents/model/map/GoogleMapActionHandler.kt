@@ -29,15 +29,15 @@ object GoogleMapActionHandler {
         polygon: Polygon
     ) {
         if (mode == MapsFragmentMod.EditZone) {
-            if (GoogleMapHelper.editMode && GoogleMapHelper.canEdit(polygon.tag.toString())) {
-                GoogleMapHelper.editArea(context, polygon.tag.toString())
-            } else if (GoogleMapHelper.deleteMode && GoogleMapHelper.canEdit(polygon.tag.toString())) {
-                GoogleMapHelper.removeArea(polygon.tag.toString().toInt())
+            if (ZoneAreaMapHelper.editMode && ZoneAreaMapHelper.canEdit(polygon.tag.toString())) {
+                ZoneAreaMapHelper.editArea(context, polygon.tag.toString())
+            } else if (ZoneAreaMapHelper.deleteMode && ZoneAreaMapHelper.canEdit(polygon.tag.toString())) {
+                ZoneAreaMapHelper.removeArea(polygon.tag.toString().toInt())
             }
         } else {
             setSelectedZoneFromArea(polygon.tag.toString())
             //Shows the info window of the marker assigned to the area
-            GoogleMapHelper.areasPoints.get(polygon.tag)!!.second.showInfoWindow()
+            ZoneAreaMapHelper.areasPoints.get(polygon.tag)!!.second.showInfoWindow()
         }
     }
 
@@ -56,7 +56,7 @@ object GoogleMapActionHandler {
      * @param marker marker clicked
      */
     fun onMarkerClickHandler(marker: Marker) {
-        if (!GoogleMapHelper.editMode) {
+        if (!ZoneAreaMapHelper.editMode) {
             marker.showInfoWindow()
         }
         val tag = marker.tag
@@ -102,14 +102,14 @@ object GoogleMapActionHandler {
      */
     fun interactionMarkerHandler(marker: Marker, dragMode: MarkerDragMode) {
         when (marker.snippet) {
-            PolygonAction.MOVE.toString() -> GoogleMapHelper.translatePolygon(marker)
-            PolygonAction.RIGHT.toString() -> GoogleMapHelper.transformPolygon(marker)
-            PolygonAction.DOWN.toString() -> GoogleMapHelper.transformPolygon(marker)
-            PolygonAction.DIAG.toString() -> GoogleMapHelper.transformPolygon(marker)
-            PolygonAction.ROTATE.toString() -> GoogleMapHelper.rotatePolygon(marker)
+            PolygonAction.MOVE.toString() -> ZoneAreaMapHelper.translatePolygon(marker)
+            PolygonAction.RIGHT.toString() -> ZoneAreaMapHelper.transformPolygon(marker)
+            PolygonAction.DOWN.toString() -> ZoneAreaMapHelper.transformPolygon(marker)
+            PolygonAction.DIAG.toString() -> ZoneAreaMapHelper.transformPolygon(marker)
+            PolygonAction.ROTATE.toString() -> ZoneAreaMapHelper.rotatePolygon(marker)
             PolygonAction.MARKER_START.toString() -> RouteMapHelper.moveMarker(marker, dragMode)
             PolygonAction.MARKER_END.toString() -> RouteMapHelper.moveMarker(marker, dragMode)
         }
-        GoogleMapHelper.tempPoly?.points = GoogleMapHelper.tempLatLng
+        ZoneAreaMapHelper.tempPoly?.points = ZoneAreaMapHelper.tempLatLng
     }
 }

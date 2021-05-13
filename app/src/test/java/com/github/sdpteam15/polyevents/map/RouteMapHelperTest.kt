@@ -141,7 +141,7 @@ class RouteMapHelperTest {
     @Before
     fun setup() {
         mockedMap = Mockito.mock(MapsInterface::class.java)
-        RouteMapHelper.map = mockedMap
+        GoogleMapHelper.map = mockedMap
         Mockito.`when`(mockedMap.cameraPosition).thenReturn(camera)
         RouteMapHelper.nodes.add(rn1)
         RouteMapHelper.nodes.add(rn2)
@@ -365,7 +365,7 @@ class RouteMapHelperTest {
         RouteMapHelper.deleteMode = deleteMode
         assertEquals(deleteMode, RouteMapHelper.deleteMode)
 
-        assertEquals(mockedMap, RouteMapHelper.map)
+        assertEquals(mockedMap, GoogleMapHelper.map)
         RouteMapHelper.lineToEdge
         RouteMapHelper.idToEdge
         RouteMapHelper.tempPolyline

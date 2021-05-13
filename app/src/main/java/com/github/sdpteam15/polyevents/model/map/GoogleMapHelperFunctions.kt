@@ -86,7 +86,7 @@ object GoogleMapHelperFunctions {
      */
     fun getAllZonesFromDB(context: Context, lifecycleOwner: LifecycleOwner, mode: MapsFragmentMod) {
         ZoneManagementListActivity.zones.observeAdd(lifecycleOwner) {
-            GoogleMapHelper.importNewZone(context, it.value, mode != MapsFragmentMod.EditZone)
+            ZoneAreaMapHelper.importNewZone(context, it.value, mode != MapsFragmentMod.EditZone)
         }
 
         Database.currentDatabase.zoneDatabase!!.getAllZones(
@@ -104,10 +104,10 @@ object GoogleMapHelperFunctions {
      * @param idZone id of the zone
      */
     fun zoneAreasToFormattedStringLocation(idZone: String): String {
-        var temp = GoogleMapHelper.zonesToArea[idZone]!!.second.toMutableList()
+        var temp = ZoneAreaMapHelper.zonesToArea[idZone]!!.second.toMutableList()
         var s = ""
         for (uid in temp) {
-            s += areaToFormattedStringLocation(GoogleMapHelper.areasPoints[uid]!!.third.points.dropLast(1))
+            s += areaToFormattedStringLocation(ZoneAreaMapHelper.areasPoints[uid]!!.third.points.dropLast(1))
             s += DatabaseConstant.ZoneConstant.AREAS_SEP
         }
         if (s != "") {

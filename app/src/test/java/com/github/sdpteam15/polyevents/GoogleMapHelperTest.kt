@@ -3,6 +3,7 @@ package com.github.sdpteam15.polyevents
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ZoneConstant.*
 import com.github.sdpteam15.polyevents.model.map.GoogleMapHelper
 import com.github.sdpteam15.polyevents.model.map.GoogleMapHelperFunctions
+import com.github.sdpteam15.polyevents.model.map.ZoneAreaMapHelper
 import com.google.android.gms.internal.maps.zzt
 import com.google.android.gms.internal.maps.zzw
 import com.google.android.gms.maps.model.LatLng
@@ -95,10 +96,10 @@ class GoogleMapHelperTest {
             mutableList.add(i,Mockito.mock(zzw::class.java))
             Mockito.`when`((mutableList[i]).points).thenReturn(map[i])
             areaId = GoogleMapHelper.uidArea++
-            GoogleMapHelper.areasPoints[areaId] = Triple(zoneId, Marker(mockedzzt), Polygon(mutableList[i]))
+            ZoneAreaMapHelper.areasPoints[areaId] = Triple(zoneId, Marker(mockedzzt), Polygon(mutableList[i]))
             areas.add(areaId)
         }
-        GoogleMapHelper.zonesToArea[zoneId] = Pair(null, areas)
+        ZoneAreaMapHelper.zonesToArea[zoneId] = Pair(null, areas)
         assert(correctString == GoogleMapHelperFunctions.zoneAreasToFormattedStringLocation(zoneId))
     }
 }

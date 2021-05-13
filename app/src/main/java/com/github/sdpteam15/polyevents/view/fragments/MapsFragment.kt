@@ -12,8 +12,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
-import com.github.sdpteam15.polyevents.model.map.MapsFragmentMod
-import com.github.sdpteam15.polyevents.model.map.MarkerDragMode
 import com.github.sdpteam15.polyevents.model.map.*
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.*
@@ -30,7 +28,6 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
     OnPolylineClickListener,
     OnPolygonClickListener, OnMarkerClickListener, OnInfoWindowClickListener, OnMarkerDragListener,
     OnMyLocationButtonClickListener, OnMapClickListener {
-
 
 
     companion object {
@@ -102,7 +99,6 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
 
     override fun onMapReady(googleMap: GoogleMap?) {
         GoogleMapHelper.map = GoogleMapAdapter(googleMap)
-        RouteMapHelper.map = GoogleMapAdapter(googleMap)
         RouteMapHelper.getNodesAndEdgesFromDB(context, this)
 
         setMapListeners(googleMap!!)
@@ -120,7 +116,7 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
      * Gets the references of the floating buttons to set listeners and visibility
      * @param view view on which the buttons are
      */
-    private fun setUpButtons(view: View){
+    private fun setUpButtons(view: View) {
         locationButton = view.findViewById(R.id.id_location_button)
 
         addNewAreaButton = view.findViewById(R.id.addNewArea)
@@ -140,7 +136,7 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
     /**
      * Sets the visibility of the buttons acording to the mode
      */
-    private fun setUpButtonsVisibility(){
+    private fun setUpButtonsVisibility() {
         when (mod) {
             MapsFragmentMod.Visitor -> {
                 locateMeButton.visibility = View.VISIBLE
@@ -193,10 +189,10 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
     /**
      * Sets the onClickListeners to the buttons
      */
-    private fun setUpButtonsListeners(){
-        addNewAreaButton.setOnClickListener { GoogleMapHelper.createNewArea(requireContext()) }
-        saveNewAreaButton.setOnClickListener { GoogleMapHelper.saveNewArea(requireContext()) }
-        editAreaButton.setOnClickListener { GoogleMapHelper.editMode(requireContext()) }
+    private fun setUpButtonsListeners() {
+        addNewAreaButton.setOnClickListener { ZoneAreaMapHelper.createNewArea(requireContext()) }
+        saveNewAreaButton.setOnClickListener { ZoneAreaMapHelper.saveNewArea(requireContext()) }
+        editAreaButton.setOnClickListener { ZoneAreaMapHelper.editMode(requireContext()) }
         //deleteAreaButton.setOnClickListener{GoogleMapHelper.deleteMode(requireContext())}
 
         addNewRouteButton.setOnClickListener { RouteMapHelper.createNewRoute(requireContext()) }
@@ -205,7 +201,7 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
 
         heatmapButton.setOnClickListener { GoogleMapHeatmap.heatmap() }
 
-        saveButton.setOnClickListener { GoogleMapHelper.saveArea() }
+        saveButton.setOnClickListener { ZoneAreaMapHelper.saveArea() }
 
         locationButton.setOnClickListener { switchLocationOnOff() }
         locateMeButton.setOnClickListener { moveToMyLocation() }
@@ -214,7 +210,7 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
     /**
      * Sets the listeners of the map
      */
-    fun setMapListeners(googleMap: GoogleMap){
+    fun setMapListeners(googleMap: GoogleMap) {
         googleMap.setOnPolylineClickListener(this)
         googleMap.setOnPolygonClickListener(this)
         googleMap.setOnMarkerClickListener(this)
@@ -266,7 +262,12 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
         GoogleMapActionHandler.polylineClick(polyline)
 
     override fun onInfoWindowClick(marker: Marker) =
-        GoogleMapActionHandler.onInfoWindowClickHandler(requireActivity(), this, marker, useUserLocation)
+        GoogleMapActionHandler.onInfoWindowClickHandler(
+            requireActivity(),
+            this,
+            marker,
+            useUserLocation
+        )
 
     override fun onMarkerDragEnd(marker: Marker) =
         GoogleMapActionHandler.interactionMarkerHandler(marker, MarkerDragMode.DRAG_END)

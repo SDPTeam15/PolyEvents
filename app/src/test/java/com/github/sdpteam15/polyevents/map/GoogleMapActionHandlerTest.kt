@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.map
 
+import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.map.*
 import com.google.android.gms.internal.maps.zzt
 import com.google.android.gms.internal.maps.zzw
@@ -47,7 +48,7 @@ class GoogleMapActionHandlerTest {
         Mockito.`when`(mockedzzt.position).thenReturn(position)
         assertNotNull(mockedzzt.position)
         assertNotNull(mockedMap.addMarker(MarkerOptions()).position)
-        GoogleMapHelper.setupEditZone(null, LatLng(lat, lng))
+        ZoneAreaMapHelper.setupEditZone(null, LatLng(lat, lng))
 
         val mockedzzw = Mockito.mock(zzw::class.java)
         val p = Polygon(mockedzzw)
@@ -67,11 +68,11 @@ class GoogleMapActionHandlerTest {
         Mockito.`when`(mockedzzt.snippet).thenReturn(PolygonAction.ROTATE.toString())
         GoogleMapActionHandler.interactionMarkerHandler(m, MarkerDragMode.DRAG)
 
-        GoogleMapHelper.tempPoly = p
+        ZoneAreaMapHelper.tempPoly = p
         Mockito.`when`(mockedzzt.snippet).thenReturn("TEST")
         GoogleMapActionHandler.interactionMarkerHandler(m, MarkerDragMode.DRAG)
 
-        GoogleMapHelper.areasPoints.clear()
-        GoogleMapHelper.clearTemp()
+        ZoneAreaMapHelper.areasPoints.clear()
+        ZoneAreaMapHelper.clearTemp()
     }
 }
