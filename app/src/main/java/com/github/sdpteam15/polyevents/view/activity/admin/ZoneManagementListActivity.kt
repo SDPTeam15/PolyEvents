@@ -12,6 +12,7 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.Matcher
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.map.GoogleMapHelper
+import com.github.sdpteam15.polyevents.model.map.ZoneAreaMapHelper
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.adapter.ZoneItemAdapter
 
@@ -51,12 +52,12 @@ class ZoneManagementListActivity : AppCompatActivity() {
         }
 
         zones.observe(this) { recyclerView.adapter!!.notifyDataSetChanged() }
-        zones.observeAdd(this) { GoogleMapHelper.importNewZone(this, it.value, false) }
+        zones.observeAdd(this) { ZoneAreaMapHelper.importNewZone(this, it.value, false) }
         findViewById<Button>(R.id.btnNewZone).setOnClickListener {
             startActivityZone(NEW_ZONE)
         }
         zones.observeRemove(this) {
-            GoogleMapHelper.removeZone(it.value.zoneId!!)
+            ZoneAreaMapHelper.removeZone(it.value.zoneId!!)
         }
     }
 

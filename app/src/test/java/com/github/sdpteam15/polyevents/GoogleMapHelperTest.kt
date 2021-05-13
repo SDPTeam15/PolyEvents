@@ -2,6 +2,8 @@ package com.github.sdpteam15.polyevents
 
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ZoneConstant.*
 import com.github.sdpteam15.polyevents.model.map.GoogleMapHelper
+import com.github.sdpteam15.polyevents.model.map.GoogleMapHelperFunctions
+import com.github.sdpteam15.polyevents.model.map.ZoneAreaMapHelper
 import com.google.android.gms.internal.maps.zzt
 import com.google.android.gms.internal.maps.zzw
 import com.google.android.gms.maps.model.LatLng
@@ -53,12 +55,12 @@ class GoogleMapHelperTest {
         }
         correctString =
             correctString.substring(0, correctString.length - POINTS_SEP.value.length)
-        assert(correctString == GoogleMapHelper.areaToFormattedStringLocation(listLngLat.dropLast(1)))
+        assert(correctString == GoogleMapHelperFunctions.areaToFormattedStringLocation(listLngLat.dropLast(1)))
     }
 
     @Test
     fun areaToFormattedStringLocationReturnEmptyStringIfNullArgument() {
-        assert(GoogleMapHelper.areaToFormattedStringLocation(null) == "")
+        assert(GoogleMapHelperFunctions.areaToFormattedStringLocation(null) == "")
     }
 
     @Test
@@ -94,10 +96,10 @@ class GoogleMapHelperTest {
             mutableList.add(i,Mockito.mock(zzw::class.java))
             Mockito.`when`((mutableList[i]).points).thenReturn(map[i])
             areaId = GoogleMapHelper.uidArea++
-            GoogleMapHelper.areasPoints[areaId] = Triple(zoneId, Marker(mockedzzt), Polygon(mutableList[i]))
+            ZoneAreaMapHelper.areasPoints[areaId] = Triple(zoneId, Marker(mockedzzt), Polygon(mutableList[i]))
             areas.add(areaId)
         }
-        GoogleMapHelper.zonesToArea[zoneId] = Pair(null, areas)
-        assert(correctString == GoogleMapHelper.zoneAreasToFormattedStringLocation(zoneId))
+        ZoneAreaMapHelper.zonesToArea[zoneId] = Pair(null, areas)
+        assert(correctString == GoogleMapHelperFunctions.zoneAreasToFormattedStringLocation(zoneId))
     }
 }

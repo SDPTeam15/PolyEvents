@@ -19,6 +19,7 @@ import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.map.GoogleMapHelper
+import com.github.sdpteam15.polyevents.model.map.ZoneAreaMapHelper
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import com.google.android.gms.internal.maps.zzt
@@ -140,8 +141,8 @@ class ZoneManagementTest {
     fun updateInfoRedirectToCorrectActivityIfCorrect() {
 
         val editingZone = "Zone ${GoogleMapHelper.uidZone++}"
-        GoogleMapHelper.editingZone = editingZone
-        GoogleMapHelper.zonesToArea[editingZone] = Pair(null, mutableListOf())
+        ZoneAreaMapHelper.editingZone = editingZone
+        ZoneAreaMapHelper.zonesToArea[editingZone] = Pair(null, mutableListOf())
 
         val zoneInfo = Zone(editingZone, zoneName, zoneLoc, zoneDesc)
 
@@ -180,9 +181,9 @@ class ZoneManagementTest {
         onView(withId(R.id.zone_management_list_activity))
             .check(matches(isDisplayed()))
         scenario2.close()
-        GoogleMapHelper.editingZone = null
-        GoogleMapHelper.zonesToArea.clear()
-        GoogleMapHelper.areasPoints.clear()
+        ZoneAreaMapHelper.editingZone = null
+        ZoneAreaMapHelper.zonesToArea.clear()
+        ZoneAreaMapHelper.areasPoints.clear()
 
     }
 
@@ -367,20 +368,20 @@ class ZoneManagementTest {
         val area1 = GoogleMapHelper.uidArea++
         val area2 = GoogleMapHelper.uidArea++
 
-        GoogleMapHelper.areasPoints[area1] = Triple(editingZone, m, p)
-        GoogleMapHelper.areasPoints[area2] = Triple(editingZone, m2, p2)
+        ZoneAreaMapHelper.areasPoints[area1] = Triple(editingZone, m, p)
+        ZoneAreaMapHelper.areasPoints[area2] = Triple(editingZone, m2, p2)
 
-        GoogleMapHelper.editingZone = editingZone
-        GoogleMapHelper.zonesToArea[editingZone] = Pair(null, mutableListOf(area1, area2))
+        ZoneAreaMapHelper.editingZone = editingZone
+        ZoneAreaMapHelper.zonesToArea[editingZone] = Pair(null, mutableListOf(area1, area2))
 
-        assert(GoogleMapHelper.zonesToArea[editingZone]!!.second.size==nbAreas)
+        assert(ZoneAreaMapHelper.zonesToArea[editingZone]!!.second.size == nbAreas)
 
         onView(withId(R.id.btnDeleteZoneCoordinates)).perform(click())
-        assert(GoogleMapHelper.zonesToArea[editingZone]!!.second.size==0)
+        assert(ZoneAreaMapHelper.zonesToArea[editingZone]!!.second.size == 0)
 
-        GoogleMapHelper.editingZone = null
-        GoogleMapHelper.zonesToArea.clear()
-        GoogleMapHelper.areasPoints.clear()
+        ZoneAreaMapHelper.editingZone = null
+        ZoneAreaMapHelper.zonesToArea.clear()
+        ZoneAreaMapHelper.areasPoints.clear()
 
     }
 
