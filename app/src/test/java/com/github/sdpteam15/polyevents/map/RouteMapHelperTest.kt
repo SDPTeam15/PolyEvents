@@ -8,7 +8,7 @@ import com.github.sdpteam15.polyevents.model.entity.RouteEdge
 import com.github.sdpteam15.polyevents.model.entity.RouteNode
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.map.*
-import com.github.sdpteam15.polyevents.model.map.GoogleMapHelper.areaToFormattedStringLocation
+import com.github.sdpteam15.polyevents.model.map.GoogleMapHelperFunctions.areaToFormattedStringLocation
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.time
 import com.github.sdpteam15.polyevents.model.map.RouteMapHelper.addLine
 import com.github.sdpteam15.polyevents.model.observable.Observable
@@ -84,7 +84,7 @@ class RouteMapHelperTest {
             )
         )
 
-        val result1 = RouteMapHelper.getShortestPath(LatLng(5.5, 7.0), "1")!!
+        val result1 = RouteMapHelper.getShortestPath(LatLng(5.5, 7.0), "1", true)!!
         val expected1 = listOf(
             LatLng(5.5, 7.0),
             LatLng(5.5, 6.0),
@@ -94,7 +94,7 @@ class RouteMapHelperTest {
         )
 
         assertListLatLngCloseEnough(expected1, result1)
-        val result2 = RouteMapHelper.getShortestPath(LatLng(1.0, 6.0), "1")!!
+        val result2 = RouteMapHelper.getShortestPath(LatLng(1.0, 6.0), "1", true)!!
         val expected2 = listOf(
             LatLng(1.0, 6.0),
             LatLng(2.0, 5.0),
@@ -102,7 +102,7 @@ class RouteMapHelperTest {
         )
         assertListLatLngCloseEnough(expected2, result2)
 
-        val result3 = RouteMapHelper.getShortestPath(LatLng(3.5, 2.5), "2")!!
+        val result3 = RouteMapHelper.getShortestPath(LatLng(3.5, 2.5), "2", true)!!
         val expected3 = listOf(
             LatLng(3.5, 2.5),
             LatLng(4.0, 3.0),
@@ -112,7 +112,7 @@ class RouteMapHelperTest {
         assertListLatLngCloseEnough(expected3, result3)
 
         RouteMapHelper.edges.remove(edge1)
-        val result4 = RouteMapHelper.getShortestPath(LatLng(1.0, 6.0), "1")!!
+        val result4 = RouteMapHelper.getShortestPath(LatLng(1.0, 6.0), "1", true)!!
         val expected4 = listOf(
             LatLng(1.0, 6.0),
             LatLng(2.0, 5.0),
@@ -141,7 +141,7 @@ class RouteMapHelperTest {
     @Before
     fun setup() {
         mockedMap = Mockito.mock(MapsInterface::class.java)
-        RouteMapHelper.map = mockedMap
+        GoogleMapHelper.map = mockedMap
         Mockito.`when`(mockedMap.cameraPosition).thenReturn(camera)
         RouteMapHelper.nodes.add(rn1)
         RouteMapHelper.nodes.add(rn2)
@@ -365,7 +365,7 @@ class RouteMapHelperTest {
         RouteMapHelper.deleteMode = deleteMode
         assertEquals(deleteMode, RouteMapHelper.deleteMode)
 
-        assertEquals(mockedMap, RouteMapHelper.map)
+        assertEquals(mockedMap, GoogleMapHelper.map)
         RouteMapHelper.lineToEdge
         RouteMapHelper.idToEdge
         RouteMapHelper.tempPolyline
