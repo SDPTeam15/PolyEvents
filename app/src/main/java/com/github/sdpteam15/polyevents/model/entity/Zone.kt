@@ -7,6 +7,7 @@ import com.github.sdpteam15.polyevents.model.map.LatLngOperator.angle
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.divide
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.euclideanDistance
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.isTooParallel
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.mean
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.minus
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.plus
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.scalar
@@ -174,15 +175,23 @@ data class Zone(
     }
 
     private fun edgeIsInZone(edges: RouteEdge): Boolean {
-        val mid = divide(plus(edges.start!!.toLatLng(), edges.end!!.toLatLng()), 2.0)
+        val list = mutableListOf(
+            edges.start!!.toLatLng(),
+            edges.end!!.toLatLng(),
+        )
+        if(edges.start!!.areaId != zoneId)
+            list.remove(edges.end!!.toLatLng())
+        if(edges.end!!.areaId != zoneId)
+            list.remove(edges.start!!.toLatLng())
+        val mean = mean(list)
         for (l in getZoneCoordinates()) {
-            val AM = minus(mid, l[0])
+            val AM = minus(mean, l[0])
             val AB = minus(l[1], l[0])
-            val BM = minus(mid, l[1])
+            val BM = minus(mean, l[1])
             val BC = minus(l[2], l[1])
             //https://math.stackexchange.com/questions/190111/how-to-check-if-a-point-is-inside-a-rectangle
-            if ((scalar(AM, AB) in (-THRESHOLD)..(squaredNorm(AB) + THRESHOLD)) &&
-                (scalar(BM, BC) in (-THRESHOLD)..(squaredNorm(BC) + THRESHOLD))
+            if ((scalar(AM, AB) in (-1e-7)..(squaredNorm(AB) + 1e-7)) &&
+                (scalar(BM, BC) in (-1e-7)..(squaredNorm(BC) + 1e-7))
             )
                 return true
         }
