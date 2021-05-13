@@ -64,7 +64,10 @@ data class Zone(
         return polygonsUnion(getZoneCoordinates())
     }
 
-
+    /**
+     * Get the coordinates of all the rectangular areas on the current Zone
+     * @return A list of list of LatLng points composing an area
+     */
     fun getDrawingPoints(): List<List<LatLng>> {
         return getZoneCoordinates()
     }
