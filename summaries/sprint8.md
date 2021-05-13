@@ -27,6 +27,14 @@ Next week, I will work on the Item requests, to see the state of an item request
 ## Robin
 
 ## Stephane
+This week, I implemented the leave review and rating on an event functionality. I did not implement the user settings tab that should
+replace the More tab until we figure out where to put the buttons in the More fragment. Instead I spent some time looking
+into the MapFragment to prepare for next week's sprint.
+
+My time estimates were good for the leave review functionality. Testing took an extra hour or so, 
+because I introduced new testing dependencies in the gradle for testing fragments, that took some getting used to.
+
+Next week, I will display the events per zone when clicked upon in the map.
 
 ## Overall team
 
