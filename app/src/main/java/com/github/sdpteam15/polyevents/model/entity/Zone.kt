@@ -12,6 +12,7 @@ import com.github.sdpteam15.polyevents.model.map.LatLngOperator.minus
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.plus
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.scalar
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.squaredNorm
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.polygonsUnion
 import com.github.sdpteam15.polyevents.model.map.RouteMapHelper.getNearestPoint
 import com.github.sdpteam15.polyevents.model.map.THRESHOLD
 import com.google.android.gms.maps.model.LatLng
@@ -57,20 +58,18 @@ data class Zone(
     }
 
     /**
-     * get the list of polygons in drawing mod
-     * @return a list of polygons with the hole Pair(outside, list of holes)
-     */
-    fun getDrawingPolygons(): List<Pair<List<LatLng>, List<List<LatLng>>?>> {
-        // TODO reduce the number of element
-        return getZoneCoordinates().map { Pair(it, null) }
-    }
-
-    /**
      * Get the coordinates of all the grouped areas on the current Zone
      * @return A list of list of LatLng points composing an area
      */
+    fun getDrawingPolygons(): List<Pair<List<LatLng>, List<List<LatLng>>?>> {
+        return polygonsUnion(getZoneCoordinates())
+    }
+
+    /**
+     * Get the coordinates of all the rectangular areas on the current Zone
+     * @return A list of list of LatLng points composing an area
+     */
     fun getDrawingPoints(): List<List<LatLng>> {
-        // TODO reduce the number of element
         return getZoneCoordinates()
     }
 

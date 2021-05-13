@@ -107,8 +107,8 @@ object RouteMapHelper {
             return null
         // gets the closest point on the map where we can go from our current position
         val nearestPos = getPosOnNearestAttachable(startPosition)
-        // if nothing to attach to, no path can be found
-        if (nearestPos.second == null) {
+        // if nothing to attach to or the zone is not connected to the graph, no path can be found
+        if (nearestPos.second == null || nodes.all{it.areaId != targetZoneId}) {
             return null
         }
         val nodesForShortestPath = mutableSetOf<RouteNode>()
