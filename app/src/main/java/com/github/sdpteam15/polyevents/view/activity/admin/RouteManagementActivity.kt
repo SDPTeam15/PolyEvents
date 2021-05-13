@@ -6,6 +6,7 @@ import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.model.map.MapsFragmentMod
 import com.github.sdpteam15.polyevents.view.fragments.MapsFragment
 
 class RouteManagementActivity : AppCompatActivity() {
@@ -18,7 +19,7 @@ class RouteManagementActivity : AppCompatActivity() {
         setContentView(R.layout.activity_route_management)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         //Get the views needed in the code
-        val mapFragment = MapsFragment(MapsFragment.MapsFragmentMod.EditRoute)
+        val mapFragment = MapsFragment(MapsFragmentMod.EditRoute)
 
         //display the FrameLayout that will contain the map fragment
         findViewById<FrameLayout>(R.id.flMapEditRoute).visibility = View.VISIBLE

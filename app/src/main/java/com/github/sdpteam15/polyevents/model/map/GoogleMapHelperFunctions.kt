@@ -78,6 +78,7 @@ object GoogleMapHelperFunctions {
         return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 
+    //TODO : Maybe move into GoogleMapHelper along with the observableList
     /**
      * Get all zones from the database
      * @param context context

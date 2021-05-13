@@ -232,24 +232,4 @@ object LatLngOperator {
     fun project(a: LatLng, b: LatLng): LatLng {
         return time(b, scalar(a, divide(b, squaredNorm(b))))
     }
-
-    /**
-     * Returns the mean of the points
-     * @param points list of points
-     * @return the mean of the points
-     */
-    fun mean(points: List<LatLng>): LatLng {
-        var latitude = 0.0
-        var longitude = 0.0
-        var nbr = 0
-        for (point in points) {
-            latitude += point.latitude
-            longitude += point.longitude
-            nbr += 1
-        }
-        return if (nbr != 0)
-            LatLng(latitude / nbr, longitude / nbr)
-        else
-            LatLng(0.0, 0.0)
-    }
 }
