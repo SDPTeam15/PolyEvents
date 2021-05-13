@@ -8,10 +8,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.view.activity.admin.EventManagementListActivity
-import com.github.sdpteam15.polyevents.view.activity.admin.ItemRequestManagementActivity
-import com.github.sdpteam15.polyevents.view.activity.admin.UserManagementListActivity
-import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementListActivity
+import com.github.sdpteam15.polyevents.view.activity.admin.*
 
 
 /**
@@ -42,8 +39,8 @@ class AdminHubFragment : Fragment() {
             startActivity(intent)
         }
         viewRoot.findViewById<Button>(R.id.btnRedirectRouteManager).setOnClickListener {
-            //TODO val intent = Intent(inflater.context, RouteManagerActivity::class.java)
-            //TODO startActivity(intent)
+            val intent = Intent(inflater.context, RouteManagementActivity::class.java)
+            startActivity(intent)
         }
         return viewRoot
     }
