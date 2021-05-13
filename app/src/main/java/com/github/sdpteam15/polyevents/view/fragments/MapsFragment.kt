@@ -181,7 +181,7 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
 
                 addNewRouteButton.visibility = View.VISIBLE
                 removeRouteButton.visibility = View.VISIBLE
-                saveNewRouteButton.visibility = View.VISIBLE
+                saveNewRouteButton.visibility = View.INVISIBLE
             }
         }
     }

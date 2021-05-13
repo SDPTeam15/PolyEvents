@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import androidx.lifecycle.LifecycleOwner
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.entity.RouteEdge
 import com.github.sdpteam15.polyevents.model.entity.RouteNode
@@ -204,10 +205,13 @@ object RouteMapHelper {
          * linking each node to its previous node on the tree
          */
         fun dijkstra(
-            nodes: Set<RouteNode>,
             edges: Set<RouteEdge>,
             start: RouteNode
         ): Map<RouteNode, RouteNode?> {
+            val nodes = edges
+                .flatMap { listOf(it.start!!, it.end!!) }
+                .toSet()
+
             if (start !in nodes) throw IllegalArgumentException("Start route not in set of nodes for Dijkstra")
             val done: MutableSet<RouteNode> = mutableSetOf()
 
@@ -266,7 +270,7 @@ object RouteMapHelper {
 
         setUpGraph()
 
-        val shortestPaths = dijkstra(nodesForShortestPath, edgesForShortestPath, startingNode)
+        val shortestPaths = dijkstra(edgesForShortestPath, startingNode)
 
         // convert the path to the tree to the target node into a list of point
         val pointlist: MutableList<LatLng> = mutableListOf()
