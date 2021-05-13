@@ -356,19 +356,29 @@ object LatLngOperator {
 
         var curVertex = polygon.start
         var nbOfIntersections = 0
+        var lastIntersection: LatLng? = null
+        var currentIntersection: LatLng? = null
         do {
             //if point is on a segment, immediately we consider the point inside the polygon
             if (isOnSegment(curVertex.xy, curVertex.next!!.xy, point)) return true
 
             //if intersection add to the count,
-
+            lastIntersection = currentIntersection
+            currentIntersection = getIntersection(
+                curVertex.xy,
+                curVertex.next!!.xy,
+                point,
+                LatLng(maxLat, point.longitude)
+            )
             if (
-                getIntersectionCoefficients(
-                    curVertex.xy,
-                    curVertex.next!!.xy,
-                    point,
-                    LatLng(maxLat, point.longitude)
-                ) != null
+            //only count once
+                currentIntersection != null &&
+                if (lastIntersection != null) {
+                    !isCloseTo(lastIntersection, currentIntersection)
+                } else {
+                    true
+                }
+            //inter != null
             ) {
                 nbOfIntersections++
             }
@@ -416,17 +426,21 @@ object LatLngOperator {
                     queuedRectangles.addLast(notIntersecting.removeFirst())
                 }
                 remainingRectangles.remove(rectangle)
-                holes = holes.map {
+                /*holes = holes.map {
                     polygonOperation(
                         Polygon(it),
                         Polygon(rectangle),
                         PolygonOperationType.DIFFERENCE
                     ).flatMap { it2 -> it2.first }.toMutableList()
-                }.toMutableList()
-                holes.addAll(unionShape[0].second?: listOf())
+                }.toMutableList()*/
+                //holes.addAll(unionShape[0].second?: listOf())
                 outerShape = unionShape[0].first
             }
-            finalShape.add(Pair(outerShape,holes))
+            if (holes.isEmpty()) {
+                finalShape.add(Pair(outerShape, null))
+            } else {
+                finalShape.add(Pair(outerShape, holes))
+            }
         }
 
         return finalShape
@@ -486,62 +500,67 @@ object LatLngOperator {
         } while (curVertP1 != subject.start || curVertP2 != clip.start)
 
 
-        // Check if the resulting zones are one inside an other or disjoint
-        // In this case we can return directly
-        var subjectInClip = true
-        var clipInSubject = true
-        var subjectAndClipSeparated = true
-        subject.foreach {
-            if (pointInsidePolygon(it.xy, clip)) subjectAndClipSeparated = false
-            else subjectInClip = false
-        }
-        clip.foreach {
-            if (pointInsidePolygon(it.xy, subject)) subjectAndClipSeparated = false
-            else clipInSubject = false
-        }
+        var intersections = false
+        subject.foreach { intersections = intersections || it.intersect }
+        clip.foreach { intersections = intersections || it.intersect }
+
+        if (!intersections) {
+            // Check if the resulting zones are one inside an other or disjoint
+            // In this case we can return directly
+            var subjectInClip = true
+            var clipInSubject = true
+            var subjectAndClipSeparated = true
+            subject.foreach {
+                if (pointInsidePolygon(it.xy, clip)) subjectAndClipSeparated = false
+                else subjectInClip = false
+            }
+            clip.foreach {
+                if (pointInsidePolygon(it.xy, subject)) subjectAndClipSeparated = false
+                else clipInSubject = false
+            }
 
 
-        if (polygonOperationType == PolygonOperationType.UNION) {
-            if (subjectInClip) return mutableListOf(
-                Pair(
-                    clip.toLatLongList(), null
+            if (polygonOperationType == PolygonOperationType.UNION) {
+                if (subjectInClip) return mutableListOf(
+                    Pair(
+                        clip.toLatLongList(), null
+                    )
                 )
-            )
-            if (clipInSubject) return mutableListOf(
-                Pair(
-                    subject.toLatLongList(), null
+                if (clipInSubject) return mutableListOf(
+                    Pair(
+                        subject.toLatLongList(), null
+                    )
                 )
-            )
-            if (subjectAndClipSeparated) return mutableListOf(
-                Pair(subject.toLatLongList(), null),
-                Pair(clip.toLatLongList(), null)
-            )
-        } else if (polygonOperationType == PolygonOperationType.INTERSECTION) {
-            if (subjectInClip) return mutableListOf(
-                Pair(
-                    subject.toLatLongList(), null
+                if (subjectAndClipSeparated) return mutableListOf(
+                    Pair(subject.toLatLongList(), null),
+                    Pair(clip.toLatLongList(), null)
                 )
-            )
-            if (clipInSubject) return mutableListOf(
-                Pair(
-                    clip.toLatLongList(), null
+            } else if (polygonOperationType == PolygonOperationType.INTERSECTION) {
+                if (subjectInClip) return mutableListOf(
+                    Pair(
+                        subject.toLatLongList(), null
+                    )
                 )
-            )
-            if (subjectAndClipSeparated) return mutableListOf()
-        } else if (polygonOperationType == PolygonOperationType.DIFFERENCE) {
-            if (subjectInClip) return mutableListOf()
-            if (clipInSubject) return mutableListOf(
-                Pair(
-                    subject.toLatLongList(), mutableListOf(clip.toLatLongList())
+                if (clipInSubject) return mutableListOf(
+                    Pair(
+                        clip.toLatLongList(), null
+                    )
                 )
-            )
-            if (subjectAndClipSeparated) return mutableListOf(
-                Pair(
-                    subject.toLatLongList(), null
+                if (subjectAndClipSeparated) return mutableListOf()
+            } else if (polygonOperationType == PolygonOperationType.DIFFERENCE) {
+                if (subjectInClip) return mutableListOf()
+                if (clipInSubject) return mutableListOf(
+                    Pair(
+                        subject.toLatLongList(), mutableListOf(clip.toLatLongList())
+                    )
                 )
-            )
+                if (subjectAndClipSeparated) return mutableListOf(
+                    Pair(
+                        subject.toLatLongList(), null
+                    )
+                )
+            }
         }
-
 
         //phase 2 set entry and exit points
 

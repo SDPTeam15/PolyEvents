@@ -15,12 +15,12 @@ import com.github.sdpteam15.polyevents.model.map.LatLngOperator.plus
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.polygonOperation
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.project
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.scalar
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.shapePolygonUnion
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.squaredEuclideanDistance
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.squaredNorm
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.time
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Test
-import java.lang.AssertionError
 import kotlin.math.sqrt
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -293,7 +293,7 @@ class LatLngOperatorTest {
 
 
     @Test
-    fun polygonDifferenceWithOverlappingZones(){
+    fun polygonDifferenceWithOverlappingZones() {
         var subject = LatLngOperator.Polygon(
             listOf(
                 LatLng(0.0, 1.0), LatLng(0.0, 2.0), LatLng(3.0, 2.0), LatLng(3.0, 1.0)
@@ -322,7 +322,7 @@ class LatLngOperatorTest {
         print(polygon)
         try {
             assertPolygonsEquivalent(polygon[0].first, expected)
-        }catch (e:AssertionError){
+        } catch (e: AssertionError) {
             assertPolygonsEquivalent(polygon[0].first, expected2)
             assertPolygonsEquivalent(polygon[1].first, expected)
             return
@@ -457,14 +457,141 @@ class LatLngOperatorTest {
 
         try {
             assertPolygonsEquivalent(polygon[0].second!![0], holes[0])
-        }catch (e:AssertionError){
+        } catch (e: AssertionError) {
             assertPolygonsEquivalent(polygon[0].second!![0], holes[1])
             assertPolygonsEquivalent(polygon[0].second!![1], holes[0])
             return
         }
         assertPolygonsEquivalent(polygon[0].second!![1], holes[1])
+
+        /////////////////////////////////////////////////////////////////////////////////////
+        subject = LatLngOperator.Polygon(
+            listOf(
+                LatLng(2.0, 0.0),
+                LatLng(7.0, 0.0),
+                LatLng(7.0, 6.0),
+                LatLng(6.0, 6.0),
+                LatLng(6.0, 1.0),
+                LatLng(5.0, 1.0),
+                LatLng(5.0, 6.0),
+                LatLng(4.0, 6.0),
+                LatLng(4.0, 1.0),
+                LatLng(3.0, 1.0),
+                LatLng(3.0, 6.0),
+                LatLng(2.0, 6.0)
+            )
+        )
+        clip = LatLngOperator.Polygon(
+            listOf(
+                LatLng(0.0, 2.0),
+                LatLng(8.0, 2.0),
+                LatLng(8.0, 3.0),
+                LatLng(2.0, 3.0),
+                LatLng(1.0, 4.0),
+                LatLng(8.0, 4.0),
+                LatLng(8.0, 5.0),
+                LatLng(0.0, 5.0)
+            )
+        )
+        expected = listOf(
+            LatLng(2.0, 0.0),
+            LatLng(7.0, 0.0),
+            LatLng(7.0, 2.0),
+            LatLng(8.0, 2.0),
+            LatLng(8.0, 3.0),
+            LatLng(7.0, 3.0),
+            LatLng(7.0, 4.0),
+            LatLng(8.0, 4.0),
+            LatLng(8.0, 5.0),
+            LatLng(7.0, 5.0),
+            LatLng(7.0, 6.0),
+            LatLng(6.0, 6.0),
+            LatLng(6.0, 5.0),
+            LatLng(5.0, 5.0),
+            LatLng(5.0, 6.0),
+            LatLng(4.0, 6.0),
+            LatLng(4.0, 5.0),
+            LatLng(3.0, 5.0),
+            LatLng(3.0, 6.0),
+            LatLng(2.0, 6.0),
+            LatLng(2.0, 5.0),
+            LatLng(0.0, 5.0),
+            LatLng(0.0, 2.0),
+            LatLng(2.0, 2.0)
+        )
+
+        polygon = polygonOperation(subject, clip, UNION)
+        assertPolygonsEquivalent(polygon[0].first, expected)
+        assert(polygon[0].second!!.size == 5)
     }
 
+    @Test
+    fun shapePolygonUnionWorks() {
+        val rectangles = listOf(
+
+            listOf(
+                LatLng(1.0, 0.5),
+                LatLng(2.0, 0.5),
+                LatLng(2.0, 4.5),
+                LatLng(1.0, 4.5)
+            ),
+            listOf(
+                LatLng(3.0, 0.0),
+                LatLng(4.0, 0.0),
+                LatLng(4.0, 5.0),
+                LatLng(3.0, 5.0)
+            ),
+
+            listOf(
+                LatLng(1.5, 3.0),
+                LatLng(1.5, 4.0),
+                LatLng(5.5, 4.0),
+                LatLng(5.5, 3.0)
+            ),
+            listOf(
+                LatLng(0.0, 1.0),
+                LatLng(0.0, 2.0),
+                LatLng(7.0, 2.0),
+                LatLng(7.0, 1.0)
+            ),
+            listOf(
+                LatLng(5.0, 1.5),
+                LatLng(6.0, 1.5),
+                LatLng(6.0, 5.0),
+                LatLng(5.0, 5.0)
+            )
+        )
+        val union = shapePolygonUnion(rectangles)
+        println(union)
+        var expected = listOf(
+            LatLng(2.0, 4.0),
+            LatLng(3.0, 4.0),
+            LatLng(3.0, 5.0),
+            LatLng(4.0, 5.0),
+            LatLng(4.0, 4.0),
+            LatLng(5.0, 4.0),
+            LatLng(5.0, 5.0),
+            LatLng(6.0, 5.0),
+            LatLng(6.0, 2.0),
+            LatLng(7.0, 2.0),
+            LatLng(7.0, 1.0),
+            LatLng(4.0, 1.0),
+            LatLng(4.0, 0.0),
+            LatLng(3.0, 0.0),
+            LatLng(3.0, 1.0),
+            LatLng(2.0, 1.0),
+            LatLng(2.0, 0.5),
+            LatLng(1.0, 0.5),
+            LatLng(1.0, 1.0),
+            LatLng(0.0, 1.0),
+            LatLng(0.0, 2.0),
+            LatLng(1.0, 2.0),
+            LatLng(1.0, 4.5),
+            LatLng(2.0, 4.5),
+            LatLng(2.0, 4.0)
+        )
+        assertPolygonsEquivalent(expected, union[0].first)
+    }
 
     fun assertPolygonsEquivalent(list1: List<LatLng>, list2: List<LatLng>) {
         println(list1)
