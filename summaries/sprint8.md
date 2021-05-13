@@ -21,3 +21,7 @@ Next week I will focus on material requests and add a functionality to accept or
 ## Stephane
 
 ## Overall team
+
+This week, all team member finish their tasks on time with over all great timee estimates. The destabilisation tasks were splits between three people: Alessio, Mathieu and Stephane. We did this all the Friday afternoon and a great collaboration was done between the three of us. Florian and Robin also collaborate to finish their tasks. It's great to see such a team work!
+
+We had, two standup meetings, one on Monday and one on Wednesday. Except Florian that needs a bit of help with its hardcore task (Mathieu and Robin helped him), nobody had noticeable problems. 
