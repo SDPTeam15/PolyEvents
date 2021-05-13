@@ -16,6 +16,14 @@ Next week I will focus on material requests and add a functionality to accept or
 
 ## Mathieu
 
+This week, I implemented the part that displays comments and the rating of an event on its activity.
+
+I also did a refactor of GoogleMapHelper.
+
+My time estimate was ok, displaying the ratings was a bit easier than I expected and I used this time to do a bigger refactor.
+
+Next week, I will work on the Item requests, to see the state of an item request.
+
 ## Robin
 
 ## Stephane
