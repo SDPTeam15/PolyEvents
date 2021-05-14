@@ -228,7 +228,7 @@ class EventManagementActivity : AppCompatActivity() {
         } else {
             btnManage.setOnClickListener {
                 if (verifyCondition()) {
-                    currentDatabase.eventDatabase!!.updateEvents(getInformation()).observe(this) {
+                    currentDatabase.eventDatabase!!.updateEvent(getInformation()).observe(this) {
                         redirectOrDisplayError(
                                 getString(R.string.event_update_success),
                                 getString(R.string.failed_to_update_event_info),

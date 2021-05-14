@@ -1,7 +1,6 @@
 package com.github.sdpteam15.polyevents.view.adapter
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,19 +26,15 @@ class EventListAdapter(
         context: Context,
         lifecycleOwner: LifecycleOwner,
         private val allEvents: ObservableMap<String, Pair<String, ObservableList<Event>>>,
-        private val modifyListener: (String) -> Unit
+        private val modifyListener: (String) -> Unit,
+        private val deleteListener: (String, Event) -> Unit
 ) : RecyclerView.Adapter<EventListAdapter.CustomViewHolder<*>>() {
     private var isZoneOpen = mutableMapOf<String, Boolean>()
     private val inflater = LayoutInflater.from(context)
+    private val noHourText = "No hours defined"
 
     init {
         allEvents.observe(lifecycleOwner) {
-            for (k in allEvents.keys){
-                Log.d("COUNTINGSTAR", k)
-                for(v in allEvents[k]?.second?: listOf()){
-                    Log.d("COUTINGSTAR3",v.eventName!!)
-                }
-            }
             for (k in it.value.keys) {
                 if (k !in isZoneOpen) {
                     isZoneOpen[k] = false
@@ -50,7 +45,7 @@ class EventListAdapter(
     }
 
 
-    abstract inner class CustomViewHolder<T>(private val view: View) :
+    abstract inner class CustomViewHolder<T>(view: View) :
             RecyclerView.ViewHolder(view) {
         abstract fun bind(value: T)
         abstract fun unbind()
@@ -93,11 +88,11 @@ class EventListAdapter(
         override fun bind(value: Event) {
             this.event = value
             view.findViewById<TextView>(R.id.tvEventTitle).text = event.eventName
-            view.findViewById<TextView>(R.id.tvEventStartDate).text = localDatetimeToString(event.startTime, "No hours defined")
-            view.findViewById<TextView>(R.id.tvEventEndDate).text = localDatetimeToString(event.endTime, "No hours defined")
+            view.findViewById<TextView>(R.id.tvEventStartDate).text = localDatetimeToString(event.startTime, noHourText)
+            view.findViewById<TextView>(R.id.tvEventEndDate).text = localDatetimeToString(event.endTime, noHourText)
             view.findViewById<ImageButton>(R.id.idEditEventButton).setOnClickListener { modifyListener(event.eventId!!) }
             view.findViewById<ImageButton>(R.id.idDeleteEventButton).setOnClickListener {
-                TODO()
+                deleteListener(event.zoneId!!, event)
             }
         }
 
@@ -112,11 +107,11 @@ class EventListAdapter(
         for (isOpen in isZoneOpen.entries) {
             count += 1 + (if (!isOpen.value) 0 else allEvents[isOpen.key]?.second?.size ?: 0)
         }
-        Log.d("COUNTING COUNTING", count.toString())
         return count
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder<*> {
+        //Create the correct holder
         return when (viewType) {
             ZONE_HOLDER -> {
                 val view = inflater.inflate(R.layout.card_zone_name, parent, false)
@@ -141,11 +136,14 @@ class EventListAdapter(
             is ZoneViewHolder -> {
                 var res = 0
                 for (zoneId in allEvents.keys) {
+                    // The zone is always displayed => added to count
                     if (res++ == position) {
+                        // if this is the zone we are looking for, bind it
                         holder.bind(zoneId)
                         return
                     }
 
+                    // Add the events to count only if they are visible in the recycler view
                     if (isZoneOpen[zoneId] == true) {
                         res += allEvents[zoneId]?.second?.size ?: 0
                     }
@@ -154,10 +152,13 @@ class EventListAdapter(
             is EventViewHolder -> {
                 var res = 0
                 for (zoneId in allEvents.keys) {
+                    // The zone is always displayed => added to count
                     res++
+                    // Add the events to count only if they are visible in the recycler view
                     if (isZoneOpen[zoneId] == true) {
                         for (event in allEvents[zoneId]?.second ?: listOf()) {
                             if (res++ == position) {
+                                // if this is the event we are looking for, bind it
                                 holder.bind(event)
                                 return
                             }
@@ -174,12 +175,16 @@ class EventListAdapter(
     override fun getItemViewType(position: Int): Int {
         var res = 0
         for (zone in allEvents.keys) {
+            // The zone is always displayed => added to count
             if (res++ == position) {
+                //Return the identifier for zone hodler
                 return ZONE_HOLDER
             }
+            // Add the events to count only if they are visible in the recycler view
             if (isZoneOpen[zone] == true) {
                 for (event in allEvents[zone]?.second ?: listOf()) {
                     if (res++ == position) {
+                        //Return the identifier for event holder
                         return EVENT_HOLDER
                     }
                 }
