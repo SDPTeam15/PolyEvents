@@ -25,6 +25,11 @@ My time estimate was ok, displaying the ratings was a bit easier than I expected
 Next week, I will work on the Item requests, to see the state of an item request.
 
 ## Robin
+This week, I implemented the management of zones in the route function and an activity to manage the route.
+
+My time estimates were good, I did my job in time.
+
+Next week, I will work on a personal home page for each user type.
 
 ## Stephane
 This week, I implemented the leave review and rating on an event functionality. I did not implement the user settings tab that should
