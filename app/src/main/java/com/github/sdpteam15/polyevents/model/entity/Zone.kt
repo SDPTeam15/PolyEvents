@@ -8,10 +8,7 @@ import com.github.sdpteam15.polyevents.model.map.LatLngOperator.divide
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.euclideanDistance
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.isTooParallel
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.mean
-import com.github.sdpteam15.polyevents.model.map.LatLngOperator.minus
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.plus
-import com.github.sdpteam15.polyevents.model.map.LatLngOperator.scalar
-import com.github.sdpteam15.polyevents.model.map.LatLngOperator.squaredNorm
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.polygonsUnion
 import com.github.sdpteam15.polyevents.model.map.RouteMapHelper.getNearestPoint
 import com.github.sdpteam15.polyevents.model.map.THRESHOLD
@@ -70,7 +67,8 @@ data class Zone(
      * @return A list of list of LatLng points composing an area
      */
     fun getDrawingPoints(): List<List<LatLng>> {
-        return getZoneCoordinates()
+        return getDrawingPolygons().flatMap { (it.second ?: listOf()).plusElement(it.first) }
+            .map { it.drop(1) }
     }
 
     override fun getAttachedNewPoint(
@@ -134,37 +132,54 @@ data class Zone(
                         if (intersection != null) {
                             //intersection type
                             // in the comment `e` is represented by the horizontal line (from left, to right) and `this` is represented by the vertical line (start up, end down)
-                            newEdges.remove(e)
-                            edgesToRemoveIfInTheZone.remove(e)
-                            val intersectionNode = RouteNode.fromLatLong(
-                                when {
-                                    // ━━┳━━
-                                    //   ┃
-                                    //   ┃
-                                    euclideanDistance(from, intersection) < THRESHOLD -> from
-                                    //   ┃
-                                    //   ┃
-                                    // ━━┻━━
-                                    euclideanDistance(to, intersection) < THRESHOLD -> to
-                                    //   ┃
-                                    // ━━╋━━
-                                    //   ┃
-                                    else -> intersection
-                                }
-                            )
-                            intersectionNode.areaId = this.zoneId
-                            val add = listOf(
-                                RouteEdge.fromRouteNode(
-                                    e.start!!,
-                                    intersectionNode
-                                ),
-                                RouteEdge.fromRouteNode(
-                                    intersectionNode,
-                                    e.end!!
+                            if (
+                            // ┃
+                            // ┣━━━━
+                            // ┃
+                                !(e.start!!.areaId == zoneId && euclideanDistance(
+                                    e.start!!.toLatLng(),
+                                    intersection
+                                ) < THRESHOLD) &&
+                                //     ┃
+                                // ━━━━┫
+                                //     ┃
+                                !(e.end!!.areaId == zoneId && euclideanDistance(
+                                    e.end!!.toLatLng(),
+                                    intersection
+                                ) < THRESHOLD)
+                            ) {
+                                newEdges.remove(e)
+                                edgesToRemoveIfInTheZone.remove(e)
+                                val intersectionNode = RouteNode.fromLatLong(
+                                    when {
+                                        // ━━┳━━
+                                        //   ┃
+                                        //   ┃
+                                        euclideanDistance(from, intersection) < THRESHOLD -> from
+                                        //   ┃
+                                        //   ┃
+                                        // ━━┻━━
+                                        euclideanDistance(to, intersection) < THRESHOLD -> to
+                                        //   ┃
+                                        // ━━╋━━
+                                        //   ┃
+                                        else -> intersection
+                                    }
                                 )
-                            )
-                            newEdges.addAll(add)
-                            edgesToRemoveIfInTheZone.addAll(add)
+                                intersectionNode.areaId = this.zoneId
+                                val add = listOf(
+                                    RouteEdge.fromRouteNode(
+                                        e.start!!,
+                                        intersectionNode
+                                    ),
+                                    RouteEdge.fromRouteNode(
+                                        intersectionNode,
+                                        e.end!!
+                                    )
+                                )
+                                newEdges.addAll(add)
+                                edgesToRemoveIfInTheZone.addAll(add)
+                            }
                         }
                     }
                 }
@@ -176,25 +191,17 @@ data class Zone(
 
     private fun edgeIsInZone(edges: RouteEdge): Boolean {
         val list = mutableListOf(
-            edges.start!!.toLatLng(),
-            edges.end!!.toLatLng(),
+            edges.start!!,
+            edges.end!!,
         )
-        if(edges.start!!.areaId != zoneId)
-            list.remove(edges.end!!.toLatLng())
-        if(edges.end!!.areaId != zoneId)
-            list.remove(edges.start!!.toLatLng())
-        val mean = mean(list)
-        for (l in getZoneCoordinates()) {
-            val AM = minus(mean, l[0])
-            val AB = minus(l[1], l[0])
-            val BM = minus(mean, l[1])
-            val BC = minus(l[2], l[1])
-            //https://math.stackexchange.com/questions/190111/how-to-check-if-a-point-is-inside-a-rectangle
-            if ((scalar(AM, AB) in (-1e-7)..(squaredNorm(AB) + 1e-7)) &&
-                (scalar(BM, BC) in (-1e-7)..(squaredNorm(BC) + 1e-7))
-            )
+        if (edges.start!!.areaId != zoneId && edges.end!!.areaId == zoneId)
+            list.remove(edges.end!!)
+        if (edges.end!!.areaId != zoneId && edges.start!!.areaId == zoneId)
+            list.remove(edges.start!!)
+        val mean = mean(list.map { it.toLatLng() })
+        for (l in getZoneCoordinates())
+            if (LatLngOperator.pointInsidePolygon(mean, LatLngOperator.Polygon(l)))
                 return true
-        }
         return false
     }
 }

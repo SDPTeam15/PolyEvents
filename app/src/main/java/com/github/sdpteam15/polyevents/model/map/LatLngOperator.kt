@@ -376,7 +376,7 @@ object LatLngOperator {
      * @param polygon the polygon
      * @return true if the point is in the polygon, else retun false
      */
-    private fun pointInsidePolygon(point: LatLng, polygon: Polygon): Boolean {
+    fun pointInsidePolygon(point: LatLng, polygon: Polygon): Boolean {
         // https://en.wikipedia.org/wiki/Point_in_polygon#:~:text=One%20simple%20way%20of%20finding,an%20even%20number%20of%20times.
         val maxLat = 90.0 // LatLng does not have a positive infinity for Lat, 90.0 is the max value
         var curVertex = polygon.start
