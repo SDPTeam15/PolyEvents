@@ -161,5 +161,10 @@
     <string name="update_event_btn_text">Update event</string>
     <string name="create_event_btn_text">Create event</string>
     <string name="title_activity_event_list_management">Event List</string>
+    <string name="fail_delete_from_database">Fail to delete the event from the database, please try again</string>
+    <string name="success_delete_from_database">The event was successfully delete from the database</string>
+    <string name="event_deletion_no_button_text">No</string>
+    <string name="event_deletion_yes_button_text">Yes</string>
+    <string name="fail_retrieve_events">Failed to retrieve all the events</string>
 
 </resources>
