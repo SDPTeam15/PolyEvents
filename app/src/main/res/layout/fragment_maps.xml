@@ -3,9 +3,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-tools:context=".view.activity.MainActivity" >
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.activity.MainActivity">
 
     <fragment
         android:id="@+id/id_fragment_map"
@@ -19,8 +19,8 @@ tools:context=".view.activity.MainActivity" >
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/id_location_button"
-        android:layout_gravity="center_horizontal"
         android:layout_alignParentEnd="true"
+        android:layout_gravity="center_horizontal"
         android:layout_marginEnd="@dimen/margin_right_map_btn"
         android:layout_marginBottom="@dimen/margin_bottom_map_btn"
         android:clickable="true"
@@ -30,21 +30,21 @@ tools:context=".view.activity.MainActivity" >
         app:layout_constraintEnd_toEndOf="parent" />
 
 
-<!--
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/id_delete_areas"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/saveAreas"
-        android:layout_alignParentEnd="true"
-        android:contentDescription="@string/none"
-        android:layout_gravity="center_horizontal|end"
-        app:srcCompat="@android:drawable/ic_delete"
-        android:layout_marginEnd="@dimen/margin_right_map_btn"
-        android:layout_marginBottom="@dimen/margin_bottom_map_btn"
-        app:layout_constraintBottom_toTopOf="@+id/saveAreas"
-        app:layout_constraintEnd_toEndOf="parent" />
--->
+    <!--
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/id_delete_areas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/saveAreas"
+            android:layout_alignParentEnd="true"
+            android:contentDescription="@string/none"
+            android:layout_gravity="center_horizontal|end"
+            app:srcCompat="@android:drawable/ic_delete"
+            android:layout_marginEnd="@dimen/margin_right_map_btn"
+            android:layout_marginBottom="@dimen/margin_bottom_map_btn"
+            app:layout_constraintBottom_toTopOf="@+id/saveAreas"
+            app:layout_constraintEnd_toEndOf="parent" />
+    -->
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/saveNewRoute"
@@ -52,11 +52,11 @@ tools:context=".view.activity.MainActivity" >
         android:layout_height="wrap_content"
         android:layout_above="@+id/removeRoute"
         android:layout_alignParentEnd="true"
-        android:contentDescription="@string/none"
         android:layout_gravity="center_horizontal|end"
-        android:src="@drawable/ic_save"
         android:layout_marginEnd="@dimen/margin_right_map_btn"
         android:layout_marginBottom="@dimen/margin_bottom_map_btn"
+        android:contentDescription="@string/none"
+        android:src="@drawable/ic_save"
         app:layout_constraintBottom_toTopOf="@+id/removeRoute"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -66,11 +66,11 @@ tools:context=".view.activity.MainActivity" >
         android:layout_height="wrap_content"
         android:layout_above="@+id/addNewRoute"
         android:layout_alignParentEnd="true"
-        android:contentDescription="@string/none"
         android:layout_gravity="center_horizontal|end"
-        android:src="@android:drawable/ic_delete"
         android:layout_marginEnd="@dimen/margin_right_map_btn"
         android:layout_marginBottom="@dimen/margin_bottom_map_btn"
+        android:contentDescription="@string/none"
+        android:src="@android:drawable/ic_delete"
         app:layout_constraintBottom_toTopOf="@+id/addNewRoute"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -78,16 +78,14 @@ tools:context=".view.activity.MainActivity" >
         android:id="@+id/addNewRoute"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/saveAreas"
         android:layout_alignParentEnd="true"
-        android:contentDescription="@string/none"
-        android:layout_gravity="center_horizontal|end"
-        android:src="@android:drawable/ic_input_add"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
         android:layout_marginEnd="@dimen/margin_right_map_btn"
         android:layout_marginBottom="@dimen/margin_bottom_map_btn"
-        app:layout_constraintBottom_toTopOf="@+id/saveAreas"
-        app:layout_constraintEnd_toEndOf="parent" />
-
+        android:clickable="true"
+        android:contentDescription="@string/none"
+        android:src="@android:drawable/ic_input_add" />
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -96,11 +94,11 @@ tools:context=".view.activity.MainActivity" >
         android:layout_height="wrap_content"
         android:layout_above="@+id/id_edit_area"
         android:layout_alignParentEnd="true"
-        android:contentDescription="@string/none"
         android:layout_gravity="center_horizontal|end"
-        android:src="@drawable/ic_save"
         android:layout_marginEnd="@dimen/margin_right_map_btn"
         android:layout_marginBottom="@dimen/margin_bottom_map_btn"
+        android:contentDescription="@string/none"
+        android:src="@drawable/ic_save"
         app:layout_constraintBottom_toTopOf="@+id/id_edit_area"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -110,11 +108,11 @@ tools:context=".view.activity.MainActivity" >
         android:layout_height="wrap_content"
         android:layout_above="@+id/acceptNewArea"
         android:layout_alignParentEnd="true"
-        android:contentDescription="@string/none"
         android:layout_gravity="center_horizontal|end"
-        android:src="@drawable/ic_heatmap"
         android:layout_marginEnd="@dimen/margin_right_map_btn"
         android:layout_marginBottom="@dimen/margin_bottom_map_btn"
+        android:contentDescription="@string/none"
+        android:src="@drawable/ic_heatmap"
         app:layout_constraintBottom_toTopOf="@+id/id_locate_me_button"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -124,49 +122,49 @@ tools:context=".view.activity.MainActivity" >
         android:layout_height="wrap_content"
         android:layout_above="@+id/acceptNewArea"
         android:layout_alignParentEnd="true"
-        android:contentDescription="@string/none"
         android:layout_gravity="center_horizontal|end"
-        android:src="@drawable/ic_edit"
         android:layout_marginEnd="@dimen/margin_right_map_btn"
         android:layout_marginBottom="@dimen/margin_bottom_map_btn"
+        android:contentDescription="@string/none"
+        android:src="@drawable/ic_edit"
         app:layout_constraintBottom_toTopOf="@+id/acceptNewArea"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addNewArea"
         android:layout_width="wrap_content"
-        android:contentDescription="@string/none"
         android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_input_add"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="@dimen/margin_right_map_btn"
-        android:layout_marginBottom="@dimen/margin_bottom_map_btn"/>
+        android:layout_marginBottom="@dimen/margin_bottom_map_btn"
+        android:contentDescription="@string/none"
+        android:src="@android:drawable/ic_input_add" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/acceptNewArea"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/addNewArea"
-        android:contentDescription="@string/none"
         android:layout_alignParentEnd="true"
         android:layout_gravity="center_horizontal|end"
         android:layout_marginEnd="@dimen/margin_right_map_btn"
         android:layout_marginBottom="@dimen/margin_bottom_map_btn"
+        android:contentDescription="@string/none"
         android:src="@android:drawable/stat_sys_upload"
         app:layout_constraintBottom_toTopOf="@+id/addNewArea"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/id_location_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:contentDescription="@string/none"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
         android:layout_marginEnd="@dimen/margin_right_map_btn"
         android:layout_marginBottom="@dimen/margin_bottom_map_btn"
         android:clickable="true"
-        android:src="@drawable/ic_location_off"/>
+        android:contentDescription="@string/none"
+        android:src="@drawable/ic_location_off" />
 </RelativeLayout>

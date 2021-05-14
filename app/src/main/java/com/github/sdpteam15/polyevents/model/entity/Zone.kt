@@ -7,10 +7,12 @@ import com.github.sdpteam15.polyevents.model.map.LatLngOperator.angle
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.divide
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.euclideanDistance
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.isTooParallel
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.mean
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.minus
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.plus
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.scalar
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.squaredNorm
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.polygonsUnion
 import com.github.sdpteam15.polyevents.model.map.RouteMapHelper.getNearestPoint
 import com.github.sdpteam15.polyevents.model.map.THRESHOLD
 import com.google.android.gms.maps.model.LatLng
@@ -56,20 +58,18 @@ data class Zone(
     }
 
     /**
-     * get the list of polygons in drawing mod
-     * @return a list of polygons with the hole Pair(outside, list of holes)
-     */
-    fun getDrawingPolygons(): List<Pair<List<LatLng>, List<List<LatLng>>?>> {
-        // TODO reduce the number of element
-        return getZoneCoordinates().map { Pair(it, null) }
-    }
-
-    /**
      * Get the coordinates of all the grouped areas on the current Zone
      * @return A list of list of LatLng points composing an area
      */
+    fun getDrawingPolygons(): List<Pair<List<LatLng>, List<List<LatLng>>?>> {
+        return polygonsUnion(getZoneCoordinates())
+    }
+
+    /**
+     * Get the coordinates of all the rectangular areas on the current Zone
+     * @return A list of list of LatLng points composing an area
+     */
     fun getDrawingPoints(): List<List<LatLng>> {
-        // TODO reduce the number of element
         return getZoneCoordinates()
     }
 
@@ -175,15 +175,23 @@ data class Zone(
     }
 
     private fun edgeIsInZone(edges: RouteEdge): Boolean {
-        val mid = divide(plus(edges.start!!.toLatLng(), edges.end!!.toLatLng()), 2.0)
+        val list = mutableListOf(
+            edges.start!!.toLatLng(),
+            edges.end!!.toLatLng(),
+        )
+        if(edges.start!!.areaId != zoneId)
+            list.remove(edges.end!!.toLatLng())
+        if(edges.end!!.areaId != zoneId)
+            list.remove(edges.start!!.toLatLng())
+        val mean = mean(list)
         for (l in getZoneCoordinates()) {
-            val AM = minus(mid, l[0])
+            val AM = minus(mean, l[0])
             val AB = minus(l[1], l[0])
-            val BM = minus(mid, l[1])
+            val BM = minus(mean, l[1])
             val BC = minus(l[2], l[1])
             //https://math.stackexchange.com/questions/190111/how-to-check-if-a-point-is-inside-a-rectangle
-            if ((scalar(AM, AB) in (-THRESHOLD)..(squaredNorm(AB) + THRESHOLD)) &&
-                (scalar(BM, BC) in (-THRESHOLD)..(squaredNorm(BC) + THRESHOLD))
+            if ((scalar(AM, AB) in (-1e-7)..(squaredNorm(AB) + 1e-7)) &&
+                (scalar(BM, BC) in (-1e-7)..(squaredNorm(BC) + 1e-7))
             )
                 return true
         }
