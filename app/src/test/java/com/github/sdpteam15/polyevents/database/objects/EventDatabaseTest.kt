@@ -55,21 +55,21 @@ class EventDatabaseTest {
     @Test
     fun updateEvent() {
         val event = Event(
-                eventId = eventId,
-                eventName = eventName,
-                description = eventDesc,
-                organizer = organizer,
-                zoneName = zoneName,
-                zoneId = zoneId,
-                startTime = startTime,
-                endTime = endTime,
-                tags = tags
+            eventId = eventId,
+            eventName = eventName,
+            description = eventDesc,
+            organizer = organizer,
+            zoneName = zoneName,
+            zoneId = zoneId,
+            startTime = startTime,
+            endTime = endTime,
+            tags = tags
         )
         val userAccess = UserProfile()
 
         HelperTestFunction.nextSetEntity { true }
-        mockedEventdatabase.updateEvents(event, userAccess)
-                .observeOnce { assert(it.value) }.then.postValue(true)
+        mockedEventdatabase.updateEvent(event, userAccess)
+            .observeOnce { assert(it.value) }.then.postValue(true)
 
         val set = HelperTestFunction.lastSetEntity()!!
 
@@ -82,21 +82,21 @@ class EventDatabaseTest {
     @Test
     fun addEvent() {
         val event = Event(
-                eventId = eventId,
-                eventName = eventName,
-                description = eventDesc,
-                organizer = organizer,
-                zoneName = zoneName,
-                zoneId = zoneId,
-                startTime = startTime,
-                endTime = endTime,
-                tags = tags
+            eventId = eventId,
+            eventName = eventName,
+            description = eventDesc,
+            organizer = organizer,
+            zoneName = zoneName,
+            zoneId = zoneId,
+            startTime = startTime,
+            endTime = endTime,
+            tags = tags
         )
         val userAccess = UserProfile()
 
         HelperTestFunction.nextAddEntity { true }
         mockedEventdatabase.createEvent(event, userAccess)
-                .observeOnce { assert(it.value) }.then.postValue(true)
+            .observeOnce { assert(it.value) }.then.postValue(true)
 
         val set = HelperTestFunction.lastAddEntity()!!
 
@@ -112,7 +112,7 @@ class EventDatabaseTest {
 
         HelperTestFunction.nextGetListEntity { true }
         mockedEventdatabase.getEvents(null, null, events, userAccess)
-                .observeOnce { assert(it.value) }.then.postValue(false)
+            .observeOnce { assert(it.value) }.then.postValue(false)
 
         val getList = HelperTestFunction.lastGetListEntity()!!
 

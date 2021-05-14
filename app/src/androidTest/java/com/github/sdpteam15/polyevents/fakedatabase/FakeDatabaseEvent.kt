@@ -64,11 +64,15 @@ object FakeDatabaseEvent : EventDatabaseInterface {
         return Observable(b, this)
     }
 
-    override fun updateEvents(event: Event, userAccess: UserProfile?): Observable<Boolean> {
+    override fun updateEvent(event: Event, userAccess: UserProfile?): Observable<Boolean> {
         // TODO should update add item if non existent in database ?
         // if (event.eventId == null) return createEvent(event, profile)
         events[event.eventId!!] = event
         return Observable(true, this)
+    }
+
+    override fun removeEvent(eventId: String, userAccess: UserProfile?): Observable<Boolean> {
+        TODO("Not yet implemented")
     }
 
     override fun getEventFromId(

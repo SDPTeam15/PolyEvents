@@ -121,7 +121,7 @@ class EventManagementTest {
 
     private fun addUpdateListener(): Observable<Boolean> {
         val obs = Observable<Boolean>()
-        When(mockedEventDB.updateEvents(anyOrNull(), anyOrNull())).thenAnswer {
+        When(mockedEventDB.updateEvent(anyOrNull(), anyOrNull())).thenAnswer {
             event = (it.arguments[0] as Event)
             obs
         }

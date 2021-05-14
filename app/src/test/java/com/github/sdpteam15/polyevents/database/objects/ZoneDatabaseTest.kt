@@ -1,31 +1,20 @@
 package com.github.sdpteam15.polyevents.database.objects
 
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.ZONE_COLLECTION
+import com.github.sdpteam15.polyevents.database.HelperTestFunction
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ZoneConstant.*
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
-import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
+import com.github.sdpteam15.polyevents.model.database.remote.adapter.EventAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.ZoneAdapter
-import com.github.sdpteam15.polyevents.model.database.remote.login.GoogleUserLogin
-import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
-import com.github.sdpteam15.polyevents.model.database.remote.login.UserLoginInterface
 import com.github.sdpteam15.polyevents.model.database.remote.objects.ZoneDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.objects.ZoneDatabaseInterface
-import com.github.sdpteam15.polyevents.model.entity.UserEntity
-import com.github.sdpteam15.polyevents.model.entity.UserProfile
-import com.github.sdpteam15.polyevents.model.entity.Zone
+import com.github.sdpteam15.polyevents.model.entity.*
 import com.github.sdpteam15.polyevents.model.observable.Observable
-import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.AuthResult
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.DocumentSnapshot
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.google.firebase.firestore.FirebaseFirestore
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito
-import org.mockito.Mockito.`when` as When
+import kotlin.test.assertEquals
 
 private const val zoneID = "ZONEID"
 private const val zoneName = "ZONENAME"
@@ -38,10 +27,10 @@ private const val uidTest = "Test uid"
 @Suppress("UNCHECKED_CAST")
 class ZoneDatabaseTest {
     lateinit var user: UserEntity
-    lateinit var mockedDatabase: FirebaseFirestore
     lateinit var database: DatabaseInterface
     lateinit var zoneDocument: HashMap<String, Any?>
     lateinit var mockedZoneDatabase: ZoneDatabaseInterface
+    lateinit var zone: Zone
 
     @Before
     fun setup() {
@@ -58,165 +47,90 @@ class ZoneDatabaseTest {
             ZONE_NAME.value to zoneName
         )
 
+        zone = Zone(zoneId = zoneID,zoneName = zoneName, description = zoneDesc,location = zoneLoc)
 
-        //Mock the database and set it as the default database
-        mockedDatabase = Mockito.mock(FirebaseFirestore::class.java)
-        FirestoreDatabaseProvider.firestore = mockedDatabase
-        ZoneDatabase.firestore = mockedDatabase
-        mockedZoneDatabase = Mockito.mock(ZoneDatabaseInterface::class.java)
-
-
-
-
-
-        FirestoreDatabaseProvider.lastQuerySuccessListener = null
-        FirestoreDatabaseProvider.lastSetSuccessListener = null
-        FirestoreDatabaseProvider.lastFailureListener = null
-        FirestoreDatabaseProvider.lastGetSuccessListener = null
-        FirestoreDatabaseProvider.lastAddSuccessListener = null
+        val mockDatabaseInterface = HelperTestFunction.mockDatabaseInterface()
+        mockedZoneDatabase = ZoneDatabase(mockDatabaseInterface)
+        HelperTestFunction.clearQueue()
     }
 
-    @After
-    fun teardown() {
-        FirestoreDatabaseProvider.firestore = null
-        ZoneDatabase.firestore = null
-        UserLogin.currentUserLogin = GoogleUserLogin
+
+    @Test
+    fun updateZone() {
+        val userAccess = UserProfile()
+
+        HelperTestFunction.nextSetEntity { true }
+        mockedZoneDatabase.updateZoneInformation(zone.zoneId!!, zone, userAccess)
+            .observeOnce { assert(it.value) }.then.postValue(true)
+
+        val set = HelperTestFunction.lastSetEntity()!!
+
+        assertEquals(zone, set.element)
+        assertEquals(zone.zoneId, set.id)
+        assertEquals(DatabaseConstant.CollectionConstant.ZONE_COLLECTION, set.collection)
+        assertEquals(ZoneAdapter, set.adapter)
     }
 
     @Test
-    fun variableCorrectlySet(){
-        val mockedUserLogin = Mockito.mock(UserLoginInterface::class.java) as UserLoginInterface<AuthResult>
-        UserLogin.currentUserLogin = mockedUserLogin
-        FirestoreDatabaseProvider.currentUser = user
-        Mockito.`when`(mockedUserLogin.isConnected()).thenReturn(true)
-        FirestoreDatabaseProvider.currentProfile = UserProfile()
-        assert(ZoneDatabase.currentUser== FirestoreDatabaseProvider.currentUser)
-        assert(ZoneDatabase.currentProfile== FirestoreDatabaseProvider.currentProfile)
-        assert(ZoneDatabase.firestore==mockedDatabase)
+    fun addZone() {
+        val userAccess = UserProfile()
+
+        HelperTestFunction.nextAddEntity { true }
+        mockedZoneDatabase.createZone(zone, userAccess)
+            .observeOnce { assert(it.value) }.then.postValue(true)
+
+        val set = HelperTestFunction.lastAddEntity()!!
+
+        assertEquals(zone, set.element)
+        assertEquals(DatabaseConstant.CollectionConstant.ZONE_COLLECTION, set.collection)
+        assertEquals(ZoneAdapter, set.adapter)
     }
 
     @Test
-    fun createZoneWorksProperly() {
-        //mock the required class
-        val mockedCollectionReference = Mockito.mock(CollectionReference::class.java)
-        val taskReferenceMock = Mockito.mock(Task::class.java) as Task<DocumentReference>
+    fun getZoneList() {
+        val zones = ObservableList<Zone>()
+        val userAccess = UserProfile("uid")
 
-        val testZone = Zone(zoneID, zoneName, zoneLoc, zoneDesc)
+        HelperTestFunction.nextGetListEntity { true }
+        mockedZoneDatabase.getAllZones(null, null, zones, userAccess)
+            .observeOnce { assert(it.value) }.then.postValue(false)
 
-        When(mockedDatabase.collection(ZONE_COLLECTION.value)).thenReturn(
-            mockedCollectionReference
-        )
-        When(mockedCollectionReference.add(ZoneAdapter.toDocument(testZone))).thenReturn(
-            taskReferenceMock
-        )
+        val getList = HelperTestFunction.lastGetListEntity()!!
 
-        var zoneNameAdded = ""
-        var zoneDescAdded = ""
-        var zoneLocAdded = ""
-        var zoneIDAdded = ""
-
-        When(taskReferenceMock.addOnSuccessListener(ArgumentMatchers.any())).thenAnswer {
-            FirestoreDatabaseProvider.lastAddSuccessListener!!.onSuccess(null)
-            //set method in hard to see if the success listener is successfully called
-            zoneNameAdded = testZone.zoneName!!
-            zoneDescAdded = testZone.description!!
-            zoneLocAdded = testZone.location!!
-            zoneIDAdded = testZone.zoneId!!
-            taskReferenceMock
-        }
-        When(taskReferenceMock.addOnFailureListener(ArgumentMatchers.any())).thenAnswer {
-            taskReferenceMock
-        }
-
-        val result = FirestoreDatabaseProvider.zoneDatabase!!.createZone(testZone, user)
-        assert(result.value!!)
-        assert(zoneNameAdded == zoneName)
-        assert(zoneDescAdded == zoneDesc)
-        assert(zoneLocAdded == zoneLoc)
-        assert(zoneIDAdded == zoneID)
-
+        assertEquals(zones, getList.element)
+        assertEquals(DatabaseConstant.CollectionConstant.ZONE_COLLECTION, getList.collection)
+        assertEquals(ZoneAdapter, getList.adapter)
     }
 
     @Test
-    fun updateZoneWorksProperly() {
-        //mock the required class
-        val mockedCollectionReference = Mockito.mock(CollectionReference::class.java)
-        val mockedTask = Mockito.mock(Task::class.java) as Task<Void>
-        val mockedDocumentReference = Mockito.mock(DocumentReference::class.java)
-        val testZone = Zone(zoneID, zoneName, zoneLoc, zoneDesc)
+    fun removeZone() {
+        val userAccess = UserProfile("uid")
 
-        When(mockedDatabase.collection(ZONE_COLLECTION.value)).thenReturn(
-            mockedCollectionReference
-        )
-        When(mockedCollectionReference.document(zoneID))
-            .thenReturn(mockedDocumentReference)
-        When(mockedDocumentReference.update(ZoneAdapter.toDocument(testZone))).thenReturn(
-            mockedTask
-        )
+        HelperTestFunction.nextSetEntity { true }
+        mockedZoneDatabase.deleteZone(zone, userAccess)
+            .observeOnce { assert(it.value) }.then.postValue(false)
 
-        var zoneNameUpdated = ""
-        var zoneDescUpdated = ""
-        var zoneLocUpdated = ""
-        var zoneIDUpdated = ""
 
-        When(mockedTask.addOnSuccessListener(ArgumentMatchers.any())).thenAnswer {
-            FirestoreDatabaseProvider.lastSetSuccessListener!!.onSuccess(null)
-            //set method in hard to see if the success listener is successfully called
-            zoneNameUpdated = testZone.zoneName!!
-            zoneDescUpdated = testZone.description!!
-            zoneLocUpdated = testZone.location!!
-            zoneIDUpdated = testZone.zoneId!!
-            mockedTask
-        }
-        When(mockedTask.addOnFailureListener(ArgumentMatchers.any())).thenAnswer {
-            mockedTask
-        }
+        val del = HelperTestFunction.lastDeleteEntity()!!
 
-        val result =
-            FirestoreDatabaseProvider.zoneDatabase!!.updateZoneInformation(zoneID, testZone, user)
-        assert(result.value!!)
-        assert(zoneNameUpdated == zoneName)
-        assert(zoneDescUpdated == zoneDesc)
-        assert(zoneLocUpdated == zoneLoc)
-        assert(zoneIDUpdated == zoneID)
+        assertEquals(zone.zoneId, del.id)
+        assertEquals(DatabaseConstant.CollectionConstant.ZONE_COLLECTION, del.collection)
     }
 
     @Test
-    fun getZoneInformation() {
-        //mock the required class
-        val mockedCollectionReference = Mockito.mock(CollectionReference::class.java)
-        val mockedTask = Mockito.mock(Task::class.java) as Task<DocumentSnapshot>
-        val mockedDocumentReference = Mockito.mock(DocumentReference::class.java)
-        val mockedDocument = Mockito.mock(DocumentSnapshot::class.java)
+    fun getZoneFromId() {
+        val zones = Observable<Zone>()
+        val userAccess = UserProfile("uid")
 
-        When(mockedDatabase.collection(ZONE_COLLECTION.value)).thenReturn(
-            mockedCollectionReference
-        )
-        When(mockedCollectionReference.document(zoneID))
-            .thenReturn(mockedDocumentReference)
-        When(mockedDocumentReference.get()).thenReturn(mockedTask)
-        When(mockedDocument.data).thenReturn(zoneDocument)
-        When(mockedDocument.id)
-            .thenReturn(zoneID)
+        HelperTestFunction.nextGetEntity { true }
+        mockedZoneDatabase.getZoneInformation(zone.zoneId!!, zones, userAccess)
+            .observeOnce { assert(it.value) }.then.postValue(false)
 
-        When(mockedTask.addOnSuccessListener(ArgumentMatchers.any())).thenAnswer {
-            FirestoreDatabaseProvider.lastGetSuccessListener!!.onSuccess(mockedDocument)
-            //set method in hard to see if the success listener is successfully called
-            mockedTask
-        }
-        When(mockedTask.addOnFailureListener(ArgumentMatchers.any())).thenAnswer {
-            mockedTask
-        }
-        val obsZone = Observable<Zone>()
+        val getEntity = HelperTestFunction.lastGetEntity()!!
 
-        val result =
-            FirestoreDatabaseProvider.zoneDatabase!!.getZoneInformation(zoneID, obsZone, user)
-        val value = obsZone.value!!
-        assert(result.value!!)
-        assert(value.zoneName == zoneName)
-        assert(value.description == zoneDesc)
-        assert(value.location == zoneLoc)
-        assert(value.zoneId == zoneID)
+        assertEquals(zones, getEntity.element)
+        assertEquals(zone.zoneId, getEntity.id)
+        assertEquals(DatabaseConstant.CollectionConstant.ZONE_COLLECTION, getEntity.collection)
+        assertEquals(ZoneAdapter, getEntity.adapter)
     }
-
 }
