@@ -162,4 +162,14 @@
     <string name="create_event_btn_text">Create event</string>
     <string name="title_activity_event_list_management">Event List</string>
 
+    <!--DisplayZoneEventsFragment-->
+    <string name="see_events">See events</string>
+    <string name="show_itinerary">Show itinerary</string>
+    <string name="zone_name">Zone name</string>
+    <string name="zone_description">Zone description</string>
+    <string name="current_event">Current Event</string>
+    <string name="current_event_name">Current Event Name</string>
+    <string name="event_description">Event description</string>
+    <string name="upcoming_events">Upcoming Events</string>
+
 </resources>
