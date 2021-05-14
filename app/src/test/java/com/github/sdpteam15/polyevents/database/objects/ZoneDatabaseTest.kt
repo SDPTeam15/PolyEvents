@@ -1,9 +1,11 @@
 package com.github.sdpteam15.polyevents.database.objects
 
 import com.github.sdpteam15.polyevents.database.HelperTestFunction
+import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ZoneConstant.*
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
+import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.EventAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.ZoneAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.objects.ZoneDatabase
@@ -14,6 +16,7 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.google.firebase.firestore.FirebaseFirestore
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito
 import kotlin.test.assertEquals
 
 private const val zoneID = "ZONEID"
@@ -54,6 +57,19 @@ class ZoneDatabaseTest {
         HelperTestFunction.clearQueue()
     }
 
+    @Test
+    fun getCurrentUserReturnCorrectOne() {
+        val mockedDatabase = Mockito.mock(DatabaseInterface::class.java)
+        Mockito.`when`(mockedDatabase.currentUser).thenReturn(UserEntity(""))
+        Database.currentDatabase = mockedDatabase
+        assertEquals(mockedZoneDatabase.currentUser, UserEntity(""))
+
+        Mockito.`when`(mockedDatabase.currentProfile).thenReturn(UserProfile(""))
+        Database.currentDatabase = mockedDatabase
+        assertEquals(mockedZoneDatabase.currentProfile, UserProfile(""))
+
+        Database.currentDatabase = FirestoreDatabaseProvider
+    }
 
     @Test
     fun updateZone() {

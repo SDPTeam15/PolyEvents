@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.transition.Slide
 import android.transition.TransitionManager
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.*
@@ -33,7 +34,6 @@ class ItemsAdminActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_items_admin)
 
-
         currentDatabase.itemDatabase!!.getItemsList(items).observe(this) {
             if (!it.value)
                 HelperFunctions.showToast(getString(R.string.failed_to_get_item), this)
@@ -44,12 +44,12 @@ class ItemsAdminActivity : AppCompatActivity() {
                 HelperFunctions.showToast(getString(R.string.query_not_satisfied), this)
         }
         items.observeRemove(this) {
-            if (it.sender != currentDatabase.itemDatabase!!) {
+            if (it.sender != currentDatabase) {
                 currentDatabase.itemDatabase!!.removeItem(it.value.first.itemId!!)
             }
         }
         items.observeAdd(this) {
-            if (it.sender != currentDatabase.itemDatabase!!) {
+            if (it.sender != currentDatabase) {
                 currentDatabase.itemDatabase!!.createItem(it.value.first, it.value.second)
                     .observe { it1 ->
                         if (it1.value) {
@@ -60,7 +60,7 @@ class ItemsAdminActivity : AppCompatActivity() {
         }
 
         itemTypes.observeAdd(this) {
-            if (it.sender != currentDatabase.itemDatabase!!) {
+            if (it.sender != currentDatabase) {
                 currentDatabase.itemDatabase!!.createItemType(it.value)
             }
         }

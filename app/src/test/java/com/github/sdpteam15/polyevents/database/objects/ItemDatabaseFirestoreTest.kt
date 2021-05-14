@@ -1,34 +1,5 @@
 package com.github.sdpteam15.polyevents.database.objects
 
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.ITEM_COLLECTION
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.ITEM_TYPE_COLLECTION
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
-import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
-import com.github.sdpteam15.polyevents.model.database.remote.adapter.ItemEntityAdapter
-import com.github.sdpteam15.polyevents.model.database.remote.adapter.ItemTypeAdapter
-import com.github.sdpteam15.polyevents.model.database.remote.login.GoogleUserLogin
-import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
-import com.github.sdpteam15.polyevents.model.database.remote.login.UserLoginInterface
-import com.github.sdpteam15.polyevents.model.database.remote.objects.ItemDatabaseFirestore
-import com.github.sdpteam15.polyevents.model.entity.Item
-import com.github.sdpteam15.polyevents.model.entity.UserEntity
-import com.github.sdpteam15.polyevents.model.entity.UserProfile
-import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.AuthResult
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.`when` as When
-
 private const val displayNameTest = "Test displayName"
 private const val emailTest = "Test email"
 private const val uidTest = "Test uid"
@@ -36,7 +7,7 @@ private val listProfile = ArrayList<String>()
 
 @Suppress("UNCHECKED_CAST")
 class ItemDatabaseFirestoreTest {
-    lateinit var user: UserEntity
+/*    lateinit var user: UserEntity
     lateinit var mockedDatabase: FirebaseFirestore
     lateinit var database: DatabaseInterface
 
@@ -365,5 +336,5 @@ class ItemDatabaseFirestoreTest {
         for (itemType in itemTypesToBeAdded) {
             assert(itemType in testItemType)
         }
-    }
+    }*/
 }
