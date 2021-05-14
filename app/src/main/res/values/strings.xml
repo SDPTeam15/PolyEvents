@@ -134,7 +134,7 @@
     <!-- ItemAdminActivity -->
     <string name="query_not_satisfied">Query not satisfied</string>
     <!-- EventListManagementActivity-->
-    <string name="event_list_management">Event List Management</string>
+    <string name="event_list_management">All events</string>
     <string name="btn_new_event_text">+</string>
 
     <!-- EventManagementActivity-->
