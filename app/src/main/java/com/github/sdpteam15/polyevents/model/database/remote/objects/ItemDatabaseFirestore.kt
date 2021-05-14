@@ -1,9 +1,9 @@
 package com.github.sdpteam15.polyevents.model.database.remote.objects
 
-import android.annotation.SuppressLint
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.ITEM_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.ITEM_TYPE_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ItemConstants.ITEM_COUNT
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.ItemEntityAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.ItemTypeAdapter
@@ -11,15 +11,8 @@ import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 
-object ItemDatabaseFirestore : ItemDatabaseInterface {
-    @SuppressLint("StaticFieldLeak")
-    var firestore: FirebaseFirestore? = null
-        get() = field ?: Firebase.firestore
-
+class ItemDatabaseFirestore(private val db: DatabaseInterface) : ItemDatabaseInterface {
     override fun createItem(
         item: Item,
         count: Int,
@@ -31,10 +24,7 @@ object ItemDatabaseFirestore : ItemDatabaseInterface {
 
 
     override fun removeItem(itemId: String, userAccess: UserProfile?): Observable<Boolean> =
-        FirestoreDatabaseProvider.thenDoSet(
-            FirestoreDatabaseProvider.firestore!!.collection(ITEM_COLLECTION.value)
-                .document(itemId).delete()
-        )
+        db.deleteEntity(itemId, ITEM_COLLECTION)
 
     override fun updateItem(
         item: Item,
@@ -85,7 +75,7 @@ object ItemDatabaseFirestore : ItemDatabaseInterface {
     override fun createItemType(
         itemType: String,
         userAccess: UserProfile?
-    ): Observable<Boolean> = FirestoreDatabaseProvider.addEntity(
+    ): Observable<Boolean> = db.addEntity(
         itemType, ITEM_TYPE_COLLECTION,
         ItemTypeAdapter
     )

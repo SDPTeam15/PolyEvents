@@ -53,7 +53,6 @@ class ItemDatabaseFirestoreTest {
         mockedDatabase = mock(FirebaseFirestore::class.java)
         FirestoreDatabaseProvider.firestore = mockedDatabase
         //FirestoreDatabaseProvider.userDatabase =  mockedDatabaseUser
-        ItemDatabaseFirestore.firestore = mockedDatabase
 
         FirestoreDatabaseProvider.lastQuerySuccessListener = null
         FirestoreDatabaseProvider.lastSetSuccessListener = null
@@ -70,15 +69,11 @@ class ItemDatabaseFirestoreTest {
         FirestoreDatabaseProvider.currentUser = user
         Mockito.`when`(mockedUserLogin.isConnected()).thenReturn(true)
         FirestoreDatabaseProvider.currentProfile = UserProfile()
-        assert(ItemDatabaseFirestore.currentUser == FirestoreDatabaseProvider.currentUser)
-        assert(ItemDatabaseFirestore.currentProfile == FirestoreDatabaseProvider.currentProfile)
-        assert(ItemDatabaseFirestore.firestore == mockedDatabase)
     }
 
     @After
     fun teardown() {
         FirestoreDatabaseProvider.firestore = null
-        ItemDatabaseFirestore.firestore = null
         UserLogin.currentUserLogin = GoogleUserLogin
     }
 

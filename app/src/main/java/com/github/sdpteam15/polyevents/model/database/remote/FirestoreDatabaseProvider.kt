@@ -30,7 +30,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
 
     override var itemDatabase: ItemDatabaseInterface? = null
         get() {
-            field = field ?: ItemDatabaseFirestore
+            field = field ?: ItemDatabaseFirestore(this)
             return field
         }
     override var zoneDatabase: ZoneDatabaseInterface? = null
