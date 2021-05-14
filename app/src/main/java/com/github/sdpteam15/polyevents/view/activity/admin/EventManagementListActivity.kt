@@ -44,7 +44,7 @@ class EventManagementListActivity : AppCompatActivity() {
                 obsEventsMap[i.key!!] = Pair(i.value[0].zoneName!!, i.value)
         }
 
-        currentDatabase.eventDatabase!!.getEvents(eventList = requestObservable).observe(this) {
+        currentDatabase.eventDatabase!!.getEvents(null, null, eventList = requestObservable).observe(this) {
             if (!it.value) {
                 HelperFunctions.showToast(getString(R.string.fail_retrieve_events), this)
                 finish()
