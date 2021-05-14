@@ -35,7 +35,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         }
     override var zoneDatabase: ZoneDatabaseInterface? = null
         get() {
-            field = field ?: ZoneDatabaseFirestore
+            field = field ?: ZoneDatabase(this)
             return field
         }
     override var userDatabase: UserDatabaseInterface? = null
@@ -257,7 +257,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
                 .addOnSuccessListener {
                     synchronized(this) {
                         mutableList[elementWithIndex.index] = it.id
-                        if (mutableList.fold(true) { a, p -> a && p != null}) {
+                        if (mutableList.fold(true) { a, p -> a && p != null }) {
                             val list = mutableListOf<String>()
                             for (e in mutableList)
                                 list.add(e!!)
@@ -277,7 +277,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         adapter: AdapterToDocumentInterface<in T>
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
-        
+
         lastSetSuccessListener = OnSuccessListener<Void> { ended.postValue(true, this) }
         lastFailureListener = OnFailureListener {
             if (it.message != null)
