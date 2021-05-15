@@ -15,7 +15,7 @@ import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.view.activity.EventPreviewActivity
+import com.github.sdpteam15.polyevents.view.activity.EventListPreviewActivity
 import com.github.sdpteam15.polyevents.view.adapter.EventPreviewAdapter
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
@@ -59,7 +59,7 @@ class ZonePreviewBottomSheetDialogFragment(
 
         seeEventsButton.setOnClickListener {
             startActivity(
-                Intent(context, EventPreviewActivity::class.java).apply {
+                Intent(context, EventListPreviewActivity::class.java).apply {
                     putExtra(EXTRA_ZONE_ID, zoneId)
                 }
             )
