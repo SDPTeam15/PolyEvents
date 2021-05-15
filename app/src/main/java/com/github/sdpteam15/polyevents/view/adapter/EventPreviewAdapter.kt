@@ -7,11 +7,13 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.entity.Event
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
 
 /**
- * An adapter for an event preview item in the recycler view
+ * An adapter for an event preview item in the recycler view. The list of events
+ * previews are just for display, they are no listeners attached when clicked upon.
  */
-class EventPreviewAdapter(private val dataSet: List<Event>) :
+class EventPreviewAdapter(private val dataSet: ObservableList<Event>) :
     RecyclerView.Adapter<EventPreviewAdapter.ViewHolder>() {
 
     /**
@@ -21,10 +23,6 @@ class EventPreviewAdapter(private val dataSet: List<Event>) :
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val eventNameTextView: TextView = view.findViewById(R.id.card_preview_event_name)
         val eventTimeTextView: TextView = view.findViewById(R.id.card_preview_event_time)
-
-        init {
-            // Define click listener for the ViewHolder's View.
-        }
     }
 
     // Create new views (invoked by the layout manager)
