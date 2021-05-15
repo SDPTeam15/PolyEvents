@@ -171,5 +171,8 @@
     <string name="current_event_name">Current Event Name</string>
     <string name="event_description">Event description</string>
     <string name="upcoming_events">Upcoming Events</string>
+    <string name="no_upcoming_events">No Upcoming Events</string>
+    <string name="event_name">Event Name</string>
+    <string name="event_time">Event Time</string>
 
 </resources>

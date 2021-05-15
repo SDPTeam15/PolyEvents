@@ -1,12 +1,13 @@
 package com.github.sdpteam15.polyevents.model.map
 
-import android.app.Activity
 import android.content.Context
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.map.GoogleMapMode.clearSelectedZone
 import com.github.sdpteam15.polyevents.model.map.GoogleMapMode.setSelectedZoneFromArea
 import com.github.sdpteam15.polyevents.model.map.GoogleMapMode.setSelectedZones
+import com.github.sdpteam15.polyevents.view.fragments.ZonePreviewBottomSheetDialogFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.Polygon
@@ -73,18 +74,32 @@ object GoogleMapActionHandler {
      * @param locationActivated is location of the visitor activated
      */
     fun onInfoWindowClickHandler(
-        activity: Activity,
+        activity: FragmentActivity,
         lifecycle: LifecycleOwner,
         marker: Marker,
         locationActivated: Boolean
     ) {
-        HelperFunctions.getLoc(activity).observeOnce(lifecycle) {
-            RouteMapHelper.chemin =
-                RouteMapHelper.getShortestPath(it.value!!, marker.tag.toString(), locationActivated)
-                    ?.toMutableList()
-                    ?: mutableListOf()
-            RouteMapHelper.drawRoute()
-        }
+        /**
+         * Display a new ZonePreviewDialog bottom sheet, displaying the zone and the current events
+         * going on. Has 2 buttons, one for showing the itinerary on the map, the other to see all
+         * the events going on in that zone
+         */
+        ZonePreviewBottomSheetDialogFragment(
+            marker.tag as String
+        ) {
+            // The listener invoked when clicked on the show itinerary button
+            HelperFunctions.getLoc(activity).observeOnce(lifecycle) {
+                RouteMapHelper.chemin =
+                    RouteMapHelper.getShortestPath(
+                        it.value!!,
+                        marker.tag.toString(),
+                        locationActivated
+                    )
+                        ?.toMutableList()
+                        ?: mutableListOf()
+                RouteMapHelper.drawRoute()
+            }
+        }.show(activity.supportFragmentManager, ZonePreviewBottomSheetDialogFragment.TAG)
     }
 
     /**
