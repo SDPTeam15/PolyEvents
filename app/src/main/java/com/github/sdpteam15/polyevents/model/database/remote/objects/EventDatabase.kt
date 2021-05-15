@@ -131,4 +131,22 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
         }
         return end
     }
+
+    override fun getEventsByZoneId(
+        zoneId: String,
+        limit: Long?,
+        events: ObservableList<Event>,
+        userAccess: UserProfile?
+    ): Observable<Boolean> =
+        db.getListEntity(
+            events,
+            null,
+            {
+                val query = it.whereEqualTo(DatabaseConstant.EventConstant.EVENT_ZONE_ID.value, zoneId)
+                if (limit != null) query.limit(limit)
+                query
+            },
+            EVENT_COLLECTION
+        )
+
 }
