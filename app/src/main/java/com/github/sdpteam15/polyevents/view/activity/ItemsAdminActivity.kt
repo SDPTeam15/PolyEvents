@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.transition.Slide
 import android.transition.TransitionManager
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.*
@@ -28,7 +27,7 @@ class ItemsAdminActivity : AppCompatActivity() {
     /**
      * Recycler containing all the items
      */
-    lateinit var recyclerView: RecyclerView
+    private lateinit var recyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +36,6 @@ class ItemsAdminActivity : AppCompatActivity() {
         currentDatabase.itemDatabase!!.getItemsList(items).observe(this) {
             if (!it.value)
                 HelperFunctions.showToast(getString(R.string.failed_to_get_item), this)
-
         }
         currentDatabase.itemDatabase!!.getItemTypes(itemTypes).observe(this) {
             if (!it.value)
@@ -45,7 +43,9 @@ class ItemsAdminActivity : AppCompatActivity() {
         }
         items.observeRemove(this) {
             if (it.sender != currentDatabase) {
-                currentDatabase.itemDatabase!!.removeItem(it.value.first.itemId!!)
+                if (it.value.first.itemId != null) {
+                    currentDatabase.itemDatabase!!.removeItem(it.value.first.itemId!!)
+                }
             }
         }
         items.observeAdd(this) {

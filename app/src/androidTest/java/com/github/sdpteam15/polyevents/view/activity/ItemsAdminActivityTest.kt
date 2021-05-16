@@ -3,12 +3,9 @@ package com.github.sdpteam15.polyevents.view.activity
 import android.content.Intent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.closeSoftKeyboard
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.typeText
+import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers
@@ -35,7 +32,7 @@ class ItemsAdminActivityTest {
 
     private val testItem = Item(null, "test item", "TESTITEMTYPE")
     private val testQuantity = 3
-    private val itemToTest =  Item(null, "Chocolat", "Food")
+    private val itemToTest = Item(null, "Chocolat", "Food")
 
     lateinit var itemsAdminActivity: ActivityScenario<ItemsAdminActivity>
 
@@ -50,7 +47,7 @@ class ItemsAdminActivityTest {
         availableItems[Item(null, "Cord rewinder (50m)", "Plug")] = 10
         availableItems[Item(null, "Cord rewinder (25m)", "Plug")] = 20
 
-        availableItemTypes = mutableListOf("Food","Plug","Fridge")
+        availableItemTypes = mutableListOf("Food", "Plug", "Fridge")
 
         currentDatabase = FakeDatabase
 
@@ -60,7 +57,7 @@ class ItemsAdminActivityTest {
         }
 
         FakeDatabaseItem.itemTypes.clear()
-        for (itemType in availableItemTypes){
+        for (itemType in availableItemTypes) {
             currentDatabase.itemDatabase!!.createItemType(itemType)
         }
 
@@ -88,11 +85,11 @@ class ItemsAdminActivityTest {
     @Test
     fun addButtonPopupAddsItemToList() {
         onView(withId(R.id.id_add_item_button)).perform(click())
-        onView(withId(R.id.id_edittext_item_name)).perform(typeText(testItem.itemName))
+        onView(withId(R.id.id_edittext_item_name)).perform(replaceText(testItem.itemName))
         closeSoftKeyboard()
-        onView(withId(R.id.id_edittext_item_quantity)).perform(typeText(testQuantity.toString()))
+        onView(withId(R.id.id_edittext_item_quantity)).perform(replaceText(testQuantity.toString()))
         closeSoftKeyboard()
-        onView(withId(R.id.id_edittext_item_type)).perform(typeText(testItem.itemType))
+        onView(withId(R.id.id_edittext_item_type)).perform(replaceText(testItem.itemType))
         closeSoftKeyboard()
         onView(withId(R.id.id_confirm_add_item_button)).perform(click())
         Thread.sleep(1000)
@@ -114,55 +111,55 @@ class ItemsAdminActivityTest {
     }
 
     @Test
-    fun modifyItemCorrectlyDisplays(){
-        Espresso.onView(ViewMatchers.withId(R.id.id_recycler_items_list)).perform(
-                RecyclerViewActions.actionOnItemAtPosition<EventItemAdapter.ItemViewHolder>(
-                        0,
-                        ViewActions.click()
-                )
+    fun modifyItemCorrectlyDisplays() {
+        onView(withId(R.id.id_recycler_items_list)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<EventItemAdapter.ItemViewHolder>(
+                0,
+                click()
+            )
         )
 
         Thread.sleep(1000)
-        Espresso.onView(ViewMatchers.withId(R.id.id_edittext_item_name))
-                .check(
-                        ViewAssertions.matches(
-                                ViewMatchers.withText(
-                                        CoreMatchers.containsString(
-                                                itemToTest.itemName
-                                        )
-                                )
+        onView(withId(R.id.id_edittext_item_name))
+            .check(
+                ViewAssertions.matches(
+                    ViewMatchers.withText(
+                        CoreMatchers.containsString(
+                            itemToTest.itemName
                         )
+                    )
                 )
-        Espresso.onView(ViewMatchers.withId(R.id.id_edittext_item_quantity))
-                .check(
-                        ViewAssertions.matches(
-                                ViewMatchers.withText(
-                                        CoreMatchers.containsString(
-                                                availableItems[itemToTest]!!.toString()
-                                        )
-                                )
+            )
+        onView(withId(R.id.id_edittext_item_quantity))
+            .check(
+                ViewAssertions.matches(
+                    ViewMatchers.withText(
+                        CoreMatchers.containsString(
+                            availableItems[itemToTest]!!.toString()
                         )
+                    )
                 )
-        Espresso.onView(ViewMatchers.withId(R.id.id_edittext_item_type))
-                .check(
-                        ViewAssertions.matches(
-                                ViewMatchers.withText(
-                                        CoreMatchers.containsString(
-                                                itemToTest.itemType
-                                        )
-                                )
+            )
+        onView(withId(R.id.id_edittext_item_type))
+            .check(
+                ViewAssertions.matches(
+                    ViewMatchers.withText(
+                        CoreMatchers.containsString(
+                            itemToTest.itemType
                         )
+                    )
                 )
+            )
     }
 
     @Test
-    fun modifyItemTest(){
+    fun modifyItemTest() {
         val newName = "Choco"
-        Espresso.onView(ViewMatchers.withId(R.id.id_recycler_items_list)).perform(
-                RecyclerViewActions.actionOnItemAtPosition<EventItemAdapter.ItemViewHolder>(
-                        0,
-                        ViewActions.click()
-                )
+        onView(withId(R.id.id_recycler_items_list)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<EventItemAdapter.ItemViewHolder>(
+                0,
+                click()
+            )
         )
 
         onView(withId(R.id.id_edittext_item_name)).perform(typeText(newName))
@@ -170,44 +167,45 @@ class ItemsAdminActivityTest {
         onView(withId(R.id.id_confirm_add_item_button)).perform(click())
         Thread.sleep(1000)
 
-        Espresso.onView(ViewMatchers.withId(R.id.id_recycler_items_list)).perform(
-                RecyclerViewActions.actionOnItemAtPosition<EventItemAdapter.ItemViewHolder>(
-                        0,
-                        ViewActions.click()
-                )
+        onView(withId(R.id.id_recycler_items_list)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<EventItemAdapter.ItemViewHolder>(
+                0,
+                click()
+            )
         )
 
-        Espresso.onView(ViewMatchers.withId(R.id.id_edittext_item_name))
-                .check(
-                        ViewAssertions.matches(
-                                ViewMatchers.withText(
-                                        CoreMatchers.containsString(
-                                                itemToTest.itemName + newName
-                                        )
-                                )
+        onView(withId(R.id.id_edittext_item_name))
+            .check(
+                ViewAssertions.matches(
+                    ViewMatchers.withText(
+                        CoreMatchers.containsString(
+                            itemToTest.itemName + newName
                         )
+                    )
                 )
-        Espresso.onView(ViewMatchers.withId(R.id.id_edittext_item_quantity))
-                .check(
-                        ViewAssertions.matches(
-                                ViewMatchers.withText(
-                                        CoreMatchers.containsString(
-                                                availableItems[itemToTest]!!.toString()
-                                        )
-                                )
+            )
+        onView(withId(R.id.id_edittext_item_quantity))
+            .check(
+                ViewAssertions.matches(
+                    ViewMatchers.withText(
+                        CoreMatchers.containsString(
+                            availableItems[itemToTest]!!.toString()
                         )
+                    )
                 )
-        Espresso.onView(ViewMatchers.withId(R.id.id_edittext_item_type))
-                .check(
-                        ViewAssertions.matches(
-                                ViewMatchers.withText(
-                                        CoreMatchers.containsString(
-                                                itemToTest.itemType
-                                        )
-                                )
+            )
+        onView(withId(R.id.id_edittext_item_type))
+            .check(
+                ViewAssertions.matches(
+                    ViewMatchers.withText(
+                        CoreMatchers.containsString(
+                            itemToTest.itemType
                         )
+                    )
                 )
+            )
     }
+
 
 
 }
