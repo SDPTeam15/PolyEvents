@@ -5,6 +5,7 @@ import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
+import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.ItemEntityAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.ItemTypeAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.ZoneAdapter

@@ -5,12 +5,18 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.database.remote.StringWithID
 import com.github.sdpteam15.polyevents.model.database.remote.TEST_STR
+import com.github.sdpteam15.polyevents.model.database.remote.adapter.UserAdapter
+import com.github.sdpteam15.polyevents.model.database.remote.login.GoogleUserLogin
+import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
+import com.github.sdpteam15.polyevents.model.database.remote.login.UserLoginInterface
 import com.github.sdpteam15.polyevents.model.database.remote.objects.*
+import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.firestore.*
 import org.junit.Before
 import org.junit.Test
@@ -728,5 +734,63 @@ class FirestoreDatabaseProviderTest {
         lastAddSuccessListenerQuerySnapshot!!.onSuccess(mockQuerySnapshot)
 
         assert(!result.isEmpty())
+    }
+
+    @Test
+    fun getCurrentUser(){
+        val user = UserEntity("UserId", "UserUsername","userName")
+        val mockUserLogin = mock(UserLoginInterface::class.java) as UserLoginInterface<AuthResult>
+        UserLogin.currentUserLogin = mockUserLogin
+        When(mockUserLogin.isConnected()).thenReturn(false)
+        assertNull(FirestoreDatabaseProvider.currentUser)
+
+        When(mockUserLogin.isConnected()).thenReturn(true)
+        currentDatabase.currentUser = user
+        assertEquals(user, currentDatabase.currentUser)
+
+        currentDatabase.currentUser=null
+
+        val mockCollectionReference = mock(CollectionReference::class.java)
+        val mockDocumentReference = mock(DocumentReference::class.java)
+        val mockTask = mock(Task::class.java) as Task<DocumentSnapshot>
+        var lastSuccessListener:OnSuccessListener<DocumentSnapshot>?=null
+        var lastFailureListener:OnFailureListener?=null
+        val mockDocumentSnapshot = mock(DocumentSnapshot::class.java)
+
+        When(mockFirestore.collection(anyOrNull())).thenReturn(mockCollectionReference)
+        When(mockCollectionReference.document(anyOrNull())).thenReturn(mockDocumentReference)
+        When(mockDocumentReference.get()).thenReturn(mockTask)
+        When(mockTask.addOnSuccessListener(anyOrNull())).thenAnswer{
+
+            lastSuccessListener = it.arguments[0] as OnSuccessListener<DocumentSnapshot>
+            mockTask
+        }
+        When(mockTask.addOnFailureListener(anyOrNull())).thenAnswer {
+            lastFailureListener = it.arguments[0] as OnFailureListener
+            mockTask
+        }
+
+
+        When(mockUserLogin.isConnected()).thenReturn(true)
+        When(mockUserLogin.getCurrentUser()).thenReturn(user)
+        assertEquals(FirestoreDatabaseProvider.currentUser,user)
+
+
+        val userInfo = UserAdapter.toDocument(user)
+
+        When(mockDocumentSnapshot.data).thenReturn(userInfo)
+        When(mockDocumentSnapshot.id).thenReturn(user.uid)
+
+        lastSuccessListener!!.onSuccess(mockDocumentSnapshot)
+
+        assertEquals(FirestoreDatabaseProvider.currentUser,user)
+        When(mockDocumentSnapshot.data).thenReturn(null)
+        lastSuccessListener!!.onSuccess(mockDocumentSnapshot)
+        assertEquals(FirestoreDatabaseProvider.currentUser,user)
+        lastFailureListener!!.onFailure(java.lang.Exception())
+        assertEquals(FirestoreDatabaseProvider.currentUser,user)
+
+
+        UserLogin.currentUserLogin = GoogleUserLogin
     }
 }
