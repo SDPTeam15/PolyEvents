@@ -151,7 +151,7 @@ interface EventDatabaseInterface {
      */
     fun getEventsByZoneId(
         zoneId: String,
-        limit: Long?,
+        limit: Long? = null,
         events: ObservableList<Event>,
         userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
