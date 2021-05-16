@@ -1,6 +1,5 @@
 package com.github.sdpteam15.polyevents.view.fragments
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,22 +14,35 @@ import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.view.activity.EventListPreviewActivity
 import com.github.sdpteam15.polyevents.view.adapter.EventPreviewAdapter
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 /**
  * Documentation on: https://developer.android.com/guide/topics/ui/dialogs.html#kotlin
  */
-class ZonePreviewBottomSheetDialogFragment(
-    val zoneId: String,
-    val onItineraryClickListener: View.OnClickListener
-): BottomSheetDialogFragment() {
+class ZonePreviewBottomSheetDialogFragment: BottomSheetDialogFragment() {
 
     companion object {
         const val TAG = "ZonePreviewBottomSheetDialogFragment"
         const val EXTRA_ZONE_ID = "zoneId"
+        const val EXTRA_ZONE_NAME = "zoneName"
+
+        fun newInstance(
+            zoneId: String,
+            onShowEventsClickListener: View.OnClickListener,
+            onItineraryClickListener: View.OnClickListener
+        ): ZonePreviewBottomSheetDialogFragment {
+            val args = Bundle()
+            args.putString(EXTRA_ZONE_ID, zoneId)
+            val f = ZonePreviewBottomSheetDialogFragment()
+            f.onShowEventsClickListener = onShowEventsClickListener
+            f.onItineraryClickListener = onItineraryClickListener
+            f.arguments = args
+            return f
+        }
     }
+
+    private var zoneId: String? = null
 
     private lateinit var previewUpcomingEventsTextView: TextView
     private lateinit var seeEventsButton: Button
@@ -38,6 +50,9 @@ class ZonePreviewBottomSheetDialogFragment(
     private lateinit var previewUpComingEventsRecyclerView: RecyclerView
     private lateinit var zoneNameTextView: TextView
     private lateinit var zoneDescriptionTextView: TextView
+
+    private lateinit var onItineraryClickListener: View.OnClickListener
+    private lateinit var onShowEventsClickListener: View.OnClickListener
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,7 +62,10 @@ class ZonePreviewBottomSheetDialogFragment(
         val v = inflater.inflate(
             R.layout.fragment_preview_zone_events_bottom_sheet,
             container,
-            false)
+            false
+        )
+
+        zoneId = arguments?.getString(EXTRA_ZONE_ID)
 
         seeEventsButton = v.findViewById(R.id.zone_preview_show_events_button)
         showItineraryButton = v.findViewById(R.id.zone_preview_show_itinerary_button)
@@ -57,27 +75,31 @@ class ZonePreviewBottomSheetDialogFragment(
         zoneNameTextView = v.findViewById(R.id.zone_preview_dialog_zone_name)
         zoneDescriptionTextView = v.findViewById(R.id.zone_preview_dialog_zone_description)
 
-        seeEventsButton.setOnClickListener {
-            startActivity(
-                Intent(context, EventListPreviewActivity::class.java).apply {
-                    putExtra(EXTRA_ZONE_ID, zoneId)
-                }
-            )
-        }
-
-        showItineraryButton.setOnClickListener {
-            dismiss()
-            onItineraryClickListener
-        }
-
         val zoneObservable = Observable<Zone>()
         zoneObservable.observeOnce(this) {
-            zoneNameTextView.text = it.value.zoneName
+            val zoneName = it.value.zoneName
+
+            zoneNameTextView.text = zoneName
             zoneDescriptionTextView.text = it.value.description
+
+            // Buttons are disabled until the zone information is retrieved
+            seeEventsButton.isEnabled = true
+            showItineraryButton.isEnabled = true
+
+            // on click go to the events list per zone fragment (and dismiss the dialog as well on click)
+            seeEventsButton.setOnClickListener {
+                dismiss()
+                onShowEventsClickListener.onClick(view)
+            }
+            // Set the itinerary button on click listener (and dismiss the dialog as well on click)
+            showItineraryButton.setOnClickListener {
+                dismiss()
+                onItineraryClickListener.onClick(view)
+            }
         }
 
         currentDatabase.zoneDatabase!!.getZoneInformation(
-            zoneId = zoneId,
+            zoneId = zoneId!!,
             zone = zoneObservable
         )
 
@@ -100,30 +122,32 @@ class ZonePreviewBottomSheetDialogFragment(
         // Select the first 3 events happening in the zone for preview
         currentDatabase.eventDatabase!!.getEventsByZoneId(
             events = eventsObservableList,
-            zoneId = zoneId,
+            zoneId = zoneId!!,
             limit = 3
         )
 
-        /*val testEvent1 = Event(
-            eventId = "0",
-            eventName = "Hello",
-            startTime = LocalDateTime.now()
-        )
-
-        val testEvent2 = Event(
-            eventId = "1",
-            eventName = "Hello Again",
-            startTime = LocalDateTime.now()
-        )
-
-        val testEvent3 = Event(
-            eventId = "2",
-            eventName = "Hello again again",
-            startTime = LocalDateTime.now()
-        )
-
-        eventsObservableList.addAll(mutableListOf(testEvent1, testEvent2, testEvent3))*/
-
         return v
+    }
+
+    /**
+     * Set the click listener for the zone itinerary button
+     * @param onItineraryClickListener the listener for the zone itinerary button
+     */
+    fun setOnItineraryClickListener(onItineraryClickListener: View.OnClickListener) {
+        this.onItineraryClickListener = View.OnClickListener {
+            dismiss()
+            onItineraryClickListener.onClick(view)
+        }
+    }
+
+    /**
+     * Set the click listener for the show events button
+     * @param onShowEventsClickListener the listener for the show events button
+     */
+    fun setOnShowEventsClickListener(onShowEventsClickListener: View.OnClickListener) {
+        this.onShowEventsClickListener = View.OnClickListener {
+            dismiss()
+            onShowEventsClickListener.onClick(view)
+        }
     }
 }

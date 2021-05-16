@@ -1,12 +1,15 @@
 package com.github.sdpteam15.polyevents.model.map
 
 import android.content.Context
+import android.view.View
+import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.map.GoogleMapMode.clearSelectedZone
 import com.github.sdpteam15.polyevents.model.map.GoogleMapMode.setSelectedZoneFromArea
 import com.github.sdpteam15.polyevents.model.map.GoogleMapMode.setSelectedZones
+import com.github.sdpteam15.polyevents.view.fragments.ZoneEventsFragment
 import com.github.sdpteam15.polyevents.view.fragments.ZonePreviewBottomSheetDialogFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
@@ -84,22 +87,36 @@ object GoogleMapActionHandler {
          * going on. Has 2 buttons, one for showing the itinerary on the map, the other to see all
          * the events going on in that zone
          */
-        ZonePreviewBottomSheetDialogFragment(
-            marker.tag as String
-        ) {
-            // The listener invoked when clicked on the show itinerary button
-            HelperFunctions.getLoc(activity).observeOnce(lifecycle) {
-                RouteMapHelper.chemin =
-                    RouteMapHelper.getShortestPath(
-                        it.value!!,
-                        marker.tag.toString(),
-                        locationActivated
-                    )
-                        ?.toMutableList()
-                        ?: mutableListOf()
-                RouteMapHelper.drawRoute()
+        ZonePreviewBottomSheetDialogFragment.newInstance(
+            zoneId = marker.tag as String,
+            onShowEventsClickListener = {
+                HelperFunctions.changeFragmentWithBundle(
+                    activity,
+                    ZoneEventsFragment::class.java,
+                    bundle = bundleOf(
+                        // marker tag should hold the zone id
+                        ZonePreviewBottomSheetDialogFragment.EXTRA_ZONE_ID to marker.tag,
+                        // marker title should hold the zone name
+                        ZonePreviewBottomSheetDialogFragment.EXTRA_ZONE_NAME to marker.title
+                    ),
+                    addToBackStack = true
+                )
+            },
+            onItineraryClickListener = {
+                // The listener invoked when clicked on the show itinerary button
+                HelperFunctions.getLoc(activity).observeOnce(lifecycle) {
+                    RouteMapHelper.chemin =
+                        RouteMapHelper.getShortestPath(
+                            it.value!!,
+                            marker.tag.toString(),
+                            locationActivated
+                        )
+                            ?.toMutableList()
+                            ?: mutableListOf()
+                    RouteMapHelper.drawRoute()
+                }
             }
-        }.show(activity.supportFragmentManager, ZonePreviewBottomSheetDialogFragment.TAG)
+        ).show(activity.supportFragmentManager, ZonePreviewBottomSheetDialogFragment.TAG)
     }
 
     /**
