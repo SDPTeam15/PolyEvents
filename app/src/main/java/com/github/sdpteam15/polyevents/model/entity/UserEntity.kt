@@ -2,7 +2,6 @@ package com.github.sdpteam15.polyevents.model.entity
 
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
-import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.google.firebase.firestore.IgnoreExtraProperties
 import java.time.LocalDate
@@ -44,12 +43,16 @@ data class UserEntity(
         }
     var userProfiles: ObservableList<UserProfile> = ObservableList()
         get() {
-            if (!loadSuccess)
-                Database.currentDatabase.userDatabase!!.getUserProfilesList(field, this)
-                    .observeOnce {
-                        if (it.value)
-                            loadSuccess = true
-                    }
+            synchronized(this) {
+                if (!loadSuccess)
+                    Database.currentDatabase.userDatabase!!.getUserProfilesList(field, this)
+                        .observeOnce {
+                            synchronized(this) {
+                                if (it.value && !loadSuccess)
+                                    loadSuccess = true
+                            }
+                        }
+            }
             return field
         }
         set(value) {
@@ -57,16 +60,16 @@ data class UserEntity(
             field = value
         }
 
-    val bestRole: Observable<UserRole>
+    val roles: ObservableList<UserRole>
         get() {
-            val result = Observable<UserRole>()
+            val result = ObservableList<UserRole>()
             userProfiles
-                .observeOnce {
-                    var res = UserRole.PARTICIPANT
+                .observe {
+                    result.clear(this)
+                    val res = mutableSetOf(UserRole.PARTICIPANT)
                     for (e in it.value)
-                        if (e.userRole < res)
-                            res = e.userRole
-                    result.postValue(res, this)
+                        res.add(e.userRole)
+                    result.addAll(res, this)
                 }
             return result
         }

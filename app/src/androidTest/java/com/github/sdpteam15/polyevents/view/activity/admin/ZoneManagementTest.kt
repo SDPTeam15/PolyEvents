@@ -77,7 +77,7 @@ class ZoneManagementTest {
         ZoneManagementActivity.inTest = false
 
         onView(withId(R.id.ic_home)).perform(click())
-        onView(withId(R.id.id_fragment_admin_hub))
+        onView(withId(R.id.id_fragment_home_admin))
             .check(matches(isDisplayed()))
         onView(withId(R.id.btnRedirectZoneManagement))
             .perform(click())

@@ -21,17 +21,7 @@ class MoreFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         val fragmentView = inflater.inflate(R.layout.fragment_more, container, false)
-        fragmentView.findViewById<Button>(R.id.btn_admin_items_list).setOnClickListener {
-            val intent = Intent(inflater.context, ItemsAdminActivity::class.java)
-            startActivity(intent)
-        }
-        fragmentView.findViewById<Button>(R.id.id_request_button).setOnClickListener {
-            val intent = Intent(activity, ItemRequestActivity::class.java)
-            startActivity(intent)
-        }
-
         return fragmentView
     }
 }

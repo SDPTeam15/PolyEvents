@@ -27,7 +27,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mockito.`when` as When
 
 @RunWith(AndroidJUnit4::class)
-class AdminHubFragmentTest {
+class AdminHomeFragmentTest {
     var mainActivity = ActivityScenarioRule(MainActivity::class.java)
     lateinit var scenario: ActivityScenario<MainActivity>
 
@@ -57,7 +57,7 @@ class AdminHubFragmentTest {
         scenario = ActivityScenario.launch(intent)
 
         Espresso.onView(ViewMatchers.withId(R.id.ic_home)).perform(click())
-        Espresso.onView(ViewMatchers.withId(R.id.id_fragment_admin_hub))
+        Espresso.onView(ViewMatchers.withId(R.id.id_fragment_home_admin))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Intents.init()
     }

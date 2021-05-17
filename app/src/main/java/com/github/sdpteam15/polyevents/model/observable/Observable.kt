@@ -83,8 +83,7 @@ class Observable<T>(value: T? = null, val creator: Any? = null) {
     var value: T?
         get() = updateArgs?.value
         set(value) {
-            if (value != null)
-                postValue(value, null)
+            postValue(value, null)
         }
 
     /**
@@ -355,13 +354,14 @@ class Observable<T>(value: T? = null, val creator: Any? = null) {
      * @param newValue the new value
      * @param sender The source of the event.
      */
-    fun postValue(newValue: T, sender: Any? = null): ThenOrRemove<Observable<T>> {
-        synchronized(this) { updateArgs = UpdateValue(newValue, sender); }
-        run(Runnable {
-            for (obs in observers.toList())
-                if (!obs(updateArgs!!))
-                    leave(obs)
-        })
+    fun postValue(newValue: T?, sender: Any? = null): ThenOrRemove<Observable<T>> {
+        synchronized(this) { updateArgs = if(newValue == null) null else UpdateValue(newValue, sender); }
+        if(updateArgs != null)
+            run(Runnable {
+                for (obs in observers.toList())
+                    if (!obs(updateArgs!!))
+                        leave(obs)
+            })
         return ThenOrRemove(this, creator, { true })
     }
 }

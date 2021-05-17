@@ -118,7 +118,7 @@ class UserManagementListTest {
         val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
         scenario = ActivityScenario.launch(intent)
         Espresso.onView(withId(R.id.ic_home)).perform(ViewActions.click())
-        Espresso.onView(withId(R.id.id_fragment_admin_hub))
+        Espresso.onView(withId(R.id.id_fragment_home_admin))
             .check(ViewAssertions.matches(isDisplayed()))
         Espresso.onView(withId(R.id.btnRedirectUserManagement)).perform(ViewActions.click())
         When(mockUserDB.getUserProfilesList(anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
