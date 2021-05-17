@@ -31,7 +31,6 @@ import com.github.sdpteam15.polyevents.view.adapter.EventListAdapter
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers.matches
 import org.mockito.Mockito
 import org.mockito.kotlin.anyOrNull
 import java.time.LocalDateTime
@@ -43,7 +42,14 @@ class EventManagementListTest {
     lateinit var scenario: ActivityScenario<EventManagementListActivity>
 
     private val event1 =
-        Event(eventName = "Test 1", eventId = "Id1", zoneId = " zid1", zoneName = "zoneName1", startTime = LocalDateTime.now(),endTime = LocalDateTime.now())
+        Event(
+            eventName = "Test 1",
+            eventId = "Id1",
+            zoneId = " zid1",
+            zoneName = "zoneName1",
+            startTime = LocalDateTime.now(),
+            endTime = LocalDateTime.now()
+        )
     private val event2 =
         Event(eventName = "Test 2", eventId = "Id2", zoneId = " zid1", zoneName = "zoneName1")
     private val event3 =
@@ -53,6 +59,7 @@ class EventManagementListTest {
 
     private lateinit var events: MutableList<Event>
     private lateinit var zones: MutableList<Zone>
+    private var nbzones: Int=0
 
     private fun setupEventsAndZones() {
         events = mutableListOf(event1, event2, event3, event4)
@@ -61,6 +68,7 @@ class EventManagementListTest {
             Zone(zoneId = "zid2", zoneName = "zoneName2"),
             Zone(zoneId = "zid3", zoneName = "zoneName3")
         )
+        nbzones = zones.size
     }
 
     @Before
@@ -95,15 +103,17 @@ class EventManagementListTest {
 
         Mockito.`when`(mockedDatabase.eventDatabase).thenReturn(mockedEventDB)
         Mockito.`when`(mockedDatabase.zoneDatabase).thenReturn(mockedZoneDB)
-        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
-            (it.arguments[2] as ObservableList<Event>).addAll(events)
-            Observable(true,this)
-        }
+        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
+            .thenAnswer {
+                (it.arguments[2] as ObservableList<Event>).addAll(events)
+                Observable(true, this)
+            }
 
-        Mockito.`when`(mockedEventDB.getEventFromId(anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
-            (it.arguments[1] as Observable<Event>).postValue(event1)
-            Observable(true)
-        }
+        Mockito.`when`(mockedEventDB.getEventFromId(anyOrNull(), anyOrNull(), anyOrNull()))
+            .thenAnswer {
+                (it.arguments[1] as Observable<Event>).postValue(event1)
+                Observable(true)
+            }
 
         Database.currentDatabase = mockedDatabase
         scenario = ActivityScenario.launch(intent)
@@ -126,11 +136,11 @@ class EventManagementListTest {
     @Test
     fun correctNumberZonesDisplayed() {
         Espresso.onView(ViewMatchers.withId(R.id.recycler_events_list_admin))
-            .check(RecyclerViewItemCountAssertion(zones.size))
+            .check(RecyclerViewItemCountAssertion(nbzones))
     }
 
     @Test
-    fun failToLoadEventsReturnToMainActivity(){
+    fun failToLoadEventsReturnToMainActivity() {
         val intent = Intent(
             ApplicationProvider.getApplicationContext(),
             MainActivity::class.java
@@ -140,10 +150,11 @@ class EventManagementListTest {
         val mockedDatabase = Mockito.mock(DatabaseInterface::class.java)
         val mockedEventDB = Mockito.mock(EventDatabaseInterface::class.java)
         Mockito.`when`(mockedDatabase.eventDatabase).thenReturn(mockedEventDB)
-        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
-            (it.arguments[2] as ObservableList<Event>).addAll(events)
-            Observable(false,this)
-        }
+        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
+            .thenAnswer {
+                (it.arguments[2] as ObservableList<Event>).addAll(events)
+                Observable(false, this)
+            }
 
         Database.currentDatabase = mockedDatabase
         scenario = ActivityScenario.launch(intent)
@@ -162,7 +173,7 @@ class EventManagementListTest {
             )
         )
         Espresso.onView(ViewMatchers.withId(R.id.recycler_events_list_admin))
-            .check(RecyclerViewItemCountAssertion(zones.size+2))
+            .check(RecyclerViewItemCountAssertion(nbzones + 2))
     }
 
     @Test
@@ -180,9 +191,15 @@ class EventManagementListTest {
         )
 
         Intents.intended(IntentMatchers.hasComponent(EventManagementActivity::class.java.name))
-        Intents.intended(IntentMatchers.hasExtra(EventManagementListActivity.EVENT_ID_INTENT,"Id1"))
+        Intents.intended(
+            IntentMatchers.hasExtra(
+                EventManagementListActivity.EVENT_ID_INTENT,
+                "Id1"
+            )
+        )
         Intents.release()
     }
+
     @Test
     fun clickOnNoDeleteBtnDoesNothing() {
         Espresso.onView(ViewMatchers.withId(R.id.recycler_events_list_admin)).perform(
@@ -195,10 +212,11 @@ class EventManagementListTest {
                 1, TestHelper.clickChildViewWithId(R.id.idDeleteEventButton)
             )
         )
-        Espresso.onView(ViewMatchers.withText("No")).inRoot(isDialog()).check(ViewAssertions.matches(isDisplayed()))
+        Espresso.onView(ViewMatchers.withText("No")).inRoot(isDialog())
+            .check(ViewAssertions.matches(isDisplayed()))
         Espresso.onView(ViewMatchers.withText("No")).inRoot(isDialog()).perform(click())
         Espresso.onView(ViewMatchers.withId(R.id.recycler_events_list_admin))
-            .check(RecyclerViewItemCountAssertion(zones.size+2))
+            .check(RecyclerViewItemCountAssertion(nbzones + 2))
     }
 
     @Test
@@ -217,12 +235,13 @@ class EventManagementListTest {
             Observable(false)
         }
 
-        Espresso.onView(ViewMatchers.withText("Yes")).inRoot(isDialog()).check(ViewAssertions.matches(isDisplayed()))
+        Espresso.onView(ViewMatchers.withText("Yes")).inRoot(isDialog())
+            .check(ViewAssertions.matches(isDisplayed()))
         Espresso.onView(ViewMatchers.withText("Yes")).inRoot(isDialog()).perform(click())
 
 
         Espresso.onView(ViewMatchers.withId(R.id.recycler_events_list_admin))
-            .check(RecyclerViewItemCountAssertion(zones.size+2))
+            .check(RecyclerViewItemCountAssertion(nbzones + 2))
     }
 
     @Test
@@ -241,12 +260,13 @@ class EventManagementListTest {
             Observable(true)
         }
 
-        Espresso.onView(ViewMatchers.withText("Yes")).inRoot(isDialog()).check(ViewAssertions.matches(isDisplayed()))
+        Espresso.onView(ViewMatchers.withText("Yes")).inRoot(isDialog())
+            .check(ViewAssertions.matches(isDisplayed()))
         Espresso.onView(ViewMatchers.withText("Yes")).inRoot(isDialog()).perform(click())
 
 
         Espresso.onView(ViewMatchers.withId(R.id.recycler_events_list_admin))
-            .check(RecyclerViewItemCountAssertion(zones.size+1))
+            .check(RecyclerViewItemCountAssertion(zones.size + 1))
     }
 
 }
