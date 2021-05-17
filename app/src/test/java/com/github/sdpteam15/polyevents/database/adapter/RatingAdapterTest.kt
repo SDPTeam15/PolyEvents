@@ -1,10 +1,8 @@
 package com.github.sdpteam15.polyevents.database.adapter
 
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
-import com.github.sdpteam15.polyevents.model.database.remote.adapter.ProfileAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.RatingAdapter
 import com.github.sdpteam15.polyevents.model.entity.Rating
-import com.github.sdpteam15.polyevents.model.entity.UserRole
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
