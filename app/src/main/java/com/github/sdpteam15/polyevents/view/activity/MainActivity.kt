@@ -20,6 +20,7 @@ import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDat
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.model.map.MapsFragmentMod
+import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.fragments.*
 import com.github.sdpteam15.polyevents.view.fragments.home.AdminHomeFragment
@@ -55,6 +56,8 @@ class MainActivity : AppCompatActivity() {
         //Return CurrentUser if we are not in test, but we can use a fake user in test this way
         var currentUser: UserEntity? = null
             get() = field ?: currentDatabase.currentUser
+        var currentUserObservable: Observable<UserEntity>? = null
+            get() = field ?: currentDatabase.currentUserObservable
 
         const val NUMBER_EVENT_TO_DISPLAY = 25
 
@@ -123,7 +126,7 @@ class MainActivity : AppCompatActivity() {
         lv_listView.emptyView = tv_emptyTextView
         */
 
-        currentDatabase.currentUserObservable.observe(this) {
+        currentUserObservable!!.observe(this) {
             it.value.roles.observe(this) {
                 roles.clear()
                 val list = resources.getStringArray(R.array.Ranks).mapIndexed { index, value ->

@@ -19,18 +19,21 @@ import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabasePr
 import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
+import com.github.sdpteam15.polyevents.model.entity.UserRole
+import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.anyOrNull
 import org.mockito.Mockito.`when` as When
 
 @RunWith(AndroidJUnit4::class)
 class AdminHomeFragmentTest {
     var mainActivity = ActivityScenarioRule(MainActivity::class.java)
     lateinit var scenario: ActivityScenario<MainActivity>
-
 
     lateinit var testUser: UserEntity
 
@@ -52,6 +55,7 @@ class AdminHomeFragmentTest {
             email = email
         )
         MainActivity.currentUser = testUser
+        MainActivity.currentUserObservable = Observable(testUser)
 
         val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
         scenario = ActivityScenario.launch(intent)

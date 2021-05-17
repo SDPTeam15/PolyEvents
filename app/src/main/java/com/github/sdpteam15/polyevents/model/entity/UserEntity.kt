@@ -41,17 +41,28 @@ data class UserEntity(
             if (!value)
                 userProfiles
         }
+    var isLoading = false
     var userProfiles: ObservableList<UserProfile> = ObservableList()
         get() {
             synchronized(this) {
-                if (!loadSuccess)
+                if (!loadSuccess && !isLoading) {
+                    isLoading = true
                     Database.currentDatabase.userDatabase!!.getUserProfilesList(field, this)
                         .observeOnce {
                             synchronized(this) {
+                                isLoading = false
                                 if (it.value && !loadSuccess)
                                     loadSuccess = true
                             }
                         }
+                    field.observe {
+                        roles.clear(this)
+                        val res = mutableSetOf(UserRole.PARTICIPANT)
+                        for (e in it.value)
+                            res.add(e.userRole)
+                        roles.addAll(res, this)
+                    }
+                }
             }
             return field
         }
@@ -60,18 +71,13 @@ data class UserEntity(
             field = value
         }
 
-    val roles: ObservableList<UserRole>
+    val roles: ObservableList<UserRole> = ObservableList<UserRole>()
         get() {
-            val result = ObservableList<UserRole>()
-            userProfiles
-                .observe {
-                    result.clear(this)
-                    val res = mutableSetOf(UserRole.PARTICIPANT)
-                    for (e in it.value)
-                        res.add(e.userRole)
-                    result.addAll(res, this)
-                }
-            return result
+            synchronized(this) {
+                if (!loadSuccess)
+                    userProfiles
+            }
+            return field
         }
 
     /**
