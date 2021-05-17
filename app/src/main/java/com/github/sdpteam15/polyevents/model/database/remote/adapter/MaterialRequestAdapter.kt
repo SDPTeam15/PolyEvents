@@ -16,7 +16,7 @@ object MaterialRequestAdapter : AdapterInterface<MaterialRequest> {
         MATERIAL_REQUEST_LIST.value to element.items,
         MATERIAL_REQUEST_TIME.value to HelperFunctions.localDateTimeToDate(element.time),
         MATERIAL_REQUEST_USER_ID.value to element.userId,
-        MATERIAL_REQUEST_STATUS.value to  element.status.toString()
+        MATERIAL_REQUEST_STATUS.value to  element.status.ordinal
     )
 
     override fun fromDocument(document: MutableMap<String, Any?>, id: String): MaterialRequest {
@@ -25,7 +25,7 @@ object MaterialRequestAdapter : AdapterInterface<MaterialRequest> {
             document[MATERIAL_REQUEST_LIST.value] as Map<String, Int>,
             HelperFunctions.dateToLocalDateTime((document[MATERIAL_REQUEST_TIME.value] as Timestamp?)?.toDate()),
             document[MATERIAL_REQUEST_USER_ID.value] as String,
-            MaterialRequest.Status.fromString((document[MATERIAL_REQUEST_STATUS]?:"pending") as String)!!
+            MaterialRequest.Status.fromOrdinal(((document[MATERIAL_REQUEST_STATUS.value]?:0) as Long).toInt())!!
         )
     }
 }
