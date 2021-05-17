@@ -60,7 +60,9 @@ class ItemRequestManagementActivity : AppCompatActivity() {
         //Wait until we have both requests accepted from the database to show the material requests
         materialRequestDatabase!!.getMaterialRequestList(
             requests,
-            { collection -> collection.orderBy(DatabaseConstant.MaterialRequestConstant.MATERIAL_REQUEST_TIME.value) })
+            { collection ->
+                collection.orderBy(DatabaseConstant.MaterialRequestConstant.MATERIAL_REQUEST_STATUS.value)
+            })
             .observeOnce(this) {
                 Database.currentDatabase.itemDatabase!!.getItemsList(tempItems).observeOnce(this) {
                     recyclerView.adapter =
@@ -75,12 +77,6 @@ class ItemRequestManagementActivity : AppCompatActivity() {
                         )
                 }
             }
-/*
-        requests.observeUpdate(this) {
-            if (it.sender != materialRequestDatabase) {
-                recyclerView.adapter!!.notifyDataSetChanged()
-            }
-        }*/
     }
 
     private val acceptMaterialRequest = { request: MaterialRequest ->

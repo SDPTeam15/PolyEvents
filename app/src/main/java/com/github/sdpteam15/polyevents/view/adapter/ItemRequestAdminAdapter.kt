@@ -2,6 +2,7 @@ package com.github.sdpteam15.polyevents.view.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -63,6 +64,7 @@ class ItemRequestAdminAdapter(
         private val itemList = view.findViewById<TextView>(R.id.id_request_item_list)
         private val btnAccept = view.findViewById<ImageButton>(R.id.id_request_accept)
         private val btnRefuse = view.findViewById<ImageButton>(R.id.id_request_refuse)
+        private val status = view.findViewById<TextView>(R.id.id_request_status)
 
         /**
          * Binds the values of each value of a material request to a view
@@ -76,6 +78,13 @@ class ItemRequestAdminAdapter(
                 ).subSequence(0, 5)
             itemList.text = request.items.map { itemNames[it.key] + " : " + it.value }
                 .joinToString(separator = "\n") { it }
+            status.setTextColor(when(request.status){
+                MaterialRequest.Status.ACCEPTED -> Color.GREEN
+                MaterialRequest.Status.PENDING -> Color.BLACK
+                MaterialRequest.Status.REFUSED -> Color.RED
+            })
+            status.text = request.status.toString()
+
             btnAccept.visibility = if (request.status == MaterialRequest.Status.PENDING) VISIBLE else INVISIBLE
             btnRefuse.visibility = if (request.status == MaterialRequest.Status.PENDING) VISIBLE else INVISIBLE
             btnRefuse.setOnClickListener { onRefuseListener(request) }
