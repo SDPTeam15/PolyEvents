@@ -264,6 +264,7 @@ class EventManagementListTest {
             .check(ViewAssertions.matches(isDisplayed()))
         Espresso.onView(ViewMatchers.withText("Yes")).inRoot(isDialog()).perform(click())
 
+        Espresso.onView(ViewMatchers.withId(R.id.recycler_events_list_admin)).check(ViewAssertions.matches(isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.recycler_events_list_admin))
             .check(RecyclerViewItemCountAssertion(nbzones + 1))
     }
