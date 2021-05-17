@@ -8,10 +8,20 @@ import java.time.LocalDateTime
  * @param items list of items to request
  * @param date date of the request
  * @param userId user who made the id
+ * @param status material request status
  */
 data class MaterialRequest(
     val requestId: String?,
     val items: Map<String, Int>,
     val time: LocalDateTime?,
-    val userId: String
-)
+    val userId: String,
+    var status: Status
+) {
+    enum class Status(status: String) {
+        PENDING("pending"),
+        ACCEPTED("accepted"),
+        REFUSED("refused")
+
+
+    }
+}
