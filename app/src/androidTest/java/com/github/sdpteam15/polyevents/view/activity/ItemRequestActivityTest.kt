@@ -3,13 +3,10 @@ package com.github.sdpteam15.polyevents.view.activity
 
 import android.content.Intent
 import android.view.View
-import android.view.WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-import android.view.WindowManager.LayoutParams.TYPE_TOAST
 import android.widget.EditText
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.Root
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.click
@@ -28,8 +25,6 @@ import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.adapter.ItemRequestAdapter
 import org.hamcrest.CoreMatchers.`is`
-import org.hamcrest.Description
-import org.hamcrest.TypeSafeMatcher
 import org.junit.After
 import org.junit.Before
 import org.junit.Test

@@ -71,7 +71,7 @@ data class UserEntity(
             field = value
         }
 
-    val roles: ObservableList<UserRole> = ObservableList<UserRole>()
+    val roles: ObservableList<UserRole> = ObservableList()
         get() {
             synchronized(this) {
                 if (!loadSuccess)
@@ -85,7 +85,7 @@ data class UserEntity(
      * @return if one of the profiles has admin role
      */
     fun isAdmin(): Boolean {
-        //TODO
+        //TODO roles.contains(UserRole.ADMIN)
         return true
     }
 
