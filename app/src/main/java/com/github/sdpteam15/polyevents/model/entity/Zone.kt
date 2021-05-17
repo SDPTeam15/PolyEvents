@@ -68,7 +68,12 @@ data class Zone(
      */
     fun getDrawingPoints(): List<List<LatLng>> {
         return getDrawingPolygons().flatMap { (it.second ?: listOf()).plusElement(it.first) }
-            .map { it.drop(1) }
+            .map {
+                if (it.first() == it.last())
+                    it.drop(1)
+                else
+                    it
+            }
     }
 
     override fun getAttachedNewPoint(
