@@ -7,6 +7,7 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
+import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider.itemDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider.materialRequestDatabase
 import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
@@ -94,6 +95,9 @@ class ItemRequestManagementActivity : AppCompatActivity() {
                     this
                 )
             }
+        }
+        for (item in request.items){
+        //itemDatabase!!.updateItem(item.key, item.value)
         }
         Unit
     }
