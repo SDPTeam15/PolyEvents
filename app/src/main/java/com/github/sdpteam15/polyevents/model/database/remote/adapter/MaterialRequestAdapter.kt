@@ -15,7 +15,8 @@ object MaterialRequestAdapter : AdapterInterface<MaterialRequest> {
     override fun toDocument(element: MaterialRequest) = hashMapOf(
         MATERIAL_REQUEST_LIST.value to element.items,
         MATERIAL_REQUEST_TIME.value to HelperFunctions.localDateTimeToDate(element.time),
-        MATERIAL_REQUEST_USER_ID.value to element.userId
+        MATERIAL_REQUEST_USER_ID.value to element.userId,
+        MATERIAL_REQUEST_STATUS.value to  element.status.toString()
     )
 
     override fun fromDocument(document: MutableMap<String, Any?>, id: String): MaterialRequest {
@@ -23,7 +24,8 @@ object MaterialRequestAdapter : AdapterInterface<MaterialRequest> {
             id,
             document[MATERIAL_REQUEST_LIST.value] as Map<String, Int>,
             HelperFunctions.dateToLocalDateTime((document[MATERIAL_REQUEST_TIME.value] as Timestamp?)?.toDate()),
-            document[MATERIAL_REQUEST_USER_ID.value] as String
+            document[MATERIAL_REQUEST_USER_ID.value] as String,
+            MaterialRequest.Status.fromString((document[MATERIAL_REQUEST_STATUS]?:"pending") as String)!!
         )
     }
 }

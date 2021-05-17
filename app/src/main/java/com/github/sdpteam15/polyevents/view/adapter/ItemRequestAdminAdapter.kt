@@ -2,8 +2,11 @@ package com.github.sdpteam15.polyevents.view.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
@@ -28,7 +31,7 @@ class ItemRequestAdminAdapter(
     context: Context,
     lifecycleOwner: LifecycleOwner,
     private val requests: ObservableList<MaterialRequest>,
-    private val userNames: ObservableMap<String, Observable<String>>,
+    private val userNames: ObservableMap<String, String>,
     private val itemNames: ObservableMap<String, String>,
     private val onAcceptListener: (MaterialRequest) -> Unit,
     private val onRefuseListener: (MaterialRequest) -> Unit
@@ -66,13 +69,15 @@ class ItemRequestAdminAdapter(
          */
         @SuppressLint("SetTextI18n")
         fun bind(request: MaterialRequest) {
-            organizer.text = userNames[request.userId]!!.value
+            organizer.text = userNames[request.userId]
             time.text =
                 request.time!!.format(DateTimeFormatter.ISO_LOCAL_DATE) + " " + request.time.format(
                     DateTimeFormatter.ISO_LOCAL_TIME
                 ).subSequence(0, 5)
             itemList.text = request.items.map { itemNames[it.key] + " : " + it.value }
                 .joinToString(separator = "\n") { it }
+            btnAccept.visibility = if (request.status == MaterialRequest.Status.PENDING) VISIBLE else INVISIBLE
+            btnRefuse.visibility = if (request.status == MaterialRequest.Status.PENDING) VISIBLE else INVISIBLE
             btnRefuse.setOnClickListener { onRefuseListener(request) }
             btnAccept.setOnClickListener { onAcceptListener(request) }
         }

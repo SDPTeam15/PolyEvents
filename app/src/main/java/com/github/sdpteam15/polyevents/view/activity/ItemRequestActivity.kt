@@ -73,7 +73,8 @@ class ItemRequestActivity : AppCompatActivity() {
                     null,
                     mapSelectedItems.keys.map { Pair(it.itemId!!, mapSelectedItems[it]!!) }.toMap(),
                     LocalDateTime.now(),
-                    currentDatabase.currentUser?.uid ?: ""
+                    currentDatabase.currentUser?.uid ?: "",
+                    MaterialRequest.Status.PENDING
                 )
             )
             showToast(getString(R.string.item_request_sent_text), this)

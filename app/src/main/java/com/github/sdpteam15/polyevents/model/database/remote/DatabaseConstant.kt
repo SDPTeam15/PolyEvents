@@ -118,7 +118,8 @@ object DatabaseConstant {
         MATERIAL_REQUEST_ID("mid"),
         MATERIAL_REQUEST_TIME("time"),
         MATERIAL_REQUEST_LIST("item_list"),
-        MATERIAL_REQUEST_USER_ID("user_id");
+        MATERIAL_REQUEST_USER_ID("user_id"),
+        MATERIAL_REQUEST_STATUS("status");
 
         override fun toString(): String = value
     }

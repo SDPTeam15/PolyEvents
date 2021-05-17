@@ -16,12 +16,21 @@ data class MaterialRequest(
     val time: LocalDateTime?,
     val userId: String,
     var status: Status
-) {
-    enum class Status(status: String) {
+){
+    enum class Status (private val status: String) {
         PENDING("pending"),
         ACCEPTED("accepted"),
-        REFUSED("refused")
+        REFUSED("refused");
 
+        override fun toString(): String {
+            return status
+        }
 
+        companion object {
+            private val map = Status.values().associateBy(Status::status)
+            fun fromString(userRole: String) = map[userRole]
+        }
     }
+
+
 }
