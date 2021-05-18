@@ -98,7 +98,7 @@ class ProfileLoginFragmentTests {
         When(mockedDatabase.userDatabase).thenReturn(mockedUserDatabase)
 
         When(mockedDatabase.currentUser).thenReturn(null)
-        val homeFragment = MainActivity.fragments[R.id.ic_home] as VisitorHomeFragment
+        val homeFragment = MainActivity.fragments[R.id.id_fragment_home_visitor] as VisitorHomeFragment
         When(
             mockedEventDatabase.getEvents(
                 null,
