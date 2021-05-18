@@ -94,7 +94,7 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
             } else
                 ended.postValue(false, it.sender)
         }
-        return ended.observeOnce { user.loadSuccess = false }.then
+        return ended
     }
 
     override fun removeProfileFromUser(
@@ -125,7 +125,7 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
             } else
                 end.postValue(it1.value, it1.sender)
         }
-        return end.observeOnce { user.loadSuccess = false }.then
+        return end
     }
 
     override fun updateProfile(profile: UserProfile, userAccess: UserEntity?) =
@@ -133,7 +133,7 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
             profile,
             profile.pid!!,
             PROFILE_COLLECTION
-        ).observeOnce { currentUser!!.loadSuccess = false }.then
+        ).observeOnce { if(db.currentUser != null) db.currentUser!!.loadSuccess = false }.then
 
     override fun getUserProfilesList(
         profiles: ObservableList<UserProfile>,
