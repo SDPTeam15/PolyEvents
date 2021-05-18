@@ -158,10 +158,10 @@ class EventManagementListTest {
 
         Database.currentDatabase = mockedDatabase
         scenario = ActivityScenario.launch(intent)
-        Espresso.onView(ViewMatchers.withId(R.id.id_fragment_admin_hub))
+        Espresso.onView(ViewMatchers.withId(R.id.id_fragment_home_admin))
             .check(ViewAssertions.matches(isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.btnRedirectEventManager))
-        Espresso.onView(ViewMatchers.withId(R.id.id_fragment_admin_hub))
+        Espresso.onView(ViewMatchers.withId(R.id.id_fragment_home_admin))
             .check(ViewAssertions.matches(isDisplayed()))
     }
 
