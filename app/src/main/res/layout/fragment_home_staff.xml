@@ -37,7 +37,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:text="@string/provider_hub_title"
+                android:text="@string/staff_hub_title"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large" />
         </LinearLayout>
 
