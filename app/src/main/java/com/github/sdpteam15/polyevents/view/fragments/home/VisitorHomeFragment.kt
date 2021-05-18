@@ -49,7 +49,7 @@ class VisitorHomeFragment : Fragment() {
         }
 
         HelperFunctions.getLocationPermission(requireActivity())
-        MainActivity.instance!!.swish(fragmentView!!.findViewById(R.id.spinner_visitor), UserRole.PARTICIPANT)
+        MainActivity.instance!!.switchRoles(fragmentView!!.findViewById(R.id.spinner_visitor), UserRole.PARTICIPANT)
 
         return fragmentView
     }

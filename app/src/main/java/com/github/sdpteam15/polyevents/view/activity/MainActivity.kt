@@ -206,7 +206,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private var roles = ObservableList<Pair<String, UserRole>>()
-    fun swish(spinner: Spinner, role: UserRole) {
+    fun switchRoles(spinner: Spinner, role: UserRole) {
         spinner.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
             override fun onItemSelected(

@@ -23,7 +23,7 @@ class ProviderHomeFragment : Fragment() {
             val intent = Intent(activity, ItemRequestActivity::class.java)
             startActivity(intent)
         }
-        MainActivity.instance!!.swish(viewRoot!!.findViewById(R.id.spinner_provider), UserRole.ORGANIZER)
+        MainActivity.instance!!.switchRoles(viewRoot!!.findViewById(R.id.spinner_provider), UserRole.ORGANIZER)
         return viewRoot
     }
 }

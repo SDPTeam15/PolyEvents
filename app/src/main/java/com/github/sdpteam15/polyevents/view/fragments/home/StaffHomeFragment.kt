@@ -16,7 +16,7 @@ class StaffHomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val viewRoot = inflater.inflate(R.layout.fragment_home_staff, container, false)
-        MainActivity.instance!!.swish(viewRoot!!.findViewById(R.id.spinner_staff), UserRole.STAFF)
+        MainActivity.instance!!.switchRoles(viewRoot!!.findViewById(R.id.spinner_staff), UserRole.STAFF)
         return viewRoot
     }
 }
