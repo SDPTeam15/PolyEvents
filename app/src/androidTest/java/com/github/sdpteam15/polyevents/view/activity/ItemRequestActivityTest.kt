@@ -147,22 +147,6 @@ class ItemRequestActivityTest {
         assert(FakeDatabaseMaterialRequest.requests.any { it.items.any { it2 -> it2.key == availableItemsList[0].first.itemId } })
     }
 
-/*
-    @Test
-    fun sendingEmptyRequestDisplayToast() {
-        val context = InstrumentationRegistry.getInstrumentation().getTargetContext()
-
-        onView(withId(R.id.id_button_make_request)).perform(click())
-        //onView(withText(containsString(context.getString(R.string.item_request_empty_text)))).inRoot(ToastMatcher()).check(matches(isDisplayed()))
-        onView(withText(containsString(context.getString(R.string.item_request_empty_text)))).inRoot(
-            withDecorView(
-                not(
-                    getActivity(context)?.getWindow()?.getDecorView()
-                )
-            )
-        ).check(matches(isDisplayed()))
-    }
-*/
 
     @Test
     fun settingNegativeQuantityMakeEmptyRequest() {
@@ -212,7 +196,6 @@ class ItemRequestActivityTest {
             )
         )
     }
-
 }
 
 

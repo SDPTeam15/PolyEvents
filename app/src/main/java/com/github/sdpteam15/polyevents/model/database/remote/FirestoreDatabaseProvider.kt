@@ -15,11 +15,9 @@ import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
-import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -30,12 +28,12 @@ object FirestoreDatabaseProvider : DatabaseInterface {
 
     override var itemDatabase: ItemDatabaseInterface? = null
         get() {
-            field = field ?: ItemDatabaseFirestore
+            field = field ?: ItemDatabase(this)
             return field
         }
     override var zoneDatabase: ZoneDatabaseInterface? = null
         get() {
-            field = field ?: ZoneDatabaseFirestore
+            field = field ?: ZoneDatabase(this)
             return field
         }
     override var userDatabase: UserDatabaseInterface? = null
@@ -70,7 +68,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         }
 
     override val currentUserObservable = Observable<UserEntity>()
-    var loadSuccess: Boolean? = false
+    private var loadSuccess: Boolean? = false
     override var currentUser: UserEntity?
         get() {
             if (UserLogin.currentUserLogin.isConnected()) {
@@ -111,106 +109,6 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     //TODO change once the current profile has been developed
     override var currentProfile: UserProfile? = UserProfile(userRole = UserRole.ADMIN)
 
-    //Method used to get listener in the test set to mock and test the database
-    var lastQuerySuccessListener: OnSuccessListener<QuerySnapshot>? = null
-    var lastSetSuccessListener: OnSuccessListener<Void>? = null
-    var lastFailureListener: OnFailureListener? = null
-    var lastGetSuccessListener: OnSuccessListener<DocumentSnapshot>? = null
-    var lastAddSuccessListener: OnSuccessListener<DocumentReference>? = null
-
-    /**
-     * After an add request, add on success and on failure listener (and set them into the corresponding variable to be able to test)
-     * @param task: The query that will get document from Firestore
-     * @return An observable that will be true if no problem during the request false otherwise
-     */
-    fun thenDoAdd(
-        task: Task<DocumentReference>
-    ): Observable<Boolean> {
-        val ended = Observable<Boolean>()
-
-        lastAddSuccessListener =
-            OnSuccessListener<DocumentReference> { ended.postValue(true, this) }
-        lastFailureListener = OnFailureListener {
-            it.message?.let { it1 -> Log.d(this::class.qualifiedName, it1) }
-            ended.postValue(false, this)
-        }
-        task.addOnSuccessListener(lastAddSuccessListener!!)
-            .addOnFailureListener(lastFailureListener!!)
-
-        return ended
-    }
-
-    /**
-     * After a get request, add on success and on failure listener (and set them into the corresponding variable to be able to test)
-     * @param task: The query that will get document from Firestore
-     * @param onSuccessListener The listener that will be executed if no problem during the request
-     * @return An observable that will be true if no problem during the request false otherwise
-     */
-    fun thenDoGet(
-        task: Task<QuerySnapshot>,
-        onSuccessListener: (QuerySnapshot) -> Unit
-    ): Observable<Boolean> {
-        val ended = Observable<Boolean>()
-        lastQuerySuccessListener = OnSuccessListener<QuerySnapshot> {
-            onSuccessListener(it)
-            ended.postValue(true, this)
-        }
-
-        lastFailureListener = OnFailureListener {
-            it.message?.let { it1 -> Log.d(this::class.qualifiedName, it1) }
-            ended.postValue(false, this)
-        }
-        task.addOnSuccessListener(lastQuerySuccessListener!!)
-            .addOnFailureListener(lastFailureListener!!)
-        return ended
-    }
-
-    /**
-     * After a get that can have multiple document, add on success and on failure listener (and set them into the corresponding variable to be able to test)
-     * @param task: The query that will get documents from Firestore
-     * @param onSuccessListener The listener that will be executed if no problem during the request
-     * @return An observable that will be true if no problem during the request false otherwise
-     */
-    fun thenDoMultGet(
-        task: Task<DocumentSnapshot>,
-        onSuccessListener: (DocumentSnapshot) -> Unit
-    ): Observable<Boolean> {
-        val ended = Observable<Boolean>()
-        lastGetSuccessListener = OnSuccessListener<DocumentSnapshot> {
-            onSuccessListener(it)
-            ended.postValue(true, this)
-        }
-        lastFailureListener = OnFailureListener {
-            if (it.message != null)
-                Log.d(this::class.qualifiedName, it.message!!)
-            ended.postValue(false, this)
-        }
-        task.addOnSuccessListener(lastGetSuccessListener!!)
-            .addOnFailureListener(lastFailureListener!!)
-        return ended
-    }
-
-    /**
-     * After a request that modify an online document, add on success and on failure listener (and set them into the corresponding variable to be able to test)
-     * @param task: The query that will get documents from Firestore
-     * @return An observable that will be true if no problem during the request false otherwise
-     */
-    fun thenDoSet(
-        task: Task<Void>
-    ): Observable<Boolean> {
-        val ended = Observable<Boolean>()
-
-        lastSetSuccessListener = OnSuccessListener<Void> { ended.postValue(true, this) }
-        lastFailureListener = OnFailureListener {
-            if (it.message != null)
-                Log.d(this::class.qualifiedName, it.message!!)
-            ended.postValue(false, this)
-        }
-        task.addOnSuccessListener(lastSetSuccessListener!!)
-            .addOnFailureListener(lastFailureListener!!)
-
-        return ended
-    }
 
     override fun <T : Any> addEntityAndGetId(
         element: T,
@@ -218,18 +116,16 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         adapter: AdapterToDocumentInterface<in T>
     ): Observable<String> {
         val ended = Observable<String>()
-        lastAddSuccessListener =
+        val successListener =
             OnSuccessListener<DocumentReference> { ended.postValue(it.id, this) }
-        lastFailureListener = OnFailureListener {
-            if (it.message != null)
-                Log.d(this::class.qualifiedName, it.message!!)
+        val failureListener = OnFailureListener {
             ended.postValue("", this)
         }
         firestore!!
             .collection(collection.value)
             .add(adapter.toDocument(element))
-            .addOnSuccessListener(lastAddSuccessListener!!)
-            .addOnFailureListener(lastFailureListener!!)
+            .addOnSuccessListener(successListener)
+            .addOnFailureListener(failureListener)
         return ended
     }
 
@@ -257,7 +153,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
                 .addOnSuccessListener {
                     synchronized(this) {
                         mutableList[elementWithIndex.index] = it.id
-                        if (mutableList.fold(true) { a, p -> a && p != null}) {
+                        if (mutableList.fold(true) { a, p -> a && p != null }) {
                             val list = mutableListOf<String>()
                             for (e in mutableList)
                                 list.add(e!!)
@@ -277,11 +173,9 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         adapter: AdapterToDocumentInterface<in T>
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
-        
-        lastSetSuccessListener = OnSuccessListener<Void> { ended.postValue(true, this) }
-        lastFailureListener = OnFailureListener {
-            if (it.message != null)
-                Log.d(this::class.qualifiedName, it.message!!)
+
+        val successListener = OnSuccessListener<Void> { ended.postValue(true, this) }
+        val failureListener = OnFailureListener {
             ended.postValue(false, this)
         }
         val document = firestore!!
@@ -289,8 +183,8 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             .document(id)
         (if (element == null) document.delete()
         else document.set(adapter.toDocument(element)))
-            .addOnSuccessListener(lastSetSuccessListener!!)
-            .addOnFailureListener(lastFailureListener!!)
+            .addOnSuccessListener(successListener)
+            .addOnFailureListener(failureListener)
         return ended
     }
 
@@ -331,23 +225,21 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         adapter: AdapterFromDocumentInterface<out T>
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
-        lastGetSuccessListener = OnSuccessListener {
+        val successListener = OnSuccessListener<DocumentSnapshot> {
             if (it.data != null) {
                 element.postValue(adapter.fromDocument(it.data!!, it.id), this)
                 ended.postValue(true, this)
             } else
                 ended.postValue(false, this)
         }
-        lastFailureListener = OnFailureListener {
-            if (it.message != null)
-                Log.d(this::class.qualifiedName, it.message!!)
+        val failureListener = OnFailureListener {
             ended.postValue(false, this)
         }
         firestore!!.collection(collection.value)
             .document(id)
             .get()
-            .addOnFailureListener(lastFailureListener!!)
-            .addOnSuccessListener(lastGetSuccessListener!!)
+            .addOnFailureListener(failureListener)
+            .addOnSuccessListener(successListener)
         return ended
     }
 
@@ -361,8 +253,6 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         val ended = Observable<Boolean>()
 
         val lastFailureListener = OnFailureListener {
-            if (it.message != null)
-                Log.d(this::class.qualifiedName, it.message!!)
             ended.postValue(false, this)
         }
         val fsCollection = firestore!!.collection(collection.value)

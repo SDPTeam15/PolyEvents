@@ -19,8 +19,11 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
     override fun createEvent(event: Event, userAccess: UserProfile?): Observable<Boolean> =
         db.addEntity(event, EVENT_COLLECTION, EventAdapter)
 
-    override fun updateEvents(event: Event, userAccess: UserProfile?): Observable<Boolean> =
+    override fun updateEvent(event: Event, userAccess: UserProfile?): Observable<Boolean> =
         db.setEntity(event, event.eventId!!, EVENT_COLLECTION)
+
+    override fun removeEvent(eventId: String, userAccess: UserProfile?): Observable<Boolean> =db.deleteEntity(eventId, EVENT_COLLECTION)
+
 
     override fun getEventFromId(
         id: String,

@@ -219,7 +219,7 @@ class LatLngOperatorTest {
         expected = listOf(
             LatLng(0.0, 1.0), LatLng(0.0, 2.0), LatLng(3.0, 2.0), LatLng(3.0, 1.0)
         )
-        var expected2 = listOf(
+        val expected2 = listOf(
             LatLng(5.0, 1.0), LatLng(5.0, 2.0), LatLng(8.0, 2.0), LatLng(8.0, 1.0)
         )
 
@@ -266,7 +266,7 @@ class LatLngOperatorTest {
                 LatLng(0.0, 1.0), LatLng(0.0, 2.0), LatLng(3.0, 2.0), LatLng(3.0, 1.0)
             )
         )
-        var expected = listOf<LatLng>()
+        var expected: List<LatLng>
 
         var polygon = polygonOperation(subject, clip, DIFFERENCE)
         assert(polygon.isEmpty())
@@ -314,7 +314,7 @@ class LatLngOperatorTest {
         expected = listOf(
             LatLng(0.0, 1.0), LatLng(0.0, 2.0), LatLng(3.0, 2.0), LatLng(3.0, 1.0)
         )
-        var expectedHole = listOf(
+        val expectedHole = listOf(
             LatLng(0.2, 1.2), LatLng(0.2, 1.8), LatLng(2.8, 1.8), LatLng(2.8, 1.2)
         )
 
@@ -359,7 +359,7 @@ class LatLngOperatorTest {
             )
         )
 
-        var expected2 =
+        val expected2 =
             mutableListOf<Pair<MutableList<LatLng>, MutableList<MutableList<LatLng>>?>>()
 
         polygon = polygonOperation(subject, clip, INTERSECTION)
@@ -393,23 +393,23 @@ class LatLngOperatorTest {
 
     @Test
     fun polygonDifferenceWithOverlappingZones() {
-        var subject = LatLngOperator.Polygon(
+        val subject = LatLngOperator.Polygon(
             listOf(
                 LatLng(0.0, 1.0), LatLng(0.0, 2.0), LatLng(3.0, 2.0), LatLng(3.0, 1.0)
             )
         )
-        var clip = LatLngOperator.Polygon(
+        val clip = LatLngOperator.Polygon(
             listOf(
                 LatLng(1.0, 0.0), LatLng(2.0, 0.0), LatLng(2.0, 3.0), LatLng(1.0, 3.0)
             )
         )
-        var expected = listOf(
+        val expected = listOf(
             LatLng(0.0, 1.0),
             LatLng(0.0, 2.0),
             LatLng(1.0, 2.0),
             LatLng(1.0, 1.0)
         )
-        var expected2 = listOf(
+        val expected2 = listOf(
             LatLng(2.0, 2.0),
             LatLng(3.0, 2.0),
             LatLng(3.0, 1.0),
@@ -417,7 +417,7 @@ class LatLngOperatorTest {
         )
 
 
-        var polygon = polygonOperation(subject, clip, DIFFERENCE)
+        val polygon = polygonOperation(subject, clip, DIFFERENCE)
         print(polygon)
         try {
             assertPolygonsEquivalent(polygon[0].first, expected)
@@ -538,7 +538,7 @@ class LatLngOperatorTest {
             LatLng(2.0, 9.0),
             LatLng(0.0, 9.0)
         )
-        var holes = mutableListOf(
+        val holes = mutableListOf(
             mutableListOf(
                 LatLng(1.0, 3.0),
                 LatLng(2.0, 2.5),
@@ -662,7 +662,7 @@ class LatLngOperatorTest {
         )
         val union = polygonsUnion(rectangles)
         println(union)
-        var expected = listOf(
+        val expected = listOf(
             LatLng(2.0, 4.0),
             LatLng(3.0, 4.0),
             LatLng(3.0, 5.0),
