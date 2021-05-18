@@ -105,7 +105,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         }
         set(value) {
             loadSuccess = value != null
-            currentUserObservable.value = value
+            currentUserObservable.postValue(value, this)
         }
 
     //TODO change once the current profile has been developed
@@ -368,6 +368,8 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         val fsCollection = firestore!!.collection(collection.value)
         if (ids != null) {
             val mutableList = mutableListOf<T?>()
+            if(ids.isEmpty())
+                ended.postValue(true, this)
             for (id in ids) {
                 mutableList.add(null)
                 fsCollection.document(id)
@@ -391,6 +393,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
                     }
                     .addOnFailureListener(lastFailureListener)
             }
+
         } else {
             val task = matcher?.match(fsCollection)?.get() ?: fsCollection.get()
             task.addOnSuccessListener {

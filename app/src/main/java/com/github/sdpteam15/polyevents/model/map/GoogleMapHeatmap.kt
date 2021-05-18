@@ -45,7 +45,7 @@ object GoogleMapHeatmap {
                 override fun run() {
                     val locations = ObservableList<LatLng>()
                     Database.currentDatabase.heatmapDatabase!!.getLocations(locations)
-                    locations.observeOnce {
+                    locations.observeOnce(false) {
                         addHeatMap(it.value)
                     }
                 }
