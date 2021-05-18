@@ -1,8 +1,9 @@
 package com.github.sdpteam15.polyevents.model.database.remote.objects
 
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.ITEM_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.ITEM_TYPE_COLLECTION
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ItemConstants.ITEM_TOTAL
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ItemConstants.ITEM_REMAINING
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.ItemEntityAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.ItemTypeAdapter
@@ -39,8 +40,8 @@ class ItemDatabase(private val db: DatabaseInterface) : ItemDatabaseInterface {
         itemList: ObservableList<Triple<Item, Int, Int>>,
         userAccess: UserProfile?
     ): Observable<Boolean> = db.getListEntity(itemList, null, {
-        it.whereGreaterThan(ITEM_TOTAL.value, 0)
-    }, ITEM_TYPE_COLLECTION, ItemEntityAdapter)
+        it.whereGreaterThan(ITEM_REMAINING.value, 0)
+    }, ITEM_COLLECTION, ItemEntityAdapter)
 
     override fun createItemType(
         itemType: String,
