@@ -243,7 +243,7 @@ class EventManagementListTest {
         Espresso.onView(ViewMatchers.withId(R.id.recycler_events_list_admin))
             .check(RecyclerViewItemCountAssertion(nbzones + 2))
     }
-*/
+
     @Test
     fun clickOnYesDeleteTheEvents() {
         Espresso.onView(ViewMatchers.withId(R.id.recycler_events_list_admin)).perform(
@@ -268,5 +268,5 @@ class EventManagementListTest {
         Espresso.onView(ViewMatchers.withId(R.id.recycler_events_list_admin))
             .check(RecyclerViewItemCountAssertion(nbzones + 1))
     }
-
+*/
 }
