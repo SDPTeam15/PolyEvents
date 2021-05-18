@@ -25,7 +25,7 @@ class ItemRequestManagementTest {
     lateinit var itemsAdminActivity: ActivityScenario<ItemRequestManagementActivity>
     lateinit var availableItems: MutableMap<Item, Int>
     lateinit var availableRequests: MutableList<MaterialRequest>
-    val availableItemsList = ObservableList<Pair<Item, Int>>()
+    val availableItemsList = ObservableList<Triple<Item, Int, Int>>()
     val availableRequestsList = ObservableList<MaterialRequest>()
 
 
@@ -53,7 +53,9 @@ class ItemRequestManagementTest {
                     Pair("1", 5)
                 ),
                 LocalDateTime.of(2021, 3, 24, 12, 23),
-                Database.currentDatabase.currentUser!!.uid
+                Database.currentDatabase.currentUser!!.uid,
+                MaterialRequest.Status.PENDING,
+                null
             ),
             MaterialRequest(
                 "r2",
@@ -63,7 +65,9 @@ class ItemRequestManagementTest {
                     Pair("6", 4)
                 ),
                 LocalDateTime.of(2021, 3, 29, 1, 6),
-                Database.currentDatabase.currentUser!!.uid
+                Database.currentDatabase.currentUser!!.uid,
+                MaterialRequest.Status.PENDING,
+                null
             ),
             MaterialRequest(
                 "r3",
@@ -71,7 +75,9 @@ class ItemRequestManagementTest {
                     Pair("3", 10)
                 ),
                 LocalDateTime.of(2021, 3, 29, 1, 6),
-                Database.currentDatabase.currentUser!!.uid
+                Database.currentDatabase.currentUser!!.uid,
+                MaterialRequest.Status.PENDING,
+                null
             )
         )
 
@@ -79,6 +85,7 @@ class ItemRequestManagementTest {
         FakeDatabaseItem.items.clear()
 
         for ((item, count) in availableItems) {
+
             Database.currentDatabase.itemDatabase!!.createItem(item, count)
         }
         Database.currentDatabase.itemDatabase!!.getItemsList(availableItemsList)

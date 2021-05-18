@@ -12,12 +12,17 @@ import com.google.firebase.Timestamp
  */
 @Suppress("UNCHECKED_CAST")
 object MaterialRequestAdapter : AdapterInterface<MaterialRequest> {
-    override fun toDocument(element: MaterialRequest) = hashMapOf(
-        MATERIAL_REQUEST_LIST.value to element.items,
-        MATERIAL_REQUEST_TIME.value to HelperFunctions.localDateTimeToDate(element.time),
-        MATERIAL_REQUEST_USER_ID.value to element.userId,
-        MATERIAL_REQUEST_STATUS.value to  element.status.ordinal
-    )
+    override fun toDocument(element: MaterialRequest): HashMap<String, Any?> {
+        val map = hashMapOf(
+            MATERIAL_REQUEST_LIST.value to element.items,
+            MATERIAL_REQUEST_TIME.value to HelperFunctions.localDateTimeToDate(element.time),
+            MATERIAL_REQUEST_USER_ID.value to element.userId,
+            MATERIAL_REQUEST_STATUS.value to element.status.ordinal,
+
+        )
+        if (element.adminMessage != null) map[MATERIAL_REQUEST_ADMIN_MESSAGE.value] = element.adminMessage
+        return map
+    }
 
     override fun fromDocument(document: MutableMap<String, Any?>, id: String): MaterialRequest {
         return MaterialRequest(
@@ -25,7 +30,8 @@ object MaterialRequestAdapter : AdapterInterface<MaterialRequest> {
             document[MATERIAL_REQUEST_LIST.value] as Map<String, Int>,
             HelperFunctions.dateToLocalDateTime((document[MATERIAL_REQUEST_TIME.value] as Timestamp?)?.toDate()),
             document[MATERIAL_REQUEST_USER_ID.value] as String,
-            MaterialRequest.Status.fromOrdinal(((document[MATERIAL_REQUEST_STATUS.value]?:0) as Long).toInt())!!
+            MaterialRequest.Status.fromOrdinal(((document[MATERIAL_REQUEST_STATUS.value]?:0) as Long).toInt())!!,
+            document[MATERIAL_REQUEST_ADMIN_MESSAGE.value] as String?
         )
     }
 }

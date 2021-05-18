@@ -21,7 +21,7 @@ import com.github.sdpteam15.polyevents.view.adapter.ItemAdapter
  */
 class ItemsAdminActivity : AppCompatActivity() {
 
-    private val items = ObservableList<Pair<Item, Int>>()
+    private val items = ObservableList<Triple<Item, Int, Int>>()
     private val itemTypes = ObservableList<String>()
 
     /**
@@ -65,7 +65,7 @@ class ItemsAdminActivity : AppCompatActivity() {
             }
         }
 
-        val modifyItem = { item: Pair<Item, Int> ->
+        val modifyItem = { item: Triple<Item, Int, Int> ->
             createItemPopup(item)
         }
 
@@ -77,7 +77,7 @@ class ItemsAdminActivity : AppCompatActivity() {
     }
 
 
-    private fun createItemPopup(item: Pair<Item, Int>?) {
+    private fun createItemPopup(item: Triple<Item, Int, Int>?) {
         // Initialize a new layout inflater instance
         val inflater: LayoutInflater =
             getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -107,11 +107,13 @@ class ItemsAdminActivity : AppCompatActivity() {
         val confirmButton = view.findViewById<ImageButton>(R.id.id_confirm_add_item_button)
         val itemQuantity = view.findViewById<EditText>(R.id.id_edittext_item_quantity)
         val itemTypeTextView = view.findViewById<AutoCompleteTextView>(R.id.id_edittext_item_type)
-
+        var itemUsed = 0
         if (item != null) {
             itemName.setText(item.first.itemName)
             itemQuantity.setText(item.second.toString())
             itemTypeTextView.setText(item.first.itemType)
+            itemUsed = item.second - item.third
+
         }
 
 
@@ -127,36 +129,45 @@ class ItemsAdminActivity : AppCompatActivity() {
 
         // Set a click listener for popup's button widget
         confirmButton.setOnClickListener {
-            val itemType = itemTypeTextView.text.toString()
+            val newTotal = itemQuantity.text.toString().toInt()
+            if (itemUsed > newTotal) {
+                HelperFunctions.showToast("The new total is less than attributed items", this)
 
-            // add new item Type if not already present
-            if (itemType !in itemTypes) {
-                itemTypes.add(itemType)
-            }
-            if (item == null) {
-                // add new item
-                items.add(
-                    Pair(
-                        Item(null, itemName.text.toString(), itemType),
-                        itemQuantity.text.toString().toInt()
-                    ), this
-                )
             } else {
-                //Modify item
-                currentDatabase.itemDatabase!!.updateItem(
-                    Item(
-                        item.first.itemId,
-                        itemName.text.toString(),
-                        itemType
-                    ), itemQuantity.text.toString().toInt()
-                ).observe { it1 ->
-                    if (it1.value) {
-                        currentDatabase.itemDatabase!!.getItemsList(items)
+
+                val itemType = itemTypeTextView.text.toString()
+
+                // add new item Type if not already present
+                if (itemType !in itemTypes) {
+                    itemTypes.add(itemType)
+                }
+                if (item == null) {
+                    // add new item
+                    items.add(
+                        Triple(
+                            Item(null, itemName.text.toString(), itemType),
+                            newTotal,
+                            newTotal
+                        ), this
+                    )
+                } else {
+                    //Modify item
+                    currentDatabase.itemDatabase!!.updateItem(
+                        Item(
+                            item.first.itemId,
+                            itemName.text.toString(),
+                            itemType
+                        ), newTotal,
+                        newTotal - itemUsed
+                    ).observe { it1 ->
+                        if (it1.value) {
+                            currentDatabase.itemDatabase!!.getItemsList(items)
+                        }
                     }
                 }
+                // Dismiss the popup window
+                popupWindow.dismiss()
             }
-            // Dismiss the popup window
-            popupWindow.dismiss()
         }
 
 
