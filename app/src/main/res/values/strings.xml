@@ -43,7 +43,7 @@
 
     <!-- Fragment Provider Home-->
     <string name="provider_hub_title">Provider management options</string>
-    <string name="items_requests_button_text">Items requests</string>
+    <string name="items_requests_button_text">Requests</string>
 
     <!-- Fragment Staff Home-->
     <string name="staff_hub_title">Staff management options</string>
