@@ -3,7 +3,7 @@ package com.github.sdpteam15.polyevents.model.database.remote.objects
 import android.annotation.SuppressLint
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.ITEM_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.ITEM_TYPE_COLLECTION
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ItemConstants.ITEM_COUNT
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ItemConstants.ITEM_TOTAL
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.ItemEntityAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.ItemTypeAdapter
@@ -22,11 +22,11 @@ object ItemDatabaseFirestore : ItemDatabaseInterface {
 
     override fun createItem(
         item: Item,
-        count: Int,
+        total: Int,
         userAccess: UserProfile?
     ): Observable<Boolean> = FirestoreDatabaseProvider.thenDoAdd(
         FirestoreDatabaseProvider.firestore!!.collection(ITEM_COLLECTION.value)
-            .add(ItemEntityAdapter.toItemDocument(item, count))
+            .add(ItemEntityAdapter.toItemDocument(item, total, total))
     )
 
 
@@ -38,21 +38,20 @@ object ItemDatabaseFirestore : ItemDatabaseInterface {
 
     override fun updateItem(
         item: Item,
-        count: Int,
+        total: Int,
+        remaining: Int,
         userAccess: UserProfile?
     ): Observable<Boolean> {
-        // TODO should update add item if non existent in database ?
-        // if (item.itemId == null) return createItem(item, count, profile)
         return FirestoreDatabaseProvider.thenDoSet(
             FirestoreDatabaseProvider.firestore!!
                 .collection(ITEM_COLLECTION.value)
                 .document(item.itemId!!)
-                .set(ItemEntityAdapter.toItemDocument(item, count))
+                .set(ItemEntityAdapter.toItemDocument(item, total, remaining))
         )
     }
 
     override fun getItemsList(
-        itemList: ObservableList<Pair<Item, Int>>,
+        itemList: ObservableList<Triple<Item, Int, Int>>,
         userAccess: UserProfile?
     ): Observable<Boolean> {
         return FirestoreDatabaseProvider.thenDoGet(
@@ -67,12 +66,12 @@ object ItemDatabaseFirestore : ItemDatabaseInterface {
     }
 
     override fun getAvailableItems(
-        itemList: ObservableList<Pair<Item, Int>>,
+        itemList: ObservableList<Triple<Item, Int, Int>>,
         userAccess: UserProfile?
     ): Observable<Boolean> {
         return FirestoreDatabaseProvider.thenDoGet(
             FirestoreDatabaseProvider.firestore!!.collection(ITEM_COLLECTION.value)
-                .whereGreaterThan(ITEM_COUNT.value, 0).get()
+                .whereGreaterThan(ITEM_TOTAL.value, 0).get()
         ) { querySnapshot ->
             itemList.clear(this)
             val items = querySnapshot.documents.map {

@@ -96,6 +96,7 @@ class ItemDatabaseFirestoreTest {
             mockedCollectionReference.add(
                 ItemEntityAdapter.toItemDocument(
                     testItem,
+                    testQuantity,
                     testQuantity
                 )
             )
@@ -138,6 +139,7 @@ class ItemDatabaseFirestoreTest {
 
         val testItem = Item("xxxbananaxxx", "banana", "OTHER")
         val testQuantity = 3
+        val testRemaining = 2
 
         When(mockedDatabase.collection(ITEM_COLLECTION.value)).thenReturn(mockedCollectionReference)
         When(mockedCollectionReference.document(testItem.itemId!!)).thenReturn(documentReference)
@@ -145,7 +147,8 @@ class ItemDatabaseFirestoreTest {
             documentReference.set(
                 ItemEntityAdapter.toItemDocument(
                     testItem,
-                    testQuantity
+                    testQuantity,
+                    testRemaining
                 )
             )
         ).thenReturn(taskMock)
@@ -168,7 +171,7 @@ class ItemDatabaseFirestoreTest {
             taskMock
         }
 
-        val result = FirestoreDatabaseProvider.itemDatabase!!.updateItem(testItem, testQuantity)
+        val result = FirestoreDatabaseProvider.itemDatabase!!.updateItem(testItem, testQuantity,testRemaining)
         assert(result.value!!)
         assert(itemNameUpdated == testItem.itemName)
         assert(itemTypeUpdated == testItem.itemType)
@@ -222,16 +225,16 @@ class ItemDatabaseFirestoreTest {
         val taskReferenceMock = mock(Task::class.java) as Task<QuerySnapshot>
         val mockedQuerySnapshot = mock(QuerySnapshot::class.java) as QuerySnapshot
 
-        val testItems = ObservableList<Pair<Item, Int>>()
+        val testItems = ObservableList<Triple<Item, Int, Int>>()
 
-        val itemToBeAdded = mutableListOf<Pair<Item, Int>>()
-        itemToBeAdded.add(Pair(Item("item1", "230V Plug", "PLUG"), 20))
-        itemToBeAdded.add(Pair(Item("item2", "Cord rewinder (50m)", "PLUG"), 10))
-        itemToBeAdded.add(Pair(Item("item3", "Microphone", "MICROPHONE"), 1))
-        itemToBeAdded.add(Pair(Item("item4", "Cooking plate", "OTHER"), 5))
-        itemToBeAdded.add(Pair(Item("item5", "Cord rewinder (100m)", "PLUG"), 1))
-        itemToBeAdded.add(Pair(Item("item6", "Cord rewinder (10m)", "PLUG"), 30))
-        itemToBeAdded.add(Pair(Item("item7", "Fridge(large)", "OTHER"), 2))
+        val itemToBeAdded = mutableListOf<Triple<Item, Int, Int>>()
+        itemToBeAdded.add(Triple(Item("item1", "230V Plug", "PLUG"), 20,12))
+        itemToBeAdded.add(Triple(Item("item2", "Cord rewinder (50m)", "PLUG"), 10,5))
+        itemToBeAdded.add(Triple(Item("item3", "Microphone", "MICROPHONE"), 1,1))
+        itemToBeAdded.add(Triple(Item("item4", "Cooking plate", "OTHER"), 5,2))
+        itemToBeAdded.add(Triple(Item("item5", "Cord rewinder (100m)", "PLUG"), 1,0))
+        itemToBeAdded.add(Triple(Item("item6", "Cord rewinder (10m)", "PLUG"), 30,13))
+        itemToBeAdded.add(Triple(Item("item7", "Fridge(large)", "OTHER"), 2,1))
 
 
         When(mockedDatabase.collection(ITEM_COLLECTION.value)).thenReturn(mockedCollectionReference)
@@ -263,22 +266,22 @@ class ItemDatabaseFirestoreTest {
         val taskReferenceMock = mock(Task::class.java) as Task<QuerySnapshot>
         val mockedQuerySnapshot = mock(QuerySnapshot::class.java) as QuerySnapshot
 
-        val testItems = ObservableList<Pair<Item, Int>>()
+        val testItems = ObservableList<Triple<Item, Int, Int>>()
 
-        val itemToBeAdded = mutableListOf<Pair<Item, Int>>()
-        itemToBeAdded.add(Pair(Item("item1", "230V Plug", "PLUG"), 20))
-        itemToBeAdded.add(Pair(Item("item2", "Cord rewinder (50m)", "PLUG"), 10))
-        itemToBeAdded.add(Pair(Item("item3", "Microphone", "MICROPHONE"), 1))
-        itemToBeAdded.add(Pair(Item("item4", "Cooking plate", "OTHER"), 5))
-        itemToBeAdded.add(Pair(Item("item5", "Cord rewinder (100m)", "PLUG"), 1))
-        itemToBeAdded.add(Pair(Item("item6", "Cord rewinder (10m)", "PLUG"), 30))
-        itemToBeAdded.add(Pair(Item("item7", "Fridge(large)", "OTHER"), 2))
+        val itemToBeAdded = mutableListOf<Triple<Item, Int, Int>>()
+        itemToBeAdded.add(Triple(Item("item1", "230V Plug", "PLUG"), 20,12))
+        itemToBeAdded.add(Triple(Item("item2", "Cord rewinder (50m)", "PLUG"), 10,5))
+        itemToBeAdded.add(Triple(Item("item3", "Microphone", "MICROPHONE"), 1,1))
+        itemToBeAdded.add(Triple(Item("item4", "Cooking plate", "OTHER"), 5,2))
+        itemToBeAdded.add(Triple(Item("item5", "Cord rewinder (100m)", "PLUG"), 1,0))
+        itemToBeAdded.add(Triple(Item("item6", "Cord rewinder (10m)", "PLUG"), 30,13))
+        itemToBeAdded.add(Triple(Item("item7", "Fridge(large)", "OTHER"), 2,1))
 
 
         When(mockedDatabase.collection(ITEM_COLLECTION.value)).thenReturn(mockedCollectionReference)
         When(
             mockedCollectionReference.whereGreaterThan(
-                DatabaseConstant.ItemConstants.ITEM_COUNT.value,
+                DatabaseConstant.ItemConstants.ITEM_TOTAL.value,
                 0
             )
         ).thenReturn(mockedCollectionReferenceFiltered)

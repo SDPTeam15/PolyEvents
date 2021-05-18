@@ -31,8 +31,8 @@ import org.junit.Test
 
 @Suppress("UNCHECKED_CAST")
 class ItemRequestActivityTest {
-    private lateinit var availableItems: MutableMap<Item, Int>
-    private var availableItemsList = ObservableList<Pair<Item, Int>>()
+    private lateinit var availableItems: MutableMap<Item, Pair<Int, Int>>
+    private var availableItemsList = ObservableList<Triple<Item, Int, Int>>()
     private var nbItemTypes: Int = 0
 
     lateinit var itemsAdminActivity: ActivityScenario<ItemRequestActivity>
@@ -64,13 +64,13 @@ class ItemRequestActivityTest {
     @Before
     fun setup() {
         availableItems = mutableMapOf()
-        availableItems[Item(null, "Bananas", "Fruit")] = 30
-        availableItems[Item(null, "Kiwis", "Fruit")] = 10
-        availableItems[Item(null, "230V Plugs", "Plug")] = 30
-        availableItems[Item(null, "Fridge (large)", "Fridge")] = 5
-        availableItems[Item(null, "Cord rewinder (15m)", "Plug")] = 30
-        availableItems[Item(null, "Cord rewinder (50m)", "Plug")] = 10
-        availableItems[Item(null, "Cord rewinder (25m)", "Plug")] = 20
+        availableItems[Item(null, "Bananas", "Fruit")] = Pair(30, 20)
+        availableItems[Item(null, "Kiwis", "Fruit")] = Pair(10, 5)
+        availableItems[Item(null, "230V Plugs", "Plug")] = Pair(30, 29)
+        availableItems[Item(null, "Fridge (large)", "Fridge")] = Pair(5, 0)
+        availableItems[Item(null, "Cord rewinder (15m)", "Plug")] = Pair(30, 1)
+        availableItems[Item(null, "Cord rewinder (50m)", "Plug")] = Pair(10, 2)
+        availableItems[Item(null, "Cord rewinder (25m)", "Plug")] = Pair(20, 2)
 
         val types = mutableSetOf<String>()
         nbItemTypes = availableItems.count { types.add(it.key.itemType) }
@@ -78,7 +78,7 @@ class ItemRequestActivityTest {
         Database.currentDatabase = FakeDatabase
         FakeDatabaseItem.items.clear()
         for ((item, count) in availableItems) {
-            Database.currentDatabase.itemDatabase!!.createItem(item, count)
+            Database.currentDatabase.itemDatabase!!.createItem(item, count.first)
         }
         Database.currentDatabase.itemDatabase!!.getItemsList(availableItemsList)
 
@@ -139,7 +139,7 @@ class ItemRequestActivityTest {
         openAllCategories()
         selectItemQuantity(1, "1")
         onView(withId(R.id.id_button_make_request)).perform(click())
-        assert(FakeDatabaseMaterialRequest.requests.any { it.items.any { it2 -> it2.key == availableItemsList[0].first.itemId } })
+        assert(FakeDatabaseMaterialRequest.requests.any { it.value.items.any { it2 -> it2.key == availableItemsList[0].first.itemId } })
     }
 
 /*

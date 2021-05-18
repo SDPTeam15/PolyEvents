@@ -13,21 +13,21 @@ interface MaterialRequestDatabaseInterface {
         get() = Database.currentDatabase.currentUser
     val currentProfile: UserProfile?
         get() = Database.currentDatabase.currentProfile
-/*
-    // TODO maybe split this function into "answerMaterialRequest() and refuseMaterialRequest()"
+
+
     /**
-     * Answer a material request
+     * Update a material request
      * @param id id of the items
-     * @param answer true or false depending if we accept the request or not
+     * @param materialRequest updated material request
      * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
-    fun answerMaterialRequest(
+    fun updateMaterialRequest(
         id: String,
-        answer: Boolean,
+        materialRequest: MaterialRequest,
         userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
-*/
+
 
     /**
      * Get the list of all material request

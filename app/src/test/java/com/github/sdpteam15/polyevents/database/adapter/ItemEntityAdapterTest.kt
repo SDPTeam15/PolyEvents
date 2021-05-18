@@ -12,6 +12,7 @@ class ItemEntityAdapterTest {
     val itemName = "Microphone Elgato"
     val itemType = "MICROPHONE"
     val itemQuantity = 5
+    val itemRemainingQuantity = 4
 
     lateinit var itemEntity: Item
     lateinit var document: HashMap<String, Any?>
@@ -23,7 +24,7 @@ class ItemEntityAdapterTest {
             itemName = itemName,
             itemType = itemType
         )
-        document = ItemEntityAdapter.toItemDocument(itemEntity, itemQuantity)
+        document = ItemEntityAdapter.toItemDocument(itemEntity, itemQuantity, itemRemainingQuantity)
     }
 
     @Test
@@ -31,22 +32,23 @@ class ItemEntityAdapterTest {
 
         val itemDocumentData: HashMap<String, Any?> = hashMapOf(
             ITEM_NAME.value to itemName,
-            ITEM_DOCUMENT_ID.value to itemId,
             ITEM_TYPE.value to itemType,
-            ITEM_COUNT.value to itemQuantity.toLong()
+            ITEM_TOTAL.value to itemQuantity.toLong(),
+            ITEM_REMAINING.value to itemRemainingQuantity.toLong()
         )
         val obtainedItem = ItemEntityAdapter.fromDocument(itemDocumentData, itemId)
 
         assertEquals(obtainedItem.first, itemEntity)
         assertEquals(obtainedItem.second, itemQuantity)
+        assertEquals(obtainedItem.third, itemRemainingQuantity)
     }
 
     @Test
     fun conversionOfItemEntityToDocumentPreservesData() {
         assertEquals(document[ITEM_TYPE.value] as String, itemEntity.itemType)
-        assertEquals(document[ITEM_DOCUMENT_ID.value], itemEntity.itemId)
-        assertEquals(document[ITEM_COUNT.value], itemQuantity)
+        assertEquals(document[ITEM_TOTAL.value], itemQuantity)
         assertEquals(document[ITEM_NAME.value], itemName)
+        assertEquals(document[ITEM_REMAINING.value], itemRemainingQuantity)
     }
 
     @Test
@@ -56,11 +58,12 @@ class ItemEntityAdapterTest {
             itemName = itemName,
             itemType = itemType
         )
-        document = ItemEntityAdapter.toItemDocument(itemEntity2, itemQuantity)
+        document = ItemEntityAdapter.toItemDocument(itemEntity2, itemQuantity, itemRemainingQuantity)
 
         assertEquals(document[ITEM_TYPE.value] as String, itemEntity.itemType)
-        assertEquals(document[ITEM_COUNT.value], itemQuantity)
+        assertEquals(document[ITEM_TOTAL.value], itemQuantity)
         assertEquals(document[ITEM_NAME.value], itemName)
+        assertEquals(document[ITEM_REMAINING.value], itemRemainingQuantity)
         assert(!document.containsKey(ITEM_DOCUMENT_ID.value))
     }
 }
