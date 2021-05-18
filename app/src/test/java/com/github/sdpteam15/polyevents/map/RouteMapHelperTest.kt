@@ -26,6 +26,7 @@ import org.mockito.kotlin.anyOrNull
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+@Suppress("UNCHECKED_CAST")
 class RouteMapHelperTest {
 
 
@@ -140,7 +141,7 @@ class RouteMapHelperTest {
 
     @Before
     fun setup() {
-        mockedMap = Mockito.mock(MapsInterface::class.java)
+        mockedMap = mock(MapsInterface::class.java)
         GoogleMapHelper.map = mockedMap
         Mockito.`when`(mockedMap.cameraPosition).thenReturn(camera)
         RouteMapHelper.nodes.add(rn1)

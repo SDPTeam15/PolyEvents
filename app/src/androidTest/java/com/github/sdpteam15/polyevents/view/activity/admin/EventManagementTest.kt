@@ -9,6 +9,7 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
+import com.github.sdpteam15.polyevents.HelperTestFunction
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
@@ -16,6 +17,7 @@ import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabasePr
 import com.github.sdpteam15.polyevents.model.database.remote.objects.EventDatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.objects.ZoneDatabaseInterface
 import com.github.sdpteam15.polyevents.model.entity.Event
+import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
@@ -24,6 +26,7 @@ import org.hamcrest.CoreMatchers
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.anyOrNull
 import java.time.LocalDateTime
@@ -68,6 +71,7 @@ class EventManagementTest {
         mockedDatabase = mock(DatabaseInterface::class.java)
         mockedEventDB = mock(EventDatabaseInterface::class.java)
         mockedZoneDB = mock(ZoneDatabaseInterface::class.java)
+
         When(mockedDatabase.eventDatabase).thenReturn(mockedEventDB)
         When(mockedDatabase.zoneDatabase).thenReturn(mockedZoneDB)
 
@@ -83,6 +87,11 @@ class EventManagementTest {
             (it.arguments[2] as ObservableList<Zone>).addAll(listZone)
             obs
         }
+
+        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())).thenReturn(
+            Observable(true)
+        )
+
         Database.currentDatabase = mockedDatabase
 
         val intent =
@@ -121,7 +130,7 @@ class EventManagementTest {
 
     private fun addUpdateListener(): Observable<Boolean> {
         val obs = Observable<Boolean>()
-        When(mockedEventDB.updateEvents(anyOrNull(), anyOrNull())).thenAnswer {
+        When(mockedEventDB.updateEvent(anyOrNull(), anyOrNull())).thenAnswer {
             event = (it.arguments[0] as Event)
             obs
         }
@@ -198,6 +207,9 @@ class EventManagementTest {
         mockedZoneDB = mock(ZoneDatabaseInterface::class.java)
         When(mockedDatabase.eventDatabase).thenReturn(mockedEventDB)
         When(mockedDatabase.zoneDatabase).thenReturn(mockedZoneDB)
+        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())).thenReturn(
+            Observable(true)
+        )
 
         val obs = Observable<Boolean>()
         When(
