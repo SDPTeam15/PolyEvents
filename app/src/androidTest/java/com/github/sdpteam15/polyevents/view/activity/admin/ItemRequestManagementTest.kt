@@ -4,9 +4,12 @@ import android.content.Intent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
+import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.RecyclerViewItemCountAssertion
+import com.github.sdpteam15.polyevents.TestHelper
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabase
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabaseItem
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabaseMaterialRequest
@@ -15,6 +18,7 @@ import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabasePr
 import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.adapter.ItemRequestAdminAdapter
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -27,6 +31,7 @@ class ItemRequestManagementTest {
     lateinit var availableRequests: MutableList<MaterialRequest>
     val availableItemsList = ObservableList<Triple<Item, Int, Int>>()
     val availableRequestsList = ObservableList<MaterialRequest>()
+    val explanation = "TESTREFUSE"
 
 
     @After
@@ -86,12 +91,17 @@ class ItemRequestManagementTest {
 
         for ((item, count) in availableItems) {
 
-            Database.currentDatabase.itemDatabase!!.createItem(item, count)
+            Database.currentDatabase.itemDatabase!!.updateItem(item, count, count)
         }
         Database.currentDatabase.itemDatabase!!.getItemsList(availableItemsList)
 
+
         for (request in availableRequests) {
-            Database.currentDatabase.materialRequestDatabase!!.createMaterialRequest(request)
+
+            Database.currentDatabase.materialRequestDatabase!!.updateMaterialRequest(
+                request.requestId!!,
+                request
+            )
         }
         Database.currentDatabase.materialRequestDatabase!!.getMaterialRequestList(
             availableRequestsList
@@ -112,6 +122,36 @@ class ItemRequestManagementTest {
     fun requestsAreAllDisplayed() {
         Espresso.onView(withId(R.id.id_recycler_item_requests))
             .check(RecyclerViewItemCountAssertion(availableRequests.size))
+
+    }
+
+    @Test
+    fun acceptRequestChangeStatus() {
+        Espresso.onView(withId(R.id.id_recycler_item_requests)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<ItemRequestAdminAdapter.ItemViewHolder>(
+                0,
+                TestHelper.clickChildViewWithId(R.id.id_request_accept)
+            )
+        )
+        assert(FakeDatabaseMaterialRequest.requests.values.any { it.status == MaterialRequest.Status.ACCEPTED })
+    }
+
+    @Test
+    fun refusePopupAndChangeStatus() {
+        Espresso.onView(withId(R.id.id_recycler_item_requests)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<ItemRequestAdminAdapter.ItemViewHolder>(
+                0,
+                TestHelper.clickChildViewWithId(R.id.id_request_refuse)
+            )
+        )
+
+        Espresso.onView(withId(R.id.id_txt_refusal_explanation))
+            .perform(ViewActions.typeText(explanation))
+        Espresso.closeSoftKeyboard()
+        Espresso.onView(withId(R.id.id_btn_confirm_refuse_request)).perform(ViewActions.click())
+
+
+        assert(FakeDatabaseMaterialRequest.requests.values.any { it.status == MaterialRequest.Status.REFUSED && it.adminMessage == explanation })
     }
 
 }

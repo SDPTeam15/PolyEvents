@@ -30,7 +30,6 @@ data class MaterialRequest(
         companion object {
             private val map = values().associateBy(Status::status)
             private val mapOrdinal =  map.mapKeys { it.value.ordinal }
-            fun fromString(userRole: String) = map[userRole]
             fun fromOrdinal(ordinal: Int) = mapOrdinal[ordinal]
         }
     }
