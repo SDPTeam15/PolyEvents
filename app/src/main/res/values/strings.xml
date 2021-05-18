@@ -162,4 +162,10 @@
     <string name="create_event_btn_text">Create event</string>
     <string name="title_activity_event_list_management">Event List</string>
 
+    <!-- MyItemRequestsActivity -->
+    <string name="my_item_requests">My item requests</string>
+    <string name="pending_requests">Pending requests</string>
+    <string name="accepted_requests">Accepted requests</string>
+    <string name="refused_requests">Refused requests</string>
+
 </resources>
