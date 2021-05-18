@@ -198,7 +198,7 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
 
         recyclerView = viewRoot.findViewById(R.id.id_recycler_profile_list)
 
-        recyclerView.adapter = ProfileAdapter(this, user.userProfiles)
+        recyclerView.adapter = ProfileAdapter(this, user, user.userProfiles)
 
         viewRoot.findViewById<ImageButton>(R.id.id_add_profile_button)
             .setOnClickListener { createProfilePopup(user) }

@@ -7,6 +7,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
@@ -14,6 +15,7 @@ import com.github.sdpteam15.polyevents.view.fragments.ProfileFragment
 
 class ProfileAdapter(
     private val profileFragment: ProfileFragment,
+    private val user: UserEntity,
     private val items: ObservableList<UserProfile>
 ) : RecyclerView.Adapter<ProfileAdapter.ItemViewHolder>() {
 
