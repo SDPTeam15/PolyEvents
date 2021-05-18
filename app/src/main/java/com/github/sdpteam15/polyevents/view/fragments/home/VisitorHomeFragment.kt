@@ -1,4 +1,4 @@
-package com.github.sdpteam15.polyevents.view.fragments
+package com.github.sdpteam15.polyevents.view.fragments.home
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,12 +12,14 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.NUMBER_UPCOMING_EVENTS
 import com.github.sdpteam15.polyevents.model.entity.Event
+import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.activity.MainActivity
 
 /**
  * The fragment for the home page.
  */
-class HomeFragment : Fragment() {
+class VisitorHomeFragment : Fragment() {
 
     private lateinit var listUpcomingEventsLayout: LinearLayout
     val events = ObservableList<Event>()
@@ -32,7 +34,7 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val fragmentView = inflater.inflate(R.layout.fragment_home, container, false)
+        val fragmentView = inflater.inflate(R.layout.fragment_home_visitor, container, false)
         listUpcomingEventsLayout =
             fragmentView.findViewById<LinearLayout>(R.id.id_upcoming_events_list)
 
@@ -47,6 +49,7 @@ class HomeFragment : Fragment() {
         }
 
         HelperFunctions.getLocationPermission(requireActivity())
+        MainActivity.instance!!.switchRoles(fragmentView!!.findViewById(R.id.spinner_visitor), UserRole.PARTICIPANT)
 
         return fragmentView
     }

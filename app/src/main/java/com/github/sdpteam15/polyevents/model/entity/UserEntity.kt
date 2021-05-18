@@ -2,7 +2,6 @@ package com.github.sdpteam15.polyevents.model.entity
 
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
-import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.google.firebase.firestore.IgnoreExtraProperties
 import java.time.LocalDate
@@ -42,14 +41,29 @@ data class UserEntity(
             if (!value)
                 userProfiles
         }
+    var isLoading = false
     var userProfiles: ObservableList<UserProfile> = ObservableList()
         get() {
-            if (!loadSuccess)
-                Database.currentDatabase.userDatabase!!.getUserProfilesList(field, this)
-                    .observeOnce {
-                        if (it.value)
-                            loadSuccess = true
+            synchronized(this) {
+                if (!loadSuccess && !isLoading) {
+                    isLoading = true
+                    Database.currentDatabase.userDatabase!!.getUserProfilesList(field, this)
+                        .observeOnce {
+                            synchronized(this) {
+                                isLoading = false
+                                if (it.value && !loadSuccess)
+                                    loadSuccess = true
+                            }
+                        }
+                    field.observe {
+                        roles.clear(this)
+                        val res = mutableSetOf(UserRole.PARTICIPANT)
+                        for (e in it.value)
+                            res.add(e.userRole)
+                        roles.addAll(res, this)
                     }
+                }
+            }
             return field
         }
         set(value) {
@@ -57,18 +71,13 @@ data class UserEntity(
             field = value
         }
 
-    val bestRole: Observable<UserRole>
+    val roles: ObservableList<UserRole> = ObservableList()
         get() {
-            val result = Observable<UserRole>()
-            userProfiles
-                .observeOnce {
-                    var res = UserRole.PARTICIPANT
-                    for (e in it.value)
-                        if (e.userRole < res)
-                            res = e.userRole
-                    result.postValue(res, this)
-                }
-            return result
+            synchronized(this) {
+                if (!loadSuccess)
+                    userProfiles
+            }
+            return field
         }
 
     /**
@@ -76,7 +85,7 @@ data class UserEntity(
      * @return if one of the profiles has admin role
      */
     fun isAdmin(): Boolean {
-        //TODO
+        //TODO roles.contains(UserRole.ADMIN)
         return true
     }
 

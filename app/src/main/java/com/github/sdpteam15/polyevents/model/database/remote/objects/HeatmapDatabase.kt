@@ -65,7 +65,7 @@ class HeatmapDatabase(private val db: DatabaseInterface) : HeatmapDatabaseInterf
             if (!it.value)
                 end.postValue(it.value, it.sender)
         }
-        tempUsersLocations.observeOnce {
+        tempUsersLocations.observeOnce(false) {
             val list = mutableListOf<LatLng>()
             for (e in it.value)
                 list.add(e)
