@@ -24,7 +24,9 @@ class MaterialRequestAdapterTest {
             matId,
             items,
             time,
-            userid
+            userid,
+            MaterialRequest.Status.PENDING,
+            ""
         )
     }
 
@@ -45,6 +47,8 @@ class MaterialRequestAdapterTest {
             MATERIAL_REQUEST_ID.value to materialRequest.requestId,
             MATERIAL_REQUEST_LIST.value to materialRequest.items,
             MATERIAL_REQUEST_USER_ID.value to materialRequest.userId,
+            MATERIAL_REQUEST_STATUS.value to materialRequest.status.ordinal.toLong(),
+            MATERIAL_REQUEST_ADMIN_MESSAGE.value to materialRequest.adminMessage
         )
 
         val matReqWithoutDate = materialRequest.copy(time = null)

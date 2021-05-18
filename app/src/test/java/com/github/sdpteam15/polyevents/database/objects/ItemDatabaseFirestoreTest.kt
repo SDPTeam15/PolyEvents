@@ -5,19 +5,13 @@ import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
-import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.ItemEntityAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.ItemTypeAdapter
-import com.github.sdpteam15.polyevents.model.database.remote.adapter.ZoneAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.objects.ItemDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.objects.ItemDatabaseInterface
-import com.github.sdpteam15.polyevents.model.database.remote.objects.ZoneDatabase
-import com.github.sdpteam15.polyevents.model.database.remote.objects.ZoneDatabaseInterface
 import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
-import com.github.sdpteam15.polyevents.model.entity.Zone
-import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import org.junit.Before
 import org.junit.Test
@@ -30,7 +24,9 @@ private const val uidTest = "Test uid"
 private const val itemId = "itemId"
 private const val itemName = "ZONENAME"
 private const val itemType = "ZONEDESC"
-private const val itemCount = 4
+private const val itemTotal = 4
+private const val itemRemaining = 3
+
 
 @Suppress("UNCHECKED_CAST")
 class ItemDatabaseFirestoreTest {
@@ -38,7 +34,8 @@ class ItemDatabaseFirestoreTest {
     lateinit var database: DatabaseInterface
     lateinit var mockedItemDatabase: ItemDatabaseInterface
     lateinit var item: Item
-    lateinit var itemPair: Pair<Item,Int>
+    lateinit var createdItemTriple: Triple<Item,Int,Int>
+    lateinit var itemTriple: Triple<Item,Int,Int>
 
     @Before
     fun setup() {
@@ -50,7 +47,8 @@ class ItemDatabaseFirestoreTest {
 
 
         item = Item(itemId = itemId,itemName = itemName, itemType = itemType)
-        itemPair = Pair(item, itemCount)
+        createdItemTriple = Triple(item, itemTotal, itemTotal)
+        itemTriple = Triple(item, itemTotal, itemRemaining)
 
         val mockDatabaseInterface = HelperTestFunction.mockDatabaseInterface()
         mockedItemDatabase = ItemDatabase(mockDatabaseInterface)
@@ -76,12 +74,12 @@ class ItemDatabaseFirestoreTest {
         val userAccess = UserProfile()
 
         HelperTestFunction.nextSetEntity { true }
-        mockedItemDatabase.updateItem(item,itemCount, userAccess)
+        mockedItemDatabase.updateItem(item,itemTotal, itemRemaining,userAccess)
             .observeOnce { assert(it.value) }.then.postValue(true)
 
         val set = HelperTestFunction.lastSetEntity()!!
 
-        assertEquals(itemPair, set.element)
+        assertEquals(itemTriple, set.element)
         assertEquals(itemId, set.id)
         assertEquals(DatabaseConstant.CollectionConstant.ITEM_COLLECTION, set.collection)
         assertEquals(ItemEntityAdapter, set.adapter)
@@ -92,19 +90,19 @@ class ItemDatabaseFirestoreTest {
         val userAccess = UserProfile()
 
         HelperTestFunction.nextAddEntity { true }
-        mockedItemDatabase.createItem(item,itemCount, userAccess)
+        mockedItemDatabase.createItem(item,itemTotal, userAccess)
             .observeOnce { assert(it.value) }.then.postValue(true)
 
         val set = HelperTestFunction.lastAddEntity()!!
 
-        assertEquals(itemPair, set.element)
+        assertEquals(createdItemTriple, set.element)
         assertEquals(DatabaseConstant.CollectionConstant.ITEM_COLLECTION, set.collection)
         assertEquals(ItemEntityAdapter, set.adapter)
     }
 
     @Test
     fun getItemList() {
-        val items = ObservableList<Pair<Item,Int>>()
+        val items = ObservableList<Triple<Item,Int, Int>>()
         val userAccess = UserProfile("uid")
 
         HelperTestFunction.nextGetListEntity { true }

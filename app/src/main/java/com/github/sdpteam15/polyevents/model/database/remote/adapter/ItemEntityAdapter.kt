@@ -7,31 +7,35 @@ import com.github.sdpteam15.polyevents.model.entity.Item
  * A class for converting between item entities in our code and
  * documents in the Firebase database. Not unlike the conversion to
  * DTO (Data transfer object) concept.
+ *
+ * The query to the database returns a Triple<Item,Int,Int> :
+ *      The Item, its total amount set by an admin, and the remaining amount
  */
-object ItemEntityAdapter : AdapterInterface<Pair<Item, Int>> {
+object ItemEntityAdapter : AdapterInterface<Triple<Item, Int, Int>> {
 
-    fun toItemDocument(item: Item, count: Int): HashMap<String, Any?> {
-        val hash: HashMap<String, Any?> = hashMapOf(
+    fun toItemDocument(item: Item, totalCount: Int, remainingCount: Int): HashMap<String, Any?> {
+        return hashMapOf(
             ITEM_NAME.value to item.itemName,
             ITEM_TYPE.value to item.itemType,
-            ITEM_COUNT.value to count
+            ITEM_TOTAL.value to totalCount,
+            ITEM_REMAINING.value to remainingCount,
         )
-        if (item.itemId != null) {
-            hash[ITEM_DOCUMENT_ID.value] = item.itemId
-        }
-        return hash
     }
 
-    override fun toDocument(element: Pair<Item, Int>): HashMap<String, Any?> =
-        toItemDocument(element.first, element.second)
+    override fun toDocument(element: Triple<Item, Int, Int>): HashMap<String, Any?> =
+        toItemDocument(element.first, element.second, element.third)
 
-    override fun fromDocument(document: MutableMap<String, Any?>, id: String): Pair<Item, Int> =
-        Pair(
+    override fun fromDocument(
+        document: MutableMap<String, Any?>,
+        id: String
+    ): Triple<Item, Int, Int> =
+        Triple(
             Item(
                 id,
                 document[ITEM_NAME.value] as String?,
                 document[ITEM_TYPE.value] as String
             ),
-            (document[ITEM_COUNT.value] as Long).toInt()
+            (document[ITEM_TOTAL.value] as Long).toInt(),
+            (document[ITEM_REMAINING.value] as Long).toInt()
         )
 }

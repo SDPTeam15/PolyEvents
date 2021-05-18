@@ -64,7 +64,8 @@ object DatabaseConstant {
         ITEM_DOCUMENT_ID("itemId"),
         ITEM_NAME("name"),
         ITEM_TYPE("itemType"),
-        ITEM_COUNT("itemCount");
+        ITEM_REMAINING("itemRemaining"),
+        ITEM_TOTAL("itemTotal");
 
         override fun toString(): String = value
     }
@@ -118,7 +119,9 @@ object DatabaseConstant {
         MATERIAL_REQUEST_ID("mid"),
         MATERIAL_REQUEST_TIME("time"),
         MATERIAL_REQUEST_LIST("item_list"),
-        MATERIAL_REQUEST_USER_ID("user_id");
+        MATERIAL_REQUEST_USER_ID("user_id"),
+        MATERIAL_REQUEST_STATUS("status"),
+        MATERIAL_REQUEST_ADMIN_MESSAGE("admin_message");
 
         override fun toString(): String = value
     }
