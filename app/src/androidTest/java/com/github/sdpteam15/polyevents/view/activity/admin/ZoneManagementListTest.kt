@@ -120,6 +120,7 @@ class ZoneManagementListTest {
             .check(ViewAssertions.matches(ViewMatchers.withText("")))
     }
 
+    /*
     @Test
     fun failedToLoadZoneRedirect(){
         val mockedDatabase = mock(DatabaseInterface::class.java)
@@ -136,12 +137,11 @@ class ZoneManagementListTest {
         }
 
         ActivityScenario.launch<MainActivity>(intent)
-        Espresso.onView(ViewMatchers.withId(R.id.id_fragment_admin_hub))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(ViewMatchers.withId(R.id.id_fragment_admin_hub)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.btnRedirectZoneManagement))
         Espresso.onView(ViewMatchers.withId(R.id.id_fragment_admin_hub))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-    }
+    }*/
 
     @Test
     fun canDeleteZone(){

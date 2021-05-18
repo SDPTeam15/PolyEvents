@@ -2,7 +2,7 @@ package com.github.sdpteam15.polyevents.model.database.remote.objects
 
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.ITEM_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.ITEM_TYPE_COLLECTION
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ItemConstants.ITEM_COUNT
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ItemConstants.ITEM_TOTAL
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.ItemEntityAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.ItemTypeAdapter
@@ -14,31 +14,32 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableList
 class ItemDatabase(private val db: DatabaseInterface) : ItemDatabaseInterface {
     override fun createItem(
         item: Item,
-        count: Int,
+        total: Int,
         userAccess: UserProfile?
-    ): Observable<Boolean> = db.addEntity(Pair(item, count), ITEM_COLLECTION, ItemEntityAdapter)
+    ): Observable<Boolean> = db.addEntity(Triple(item, total,total), ITEM_COLLECTION, ItemEntityAdapter)
 
     override fun removeItem(itemId: String, userAccess: UserProfile?): Observable<Boolean> =
         db.deleteEntity(itemId, ITEM_COLLECTION)
 
     override fun updateItem(
         item: Item,
-        count: Int,
+        total: Int,
+        remaining: Int,
         userAccess: UserProfile?
     ): Observable<Boolean> =
-        db.setEntity(Pair(item, count), item.itemId!!, ITEM_COLLECTION, ItemEntityAdapter)
+        db.setEntity(Triple(item,total,remaining), item.itemId!!, ITEM_COLLECTION, ItemEntityAdapter)
 
     override fun getItemsList(
-        itemList: ObservableList<Pair<Item, Int>>,
+        itemList: ObservableList<Triple<Item, Int, Int>>,
         userAccess: UserProfile?
     ): Observable<Boolean> =
         db.getListEntity(itemList, null, null, ITEM_COLLECTION, ItemEntityAdapter)
 
     override fun getAvailableItems(
-        itemList: ObservableList<Pair<Item, Int>>,
+        itemList: ObservableList<Triple<Item, Int, Int>>,
         userAccess: UserProfile?
     ): Observable<Boolean> = db.getListEntity(itemList, null, {
-        it.whereGreaterThan(ITEM_COUNT.value, 0)
+        it.whereGreaterThan(ITEM_TOTAL.value, 0)
     }, ITEM_TYPE_COLLECTION, ItemEntityAdapter)
 
     override fun createItemType(
