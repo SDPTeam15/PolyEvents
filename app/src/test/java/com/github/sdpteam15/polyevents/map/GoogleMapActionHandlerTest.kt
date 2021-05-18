@@ -1,6 +1,5 @@
 package com.github.sdpteam15.polyevents.map
 
-import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.map.*
 import com.google.android.gms.internal.maps.zzt
 import com.google.android.gms.internal.maps.zzw

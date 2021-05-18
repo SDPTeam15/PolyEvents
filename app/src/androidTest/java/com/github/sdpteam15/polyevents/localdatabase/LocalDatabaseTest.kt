@@ -15,14 +15,11 @@ import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.room.EventLocal
 import com.github.sdpteam15.polyevents.model.room.UserSettings
-import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
-import org.junit.Test
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.anyOrNull
 import java.io.IOException
-import kotlin.test.assertEquals
 import org.mockito.Mockito.`when` as When
 
 class LocalDatabaseTest {

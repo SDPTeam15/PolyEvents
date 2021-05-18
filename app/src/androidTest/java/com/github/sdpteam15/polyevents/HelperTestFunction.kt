@@ -6,8 +6,12 @@ import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
+import com.github.sdpteam15.polyevents.model.database.remote.objects.EventDatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.objects.HeatmapDatabaseInterface
+import com.github.sdpteam15.polyevents.model.database.remote.objects.UserDatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.objects.ZoneDatabaseInterface
+import com.github.sdpteam15.polyevents.model.entity.UserProfile
+import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
@@ -64,8 +68,26 @@ object HelperTestFunction {
                 )
                 Observable(true, Database.currentDatabase)
             }
+        Mockito.`when`(database.eventDatabase)
+            .thenAnswer {
+                val mock = Mockito.mock(EventDatabaseInterface::class.java)
+                Mockito.`when`(mock.getEvents(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
+                    .thenReturn(Observable(true))
+                mock
+            }
+        Mockito.`when`(database.userDatabase)
+            .thenAnswer {
+                val mock = Mockito.mock(UserDatabaseInterface::class.java)
+                Mockito.`when`(mock.getUserProfilesList(anyOrNull(), anyOrNull(), anyOrNull()))
+                    .thenAnswer {
+                        (it!!.arguments[0] as ObservableList<UserProfile>).clear()
+                        (it!!.arguments[0] as ObservableList<UserProfile>).add(UserProfile(userRole = UserRole.ADMIN))
+                        Observable(true)
+                    }
+                mock
+            }
         Mockito.`when`(database.heatmapDatabase).thenAnswer { heatmapDatabase }
-        Mockito.`when`(heatmapDatabase.setLocation(anyOrNull())).thenAnswer { Observable(true) }
+        Mockito.`when`(heatmapDatabase.setLocation(anyOrNull())).thenReturn(Observable(true))
         return database
     }
 }

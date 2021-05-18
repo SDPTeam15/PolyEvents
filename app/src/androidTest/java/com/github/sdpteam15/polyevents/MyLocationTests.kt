@@ -59,7 +59,7 @@ class MyLocationTests {
         val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
         scenario = ActivityScenario.launch(intent)
         Espresso.onView(ViewMatchers.withId(R.id.ic_home)).perform(click())
-        Espresso.onView(ViewMatchers.withId(R.id.id_fragment_admin_hub))
+        Espresso.onView(ViewMatchers.withId(R.id.id_fragment_home_admin))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.btnRedirectZoneManagement)).perform(click())
         Intents.init()

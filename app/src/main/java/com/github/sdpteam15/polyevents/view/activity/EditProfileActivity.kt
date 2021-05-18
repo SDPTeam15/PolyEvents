@@ -48,7 +48,7 @@ class EditProfileActivity : AppCompatActivity() {
         val adapter = ArrayAdapter(
             this,
             android.R.layout.simple_list_item_1,
-            resources.getStringArray(R.array.EditProfileActivity_Ranks)
+            resources.getStringArray(R.array.Ranks)
         )
 
         rank.setAdapter(adapter)
@@ -119,19 +119,19 @@ class EditProfileActivity : AppCompatActivity() {
 
     fun rankToString(rank: UserRole): String {
         when (rank) {
-            UserRole.ADMIN -> return resources.getStringArray(R.array.EditProfileActivity_Ranks)[0]
-            UserRole.ORGANIZER -> return resources.getStringArray(R.array.EditProfileActivity_Ranks)[1]
-            UserRole.STAFF -> return resources.getStringArray(R.array.EditProfileActivity_Ranks)[2]
-            UserRole.PARTICIPANT -> return resources.getStringArray(R.array.EditProfileActivity_Ranks)[3]
+            UserRole.ADMIN -> return resources.getStringArray(R.array.Ranks)[0]
+            UserRole.ORGANIZER -> return resources.getStringArray(R.array.Ranks)[1]
+            UserRole.STAFF -> return resources.getStringArray(R.array.Ranks)[2]
+            UserRole.PARTICIPANT -> return resources.getStringArray(R.array.Ranks)[3]
         }
     }
 
     fun stringToRank(rank: String): UserRole {
         when (rank) {
-            resources.getStringArray(R.array.EditProfileActivity_Ranks)[0] -> return UserRole.ADMIN
-            resources.getStringArray(R.array.EditProfileActivity_Ranks)[1] -> return UserRole.ORGANIZER
-            resources.getStringArray(R.array.EditProfileActivity_Ranks)[2] -> return UserRole.STAFF
-            resources.getStringArray(R.array.EditProfileActivity_Ranks)[3] -> return UserRole.PARTICIPANT
+            resources.getStringArray(R.array.Ranks)[0] -> return UserRole.ADMIN
+            resources.getStringArray(R.array.Ranks)[1] -> return UserRole.ORGANIZER
+            resources.getStringArray(R.array.Ranks)[2] -> return UserRole.STAFF
+            resources.getStringArray(R.array.Ranks)[3] -> return UserRole.PARTICIPANT
         }
         return lastRank
     }
