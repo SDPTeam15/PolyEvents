@@ -19,8 +19,9 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableMap
  * Shows each item with its available quantity
  * @param context context of parent view used to inflate new views
  * @param lifecycleOwner parent to enable observables to stop observing when the lifecycle is closed
- * @param availableItems Map of each available item grouped by types
- * @param mapSelectedItems Item counts for each item
+ * @param allEvents Map of all the available events group by zones
+ * @param modifyListener What to do with modify items
+ * @param deleteListener What to do with the deleted items
  */
 class EventListAdapter(
         context: Context,
@@ -48,7 +49,6 @@ class EventListAdapter(
     abstract inner class CustomViewHolder<T>(view: View) :
             RecyclerView.ViewHolder(view) {
         abstract fun bind(value: T)
-        abstract fun unbind()
     }
 
     /**
@@ -66,11 +66,6 @@ class EventListAdapter(
                 notifyDataSetChanged()
             }
         }
-
-        override fun unbind() {
-            //do nothing
-        }
-
     }
 
     /**
@@ -94,10 +89,6 @@ class EventListAdapter(
             view.findViewById<ImageButton>(R.id.idDeleteEventButton).setOnClickListener {
                 deleteListener(event.zoneId!!, event)
             }
-        }
-
-        override fun unbind() {
-            //Do nothing
         }
     }
 
@@ -124,11 +115,6 @@ class EventListAdapter(
             //Should not happen
             else -> throw IllegalArgumentException("wrong view type $viewType")
         }
-    }
-
-    override fun onViewRecycled(holder: CustomViewHolder<*>) {
-        super.onViewRecycled(holder)
-        holder.unbind()
     }
 
     override fun onBindViewHolder(holder: CustomViewHolder<*>, position: Int) {
@@ -168,7 +154,6 @@ class EventListAdapter(
             }
             //Should not happen
             else -> throw java.lang.IllegalArgumentException("invalid position")
-
         }
     }
 
