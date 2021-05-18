@@ -3,42 +3,37 @@ package com.github.sdpteam15.polyevents.database.objects
 import com.github.sdpteam15.polyevents.database.HelperTestFunction
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ZoneConstant.*
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
-import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterInterface
-import com.github.sdpteam15.polyevents.model.database.remote.adapter.ItemEntityAdapter
-import com.github.sdpteam15.polyevents.model.database.remote.adapter.ItemTypeAdapter
+import com.github.sdpteam15.polyevents.model.database.remote.adapter.EventAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.ZoneAdapter
-import com.github.sdpteam15.polyevents.model.database.remote.objects.ItemDatabase
-import com.github.sdpteam15.polyevents.model.database.remote.objects.ItemDatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.objects.ZoneDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.objects.ZoneDatabaseInterface
-import com.github.sdpteam15.polyevents.model.entity.Item
-import com.github.sdpteam15.polyevents.model.entity.UserEntity
-import com.github.sdpteam15.polyevents.model.entity.UserProfile
-import com.github.sdpteam15.polyevents.model.entity.Zone
+import com.github.sdpteam15.polyevents.model.entity.*
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.google.firebase.firestore.FirebaseFirestore
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 import kotlin.test.assertEquals
 
+private const val zoneID = "ZONEID"
+private const val zoneName = "ZONENAME"
+private const val zoneDesc = "ZONEDESC"
+private const val zoneLoc = "ZONELOCATION"
 private const val displayNameTest = "Test displayName"
 private const val emailTest = "Test email"
 private const val uidTest = "Test uid"
-private const val itemId = "itemId"
-private const val itemName = "ZONENAME"
-private const val itemType = "ZONEDESC"
-private const val itemCount = 4
 
 @Suppress("UNCHECKED_CAST")
-class ItemDatabaseFirestoreTest {
+class ZoneDatabaseTest {
     lateinit var user: UserEntity
     lateinit var database: DatabaseInterface
-    lateinit var mockedItemDatabase: ItemDatabaseInterface
-    lateinit var item: Item
-    lateinit var itemPair: Pair<Item,Int>
+    lateinit var zoneDocument: HashMap<String, Any?>
+    lateinit var mockedZoneDatabase: ZoneDatabaseInterface
+    lateinit var zone: Zone
 
     @Before
     fun setup() {
@@ -48,12 +43,17 @@ class ItemDatabaseFirestoreTest {
             email = emailTest
         )
 
+        zoneDocument = hashMapOf(
+            ZONE_DOCUMENT_ID.value to zoneID,
+            ZONE_DESCRIPTION.value to zoneDesc,
+            ZONE_LOCATION.value to zoneLoc,
+            ZONE_NAME.value to zoneName
+        )
 
-        item = Item(itemId = itemId,itemName = itemName, itemType = itemType)
-        itemPair = Pair(item, itemCount)
+        zone = Zone(zoneId = zoneID,zoneName = zoneName, description = zoneDesc,location = zoneLoc)
 
         val mockDatabaseInterface = HelperTestFunction.mockDatabaseInterface()
-        mockedItemDatabase = ItemDatabase(mockDatabaseInterface)
+        mockedZoneDatabase = ZoneDatabase(mockDatabaseInterface)
         HelperTestFunction.clearQueue()
     }
 
@@ -62,90 +62,91 @@ class ItemDatabaseFirestoreTest {
         val mockedDatabase = Mockito.mock(DatabaseInterface::class.java)
         Mockito.`when`(mockedDatabase.currentUser).thenReturn(UserEntity(""))
         Database.currentDatabase = mockedDatabase
-        assertEquals(mockedItemDatabase.currentUser, UserEntity(""))
+        assertEquals(mockedZoneDatabase.currentUser, UserEntity(""))
 
         Mockito.`when`(mockedDatabase.currentProfile).thenReturn(UserProfile(""))
         Database.currentDatabase = mockedDatabase
-        assertEquals(mockedItemDatabase.currentProfile, UserProfile(""))
+        assertEquals(mockedZoneDatabase.currentProfile, UserProfile(""))
 
         Database.currentDatabase = FirestoreDatabaseProvider
     }
 
     @Test
-    fun updateItem() {
+    fun updateZone() {
         val userAccess = UserProfile()
 
         HelperTestFunction.nextSetEntity { true }
-        mockedItemDatabase.updateItem(item,itemCount, userAccess)
+        mockedZoneDatabase.updateZoneInformation(zone.zoneId!!, zone, userAccess)
             .observeOnce { assert(it.value) }.then.postValue(true)
 
         val set = HelperTestFunction.lastSetEntity()!!
 
-        assertEquals(itemPair, set.element)
-        assertEquals(itemId, set.id)
-        assertEquals(DatabaseConstant.CollectionConstant.ITEM_COLLECTION, set.collection)
-        assertEquals(ItemEntityAdapter, set.adapter)
+        assertEquals(zone, set.element)
+        assertEquals(zone.zoneId, set.id)
+        assertEquals(DatabaseConstant.CollectionConstant.ZONE_COLLECTION, set.collection)
+        assertEquals(ZoneAdapter, set.adapter)
     }
 
     @Test
-    fun addItem() {
+    fun addZone() {
         val userAccess = UserProfile()
 
         HelperTestFunction.nextAddEntity { true }
-        mockedItemDatabase.createItem(item,itemCount, userAccess)
+        mockedZoneDatabase.createZone(zone, userAccess)
             .observeOnce { assert(it.value) }.then.postValue(true)
 
         val set = HelperTestFunction.lastAddEntity()!!
 
-        assertEquals(itemPair, set.element)
-        assertEquals(DatabaseConstant.CollectionConstant.ITEM_COLLECTION, set.collection)
-        assertEquals(ItemEntityAdapter, set.adapter)
+        assertEquals(zone, set.element)
+        assertEquals(DatabaseConstant.CollectionConstant.ZONE_COLLECTION, set.collection)
+        assertEquals(ZoneAdapter, set.adapter)
     }
 
     @Test
-    fun getItemList() {
-        val items = ObservableList<Pair<Item,Int>>()
+    fun getZoneList() {
+        val zones = ObservableList<Zone>()
         val userAccess = UserProfile("uid")
 
         HelperTestFunction.nextGetListEntity { true }
-        mockedItemDatabase.getItemsList(items,  userAccess)
+        mockedZoneDatabase.getAllZones(null, null, zones, userAccess)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         val getList = HelperTestFunction.lastGetListEntity()!!
 
-        assertEquals(items, getList.element)
-        assertEquals(DatabaseConstant.CollectionConstant.ITEM_COLLECTION, getList.collection)
-        assertEquals(ItemEntityAdapter, getList.adapter)
+        assertEquals(zones, getList.element)
+        assertEquals(DatabaseConstant.CollectionConstant.ZONE_COLLECTION, getList.collection)
+        assertEquals(ZoneAdapter, getList.adapter)
     }
 
     @Test
-    fun removeItem() {
+    fun removeZone() {
         val userAccess = UserProfile("uid")
 
         HelperTestFunction.nextSetEntity { true }
-        mockedItemDatabase.removeItem(itemId, userAccess)
+        mockedZoneDatabase.deleteZone(zone, userAccess)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
 
         val del = HelperTestFunction.lastDeleteEntity()!!
 
-        assertEquals(itemId, del.id)
-        assertEquals(DatabaseConstant.CollectionConstant.ITEM_COLLECTION, del.collection)
+        assertEquals(zone.zoneId, del.id)
+        assertEquals(DatabaseConstant.CollectionConstant.ZONE_COLLECTION, del.collection)
     }
 
     @Test
-    fun getItemTypeList() {
-        val items = ObservableList<String>()
+    fun getZoneFromId() {
+        val zones = Observable<Zone>()
         val userAccess = UserProfile("uid")
 
-        HelperTestFunction.nextGetListEntity { true }
-        mockedItemDatabase.getItemTypes(items,  userAccess)
+        HelperTestFunction.nextGetEntity { true }
+        mockedZoneDatabase.getZoneInformation(zone.zoneId!!, zones, userAccess)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
-        val getList = HelperTestFunction.lastGetListEntity()!!
+        val getEntity = HelperTestFunction.lastGetEntity()!!
 
-        assertEquals(items, getList.element)
-        assertEquals(DatabaseConstant.CollectionConstant.ITEM_TYPE_COLLECTION, getList.collection)
-        assertEquals(ItemTypeAdapter, getList.adapter)
+        assertEquals(zones, getEntity.element)
+        assertEquals(zone.zoneId, getEntity.id)
+        assertEquals(DatabaseConstant.CollectionConstant.ZONE_COLLECTION, getEntity.collection)
+        assertEquals(ZoneAdapter, getEntity.adapter)
     }
 }

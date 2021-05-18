@@ -27,29 +27,29 @@ class ItemsAdminActivity : AppCompatActivity() {
     /**
      * Recycler containing all the items
      */
-    lateinit var recyclerView: RecyclerView
+    private lateinit var recyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_items_admin)
 
-
         currentDatabase.itemDatabase!!.getItemsList(items).observe(this) {
             if (!it.value)
                 HelperFunctions.showToast(getString(R.string.failed_to_get_item), this)
-
         }
         currentDatabase.itemDatabase!!.getItemTypes(itemTypes).observe(this) {
             if (!it.value)
                 HelperFunctions.showToast(getString(R.string.query_not_satisfied), this)
         }
         items.observeRemove(this) {
-            if (it.sender != currentDatabase.itemDatabase!!) {
-                currentDatabase.itemDatabase!!.removeItem(it.value.first.itemId!!)
+            if (it.sender != currentDatabase) {
+                if (it.value.first.itemId != null) {
+                    currentDatabase.itemDatabase!!.removeItem(it.value.first.itemId!!)
+                }
             }
         }
         items.observeAdd(this) {
-            if (it.sender != currentDatabase.itemDatabase!!) {
+            if (it.sender != currentDatabase) {
                 currentDatabase.itemDatabase!!.createItem(it.value.first, it.value.second)
                     .observe { it1 ->
                         if (it1.value) {
@@ -60,7 +60,7 @@ class ItemsAdminActivity : AppCompatActivity() {
         }
 
         itemTypes.observeAdd(this) {
-            if (it.sender != currentDatabase.itemDatabase!!) {
+            if (it.sender != currentDatabase) {
                 currentDatabase.itemDatabase!!.createItemType(it.value)
             }
         }

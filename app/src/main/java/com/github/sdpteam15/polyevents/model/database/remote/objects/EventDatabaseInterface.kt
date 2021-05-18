@@ -32,9 +32,17 @@ interface EventDatabaseInterface {
      * @param userAccess The user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
-    fun updateEvents(
+    fun updateEvent(
         event: Event,
         userAccess: UserProfile? = currentProfile
+    ): Observable<Boolean>
+
+    /**
+     *
+     */
+    fun removeEvent(
+        eventId:String,
+        userAccess: UserProfile?=currentProfile
     ): Observable<Boolean>
 
     /**

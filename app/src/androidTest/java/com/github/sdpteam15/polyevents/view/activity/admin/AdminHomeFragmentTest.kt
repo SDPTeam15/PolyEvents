@@ -10,13 +10,13 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.sdpteam15.polyevents.HelperTestFunction
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
+import com.github.sdpteam15.polyevents.model.database.remote.objects.EventDatabaseInterface
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
@@ -25,12 +25,15 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito
+import org.mockito.Mockito.mock
+import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.anyOrNull
 import org.mockito.Mockito.`when` as When
 
-@RunWith(AndroidJUnit4::class)
-class AdminHomeFragmentTest {
+@RunWith(MockitoJUnitRunner::class)
+class AdminHubFragmentTest {
     var mainActivity = ActivityScenarioRule(MainActivity::class.java)
-    lateinit var scenario: ActivityScenario<MainActivity>
 
     lateinit var testUser: UserEntity
 
@@ -55,7 +58,7 @@ class AdminHomeFragmentTest {
         MainActivity.currentUserObservable = Observable(testUser)
 
         val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
-        scenario = ActivityScenario.launch(intent)
+        ActivityScenario.launch<MainActivity>(intent)
 
         Espresso.onView(ViewMatchers.withId(R.id.ic_home)).perform(click())
         Espresso.onView(ViewMatchers.withId(R.id.id_fragment_home_admin))
@@ -66,7 +69,7 @@ class AdminHomeFragmentTest {
     @After
     fun teardown() {
         MainActivity.currentUser = null
-        scenario.close()
+
         Intents.release()
         Database.currentDatabase = FirestoreDatabaseProvider
     }
@@ -86,6 +89,23 @@ class AdminHomeFragmentTest {
 
     @Test
     fun clickOnBtnEventDisplayCorrectActivity() {
+        val mockedDatabase = HelperTestFunction.defaultMockDatabase()
+        val mockedUserProfile = UserProfile("TestID", "TestName")
+        When(mockedDatabase.currentProfile).thenReturn(mockedUserProfile)
+        Database.currentDatabase = mockedDatabase
+        val mockedEventDatabase = mock(EventDatabaseInterface::class.java)
+        Mockito.`when`(mockedDatabase.eventDatabase).thenReturn(mockedEventDatabase)
+
+        Mockito.`when`(
+            mockedEventDatabase.getEvents(
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenReturn(
+            Observable(true)
+        )
         Espresso.onView(ViewMatchers.withId(R.id.btnRedirectEventManager)).perform(click())
         Intents.intended(IntentMatchers.hasComponent(EventManagementListActivity::class.java.name))
     }
