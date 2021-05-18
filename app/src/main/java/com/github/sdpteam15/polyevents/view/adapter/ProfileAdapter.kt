@@ -50,6 +50,8 @@ class ProfileAdapter(
             }
             btnEdit.setOnClickListener {
                 profileFragment.editProfile(item)
+                //TODO Found where to set it
+                user.loadSuccess = false
             }
         }
     }
