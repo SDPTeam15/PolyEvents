@@ -93,8 +93,8 @@ class MyItemRequestsActivity : AppCompatActivity() {
                 observableStatus,
                 userName,
                 itemNames,
-                acceptMaterialRequest,
-                declineMaterialRequest
+                modifyMaterialRequest,
+                cancelMaterialRequest
             )
 
         observableStatus.observe(this){recyclerView.adapter!!.notifyDataSetChanged()}
@@ -124,10 +124,10 @@ class MyItemRequestsActivity : AppCompatActivity() {
             }
     }
 
-    private val acceptMaterialRequest = {
+    private val modifyMaterialRequest = {
             request: MaterialRequest ->
     }
-    private val declineMaterialRequest = {
+    private val cancelMaterialRequest = {
             request: MaterialRequest ->
     }
 }
