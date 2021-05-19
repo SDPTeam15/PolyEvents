@@ -186,7 +186,6 @@ class EventDatabaseTest {
         val getList = HelperTestFunction.lastGetListEntity()!!
 
         assertEquals(events, getList.element)
-        assert(getList.matcher != null)
         assertEquals(DatabaseConstant.CollectionConstant.EVENT_EDIT_COLLECTION, getList.collection)
         assertEquals(EventEditAdapter, getList.adapter)
     }

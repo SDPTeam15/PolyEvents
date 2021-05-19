@@ -45,17 +45,6 @@ class EventManagementListActivity : AppCompatActivity() {
             EventListAdapter(this, this, obsEventsMap, modifyListener, deleteListener)
         recyclerView.setHasFixedSize(false)
 
-        val requestObservable = ObservableList<Event>()
-        requestObservable.group(this) { it.zoneId }.then.observe {
-            obsEventsMap.clear()
-            for (i in it.value.entries) {
-                obsEventsMap[i.key!!] = Pair(i.value[0].zoneName!!, i.value)
-            }
-        }
-
-        getEventsDatabase(requestObservable)
-
-
         findViewById<Button>(R.id.btnNewEvent).setOnClickListener {
             val intent = Intent(this, EventManagementActivity::class.java)
             if (isOrganiser) {
@@ -65,6 +54,18 @@ class EventManagementListActivity : AppCompatActivity() {
             intent.putExtra(EVENT_ID_INTENT, NEW_EVENT_ID)
             startActivity(intent)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val requestObservable = ObservableList<Event>()
+        requestObservable.group(this) { it.zoneId }.then.observe {
+            obsEventsMap.clear()
+            for (i in it.value.entries) {
+                obsEventsMap[i.key!!] = Pair(i.value[0].zoneName!!, i.value)
+            }
+        }
+        getEventsDatabase(requestObservable)
     }
 
 

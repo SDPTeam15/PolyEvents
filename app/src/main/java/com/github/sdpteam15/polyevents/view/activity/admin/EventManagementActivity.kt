@@ -299,7 +299,7 @@ class EventManagementActivity : AppCompatActivity() {
                             getString(R.string.failed_get_event_information),
                             this
                         )
-                        startActivity(Intent(this, EventManagementListActivity::class.java))
+                        finish()
                     }
                 }
             }else{
@@ -312,7 +312,7 @@ class EventManagementActivity : AppCompatActivity() {
                             getString(R.string.failed_get_event_information),
                             this
                         )
-                        startActivity(Intent(this, EventManagementListActivity::class.java))
+                        finish()
                     }
                 }
             }
@@ -351,12 +351,22 @@ class EventManagementActivity : AppCompatActivity() {
     private fun handleUpdateClick(){
         if (verifyCondition()) {
             if(isActivityProvider){
-                currentDatabase.eventDatabase!!.updateEventEdit(getInformation()).observe(this) {
-                    redirectOrDisplayError(
-                        getString(R.string.event_update_success),
-                        getString(R.string.failed_to_update_event_info),
-                        it.value
-                    )
+                if(isModificationActivityProvider){
+                    currentDatabase.eventDatabase!!.updateEventEdit(getInformation()).observe(this) {
+                        redirectOrDisplayError(
+                            getString(R.string.event_update_success),
+                            getString(R.string.failed_to_update_event_info),
+                            it.value
+                        )
+                    }
+                }else{
+                    currentDatabase.eventDatabase!!.createEventEdit(getInformation()).observe(this) {
+                        redirectOrDisplayError(
+                            getString(R.string.event_update_success),
+                            getString(R.string.failed_to_update_event_info),
+                            it.value
+                        )
+                    }
                 }
             }else{
                 currentDatabase.eventDatabase!!.updateEvent(getInformation()).observe(this) {
@@ -392,7 +402,7 @@ class EventManagementActivity : AppCompatActivity() {
     private fun redirectOrDisplayError(msgSuccess: String, msgError: String, success: Boolean) {
         if (success) {
             HelperFunctions.showToast(msgSuccess, this)
-            startActivity(Intent(this, EventManagementListActivity::class.java))
+            finish()
         } else {
             HelperFunctions.showToast(msgError, this)
         }
