@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.view.activity.activityprovider
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -16,9 +17,15 @@ import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
+import com.github.sdpteam15.polyevents.view.activity.ItemRequestActivity
 import com.github.sdpteam15.polyevents.view.adapter.ItemRequestAdminAdapter
 import com.github.sdpteam15.polyevents.view.adapter.MyItemRequestAdapter
 import com.github.sdpteam15.polyevents.view.fragments.home.ProviderHomeFragment
+
+/**
+ * Extra containing the event ID to show on the launched event page
+ */
+const val EXTRA_ITEM_REQUEST_ID = "com.github.sdpteam15.polyevents.requests.ITEM_REQUEST_ID"
 
 class MyItemRequestsActivity : AppCompatActivity() {
     private var currentStatus: MaterialRequest.Status = MaterialRequest.Status.PENDING
@@ -66,13 +73,13 @@ class MyItemRequestsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_my_item_requests)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         userId = intent.getStringExtra(ProviderHomeFragment.ID_USER)!!
         recyclerView = findViewById(R.id.id_recycler_my_item_requests)
         title = findViewById(R.id.id_title_item_request)
         leftButton = findViewById(R.id.id_change_request_status_left)
         rightButton = findViewById(R.id.id_change_request_status_right)
-
 //-------------------------------------------------------------------------------------------
 
         leftButton.setOnClickListener {
@@ -126,8 +133,12 @@ class MyItemRequestsActivity : AppCompatActivity() {
             }
     }
 
-    private val modifyMaterialRequest = {
-            request: MaterialRequest ->
+    private val modifyMaterialRequest = { request: MaterialRequest ->
+
+        val intent = Intent(this, ItemRequestActivity::class.java).apply {
+            putExtra(EXTRA_ITEM_REQUEST_ID, request.requestId)
+        }
+        startActivity(intent)
     }
 
     private val cancelMaterialRequest = {request: MaterialRequest ->

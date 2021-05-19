@@ -75,4 +75,17 @@ interface MaterialRequestDatabaseInterface {
         materialRequestId: String,
         userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
+
+    /**
+     * Get the material request from a specific request id
+     * @param materialRequest request observable to store the material request
+     * @param requestId id of the material request to retrieve
+     * @param userAccess the user profile to use its permission
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun getMaterialRequestById(
+        materialRequest: Observable<MaterialRequest>,
+        requestId: String,
+        userAccess: UserProfile? = currentProfile
+    ): Observable<Boolean>
 }

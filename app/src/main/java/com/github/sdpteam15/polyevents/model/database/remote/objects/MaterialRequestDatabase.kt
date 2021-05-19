@@ -57,6 +57,16 @@ class MaterialRequestDatabase(private val db: DatabaseInterface) :
     override fun createMaterialRequest(request: MaterialRequest, userAccess: UserProfile?) =
         db.addEntity(request, MATERIAL_REQUEST_COLLECTION, MaterialRequestAdapter)
 
-
+    override fun getMaterialRequestById(
+        materialRequest: Observable<MaterialRequest>,
+        requestId: String,
+        userAccess: UserProfile?
+    ): Observable<Boolean> =
+        db.getEntity(
+            materialRequest,
+            requestId,
+            MATERIAL_REQUEST_COLLECTION,
+            MaterialRequestAdapter
+        )
 
 }
