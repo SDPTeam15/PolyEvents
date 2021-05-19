@@ -1,8 +1,7 @@
 package com.github.sdpteam15.polyevents.model.database.remote.objects
 
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.EVENT_COLLECTION
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.RATING_COLLECTION
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.*
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.EventAdapter
@@ -22,8 +21,8 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
     override fun updateEvent(event: Event, userAccess: UserProfile?): Observable<Boolean> =
         db.setEntity(event, event.eventId!!, EVENT_COLLECTION)
 
-    override fun removeEvent(eventId: String, userAccess: UserProfile?): Observable<Boolean> =db.deleteEntity(eventId, EVENT_COLLECTION)
-
+    override fun removeEvent(eventId: String, userAccess: UserProfile?): Observable<Boolean> =
+        db.deleteEntity(eventId, EVENT_COLLECTION)
 
     override fun getEventFromId(
         id: String,
@@ -48,6 +47,30 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
                 query
             },
             EVENT_COLLECTION
+        )
+
+    override fun createEventEdit(event: Event, userAccess: UserProfile?): Observable<Boolean> =
+        db.addEntity(event, EVENT_EDIT_COLLECTION)
+
+    override fun updateEventEdit(event: Event, userAccess: UserProfile?): Observable<Boolean> =
+        db.setEntity(event, event.eventId!!, EVENT_EDIT_COLLECTION)
+
+    override fun getEventEditFromId(
+        id: String,
+        returnEvent: Observable<Event>,
+        userAccess: UserProfile?
+    ): Observable<Boolean> = db.getEntity(returnEvent, id, EVENT_EDIT_COLLECTION, EventAdapter)
+
+    override fun getEventEdits(
+        matcher: Matcher?,
+        eventList: ObservableList<Event>,
+        userAccess: UserProfile?
+    ): Observable<Boolean> =
+        db.getListEntity(
+            eventList,
+            null,
+            null,
+            EVENT_EDIT_COLLECTION
         )
 
     override fun getRatingsForEvent(
@@ -98,7 +121,7 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
                         )
                     })
                 mean.postValue(m.first, it.sender)
-                end.postValue(true,it.sender)
+                end.postValue(true, it.sender)
             } else {
                 end.postValue(false, it.sender)
             }

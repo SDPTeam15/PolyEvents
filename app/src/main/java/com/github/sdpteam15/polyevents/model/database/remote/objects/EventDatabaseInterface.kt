@@ -16,7 +16,7 @@ interface EventDatabaseInterface {
         get() = Database.currentDatabase.currentProfile
 
     /**
-     * Update or request an update for an event
+     * Create an event
      * @param event Event to create
      * @param userAccess The user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
@@ -72,6 +72,58 @@ interface EventDatabaseInterface {
         eventList: ObservableList<Event>,
         userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
+
+
+    /**
+     * Create an event edit
+     * @param event Event to create
+     * @param userAccess The user profile to use its permission
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun createEventEdit(
+        event: Event,
+        userAccess: UserProfile? = currentProfile
+    ): Observable<Boolean>
+
+    /**
+     * Update or request an update for an event
+     * @param event Event to update
+     * @param userAccess The user profile to use its permission
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun updateEventEdit(
+        event: Event,
+        userAccess: UserProfile? = currentProfile
+    ): Observable<Boolean>
+
+
+    /**
+     * Get event Edit from ID
+     * @param id The id of the event we want to retrieve
+     * @param returnEvent Variable in which we will set the retrieve event
+     * @param userAccess The user profile to use its permission
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun getEventEditFromId(
+        id: String,
+        returnEvent: Observable<Event>,
+        userAccess: UserProfile? = currentProfile
+    ): Observable<Boolean>
+
+    /**
+     * Get list of event edits
+     * @param matcher Matcher for the search
+     * @param limit Maximum number of results
+     * @param eventList The list of event that will be set when the DB returns the information
+     * @param userAccess The user profile to use its permission
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun getEventEdits(
+        matcher: Matcher? = null,
+        eventList: ObservableList<Event>,
+        userAccess: UserProfile? = currentProfile
+    ): Observable<Boolean>
+
 
     /**
      * Get all the ratings for a specific events

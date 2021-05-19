@@ -26,6 +26,7 @@ object DatabaseConstant {
         NODE_COLLECTION("nodes", RouteNodeAdapter),
         EDGE_COLLECTION("edges", RouteEdgeAdapter),
         RATING_COLLECTION("ratings", RatingAdapter),
+        EVENT_EDIT_COLLECTION("eventEdits", EventAdapter),
 
 
         TEST_COLLECTION("test", object : AdapterInterface<StringWithID> {
