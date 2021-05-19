@@ -3,14 +3,11 @@ package com.github.sdpteam15.polyevents.view.activity.admin
 import android.content.Intent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.matcher.IntentMatchers
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import com.github.sdpteam15.polyevents.HelperTestFunction
 import com.github.sdpteam15.polyevents.R
@@ -36,6 +33,7 @@ import org.mockito.kotlin.anyOrNull
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
 import org.mockito.Mockito.`when` as When
+
 @Suppress("UNCHECKED_CAST")
 class EventManagementTest {
     lateinit var scenario: ActivityScenario<MainActivity>
@@ -83,13 +81,14 @@ class EventManagementTest {
         listZone.add(Zone(zoneName = "UserB", zoneId = "idB"))
         listZone.add(Zone(zoneName = "UserC", zoneId = "idC"))
     }
-    private fun setupListUser(){
+
+    private fun setupListUser() {
         listUser.add(UserEntity(name = "A", uid = "idA"))
         listUser.add(UserEntity(name = "B", uid = "idB"))
         listUser.add(UserEntity(name = "C", uid = "idC"))
     }
 
-    private fun setupMockDatabase(){
+    private fun setupMockDatabase() {
         mockedDatabase = mock(DatabaseInterface::class.java)
         mockedEventDB = mock(EventDatabaseInterface::class.java)
         mockedZoneDB = mock(ZoneDatabaseInterface::class.java)
@@ -121,10 +120,11 @@ class EventManagementTest {
             Observable(true)
         }
 
-        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())).thenReturn(
-            Observable(true)
-        )
-        When(mockedDatabase.currentUser).thenReturn(UserEntity(uid="UserId"))
+        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
+            .thenReturn(
+                Observable(true)
+            )
+        When(mockedDatabase.currentUser).thenReturn(UserEntity(uid = "UserId"))
         Database.currentDatabase = mockedDatabase
     }
 
@@ -208,7 +208,10 @@ class EventManagementTest {
     @Test
     fun updateOnlyWhenAllConditionsSatisfied1() {
         val intent =
-            Intent(ApplicationProvider.getApplicationContext(), EventManagementListActivity::class.java)
+            Intent(
+                ApplicationProvider.getApplicationContext(),
+                EventManagementListActivity::class.java
+            )
 
         scenario = ActivityScenario.launch(intent)
         onView(withId(R.id.btnNewEvent)).perform(click())
@@ -244,7 +247,10 @@ class EventManagementTest {
     @Test
     fun updateOnlyWhenAllConditionsSatisfied2() {
         val intent =
-            Intent(ApplicationProvider.getApplicationContext(), EventManagementListActivity::class.java)
+            Intent(
+                ApplicationProvider.getApplicationContext(),
+                EventManagementListActivity::class.java
+            )
 
         scenario = ActivityScenario.launch(intent)
 
@@ -288,13 +294,20 @@ class EventManagementTest {
         When(mockedDatabase.eventDatabase).thenReturn(mockedEventDB)
         When(mockedDatabase.zoneDatabase).thenReturn(mockedZoneDB)
         When(mockedDatabase.userDatabase).thenReturn(mockedUserDb)
-        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())).thenReturn(
-            Observable(true)
-        )
-        Mockito.`when`(mockedUserDb.getUserProfilesList(anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
-            (it.arguments[0] as ObservableList<UserProfile>).add(UserProfile(pid="test", userRole = UserRole.ADMIN))
-            Observable(true)
-        }
+        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
+            .thenReturn(
+                Observable(true)
+            )
+        Mockito.`when`(mockedUserDb.getUserProfilesList(anyOrNull(), anyOrNull(), anyOrNull()))
+            .thenAnswer {
+                (it.arguments[0] as ObservableList<UserProfile>).add(
+                    UserProfile(
+                        pid = "test",
+                        userRole = UserRole.ADMIN
+                    )
+                )
+                Observable(true)
+            }
 
         val obs = Observable<Boolean>()
         When(
@@ -312,12 +325,13 @@ class EventManagementTest {
         Database.currentDatabase = mockedDatabase
 
         val intent =
-            Intent(ApplicationProvider.getApplicationContext(), EventManagementListActivity::class.java)
+            Intent(
+                ApplicationProvider.getApplicationContext(),
+                EventManagementListActivity::class.java
+            )
 
         val scenario = ActivityScenario.launch<EventManagementListActivity>(intent)
         onView(withId(R.id.btnNewEvent)).perform(click())
-
-
 
         obs.postValue(false)
         onView(withId(R.id.event_management_list_id)).check(matches(isDisplayed()))
@@ -344,7 +358,10 @@ class EventManagementTest {
 
 
         val intent =
-            Intent(ApplicationProvider.getApplicationContext(), EventManagementListActivity::class.java)
+            Intent(
+                ApplicationProvider.getApplicationContext(),
+                EventManagementListActivity::class.java
+            )
         scenario = ActivityScenario.launch(intent)
         onView(withId(R.id.recycler_events_list_admin)).perform(
             RecyclerViewActions.actionOnItemAtPosition<EventListAdapter.CustomViewHolder<EventListAdapter.ZoneViewHolder>>(
@@ -446,7 +463,7 @@ class EventManagementTest {
     fun addReturnTheCorrectlySetFieldEdit() {
         val intent =
             Intent(ApplicationProvider.getApplicationContext(), EventManagementActivity::class.java)
-        intent.putExtra(EventManagementListActivity.INTENT_MANAGER,"edit")
+        intent.putExtra(EventManagementListActivity.INTENT_MANAGER, "edit")
 
         val startDate = EventManagementActivity.dateStart.value!!
         val endDate = EventManagementActivity.dateEnd.value!!
@@ -528,8 +545,67 @@ class EventManagementTest {
             eventId
         )
 
-        intent.putExtra(EventManagementListActivity.INTENT_MANAGER_EDIT,"edit")
-        intent.putExtra(EventManagementListActivity.INTENT_MANAGER,"edit")
+        intent.putExtra(EventManagementListActivity.INTENT_MANAGER_EDIT, "edit")
+        intent.putExtra(EventManagementListActivity.INTENT_MANAGER, "edit")
+        scenario = ActivityScenario.launch(intent)
+        obs.postValue(true)
+        closeKeyboard()
+        onView(withId(R.id.swtLimitedEvent)).perform(click())
+        onView(withId(R.id.etNbPart)).perform(replaceText(eventNb))
+
+        onView(withId(R.id.btnManageEvent)).perform(click())
+
+        obs2.postValue(true)
+
+        assertEquals(event!!.endTime, endTime)
+        assertEquals(event!!.startTime, startTime)
+        assertEquals(event!!.eventName, eventName)
+        assertEquals(event!!.description, eventDesc)
+        assertEquals(event!!.getMaxNumberOfSlots(), eventNb.toInt())
+        assertEquals(event!!.isLimitedEvent(), true)
+        assertEquals(event!!.eventId, eventId)
+    }
+
+    @Test
+    fun successfulUpdateEditManager2() {
+        val startTime = LocalDateTime.now()
+        val endTime = LocalDateTime.now()
+        event = Event(
+            zoneId = listZone[0].zoneId,
+            zoneName = listZone[0].zoneName,
+            eventName = eventName,
+            eventId = eventId,
+            description = eventDesc,
+            limitedEvent = false,
+            startTime = startTime,
+            endTime = endTime
+        )
+        val obs = Observable<Boolean>()
+        When(
+            mockedEventDB.getEventEditFromId(
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenAnswer {
+            (it.arguments[1] as Observable<Event>).postValue(event!!)
+            obs
+        }
+
+        val intent =
+            Intent(ApplicationProvider.getApplicationContext(), EventManagementActivity::class.java)
+        intent.putExtra(
+            EventManagementListActivity.EVENT_ID_INTENT,
+            eventId
+        )
+        val obs2=Observable<Boolean>()
+        When(mockedEventDB.createEventEdit(anyOrNull(), anyOrNull())).thenAnswer {
+            event = (it.arguments[0] as Event)
+            obs2
+        }
+
+        intent.putExtra(EventManagementListActivity.INTENT_MANAGER, "edit")
+
         scenario = ActivityScenario.launch(intent)
         obs.postValue(true)
         closeKeyboard()
@@ -576,6 +652,7 @@ class EventManagementTest {
             (it.arguments[1] as Observable<Event>).postValue(event!!)
             obs
         }
+
 
         val intent =
             Intent(ApplicationProvider.getApplicationContext(), EventManagementActivity::class.java)

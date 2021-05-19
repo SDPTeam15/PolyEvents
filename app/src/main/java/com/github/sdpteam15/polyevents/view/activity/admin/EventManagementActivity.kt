@@ -290,7 +290,7 @@ class EventManagementActivity : AppCompatActivity() {
                 handleUpdateClick()
             }
             // Get the correct information depending on if we edit an event edit request
-            if(isModificationActivityProvider){
+            if(isActivityProvider){
                 currentDatabase.eventDatabase!!.getEventEditFromId(curId, observableEvent).observe(this) {
                     if (it.value) {
                         setupViewInActivity(true)
