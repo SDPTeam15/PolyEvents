@@ -4,8 +4,8 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.ImageButton
-import android.widget.TextView
+import android.view.View
+import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
@@ -27,13 +27,13 @@ import com.github.sdpteam15.polyevents.view.fragments.home.ProviderHomeFragment
  */
 const val EXTRA_ITEM_REQUEST_ID = "com.github.sdpteam15.polyevents.requests.ITEM_REQUEST_ID"
 
-class MyItemRequestsActivity : AppCompatActivity() {
+class MyItemRequestsActivity : AppCompatActivity() , AdapterView.OnItemSelectedListener{
     private var currentStatus: MaterialRequest.Status = MaterialRequest.Status.PENDING
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var title: TextView
     private lateinit var leftButton: ImageButton
     private lateinit var rightButton: ImageButton
+    private lateinit var spinner: Spinner
     private lateinit var userId: String
 
     private val requests = ObservableList<MaterialRequest>()
@@ -62,14 +62,11 @@ class MyItemRequestsActivity : AppCompatActivity() {
     }
 
     private fun refresh(){
-        title.text =  when(currentStatus){
-            MaterialRequest.Status.PENDING -> getText(R.string.pending_requests)
-            MaterialRequest.Status.REFUSED -> getText(R.string.refused_requests)
-            MaterialRequest.Status.ACCEPTED -> getText(R.string.accepted_requests)
-        }
+
+        spinner.setSelection(currentStatus.ordinal)
         recyclerView.adapter!!.notifyDataSetChanged()
     }
-
+    private val statusNames = ArrayList<String>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_my_item_requests)
@@ -77,10 +74,20 @@ class MyItemRequestsActivity : AppCompatActivity() {
 
         userId = intent.getStringExtra(ProviderHomeFragment.ID_USER)!!
         recyclerView = findViewById(R.id.id_recycler_my_item_requests)
-        title = findViewById(R.id.id_title_item_request)
         leftButton = findViewById(R.id.id_change_request_status_left)
         rightButton = findViewById(R.id.id_change_request_status_right)
+        spinner = findViewById(R.id.id_title_item_request)
 //-------------------------------------------------------------------------------------------
+        statusNames.add(getString(R.string.pending_requests))
+        statusNames.add(getString(R.string.accepted_requests))
+        statusNames.add(getString(R.string.refused_requests))
+        val adapter =
+            ArrayAdapter(this, R.layout.spinner_dropdown_item, statusNames)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+        spinner.setSelection(currentStatus.ordinal)
+
+        spinner.onItemSelectedListener = this
 
         leftButton.setOnClickListener {
             previousStatus()
@@ -148,5 +155,14 @@ class MyItemRequestsActivity : AppCompatActivity() {
                         requests.remove(request)
                 }
         Unit
+    }
+
+    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+        currentStatus = MaterialRequest.Status.fromOrdinal(p2)!!
+        observableStatus.postValue(currentStatus)
+    }
+
+    override fun onNothingSelected(p0: AdapterView<*>?) {
+
     }
 }
