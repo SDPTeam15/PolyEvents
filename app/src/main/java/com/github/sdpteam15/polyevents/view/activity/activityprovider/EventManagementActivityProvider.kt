@@ -7,6 +7,7 @@ import com.github.sdpteam15.polyevents.R
 class EventManagementActivityProvider : AppCompatActivity() {
     companion object {
         const val INTENT_MANAGER = "MANAGER"
+        const val INTENT_MANAGER_EDIT = "EDIT_MANAGER"
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
