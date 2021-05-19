@@ -36,14 +36,12 @@ class MaterialRequestDatabase(private val db: DatabaseInterface) :
     override fun getMaterialRequestListByUser(
         materialList: ObservableList<MaterialRequest>,
         userId: String,
-        matcher: Matcher?,
         userAccess: UserProfile?
     ): Observable<Boolean> =
         getMaterialRequestList(
             materialList,
             {
-                matcher?.match(it.whereEqualTo(DatabaseConstant.MaterialRequestConstant.MATERIAL_REQUEST_USER_ID.value, userId))
-                    ?: it.whereEqualTo(DatabaseConstant.MaterialRequestConstant.MATERIAL_REQUEST_USER_ID.value, userId)
+               it.whereEqualTo(DatabaseConstant.MaterialRequestConstant.MATERIAL_REQUEST_USER_ID.value, userId)
             },
             userAccess
         )

@@ -62,7 +62,6 @@ interface MaterialRequestDatabaseInterface {
     fun getMaterialRequestListByUser(
         materialList: ObservableList<MaterialRequest>,
         userId: String,
-        matcher: Matcher? = null,
         userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 }

@@ -30,6 +30,7 @@ class ProviderHomeFragment : Fragment() {
             startActivity(intent)
         }
 
+
         viewRoot.findViewById<Button>(R.id.id_my_items_request_button).setOnClickListener {
             val intent = Intent(activity, MyItemRequestsActivity::class.java)
             intent.putExtra(ID_USER, Database.currentDatabase.currentUser!!.uid)

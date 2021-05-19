@@ -74,6 +74,21 @@
             app:strokeColor="@color/purple_500"
             app:strokeWidth="2dp"
             tools:ignore="ButtonStyle" />
+        <Button
+            android:id="@+id/id_my_items_request_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
+            android:drawableTop="@drawable/ic_event"
+            android:drawableTint="@color/purple_500"
+
+            android:paddingHorizontal="25dp"
+            android:text="@string/my_items_requests_button_text"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="@color/purple_500"
+            app:strokeColor="@color/purple_500"
+            app:strokeWidth="2dp"
+            tools:ignore="ButtonStyle" />
 
     </androidx.gridlayout.widget.GridLayout>
 

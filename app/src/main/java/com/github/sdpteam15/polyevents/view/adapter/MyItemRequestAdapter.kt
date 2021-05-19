@@ -14,6 +14,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
+import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
 import java.time.format.DateTimeFormatter
@@ -29,8 +30,9 @@ import java.time.format.DateTimeFormatter
 class MyItemRequestAdapter(
     context: Context,
     lifecycleOwner: LifecycleOwner,
-    private val requests: ObservableList<MaterialRequest>,
-    private val userNames: ObservableMap<String, String>,
+    private val requests: ObservableMap<MaterialRequest.Status, ObservableList<MaterialRequest>>,
+    private val typeToDisplay: Observable<MaterialRequest.Status>,
+    private val userNames: String?,
     private val itemNames: ObservableMap<String, String>,
     private val onModifyListener: (MaterialRequest) -> Unit,
     private val onCancelListener: (MaterialRequest) -> Unit
@@ -43,9 +45,6 @@ class MyItemRequestAdapter(
             notifyDataSetChanged()
         }
         itemNames.observe(lifecycleOwner) {
-            notifyDataSetChanged()
-        }
-        userNames.observe(lifecycleOwner) {
             notifyDataSetChanged()
         }
     }
@@ -69,7 +68,7 @@ class MyItemRequestAdapter(
          */
         @SuppressLint("SetTextI18n")
         fun bind(request: MaterialRequest) {
-            organizer.text = userNames[request.userId]
+            organizer.text = userNames
             time.text =
                 request.time!!.format(DateTimeFormatter.ISO_LOCAL_DATE) + " " + request.time.format(
                     DateTimeFormatter.ISO_LOCAL_TIME
@@ -100,11 +99,11 @@ class MyItemRequestAdapter(
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        val item = requests[position]
+        val item = requests[typeToDisplay.value]!![position]
         holder.bind(item)
     }
 
     override fun getItemCount(): Int {
-        return requests.size
+        return requests[typeToDisplay.value]?.size ?: 0
     }
 }
