@@ -207,6 +207,12 @@ class EventManagementTest {
 
     @Test
     fun updateOnlyWhenAllConditionsSatisfied1() {
+        val intent =
+            Intent(ApplicationProvider.getApplicationContext(), EventManagementListActivity::class.java)
+
+        scenario = ActivityScenario.launch(intent)
+        onView(withId(R.id.btnNewEvent)).perform(click())
+
         EventManagementActivity.dateEnd.postValue(
             EventManagementActivity.dateStart.value!!.minusDays(
                 1
@@ -231,12 +237,19 @@ class EventManagementTest {
         closeSoftKeyboard()
         onView(withId(R.id.btnManageEvent)).perform(scrollTo(), click())
         obs.postValue(true)
-        Intents.intended(IntentMatchers.hasComponent(EventManagementListActivity::class.java.name))
-        Intents.release()
+
+        onView(withId(R.id.event_management_list_id)).check(matches(isDisplayed()))
     }
 
     @Test
     fun updateOnlyWhenAllConditionsSatisfied2() {
+        val intent =
+            Intent(ApplicationProvider.getApplicationContext(), EventManagementListActivity::class.java)
+
+        scenario = ActivityScenario.launch(intent)
+
+        onView(withId(R.id.btnNewEvent)).perform(click())
+
         EventManagementActivity.dateEnd.postValue(
             EventManagementActivity.dateStart.value!!.minusDays(
                 1
@@ -254,7 +267,6 @@ class EventManagementTest {
         onView(withId(R.id.etNbPart)).perform(replaceText(EventManagementActivity.MIN_PART_NB.toString()))
         clickAndCheckNotRedirect()
 
-        Intents.init()
         EventManagementActivity.dateEnd.postValue(
             EventManagementActivity.dateStart.value!!.plusDays(
                 1
@@ -264,8 +276,8 @@ class EventManagementTest {
         closeSoftKeyboard()
         onView(withId(R.id.btnManageEvent)).perform(scrollTo(), click())
         obs.postValue(true)
-        Intents.intended(IntentMatchers.hasComponent(EventManagementListActivity::class.java.name))
-        Intents.release()
+
+        onView(withId(R.id.event_management_list_id)).check(matches(isDisplayed()))
     }
 
     @Test
@@ -515,6 +527,7 @@ class EventManagementTest {
             EventManagementListActivity.EVENT_ID_INTENT,
             eventId
         )
+
         intent.putExtra(EventManagementListActivity.INTENT_MANAGER_EDIT,"edit")
         intent.putExtra(EventManagementListActivity.INTENT_MANAGER,"edit")
         scenario = ActivityScenario.launch(intent)
