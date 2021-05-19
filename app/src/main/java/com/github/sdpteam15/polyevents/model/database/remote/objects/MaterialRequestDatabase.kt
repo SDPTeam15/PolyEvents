@@ -46,6 +46,13 @@ class MaterialRequestDatabase(private val db: DatabaseInterface) :
             userAccess
         )
 
+    override fun deleteMaterialRequest(
+        materialRequestId: String,
+        userAccess: UserProfile?
+    ): Observable<Boolean> =
+        db.deleteEntity(materialRequestId, MATERIAL_REQUEST_COLLECTION)
+
+
 
     override fun createMaterialRequest(request: MaterialRequest, userAccess: UserProfile?) =
         db.addEntity(request, MATERIAL_REQUEST_COLLECTION, MaterialRequestAdapter)

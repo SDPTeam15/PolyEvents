@@ -53,15 +53,26 @@ interface MaterialRequestDatabaseInterface {
     ): Observable<Boolean>
 
     /**
-     * Get the list of all material request
+     * Get the list of all material request for a user
      * @param materialList list in which the list of all material request will be set after retrieving from database
-     * @param matcher matcher for the search
+     * @param userId id of the user
      * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getMaterialRequestListByUser(
         materialList: ObservableList<MaterialRequest>,
         userId: String,
+        userAccess: UserProfile? = currentProfile
+    ): Observable<Boolean>
+
+    /**
+     * Delete a material request
+     * @param materialRequestId updated material request
+     * @param userAccess the user profile to use its permission
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun deleteMaterialRequest(
+        materialRequestId: String,
         userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 }

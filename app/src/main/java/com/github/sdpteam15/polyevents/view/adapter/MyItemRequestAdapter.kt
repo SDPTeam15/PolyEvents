@@ -5,10 +5,10 @@ import android.content.Context
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.INVISIBLE
-import android.view.View.VISIBLE
+import android.view.View.*
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
@@ -44,6 +44,7 @@ class MyItemRequestAdapter(
         requests.observe(lifecycleOwner) {
             notifyDataSetChanged()
         }
+
         itemNames.observe(lifecycleOwner) {
             notifyDataSetChanged()
         }
@@ -62,6 +63,8 @@ class MyItemRequestAdapter(
         private val btnModify = view.findViewById<ImageButton>(R.id.id_modify_request)
         private val btnCancel = view.findViewById<ImageButton>(R.id.id_delete_request)
         private val status = view.findViewById<TextView>(R.id.id_request_status)
+        private val adminMessage = view.findViewById<TextView>(R.id.id_admin_message)
+        private val refusalLayout = view.findViewById<LinearLayout>(R.id.id_reason_of_refusal)
 
         /**
          * Binds the values of each value of a material request to a view
@@ -86,6 +89,8 @@ class MyItemRequestAdapter(
             btnCancel.visibility = if (request.status == MaterialRequest.Status.PENDING) VISIBLE else INVISIBLE
             btnCancel.setOnClickListener { onCancelListener(request) }
             btnModify.setOnClickListener { onModifyListener(request) }
+            refusalLayout.visibility = if(request.adminMessage != null) VISIBLE else GONE
+            adminMessage.text = request.adminMessage
         }
     }
 

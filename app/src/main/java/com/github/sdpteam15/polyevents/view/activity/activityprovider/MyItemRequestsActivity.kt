@@ -107,6 +107,8 @@ class MyItemRequestsActivity : AppCompatActivity() {
             it.status
         }
 
+        requests.observeRemove(this) { Log.d("REQUEST REMOVED", "REQUEST REMOVED") }
+
         //Wait until we have both requests accepted from the database to show the material requests
         Database.currentDatabase.materialRequestDatabase!!.getMaterialRequestListByUser(
             requests,
@@ -127,7 +129,13 @@ class MyItemRequestsActivity : AppCompatActivity() {
     private val modifyMaterialRequest = {
             request: MaterialRequest ->
     }
-    private val cancelMaterialRequest = {
-            request: MaterialRequest ->
+
+    private val cancelMaterialRequest = {request: MaterialRequest ->
+                val l = Database.currentDatabase.materialRequestDatabase!!.deleteMaterialRequest(request.requestId!!)
+                l.observe(this){
+                    if(it.value)
+                        requests.remove(request)
+                }
+        Unit
     }
 }

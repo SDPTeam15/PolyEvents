@@ -182,5 +182,6 @@
     <string name="pending_requests">Pending requests</string>
     <string name="accepted_requests">Accepted requests</string>
     <string name="refused_requests">Refused requests</string>
+    <string name="reason_of_refusal">Reason of refusal:</string>
 
 </resources>
