@@ -123,21 +123,26 @@ class MyItemRequestsActivity : AppCompatActivity() , AdapterView.OnItemSelectedL
 
         requests.observeRemove(this) { Log.d("REQUEST REMOVED", "REQUEST REMOVED") }
 
+
+    }
+
+    override fun onResume() {
+        super.onResume()
         //Wait until we have both requests accepted from the database to show the material requests
         Database.currentDatabase.materialRequestDatabase!!.getMaterialRequestListByUser(
             requests,
             userId).observeOnce(this) {
-                if (!it.value) {
-                    HelperFunctions.showToast("Failed to get the list of material requests", this)
-                } else {
-                    Database.currentDatabase.itemDatabase!!.getItemsList(items)
-                        .observeOnce(this) { it2 ->
-                            if (!it2.value) {
-                                HelperFunctions.showToast("Failed to get the list of items", this)
-                            }
+            if (!it.value) {
+                HelperFunctions.showToast("Failed to get the list of material requests", this)
+            } else {
+                Database.currentDatabase.itemDatabase!!.getItemsList(items)
+                    .observeOnce(this) { it2 ->
+                        if (!it2.value) {
+                            HelperFunctions.showToast("Failed to get the list of items", this)
                         }
-                }
+                    }
             }
+        }
     }
 
     private val modifyMaterialRequest = { request: MaterialRequest ->
