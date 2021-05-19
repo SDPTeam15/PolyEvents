@@ -1,24 +1,23 @@
 package com.github.sdpteam15.polyevents.view.activity.activityprovider
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.ImageButton
+import android.widget.Spinner
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
-import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
 import com.github.sdpteam15.polyevents.view.activity.ItemRequestActivity
-import com.github.sdpteam15.polyevents.view.adapter.ItemRequestAdminAdapter
 import com.github.sdpteam15.polyevents.view.adapter.MyItemRequestAdapter
 import com.github.sdpteam15.polyevents.view.fragments.home.ProviderHomeFragment
 
@@ -27,7 +26,7 @@ import com.github.sdpteam15.polyevents.view.fragments.home.ProviderHomeFragment
  */
 const val EXTRA_ITEM_REQUEST_ID = "com.github.sdpteam15.polyevents.requests.ITEM_REQUEST_ID"
 
-class MyItemRequestsActivity : AppCompatActivity() , AdapterView.OnItemSelectedListener{
+class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private var currentStatus: MaterialRequest.Status = MaterialRequest.Status.PENDING
 
     private lateinit var recyclerView: RecyclerView
@@ -37,14 +36,18 @@ class MyItemRequestsActivity : AppCompatActivity() , AdapterView.OnItemSelectedL
     private lateinit var userId: String
 
     private val requests = ObservableList<MaterialRequest>()
-    private val materialRequest = ObservableMap<MaterialRequest.Status, ObservableList<MaterialRequest>>()
+    private val materialRequest =
+        ObservableMap<MaterialRequest.Status, ObservableList<MaterialRequest>>()
     private val observableStatus = Observable(currentStatus)
     private var userName = Database.currentDatabase.currentUser!!.name
     private val itemNames = ObservableMap<String, String>()
     private val items = ObservableList<Triple<Item, Int, Int>>()
 
-    private fun nextStatus(){
-        currentStatus = when(currentStatus){
+    /**
+     * Select previous status page
+     */
+    private fun nextStatus() {
+        currentStatus = when (currentStatus) {
             MaterialRequest.Status.PENDING -> MaterialRequest.Status.ACCEPTED
             MaterialRequest.Status.ACCEPTED -> MaterialRequest.Status.REFUSED
             MaterialRequest.Status.REFUSED -> MaterialRequest.Status.PENDING
@@ -52,8 +55,11 @@ class MyItemRequestsActivity : AppCompatActivity() , AdapterView.OnItemSelectedL
         observableStatus.postValue(currentStatus)
     }
 
-    private fun previousStatus(){
-        currentStatus = when(currentStatus){
+    /**
+     * Select next status page
+     */
+    private fun previousStatus() {
+        currentStatus = when (currentStatus) {
             MaterialRequest.Status.PENDING -> MaterialRequest.Status.REFUSED
             MaterialRequest.Status.REFUSED -> MaterialRequest.Status.ACCEPTED
             MaterialRequest.Status.ACCEPTED -> MaterialRequest.Status.PENDING
@@ -61,11 +67,14 @@ class MyItemRequestsActivity : AppCompatActivity() , AdapterView.OnItemSelectedL
         observableStatus.postValue(currentStatus)
     }
 
-    private fun refresh(){
-
+    /**
+     * Refreshes the view
+     */
+    private fun refresh() {
         spinner.setSelection(currentStatus.ordinal)
         recyclerView.adapter!!.notifyDataSetChanged()
     }
+
     private val statusNames = ArrayList<String>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,6 +87,7 @@ class MyItemRequestsActivity : AppCompatActivity() , AdapterView.OnItemSelectedL
         rightButton = findViewById(R.id.id_change_request_status_right)
         spinner = findViewById(R.id.id_title_item_request)
 //-------------------------------------------------------------------------------------------
+        //List of status
         statusNames.add(getString(R.string.pending_requests))
         statusNames.add(getString(R.string.accepted_requests))
         statusNames.add(getString(R.string.refused_requests))
@@ -86,7 +96,6 @@ class MyItemRequestsActivity : AppCompatActivity() , AdapterView.OnItemSelectedL
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = adapter
         spinner.setSelection(currentStatus.ordinal)
-
         spinner.onItemSelectedListener = this
 
         leftButton.setOnClickListener {
@@ -95,7 +104,7 @@ class MyItemRequestsActivity : AppCompatActivity() , AdapterView.OnItemSelectedL
         rightButton.setOnClickListener {
             nextStatus()
         }
-        observableStatus.observe(this){
+        observableStatus.observe(this) {
             refresh()
         }
 
@@ -111,27 +120,31 @@ class MyItemRequestsActivity : AppCompatActivity() , AdapterView.OnItemSelectedL
                 cancelMaterialRequest
             )
 
-        observableStatus.observe(this){recyclerView.adapter!!.notifyDataSetChanged()}
+        observableStatus.observe(this) { recyclerView.adapter!!.notifyDataSetChanged() }
 
         items.group(this) { it.first.itemId!! }.then.map(this, itemNames) {
             it[0].first.itemName!!
         }
 
-        requests.group(this, materialRequest){
+        requests.group(this, materialRequest) {
             it.status
         }
-
-        requests.observeRemove(this) { Log.d("REQUEST REMOVED", "REQUEST REMOVED") }
-
-
     }
 
     override fun onResume() {
         super.onResume()
-        //Wait until we have both requests accepted from the database to show the material requests
+        getItemRequestsFromDB()
+    }
+
+    /**
+     * Gets the item request of the user and then gets the item list
+     */
+    private fun getItemRequestsFromDB(){
+        //Gets the item request of the user and then gets the item list
         Database.currentDatabase.materialRequestDatabase!!.getMaterialRequestListByUser(
             requests,
-            userId).observeOnce(this) {
+            userId
+        ).observeOnce(this) {
             if (!it.value) {
                 HelperFunctions.showToast("Failed to get the list of material requests", this)
             } else {
@@ -145,6 +158,9 @@ class MyItemRequestsActivity : AppCompatActivity() , AdapterView.OnItemSelectedL
         }
     }
 
+    /**
+     * Launches the activity to modify the item request
+     */
     private val modifyMaterialRequest = { request: MaterialRequest ->
 
         val intent = Intent(this, ItemRequestActivity::class.java).apply {
@@ -153,12 +169,16 @@ class MyItemRequestsActivity : AppCompatActivity() , AdapterView.OnItemSelectedL
         startActivity(intent)
     }
 
-    private val cancelMaterialRequest = {request: MaterialRequest ->
-                val l = Database.currentDatabase.materialRequestDatabase!!.deleteMaterialRequest(request.requestId!!)
-                l.observe(this){
-                    if(it.value)
-                        requests.remove(request)
-                }
+    /**
+     * Deletes the item request
+     */
+    private val cancelMaterialRequest = { request: MaterialRequest ->
+        val l =
+            Database.currentDatabase.materialRequestDatabase!!.deleteMaterialRequest(request.requestId!!)
+        l.observe(this) {
+            if (it.value)
+                requests.remove(request)
+        }
         Unit
     }
 
