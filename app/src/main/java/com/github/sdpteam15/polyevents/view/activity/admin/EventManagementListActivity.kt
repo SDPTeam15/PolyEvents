@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
@@ -20,16 +21,22 @@ class EventManagementListActivity : AppCompatActivity() {
     private var obsEventsMap = ObservableMap<String, Pair<String, ObservableList<Event>>>()
     private lateinit var modifyListener: (String) -> Unit
     private lateinit var deleteListener: (String, Event) -> Unit
+    private var isOrganiser = false
 
     companion object {
         const val NEW_EVENT_ID = "-1"
         const val EVENT_ID_INTENT = "EVENT_ID"
+        const val ORGANISER_LIST = "ORGANISER LIST"
+        const val INTENT_MANAGER = "MANAGER"
+        const val INTENT_MANAGER_EDIT = "EDIT_MANAGER"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_event_management_list)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+
+        isOrganiser = intent.hasExtra(ORGANISER_LIST)
 
         setupListeners()
 
@@ -46,18 +53,43 @@ class EventManagementListActivity : AppCompatActivity() {
             }
         }
 
-        currentDatabase.eventDatabase!!.getEvents(null, null, eventList = requestObservable)
-            .observe(this) {
-                if (!it.value) {
-                    HelperFunctions.showToast(getString(R.string.fail_retrieve_events), this)
-                    finish()
-                }
-            }
+        getEventsDatabase(requestObservable)
+
 
         findViewById<Button>(R.id.btnNewEvent).setOnClickListener {
             val intent = Intent(this, EventManagementActivity::class.java)
+            if (isOrganiser) {
+                intent.putExtra(INTENT_MANAGER, "NOT NULL")
+            }
+
             intent.putExtra(EVENT_ID_INTENT, NEW_EVENT_ID)
             startActivity(intent)
+        }
+    }
+
+
+    private fun getEventsDatabase(requestObservable: ObservableList<Event>) {
+        if (isOrganiser) {
+            currentDatabase.eventDatabase!!.getEvents({
+                it.whereEqualTo(
+                    DatabaseConstant.EventConstant.EVENT_ORGANIZER.value,
+                    currentDatabase.currentUser!!.uid
+                )
+            }, null, eventList = requestObservable)
+                .observe(this) {
+                    if (!it.value) {
+                        HelperFunctions.showToast(getString(R.string.fail_retrieve_events), this)
+                        finish()
+                    }
+                }
+        } else {
+            currentDatabase.eventDatabase!!.getEvents(null, null, eventList = requestObservable)
+                .observe(this) {
+                    if (!it.value) {
+                        HelperFunctions.showToast(getString(R.string.fail_retrieve_events), this)
+                        finish()
+                    }
+                }
         }
     }
 

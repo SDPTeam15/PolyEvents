@@ -90,8 +90,8 @@ class EventManagementActivity : AppCompatActivity() {
 
         // Get intent value (if not NEW_EVENT_ID we know that we are in edition mode)
         val id = intent.getStringExtra(EventManagementListActivity.EVENT_ID_INTENT)!!
-        isActivityProvider = intent.hasExtra(EventManagementActivityProvider.INTENT_MANAGER)
-        isModificationActivityProvider = intent.hasExtra(EventManagementActivityProvider.INTENT_MANAGER_EDIT)
+        isActivityProvider = intent.hasExtra(EventManagementListActivity.INTENT_MANAGER)
+        isModificationActivityProvider = intent.hasExtra(EventManagementListActivity.INTENT_MANAGER_EDIT)
 
         isCreation = id == EventManagementListActivity.NEW_EVENT_ID
         curId = id
