@@ -59,7 +59,7 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
         id: String,
         returnEvent: Observable<Event>,
         userAccess: UserProfile?
-    ): Observable<Boolean> = db.getEntity(returnEvent, id, EVENT_EDIT_COLLECTION, EventAdapter)
+    ): Observable<Boolean> = db.getEntity(returnEvent, id, EVENT_EDIT_COLLECTION)
 
     override fun getEventEdits(
         matcher: Matcher?,
