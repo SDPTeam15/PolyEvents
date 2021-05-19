@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/id_fragment_home_visitor"
     android:layout_width="match_parent"
@@ -8,26 +9,34 @@
 
     <Spinner
         android:id="@+id/spinner_visitor"
-        android:layout_width="110dp"
+        android:layout_width="120dp"
         android:layout_height="wrap_content"
-        android:entries="@array/Ranks" />
+        android:layout_marginEnd="8dp"
+        android:entries="@array/Ranks"
+        app:layout_constraintBottom_toTopOf="@+id/id_title_upcoming_events"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/id_title_upcoming_events"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="40dp"
         android:text="@string/upcoming_activities_txt"
         android:textColor="@color/black"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/id_upcoming_events_list"
+        app:layout_constraintStart_toStartOf="@+id/id_upcoming_events_list"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/id_upcoming_events_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_below="@id/id_title_upcoming_events"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@+id/id_title_upcoming_events">
 
     </LinearLayout>
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

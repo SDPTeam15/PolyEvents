@@ -29,12 +29,10 @@ class ItemRequestAdapter(
     private val availableItems: ObservableMap<String, ObservableMap<Item, Pair<Int, Int>>>,
     private val mapSelectedItems: ObservableMap<Item, Int>
 ) : RecyclerView.Adapter<ItemRequestAdapter.CustomViewHolder<*>>() {
-    //private var isCategoryOpen = availableItems.keys(lifecycleOwner).then.groupOnce(lifecycleOwner) { it }.then.mapOnce(lifecycleOwner) { false }.then
     private var isCategoryOpen = mutableMapOf<String, Boolean>()
     private val inflater = LayoutInflater.from(context)
 
     init {
-        //itemTypes.map(lifecycleOwner,isCategoryOpen) { Pair(it,false) }.then
         availableItems.observe(lifecycleOwner) {
             for (k in it.value.keys) {
                 if (k !in isCategoryOpen) {

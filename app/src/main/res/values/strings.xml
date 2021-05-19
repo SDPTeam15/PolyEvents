@@ -43,7 +43,7 @@
 
     <!-- Fragment Provider Home-->
     <string name="provider_hub_title">Provider management options</string>
-    <string name="items_requests_button_text">Items requests</string>
+    <string name="items_requests_button_text">Requests</string>
     <string name="my_items_requests_button_text">My items requests</string>
 
     <!-- Fragment Staff Home-->
@@ -142,7 +142,7 @@
     <!-- ItemAdminActivity -->
     <string name="query_not_satisfied">Query not satisfied</string>
     <!-- EventListManagementActivity-->
-    <string name="event_list_management">Event List Management</string>
+    <string name="event_list_management">All events</string>
     <string name="btn_new_event_text">+</string>
 
     <!-- EventManagementActivity-->
@@ -169,6 +169,11 @@
     <string name="update_event_btn_text">Update event</string>
     <string name="create_event_btn_text">Create event</string>
     <string name="title_activity_event_list_management">Event List</string>
+    <string name="fail_delete_from_database">Fail to delete the event from the database, please try again</string>
+    <string name="success_delete_from_database">The event was successfully delete from the database</string>
+    <string name="event_deletion_no_button_text">No</string>
+    <string name="event_deletion_yes_button_text">Yes</string>
+    <string name="fail_retrieve_events">Failed to retrieve all the events</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 

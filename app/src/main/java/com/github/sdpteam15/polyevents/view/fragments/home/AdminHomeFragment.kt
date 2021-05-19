@@ -49,7 +49,7 @@ class AdminHomeFragment : Fragment() {
             val intent = Intent(inflater.context, ItemsAdminActivity::class.java)
             startActivity(intent)
         }
-        MainActivity.instance!!.swish(viewRoot.findViewById(R.id.spinner_admin), UserRole.ADMIN)
+        MainActivity.instance!!.switchRoles(viewRoot.findViewById(R.id.spinner_admin), UserRole.ADMIN)
         return viewRoot
     }
 }

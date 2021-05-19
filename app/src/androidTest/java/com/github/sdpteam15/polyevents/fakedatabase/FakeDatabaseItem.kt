@@ -42,12 +42,12 @@ object FakeDatabaseItem : ItemDatabaseInterface {
         // generate random document ID like in firebase
         val itemId = FakeDatabase.generateRandomKey()
         val b = items.put(itemId, Triple(Item(itemId, item.itemName, item.itemType), total, total)) == null
-        return Observable(b, this)
+        return Observable(b, FakeDatabase)
     }
 
     override fun removeItem(itemId: String, userAccess: UserProfile?): Observable<Boolean> {
         val b = items.remove(itemId) != null
-        return Observable(b, this)
+        return Observable(b, FakeDatabase)
     }
 
     override fun updateItem(
@@ -59,7 +59,7 @@ object FakeDatabaseItem : ItemDatabaseInterface {
         // TODO should update add item if non existent in database ?
         // if (item.itemId == null) return createItem(item, count, profile)
         items[item.itemId!!] = Triple(item, total,remaining)
-        return Observable(true, this)
+        return Observable(true, FakeDatabase)
     }
 
     override fun getItemsList(
@@ -68,9 +68,9 @@ object FakeDatabaseItem : ItemDatabaseInterface {
     ): Observable<Boolean> {
         itemList.clear(this)
         for (item in items) {
-            itemList.add(item.value, this)
+            itemList.add(item.value, FakeDatabase)
         }
-        return Observable(true, this)
+        return Observable(true, FakeDatabase)
     }
 
     override fun getAvailableItems(
@@ -81,8 +81,8 @@ object FakeDatabaseItem : ItemDatabaseInterface {
         val list = mutableListOf<Triple<Item, Int,Int>>()
         for (item in items)
             list.add(item.value)
-        itemList.addAll(list, this)
-        return Observable(true, this)
+        itemList.addAll(list, FakeDatabase)
+        return Observable(true, FakeDatabase)
     }
 
     override fun createItemType(
@@ -90,7 +90,7 @@ object FakeDatabaseItem : ItemDatabaseInterface {
         userAccess: UserProfile?
     ): Observable<Boolean> {
         itemTypes.add(itemType)
-        return Observable(true, this)
+        return Observable(true, FakeDatabase)
     }
 
     override fun getItemTypes(
@@ -99,8 +99,6 @@ object FakeDatabaseItem : ItemDatabaseInterface {
     ): Observable<Boolean> {
         itemTypeList.clear()
         itemTypeList.addAll(itemTypes)
-        return Observable(true)
+        return Observable(true, FakeDatabase)
     }
-
-
 }
