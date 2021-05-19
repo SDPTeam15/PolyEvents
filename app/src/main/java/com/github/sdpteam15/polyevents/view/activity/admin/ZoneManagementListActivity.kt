@@ -11,7 +11,6 @@ import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.Matcher
 import com.github.sdpteam15.polyevents.model.entity.Zone
-import com.github.sdpteam15.polyevents.model.map.GoogleMapHelper
 import com.github.sdpteam15.polyevents.model.map.ZoneAreaMapHelper
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.adapter.ZoneItemAdapter
@@ -24,7 +23,7 @@ class ZoneManagementListActivity : AppCompatActivity() {
         var zones = ObservableList<Zone>()
 
         fun deleteZone(zone: Zone) {
-            Database.currentDatabase.zoneDatabase!!.deleteZone(zone, null)
+            Database.currentDatabase.zoneDatabase!!.deleteZone(zone)
         }
     }
 
@@ -38,7 +37,7 @@ class ZoneManagementListActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recycler_zones_list)
 
         val openZone = { zone: Zone ->
-            startActivityZone(zone.zoneId)
+            startActivityZone(zone.zoneId!!)
         }
 
         recyclerView.adapter = ZoneItemAdapter(zones, openZone)
@@ -48,6 +47,7 @@ class ZoneManagementListActivity : AppCompatActivity() {
         Database.currentDatabase.zoneDatabase!!.getAllZones(matcher, 50, zones).observe(this) {
             if (!it.value) {
                 HelperFunctions.showToast("Failed to get the list of zones", this)
+                finish()
             }
         }
 
@@ -61,10 +61,10 @@ class ZoneManagementListActivity : AppCompatActivity() {
         }
     }
 
-    fun startActivityZone(zoneId: String?) {
+    fun startActivityZone(zoneId: String) {
         val intent = Intent(this, ZoneManagementActivity::class.java)
         ZoneManagementActivity.zone.location = ""
-        intent.putExtra(EXTRA_ID, zoneId ?: NEW_ZONE)
+        intent.putExtra(EXTRA_ID, zoneId)
         startActivity(intent)
     }
 

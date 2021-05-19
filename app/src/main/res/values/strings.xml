@@ -25,7 +25,6 @@
     <string name="login_button_text">Sign in with Google</string>
 
     <!-- Item request -->
-    <string name="go_to_items_requests_button_text">Go to items requests</string>
     <string name="send_request_button_text">Send request</string>
     <string name="item_request_sent_text">Your request has been sent !</string>
     <string name="item_request_empty_text">Your request is empty. Please select some items !</string>
@@ -33,13 +32,21 @@
     <string name="item_name_quantity_text">%1$s\n(%2$d available)</string>
     <string name="max_item_quantity_text">There are only %1$s %2$s available !</string>
 
-    <!-- Fragment Admin Hub-->
-    <string name="admin_hub_btn_item_text">Item</string>
+    <!-- Fragment Admin Home-->
+    <string name="admin_hub_btn_item_list_text">Item List</string>
+    <string name="admin_hub_btn_item_request_text">Item Req</string>
     <string name="admin_hub_btn_route_text">Route</string>
     <string name="admin_hub_btn_zone_text">Zone</string>
     <string name="admin_hub_btn_event_text">Event</string>
     <string name="admin_hub_btn_user_text">User</string>
     <string name="admin_hub_title">Admin management options</string>
+
+    <!-- Fragment Provider Home-->
+    <string name="provider_hub_title">Provider management options</string>
+    <string name="items_requests_button_text">Requests</string>
+
+    <!-- Fragment Staff Home-->
+    <string name="staff_hub_title">Staff management options</string>
 
     <!-- All string for Profile Fragment -->
     <string name="logout_button_text">Logout</string>
@@ -64,7 +71,7 @@
     <string name="EditProfileActivity_Cancel">Cancel</string>
     <string name="EditProfileActivity_DatabaseError">Impossible to update your profile information, please try again.</string>
 
-    <string-array name="EditProfileActivity_Ranks">
+    <string-array name="Ranks">
         <item>Admin</item>
         <item>Activity provider</item>
         <item>Staff</item>
@@ -134,7 +141,7 @@
     <!-- ItemAdminActivity -->
     <string name="query_not_satisfied">Query not satisfied</string>
     <!-- EventListManagementActivity-->
-    <string name="event_list_management">Event List Management</string>
+    <string name="event_list_management">All events</string>
     <string name="btn_new_event_text">+</string>
 
     <!-- EventManagementActivity-->
@@ -161,6 +168,13 @@
     <string name="update_event_btn_text">Update event</string>
     <string name="create_event_btn_text">Create event</string>
     <string name="title_activity_event_list_management">Event List</string>
+    <string name="fail_delete_from_database">Fail to delete the event from the database, please try again</string>
+    <string name="success_delete_from_database">The event was successfully delete from the database</string>
+    <string name="event_deletion_no_button_text">No</string>
+    <string name="event_deletion_yes_button_text">Yes</string>
+    <string name="fail_retrieve_events">Failed to retrieve all the events</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <!--DisplayZoneEventsFragment-->
     <string name="see_events">See events</string>

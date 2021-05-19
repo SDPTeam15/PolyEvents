@@ -33,6 +33,7 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.activity.EditProfileActivity.Companion.EDIT_PROFILE_ID
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import com.github.sdpteam15.polyevents.view.adapter.EventItemAdapter
+import com.github.sdpteam15.polyevents.view.fragments.home.VisitorHomeFragment
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
@@ -97,7 +98,7 @@ class ProfileLoginFragmentTests {
         When(mockedDatabase.userDatabase).thenReturn(mockedUserDatabase)
 
         When(mockedDatabase.currentUser).thenReturn(null)
-        val homeFragment = MainActivity.fragments[R.id.ic_home] as HomeFragment
+        val homeFragment = MainActivity.fragments[R.id.id_fragment_home_visitor] as VisitorHomeFragment
         When(
             mockedEventDatabase.getEvents(
                 null,

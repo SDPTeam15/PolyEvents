@@ -214,7 +214,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         event.removeParticipant(currentDatabase.currentUser!!.uid)
 
         localEventViewModel.delete(EventLocal.fromEvent(event))
-        currentDatabase.eventDatabase!!.updateEvents(event)
+        currentDatabase.eventDatabase!!.updateEvent(event)
 
         showToast(resources.getString(R.string.event_successfully_unsubscribed), this)
 
@@ -230,7 +230,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
             event.addParticipant(currentDatabase.currentUser!!.uid)
 
             localEventViewModel.insert(EventLocal.fromEvent(event))
-            currentDatabase.eventDatabase!!.updateEvents(event)
+            currentDatabase.eventDatabase!!.updateEvent(event)
             showToast(resources.getString(R.string.event_successfully_subscribed), this)
             subscribeButton.setText(resources.getString(R.string.event_unsubscribe))
         } catch (e: MaxAttendeesException) {

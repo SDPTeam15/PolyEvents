@@ -11,6 +11,13 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableList
 
 class MaterialRequestDatabase(private val db: DatabaseInterface) :
     MaterialRequestDatabaseInterface {
+    override fun updateMaterialRequest(
+        id: String,
+        materialRequest: MaterialRequest,
+        userAccess: UserProfile?
+    ): Observable<Boolean> =
+        db.setEntity(materialRequest, id, MATERIAL_REQUEST_COLLECTION, MaterialRequestAdapter)
+
 
     override fun getMaterialRequestList(
         materialList: ObservableList<MaterialRequest>,
@@ -28,5 +35,6 @@ class MaterialRequestDatabase(private val db: DatabaseInterface) :
 
     override fun createMaterialRequest(request: MaterialRequest, userAccess: UserProfile?) =
         db.addEntity(request, MATERIAL_REQUEST_COLLECTION, MaterialRequestAdapter)
+
 
 }

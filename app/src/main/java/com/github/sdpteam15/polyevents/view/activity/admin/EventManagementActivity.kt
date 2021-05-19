@@ -10,6 +10,7 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.localDatetimeToString
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Zone
@@ -42,23 +43,23 @@ class EventManagementActivity : AppCompatActivity() {
         fun postValueDate(type: String, year: Int, month: Int, day: Int, hour: Int, minute: Int) {
             if (type == TYPE_START) {
                 dateStart.postValue(
-                    LocalDateTime.of(
-                        year,
-                        month,
-                        day,
-                        hour,
-                        minute
-                    )
+                        LocalDateTime.of(
+                                year,
+                                month,
+                                day,
+                                hour,
+                                minute
+                        )
                 )
             } else {
                 dateEnd.postValue(
-                    LocalDateTime.of(
-                        year,
-                        month,
-                        day,
-                        hour,
-                        minute
-                    )
+                        LocalDateTime.of(
+                                year,
+                                month,
+                                day,
+                                hour,
+                                minute
+                        )
                 )
             }
         }
@@ -91,7 +92,7 @@ class EventManagementActivity : AppCompatActivity() {
         dateEnd.postValue(LocalDateTime.now().withSecond(0).withNano(0))
 
         val adapter =
-            ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, zoneName)
+                ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, zoneName)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         findViewById<Spinner>(R.id.spinner_zone).adapter = adapter
 
@@ -217,9 +218,9 @@ class EventManagementActivity : AppCompatActivity() {
                 if (verifyCondition()) {
                     currentDatabase.eventDatabase!!.createEvent(getInformation()).observe(this) {
                         redirectOrDisplayError(
-                            getString(R.string.event_creation_success),
-                            getString(R.string.event_creation_failed),
-                            it.value
+                                getString(R.string.event_creation_success),
+                                getString(R.string.event_creation_failed),
+                                it.value
                         )
                     }
                 }
@@ -227,11 +228,11 @@ class EventManagementActivity : AppCompatActivity() {
         } else {
             btnManage.setOnClickListener {
                 if (verifyCondition()) {
-                    currentDatabase.eventDatabase!!.updateEvents(getInformation()).observe(this) {
+                    currentDatabase.eventDatabase!!.updateEvent(getInformation()).observe(this) {
                         redirectOrDisplayError(
-                            getString(R.string.event_update_success),
-                            getString(R.string.failed_to_update_event_info),
-                            it.value
+                                getString(R.string.event_update_success),
+                                getString(R.string.failed_to_update_event_info),
+                                it.value
                         )
                     }
                 }
@@ -240,7 +241,7 @@ class EventManagementActivity : AppCompatActivity() {
                 if (it.value) {
                     setupViewInActivity(true)
                 } else {
-                    HelperFunctions.showToast(  getString(R.string.failed_get_event_information), this)
+                    HelperFunctions.showToast(getString(R.string.failed_get_event_information), this)
                     startActivity(Intent(this, EventManagementListActivity::class.java))
                 }
             }
@@ -253,10 +254,9 @@ class EventManagementActivity : AppCompatActivity() {
      */
     private fun updateTextDate(type: String) {
         if (TYPE_START == type) {
-            findViewById<TextView>(R.id.et_start_date).text =
-                dateStart.value!!.toString().replace("T"," ")
+            findViewById<TextView>(R.id.et_start_date).text = localDatetimeToString(dateStart.value!!)
         } else {
-            findViewById<TextView>(R.id.et_end_date).text = dateEnd.value!!.toString().replace("T"," ")
+            findViewById<TextView>(R.id.et_end_date).text = localDatetimeToString(dateEnd.value!!)
         }
     }
 
@@ -291,15 +291,15 @@ class EventManagementActivity : AppCompatActivity() {
         val zoneNa = zoneName[selectedZone]
         val zoneId = mapIndexToId[selectedZone]
         return Event(
-            eventId = eventId,
-            zoneId = zoneId,
-            zoneName = zoneNa,
-            startTime = dateStart.value,
-            endTime = dateEnd.value,
-            eventName = name,
-            description = desc,
-            limitedEvent = limitedEvent,
-            maxNumberOfSlots = nbParticipant
+                eventId = eventId,
+                zoneId = zoneId,
+                zoneName = zoneNa,
+                startTime = dateStart.value,
+                endTime = dateEnd.value,
+                eventName = name,
+                description = desc,
+                limitedEvent = limitedEvent,
+                maxNumberOfSlots = nbParticipant
         )
     }
 
@@ -308,33 +308,33 @@ class EventManagementActivity : AppCompatActivity() {
      */
     private fun setDateListener() {
         dialogEndDate = DatePickerDialog(
-            this, { _: DatePicker, year: Int, month: Int, day: Int ->
-                postValueDate(
+                this, { _: DatePicker, year: Int, month: Int, day: Int ->
+            postValueDate(
                     TYPE_END,
                     year,
                     month + 1,
                     day,
                     dateEnd.value!!.hour,
                     dateEnd.value!!.minute
-                )
-            }, dateEnd.value!!.year, dateEnd.value!!.monthValue - 1, dateEnd.value!!.dayOfMonth
+            )
+        }, dateEnd.value!!.year, dateEnd.value!!.monthValue - 1, dateEnd.value!!.dayOfMonth
         )
 
         dialogStartDate = DatePickerDialog(
-            this,
-            { _: DatePicker, year: Int, month: Int, day: Int ->
-                postValueDate(
-                    TYPE_START,
-                    year,
-                    month + 1,
-                    day,
-                    dateStart.value!!.hour,
-                    dateStart.value!!.minute
-                )
-            },
-            dateStart.value!!.year,
-            dateStart.value!!.monthValue - 1,
-            dateStart.value!!.dayOfMonth
+                this,
+                { _: DatePicker, year: Int, month: Int, day: Int ->
+                    postValueDate(
+                            TYPE_START,
+                            year,
+                            month + 1,
+                            day,
+                            dateStart.value!!.hour,
+                            dateStart.value!!.minute
+                    )
+                },
+                dateStart.value!!.year,
+                dateStart.value!!.monthValue - 1,
+                dateStart.value!!.dayOfMonth
         )
     }
 
@@ -343,35 +343,35 @@ class EventManagementActivity : AppCompatActivity() {
      */
     private fun setTimeListener() {
         dialogStartTime = TimePickerDialog(
-            this, { _: TimePicker, hour: Int, minute: Int ->
-                postValueDate(
+                this, { _: TimePicker, hour: Int, minute: Int ->
+            postValueDate(
                     TYPE_START,
                     dateStart.value!!.year,
                     dateStart.value!!.monthValue,
                     dateStart.value!!.dayOfMonth,
                     hour,
                     minute
-                )
-            },
-            dateStart.value!!.hour,
-            dateStart.value!!.minute,
-            true
+            )
+        },
+                dateStart.value!!.hour,
+                dateStart.value!!.minute,
+                true
         )
 
         dialogEndTime = TimePickerDialog(
-            this, { _: TimePicker, hour: Int, minute: Int ->
-                postValueDate(
+                this, { _: TimePicker, hour: Int, minute: Int ->
+            postValueDate(
                     TYPE_END,
                     dateEnd.value!!.year,
                     dateEnd.value!!.monthValue,
                     dateEnd.value!!.dayOfMonth,
                     hour,
                     minute
-                )
-            },
-            dateEnd.value!!.hour,
-            dateEnd.value!!.minute,
-            true
+            )
+        },
+                dateEnd.value!!.hour,
+                dateEnd.value!!.minute,
+                true
         )
     }
 
@@ -397,12 +397,12 @@ class EventManagementActivity : AppCompatActivity() {
 
         if (findViewById<Switch>(R.id.swtLimitedEvent).isChecked) {
             if (findViewById<EditText>(R.id.etNbPart).text.toString()
-                    .toInt() < MIN_PART_NB
+                            .toInt() < MIN_PART_NB
             ) {
                 good = false
                 HelperFunctions.showToast(
-                    "The number of participant must be >= $MIN_PART_NB",
-                    this
+                        "The number of participant must be >= $MIN_PART_NB",
+                        this
                 )
             }
         }

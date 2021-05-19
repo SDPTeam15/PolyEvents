@@ -30,6 +30,7 @@ interface DatabaseInterface {
     /**
      * The current profile of the database
      */
+    @Deprecated("to remove")
     var currentProfile: UserProfile?
 
     /**

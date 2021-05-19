@@ -7,7 +7,7 @@ import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 
 object FakeDatabaseItem : ItemDatabaseInterface {
-    lateinit var items: MutableMap<String, Pair<Item, Int>>
+    lateinit var items: MutableMap<String, Triple<Item, Int,Int>>
     lateinit var itemTypes: MutableList<String>
 
     init {
@@ -17,13 +17,13 @@ object FakeDatabaseItem : ItemDatabaseInterface {
 
     private fun initItems() {
         items = mutableMapOf()
-        items["item1"] = Pair(Item("item1", "230V Plug", "PLUG"), 20)
-        items["item2"] = Pair(Item("item2", "Cord rewinder (50m)", "PLUG"), 10)
-        items["item3"] = Pair(Item("item3", "Microphone", "MICROPHONE"), 1)
-        items["item4"] = Pair(Item("item4", "Cooking plate", "OTHER"), 5)
-        items["item5"] = Pair(Item("item5", "Cord rewinder (100m)", "PLUG"), 1)
-        items["item6"] = Pair(Item("item6", "Cord rewinder (10m)", "PLUG"), 30)
-        items["item7"] = Pair(Item("item7", "Fridge(large)", "OTHER"), 2)
+        items["item1"] = Triple(Item("item1", "230V Plug", "PLUG"), 20,18)
+        items["item2"] = Triple(Item("item2", "Cord rewinder (50m)", "PLUG"), 10,5)
+        items["item3"] = Triple(Item("item3", "Microphone", "MICROPHONE"), 1,1)
+        items["item4"] = Triple(Item("item4", "Cooking plate", "OTHER"), 5,5)
+        items["item5"] = Triple(Item("item5", "Cord rewinder (100m)", "PLUG"), 1,0)
+        items["item6"] = Triple(Item("item6", "Cord rewinder (10m)", "PLUG"), 30,10)
+        items["item7"] = Triple(Item("item7", "Fridge(large)", "OTHER"), 2,2)
     }
 
     private fun initItemTypes() {
@@ -36,52 +36,53 @@ object FakeDatabaseItem : ItemDatabaseInterface {
 
     override fun createItem(
         item: Item,
-        count: Int,
+        total: Int,
         userAccess: UserProfile?
     ): Observable<Boolean> {
         // generate random document ID like in firebase
         val itemId = FakeDatabase.generateRandomKey()
-        val b = items.put(itemId, Pair(Item(itemId, item.itemName, item.itemType), count)) == null
-        return Observable(b, this)
+        val b = items.put(itemId, Triple(Item(itemId, item.itemName, item.itemType), total, total)) == null
+        return Observable(b, FakeDatabase)
     }
 
     override fun removeItem(itemId: String, userAccess: UserProfile?): Observable<Boolean> {
         val b = items.remove(itemId) != null
-        return Observable(b, this)
+        return Observable(b, FakeDatabase)
     }
 
     override fun updateItem(
         item: Item,
-        count: Int,
+        total: Int,
+        remaining: Int,
         userAccess: UserProfile?
     ): Observable<Boolean> {
         // TODO should update add item if non existent in database ?
         // if (item.itemId == null) return createItem(item, count, profile)
-        items[item.itemId!!] = Pair(item, count)
-        return Observable(true, this)
+        items[item.itemId!!] = Triple(item, total,remaining)
+        return Observable(true, FakeDatabase)
     }
 
     override fun getItemsList(
-        itemList: ObservableList<Pair<Item, Int>>,
+        itemList: ObservableList<Triple<Item, Int, Int>>,
         userAccess: UserProfile?
     ): Observable<Boolean> {
         itemList.clear(this)
         for (item in items) {
-            itemList.add(item.value, this)
+            itemList.add(item.value, FakeDatabase)
         }
-        return Observable(true, this)
+        return Observable(true, FakeDatabase)
     }
 
     override fun getAvailableItems(
-        itemList: ObservableList<Pair<Item, Int>>,
+        itemList: ObservableList<Triple<Item, Int, Int>>,
         userAccess: UserProfile?
     ): Observable<Boolean> {
         itemList.clear(this)
-        val list = mutableListOf<Pair<Item, Int>>()
+        val list = mutableListOf<Triple<Item, Int,Int>>()
         for (item in items)
             list.add(item.value)
-        itemList.addAll(list, this)
-        return Observable(true, this)
+        itemList.addAll(list, FakeDatabase)
+        return Observable(true, FakeDatabase)
     }
 
     override fun createItemType(
@@ -89,7 +90,7 @@ object FakeDatabaseItem : ItemDatabaseInterface {
         userAccess: UserProfile?
     ): Observable<Boolean> {
         itemTypes.add(itemType)
-        return Observable(true, this)
+        return Observable(true, FakeDatabase)
     }
 
     override fun getItemTypes(
@@ -98,8 +99,6 @@ object FakeDatabaseItem : ItemDatabaseInterface {
     ): Observable<Boolean> {
         itemTypeList.clear()
         itemTypeList.addAll(itemTypes)
-        return Observable(true)
+        return Observable(true, FakeDatabase)
     }
-
-
 }
