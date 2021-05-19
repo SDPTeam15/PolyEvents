@@ -1,26 +1,30 @@
 package com.github.sdpteam15.polyevents.view.activity.activityprovider
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
-import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
-import com.github.sdpteam15.polyevents.view.adapter.ItemRequestAdminAdapter
+import com.github.sdpteam15.polyevents.view.activity.ItemRequestActivity
 import com.github.sdpteam15.polyevents.view.adapter.MyItemRequestAdapter
 import com.github.sdpteam15.polyevents.view.fragments.home.ProviderHomeFragment
 
+/**
+ * Extra containing the event ID to show on the launched event page
+ */
+const val EXTRA_ITEM_REQUEST_ID = "com.github.sdpteam15.polyevents.requests.ITEM_REQUEST_ID"
+
 class MyItemRequestsActivity : AppCompatActivity() {
+
     private var currentStatus: MaterialRequest.Status = MaterialRequest.Status.PENDING
 
     private lateinit var recyclerView: RecyclerView
@@ -30,14 +34,15 @@ class MyItemRequestsActivity : AppCompatActivity() {
     private lateinit var userId: String
 
     private val requests = ObservableList<MaterialRequest>()
-    private val materialRequest = ObservableMap<MaterialRequest.Status, ObservableList<MaterialRequest>>()
+    private val materialRequest =
+        ObservableMap<MaterialRequest.Status, ObservableList<MaterialRequest>>()
     private val observableStatus = Observable(currentStatus)
     private var userName = Database.currentDatabase.currentUser!!.name
     private val itemNames = ObservableMap<String, String>()
     private val items = ObservableList<Triple<Item, Int, Int>>()
 
-    private fun nextStatus(){
-        currentStatus = when(currentStatus){
+    private fun nextStatus() {
+        currentStatus = when (currentStatus) {
             MaterialRequest.Status.PENDING -> MaterialRequest.Status.ACCEPTED
             MaterialRequest.Status.ACCEPTED -> MaterialRequest.Status.REFUSED
             MaterialRequest.Status.REFUSED -> MaterialRequest.Status.PENDING
@@ -45,8 +50,8 @@ class MyItemRequestsActivity : AppCompatActivity() {
         observableStatus.postValue(currentStatus)
     }
 
-    private fun previousStatus(){
-        currentStatus = when(currentStatus){
+    private fun previousStatus() {
+        currentStatus = when (currentStatus) {
             MaterialRequest.Status.PENDING -> MaterialRequest.Status.REFUSED
             MaterialRequest.Status.REFUSED -> MaterialRequest.Status.ACCEPTED
             MaterialRequest.Status.ACCEPTED -> MaterialRequest.Status.PENDING
@@ -54,8 +59,8 @@ class MyItemRequestsActivity : AppCompatActivity() {
         observableStatus.postValue(currentStatus)
     }
 
-    private fun refresh(){
-        title.text =  when(currentStatus){
+    private fun refresh() {
+        title.text = when (currentStatus) {
             MaterialRequest.Status.PENDING -> getText(R.string.pending_requests)
             MaterialRequest.Status.REFUSED -> getText(R.string.refused_requests)
             MaterialRequest.Status.ACCEPTED -> getText(R.string.accepted_requests)
@@ -81,7 +86,7 @@ class MyItemRequestsActivity : AppCompatActivity() {
         rightButton.setOnClickListener {
             nextStatus()
         }
-        observableStatus.observe(this){
+        observableStatus.observe(this) {
             refresh()
         }
 
@@ -97,37 +102,41 @@ class MyItemRequestsActivity : AppCompatActivity() {
                 cancelMaterialRequest
             )
 
-        observableStatus.observe(this){recyclerView.adapter!!.notifyDataSetChanged()}
+        observableStatus.observe(this) { recyclerView.adapter!!.notifyDataSetChanged() }
 
         items.group(this) { it.first.itemId!! }.then.map(this, itemNames) {
             it[0].first.itemName!!
         }
 
-        requests.group(this, materialRequest){
+        requests.group(this, materialRequest) {
             it.status
         }
 
         //Wait until we have both requests accepted from the database to show the material requests
         Database.currentDatabase.materialRequestDatabase!!.getMaterialRequestListByUser(
             requests,
-            userId).observeOnce(this) {
-                if (!it.value) {
-                    HelperFunctions.showToast("Failed to get the list of material requests", this)
-                } else {
-                    Database.currentDatabase.itemDatabase!!.getItemsList(items)
-                        .observeOnce(this) { it2 ->
-                            if (!it2.value) {
-                                HelperFunctions.showToast("Failed to get the list of items", this)
-                            }
+            userId
+        ).observeOnce(this) {
+            if (!it.value) {
+                HelperFunctions.showToast("Failed to get the list of material requests", this)
+            } else {
+                Database.currentDatabase.itemDatabase!!.getItemsList(items)
+                    .observeOnce(this) { it2 ->
+                        if (!it2.value) {
+                            HelperFunctions.showToast("Failed to get the list of items", this)
                         }
-                }
+                    }
             }
+        }
     }
 
-    private val modifyMaterialRequest = {
-            request: MaterialRequest ->
+    private val modifyMaterialRequest = { request: MaterialRequest ->
+
+        val intent = Intent(this, ItemRequestActivity::class.java).apply {
+            putExtra(EXTRA_ITEM_REQUEST_ID, request.requestId)
+        }
+        startActivity(intent)
     }
-    private val cancelMaterialRequest = {
-            request: MaterialRequest ->
+    private val cancelMaterialRequest = { request: MaterialRequest ->
     }
 }

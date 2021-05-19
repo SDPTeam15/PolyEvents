@@ -41,15 +41,29 @@ class MaterialRequestDatabase(private val db: DatabaseInterface) :
         getMaterialRequestList(
             materialList,
             {
-               it.whereEqualTo(DatabaseConstant.MaterialRequestConstant.MATERIAL_REQUEST_USER_ID.value, userId)
+                it.whereEqualTo(
+                    DatabaseConstant.MaterialRequestConstant.MATERIAL_REQUEST_USER_ID.value,
+                    userId
+                )
             },
             userAccess
+        )
+
+    override fun getMaterialRequestById(
+        materialRequest: Observable<MaterialRequest>,
+        requestId: String,
+        userAccess: UserProfile?
+    ): Observable<Boolean> =
+        db.getEntity(
+            materialRequest,
+            requestId,
+            MATERIAL_REQUEST_COLLECTION,
+            MaterialRequestAdapter
         )
 
 
     override fun createMaterialRequest(request: MaterialRequest, userAccess: UserProfile?) =
         db.addEntity(request, MATERIAL_REQUEST_COLLECTION, MaterialRequestAdapter)
-
 
 
 }
