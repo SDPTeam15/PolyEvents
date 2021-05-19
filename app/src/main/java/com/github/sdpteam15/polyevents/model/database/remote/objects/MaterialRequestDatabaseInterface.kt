@@ -52,4 +52,17 @@ interface MaterialRequestDatabaseInterface {
         userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
+    /**
+     * Get the list of all material request
+     * @param materialList list in which the list of all material request will be set after retrieving from database
+     * @param matcher matcher for the search
+     * @param userAccess the user profile to use its permission
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun getMaterialRequestListByUser(
+        materialList: ObservableList<MaterialRequest>,
+        userId: String,
+        matcher: Matcher? = null,
+        userAccess: UserProfile? = currentProfile
+    ): Observable<Boolean>
 }

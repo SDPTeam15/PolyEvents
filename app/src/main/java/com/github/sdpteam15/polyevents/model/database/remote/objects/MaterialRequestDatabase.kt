@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.model.database.remote.objects
 
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.MATERIAL_REQUEST_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.Matcher
@@ -32,9 +33,25 @@ class MaterialRequestDatabase(private val db: DatabaseInterface) :
             MaterialRequestAdapter
         )
 
+    override fun getMaterialRequestListByUser(
+        materialList: ObservableList<MaterialRequest>,
+        userId: String,
+        matcher: Matcher?,
+        userAccess: UserProfile?
+    ): Observable<Boolean> =
+        getMaterialRequestList(
+            materialList,
+            {
+                matcher?.match(it.whereEqualTo(DatabaseConstant.MaterialRequestConstant.MATERIAL_REQUEST_USER_ID.value, userId))
+                    ?: it.whereEqualTo(DatabaseConstant.MaterialRequestConstant.MATERIAL_REQUEST_USER_ID.value, userId)
+            },
+            userAccess
+        )
+
 
     override fun createMaterialRequest(request: MaterialRequest, userAccess: UserProfile?) =
         db.addEntity(request, MATERIAL_REQUEST_COLLECTION, MaterialRequestAdapter)
+
 
 
 }

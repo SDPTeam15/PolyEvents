@@ -2,8 +2,11 @@ package com.github.sdpteam15.polyevents.view.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
@@ -11,7 +14,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
-import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
 import java.time.format.DateTimeFormatter
@@ -24,13 +26,15 @@ import java.time.format.DateTimeFormatter
  * @param requests List of all item requests
  * @param userNames Username map to retrieve usernames given their userid
  */
-class MyItemRequestsAdapter(
+class MyItemRequestAdapter(
     context: Context,
     lifecycleOwner: LifecycleOwner,
     private val requests: ObservableList<MaterialRequest>,
-    private val userNames: ObservableMap<String, Observable<String>>,
-    private val itemNames: ObservableMap<String, String>
-) : RecyclerView.Adapter<MyItemRequestsAdapter.ItemViewHolder>() {
+    private val userNames: ObservableMap<String, String>,
+    private val itemNames: ObservableMap<String, String>,
+    private val onModifyListener: (MaterialRequest) -> Unit,
+    private val onCancelListener: (MaterialRequest) -> Unit
+) : RecyclerView.Adapter<MyItemRequestAdapter.ItemViewHolder>() {
     private val adapterLayout = LayoutInflater.from(context)
 
     init {
@@ -56,19 +60,33 @@ class MyItemRequestsAdapter(
         private val organizer = view.findViewById<TextView>(R.id.id_request_organiser)
         private val time = view.findViewById<TextView>(R.id.id_request_time)
         private val itemList = view.findViewById<TextView>(R.id.id_request_item_list)
+        private val btnModify = view.findViewById<ImageButton>(R.id.id_modify_request)
+        private val btnCancel = view.findViewById<ImageButton>(R.id.id_delete_request)
+        private val status = view.findViewById<TextView>(R.id.id_request_status)
 
         /**
          * Binds the values of each value of a material request to a view
          */
         @SuppressLint("SetTextI18n")
         fun bind(request: MaterialRequest) {
-            organizer.text = userNames[request.userId]!!.value
+            organizer.text = userNames[request.userId]
             time.text =
                 request.time!!.format(DateTimeFormatter.ISO_LOCAL_DATE) + " " + request.time.format(
                     DateTimeFormatter.ISO_LOCAL_TIME
                 ).subSequence(0, 5)
             itemList.text = request.items.map { itemNames[it.key] + " : " + it.value }
                 .joinToString(separator = "\n") { it }
+            status.setTextColor(when(request.status){
+                MaterialRequest.Status.ACCEPTED -> Color.GREEN
+                MaterialRequest.Status.PENDING -> Color.BLACK
+                MaterialRequest.Status.REFUSED -> Color.RED
+            })
+            status.text = request.status.toString()
+
+            btnModify.visibility = if (request.status == MaterialRequest.Status.PENDING) VISIBLE else INVISIBLE
+            btnCancel.visibility = if (request.status == MaterialRequest.Status.PENDING) VISIBLE else INVISIBLE
+            btnCancel.setOnClickListener { onCancelListener(request) }
+            btnModify.setOnClickListener { onModifyListener(request) }
         }
     }
 
@@ -77,7 +95,7 @@ class MyItemRequestsAdapter(
         viewType: Int
     ): ItemViewHolder {
 
-        val view = adapterLayout.inflate(R.layout.card_material_request, parent, false)
+        val view = adapterLayout.inflate(R.layout.card_my_material_request, parent, false)
         return ItemViewHolder(view)
     }
 

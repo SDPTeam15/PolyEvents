@@ -4,67 +4,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.activity.activityprovider.MyItemRequestsActivity">
+    tools:context=".view.activity.ItemRequestActivity">
 
     <TextView
-        android:id="@+id/my_item_requests_title"
-        android:layout_width="match_parent"
+        android:id="@+id/id_title_item_request"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:textSize="20sp"
         android:text="@string/my_item_requests"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintTop_toTopOf="parent" />
-    <TextView
-        android:id="@+id/pending_requests_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/pending_requests"
-        app:layout_constraintTop_toBottomOf="@+id/my_item_requests_title"
-        />
 
     <RelativeLayout
-        android:id="@+id/relative_layout_pending_requests"
+        android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:maxHeight="230dp"
-        app:layout_constraintStart_toEndOf="@+id/pending_requests_title"
-        app:layout_constraintTop_toBottomOf="@+id/pending_requests_title"
+        android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        >
+        app:layout_constraintTop_toBottomOf="@+id/id_title_item_request">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/id_recycler_pending_requests"
+            android:id="@+id/id_recycler_my_item_requests"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="vertical"
             app:layoutManager="LinearLayoutManager" />
     </RelativeLayout>
-
-    <TextView
-        android:id="@+id/accepted_requests_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/pending_requests"
-        app:layout_constraintTop_toBottomOf="@+id/relative_layout_pending_requests"
-        />
-
-    <RelativeLayout
-        android:id="@+id/relative_layout_accepted_requests"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:maxHeight="230dp"
-        app:layout_constraintStart_toEndOf="@+id/accepted_requests_title"
-        app:layout_constraintTop_toBottomOf="@+id/accepted_requests_title"
-        app:layout_constraintBottom_toBottomOf="parent"
-        >
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/id_recycler_accepted_requests"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbars="vertical"
-            app:layoutManager="LinearLayoutManager" />
-    </RelativeLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
