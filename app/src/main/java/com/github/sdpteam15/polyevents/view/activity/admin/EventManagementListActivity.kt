@@ -97,6 +97,9 @@ class EventManagementListActivity : AppCompatActivity() {
     private fun setupListeners() {
         modifyListener = { s: String ->
             val intent = Intent(this, EventManagementActivity::class.java)
+            if(isOrganiser){
+                intent.putExtra(INTENT_MANAGER,"INTENT_MANAGER")
+            }
             intent.putExtra(EVENT_ID_INTENT, s)
             startActivity(intent)
         }

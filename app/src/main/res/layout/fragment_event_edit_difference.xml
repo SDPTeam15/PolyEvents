@@ -233,7 +233,19 @@
                     android:layout_weight="1"
                     android:singleLine="false"
                     android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+
             </LinearLayout>
+
+            <Button
+                android:id="@+id/btnCloseFragment"
+                android:layout_width="wrap_content"
+                android:layout_height="39dp"
+                android:layout_marginTop="16dp"
+                android:layout_weight="1"
+                android:text="Close "
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/layoutDescription" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 

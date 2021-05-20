@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.DialogFragment
@@ -22,9 +23,9 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class EventEditDifferenceFragment(
-    val modifEvent: Event,
-    val creation: Boolean,
-    val origEvents: Event?
+    private val modifyEvent: Event,
+    private val creation: Boolean,
+    private val origEvents: Event?
 ) : DialogFragment(R.layout.fragment_event_edit_difference) {
 
     override fun onCreateView(
@@ -57,20 +58,23 @@ class EventEditDifferenceFragment(
     }
 
     private fun setupFieldContents(view: View) {
-        view.findViewById<TextView>(R.id.tvModZone).text = modifEvent.zoneName
-        view.findViewById<TextView>(R.id.tvModDesc).text = modifEvent.description
+        view.findViewById<TextView>(R.id.tvModZone).text = modifyEvent.zoneName
+        view.findViewById<TextView>(R.id.tvModDesc).text = modifyEvent.description
         view.findViewById<TextView>(R.id.tvModEndDate).text =
-            HelperFunctions.localDatetimeToString(modifEvent.endTime)
+            HelperFunctions.localDatetimeToString(modifyEvent.endTime)
         view.findViewById<TextView>(R.id.tvModStartDate).text =
-            HelperFunctions.localDatetimeToString(modifEvent.startTime)
-        if (modifEvent.isLimitedEvent()) {
+            HelperFunctions.localDatetimeToString(modifyEvent.startTime)
+        if (modifyEvent.isLimitedEvent()) {
             view.findViewById<TextView>(R.id.tvModLimited).text =
-                "Yes, " + modifEvent.getMaxNumberOfSlots().toString()+"."
+                "Yes, " + modifyEvent.getMaxNumberOfSlots().toString()+"."
         } else {
             view.findViewById<TextView>(R.id.tvModLimited).text = "No."
         }
 
-        view.findViewById<TextView>(R.id.tvModName).text = modifEvent.eventName
+        view.findViewById<TextView>(R.id.tvModName).text = modifyEvent.eventName
+        view.findViewById<Button>(R.id.btnCloseFragment).setOnClickListener{
+            dismiss()
+        }
 
         if (!creation) {
             view.findViewById<TextView>(R.id.tvOrigZone).text = origEvents!!.zoneName
@@ -81,7 +85,7 @@ class EventEditDifferenceFragment(
                 HelperFunctions.localDatetimeToString(origEvents.startTime)
             if (origEvents.isLimitedEvent()) {
                 view.findViewById<TextView>(R.id.tvModLimited).text =
-                    "Yes, " + modifEvent.getMaxNumberOfSlots().toString()+"."
+                    "Yes, " + modifyEvent.getMaxNumberOfSlots().toString()+"."
             } else {
                 view.findViewById<TextView>(R.id.tvModLimited).text = "No."
             }
