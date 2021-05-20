@@ -24,6 +24,7 @@ object FakeDatabaseMaterialRequest : MaterialRequestDatabaseInterface {
         matcher: Matcher?,
         userAccess: UserProfile?
     ): Observable<Boolean> {
+        materialList.clear()
         materialList.addAll(requests.values)
         return Observable(true)
     }
@@ -32,7 +33,8 @@ object FakeDatabaseMaterialRequest : MaterialRequestDatabaseInterface {
         request: MaterialRequest,
         userAccess: UserProfile?
     ): Observable<Boolean> {
-        requests[FakeDatabase.generateRandomKey()] = request
+        val key = FakeDatabase.generateRandomKey()
+        requests[key] = request.copy(requestId = key)
         return Observable(true)
     }
 
@@ -41,7 +43,9 @@ object FakeDatabaseMaterialRequest : MaterialRequestDatabaseInterface {
         userId: String,
         userAccess: UserProfile?
     ): Observable<Boolean> {
-        materialList.addAll(requests.values)
+        materialList.clear()
+        for (request in requests.values)
+            materialList.add(request)
         return Observable(true)
     }
 
@@ -59,7 +63,7 @@ object FakeDatabaseMaterialRequest : MaterialRequestDatabaseInterface {
         userAccess: UserProfile?
     ): Observable<Boolean> {
         materialRequest.postValue(requests[requestId])
-        return Observable(requests[requestId] != null)
+        return Observable(true)
     }
 
 }
