@@ -141,7 +141,7 @@ object GoogleMapActionHandler {
                                     ZonePreviewBottomSheetDialogFragment.EXTRA_ZONE_NAME to zoneName
                             ),
                             // TODO: avoid redrawing the routes in mapfragment
-                            addToBackStack = true
+                            //addToBackStack = true
                     )
                 },
                 onItineraryClickListener = {

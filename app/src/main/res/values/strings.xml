@@ -188,5 +188,6 @@
     <string name="no_upcoming_events">No Upcoming Events</string>
     <string name="event_name">Event Name</string>
     <string name="event_time">Event Time</string>
+    <string name="go_back_to_map_fragment">go back to map fragment</string>
 
 </resources>

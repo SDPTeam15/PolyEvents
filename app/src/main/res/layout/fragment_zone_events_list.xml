@@ -17,6 +17,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
+    <ImageButton
+        android:id="@+id/fragment_zone_events_back_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="@color/cardview_light_background"
+        android:contentDescription="@string/go_back_to_map_fragment"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toTopOf="@id/zone_events_fragment_recycler_view"
+        app:layout_constraintEnd_toStartOf="@id/fragment_zone_events_zone_name_text_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_arrow_back_24" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/zone_events_fragment_recycler_view"
         android:name="com.github.sdpteam15.poly
