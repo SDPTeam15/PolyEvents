@@ -29,7 +29,7 @@ import java.time.format.DateTimeFormatter
 // TODO: add location (Zone or zoneId)
 @IgnoreExtraProperties
 data class Event(
-    val eventId: String? = null,
+    var eventId: String? = null,
     val eventName: String? = null,
     val organizer: String? = null,
     val zoneId:String?=null,
@@ -42,7 +42,11 @@ data class Event(
     val inventory: MutableList<Item> = mutableListOf(),
     // NOTE: Set is not a supported collection in Firebase Firestore so will be stored as list in the db.
     val tags: MutableSet<String> = mutableSetOf(),
+
     var status: EventStatus?=null,
+    var adminMessage: String?=null,
+    var eventEditId:String?=null,
+
     private var limitedEvent: Boolean = false,
     private var maxNumberOfSlots: Int? = null,
     private val participants: MutableSet<String> = mutableSetOf()

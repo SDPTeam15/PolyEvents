@@ -422,11 +422,14 @@ class EventManagementActivity : AppCompatActivity() {
 
         val zoneNa = zoneName[selectedZone]
         val zoneId = mapIndexToId[selectedZone]
+        var status:Event.EventStatus? = null
 
-        val organiserId = if (!isActivityProvider) {
-            mapIndexToOrganiserId[selectedOrganiser]!!
+        var organiserId =""
+        if (!isActivityProvider) {
+            organiserId = mapIndexToOrganiserId[selectedOrganiser]!!
         } else {
-            currentDatabase.currentUser!!.uid
+            organiserId= currentDatabase.currentUser!!.uid
+            status = Event.EventStatus.PENDING
         }
 
         return Event(
@@ -439,7 +442,8 @@ class EventManagementActivity : AppCompatActivity() {
             description = desc,
             limitedEvent = limitedEvent,
             maxNumberOfSlots = nbParticipant,
-            organizer = organiserId
+            organizer = organiserId,
+            status = status
         )
     }
 

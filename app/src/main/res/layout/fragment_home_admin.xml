@@ -93,6 +93,22 @@
             tools:ignore="ButtonStyle" />
 
         <Button
+            android:id="@+id/btnRedirectEventEditManager"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
+            android:drawableTop="@drawable/ic_event"
+            android:drawableTint="@color/purple_500"
+            android:gravity="center"
+            android:paddingHorizontal="25dp"
+            android:text="@string/event_edit_btn_text"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="@color/purple_500"
+            app:strokeColor="@color/purple_500"
+            app:strokeWidth="2dp"
+            tools:ignore="ButtonStyle" />
+
+        <Button
             android:id="@+id/btnRedirectZoneManagement"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

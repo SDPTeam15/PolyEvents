@@ -63,6 +63,7 @@ object DatabaseConstant {
 
     enum class EventEditConstant(val value: String) {
         EVENT_EDIT_DOCUMENT_ID("eventEditId"),
+        EVENT_EDIT_ADMIN_MESSAGE("adminMessage"),
         EVENT_EDIT_STATUS("status");
 
         override fun toString(): String = value

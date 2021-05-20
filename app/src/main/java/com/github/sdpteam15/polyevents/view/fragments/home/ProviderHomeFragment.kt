@@ -11,6 +11,7 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.view.activity.ItemRequestActivity
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
+import com.github.sdpteam15.polyevents.view.activity.admin.EventManagementListActivity
 
 class ProviderHomeFragment : Fragment() {
     override fun onCreateView(
@@ -23,6 +24,13 @@ class ProviderHomeFragment : Fragment() {
             val intent = Intent(activity, ItemRequestActivity::class.java)
             startActivity(intent)
         }
+
+        viewRoot.findViewById<Button>(R.id.btnRedirectEventManager).setOnClickListener {
+            val intent = Intent(activity, EventManagementListActivity::class.java)
+            intent.putExtra(EventManagementListActivity.ORGANISER_LIST,"organiser")
+            startActivity(intent)
+        }
+
         MainActivity.instance!!.switchRoles(viewRoot!!.findViewById(R.id.spinner_provider), UserRole.ORGANIZER)
         return viewRoot
     }
