@@ -3,7 +3,6 @@ package com.github.sdpteam15.polyevents.view.activity.admin
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.*
@@ -17,7 +16,6 @@ import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.view.activity.activityprovider.EventManagementActivityProvider
 import java.time.LocalDateTime
 
 class EventManagementActivity : AppCompatActivity() {

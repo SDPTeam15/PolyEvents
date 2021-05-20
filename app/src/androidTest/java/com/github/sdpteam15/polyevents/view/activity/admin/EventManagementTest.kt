@@ -230,7 +230,7 @@ class EventManagementTest {
         closeKeyboard()
         onView(withId(R.id.swtLimitedEvent)).perform(click())
         onView(withId(R.id.swtLimitedEvent)).perform(click())
-        Intents.init()
+
         EventManagementActivity.dateEnd.postValue(
             EventManagementActivity.dateStart.value!!.plusDays(
                 1
@@ -469,7 +469,6 @@ class EventManagementTest {
         val endDate = EventManagementActivity.dateEnd.value!!
         onView(withId(R.id.eventManagementNameField)).perform(typeText(eventName))
         onView(withId(R.id.eventManagementDescriptionField)).perform(replaceText(eventDesc))
-        onView(withId(R.id.btnManageEvent)).perform(scrollTo())
         val obs = addAddListener()
         onView(withId(R.id.btnManageEvent)).perform(scrollTo(), click())
         obs.postValue(true)

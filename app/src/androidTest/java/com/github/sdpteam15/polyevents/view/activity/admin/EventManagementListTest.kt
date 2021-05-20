@@ -20,6 +20,7 @@ import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.database.remote.objects.EventDatabaseInterface
+import com.github.sdpteam15.polyevents.model.database.remote.objects.UserDatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.objects.ZoneDatabaseInterface
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
@@ -71,16 +72,18 @@ class EventManagementListTest {
         nbzones = zones.size
     }
 
-    @Before
-    fun setup() {
-        val intent = Intent(
-            ApplicationProvider.getApplicationContext(),
-            EventManagementListActivity::class.java
-        )
-
-        setupEventsAndZones()
-
+    private fun setupDb(){
         val mockedZoneDB = Mockito.mock(ZoneDatabaseInterface::class.java)
+        val mockeduserDb = Mockito.mock(UserDatabaseInterface::class.java)
+
+        Mockito.`when`(
+            mockeduserDb.getListAllUsers(
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenAnswer {
+            Observable(true)
+        }
 
         Mockito.`when`(
             mockedZoneDB.getAllZones(
@@ -103,6 +106,7 @@ class EventManagementListTest {
 
         Mockito.`when`(mockedDatabase.eventDatabase).thenReturn(mockedEventDB)
         Mockito.`when`(mockedDatabase.zoneDatabase).thenReturn(mockedZoneDB)
+        Mockito.`when`(mockedDatabase.userDatabase).thenReturn(mockeduserDb)
         Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
             .thenAnswer {
                 (it.arguments[2] as ObservableList<Event>).addAll(events)
@@ -116,6 +120,20 @@ class EventManagementListTest {
             }
 
         Database.currentDatabase = mockedDatabase
+
+    }
+
+    @Before
+    fun setup() {
+        val intent = Intent(
+            ApplicationProvider.getApplicationContext(),
+            EventManagementListActivity::class.java
+        )
+
+        setupEventsAndZones()
+        setupDb()
+
+
         scenario = ActivityScenario.launch(intent)
     }
 
@@ -128,7 +146,7 @@ class EventManagementListTest {
     @Test
     fun clickOnBtnCreateZoneLaunchCorrectActivityWithEmptyFields() {
         Intents.init()
-        Espresso.onView(ViewMatchers.withId(R.id.btnNewEvent)).perform(ViewActions.click())
+        Espresso.onView(ViewMatchers.withId(R.id.btnNewEvent)).perform(click())
         Intents.intended(IntentMatchers.hasComponent(EventManagementActivity::class.java.name))
         Intents.release()
     }
