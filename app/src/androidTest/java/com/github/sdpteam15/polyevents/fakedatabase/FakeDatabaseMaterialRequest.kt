@@ -36,4 +36,30 @@ object FakeDatabaseMaterialRequest : MaterialRequestDatabaseInterface {
         return Observable(true)
     }
 
+    override fun getMaterialRequestListByUser(
+        materialList: ObservableList<MaterialRequest>,
+        userId: String,
+        userAccess: UserProfile?
+    ): Observable<Boolean> {
+        materialList.addAll(requests.values)
+        return Observable(true)
+    }
+
+    override fun deleteMaterialRequest(
+        materialRequestId: String,
+        userAccess: UserProfile?
+    ): Observable<Boolean> {
+        requests.remove(materialRequestId)
+        return Observable(true)
+    }
+
+    override fun getMaterialRequestById(
+        materialRequest: Observable<MaterialRequest>,
+        requestId: String,
+        userAccess: UserProfile?
+    ): Observable<Boolean> {
+        materialRequest.postValue(requests[requestId])
+        return Observable(requests[requestId] != null)
+    }
+
 }
