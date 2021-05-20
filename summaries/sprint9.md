@@ -24,6 +24,11 @@ My time estimates were good.
 Next week, I will work on the local cash for all route element.
 
 ## Stephane
+This week, I implemented the bottom dialog fragment that is displayed on the map when you click on a zone to preview that zone's details as well as its upcoming events.
+
+My time estimates were fairly good for this week's tasks. I've added some extra tasks to do if I have the time, like sorting the events in their starting time. But I ended up not doing them, instead I spent the rest of the time fixing a bug and adjusting according to the reviews I had on my PR.
+
+Next week, I will implement the functionality to follow some events as well as notifications on events if I have the time.
 
 ## Overall team
 
