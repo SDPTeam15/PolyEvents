@@ -6,6 +6,9 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.contrib.RecyclerViewActions
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.Intents.intended
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.RecyclerViewItemCountAssertion
@@ -20,6 +23,7 @@ import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.activity.ItemRequestActivity
 import com.github.sdpteam15.polyevents.view.adapter.EventItemAdapter
 import com.github.sdpteam15.polyevents.view.fragments.home.ProviderHomeFragment
 import org.hamcrest.CoreMatchers.anything
@@ -27,9 +31,9 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
-import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import java.time.LocalDateTime
+import kotlin.test.assertEquals
 
 class MyItemRequestsActivityTest {
 
@@ -53,7 +57,7 @@ class MyItemRequestsActivityTest {
         Database.currentDatabase = FirestoreDatabaseProvider
     }
 
-    fun setupItemRequests(){
+    fun setupItemRequests() {
         availableItems = mutableMapOf()
         availableItems[Item("1", "Bananas", "Fruit")] = 30
         availableItems[Item("2", "Kiwis", "Fruit")] = 10
@@ -97,41 +101,41 @@ class MyItemRequestsActivityTest {
                 null
             ),
             MaterialRequest(
-            "r1",
-            mutableMapOf(
-                Pair("1", 5)
+                "r1",
+                mutableMapOf(
+                    Pair("1", 5)
+                ),
+                LocalDateTime.of(2021, 3, 24, 12, 23),
+                Database.currentDatabase.currentUser!!.uid,
+                MaterialRequest.Status.ACCEPTED,
+                null
             ),
-            LocalDateTime.of(2021, 3, 24, 12, 23),
-            Database.currentDatabase.currentUser!!.uid,
-            MaterialRequest.Status.ACCEPTED,
-            null
-        ),
-        MaterialRequest(
-            "r2",
-            mutableMapOf(
-                Pair("3", 10),
-                Pair("1", 5),
-                Pair("6", 4)
+            MaterialRequest(
+                "r2",
+                mutableMapOf(
+                    Pair("3", 10),
+                    Pair("1", 5),
+                    Pair("6", 4)
+                ),
+                LocalDateTime.of(2021, 3, 29, 1, 6),
+                Database.currentDatabase.currentUser!!.uid,
+                MaterialRequest.Status.ACCEPTED,
+                null
             ),
-            LocalDateTime.of(2021, 3, 29, 1, 6),
-            Database.currentDatabase.currentUser!!.uid,
-            MaterialRequest.Status.ACCEPTED,
-            null
-        ),
-        MaterialRequest(
-            "r3",
-            mutableMapOf(
-                Pair("3", 10)
-            ),
-            LocalDateTime.of(2021, 3, 29, 1, 6),
-            Database.currentDatabase.currentUser!!.uid,
-            MaterialRequest.Status.REFUSED,
-            null
-        )
+            MaterialRequest(
+                "r3",
+                mutableMapOf(
+                    Pair("3", 10)
+                ),
+                LocalDateTime.of(2021, 3, 29, 1, 6),
+                Database.currentDatabase.currentUser!!.uid,
+                MaterialRequest.Status.REFUSED,
+                null
+            )
         )
 
-        for(r in allRequests){
-            when(r.status){
+        for (r in allRequests) {
+            when (r.status) {
                 MaterialRequest.Status.ACCEPTED -> accepted++
                 MaterialRequest.Status.REFUSED -> refused++
                 MaterialRequest.Status.PENDING -> pending++
@@ -158,80 +162,133 @@ class MyItemRequestsActivityTest {
         Mockito.`when`(mockedDatabase.materialRequestDatabase).thenReturn(mockedMaterialRequestDB)
         Mockito.`when`(mockedDatabase.itemDatabase).thenReturn(mockedItemDB)
 
-        Mockito.`when`(mockedMaterialRequestDB.getMaterialRequestListByUser(anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
+        setupItemRequests()
+
+        Mockito.`when`(
+            mockedMaterialRequestDB.getMaterialRequestListByUser(
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenAnswer {
             (it.arguments[0] as ObservableList<MaterialRequest>).addAll(allRequests)
             Observable(true, this)
         }
 
-        Mockito.`when`(mockedMaterialRequestDB.deleteMaterialRequest(anyOrNull(), anyOrNull())).thenAnswer {
-            allRequests.remove(it)
-            pending--
-            Observable(true, this)
-        }
-
+        Mockito.`when`(mockedMaterialRequestDB.deleteMaterialRequest(anyOrNull(), anyOrNull()))
+            .thenAnswer {
+                allRequests.remove(it)
+                pending--
+                Observable(true, this)
+            }
+        Mockito.`when`(
+            mockedMaterialRequestDB.getMaterialRequestById(
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull()
+            )
+        )
+            .thenAnswer {
+                (it.arguments[0] as Observable<MaterialRequest>).postValue(allRequests.first { it2 -> it2.requestId == it.arguments[1] })
+                Observable(true, this)
+            }
         Mockito.`when`(mockedItemDB.getItemsList(anyOrNull(), anyOrNull())).thenAnswer {
             (it.arguments[0] as ObservableList<Triple<Item, Int, Int>>).addAll(availableItemsList)
             Observable(true, this)
         }
+        Mockito.`when`(mockedItemDB.getAvailableItems(anyOrNull(), anyOrNull())).thenAnswer {
+            (it.arguments[0] as ObservableList<Triple<Item, Int, Int>>).addAll(availableItemsList)
+            Observable(true, this)
+        }
 
-        setupItemRequests()
+
         itemsAdminActivity = ActivityScenario.launch(intent)
         Thread.sleep(500)
     }
 
     @Test
-    fun sizeOfListOk(){
+    fun sizeOfListOk() {
         Espresso.onView(ViewMatchers.withId(R.id.id_recycler_my_item_requests))
             .check(RecyclerViewItemCountAssertion(pending))
-        Espresso.onView(ViewMatchers.withId(R.id.id_change_request_status_left)).perform(ViewActions.click())
+        Espresso.onView(ViewMatchers.withId(R.id.id_change_request_status_left))
+            .perform(ViewActions.click())
         Espresso.onView(ViewMatchers.withId(R.id.id_recycler_my_item_requests))
             .check(RecyclerViewItemCountAssertion(refused))
-        Espresso.onView(ViewMatchers.withId(R.id.id_change_request_status_left)).perform(ViewActions.click())
+        Espresso.onView(ViewMatchers.withId(R.id.id_change_request_status_left))
+            .perform(ViewActions.click())
         Espresso.onView(ViewMatchers.withId(R.id.id_recycler_my_item_requests))
             .check(RecyclerViewItemCountAssertion(accepted))
-        Espresso.onView(ViewMatchers.withId(R.id.id_change_request_status_left)).perform(ViewActions.click())
+        Espresso.onView(ViewMatchers.withId(R.id.id_change_request_status_left))
+            .perform(ViewActions.click())
         Espresso.onView(ViewMatchers.withId(R.id.id_recycler_my_item_requests))
             .check(RecyclerViewItemCountAssertion(pending))
-        Espresso.onView(ViewMatchers.withId(R.id.id_change_request_status_right)).perform(ViewActions.click())
+        Espresso.onView(ViewMatchers.withId(R.id.id_change_request_status_right))
+            .perform(ViewActions.click())
         Espresso.onView(ViewMatchers.withId(R.id.id_recycler_my_item_requests))
             .check(RecyclerViewItemCountAssertion(accepted))
-        Espresso.onView(ViewMatchers.withId(R.id.id_change_request_status_right)).perform(ViewActions.click())
+        Espresso.onView(ViewMatchers.withId(R.id.id_change_request_status_right))
+            .perform(ViewActions.click())
         Espresso.onView(ViewMatchers.withId(R.id.id_recycler_my_item_requests))
             .check(RecyclerViewItemCountAssertion(refused))
-        Espresso.onView(ViewMatchers.withId(R.id.id_change_request_status_right)).perform(ViewActions.click())
+        Espresso.onView(ViewMatchers.withId(R.id.id_change_request_status_right))
+            .perform(ViewActions.click())
         Espresso.onView(ViewMatchers.withId(R.id.id_recycler_my_item_requests))
             .check(RecyclerViewItemCountAssertion(pending))
 
-        Espresso.onView(ViewMatchers.withId(R.id.id_title_item_request)).perform(ViewActions.click())
+        Espresso.onView(ViewMatchers.withId(R.id.id_title_item_request))
+            .perform(ViewActions.click())
         Espresso.onData(anything()).atPosition(0).perform(ViewActions.click())
         Espresso.onView(ViewMatchers.withId(R.id.id_recycler_my_item_requests))
             .check(RecyclerViewItemCountAssertion(pending))
 
-        Espresso.onView(ViewMatchers.withId(R.id.id_title_item_request)).perform(ViewActions.click())
+        Espresso.onView(ViewMatchers.withId(R.id.id_title_item_request))
+            .perform(ViewActions.click())
         Espresso.onData(anything()).atPosition(1).perform(ViewActions.click())
         Espresso.onView(ViewMatchers.withId(R.id.id_recycler_my_item_requests))
             .check(RecyclerViewItemCountAssertion(accepted))
 
-        Espresso.onView(ViewMatchers.withId(R.id.id_title_item_request)).perform(ViewActions.click())
+        Espresso.onView(ViewMatchers.withId(R.id.id_title_item_request))
+            .perform(ViewActions.click())
         Espresso.onData(anything()).atPosition(2).perform(ViewActions.click())
         Espresso.onView(ViewMatchers.withId(R.id.id_recycler_my_item_requests))
             .check(RecyclerViewItemCountAssertion(refused))
     }
 
     @Test
-    fun cancelTest(){
-        Espresso.onView(ViewMatchers.withId(R.id.id_title_item_request)).perform(ViewActions.click())
+    fun cancelTest() {
+        Espresso.onView(ViewMatchers.withId(R.id.id_title_item_request))
+            .perform(ViewActions.click())
         Espresso.onData(anything()).atPosition(0).perform(ViewActions.click())
-        Thread.sleep(
-            500
-        )
+
         Espresso.onView(ViewMatchers.withId(R.id.id_recycler_my_item_requests)).perform(
             RecyclerViewActions.actionOnItemAtPosition<EventItemAdapter.ItemViewHolder>(
                 0, TestHelper.clickChildViewWithId(R.id.id_delete_request)
             )
         )
-        Thread.sleep(1000)
         Espresso.onView(ViewMatchers.withId(R.id.id_recycler_my_item_requests))
             .check(RecyclerViewItemCountAssertion(pending))
+    }
+
+    @Test
+    fun modifyTest() {
+
+        Espresso.onView(ViewMatchers.withId(R.id.id_title_item_request))
+            .perform(ViewActions.click())
+        Espresso.onData(anything()).atPosition(0).perform(ViewActions.click())
+        Intents.init()
+        Espresso.onView(ViewMatchers.withId(R.id.id_recycler_my_item_requests)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<EventItemAdapter.ItemViewHolder>(
+                0, TestHelper.clickChildViewWithId(R.id.id_modify_request)
+            )
+        )
+        intended(hasComponent(ItemRequestActivity::class.java.name))
+        assertEquals(
+            allRequests[0].requestId,
+            Intents.getIntents().first { it.hasExtra(EXTRA_ITEM_REQUEST_ID) }
+                .getStringExtra(EXTRA_ITEM_REQUEST_ID)
+        )
+        Intents.release()
+
+
     }
 }
