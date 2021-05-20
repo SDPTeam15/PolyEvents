@@ -8,6 +8,11 @@ my time estimates were really good.
 Next week, I will work on the ability for the Activity provider to propose event creation and modification to the admin.
 
 ## Florian 
+This week, I added the functionnality for an admin to accept or refuse a material request from an activity provider, and also to an activity provider to modify a pending item request.
+
+My time estimates were great.
+
+Next week, I will work on staff item deliveries, by adding the abitily to take item requests tasks and confirm the delivery.
 
 ## Mathieu
 
