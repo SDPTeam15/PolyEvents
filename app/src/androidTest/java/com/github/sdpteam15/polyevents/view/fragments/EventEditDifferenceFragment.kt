@@ -26,9 +26,11 @@ import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.anyOrNull
 import java.time.LocalDateTime
+import kotlin.test.assertEquals
 
 class EventEditDifferenceFragment {
     private val mockedDatabase = HelperTestFunction.defaultMockDatabase()
+    private val mockedDatabaseEvent = Mockito.mock(EventDatabaseInterface::class.java)
 
     private val event1 =
         Event(
@@ -41,7 +43,14 @@ class EventEditDifferenceFragment {
             description = "description"
         )
     private val event2 =
-        Event(eventName = "Test 2", eventId = "Id2", zoneId = " zid1", zoneName = "zoneName1")
+        Event(
+            eventName = "Test 2",
+            eventId = "Id2",
+            zoneId = " zid1",
+            zoneName = "zoneName1",
+            limitedEvent = true,
+            maxNumberOfSlots = 10
+        )
     private val event3 =
         Event(eventName = "Test 3", eventId = "Id3", zoneId = " zid2", zoneName = "zoneName2")
     private val event4 =
@@ -56,12 +65,22 @@ class EventEditDifferenceFragment {
             zoneName = "zoneName4",
             startTime = LocalDateTime.now(),
             endTime = LocalDateTime.now(),
-            eventEditId = "EID1", status = Event.EventStatus.PENDING
+            eventEditId = "EID1",
+            status = Event.EventStatus.PENDING,
+            limitedEvent = true,
+            maxNumberOfSlots = 10
         )
     private val eventEdit2 =
         Event(
-            eventName = "Test 2", eventId = null, zoneId = " zid1", zoneName = "zoneName1",
-            eventEditId = "EID2", status = Event.EventStatus.PENDING,description = "asd"
+            eventName = "Test 2",
+            eventId = null,
+            zoneId = " zid1",
+            zoneName = "zoneName1",
+            eventEditId = "EID2",
+            status = Event.EventStatus.PENDING,
+            description = "asd",
+            limitedEvent = true,
+            maxNumberOfSlots = 10
         )
     private val eventEdit3 =
         Event(
@@ -87,7 +106,6 @@ class EventEditDifferenceFragment {
     fun setup() {
         setupEventsAndZones()
 
-        val mockedDatabaseEvent = Mockito.mock(EventDatabaseInterface::class.java)
         Mockito.`when`(mockedDatabase.eventDatabase).thenReturn(mockedDatabaseEvent)
 
         Mockito.`when`(
@@ -222,5 +240,97 @@ class EventEditDifferenceFragment {
         )
         onView(withId(R.id.tvModZone)).check(matches(withText(eventEdit2.zoneName!!)))
         onView(withId(R.id.btnCloseFragment)).perform(click())
+    }
+
+    @Test
+    fun canAcceptARequest() {
+        Thread.sleep(2000)
+
+        Mockito.`when`(mockedDatabaseEvent.updateEventEdit(anyOrNull(), anyOrNull())).thenAnswer {
+            val eventEdit = (it.arguments[0] as Event)
+            assertEquals(eventEdit.status, Event.EventStatus.ACCEPTED)
+            Observable(true)
+        }
+        Mockito.`when`(mockedDatabaseEvent.updateEvent(anyOrNull(), anyOrNull())).thenAnswer {
+            assertEquals(eventEdit1, it.arguments[0] as Event)
+            Observable(true)
+        }
+
+        Mockito.`when`(mockedDatabaseEvent.createEvent(anyOrNull(), anyOrNull())).thenAnswer {
+            assertEquals(eventEdit2, it.arguments[0] as Event)
+            Observable(true)
+        }
+
+        onView(withId(R.id.id_recycler_event_edits)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<EventEditAdminAdapter.ItemViewHolder>(
+                0, TestHelper.clickChildViewWithId(R.id.id_edit_accept)
+            )
+        )
+
+        onView(withId(R.id.id_recycler_event_edits)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<EventEditAdminAdapter.ItemViewHolder>(
+                1, TestHelper.clickChildViewWithId(R.id.id_edit_accept)
+            )
+        )
+    }
+
+    @Test
+    fun canRefuseARequest() {
+        Thread.sleep(2000)
+
+        Mockito.`when`(mockedDatabaseEvent.updateEventEdit(anyOrNull(), anyOrNull())).thenAnswer {
+            val eventEdit = (it.arguments[0] as Event)
+            assertEquals(eventEdit.status, Event.EventStatus.REFUSED)
+            Observable(true)
+        }
+
+        onView(withId(R.id.id_recycler_event_edits)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<EventEditAdminAdapter.ItemViewHolder>(
+                0, TestHelper.clickChildViewWithId(R.id.id_edit_refuse)
+            )
+        )
+        onView(withId(R.id.id_btn_confirm_refuse_request)).perform(
+            click()
+        )
+    }
+
+    @Test
+    fun canRefuseARequestAndNotChangeTheRecycler() {
+        Thread.sleep(2000)
+
+        Mockito.`when`(mockedDatabaseEvent.updateEventEdit(anyOrNull(), anyOrNull())).thenAnswer {
+            val eventEdit = (it.arguments[0] as Event)
+            assertEquals(eventEdit.status, Event.EventStatus.REFUSED)
+            Observable(false)
+        }
+
+        onView(withId(R.id.id_recycler_event_edits)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<EventEditAdminAdapter.ItemViewHolder>(
+                0, TestHelper.clickChildViewWithId(R.id.id_edit_refuse)
+            )
+        )
+        onView(withId(R.id.id_btn_confirm_refuse_request)).perform(
+            click()
+        )
+
+
+        onView(withId(R.id.id_recycler_event_edits)).check(matches(isDisplayed()))
+    }
+    @Test
+    fun canAccceptARequestAndNotChangeTheRecycler() {
+        Thread.sleep(2000)
+        Mockito.`when`(mockedDatabaseEvent.updateEventEdit(anyOrNull(), anyOrNull())).thenAnswer {
+            val eventEdit = (it.arguments[0] as Event)
+            assertEquals(eventEdit.status, Event.EventStatus.ACCEPTED)
+            Observable(false)
+        }
+
+        onView(withId(R.id.id_recycler_event_edits)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<EventEditAdminAdapter.ItemViewHolder>(
+                0, TestHelper.clickChildViewWithId(R.id.id_edit_accept)
+            )
+        )
+
+        onView(withId(R.id.id_recycler_event_edits)).check(matches(isDisplayed()))
     }
 }

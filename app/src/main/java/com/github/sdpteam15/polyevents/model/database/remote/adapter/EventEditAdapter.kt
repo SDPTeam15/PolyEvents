@@ -10,6 +10,7 @@ object EventEditAdapter : AdapterInterface<Event> {
         map[EVENT_EDIT_STATUS.value] = element.status!!.ordinal
         map[DatabaseConstant.EventEditConstant.EVENT_EDIT_ADMIN_MESSAGE.value] = element.adminMessage
         map[DatabaseConstant.EventConstant.EVENT_DOCUMENT_ID.value] = element.eventId
+        map[DatabaseConstant.EventConstant.EVENT_DOCUMENT_ID.value] =element.eventId
         return map
     }
 

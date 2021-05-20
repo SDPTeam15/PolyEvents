@@ -107,18 +107,22 @@ class EventEditManagementActivity : AppCompatActivity() {
             ).observeOnce(this) {
                 acceptEventEditCallback(it.value, event)
             }.then.observeOnce(this) {
-                if (event.eventId == null) {
-                    Database.currentDatabase.eventDatabase!!.createEvent(
-                        event
-                    ).observeOnce(this) {
-                        acceptEventEditCallback(it.value, event)
+                if (it.value) {
+                    if (event.eventId == null) {
+                        Database.currentDatabase.eventDatabase!!.createEvent(
+                            event
+                        ).observeOnce(this) {
+                            acceptEventEditCallback(it.value, event)
+                        }
+                    } else {
+                        Database.currentDatabase.eventDatabase!!.updateEvent(
+                            event
+                        ).observeOnce(this) {
+                            acceptEventEditCallback(it.value, event)
+                        }
                     }
-                } else {
-                    Database.currentDatabase.eventDatabase!!.updateEvent(
-                        event
-                    ).observeOnce(this) {
-                        acceptEventEditCallback(it.value, event)
-                    }
+                }else{
+                    HelperFunctions.showToast("The activity edit cannot be requested", this)
                 }
             }
 
@@ -161,7 +165,6 @@ class EventEditManagementActivity : AppCompatActivity() {
         val confirmButton = view.findViewById<Button>(R.id.id_btn_confirm_refuse_request)
         val message = view.findViewById<TextView>(R.id.id_txt_refusal_explanation)
 
-
         //set focus on the popup
         popupWindow.isFocusable = true
 
@@ -169,6 +172,7 @@ class EventEditManagementActivity : AppCompatActivity() {
         confirmButton.setOnClickListener {
             event.status = Event.EventStatus.REFUSED
             event.adminMessage = message.text.toString()
+
             Database.currentDatabase.eventDatabase!!.updateEventEdit(
                 event
             ).observeOnce(this) {
@@ -185,7 +189,6 @@ class EventEditManagementActivity : AppCompatActivity() {
             // Dismiss the popup window
             popupWindow.dismiss()
         }
-
 
         // Finally, show the popup window on app
         TransitionManager.beginDelayedTransition(this.recyclerView)
