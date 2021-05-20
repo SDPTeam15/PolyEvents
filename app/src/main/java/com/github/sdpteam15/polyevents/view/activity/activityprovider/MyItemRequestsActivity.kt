@@ -42,9 +42,10 @@ class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLi
     private var userName = Database.currentDatabase.currentUser!!.name
     private val itemNames = ObservableMap<String, String>()
     private val items = ObservableList<Triple<Item, Int, Int>>()
+    private val statusNames = ArrayList<String>()
 
     /**
-     * Select previous status page
+     * Select next status page
      */
     private fun nextStatus() {
         currentStatus = when (currentStatus) {
@@ -56,7 +57,7 @@ class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLi
     }
 
     /**
-     * Select next status page
+     * Select previous status page
      */
     private fun previousStatus() {
         currentStatus = when (currentStatus) {
@@ -75,7 +76,6 @@ class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLi
         recyclerView.adapter!!.notifyDataSetChanged()
     }
 
-    private val statusNames = ArrayList<String>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_my_item_requests)
