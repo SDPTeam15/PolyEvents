@@ -1,6 +1,11 @@
 # Summary for week 9
 
 ## Alessio
+This week, I implemented the ability for the admin to list all the events group by zone so that the admin can easily update or delete events, I also made some refactoring.
+
+my time estimates were really good. 
+
+Next week, I will work on the ability for the Activity provider to propose event creation and modification to the admin.
 
 ## Florian 
 
