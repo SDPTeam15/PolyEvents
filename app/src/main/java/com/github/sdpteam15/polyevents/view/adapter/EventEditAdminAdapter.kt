@@ -56,7 +56,7 @@ class EventEditAdminAdapter(
 
         private val title = view.findViewById<TextView>(R.id.id_edit_title)
         private val eventName = view.findViewById<TextView>(R.id.id_edit_name)
-        private val btnSee = view.findViewById<ImageButton>(R.id.id_edit_accept)
+        private val btnSee = view.findViewById<ImageButton>(R.id.id_edit_see)
         private val btnAccept = view.findViewById<ImageButton>(R.id.id_edit_accept)
         private val btnRefuse = view.findViewById<ImageButton>(R.id.id_edit_refuse)
         private val status = view.findViewById<TextView>(R.id.id_edit_status)
@@ -67,8 +67,8 @@ class EventEditAdminAdapter(
         @SuppressLint("SetTextI18n")
         fun bind(event: Event) {
             title.text= when(event.eventId){
-                null -> "Event creation"
-                else -> "Event modification"
+                null -> "Creation"
+                else -> "Modification"
             }
 
             eventName.text = event.eventName
@@ -85,9 +85,9 @@ class EventEditAdminAdapter(
 
             btnSee.setOnClickListener{
                 if (event.eventId!=null){
-                    onSeeListener(event, true, origEvent[event.eventId])
+                    onSeeListener(event, false, origEvent[event.eventId])
                 }else{
-                    onSeeListener(event, false, null)
+                    onSeeListener(event, true, null)
                 }
             }
             btnRefuse.setOnClickListener { onRefuseListener(event) }

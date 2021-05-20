@@ -16,6 +16,7 @@ object EventEditAdapter : AdapterInterface<Event> {
     override fun fromDocument(document: MutableMap<String, Any?>, id: String): Event {
         val event = EventAdapter.fromDocument(document, id)
         event.eventId = document[DatabaseConstant.EventConstant.EVENT_DOCUMENT_ID.value] as String?
+        event.eventEditId=id
 
         event.status = Event.EventStatus.fromOrdinal(
             ((document[EVENT_EDIT_STATUS.value] ?: 0) as Long).toInt()

@@ -84,7 +84,7 @@ class EventEditManagementActivity : AppCompatActivity() {
     }
 
     private fun acceptEventEditCallback(success: Boolean, event: Event) {
-        if (success) {
+        if (!success) {
             HelperFunctions.showToast("Failed to accept the request", this)
         } else {
             eventEdits.set(
@@ -97,6 +97,7 @@ class EventEditManagementActivity : AppCompatActivity() {
 
     private val acceptEventEditRequest = { event: Event ->
         if (event.status == Event.EventStatus.PENDING) {
+            println(event)
             event.status = Event.EventStatus.ACCEPTED
 
             Database.currentDatabase.eventDatabase!!.updateEventEdit(

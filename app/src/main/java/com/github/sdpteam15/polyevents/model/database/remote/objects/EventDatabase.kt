@@ -53,7 +53,7 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
         db.addEntity(event, EVENT_EDIT_COLLECTION)
 
     override fun updateEventEdit(event: Event, userAccess: UserProfile?): Observable<Boolean> =
-        db.setEntity(event, event.eventId!!, EVENT_EDIT_COLLECTION)
+        db.setEntity(event, event.eventEditId!!, EVENT_EDIT_COLLECTION)
 
     override fun getEventEditFromId(
         id: String,
