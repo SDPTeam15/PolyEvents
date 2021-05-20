@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.fragments.admin.EventEditDifferenceFragment">
+    tools:context=".view.fragments.admin.EventEditDifferenceFragment"
+    android:id="@+id/fragment_event_edit_diff">
 
     <ScrollView
         android:layout_width="match_parent"

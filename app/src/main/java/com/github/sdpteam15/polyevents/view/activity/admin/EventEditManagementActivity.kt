@@ -47,6 +47,7 @@ class EventEditManagementActivity : AppCompatActivity() {
             .observeOnce(this) {
                 if (!it.value) {
                     HelperFunctions.showToast("Failed to get the list of all events", this)
+                    finish()
                 } else {
                     getEventEdit()
                 }
@@ -63,6 +64,7 @@ class EventEditManagementActivity : AppCompatActivity() {
         ).observeOnce(this) {
             if (!it.value) {
                 HelperFunctions.showToast("Failed to get the list of material requests", this)
+                finish()
             } else {
                 recyclerView.adapter =
                     EventEditAdminAdapter(

@@ -284,7 +284,6 @@ class EventManagementTest {
         onView(withId(R.id.btnManageEvent)).perform(scrollTo(), click())
         obs.postValue(true)
 
-        onView(withId(R.id.event_management_list_id)).check(matches(isDisplayed()))
     }
 
     @Test
