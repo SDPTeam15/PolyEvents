@@ -184,4 +184,18 @@
     <string name="refused_requests">Refused requests</string>
     <string name="reason_of_refusal">Reason of refusal:</string>
 
+    <!--DisplayZoneEventsFragment-->
+    <string name="see_events">See events</string>
+    <string name="show_itinerary">Show itinerary</string>
+    <string name="zone_name">Zone name</string>
+    <string name="zone_description">Zone description</string>
+    <string name="current_event">Current Event</string>
+    <string name="current_event_name">Current Event Name</string>
+    <string name="event_description">Event description</string>
+    <string name="upcoming_events">Upcoming Events</string>
+    <string name="no_upcoming_events">No Upcoming Events</string>
+    <string name="event_name">Event Name</string>
+    <string name="event_time">Event Time</string>
+    <string name="go_back_to_map_fragment">go back to map fragment</string>
+
 </resources>

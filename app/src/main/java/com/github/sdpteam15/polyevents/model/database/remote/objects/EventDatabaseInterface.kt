@@ -149,4 +149,19 @@ interface EventDatabaseInterface {
         userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
+    /**
+     * Get events for a certain zone
+     * @param zoneId the id of the zone
+     * @param limit The maximum number of events we want to retrieve
+     * @param events The list of events that will be set when the DB returns the information
+     * @param userAccess the user profile to use its permission
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun getEventsByZoneId(
+        zoneId: String,
+        limit: Long? = null,
+        events: ObservableList<Event>,
+        userAccess: UserProfile? = currentProfile
+    ): Observable<Boolean>
+
 }

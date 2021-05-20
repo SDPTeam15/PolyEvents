@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Bundle
 import android.widget.Toast
 import androidx.arch.core.executor.ArchTaskExecutor
 import androidx.core.app.ActivityCompat
@@ -12,6 +13,7 @@ import androidx.core.app.ActivityCompat.RequestPermissionsRequestCodeValidator
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.commit
 import androidx.room.TypeConverter
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.observable.Observable
@@ -27,16 +29,55 @@ object HelperFunctions {
      * Method that allows to switch the fragment in an event
      * @param newFrag: the fragment we want to display (should be in the fragments app from Mainevent otherwise nothing happen)
      * @param activity: the activity in which a fragment is instantiate
+     * @param addToBackStack if set, add the fragment to the fragment backstack, so that the user
+     * can go back to the current fragment on back button
      */
     fun changeFragment(
-            activity: FragmentActivity?,
-            newFrag: Fragment?,
-            idFrameLayout: Int = R.id.fl_wrapper
+        activity: FragmentActivity?,
+        newFrag: Fragment?,
+        idFrameLayout: Int = R.id.fl_wrapper,
+        addToBackStack: Boolean = false
     ) {
         if (newFrag != null) {
-            activity?.supportFragmentManager?.beginTransaction()?.apply {
+            // Create new fragment
+            val fragmentManager = activity?.supportFragmentManager
+            fragmentManager?.beginTransaction()
+            fragmentManager?.commit {
+                setReorderingAllowed(true)
                 replace(idFrameLayout, newFrag)
-                commit()
+                if (addToBackStack) {
+                    addToBackStack(newFrag::class.java.simpleName)
+                }
+            }
+        }
+    }
+
+    /**
+     * Change Fragment while passing a bundle
+     * @param newFrag: the fragment we want to display (should be in the fragments app from Mainevent otherwise nothing happen)
+     * @param activity: the activity in which a fragment is instantiate
+     * @param idFrameLayout the id of the fragment container in which the fragment will be instantiated
+     * @param bundle the bundle to pass to the new fragment
+     * @param addToBackStack if set, add the fragment to the fragment backstack, so that the user
+     * can go back to the current fragment on back button
+     */
+    fun changeFragmentWithBundle(
+        activity: FragmentActivity?,
+        newFrag: Class<out Fragment>?,
+        idFrameLayout: Int = R.id.fl_wrapper,
+        bundle: Bundle? = null,
+        addToBackStack: Boolean = false
+    ) {
+        if (newFrag != null) {
+            // Create new fragment
+            val fragmentManager = activity?.supportFragmentManager
+            fragmentManager?.beginTransaction()
+            fragmentManager?.commit {
+                setReorderingAllowed(true)
+                replace(idFrameLayout, newFrag, bundle)
+                if (addToBackStack) {
+                    addToBackStack(newFrag::class.java.simpleName)
+                }
             }
         }
     }

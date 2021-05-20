@@ -48,6 +48,22 @@ object RouteMapHelper {
     var route: MutableList<Polyline> = mutableListOf()
 
     /**
+     * Clear all route variables (Does not work yet!)
+     */
+    /*fun resetAll() {
+        nodes.clear()
+        edges.clear()
+        zones.clear()
+
+        for ((key, value) in lineToEdge) {
+            value.remove()
+        }
+
+        lineToEdge.clear()
+        idToEdge.clear()
+    }*/
+
+    /**
      * Add a line to dataBase
      * @param start pair containing the Position of the first point and eventually an attached object
      * @param end pair containing the Position of the second point and eventually an attached object
