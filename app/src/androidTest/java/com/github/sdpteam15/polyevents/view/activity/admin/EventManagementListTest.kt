@@ -217,7 +217,7 @@ class EventManagementListTest {
         )
         Intents.release()
     }
-/*
+
     @Test
     fun clickOnNoDeleteBtnDoesNothing() {
         Espresso.onView(ViewMatchers.withId(R.id.recycler_events_list_admin)).perform(
@@ -233,6 +233,7 @@ class EventManagementListTest {
         Espresso.onView(ViewMatchers.withText("No")).inRoot(isDialog())
             .check(ViewAssertions.matches(isDisplayed()))
         Espresso.onView(ViewMatchers.withText("No")).inRoot(isDialog()).perform(click())
+        Thread.sleep(1000)
         Espresso.onView(ViewMatchers.withId(R.id.recycler_events_list_admin))
             .check(RecyclerViewItemCountAssertion(nbzones + 2))
     }
@@ -256,6 +257,7 @@ class EventManagementListTest {
         Espresso.onView(ViewMatchers.withText("Yes")).inRoot(isDialog())
             .check(ViewAssertions.matches(isDisplayed()))
         Espresso.onView(ViewMatchers.withText("Yes")).inRoot(isDialog()).perform(click())
+        Thread.sleep(1000)
 
         Espresso.onView(ViewMatchers.withId(R.id.recycler_events_list_admin)).check(ViewAssertions.matches(isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.recycler_events_list_admin))
@@ -281,10 +283,11 @@ class EventManagementListTest {
         Espresso.onView(ViewMatchers.withText("Yes")).inRoot(isDialog())
             .check(ViewAssertions.matches(isDisplayed()))
         Espresso.onView(ViewMatchers.withText("Yes")).inRoot(isDialog()).perform(click())
+        Thread.sleep(1000)
 
         Espresso.onView(ViewMatchers.withId(R.id.recycler_events_list_admin)).check(ViewAssertions.matches(isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.recycler_events_list_admin))
             .check(RecyclerViewItemCountAssertion(nbzones + 1))
     }
-*/
+
 }
