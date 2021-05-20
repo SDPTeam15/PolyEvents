@@ -28,9 +28,12 @@ object GoogleMapActionHandler {
      * @param polygon polygon clicked
      */
     fun onPolygonClickHandler(
-        mode: MapsFragmentMod,
-        context: Context,
-        polygon: Polygon
+            mode: MapsFragmentMod,
+            context: Context,
+            polygon: Polygon,
+            activity: FragmentActivity,
+            lifecycle: LifecycleOwner,
+            locationActivated: Boolean
     ) {
         if (mode == MapsFragmentMod.EditZone) {
             if (ZoneAreaMapHelper.editMode && ZoneAreaMapHelper.canEdit(polygon.tag.toString())) {
@@ -40,8 +43,16 @@ object GoogleMapActionHandler {
             }
         } else {
             setSelectedZoneFromArea(polygon.tag.toString())
-            //Shows the info window of the marker assigned to the area
-            ZoneAreaMapHelper.areasPoints.get(polygon.tag)!!.second.showInfoWindow()
+            // Get the marker associated to the selected zone
+            val zoneMarker = ZoneAreaMapHelper.areasPoints.get(polygon.tag)!!.second
+            // Display the bottom dialog previewing the selected zone
+            displayZoneDetailsBottomDialog(
+                    zoneId = zoneMarker.tag.toString(),
+                    zoneName = zoneMarker.title,
+                    activity = activity,
+                    lifecycle = lifecycle,
+                    locationActivated = locationActivated
+            )
         }
     }
 
@@ -59,9 +70,20 @@ object GoogleMapActionHandler {
      * Handles the marker click
      * @param marker marker clicked
      */
-    fun onMarkerClickHandler(marker: Marker) {
+    fun onMarkerClickHandler(
+            marker: Marker,
+            activity: FragmentActivity,
+            lifecycle: LifecycleOwner,
+            locationActivated: Boolean
+    ) {
         if (!ZoneAreaMapHelper.editMode) {
-            marker.showInfoWindow()
+            displayZoneDetailsBottomDialog(
+                    zoneId = marker.tag.toString(),
+                    zoneName = marker.title,
+                    activity = activity,
+                    lifecycle = lifecycle,
+                    locationActivated = locationActivated
+            )
         }
         val tag = marker.tag
         if (tag != null) {
@@ -77,10 +99,29 @@ object GoogleMapActionHandler {
      * @param locationActivated is location of the visitor activated
      */
     fun onInfoWindowClickHandler(
-        activity: FragmentActivity,
-        lifecycle: LifecycleOwner,
-        marker: Marker,
-        locationActivated: Boolean
+            activity: FragmentActivity,
+            lifecycle: LifecycleOwner,
+            marker: Marker,
+            locationActivated: Boolean
+    ) {
+        displayZoneDetailsBottomDialog(
+                zoneId = marker.tag.toString(),
+                zoneName = marker.title,
+                activity = activity,
+                lifecycle = lifecycle,
+                locationActivated = locationActivated
+        )
+    }
+
+    /**
+     * Display Zone Details Bottom Dialog Fragment
+     */
+    private fun displayZoneDetailsBottomDialog(
+            zoneId: String,
+            zoneName: String?,
+            activity: FragmentActivity,
+            lifecycle: LifecycleOwner,
+            locationActivated: Boolean
     ) {
         /**
          * Display a new ZonePreviewDialog bottom sheet, displaying the zone and the current events
@@ -88,34 +129,35 @@ object GoogleMapActionHandler {
          * the events going on in that zone
          */
         ZonePreviewBottomSheetDialogFragment.newInstance(
-            zoneId = marker.tag as String,
-            onShowEventsClickListener = {
-                HelperFunctions.changeFragmentWithBundle(
-                    activity,
-                    ZoneEventsFragment::class.java,
-                    bundle = bundleOf(
-                        // marker tag should hold the zone id
-                        ZonePreviewBottomSheetDialogFragment.EXTRA_ZONE_ID to marker.tag,
-                        // marker title should hold the zone name
-                        ZonePreviewBottomSheetDialogFragment.EXTRA_ZONE_NAME to marker.title
-                    ),
-                    addToBackStack = true
-                )
-            },
-            onItineraryClickListener = {
-                // The listener invoked when clicked on the show itinerary button
-                HelperFunctions.getLoc(activity).observeOnce(lifecycle) {
-                    RouteMapHelper.chemin =
-                        RouteMapHelper.getShortestPath(
-                            it.value!!,
-                            marker.tag.toString(),
-                            locationActivated
-                        )
-                            ?.toMutableList()
-                            ?: mutableListOf()
-                    RouteMapHelper.drawRoute()
+                zoneId = zoneId,
+                onShowEventsClickListener = {
+                    HelperFunctions.changeFragmentWithBundle(
+                            activity,
+                            ZoneEventsFragment::class.java,
+                            bundle = bundleOf(
+                                    // marker tag should hold the zone id
+                                    ZonePreviewBottomSheetDialogFragment.EXTRA_ZONE_ID to zoneId,
+                                    // marker title should hold the zone name
+                                    ZonePreviewBottomSheetDialogFragment.EXTRA_ZONE_NAME to zoneName
+                            ),
+                            // TODO: avoid redrawing the routes in mapfragment
+                            addToBackStack = true
+                    )
+                },
+                onItineraryClickListener = {
+                    // The listener invoked when clicked on the show itinerary button
+                    HelperFunctions.getLoc(activity).observeOnce(lifecycle) {
+                        RouteMapHelper.chemin =
+                                RouteMapHelper.getShortestPath(
+                                        it.value!!,
+                                        zoneId,
+                                        locationActivated
+                                )
+                                        ?.toMutableList()
+                                        ?: mutableListOf()
+                        RouteMapHelper.drawRoute()
+                    }
                 }
-            }
         ).show(activity.supportFragmentManager, ZonePreviewBottomSheetDialogFragment.TAG)
     }
 

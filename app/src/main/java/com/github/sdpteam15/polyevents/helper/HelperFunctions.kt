@@ -33,7 +33,6 @@ object HelperFunctions {
      * can go back to the current fragment on back button
      */
     fun changeFragment(
-        fb-events-per-zone
         activity: FragmentActivity?,
         newFrag: Fragment?,
         idFrameLayout: Int = R.id.fl_wrapper,
