@@ -132,7 +132,8 @@ class EventDatabaseTest {
             zoneId = zoneId,
             startTime = startTime,
             endTime = endTime,
-            tags = tags
+            tags = tags,
+            eventEditId = eventId
         )
         val userAccess = UserProfile()
 
@@ -143,7 +144,7 @@ class EventDatabaseTest {
         val set = HelperTestFunction.lastSetEntity()!!
 
         assertEquals(event, set.element)
-        assertEquals(event.eventId, set.id)
+        assertEquals(event.eventEditId, set.id)
         assertEquals(DatabaseConstant.CollectionConstant.EVENT_EDIT_COLLECTION, set.collection)
         assertEquals(EventEditAdapter, set.adapter)
     }

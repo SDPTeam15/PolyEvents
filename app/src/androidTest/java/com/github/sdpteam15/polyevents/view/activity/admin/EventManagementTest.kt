@@ -56,7 +56,8 @@ class EventManagementTest {
             zoneId = " zid1",
             zoneName = "zoneName1",
             startTime = LocalDateTime.now(),
-            endTime = LocalDateTime.now()
+            endTime = LocalDateTime.now(),
+            organizer = "idA"
         )
     private val event2 =
         Event(eventName = "Test 2", eventId = "Id2", zoneId = " zid1", zoneName = "zoneName1")
@@ -464,6 +465,8 @@ class EventManagementTest {
         val intent =
             Intent(ApplicationProvider.getApplicationContext(), EventManagementActivity::class.java)
         intent.putExtra(EventManagementListActivity.INTENT_MANAGER, "edit")
+        intent.putExtra(EventManagementListActivity.EVENT_ID_INTENT,EventManagementListActivity.NEW_EVENT_ID)
+        val activity =  ActivityScenario.launch<EventManagementActivity>(intent)
 
         val startDate = EventManagementActivity.dateStart.value!!
         val endDate = EventManagementActivity.dateEnd.value!!
@@ -581,7 +584,7 @@ class EventManagementTest {
         )
         val obs = Observable<Boolean>()
         When(
-            mockedEventDB.getEventEditFromId(
+            mockedEventDB.getEventFromId(
                 anyOrNull(),
                 anyOrNull(),
                 anyOrNull()
