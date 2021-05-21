@@ -78,7 +78,9 @@ class EventManagementActivity : AppCompatActivity() {
     private var isCreation: Boolean = true
     private var curId = ""
     private val observableEvent = Observable<Event>()
+    // True if the current user is not an admin
     private var isActivityProvider = false
+    // True if the current user is not an admin and he is currently editing an event edit request.
     private var isModificationActivityProvider = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,6 +90,7 @@ class EventManagementActivity : AppCompatActivity() {
 
         // Get intent value (if not NEW_EVENT_ID we know that we are in edition mode)
         val id = intent.getStringExtra(EventManagementListActivity.EVENT_ID_INTENT)!!
+        // See if there are intents related to managers so that we can display everything accordingly.
         isActivityProvider = intent.hasExtra(EventManagementListActivity.INTENT_MANAGER)
         isModificationActivityProvider = intent.hasExtra(EventManagementListActivity.INTENT_MANAGER_EDIT)
 
@@ -96,6 +99,7 @@ class EventManagementActivity : AppCompatActivity() {
 
         setupSpinnerAdapter()
         setupDateListener()
+
         // Default date
         dateStart.postValue(LocalDateTime.now().withSecond(0).withNano(0))
         dateEnd.postValue(LocalDateTime.now().withSecond(0).withNano(0))
@@ -146,6 +150,8 @@ class EventManagementActivity : AppCompatActivity() {
             }
         }
 
+        // We only allow to choose the user if the current user is an admin
+        // if the current user is an activity provider which will propose a event edit request, we will simply put its user id.
         if (!isActivityProvider) {
             val adapter2 =
                 ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, organiserName)
@@ -428,7 +434,8 @@ class EventManagementActivity : AppCompatActivity() {
         val zoneId = mapIndexToId[selectedZone]
         var status:Event.EventStatus? = null
 
-        var organiserId =""
+        // Add the event organiser id and the status if the current user is not an admin -> event edit request
+        val organiserId: String
         if (!isActivityProvider) {
             organiserId = mapIndexToOrganiserId[selectedOrganiser]!!
         } else {
