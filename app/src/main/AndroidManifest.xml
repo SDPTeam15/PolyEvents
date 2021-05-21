@@ -18,6 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PolyEvents">
         <activity
+            android:name=".view.activity.activityprovider.MyItemRequestsActivity"
+            android:parentActivityName=".view.activity.MainActivity"/>
+        <activity
             android:name=".view.activity.admin.RouteManagementActivity"
             android:label="@string/admin_hub_btn_route_text"
             android:parentActivityName=".view.activity.MainActivity" />
