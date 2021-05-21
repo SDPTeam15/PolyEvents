@@ -96,12 +96,12 @@ class EventEditDifferenceFragment(
             view.findViewById<TextView>(R.id.tvOrigStartDate).text =
                 HelperFunctions.localDatetimeToString(origEvents.startTime)
             if (origEvents.isLimitedEvent()) {
-                view.findViewById<TextView>(R.id.tvModLimited).text = getString(
+                view.findViewById<TextView>(R.id.tvOrigLimited).text = getString(
                     R.string.fragment_edit_limited_text,
                     origEvents.getMaxNumberOfSlots().toString()
                 )
             } else {
-                view.findViewById<TextView>(R.id.tvModLimited).text =
+                view.findViewById<TextView>(R.id.tvOrigLimited).text =
                     getString(R.string.fragment_edit_no_text)
             }
 
