@@ -33,7 +33,7 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/id_edit_accept"
-                app:srcCompat="@android:drawable/ic_delete"
+                app:srcCompat="@drawable/ic_clear"
                 tools:ignore="ContentDescription" />
 
             <TextView
