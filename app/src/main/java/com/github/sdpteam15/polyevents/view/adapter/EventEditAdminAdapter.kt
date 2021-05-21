@@ -20,11 +20,14 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableMap
 import java.time.format.DateTimeFormatter
 
 /**
- * Recycler Adapter for the list of items
- * Shows each item with its available quantity
+ * Recycler Adapter for the list of event edit request
  * @param context context of parent view used to inflate new views
  * @param lifecycleOwner parent to enable observables to stop observing when the lifecycle is closed
- * @param events List of all item requests
+ * @param events List of all events edit request
+ * @param origEvent A map that map the eventId to the original event (the one already in database)
+ * @param onAcceptListener Listener for the click on the "accept" button
+ * @param onRefuseListener Listener for the click on the "refuse" button
+ * @param onSeeListener Listener for the click on the "see" button
  */
 class EventEditAdminAdapter(
     context: Context,
@@ -37,8 +40,8 @@ class EventEditAdminAdapter(
 ) : RecyclerView.Adapter<EventEditAdminAdapter.ItemViewHolder>() {
     private val adapterLayout = LayoutInflater.from(context)
 
+    // Add observer to both list to update the recyclerview content when the lists are updated
     init {
-
         events.observe(lifecycleOwner) {
             notifyDataSetChanged()
         }
@@ -49,8 +52,8 @@ class EventEditAdminAdapter(
     }
 
     /**
-     * adapted ViewHolder for each item
-     * Takes the corresponding material request view
+     * adapted ViewHolder for each event edit request
+     * @param view The view of the current item
      */
     inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
@@ -62,7 +65,7 @@ class EventEditAdminAdapter(
         private val status = view.findViewById<TextView>(R.id.id_edit_status)
 
         /**
-         * Binds the values of each value of a material request to a view
+         * Binds the values of each value of a event edit to a view and add the listener to each button of the view.
          */
         @SuppressLint("SetTextI18n")
         fun bind(event: Event) {
