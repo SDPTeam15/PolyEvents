@@ -16,6 +16,12 @@ Next week, I will work on staff item deliveries, by adding the abitily to take i
 
 ## Mathieu
 
+This week, I made the interface for the activity provider to see the item requests he submitted and to know in which state they are.
+
+My time estimate was good.
+
+Next week, I'll implement a timetable to display all events that take place in a certain zone.
+
 ## Robin
 This week, I fix bug #230 the edge dont conect to zone then I implemented Home page for each user type.
 
