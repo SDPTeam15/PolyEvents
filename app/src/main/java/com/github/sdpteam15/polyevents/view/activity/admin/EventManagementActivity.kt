@@ -78,8 +78,10 @@ class EventManagementActivity : AppCompatActivity() {
     private var isCreation: Boolean = true
     private var curId = ""
     private val observableEvent = Observable<Event>()
+
     // True if the current user is not an admin
     private var isActivityProvider = false
+
     // True if the current user is not an admin and he is currently editing an event edit request.
     private var isModificationActivityProvider = false
 
@@ -92,7 +94,8 @@ class EventManagementActivity : AppCompatActivity() {
         val id = intent.getStringExtra(EventManagementListActivity.EVENT_ID_INTENT)!!
         // See if there are intents related to managers so that we can display everything accordingly.
         isActivityProvider = intent.hasExtra(EventManagementListActivity.INTENT_MANAGER)
-        isModificationActivityProvider = intent.hasExtra(EventManagementListActivity.INTENT_MANAGER_EDIT)
+        isModificationActivityProvider =
+            intent.hasExtra(EventManagementListActivity.INTENT_MANAGER_EDIT)
 
         isCreation = id == EventManagementListActivity.NEW_EVENT_ID
         curId = id
@@ -224,11 +227,11 @@ class EventManagementActivity : AppCompatActivity() {
         val spinnerOrg = findViewById<Spinner>(R.id.spinner_organiser)
         val spinnerZone = findViewById<Spinner>(R.id.spinner_zone)
         val tvSpinnerOrganiser = findViewById<TextView>(R.id.tvSpinnerOrganiser)
-        if (isActivityProvider){
-            tvSpinnerOrganiser.visibility=View.INVISIBLE
+        if (isActivityProvider) {
+            tvSpinnerOrganiser.visibility = View.INVISIBLE
             spinnerOrg.visibility = View.INVISIBLE
-        }else{
-            tvSpinnerOrganiser.visibility=View.VISIBLE
+        } else {
+            tvSpinnerOrganiser.visibility = View.VISIBLE
             spinnerOrg.visibility = View.VISIBLE
         }
 
@@ -259,8 +262,9 @@ class EventManagementActivity : AppCompatActivity() {
             updateTextDate(TYPE_END)
             updateTextDate(TYPE_START)
 
+            // Select the correct organiser
             organiserObserver.observeOnce(this) {
-                var idx = -1
+                var idx = 0
                 for (u in it.value.withIndex()) {
                     if (u.value.uid == event.organizer) {
                         idx = u.index
@@ -270,8 +274,9 @@ class EventManagementActivity : AppCompatActivity() {
                 spinnerOrg.setSelection(idx)
             }
 
+            // Select the correct zone
             zoneObserver.observeOnce(this) {
-                var idx = -1
+                var idx = 0
                 for (u in it.value.withIndex()) {
                     if (u.value.zoneId == event.zoneId) {
                         idx = u.index
@@ -298,31 +303,33 @@ class EventManagementActivity : AppCompatActivity() {
                 handleUpdateClick()
             }
             // Get the correct information depending on if we edit an event edit request
-            if(isModificationActivityProvider){
-                currentDatabase.eventDatabase!!.getEventEditFromId(curId, observableEvent).observe(this) {
-                    if (it.value) {
-                        setupViewInActivity(true)
-                    } else {
-                        HelperFunctions.showToast(
-                            getString(R.string.failed_get_event_information),
-                            this
-                        )
-                        finish()
+            if (isModificationActivityProvider) {
+                currentDatabase.eventDatabase!!.getEventEditFromId(curId, observableEvent)
+                    .observe(this) {
+                        if (it.value) {
+                            setupViewInActivity(true)
+                        } else {
+                            HelperFunctions.showToast(
+                                getString(R.string.failed_get_event_information),
+                                this
+                            )
+                            finish()
+                        }
                     }
-                }
-            }else{
-                // Or if we edit an already existing event
-                currentDatabase.eventDatabase!!.getEventFromId(curId, observableEvent).observe(this) {
-                    if (it.value) {
-                        setupViewInActivity(true)
-                    } else {
-                        HelperFunctions.showToast(
-                            getString(R.string.failed_get_event_information),
-                            this
-                        )
-                        finish()
+            } else {
+                // Or if we edit an existing event
+                currentDatabase.eventDatabase!!.getEventFromId(curId, observableEvent)
+                    .observe(this) {
+                        if (it.value) {
+                            setupViewInActivity(true)
+                        } else {
+                            HelperFunctions.showToast(
+                                getString(R.string.failed_get_event_information),
+                                this
+                            )
+                            finish()
+                        }
                     }
-                }
             }
         }
 
@@ -331,9 +338,9 @@ class EventManagementActivity : AppCompatActivity() {
     /**
      * Handle the click on the create button
      */
-    private fun handleCreateClick(){
+    private fun handleCreateClick() {
         if (verifyCondition()) {
-            if(isActivityProvider){
+            if (isActivityProvider) {
                 currentDatabase.eventDatabase!!.createEventEdit(getInformation()).observe(this) {
                     redirectOrDisplayError(
                         getString(R.string.event_update_success),
@@ -341,7 +348,7 @@ class EventManagementActivity : AppCompatActivity() {
                         it.value
                     )
                 }
-            }else{
+            } else {
                 currentDatabase.eventDatabase!!.createEvent(getInformation()).observe(this) {
                     redirectOrDisplayError(
                         getString(R.string.event_creation_success),
@@ -356,27 +363,29 @@ class EventManagementActivity : AppCompatActivity() {
     /**
      * Handle the click on the update button
      */
-    private fun handleUpdateClick(){
+    private fun handleUpdateClick() {
         if (verifyCondition()) {
-            if(isActivityProvider){
-                if(isModificationActivityProvider){
-                    currentDatabase.eventDatabase!!.updateEventEdit(getInformation()).observe(this) {
-                        redirectOrDisplayError(
-                            getString(R.string.event_update_success),
-                            getString(R.string.failed_to_update_event_info),
-                            it.value
-                        )
-                    }
-                }else{
-                    currentDatabase.eventDatabase!!.createEventEdit(getInformation()).observe(this) {
-                        redirectOrDisplayError(
-                            getString(R.string.event_update_success),
-                            getString(R.string.failed_to_update_event_info),
-                            it.value
-                        )
-                    }
+            if (isActivityProvider) {
+                if (isModificationActivityProvider) {
+                    currentDatabase.eventDatabase!!.updateEventEdit(getInformation())
+                        .observe(this) {
+                            redirectOrDisplayError(
+                                getString(R.string.event_update_success),
+                                getString(R.string.failed_to_update_event_info),
+                                it.value
+                            )
+                        }
+                } else {
+                    currentDatabase.eventDatabase!!.createEventEdit(getInformation())
+                        .observe(this) {
+                            redirectOrDisplayError(
+                                getString(R.string.event_update_success),
+                                getString(R.string.failed_to_update_event_info),
+                                it.value
+                            )
+                        }
                 }
-            }else{
+            } else {
                 currentDatabase.eventDatabase!!.updateEvent(getInformation()).observe(this) {
                     redirectOrDisplayError(
                         getString(R.string.event_update_success),
@@ -432,14 +441,14 @@ class EventManagementActivity : AppCompatActivity() {
 
         val zoneNa = zoneName[selectedZone]
         val zoneId = mapIndexToId[selectedZone]
-        var status:Event.EventStatus? = null
+        var status: Event.EventStatus? = null
 
         // Add the event organiser id and the status if the current user is not an admin -> event edit request
         val organiserId: String
         if (!isActivityProvider) {
             organiserId = mapIndexToOrganiserId[selectedOrganiser]!!
         } else {
-            organiserId= currentDatabase.currentUser!!.uid
+            organiserId = currentDatabase.currentUser!!.uid
             status = Event.EventStatus.PENDING
         }
 
@@ -532,7 +541,7 @@ class EventManagementActivity : AppCompatActivity() {
 
     /**
      * Verify that all the condition are satisfied. If it is not the case, display the corresponding error message
-     * @return if all the conditions are satisfied or not
+     * @return true if all the conditions are satisfied or false otherwise
      */
     private fun verifyCondition(): Boolean {
         var good = true
@@ -556,7 +565,7 @@ class EventManagementActivity : AppCompatActivity() {
             ) {
                 good = false
                 HelperFunctions.showToast(
-                    "The number of participant must be >= $MIN_PART_NB",
+                    getString(R.string.number_of_event_greater_than_0,MIN_PART_NB),
                     this
                 )
             }
