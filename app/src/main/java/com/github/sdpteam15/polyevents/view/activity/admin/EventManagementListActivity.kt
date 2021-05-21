@@ -42,7 +42,7 @@ class EventManagementListActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.recycler_events_list_admin)
         recyclerView.adapter =
-            EventListAdapter(this, this, obsEventsMap, modifyListener, deleteListener)
+            EventListAdapter(this, this, isOrganiser, obsEventsMap, modifyListener, deleteListener)
         recyclerView.setHasFixedSize(false)
 
         findViewById<Button>(R.id.btnNewEvent).setOnClickListener {
@@ -97,8 +97,8 @@ class EventManagementListActivity : AppCompatActivity() {
     private fun setupListeners() {
         modifyListener = { s: String ->
             val intent = Intent(this, EventManagementActivity::class.java)
-            if(isOrganiser){
-                intent.putExtra(INTENT_MANAGER,"INTENT_MANAGER")
+            if (isOrganiser) {
+                intent.putExtra(INTENT_MANAGER, "INTENT_MANAGER")
             }
             intent.putExtra(EVENT_ID_INTENT, s)
             startActivity(intent)

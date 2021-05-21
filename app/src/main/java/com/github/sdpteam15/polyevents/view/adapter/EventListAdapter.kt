@@ -26,6 +26,7 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableMap
 class EventListAdapter(
         context: Context,
         lifecycleOwner: LifecycleOwner,
+        private val isOrganiser: Boolean,
         private val allEvents: ObservableMap<String, Pair<String, ObservableList<Event>>>,
         private val modifyListener: (String) -> Unit,
         private val deleteListener: (String, Event) -> Unit
@@ -86,9 +87,14 @@ class EventListAdapter(
             view.findViewById<TextView>(R.id.tvEventStartDate).text = localDatetimeToString(event.startTime, noHourText)
             view.findViewById<TextView>(R.id.tvEventEndDate).text = localDatetimeToString(event.endTime, noHourText)
             view.findViewById<ImageButton>(R.id.idEditEventButton).setOnClickListener { modifyListener(event.eventId!!) }
-            view.findViewById<ImageButton>(R.id.idDeleteEventButton).setOnClickListener {
-                deleteListener(event.zoneId!!, event)
+            if(isOrganiser){
+                view.findViewById<ImageButton>(R.id.idDeleteEventButton).visibility = View.INVISIBLE
+            }else{
+                view.findViewById<ImageButton>(R.id.idDeleteEventButton).setOnClickListener {
+                    deleteListener(event.zoneId!!, event)
+                }
             }
+
         }
     }
 

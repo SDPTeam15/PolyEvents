@@ -154,7 +154,7 @@
                 app:layout_constraintTop_toBottomOf="@id/eventManagementDescriptionLayout">
 
                 <TextView
-                    android:id="@+id/tvSpinnerORganiser"
+                    android:id="@+id/tvSpinnerOrganiser"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="2.5"
@@ -162,7 +162,7 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
                 <Spinner
-                    android:id="@+id/spinner_organiser"
+                    android:id="@+id/spinner_zone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1" />
@@ -189,7 +189,7 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
                 <Spinner
-                    android:id="@+id/spinner_zone"
+                    android:id="@+id/spinner_organiser"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1" />

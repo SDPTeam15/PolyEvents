@@ -217,11 +217,15 @@ class EventManagementActivity : AppCompatActivity() {
         val nbpart = findViewById<EditText>(R.id.etNbPart)
         val spinnerOrg = findViewById<Spinner>(R.id.spinner_organiser)
         val spinnerZone = findViewById<Spinner>(R.id.spinner_zone)
-
-        if (isActivityProvider)
+        val tvSpinnerOrganiser = findViewById<TextView>(R.id.tvSpinnerOrganiser)
+        if (isActivityProvider){
+            tvSpinnerOrganiser.visibility=View.INVISIBLE
             spinnerOrg.visibility = View.INVISIBLE
-        else
+        }else{
+            tvSpinnerOrganiser.visibility=View.VISIBLE
             spinnerOrg.visibility = View.VISIBLE
+        }
+
 
         if (!onCallback) {
             btnManage.text = getString(R.string.create_event_btn_text)
