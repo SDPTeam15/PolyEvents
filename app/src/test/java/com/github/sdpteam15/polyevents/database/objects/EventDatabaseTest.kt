@@ -576,4 +576,19 @@ class EventDatabaseTest {
         )
         assertEquals(EventEditAdapter, getEntity.adapter)
     }
+
+    @Test
+    fun testGetEventsByZoneId() {
+        val events = ObservableList<Event>()
+        HelperTestFunction.nextGetListEntity { true }
+        mockedEventdatabase.getEventsByZoneId(zoneId, null, events)
+            .observeOnce { assert(it.value) }.then.postValue(false)
+
+        val getList = HelperTestFunction.lastGetListEntity()!!
+
+        assertEquals(events, getList.element)
+        assertNotNull(getList.matcher)
+        assertEquals(EVENT_COLLECTION, getList.collection)
+        assertEquals(EventAdapter, getList.adapter)
+    }
 }

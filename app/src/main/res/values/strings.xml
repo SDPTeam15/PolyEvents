@@ -45,6 +45,7 @@
     <!-- Fragment Provider Home-->
     <string name="provider_hub_title">Provider management options</string>
     <string name="items_requests_button_text">Requests</string>
+    <string name="my_items_requests_button_text">My requests</string>
 
     <!-- Fragment Staff Home-->
     <string name="staff_hub_title">Staff management options</string>
@@ -193,5 +194,26 @@
     <string name="edit_close_btn_text">Close</string>
     <string name="fragment_edit_no_text">No.</string>
     <string name="fragment_edit_limited_text">Yes, %1$s.</string>
+
+    <!-- MyItemRequestsActivity -->
+    <string name="my_item_requests">My item requests</string>
+    <string name="pending_requests">Pending requests</string>
+    <string name="accepted_requests">Accepted requests</string>
+    <string name="refused_requests">Refused requests</string>
+    <string name="reason_of_refusal">Reason of refusal:</string>
+
+    <!--DisplayZoneEventsFragment-->
+    <string name="see_events">See events</string>
+    <string name="show_itinerary">Show itinerary</string>
+    <string name="zone_name">Zone name</string>
+    <string name="zone_description">Zone description</string>
+    <string name="current_event">Current Event</string>
+    <string name="current_event_name">Current Event Name</string>
+    <string name="event_description">Event description</string>
+    <string name="upcoming_events">Upcoming Events</string>
+    <string name="no_upcoming_events">No Upcoming Events</string>
+    <string name="event_name">Event Name</string>
+    <string name="event_time">Event Time</string>
+    <string name="go_back_to_map_fragment">go back to map fragment</string>
 
 </resources>

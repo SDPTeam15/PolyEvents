@@ -27,7 +27,8 @@ object MaterialRequestAdapter : AdapterInterface<MaterialRequest> {
     override fun fromDocument(document: MutableMap<String, Any?>, id: String): MaterialRequest {
         return MaterialRequest(
             id,
-            document[MATERIAL_REQUEST_LIST.value] as Map<String, Int>,
+            //document[MATERIAL_REQUEST_LIST.value] as Map<String, Int>,
+            (document[MATERIAL_REQUEST_LIST.value] as Map<String, Long>).mapValues { it.value.toInt() },
             HelperFunctions.dateToLocalDateTime((document[MATERIAL_REQUEST_TIME.value] as Timestamp?)?.toDate()),
             document[MATERIAL_REQUEST_USER_ID.value] as String,
             MaterialRequest.Status.fromOrdinal(((document[MATERIAL_REQUEST_STATUS.value]?:0) as Long).toInt())!!,

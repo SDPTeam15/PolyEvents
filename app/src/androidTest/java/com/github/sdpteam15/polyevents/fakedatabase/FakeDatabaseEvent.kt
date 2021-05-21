@@ -162,4 +162,13 @@ object FakeDatabaseEvent : EventDatabaseInterface {
     ): Observable<Boolean> {
         return Observable(true)
     }
+
+    override fun getEventsByZoneId(
+        zoneId: String,
+        limit: Long?,
+        events: ObservableList<Event>,
+        userAccess: UserProfile?
+    ): Observable<Boolean> {
+        return Observable(true)
+    }
 }
