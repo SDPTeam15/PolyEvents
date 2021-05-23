@@ -1,27 +1,38 @@
 package com.github.sdpteam15.polyevents.view.activity
 
-import android.app.ActionBar
 import android.content.Context
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
-import android.provider.SyncStateContract
-import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
+import android.widget.ArrayAdapter
+import android.widget.ImageButton
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.view.marginRight
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.model.database.remote.Database
+import com.github.sdpteam15.polyevents.model.entity.Event
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.model.observable.ObservableMap
+import java.time.Duration
 import java.time.LocalDateTime
 
 
 class TimeTableActivity : AppCompatActivity() {
+    private lateinit var leftButton: ImageButton
+    private lateinit var rightButton: ImageButton
+    private lateinit var spinner: Spinner
+
+    private var obsEventsMap = ObservableMap<String, Pair<String, ObservableList<Event>>>()
+    private var zoneNameToId = mutableMapOf<String, String>()
+
+    private val zoneNames = ArrayList<String>()
+
     var nextId = 156
     val hourSizeDp = 100
     val lineHeightDp = 1
@@ -30,14 +41,54 @@ class TimeTableActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_time_table)
+
+        leftButton = findViewById(R.id.id_change_zone_left)
+        rightButton = findViewById(R.id.id_change_zone_right)
+        spinner = findViewById(R.id.id_title_zone)
+        setupSpinner()
+
         generateTime(16, 3)
-        addEvent(LocalDateTime.of(2021, 5,23, 18, 30), 90.0)
-        addEvent(LocalDateTime.of(2021, 5,23, 21, 30), 45.0)
+        addEvent(LocalDateTime.of(2021, 5,23, 21, 30,0), LocalDateTime.of(2021, 5,23, 21, 45,0))
+        getEventsFromDB()
     }
 
-    fun addEvent(time: LocalDateTime, durationMinutes: Double){
-        val idLine = hourToLine[time.hour]?:return
-        val height = ((durationMinutes/60)*hourSizeDp).toInt()
+    fun getEventsFromDB(){
+        val requestObservable = ObservableList<Event>()
+        requestObservable.group(this) { it.zoneId }.then.observe {
+            obsEventsMap.clear()
+            zoneNames.clear()
+            for (i in it.value.entries) {
+                obsEventsMap[i.key!!] = Pair(i.value[0].zoneName!!, i.value)
+                if(!zoneNames.contains(i.value[0].zoneName!!)){
+                    zoneNames.add(i.value[0].zoneName!!)
+                    zoneNameToId[i.value[0].zoneName!!] = i.key!!
+                }
+            }
+            setupSpinner()
+        }
+
+        Database.currentDatabase.eventDatabase!!.getEvents(null, null, eventList = requestObservable)
+            .observe(this) {
+                if (!it.value) {
+                    HelperFunctions.showToast(getString(R.string.fail_retrieve_events), this)
+                    finish()
+                }
+            }
+    }
+
+    fun setupSpinner(){
+        val adapter =
+            ArrayAdapter(this, R.layout.spinner_dropdown_item, zoneNames)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+        spinner.setSelection(0)
+    }
+
+    fun addEvent(start: LocalDateTime, end: LocalDateTime){
+        val duration = Duration.between(start, end)
+
+        val idLine = hourToLine[start.hour]?:return
+        val height = ((duration.toMinutes()/60.0)*hourSizeDp).toInt()
         val width = 60
         val currentId = nextId++
         val event = View(this)
@@ -54,6 +105,8 @@ class TimeTableActivity : AppCompatActivity() {
         val constraintLayout = findViewById<ConstraintLayout>(R.id.id_timetable_constraintlayout)
         constraintLayout.addView(event)
 
+        val marginTop = ((start.minute/60.0)*hourSizeDp).toInt()
+
         val constraintSet = ConstraintSet()
         constraintSet.clone(constraintLayout)
         //Constraints for the time
@@ -69,7 +122,7 @@ class TimeTableActivity : AppCompatActivity() {
             ConstraintSet.TOP,
             idLine,
             ConstraintSet.BOTTOM,
-            0
+            marginTop.dpToPixelsInt(this)
         )
         constraintSet.applyTo(constraintLayout)
     }
