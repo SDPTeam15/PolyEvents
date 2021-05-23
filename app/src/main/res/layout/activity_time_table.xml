@@ -15,7 +15,10 @@
             android:id="@+id/id_timetable_constraintlayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:paddingBottom="60dp"
+            android:layout_marginRight="8dp"
             android:layout_marginLeft="8dp">
+
             <TextView
                 android:id="@+id/text_heure"
                 android:layout_width="wrap_content"
@@ -23,6 +26,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 android:text="Heure"/>
+            <!--
             <TextView
                 android:id="@+id/huit"
                 android:layout_width="wrap_content"
@@ -75,7 +79,6 @@
                 app:layout_constraintBottom_toBottomOf="@+id/dix"
                 app:layout_constraintLeft_toRightOf="@+id/dix"
                 />
-            <!--
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="20dp"
