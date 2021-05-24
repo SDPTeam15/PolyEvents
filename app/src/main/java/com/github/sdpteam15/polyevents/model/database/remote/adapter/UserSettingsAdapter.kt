@@ -16,7 +16,7 @@ object UserSettingsAdapter: AdapterInterface<UserSettings> {
                 USER_SETTINGS_LOCATION_ID.value to element.locationId
         )
 
-    override fun fromDocument(document: MutableMap<String, Any?>, id: String): UserSettings =
+    override fun fromDocument(document: Map<String, Any?>, id: String): UserSettings =
         UserSettings(
                 trackLocation = document[USER_SETTINGS_TRACK_LOCATION.value] as Boolean,
                 isSendingLocationOn = document[USER_SETTINGS_SENDING_LOCATION_ON.value] as Boolean,

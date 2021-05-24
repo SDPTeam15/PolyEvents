@@ -24,7 +24,7 @@ object MaterialRequestAdapter : AdapterInterface<MaterialRequest> {
         return map
     }
 
-    override fun fromDocument(document: MutableMap<String, Any?>, id: String): MaterialRequest {
+    override fun fromDocument(document: Map<String, Any?>, id: String): MaterialRequest {
         return MaterialRequest(
             id,
             //document[MATERIAL_REQUEST_LIST.value] as Map<String, Int>,

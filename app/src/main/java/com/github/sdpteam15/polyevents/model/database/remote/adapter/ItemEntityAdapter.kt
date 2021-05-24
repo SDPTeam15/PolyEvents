@@ -26,7 +26,7 @@ object ItemEntityAdapter : AdapterInterface<Triple<Item, Int, Int>> {
         toItemDocument(element.first, element.second, element.third)
 
     override fun fromDocument(
-        document: MutableMap<String, Any?>,
+        document: Map<String, Any?>,
         id: String
     ): Triple<Item, Int, Int> =
         Triple(

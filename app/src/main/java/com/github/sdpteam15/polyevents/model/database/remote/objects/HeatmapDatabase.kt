@@ -58,7 +58,7 @@ class HeatmapDatabase(private val db: DatabaseInterface) : HeatmapDatabaseInterf
                 },
             LOCATION_COLLECTION,
             object : AdapterFromDocumentInterface<LatLng> {
-                override fun fromDocument(document: MutableMap<String, Any?>, id: String): LatLng =
+                override fun fromDocument(document: Map<String, Any?>, id: String): LatLng =
                     DeviceLocationAdapter.fromDocument(document, id).location
             }
         ).observeOnce {

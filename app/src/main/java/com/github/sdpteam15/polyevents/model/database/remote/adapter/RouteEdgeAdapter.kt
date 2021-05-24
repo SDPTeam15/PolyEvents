@@ -15,7 +15,7 @@ object RouteEdgeAdapter : AdapterInterface<RouteEdge> {
         END_ID.value to element.endId
     )
 
-    override fun fromDocument(document: MutableMap<String, Any?>, id: String) = RouteEdge(
+    override fun fromDocument(document: Map<String, Any?>, id: String) = RouteEdge(
         id = id,
         startInitId = document[START_ID.value] as String?,
         endInitId = document[END_ID.value] as String?

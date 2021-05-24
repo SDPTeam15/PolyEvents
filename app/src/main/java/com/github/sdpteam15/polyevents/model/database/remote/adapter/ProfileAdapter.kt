@@ -19,7 +19,7 @@ object ProfileAdapter : AdapterInterface<UserProfile> {
         PROFILE_USERS.value to element.users
     )
 
-    override fun fromDocument(document: MutableMap<String, Any?>, id: String) = UserProfile(
+    override fun fromDocument(document: Map<String, Any?>, id: String) = UserProfile(
         pid = id as String?,
         profileName = document[PROFILE_NAME.value] as String?,
         userRole = if ((document[PROFILE_RANK.value] as String?) != null)

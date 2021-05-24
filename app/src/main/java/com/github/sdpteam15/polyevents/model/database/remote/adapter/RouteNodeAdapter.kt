@@ -16,7 +16,7 @@ object RouteNodeAdapter :AdapterInterface<RouteNode> {
         AREA_ID.value to element.areaId
     )
 
-    override fun fromDocument(document: MutableMap<String, Any?>, id: String) = RouteNode(
+    override fun fromDocument(document: Map<String, Any?>, id: String) = RouteNode(
         id = id,
         latitude = document[LATITUDE.value] as Double,
         longitude = document[LONGITUDE.value] as Double,

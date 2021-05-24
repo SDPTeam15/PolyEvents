@@ -36,7 +36,7 @@ object EventAdapter : AdapterInterface<Event> {
         EVENT_PARTICIPANTS.value to element.getParticipants().toList()
     )
 
-    override fun fromDocument(document: MutableMap<String, Any?>, id: String): Event {
+    override fun fromDocument(document: Map<String, Any?>, id: String): Event {
         return Event(
             eventId = id,
             eventName = document[EVENT_NAME.value] as String?,

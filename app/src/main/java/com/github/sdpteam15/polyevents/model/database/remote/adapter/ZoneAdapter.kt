@@ -25,7 +25,7 @@ object ZoneAdapter : AdapterInterface<Zone> {
         return map
     }
 
-    override fun fromDocument(document: MutableMap<String, Any?>, id: String): Zone = Zone(
+    override fun fromDocument(document: Map<String, Any?>, id: String): Zone = Zone(
         zoneId = id,
         zoneName = document[ZONE_NAME.value] as String?,
         location = document[ZONE_LOCATION.value] as String?,

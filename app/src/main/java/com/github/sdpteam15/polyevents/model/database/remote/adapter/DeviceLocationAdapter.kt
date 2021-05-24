@@ -19,7 +19,7 @@ object DeviceLocationAdapter : AdapterInterface<DeviceLocation> {
         LocationConstant.LOCATIONS_TIME.value to HelperFunctions.localDateTimeToDate(element.time)
     )
 
-    override fun fromDocument(document: MutableMap<String, Any?>, id: String): DeviceLocation =
+    override fun fromDocument(document: Map<String, Any?>, id: String): DeviceLocation =
         DeviceLocation(
             device = document[LocationConstant.LOCATIONS_DEVICE.value] as String?,
             location = LatLng(

@@ -28,7 +28,7 @@ object UserAdapter : AdapterInterface<UserEntity> {
         USER_PROFILES.value to element.profiles
     )
 
-    override fun fromDocument(document: MutableMap<String, Any?>, id: String) = UserEntity(
+    override fun fromDocument(document: Map<String, Any?>, id: String) = UserEntity(
         uid = id,
         username = document[USER_USERNAME.value] as String?,
         name = document[USER_NAME.value] as String?,
