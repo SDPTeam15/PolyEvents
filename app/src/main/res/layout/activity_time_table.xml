@@ -22,12 +22,14 @@
             android:background="@null"
             android:layout_marginEnd="8dp"
             />
-        <Spinner
-            android:id="@+id/id_title_zone"
+        <TextView
+            android:id="@+id/id_date_timetable"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:background="@null"
+            android:text="Lundi 24.05.2021"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
             />
         <ImageButton
             android:id="@+id/id_change_zone_right"
@@ -38,10 +40,20 @@
             android:layout_marginStart="8dp"
             />
     </LinearLayout>
+    <Spinner
+        android:id="@+id/id_title_zone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@null"
+        app:layout_constraintTop_toBottomOf="@+id/id_layout_title_zone"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        />
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/id_layout_title_zone"
+        app:layout_constraintTop_toBottomOf="@+id/id_title_zone"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginTop="8dp"
         >
