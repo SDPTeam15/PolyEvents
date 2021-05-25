@@ -29,7 +29,7 @@ import java.time.LocalDateTime
 import kotlin.test.assertEquals
 
 @Suppress("UNCHECKED_CAST")
-class EventEditDifferenceFragment {
+class EventEditDifferenceFragmentTest {
     private val mockedDatabase = HelperTestFunction.defaultMockDatabase()
     private val mockedDatabaseEvent = Mockito.mock(EventDatabaseInterface::class.java)
 
@@ -133,7 +133,7 @@ class EventEditDifferenceFragment {
             )
         Database.currentDatabase = mockedDatabase
         val scenario = ActivityScenario.launch<EventEditManagementActivity>(intent)
-
+        Thread.sleep(1000)
 
     }
 
@@ -144,7 +144,7 @@ class EventEditDifferenceFragment {
 
     @Test
     fun displayFragmentProperly() {
-        Thread.sleep(1000)
+
         onView(withId(R.id.id_recycler_event_edits)).perform(
             RecyclerViewActions.actionOnItemAtPosition<EventEditAdminAdapter.ItemViewHolder>(
                 0, TestHelper.clickChildViewWithId(R.id.id_edit_see)
@@ -207,7 +207,6 @@ class EventEditDifferenceFragment {
 
     @Test
     fun displayFragmentWithNullProperly() {
-        Thread.sleep(1000)
         onView(withId(R.id.id_recycler_event_edits)).perform(
             RecyclerViewActions.actionOnItemAtPosition<EventEditAdminAdapter.ItemViewHolder>(
                 1, TestHelper.clickChildViewWithId(R.id.id_edit_see)
@@ -245,7 +244,6 @@ class EventEditDifferenceFragment {
 
     @Test
     fun canAcceptARequest() {
-        Thread.sleep(1000)
 
         Mockito.`when`(mockedDatabaseEvent.updateEventEdit(anyOrNull(), anyOrNull())).thenAnswer {
             val eventEdit = (it.arguments[0] as Event)
@@ -277,7 +275,6 @@ class EventEditDifferenceFragment {
 
     @Test
     fun canRefuseARequest() {
-        Thread.sleep(1000)
 
         Mockito.`when`(mockedDatabaseEvent.updateEventEdit(anyOrNull(), anyOrNull())).thenAnswer {
             val eventEdit = (it.arguments[0] as Event)
@@ -297,7 +294,6 @@ class EventEditDifferenceFragment {
 
     @Test
     fun canRefuseARequestAndNotChangeTheRecycler() {
-        Thread.sleep(1000)
 
         Mockito.`when`(mockedDatabaseEvent.updateEventEdit(anyOrNull(), anyOrNull())).thenAnswer {
             val eventEdit = (it.arguments[0] as Event)
@@ -319,7 +315,6 @@ class EventEditDifferenceFragment {
     }
     @Test
     fun canAcceptARequestAndNotChangeTheRecycler() {
-        Thread.sleep(1000)
         Mockito.`when`(mockedDatabaseEvent.updateEventEdit(anyOrNull(), anyOrNull())).thenAnswer {
             val eventEdit = (it.arguments[0] as Event)
             assertEquals(eventEdit.status, Event.EventStatus.ACCEPTED)
