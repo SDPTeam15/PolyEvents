@@ -10,10 +10,10 @@ import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
 @Dao
 interface GenericEntityDao {
 
-    @Query("SELECT * FROM entity_table WHERE entity_collection LIKE :collection")
+    @Query("SELECT * FROM entity_table WHERE collection LIKE :collection")
     suspend fun getAll(collection: CollectionConstant): List<GenericEntity>
 
-    @Query("SELECT * FROM entity_table WHERE entity_id LIKE :id AND entity_collection LIKE :collection ")
+    @Query("SELECT * FROM entity_table WHERE id LIKE :id AND collection LIKE :collection ")
     suspend fun getEventById(id: String, collection: CollectionConstant): GenericEntity
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
