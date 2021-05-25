@@ -9,6 +9,7 @@ import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.local.dao.EventDao
+import com.github.sdpteam15.polyevents.model.database.local.dao.GenericEntityDao
 import com.github.sdpteam15.polyevents.model.database.local.dao.UserSettingsDao
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
@@ -36,6 +37,11 @@ abstract class LocalDatabase : RoomDatabase() {
      * Get the user settings Dao
      */
     abstract fun userSettingsDao(): UserSettingsDao
+
+    /**
+     * Get the GenericEntity Dao
+     */
+    abstract fun genericEntityDao() : GenericEntityDao
 
     companion object {
         private const val TAG = "LocalDatabase"

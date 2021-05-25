@@ -34,7 +34,7 @@ object DatabaseConstant {
                 hashMapOf(TEST_STR to element.string)
 
             override fun fromDocument(
-                document: MutableMap<String, Any?>,
+                document: Map<String, Any?>,
                 id: String
             ) = StringWithID(id, document[TEST_STR] as String)
         });
