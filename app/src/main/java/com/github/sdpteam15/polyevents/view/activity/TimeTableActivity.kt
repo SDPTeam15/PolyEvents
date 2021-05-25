@@ -41,9 +41,10 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
 
     var nextId = 156
     val hourSizeDp = 100
-    val lineHeightDp = 1
+    val lineHeightDp = 2
     var currentPadding = 30
     val linepaddingLeftDP = 2
+    val nowLineHeightDP = 2
 
     //Event params
     var widthDP = 250
@@ -189,10 +190,65 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         //Apply all the constraints
         constraintSet.applyTo(constraintLayout)
         currentPadding += hourSizeDp
+        addHalfHour(hour)
     }
 
-    //private var obsEventsMap = ObservableMap<String, MutableMap<String, MutableList<Event>>>()
-    //private var obsZoneNames = ObservableMap<String, String>()
+    fun addHalfHour(hour: Int){
+        if(hourToLine.size < 2)
+            return
+        val currentIdLineHalfHour = nextId++
+        val idNextHour = hourToLine[hour]!!
+        val idPreviousHour = hourToLine[hour-1]!!
+        //Create a line
+        val lignHalfHour = View(this)
+        lignHalfHour.backgroundTintList = resources.getColorStateList(R.color.semi_black, null)
+        lignHalfHour.id = currentIdLineHalfHour
+
+        //Create new parameters for the line (the line)
+        val paramsHalfHour = ViewGroup.LayoutParams(0, lineHeightDp.dpToPixelsInt(this))
+        lignHalfHour.layoutParams = paramsHalfHour
+        lignHalfHour.setBackgroundColor(Color.BLUE)
+
+        val constraintLayout = findViewById<ConstraintLayout>(R.id.id_timetable_constraintlayout)
+
+        constraintLayout.addView(lignHalfHour)
+
+        val constraintSet = ConstraintSet()
+        constraintSet.clone(constraintLayout)
+
+        //Constraints for the line of half hours
+        constraintSet.connect(
+            currentIdLineHalfHour,
+            ConstraintSet.TOP,
+            idNextHour,
+            ConstraintSet.TOP,
+            0
+        )
+        constraintSet.connect(
+            currentIdLineHalfHour,
+            ConstraintSet.BOTTOM,
+            idPreviousHour,
+            ConstraintSet.BOTTOM,
+            0
+        )
+        constraintSet.connect(
+            currentIdLineHalfHour,
+            ConstraintSet.LEFT,
+            idNextHour,
+            ConstraintSet.LEFT,
+            8*linepaddingLeftDP.dpToPixelsInt(this)
+        )
+        constraintSet.connect(
+            currentIdLineHalfHour,
+            ConstraintSet.RIGHT,
+            idNextHour,
+            ConstraintSet.RIGHT,
+            0
+        )
+
+        //Apply all the constraints
+        constraintSet.applyTo(constraintLayout)
+    }
 
     /**
      * Get all events from the DB
@@ -201,25 +257,31 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         val requestObservable = ObservableList<Event>()
         requestObservable.group(this) { it.zoneId!! }.then.map(this, obsZoneNames) {
             it[0].zoneName!!
-        }.then.observe(this) { setupSpinner() }
+        }
 
         requestObservable.group(this) { it.zoneId!! }.then.map(this, obsEventsMap) {
             it.group(this) { e ->
                 getDateFormat(e.startTime!!)
             }.then
-        }.then.observe { }
+        }
 
         Database.currentDatabase.eventDatabase!!.getEvents(
             null,
             null,
             eventList = requestObservable
         )
-            .observe(this) {
-                if (!it.value) {
-                    HelperFunctions.showToast(getString(R.string.fail_retrieve_events), this)
-                    finish()
+        .observe(this) {
+            if (!it.value) {
+                HelperFunctions.showToast(getString(R.string.fail_retrieve_events), this)
+                finish()
+            } else {
+                setupSpinner()
+                if (!obsZoneNames.isEmpty()) {
+                    selectedZone = obsZoneNames.keys.toList()[0]
+                    drawZoneEvents(selectedZone!!)
                 }
             }
+        }
     }
 
     private fun getDateFormat(date: LocalDateTime): String {
@@ -350,7 +412,7 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         lign.id = currentId
 
         //Create new parameters for the line (the line)
-        val params = ViewGroup.LayoutParams(0, lineHeightDp.dpToPixelsInt(this))
+        val params = ViewGroup.LayoutParams(0, nowLineHeightDP.dpToPixelsInt(this))
         lign.layoutParams = params
         lign.setBackgroundColor(Color.BLUE)
 
