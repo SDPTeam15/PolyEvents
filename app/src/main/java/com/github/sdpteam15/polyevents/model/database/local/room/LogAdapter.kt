@@ -1,9 +1,10 @@
-package com.github.sdpteam15.polyevents.model.database.local.room;
+package com.github.sdpteam15.polyevents.model.database.local.room
 
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
-import com.github.sdpteam15.polyevents.model.database.remote.adapter.*
+import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterInterface
+import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterToDocumentInterface
+import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
 import java.time.LocalDateTime
-
 
 class LogAdapter<T>(adapter: AdapterInterface<T>) : AdapterInterface<T> {
     companion object {
@@ -16,8 +17,8 @@ class LogAdapter<T>(adapter: AdapterInterface<T>) : AdapterInterface<T> {
     private var fromDocument: AdapterFromDocumentInterface<T> =
         LogAdapterFromDocument(adapter)
 
-    override fun toDocument(element: T, deletion: Boolean): Map<String, Any?> =
-        toDocument.toDocument(element, deletion)
+    override fun toDocument(element: T?): Map<String, Any?>? =
+        toDocument.toDocument(element)
 
     override fun fromDocument(document: Map<String, Any?>, id: String): T? =
         fromDocument.fromDocument(document, id)
@@ -25,12 +26,13 @@ class LogAdapter<T>(adapter: AdapterInterface<T>) : AdapterInterface<T> {
 
 class LogAdapterToDocument<T>(private val adapter: AdapterToDocumentInterface<T>) :
     AdapterToDocumentInterface<T> {
-    override fun toDocument(element: T, deletion: Boolean): Map<String, Any?> {
+    override fun toDocument(element: T?): Map<String, Any?>? {
         val result = mutableMapOf<String, Any?>(
             LogAdapter.LAST_UPDATE to HelperFunctions.localDateTimeToDate(LocalDateTime.now()),
-            LogAdapter.IS_VALID to deletion,
+            LogAdapter.IS_VALID to (element != null),
         )
-        result.putAll(adapter.toDocument(element, deletion))
+        if(element != null)
+            result.putAll(adapter.toDocument(element)!!)
         return result
     }
 }
@@ -40,7 +42,6 @@ class LogAdapterFromDocument<T>(private val adapter: AdapterFromDocumentInterfac
     override fun fromDocument(document: Map<String, Any?>, id: String): T? {
         return if(document[LogAdapter.IS_VALID] as? Boolean == true)
             adapter.fromDocument(document, id)
-        else
-            null
+        else null
     }
 }

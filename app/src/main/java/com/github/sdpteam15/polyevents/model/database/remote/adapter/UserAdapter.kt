@@ -12,21 +12,23 @@ import com.google.firebase.Timestamp
  */
 @Suppress("UNCHECKED_CAST")
 object UserAdapter : AdapterInterface<UserEntity> {
-    override fun toDocument(element: UserEntity): HashMap<String, Any?> = hashMapOf(
-        USER_UID.value to element.uid,
-        USER_USERNAME.value to element.username,
-        USER_NAME.value to element.name,
-        // convert the localdate to LocalDateTime compatible to store in Firestore
-        // UPDATE: this will store the localdatetime as a hashmap, not a timestamp in Firestore
-        // Best to convert to date to parse the birthdate as a Timestamp from Firestore when converting
-        // from document
-        USER_BIRTH_DATE.value to HelperFunctions.localDateTimeToDate(
-            element.birthDate?.atStartOfDay()
-        ),
-        USER_EMAIL.value to element.email,
-        USER_PHONE.value to element.telephone,
-        USER_PROFILES.value to element.profiles
-    )
+    override fun toDocument(element: UserEntity?): HashMap<String, Any?>? =
+        if (element == null) null
+        else hashMapOf(
+            USER_UID.value to element.uid,
+            USER_USERNAME.value to element.username,
+            USER_NAME.value to element.name,
+            // convert the localdate to LocalDateTime compatible to store in Firestore
+            // UPDATE: this will store the localdatetime as a hashmap, not a timestamp in Firestore
+            // Best to convert to date to parse the birthdate as a Timestamp from Firestore when converting
+            // from document
+            USER_BIRTH_DATE.value to HelperFunctions.localDateTimeToDate(
+                element.birthDate?.atStartOfDay()
+            ),
+            USER_EMAIL.value to element.email,
+            USER_PHONE.value to element.telephone,
+            USER_PROFILES.value to element.profiles
+        )
 
     override fun fromDocument(document: Map<String, Any?>, id: String) = UserEntity(
         uid = id,

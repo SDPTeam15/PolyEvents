@@ -5,25 +5,28 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.Ev
 import com.github.sdpteam15.polyevents.model.entity.Event
 
 object EventEditAdapter : AdapterInterface<Event> {
-    override fun toDocument(element: Event): HashMap<String, Any?> {
-        val map = EventAdapter.toDocument(element)
+    override fun toDocument(element: Event?): HashMap<String, Any?>? {
+        if (element == null) return null
+        val map = EventAdapter.toDocument(element) ?: return null
         map[EVENT_EDIT_STATUS.value] = element.status!!.ordinal
-        map[DatabaseConstant.EventEditConstant.EVENT_EDIT_ADMIN_MESSAGE.value] = element.adminMessage
+        map[DatabaseConstant.EventEditConstant.EVENT_EDIT_ADMIN_MESSAGE.value] =
+            element.adminMessage
         map[DatabaseConstant.EventConstant.EVENT_DOCUMENT_ID.value] = element.eventId
-        map[DatabaseConstant.EventConstant.EVENT_DOCUMENT_ID.value] =element.eventId
+        map[DatabaseConstant.EventConstant.EVENT_DOCUMENT_ID.value] = element.eventId
         return map
     }
 
     override fun fromDocument(document: Map<String, Any?>, id: String): Event {
         val event = EventAdapter.fromDocument(document, id)
         event.eventId = document[DatabaseConstant.EventConstant.EVENT_DOCUMENT_ID.value] as String?
-        event.eventEditId=id
+        event.eventEditId = id
 
         event.status = Event.EventStatus.fromOrdinal(
             ((document[EVENT_EDIT_STATUS.value] ?: 0) as Long).toInt()
         )!!
 
-        event.adminMessage = (document[DatabaseConstant.EventEditConstant.EVENT_EDIT_ADMIN_MESSAGE.value] as String?)
+        event.adminMessage =
+            (document[DatabaseConstant.EventEditConstant.EVENT_EDIT_ADMIN_MESSAGE.value] as String?)
         return event
     }
 }

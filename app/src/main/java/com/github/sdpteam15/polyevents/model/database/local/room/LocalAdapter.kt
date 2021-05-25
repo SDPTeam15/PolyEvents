@@ -3,9 +3,7 @@ package com.github.sdpteam15.polyevents.model.database.local.room
 import android.annotation.SuppressLint
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.local.entity.GenericEntity
-import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
-import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterInterface
-import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterToDocumentInterface
+import com.github.sdpteam15.polyevents.model.database.remote.adapter.*
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
@@ -14,18 +12,28 @@ import java.util.*
 /**
  * A class for converting between user entities in our code and GenericEntity in the database.
  */
-class LocalAdapter<T>(adapter: AdapterInterface<T>) :
-    LocalAdapterToDocumentInterface<T>,
-    LocalAdapterFromDocumentInterface<T> {
-    private var toDocument: LocalAdapterToDocumentInterface<T> =
+class LocalAdapter<T>(adapter: AdapterInterface<T>) {
+    private var toDocument: LocalAdapterToDocument<T> =
         LocalAdapterToDocument(adapter)
-    private var fromDocument: LocalAdapterFromDocumentInterface<T> =
+    private var fromDocument: LocalAdapterFromDocument<T> =
         LocalAdapterFromDocument(adapter)
 
-    override fun toDocument(element: T, id: String, deletion: Boolean, date: LocalDateTime?): GenericEntity =
-        toDocument.toDocument(element, id, deletion, date)
+    /**
+     * Convert an entity to a GenericEntity
+     * @param element the entity we're converting
+     * @param id id in remote database
+     * @param date from last update
+     * @return a GenericEntity fields to their values
+     */
+    fun toDocument(element: T?, id: String, date: LocalDateTime?): GenericEntity? =
+        toDocument.toDocument(element, id, date)
 
-    override fun fromDocument(document: GenericEntity) =
+    /**
+     * Convert document data to a user entity in our model.
+     * @param document this is the data we retrieve from the document.
+     * @return the corresponding userEntity.
+     */
+    fun fromDocument(document: GenericEntity) =
         fromDocument.fromDocument(document)
 
     companion object {
@@ -37,12 +45,21 @@ class LocalAdapter<T>(adapter: AdapterInterface<T>) :
 /**
  * A class for converting between user entities in our code and GenericEntity in the database.
  */
-class LocalAdapterToDocument<T>(private val adapter: AdapterToDocumentInterface<T>) :
-    LocalAdapterToDocumentInterface<T> {
-    override fun toDocument(element: T, id: String, deletion : Boolean, date: LocalDateTime?): GenericEntity {
-        return GenericEntity(
+class LocalAdapterToDocument<T>(private val adapter: AdapterToDocumentInterface<T>) {
+
+    /**
+     * Convert an entity to a GenericEntity
+     * @param element the entity we're converting
+     * @param id id in remote database
+     * @param date from last update
+     * @return a GenericEntity fields to their values
+     */
+    fun toDocument(element: T?, id: String, date: LocalDateTime?): GenericEntity? {
+        val result = adapter.toDocument(element)
+        return if (result == null) null
+        else GenericEntity(
             id,
-            data = fromMap(adapter.toDocument(element, deletion)),
+            data = fromMap(result),
             update = fromDate(
                 HelperFunctions.localDateTimeToDate(
                     date ?: LocalDateTime.now()
@@ -101,14 +118,13 @@ class LocalAdapterToDocument<T>(private val adapter: AdapterToDocumentInterface<
 /**
  * A class for converting between user entities in our code and GenericEntity in the database.
  */
-class LocalAdapterFromDocument<T>(private val adapter: AdapterFromDocumentInterface<T>) :
-    LocalAdapterFromDocumentInterface<T>,
-        AdapterFromDocumentInterface<T>
-{
-    override fun fromDocument(document: Map<String, Any?>, id: String): T? =
-        adapter.fromDocument(document, id)
-
-    override fun fromDocument(document: GenericEntity): T? =
+class LocalAdapterFromDocument<T>(private val adapter: AdapterFromDocumentInterface<T>) {
+    /**
+     * Convert document data to a user entity in our model.
+     * @param document this is the data we retrieve from the document.
+     * @return the corresponding userEntity.
+     */
+    fun fromDocument(document: GenericEntity): T? =
         adapter.fromDocument(toMap(document.data!!) as Map<String, Any?>, document.id)
 
     private fun toAny(element: String): Any? {
@@ -162,31 +178,4 @@ class LocalAdapterFromDocument<T>(private val adapter: AdapterFromDocumentInterf
             setResult.add(toAny(jsonObject.getString(key)))
         return setResult
     }
-}
-
-/**
- * A class for converting between user entities in our code and GenericEntity in the database.
- */
-interface LocalAdapterToDocumentInterface<T> {
-    /**
-     * Convert an entity to a GenericEntity
-     * @param element the entity we're converting
-     * @param id id in remote database
-     * @param deletion if we are converting for deletion
-     * @param date from last update
-     * @return a GenericEntity fields to their values
-     */
-    fun toDocument(element: T, id: String, deletion : Boolean, date: LocalDateTime? = null): GenericEntity
-}
-
-/**
- * A class for converting between user entities in our code and GenericEntity in the database.
- */
-interface LocalAdapterFromDocumentInterface<T> {
-    /**
-     * Convert document data to a user entity in our model.
-     * @param document this is the data we retrieve from the document.
-     * @return the corresponding userEntity.
-     */
-    fun fromDocument(document: GenericEntity): T?
 }
