@@ -17,6 +17,7 @@ import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
+import com.github.sdpteam15.polyevents.model.database.local.entity.GenericEntity
 import com.github.sdpteam15.polyevents.model.database.local.entity.UserSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +26,7 @@ import kotlinx.coroutines.launch
 // TODO: consider using repositories
 // TODO: Firebase database objects are technically daos, consider refactoring?
 // TODO: when user logs in, should fetch all info to store in local db
-@Database(entities = [EventLocal::class, UserSettings::class], version = 2, exportSchema = false)
+@Database(entities = [EventLocal::class, UserSettings::class, GenericEntity::class], version = 3, exportSchema = false)
 @TypeConverters(HelperFunctions.Converters::class)
 abstract class LocalDatabase : RoomDatabase() {
     /**
@@ -41,7 +42,7 @@ abstract class LocalDatabase : RoomDatabase() {
     /**
      * Get the GenericEntity Dao
      */
-    //abstract fun genericEntityDao() : GenericEntityDao
+    abstract fun genericEntityDao() : GenericEntityDao
 
     companion object {
         private const val TAG = "LocalDatabase"
