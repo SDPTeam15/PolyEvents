@@ -5,7 +5,7 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.github.sdpteam15.polyevents.model.database.local.dao.EventDao
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
-import com.github.sdpteam15.polyevents.model.room.EventLocal
+import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before

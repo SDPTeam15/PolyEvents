@@ -13,8 +13,8 @@ import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.model.room.EventLocal
-import com.github.sdpteam15.polyevents.model.room.UserSettings
+import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
+import com.github.sdpteam15.polyevents.model.database.local.entity.UserSettings
 import org.junit.After
 import org.junit.Before
 import org.mockito.Mockito.mock

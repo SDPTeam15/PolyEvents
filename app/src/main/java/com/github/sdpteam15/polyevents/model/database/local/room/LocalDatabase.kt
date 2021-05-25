@@ -16,8 +16,8 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.model.room.EventLocal
-import com.github.sdpteam15.polyevents.model.room.UserSettings
+import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
+import com.github.sdpteam15.polyevents.model.database.local.entity.UserSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,7 +41,7 @@ abstract class LocalDatabase : RoomDatabase() {
     /**
      * Get the GenericEntity Dao
      */
-    abstract fun genericEntityDao() : GenericEntityDao
+    //abstract fun genericEntityDao() : GenericEntityDao
 
     companion object {
         private const val TAG = "LocalDatabase"

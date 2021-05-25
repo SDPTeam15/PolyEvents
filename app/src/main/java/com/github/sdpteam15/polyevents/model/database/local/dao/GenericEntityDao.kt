@@ -2,7 +2,7 @@ package com.github.sdpteam15.polyevents.model.database.local.dao
 import androidx.room.*
 import com.github.sdpteam15.polyevents.model.database.local.entity.GenericEntity
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant
-import com.github.sdpteam15.polyevents.model.room.EventLocal
+import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
 
 /**
  * Data access object for the GenericEntity entity on the local room database
