@@ -178,6 +178,8 @@
     <string name="fail_retrieve_events">Failed to retrieve all the events</string>
     <string name="number_of_event_greater_than_0">The number of participant must be >= %1$d</string>
     <string name="choose_an_organiser">Choose an organiser</string>
+    <string name="event_edit_request_successfully_sent">Your event edit request has been successfully sent</string>
+    <string name="event_edit_request_error">Error while sending event edit request, please try again</string>
 
 
 
