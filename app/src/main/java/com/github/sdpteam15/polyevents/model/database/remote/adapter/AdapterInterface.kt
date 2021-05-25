@@ -16,9 +16,10 @@ interface AdapterToDocumentInterface<T> {
     /**
      * Convert an entity to a map mapping fields keys (always string in the database) to their values that we can use directly in the database
      * @param element the entity we're converting
+     * @param deletion if we are converting for deletion
      * @return a hashmap mapping entity fields to their values
      */
-    fun toDocument(element: T): Map<String, Any?>
+    fun toDocument(element: T, deletion : Boolean): Map<String, Any?>
 }
 
 /**
@@ -34,5 +35,5 @@ interface AdapterFromDocumentInterface<T> {
      * @param document this is the data we retrieve from the document.
      * @return the corresponding userEntity.
      */
-    fun fromDocument(document: Map<String, Any?>, id: String): T
+    fun fromDocument(document: Map<String, Any?>, id: String): T?
 }
