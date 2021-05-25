@@ -28,6 +28,11 @@ import kotlin.collections.ArrayList
 
 
 class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
+
+    companion object{
+        var instance: TimeTableActivity? = null
+    }
+
     private lateinit var leftButton: ImageButton
     private lateinit var rightButton: ImageButton
     private lateinit var spinner: Spinner
@@ -36,7 +41,7 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
     private var obsZoneNames = ObservableMap<String, String>()
     var selectedItem = 0
 
-    private val displayedViews = ArrayList<View>()
+    val displayedViews = ArrayList<View>()
     private val idViewToIdEvent = mutableMapOf<Int, String>()
 
     var nextId = 156
@@ -60,7 +65,7 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_time_table)
-
+        instance = this
         leftButton = findViewById(R.id.id_change_zone_left)
         rightButton = findViewById(R.id.id_change_zone_right)
 
@@ -79,7 +84,7 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         setupSpinner()
         setupDate()
 
-        generateTime(8, 23)
+        generateTime(0, 23)
         getEventsFromDB()
         addNowBar()
     }
@@ -121,14 +126,14 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         hourToLine.put(hour, currentIdLine)
 
         tv.id = currentIdText
-        tv.text = "${hour}:00"
+        tv.text = getString(R.string.time_timetable, hour)
 
         //Create a line
         val lign = View(this)
         lign.backgroundTintList = resources.getColorStateList(R.color.black, null)
         lign.id = currentIdLine
 
-        //Create new parameters for the line (the line)
+        //Create new parameters for the line
         val params = ViewGroup.LayoutParams(0, lineHeightDp.dpToPixelsInt(this))
         lign.layoutParams = params
         lign.setBackgroundColor(Color.BLUE)
@@ -193,6 +198,10 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         addHalfHour(hour)
     }
 
+    /**
+     * Draws half hours between the hour in argument and the last hour, only draws if there is a last hour
+     * @param hour next hour to draw between
+     */
     fun addHalfHour(hour: Int){
         if(hourToLine.size < 2)
             return
@@ -204,7 +213,7 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         lignHalfHour.backgroundTintList = resources.getColorStateList(R.color.semi_black, null)
         lignHalfHour.id = currentIdLineHalfHour
 
-        //Create new parameters for the line (the line)
+        //Create new parameters for the line
         val paramsHalfHour = ViewGroup.LayoutParams(0, lineHeightDp.dpToPixelsInt(this))
         lignHalfHour.layoutParams = paramsHalfHour
         lignHalfHour.setBackgroundColor(Color.BLUE)

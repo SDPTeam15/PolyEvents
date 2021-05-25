@@ -59,11 +59,12 @@
 
             <TextView
                 android:id="@+id/txt_event_Name"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 app:layout_constraintBottom_toTopOf="@+id/txt_event_date"
                 app:layout_constraintEnd_toEndOf="parent"
+                android:textAlignment="center"
                 app:layout_constraintStart_toEndOf="@+id/img_event_logo"
                 app:layout_constraintTop_toTopOf="@+id/img_event_logo"
                 app:layout_constraintVertical_bias="0.552" />
