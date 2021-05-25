@@ -5,17 +5,16 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "entity_table")
+@Entity(tableName = "entity_table", primaryKeys = ["id", "collection"])
 data class GenericEntity(
-    @PrimaryKey
-    @ColumnInfo(name = "entity_id")
+    @ColumnInfo(name = "id")
     @NonNull
     val id: String,
-    @PrimaryKey
-    @ColumnInfo(name = "entity_collection")
-    val collection: String? = null,
-    @ColumnInfo(name = "entity_data")
+    @ColumnInfo(name = "collection")
+    @NonNull
+    val collection: String = "",
+    @ColumnInfo(name = "data")
     val data: String? = null,
-    @ColumnInfo(name = "entity_update")
+    @ColumnInfo(name = "update")
     val update: String? = null,
 )
