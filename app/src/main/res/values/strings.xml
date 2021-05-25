@@ -122,6 +122,10 @@
     <!-- EventActivity -->
     <string name="event_unsubscribe">Unsubscribe</string>
     <string name="event_subscribe">Subscribe</string>
+    <string name="event_follow">Follow</string>
+    <string name="event_unfollow">Unfollow</string>
+    <string name="event_successfully_followed">You are now following this event!</string>
+    <string name="event_successfully_unfollowed">You are no longer following this event</string>
     <string name="event_successfully_subscribed">Successfully registered to event!</string>
     <string name="event_successfully_unsubscribed">Successfully unsubscribed from event!</string>
     <string name="toast_subscribe_warning">"You have to be logged in to subscribe"</string>

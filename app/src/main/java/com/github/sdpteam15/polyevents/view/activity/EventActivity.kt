@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.view.activity
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -28,7 +29,9 @@ import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModel
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModelFactory
 
 /**
- * An activity containing events description
+ * An activity containing events description. Note that information about the event could be stored from the local
+ * database instead if they are stored locally (like the case where you subscribe to or follow an
+ * event), but we choose to fetch them remotely to reflect any changes that might be done on the event.
  */
 class EventActivity : AppCompatActivity(), ReviewHasChanged {
     // TODO: view on map functionality?
@@ -95,6 +98,31 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         getCommentsAndObserve()
     }
 
+    /**
+     * Get the currentEvent from the local database
+     */
+    private fun fetchEventFromLocalDatabase() {
+        val localEventObservable = Observable<EventLocal>()
+        localEventObservable.observe (this) {
+            if (it.value == null) {
+                Log.d(TAG, "Event not found in local")
+                subscribeButton.setText(R.string.event_follow)
+                subscribeButton.visibility = View.VISIBLE
+                subscribeButton.setOnClickListener {
+                    followEvent()
+                }
+            } else {
+                Log.d(TAG, "Event found in local!")
+                subscribeButton.setText(R.string.event_unfollow)
+                subscribeButton.visibility = View.VISIBLE
+                subscribeButton.setOnClickListener {
+                    unFollowEvent()
+                }
+            }
+        }
+        Log.d(TAG, "Getting event from local")
+        localEventViewModel.getEventById(eventId, localEventObservable)
+    }
 
     /**
      * get the rating of the event
@@ -188,7 +216,8 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
                 subscribeButton.text = resources.getString(R.string.event_unsubscribe)
             }
         } else {
-            subscribeButton.visibility = View.INVISIBLE
+            // Check if we're following the event
+            fetchEventFromLocalDatabase()
         }
     }
 
@@ -235,6 +264,24 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
             subscribeButton.setText(resources.getString(R.string.event_unsubscribe))
         } catch (e: MaxAttendeesException) {
             showToast(resources.getString(R.string.event_subscribe_at_max_capacity), this)
+        }
+    }
+    
+    private fun followEvent() {
+        localEventViewModel.insert(EventLocal.fromEvent(event))
+        showToast(resources.getString(R.string.event_successfully_followed), this)
+        subscribeButton.setText(R.string.event_unfollow)
+        subscribeButton.setOnClickListener {
+            unFollowEvent()
+        }
+    }
+
+    private fun unFollowEvent() {
+        localEventViewModel.delete(EventLocal.fromEvent(event))
+        showToast(resources.getString(R.string.event_successfully_unfollowed), this)
+        subscribeButton.setText(R.string.event_follow)
+        subscribeButton.setOnClickListener {
+            followEvent()
         }
     }
 

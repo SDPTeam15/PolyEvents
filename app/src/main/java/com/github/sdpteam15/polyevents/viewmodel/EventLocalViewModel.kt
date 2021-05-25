@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.github.sdpteam15.polyevents.model.database.local.dao.EventDao
+import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.room.EventLocal
 import kotlinx.coroutines.launch
@@ -20,6 +21,17 @@ class EventLocalViewModel(private val eventDao: EventDao) : ViewModel() {
         val events = eventDao.getAll()
         obs.clear()
         obs.addAll(events)
+    }
+
+    fun getEventById(eventId: String, obs: Observable<EventLocal>) = viewModelScope.launch {
+        val eventLocal = eventDao.getEventById(eventId)
+        if (eventLocal == null) {
+            Log.d(TAG, "EventLocal Not found!")
+            obs.postValue(null)
+        } else {
+            Log.d(TAG, "EventLocal found!: $eventLocal")
+            obs.postValue(eventLocal)
+        }
     }
 
     /**
