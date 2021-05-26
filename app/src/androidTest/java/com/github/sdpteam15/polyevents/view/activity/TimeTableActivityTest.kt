@@ -36,8 +36,8 @@ class TimeTableActivityTest {
             eventId = "Id1",
             zoneId = " zid1",
             zoneName = "zoneName1",
-            startTime = LocalDateTime.now(),
-            endTime = LocalDateTime.now()
+            startTime = LocalDateTime.now().withHour(1),
+            endTime = LocalDateTime.now().withHour(1)
         )
     private val event2 =
         Event(
@@ -45,8 +45,8 @@ class TimeTableActivityTest {
             eventId = "Id2",
             zoneId = " zid1",
             zoneName = "zoneName1",
-            startTime = LocalDateTime.now().plusDays(1),
-            endTime = LocalDateTime.now().plusDays(1)
+            startTime = LocalDateTime.now().plusDays(1).withHour(1),
+            endTime = LocalDateTime.now().plusDays(1).withHour(1)
         )
     private val event3 =
         Event(
@@ -54,8 +54,8 @@ class TimeTableActivityTest {
             eventId = "Id3",
             zoneId = " zid2",
             zoneName = "zoneName2",
-            startTime = LocalDateTime.now(),
-            endTime = LocalDateTime.now()
+            startTime = LocalDateTime.now().withHour(1),
+            endTime = LocalDateTime.now().withHour(1)
         )
     private val event4 =
         Event(
@@ -63,8 +63,8 @@ class TimeTableActivityTest {
             eventId = "Id4",
             zoneId = " zid3",
             zoneName = "zoneName3",
-            startTime = LocalDateTime.now(),
-            endTime = LocalDateTime.now()
+            startTime = LocalDateTime.now().withHour(1),
+            endTime = LocalDateTime.now().withHour(1)
         )
     private lateinit var events: MutableList<Event>
     private lateinit var zones: MutableList<Zone>
@@ -155,7 +155,6 @@ class TimeTableActivityTest {
         Espresso.onData(CoreMatchers.anything()).atPosition(2).perform(ViewActions.click())
         Thread.sleep(1000)
         assertEquals(1, TimeTableActivity.instance!!.displayedViews.size)
-        val view = TimeTableActivity.instance!!.displayedViews.first()
     }
 
     @Test
@@ -174,22 +173,21 @@ class TimeTableActivityTest {
         TimeTableActivity.instance!!.widthDP = v3
         assertEquals(v3, TimeTableActivity.instance!!.widthDP)
 
-        TimeTableActivity.instance!!.hourSizeDp
         TimeTableActivity.instance!!.lineHeightDp
         TimeTableActivity.instance!!.linepaddingLeftDP
         TimeTableActivity.instance!!.nowLineHeightDP
         TimeTableActivity.instance!!.hourToLine
 
-
     }
+
+
     @Test
     fun clic(){
         Thread.sleep(1000)
         assertEquals(1, TimeTableActivity.instance!!.displayedViews.size)
         val view = TimeTableActivity.instance!!.displayedViews.first()
 
-        Espresso.onView(ViewMatchers.withId(view.id))
-            .perform(ViewActions.click())
+        Espresso.onView(ViewMatchers.withId(view.id)).perform(ViewActions.click())
 
     }
 

@@ -26,7 +26,9 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.collections.ArrayList
 
-
+/**
+ * Activity displaying the timetable of the event
+ */
 class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     companion object{
@@ -69,6 +71,7 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         leftButton = findViewById(R.id.id_change_zone_left)
         rightButton = findViewById(R.id.id_change_zone_right)
 
+        //Setup of buttons
         rightButton.setOnClickListener {
             selectedDate = selectedDate.plusDays(1)
             setupDate()
@@ -80,6 +83,7 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
             drawZoneEvents(selectedZone!!)
         }
         spinner = findViewById(R.id.id_title_zone)
+
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         setupSpinner()
         setupDate()
@@ -89,6 +93,9 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         addNowBar()
     }
 
+    /**
+     * Sets the date in the textview to the selected date
+     */
     private fun setupDate() {
         val date =
             selectedDate.format(DateTimeFormatter.ofPattern("EEEE, dd.MM.yyyy", Locale.FRENCH))
@@ -139,7 +146,6 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         lign.setBackgroundColor(Color.BLUE)
 
         val constraintLayout = findViewById<ConstraintLayout>(R.id.id_timetable_constraintlayout)
-
         constraintLayout.addView(tv)
         constraintLayout.addView(lign)
 
@@ -219,13 +225,12 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         lignHalfHour.setBackgroundColor(Color.BLUE)
 
         val constraintLayout = findViewById<ConstraintLayout>(R.id.id_timetable_constraintlayout)
-
         constraintLayout.addView(lignHalfHour)
 
         val constraintSet = ConstraintSet()
         constraintSet.clone(constraintLayout)
 
-        //Constraints for the line of half hours
+        //Constraints for the line of half hours, constraint is between the lines of the two hours
         constraintSet.connect(
             currentIdLineHalfHour,
             ConstraintSet.TOP,
@@ -293,6 +298,11 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         }
     }
 
+    /**
+     * Get the right format for the key of days
+     * @param date date to format
+     * @return returns the date to the right format for being the key of the maps
+     */
     private fun getDateFormat(date: LocalDateTime): String {
         return date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.FRENCH))
     }
