@@ -107,13 +107,7 @@ class EventListFragment : Fragment() {
      */
     private fun myEventsSwitchCallback(isChecked: Boolean) {
         if (isChecked) {
-            if (currentDatabase.currentUser == null) {
-                // Cannot switch to my Events if no user logged in
-                myEventsSwitch.isChecked = false
-                HelperFunctions.showToast(resources.getString(R.string.my_events_log_in), context)
-            } else {
-                getUserLocalSubscribedEvents()
-            }
+            getUserLocalSubscribedEvents()
         } else {
             getEventsListAndDisplay(context)
         }
