@@ -102,15 +102,15 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
      * Get the currentEvent from the local database
      */
     private fun fetchEventFromLocalDatabase() {
-        val localEventObservable = Observable<EventLocal>()
+        val localEventObservable = ObservableList<EventLocal>()
         localEventObservable.observe (this) {
-            if (it.value == null) {
+            if (it.value.isEmpty()) {
                 Log.d(TAG, "Event not found in local")
                 subscribeButton.setText(R.string.event_follow)
-                subscribeButton.visibility = View.VISIBLE
                 subscribeButton.setOnClickListener {
                     followEvent()
                 }
+                subscribeButton.visibility = View.VISIBLE
             } else {
                 Log.d(TAG, "Event found in local!")
                 subscribeButton.setText(R.string.event_unfollow)
@@ -118,6 +118,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
                 subscribeButton.setOnClickListener {
                     unFollowEvent()
                 }
+                subscribeButton.visibility = View.VISIBLE
             }
         }
         Log.d(TAG, "Getting event from local")

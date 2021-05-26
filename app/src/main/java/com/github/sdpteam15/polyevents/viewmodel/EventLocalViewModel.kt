@@ -23,14 +23,14 @@ class EventLocalViewModel(private val eventDao: EventDao) : ViewModel() {
         obs.addAll(events)
     }
 
-    fun getEventById(eventId: String, obs: Observable<EventLocal>) = viewModelScope.launch {
+    fun getEventById(eventId: String, obs: ObservableList<EventLocal>) = viewModelScope.launch {
         val eventLocal = eventDao.getEventById(eventId)
-        if (eventLocal == null) {
+        if (eventLocal.isEmpty()) {
             Log.d(TAG, "EventLocal Not found!")
-            obs.postValue(null)
+            obs.addAll(eventLocal)
         } else {
-            Log.d(TAG, "EventLocal found!: $eventLocal")
-            obs.postValue(eventLocal)
+            Log.d(TAG, "EventLocal found!: ${eventLocal[0]}")
+            obs.addAll(eventLocal)
         }
     }
 
