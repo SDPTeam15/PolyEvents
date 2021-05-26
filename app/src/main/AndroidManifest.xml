@@ -17,9 +17,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PolyEvents">
+
+        <activity android:name=".view.activity.admin.EventEditManagementActivity"
+            android:parentActivityName=".view.activity.MainActivity">
+
+        </activity>
+
         <activity
             android:name=".view.activity.activityprovider.MyItemRequestsActivity"
             android:parentActivityName=".view.activity.MainActivity"/>
+        <activity android:name=".view.activity.activityprovider.EventManagementActivityProvider" />
+
         <activity
             android:name=".view.activity.staff.StaffRequestsActivity"
             android:label="Staff Items Deliveries"
@@ -32,7 +40,6 @@
             android:name=".view.activity.admin.EventManagementActivity"
             android:label="@string/title_activity_event_management"
             android:parentActivityName=".view.activity.admin.EventManagementListActivity" />
-
         <service
             android:name=".view.service.TimerService"
             android:enabled="true"
