@@ -21,7 +21,14 @@ data class MaterialRequest(
     enum class Status (private val status: String) {
         PENDING("pending"),
         ACCEPTED("accepted"),
-        REFUSED("refused");
+        REFUSED("refused"),
+        DELIVERING("In delivery"),
+        DELIVERED("Delivered"),
+        RETURN_REQUESTED("Return requested"),
+        RETURNING("In returning"),
+        RETURNED("Returned")
+        ;
+
 
         override fun toString(): String {
             return status

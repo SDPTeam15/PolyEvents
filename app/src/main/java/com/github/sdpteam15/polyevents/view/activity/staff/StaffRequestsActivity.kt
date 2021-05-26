@@ -22,18 +22,19 @@ import com.github.sdpteam15.polyevents.view.adapter.MyItemRequestAdapter
 import com.github.sdpteam15.polyevents.view.fragments.home.ProviderHomeFragment
 
 /**
- * Extra containing the event ID to show on the launched event page
+ * Extra containing the user ID of the staff
  */
-const val EXTRA_ITEM_REQUEST_ID = "com.github.sdpteam15.polyevents.requests.ITEM_REQUEST_ID"
+const val EXTRA_ID_USER_STAFF = "com.github.sdpteam15.polyevents.requests.STAFF_USER_ID"
 
-class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
+class StaffRequestsActivity : AppCompatActivity()/*, AdapterView.OnItemSelectedListener*/ {
+
     private var currentStatus: MaterialRequest.Status = MaterialRequest.Status.PENDING
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var leftButton: ImageButton
     private lateinit var rightButton: ImageButton
     private lateinit var spinner: Spinner
-    private lateinit var userId: String
+    private lateinit var staffUserId: String
 
     private val requests = ObservableList<MaterialRequest>()
     private val materialRequest =
@@ -52,6 +53,7 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
             MaterialRequest.Status.PENDING -> MaterialRequest.Status.ACCEPTED
             MaterialRequest.Status.ACCEPTED -> MaterialRequest.Status.REFUSED
             MaterialRequest.Status.REFUSED -> MaterialRequest.Status.PENDING
+            else -> currentStatus //should never happen
         }
         observableStatus.postValue(currentStatus)
     }
@@ -64,6 +66,7 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
             MaterialRequest.Status.PENDING -> MaterialRequest.Status.REFUSED
             MaterialRequest.Status.REFUSED -> MaterialRequest.Status.ACCEPTED
             MaterialRequest.Status.ACCEPTED -> MaterialRequest.Status.PENDING
+            else -> currentStatus //should never happen
         }
         observableStatus.postValue(currentStatus)
     }
@@ -77,11 +80,11 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+        super.onCreate(savedInstanceState)}/*
         setContentView(R.layout.activity_my_item_requests)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
-        userId = intent.getStringExtra(ProviderHomeFragment.ID_USER)!!
+        staffUserId = intent.getStringExtra(EXTRA_ID_USER_STAFF)!!
         recyclerView = findViewById(R.id.id_recycler_my_item_requests)
         leftButton = findViewById(R.id.id_change_request_status_left)
         rightButton = findViewById(R.id.id_change_request_status_right)
@@ -189,5 +192,5 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
 
     override fun onNothingSelected(p0: AdapterView<*>?) {
 
-    }
+    }*/
 }

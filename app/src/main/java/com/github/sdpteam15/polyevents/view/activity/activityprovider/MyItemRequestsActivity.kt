@@ -52,6 +52,7 @@ class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLi
             MaterialRequest.Status.PENDING -> MaterialRequest.Status.ACCEPTED
             MaterialRequest.Status.ACCEPTED -> MaterialRequest.Status.REFUSED
             MaterialRequest.Status.REFUSED -> MaterialRequest.Status.PENDING
+            else -> currentStatus //should never happen
         }
         observableStatus.postValue(currentStatus)
     }
@@ -64,6 +65,7 @@ class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLi
             MaterialRequest.Status.PENDING -> MaterialRequest.Status.REFUSED
             MaterialRequest.Status.REFUSED -> MaterialRequest.Status.ACCEPTED
             MaterialRequest.Status.ACCEPTED -> MaterialRequest.Status.PENDING
+            else -> currentStatus //should never happen
         }
         observableStatus.postValue(currentStatus)
     }

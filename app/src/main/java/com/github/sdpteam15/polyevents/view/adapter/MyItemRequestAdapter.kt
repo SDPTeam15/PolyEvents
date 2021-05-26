@@ -82,6 +82,7 @@ class MyItemRequestAdapter(
                 MaterialRequest.Status.ACCEPTED -> Color.GREEN
                 MaterialRequest.Status.PENDING -> Color.BLACK
                 MaterialRequest.Status.REFUSED -> Color.RED
+                else -> Color.BLACK
             })
             status.text = request.status.toString()
 
