@@ -145,7 +145,7 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
     private fun addListener(viewRoot: View) {
         viewRoot.findViewById<Button>(R.id.btnUpdateInfos).setOnClickListener {
             //Clear the previous map and add every field
-            currentUser!!.name = profileUsernameET.text.toString()
+            currentUser!!.username = profileUsernameET.text.toString()
             // TODO: editText should have birthday input and convert it to Timestamp otherwise things crash
             //hashMapNewInfo[USER_BIRTH_DATE] = viewRoot.findViewById<EditText>(R.id.profileBirthdayET).text.toString()
 

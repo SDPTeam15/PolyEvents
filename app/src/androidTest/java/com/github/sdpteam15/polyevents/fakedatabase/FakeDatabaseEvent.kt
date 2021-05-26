@@ -99,6 +99,30 @@ object FakeDatabaseEvent : EventDatabaseInterface {
         return Observable(true, this)
     }
 
+    override fun createEventEdit(event: Event, userAccess: UserProfile?): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateEventEdit(event: Event, userAccess: UserProfile?): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getEventEditFromId(
+        id: String,
+        returnEvent: Observable<Event>,
+        userAccess: UserProfile?
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getEventEdits(
+        matcher: Matcher?,
+        eventList: ObservableList<Event>,
+        userAccess: UserProfile?
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
     override fun getRatingsForEvent(
         eventId: String,
         limit: Long?,

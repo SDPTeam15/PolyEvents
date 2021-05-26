@@ -141,9 +141,8 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
-
             <LinearLayout
-                android:id="@+id/eventManagementSpinnerLayout"
+                android:id="@+id/eventManagementSpinnerLayoutOrganiser"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -155,7 +154,7 @@
                 app:layout_constraintTop_toBottomOf="@id/eventManagementDescriptionLayout">
 
                 <TextView
-                    android:id="@+id/tvSpinnerChoice"
+                    android:id="@+id/tvSpinnerOrganiser"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="2.5"
@@ -168,6 +167,34 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1" />
             </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/eventManagementSpinnerLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                android:paddingStart="10dp"
+                android:paddingEnd="0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/eventManagementSpinnerLayoutOrganiser">
+
+                <TextView
+                    android:id="@+id/tvSpinnerChoice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2.5"
+                    android:text="@string/choose_an_organiser"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+
+                <Spinner
+                    android:id="@+id/spinner_organiser"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraint_layout_date_start"

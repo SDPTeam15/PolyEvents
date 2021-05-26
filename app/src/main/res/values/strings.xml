@@ -40,6 +40,7 @@
     <string name="admin_hub_btn_event_text">Event</string>
     <string name="admin_hub_btn_user_text">User</string>
     <string name="admin_hub_title">Admin management options</string>
+    <string name="event_edit_btn_text">Event edit</string>
 
     <!-- Fragment Provider Home-->
     <string name="provider_hub_title">Provider management options</string>
@@ -144,6 +145,7 @@
     <!-- EventListManagementActivity-->
     <string name="event_list_management">All events</string>
     <string name="btn_new_event_text">+</string>
+    <string name="message_confirm_delete">Are you sure to want to delete %1$s (this action is not reversible)</string>
 
     <!-- EventManagementActivity-->
     <string name="failed_get_event_information">Unable to get the information associated to this event</string>
@@ -174,8 +176,26 @@
     <string name="event_deletion_no_button_text">No</string>
     <string name="event_deletion_yes_button_text">Yes</string>
     <string name="fail_retrieve_events">Failed to retrieve all the events</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="number_of_event_greater_than_0">The number of participant must be >= %1$d</string>
+    <string name="choose_an_organiser">Choose an organiser</string>
+    <string name="event_edit_request_successfully_sent">Your event edit request has been successfully sent</string>
+    <string name="event_edit_request_error">Error while sending event edit request, please try again</string>
+
+
+
+    <!-- EventEditDifference Fragments title -->
+    <string name="edit_fragment_creation_title">Creation</string>
+    <string name="edit_title_modification">Modified</string>
+    <string name="edit_original_title">Original</string>
+    <string name="edit_name_label">Name:</string>
+    <string name="edit_start_date_label">Start date:</string>
+    <string name="edit_end_date_label">End date:</string>
+    <string name="edit_zone_label">Zone:</string>
+    <string name="edit_limited_event_label">Limited event ?</string>
+    <string name="edit_desc_label">Description</string>
+    <string name="edit_close_btn_text">Close</string>
+    <string name="fragment_edit_no_text">No.</string>
+    <string name="fragment_edit_limited_text">Yes, %1$s.</string>
 
     <!-- MyItemRequestsActivity -->
     <string name="my_item_requests">My item requests</string>
