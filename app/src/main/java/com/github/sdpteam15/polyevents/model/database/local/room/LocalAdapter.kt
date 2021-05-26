@@ -54,7 +54,7 @@ class LocalAdapterToDocument<T>(private val adapter: AdapterToDocumentInterface<
      * @param date from last update
      * @return a GenericEntity fields to their values
      */
-    fun toDocument(element: T?, id: String, date: LocalDateTime?): GenericEntity? {
+    fun toDocument(element: T?, id: String, date: LocalDateTime? = null): GenericEntity? {
         val result = adapter.toDocument(element)
         return if (result == null) null
         else GenericEntity(

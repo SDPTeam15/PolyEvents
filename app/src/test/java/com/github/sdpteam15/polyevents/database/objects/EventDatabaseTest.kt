@@ -7,6 +7,7 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.Co
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.EventAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.EventEditAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.RatingAdapter
+import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.objects.EventDatabase
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Rating

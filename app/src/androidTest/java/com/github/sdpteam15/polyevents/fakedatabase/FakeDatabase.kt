@@ -2,7 +2,7 @@ package com.github.sdpteam15.polyevents.fakedatabase
 
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
-import com.github.sdpteam15.polyevents.model.database.remote.Matcher
+import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterToDocumentInterface
 import com.github.sdpteam15.polyevents.model.database.remote.objects.*
@@ -105,11 +105,11 @@ object FakeDatabase : DatabaseInterface {
     }
 
     override fun <T : Any> getListEntity(
-            elements: ObservableList<T>,
-            ids: List<String>?,
-            matcher: Matcher?,
-            collection: DatabaseConstant.CollectionConstant,
-            adapter: AdapterFromDocumentInterface<out T>
+        elements: ObservableList<T>,
+        ids: List<String>?,
+        matcher: Matcher?,
+        collection: DatabaseConstant.CollectionConstant,
+        adapter: AdapterFromDocumentInterface<out T>
     ): Observable<Boolean> {
         TODO("Not yet implemented")
     }

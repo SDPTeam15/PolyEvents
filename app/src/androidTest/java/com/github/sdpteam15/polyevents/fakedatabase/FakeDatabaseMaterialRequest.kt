@@ -1,7 +1,6 @@
 package com.github.sdpteam15.polyevents.fakedatabase
 
-import com.github.sdpteam15.polyevents.TestHelper
-import com.github.sdpteam15.polyevents.model.database.remote.Matcher
+import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.objects.MaterialRequestDatabaseInterface
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
 import com.github.sdpteam15.polyevents.model.entity.UserProfile

@@ -6,6 +6,8 @@ import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFrom
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterToDocumentInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.UserAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
+import com.github.sdpteam15.polyevents.model.database.remote.matcher.FirestoreQuery
+import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.objects.*
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
@@ -127,13 +129,6 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             .addOnFailureListener(failureListener)
         return ended
     }
-
-    override fun <T : Any> addEntity(
-        element: T,
-        collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterToDocumentInterface<in T>
-    ): Observable<Boolean> =
-        addEntityAndGetId(element, collection, adapter).mapOnce { it != "" }.then
 
     override fun <T : Any> addListEntity(
         elements: List<T>,
@@ -292,7 +287,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             }
 
         } else {
-            val task = matcher?.match(fsCollection)?.get() ?: fsCollection.get()
+            val task = matcher?.match(FirestoreQuery(fsCollection))?.get() ?: FirestoreQuery(fsCollection).get()
             task.addOnSuccessListener {
                 elements.clear(this)
                 val list = mutableListOf<T>()

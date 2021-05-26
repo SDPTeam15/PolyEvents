@@ -9,7 +9,7 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
-import com.github.sdpteam15.polyevents.model.database.remote.Matcher
+import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.map.ZoneAreaMapHelper
 import com.github.sdpteam15.polyevents.model.observable.ObservableList

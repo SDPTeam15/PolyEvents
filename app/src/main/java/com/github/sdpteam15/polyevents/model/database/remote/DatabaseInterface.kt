@@ -3,6 +3,7 @@ package com.github.sdpteam15.polyevents.model.database.remote
 import com.github.sdpteam15.polyevents.model.*
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterToDocumentInterface
+import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.objects.*
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
@@ -97,7 +98,7 @@ interface DatabaseInterface {
         element: T,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterToDocumentInterface<in T> = collection.adapter as AdapterToDocumentInterface<T>
-    ): Observable<Boolean>
+    ): Observable<Boolean> = addEntityAndGetId(element, collection, adapter).mapOnce { it != "" }.then
 
     /**
      * Add a list Entity from the database
