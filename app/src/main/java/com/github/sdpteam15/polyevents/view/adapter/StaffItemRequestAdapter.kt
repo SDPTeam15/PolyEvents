@@ -36,7 +36,7 @@ class StaffItemRequestAdapter(
     private val itemNames: ObservableMap<String, String>,
     private val userNames: ObservableMap<String, String>,
     private val staffName: String?,
-    private val onModifyListener: (MaterialRequest) -> Unit,
+    private val onAcceptListener: (MaterialRequest) -> Unit,
     private val onCancelListener: (MaterialRequest) -> Unit
 ) : RecyclerView.Adapter<StaffItemRequestAdapter.ItemViewHolder>() {
     private val adapterLayout = LayoutInflater.from(context)
@@ -68,7 +68,7 @@ class StaffItemRequestAdapter(
         private val organizer = view.findViewById<TextView>(R.id.id_request_organiser)
         private val time = view.findViewById<TextView>(R.id.id_request_time)
         private val itemList = view.findViewById<TextView>(R.id.id_request_item_list)
-        private val btnModify = view.findViewById<ImageButton>(R.id.id_modify_request)
+        private val btnAccept = view.findViewById<ImageButton>(R.id.id_modify_request)
         private val btnCancel = view.findViewById<ImageButton>(R.id.id_delete_request)
         private val status = view.findViewById<TextView>(R.id.id_request_status)
         private val adminMessage = view.findViewById<TextView>(R.id.id_admin_message)
@@ -85,22 +85,22 @@ class StaffItemRequestAdapter(
                     DateTimeFormatter.ISO_LOCAL_TIME
                 ).subSequence(0, 5)
             itemList.text = request.items.map { itemNames[it.key] + " : " + it.value }
-                .joinToString(separator = "\n") { it }
+                .joinToString(separator = "\n")
             status.setTextColor(when(request.status){
                 MaterialRequest.Status.ACCEPTED -> Color.BLACK
-                MaterialRequest.Status.DELIVERING -> Color.YELLOW
+                MaterialRequest.Status.DELIVERING -> Color.CYAN
                 MaterialRequest.Status.DELIVERED -> Color.GREEN
                 MaterialRequest.Status.RETURN_REQUESTED -> Color.BLACK
-                MaterialRequest.Status.RETURNING -> Color.YELLOW
+                MaterialRequest.Status.RETURNING -> Color.CYAN
                 MaterialRequest.Status.RETURNED -> Color.GREEN
                 else -> Color.BLACK
             })
             status.text = request.status.toString()
 
-            btnModify.visibility = if (request.status == MaterialRequest.Status.PENDING) VISIBLE else INVISIBLE
-            btnCancel.visibility = if (request.status == MaterialRequest.Status.PENDING) VISIBLE else INVISIBLE
+            btnAccept.visibility = if (request.status == MaterialRequest.Status.ACCEPTED || request.status == MaterialRequest.Status.RETURN_REQUESTED) VISIBLE else INVISIBLE
+            btnCancel.visibility = if (request.status == MaterialRequest.Status.DELIVERING || request.status == MaterialRequest.Status.RETURNING) VISIBLE else INVISIBLE
             btnCancel.setOnClickListener { onCancelListener(request) }
-            btnModify.setOnClickListener { onModifyListener(request) }
+            btnAccept.setOnClickListener { onAcceptListener(request) }
             refusalLayout.visibility = if(request.adminMessage != null) VISIBLE else GONE
             adminMessage.text = request.adminMessage
         }

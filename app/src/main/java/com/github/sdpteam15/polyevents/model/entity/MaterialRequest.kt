@@ -15,8 +15,10 @@ data class MaterialRequest(
     val items: Map<String, Int>,
     val time: LocalDateTime?,
     val userId: String,
+    val zoneId: String,
     var status: Status,
-    var adminMessage: String?
+    var adminMessage: String?,
+    var staffInChargeId: String?
 ){
     enum class Status (private val status: String) {
         PENDING("pending"),

@@ -11,7 +11,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.model.database.remote.Database
+import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.MaterialRequestConstant.MATERIAL_REQUEST_STATUS
 import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
@@ -20,8 +22,7 @@ import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
-import com.github.sdpteam15.polyevents.view.activity.staff.StaffRequestsActivity.Companion.StaffRequestStatus.DELIVERY
-import com.github.sdpteam15.polyevents.view.activity.staff.StaffRequestsActivity.Companion.StaffRequestStatus.RETURN
+import com.github.sdpteam15.polyevents.view.activity.staff.StaffRequestsActivity.Companion.StaffRequestStatus.*
 import com.github.sdpteam15.polyevents.view.adapter.StaffItemRequestAdapter
 
 /**
@@ -120,8 +121,8 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
                 itemNames,
                 userNames,
                 staffName,
-                modifyMaterialRequest,
-                cancelMaterialRequest
+                acceptMaterialDelivery,
+                cancelMaterialDelivery
             )
 
         currentStatus.observe(this) {
@@ -129,12 +130,25 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
             Log.d("YYYYYYYYYY", items.size.toString())
         }
 
+        requests.observeUpdate(this) {
+            if (it.sender != currentDatabase) {
+                currentDatabase.materialRequestDatabase!!.updateMaterialRequest(
+                    it.value.requestId!!,
+                    it.value
+                ).observeOnce { it2 ->
+                    if (!it2.value) {
+                        showToast("Failed to update the material request", this)
+                    }
+                }
+            }
+        }
+
         items.group(this) { it.first.itemId!! }.then.map(this, itemNames) {
             it[0].first.itemName!!
         }
 
         requests.group(this, materialRequest) {
-            fromOrdinal(staffRequestStatusFromMaterialStatus(it.status))!!
+            staffRequestStatusFromMaterialStatus(it.status)
         }
     }
 
@@ -148,8 +162,8 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
      */
     private fun getItemRequestsFromDB() {
         //Gets the item request of the user and then gets the item list
-        Log.d("ZZZZZZZZZZZZZZZZZZ", allStaffStatuses().toString())
-        Database.currentDatabase.materialRequestDatabase!!.getMaterialRequestList(
+
+        currentDatabase.materialRequestDatabase!!.getMaterialRequestList(
             requests,
             {
                 it.orderBy(MATERIAL_REQUEST_STATUS.value)
@@ -159,7 +173,7 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
                 HelperFunctions.showToast("Failed to get the list of material requests", this)
             }
         }
-        Database.currentDatabase.itemDatabase!!.getItemsList(items)
+        currentDatabase.itemDatabase!!.getItemsList(items)
             .observeOnce(this) {
                 if (!it.value) {
                     HelperFunctions.showToast("Failed to get the list of items", this)
@@ -168,34 +182,38 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
 
         val tempUsers = ObservableList<UserEntity>()
         tempUsers.group(this) { it.uid }.then.map(this, userNames) { it[0].name ?: "UNKNOWN" }
-        Database.currentDatabase.userDatabase!!.getListAllUsers(tempUsers)
+        currentDatabase.userDatabase!!.getListAllUsers(tempUsers)
             .observeOnce(this) {
                 if (!it.value) {
                     HelperFunctions.showToast("Failed to get the list of users", this)
                 }
             }
     }
-
-    private val modifyMaterialRequest = { request: MaterialRequest ->
-        val l =
-            Database.currentDatabase.materialRequestDatabase!!.deleteMaterialRequest(request.requestId!!)
-        l.observe(this) {
-            if (it.value)
-                requests.remove(request)
-        }
+    /**
+     * Accept a material request delivery / return
+     */
+    private val acceptMaterialDelivery = { request: MaterialRequest ->
+        requests.set(
+            requests.indexOfFirst { it.requestId == request.requestId }, when (request.status) {
+                ACCEPTED -> request.copy(status = DELIVERING, staffInChargeId = staffUserId)
+                RETURN_REQUESTED -> request.copy(status = RETURNING, staffInChargeId = staffUserId)
+                else -> request // should never happen
+            }, this
+        )
         Unit
     }
 
     /**
-     * Deletes the item request
+     * Cancel a material request delivery / return
      */
-    private val cancelMaterialRequest = { request: MaterialRequest ->
-        val l =
-            Database.currentDatabase.materialRequestDatabase!!.deleteMaterialRequest(request.requestId!!)
-        l.observe(this) {
-            if (it.value)
-                requests.remove(request)
-        }
+    private val cancelMaterialDelivery = { request: MaterialRequest ->
+        requests.set(
+            requests.indexOfFirst { it.requestId == request.requestId }, when (request.status) {
+                DELIVERING -> request.copy(status = ACCEPTED, staffInChargeId = null)
+                RETURNING -> request.copy(status = RETURN_REQUESTED, staffInChargeId = null)
+                else -> request // should never happen
+            }, this
+        )
         Unit
     }
 
@@ -223,16 +241,32 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
             }
         }
 
-        fun allStaffStatuses(): MutableList<Long> {
-            return StaffRequestStatus.values().flatMap { it.getItemRequestStatuses() }
-                .toMutableList()
-        }
-
-        fun staffRequestStatusFromMaterialStatus(status: MaterialRequest.Status): Int {
-            return mapOrdinal.entries.firstOrNull { it.value.ordinal == status.ordinal }!!.key
-        }
-
+        /*
+                fun allStaffStatuses(): MutableList<Long> {
+                    return StaffRequestStatus.values().flatMap { it.getItemRequestStatuses() }
+                        .toMutableList()
+                }
+        */
         private val mapOrdinal = StaffRequestStatus.values().map { it.ordinal to it }.toMap()
+
+        private val mapCategory = mapOf(
+            ACCEPTED to DELIVERY,
+            DELIVERING to DELIVERY,
+            DELIVERED to DELIVERY,
+
+            RETURN_REQUESTED to RETURN,
+            RETURNING to RETURN,
+            RETURNED to RETURN,
+
+            PENDING to OTHERS,
+            REFUSED to OTHERS
+        )
+
+        fun staffRequestStatusFromMaterialStatus(status: MaterialRequest.Status): StaffRequestStatus {
+            return mapCategory[status]!!
+        }
+
+
         fun fromOrdinal(ordinal: Int) = mapOrdinal[ordinal]
 
 

@@ -9,6 +9,7 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
+import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
@@ -26,6 +27,8 @@ class ItemRequestActivity : AppCompatActivity() {
     var mapSelectedItems = ObservableMap<Item, Int>()
     var obsItemsMap = ObservableMap<String, ObservableMap<Item, Pair<Int, Int>>>()
     private var requestId: String? = null
+    var mapZoneNames = ObservableMap<String,String>()
+    lateinit var selectedZoneId : String
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,6 +50,12 @@ class ItemRequestActivity : AppCompatActivity() {
                 it.group(this) { it2 -> it2.first }.then
                     .map(this) { it2 -> Pair(it2[0].second, it2[0].third) }.then
             }
+        val tempZones = ObservableList<Zone>()
+        currentDatabase.zoneDatabase!!.getAllZones(null,null,tempZones).observe (this){
+            if(it.value){
+                tempZones.group (this){ it2 -> it2.zoneId!! }.then.map (this, mapZoneNames) { it2->it2[0].zoneName?:"UNKNOWN LOCATION" }
+            }
+        }
         currentDatabase.itemDatabase!!.getAvailableItems(requestObservable).observeOnce(this) {
             if (it.value) {
                 if (requestId != null) {
@@ -100,7 +109,9 @@ class ItemRequestActivity : AppCompatActivity() {
                             .toMap(),
                         LocalDateTime.now(),
                         currentDatabase.currentUser?.uid ?: "",
+                        selectedZoneId,
                         MaterialRequest.Status.PENDING,
+                        null,
                         null
                     )
                 )
@@ -114,7 +125,9 @@ class ItemRequestActivity : AppCompatActivity() {
                             .toMap(),
                         LocalDateTime.now(),
                         currentDatabase.currentUser?.uid ?: "",
+                        selectedZoneId,
                         MaterialRequest.Status.PENDING,
+                        null,
                         null
                     )
                 )

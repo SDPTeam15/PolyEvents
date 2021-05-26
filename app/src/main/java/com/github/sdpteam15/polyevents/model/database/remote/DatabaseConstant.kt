@@ -120,8 +120,10 @@ object DatabaseConstant {
         MATERIAL_REQUEST_TIME("time"),
         MATERIAL_REQUEST_LIST("item_list"),
         MATERIAL_REQUEST_USER_ID("user_id"),
+        MATERIAL_REQUEST_ZONE_ID("zone_id"),
         MATERIAL_REQUEST_STATUS("status"),
-        MATERIAL_REQUEST_ADMIN_MESSAGE("admin_message");
+        MATERIAL_REQUEST_ADMIN_MESSAGE("admin_message"),
+        MATERIAL_REQUEST_STAFF_IN_CHARGE("staff_in_charge");
 
         override fun toString(): String = value
     }
