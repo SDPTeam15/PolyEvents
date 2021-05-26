@@ -71,7 +71,7 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
-                android:text="Heure"/>
+                android:text="@string/time_name"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>

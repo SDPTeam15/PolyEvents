@@ -56,7 +56,7 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
     //Event params
     var widthDP = 250
 
-    private var idNowBar: View? = null
+    private var nowBar: View? = null
     private var selectedDate = LocalDateTime.now()
     private var selectedZone: String? = null
 
@@ -91,6 +91,11 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         generateTime(0, 23)
         getEventsFromDB()
         addNowBar()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        instance = null
     }
 
     /**
@@ -136,18 +141,18 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         tv.text = getString(R.string.time_timetable, hour)
 
         //Create a line
-        val lign = View(this)
-        lign.backgroundTintList = resources.getColorStateList(R.color.black, null)
-        lign.id = currentIdLine
+        val line = View(this)
+        line.backgroundTintList = resources.getColorStateList(R.color.black, null)
+        line.id = currentIdLine
 
         //Create new parameters for the line
         val params = ViewGroup.LayoutParams(0, lineHeightDp.dpToPixelsInt(this))
-        lign.layoutParams = params
-        lign.setBackgroundColor(Color.BLUE)
+        line.layoutParams = params
+        line.setBackgroundColor(Color.BLUE)
 
         val constraintLayout = findViewById<ConstraintLayout>(R.id.id_timetable_constraintlayout)
         constraintLayout.addView(tv)
-        constraintLayout.addView(lign)
+        constraintLayout.addView(line)
 
         val constraintSet = ConstraintSet()
         constraintSet.clone(constraintLayout)
@@ -215,17 +220,17 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         val idNextHour = hourToLine[hour]!!
         val idPreviousHour = hourToLine[hour-1]!!
         //Create a line
-        val lignHalfHour = View(this)
-        lignHalfHour.backgroundTintList = resources.getColorStateList(R.color.semi_black, null)
-        lignHalfHour.id = currentIdLineHalfHour
+        val lineHalfHour = View(this)
+        lineHalfHour.backgroundTintList = resources.getColorStateList(R.color.semi_black, null)
+        lineHalfHour.id = currentIdLineHalfHour
 
         //Create new parameters for the line
         val paramsHalfHour = ViewGroup.LayoutParams(0, lineHeightDp.dpToPixelsInt(this))
-        lignHalfHour.layoutParams = paramsHalfHour
-        lignHalfHour.setBackgroundColor(Color.BLUE)
+        lineHalfHour.layoutParams = paramsHalfHour
+        lineHalfHour.setBackgroundColor(Color.BLUE)
 
         val constraintLayout = findViewById<ConstraintLayout>(R.id.id_timetable_constraintlayout)
-        constraintLayout.addView(lignHalfHour)
+        constraintLayout.addView(lineHalfHour)
 
         val constraintSet = ConstraintSet()
         constraintSet.clone(constraintLayout)
@@ -426,17 +431,17 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         val constraintLayout = findViewById<ConstraintLayout>(R.id.id_timetable_constraintlayout)
 
         //Create now line
-        val lign = View(this)
-        lign.backgroundTintList = resources.getColorStateList(R.color.red, null)
-        lign.id = currentId
+        val line = View(this)
+        line.backgroundTintList = resources.getColorStateList(R.color.red, null)
+        line.id = currentId
 
         //Create new parameters for the line (the line)
         val params = ViewGroup.LayoutParams(0, nowLineHeightDP.dpToPixelsInt(this))
-        lign.layoutParams = params
-        lign.setBackgroundColor(Color.BLUE)
+        line.layoutParams = params
+        line.setBackgroundColor(Color.BLUE)
 
-        constraintLayout.addView(lign)
-        idNowBar = lign
+        constraintLayout.addView(line)
+        nowBar = line
 
 
         val constraintSet = ConstraintSet()
@@ -481,10 +486,10 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
      * Refreshes the display of the bar that indicates the current time
      */
     private fun refreshNowBar() {
-        idNowBar ?: return
+        nowBar ?: return
         val constraintLayout = findViewById<ConstraintLayout>(R.id.id_timetable_constraintlayout)
-        constraintLayout.removeView(idNowBar)
-        idNowBar = null
+        constraintLayout.removeView(nowBar)
+        nowBar = null
         addNowBar()
     }
 
