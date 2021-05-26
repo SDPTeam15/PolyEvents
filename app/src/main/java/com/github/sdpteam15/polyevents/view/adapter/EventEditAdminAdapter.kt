@@ -67,7 +67,6 @@ class EventEditAdminAdapter(
         /**
          * Binds the values of each value of a event edit to a view and add the listener to each button of the view.
          */
-        @SuppressLint("SetTextI18n")
         fun bind(event: Event) {
             title.text= when(event.eventId){
                 null -> "Creation"
