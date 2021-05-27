@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.model.database.remote
 
 import android.annotation.SuppressLint
+import com.github.sdpteam15.polyevents.model.database.local.room.LocalCacheAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterToDocumentInterface
@@ -21,6 +22,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import java.time.LocalTime
 
 object FirestoreDatabaseProvider : DatabaseInterface {
     @SuppressLint("StaticFieldLeak")
@@ -59,7 +61,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         }
     override var routeDatabase: RouteDatabaseInterface? = null
         get() {
-            field = field ?: RouteDatabase(this)
+            field = field ?: RouteDatabase(LocalCacheAdapter(this))
             return field
         }
     override var userSettingsDatabase: UserSettingsDatabaseInterface? = null

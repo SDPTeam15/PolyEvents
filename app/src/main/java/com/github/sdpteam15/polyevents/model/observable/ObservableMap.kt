@@ -787,4 +787,6 @@ class ObservableMap<K, T>(val creator: Any? = null) : MutableMap<K, T> {
                     leave(obs)
         }
     }
+
+    override fun toString(): String = "ObservableMap$mapValues"
 }

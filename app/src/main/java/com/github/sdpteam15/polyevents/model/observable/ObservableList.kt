@@ -1103,4 +1103,6 @@ class ObservableList<T>(
     override fun iterator(): MutableIterator<T> = ObservableListIterator(0)
     override fun listIterator(): MutableListIterator<T> = ObservableListIterator(0)
     override fun listIterator(index: Int): MutableListIterator<T> = ObservableListIterator(index)
+
+    override fun toString(): String = "ObservableList$listValues"
 }

@@ -3,7 +3,7 @@ package com.github.sdpteam15.polyevents.model.database.remote.matcher
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 
-class CodeQuery(private val get: () -> Task<QuerySnapshot>) : Query {
+class CodeQuery(private val getfun: () -> Task<QuerySnapshot>) : Query {
     companion object {
         fun <T> CodeQueryFromIterator(
             iterator: Iterator<T>,
@@ -20,7 +20,7 @@ class CodeQuery(private val get: () -> Task<QuerySnapshot>) : Query {
         }
     }
 
-    override fun get(): Task<QuerySnapshot> = get()
+    override fun get(): Task<QuerySnapshot> = getfun()
 
     fun filter(filter: (QueryDocumentSnapshot, Int) -> Boolean) = CodeQuery {
         get().onSuccessTask {

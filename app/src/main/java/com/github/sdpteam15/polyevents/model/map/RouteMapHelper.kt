@@ -436,14 +436,14 @@ object RouteMapHelper {
         context: Context?,
         lifecycleOwner: LifecycleOwner
     ): Observable<Boolean> {
-        Database.currentDatabase.routeDatabase!!.getRoute(nodes, edges, zones)
+        val result = Database.currentDatabase.routeDatabase!!.getRoute(nodes, edges, zones)
         edges.observeAdd(lifecycleOwner) {
             edgeAddedNotification(context, it.value)
         }
         edges.observeRemove(lifecycleOwner) {
             edgeRemovedNotification(it.value)
         }
-        return Observable(true)
+        return result
     }
 
 
