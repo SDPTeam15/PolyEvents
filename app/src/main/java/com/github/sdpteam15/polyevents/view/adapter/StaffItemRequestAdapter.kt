@@ -2,14 +2,13 @@ package com.github.sdpteam15.polyevents.view.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.LocusId
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.*
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ImageButton
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
@@ -36,7 +35,7 @@ class StaffItemRequestAdapter(
     private val typeToDisplay: Observable<StaffRequestsActivity.Companion.StaffRequestStatus>,
     private val itemNames: ObservableMap<String, String>,
     private val userNames: ObservableMap<String, String>,
-    private val zoneNameFromEventId: ObservableMap<String,String>,
+    private val zoneNameFromEventId: ObservableMap<String, String>,
     private val staffId: String?,
     private val onAcceptListener: (MaterialRequest) -> Unit,
     private val onCancelListener: (MaterialRequest) -> Unit,
@@ -55,10 +54,10 @@ class StaffItemRequestAdapter(
         typeToDisplay.observe(lifecycleOwner) {
             notifyDataSetChanged()
         }
-        userNames.observe(lifecycleOwner){
+        userNames.observe(lifecycleOwner) {
             notifyDataSetChanged()
         }
-        zoneNameFromEventId.observe (lifecycleOwner){
+        zoneNameFromEventId.observe(lifecycleOwner) {
             notifyDataSetChanged()
         }
     }
@@ -77,6 +76,7 @@ class StaffItemRequestAdapter(
         private val btnAccept = view.findViewById<ImageButton>(R.id.id_modify_request)
         private val btnCancel = view.findViewById<ImageButton>(R.id.id_delete_request)
         private val status = view.findViewById<TextView>(R.id.id_request_status)
+        private val staffName = view.findViewById<TextView>(R.id.id_request_staffName)
 
         /**
          * Binds the values of each value of a material request to a view
@@ -91,27 +91,35 @@ class StaffItemRequestAdapter(
                 ).subSequence(0, 5)
             itemList.text = request.items.map { itemNames[it.key] + " : " + it.value }
                 .joinToString(separator = "\n")
-            status.setTextColor(when(request.status){
-                MaterialRequest.Status.ACCEPTED -> Color.BLACK
-                MaterialRequest.Status.DELIVERING -> Color.CYAN
-                MaterialRequest.Status.DELIVERED -> Color.GREEN
-                MaterialRequest.Status.RETURN_REQUESTED -> Color.BLACK
-                MaterialRequest.Status.RETURNING -> Color.CYAN
-                MaterialRequest.Status.RETURNED -> Color.GREEN
-                else -> Color.BLACK
-            })
+            status.setTextColor(
+                when (request.status) {
+                    MaterialRequest.Status.ACCEPTED -> Color.BLACK
+                    MaterialRequest.Status.DELIVERING -> Color.CYAN
+                    MaterialRequest.Status.DELIVERED -> Color.GREEN
+                    MaterialRequest.Status.RETURN_REQUESTED -> Color.BLACK
+                    MaterialRequest.Status.RETURNING -> Color.CYAN
+                    MaterialRequest.Status.RETURNED -> Color.GREEN
+                    else -> Color.BLACK
+                }
+            )
             status.text = request.status.toString()
+            staffName.text = if (request.staffInChargeId != null) {
+                "Staff : ${userNames[request.staffInChargeId]}"
+            } else {
+                ""
+            }
 
-            if (request.status == MaterialRequest.Status.ACCEPTED || request.status == MaterialRequest.Status.RETURN_REQUESTED){
+
+            if (request.status == MaterialRequest.Status.ACCEPTED || request.status == MaterialRequest.Status.RETURN_REQUESTED) {
                 btnAccept.visibility = VISIBLE
                 btnAccept.setOnClickListener { onAcceptListener(request) }
                 btnCancel.visibility = INVISIBLE
-            }else if (request.status == MaterialRequest.Status.DELIVERING || request.status == MaterialRequest.Status.RETURNING) {
+            } else if ((request.status == MaterialRequest.Status.DELIVERING || request.status == MaterialRequest.Status.RETURNING) && request.staffInChargeId == staffId) {
                 btnAccept.visibility = VISIBLE
                 btnAccept.setOnClickListener { onDeliveredListener(request) }
                 btnCancel.visibility = VISIBLE
                 btnCancel.setOnClickListener { onCancelListener(request) }
-            }else{
+            } else {
                 btnAccept.visibility = INVISIBLE
                 btnCancel.visibility = INVISIBLE
             }

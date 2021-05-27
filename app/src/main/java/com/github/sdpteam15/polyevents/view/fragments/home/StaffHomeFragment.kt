@@ -14,7 +14,9 @@ import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import com.github.sdpteam15.polyevents.view.activity.activityprovider.MyItemRequestsActivity
 import com.github.sdpteam15.polyevents.view.activity.staff.EXTRA_ID_USER_STAFF
 import com.github.sdpteam15.polyevents.view.activity.staff.StaffRequestsActivity
-
+/**
+ * StaffHomeFragment fragment: the fragment containing all shortcuts to the staff management options
+ */
 class StaffHomeFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,

@@ -29,8 +29,6 @@ import java.time.LocalDateTime
 
 class StaffItemRequestsActivityTest {
 
-
-
     lateinit var staffItemActivity: ActivityScenario<StaffRequestsActivity>
     lateinit var availableItems: MutableMap<Item, Int>
     lateinit var availableRequests: MutableList<MaterialRequest>

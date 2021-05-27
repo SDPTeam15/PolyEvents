@@ -26,6 +26,10 @@ import com.github.sdpteam15.polyevents.view.adapter.StaffItemRequestAdapter
  */
 const val EXTRA_ID_USER_STAFF = "com.github.sdpteam15.polyevents.requests.STAFF_USER_ID"
 
+/**
+ * Activity for staff item requests management
+ * Staffs can take in charge item requests and deliver them to event providers
+ */
 class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
 
@@ -43,7 +47,6 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
     private val users = ObservableList<UserEntity>()
     private val userNames = ObservableMap<String, String>()
     private val itemNames = ObservableMap<String, String>()
-    private val zones = ObservableList<Zone>()
     private val zoneNameFromEventId = ObservableMap<String, String>()
     private val items = ObservableList<Triple<Item, Int, Int>>()
     private val statusNames = ArrayList<String>()
@@ -128,7 +131,6 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
 
         currentStatus.observe(this) {
             refresh()
-            Log.d("YYYYYYYYYY", items.size.toString())
         }
 
         requests.observeUpdate(this) {
@@ -225,8 +227,7 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
                 }
             }
 
-        val tempZones = ObservableList<Zone>()
-        tempZones.group { }
+
     }
 
     /**
@@ -288,28 +289,19 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
 
     }
 
+
+
     companion object {
-        enum class StaffRequestStatus() {
+        /**
+         * Status to display on the staff request activity
+         * They regroups Material requests statuses within the same delivery process
+         * The OTHERS are not displayed on the screen, for example an item request which is refused
+         */
+        enum class StaffRequestStatus {
             DELIVERY,
             RETURN,
             OTHERS;
-
-
-            fun getItemRequestStatuses(): MutableList<Long> {
-                return when (this) {
-                    DELIVERY -> listOf(ACCEPTED, DELIVERING, DELIVERED)
-                    RETURN -> listOf(RETURN_REQUESTED, RETURNING, RETURNED)
-                    OTHERS -> listOf(PENDING, REFUSED)
-                }.map { it.ordinal.toLong() }.toMutableList()
-            }
         }
-
-        /*
-                fun allStaffStatuses(): MutableList<Long> {
-                    return StaffRequestStatus.values().flatMap { it.getItemRequestStatuses() }
-                        .toMutableList()
-                }
-        */
         private val mapOrdinal = StaffRequestStatus.values().map { it.ordinal to it }.toMap()
 
         private val mapCategory = mapOf(
@@ -325,12 +317,12 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
             REFUSED to OTHERS
         )
 
-        fun staffRequestStatusFromMaterialStatus(status: MaterialRequest.Status): StaffRequestStatus {
+        private fun staffRequestStatusFromMaterialStatus(status: MaterialRequest.Status): StaffRequestStatus {
             return mapCategory[status]!!
         }
 
 
-        fun fromOrdinal(ordinal: Int) = mapOrdinal[ordinal]
+        private fun fromOrdinal(ordinal: Int) = mapOrdinal[ordinal]
 
 
     }

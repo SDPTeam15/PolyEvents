@@ -20,10 +20,15 @@ data class MaterialRequest(
     var adminMessage: String?,
     var staffInChargeId: String?
 ){
+    /**
+     * Material request status
+     * It indicates the status of a material request
+     * @param status the status in string format
+     */
     enum class Status (private val status: String) {
-        PENDING("pending"),
-        ACCEPTED("accepted"),
-        REFUSED("refused"),
+        PENDING("Pending"),
+        ACCEPTED("Accepted"),
+        REFUSED("Refused"),
         DELIVERING("In delivery"),
         DELIVERED("Delivered"),
         RETURN_REQUESTED("Return requested"),
