@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.github.sdpteam15.polyevents.model.database.local.dao.EventDao
-import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.room.EventLocal
 import kotlinx.coroutines.launch
@@ -48,7 +47,6 @@ class EventLocalViewModel(private val eventDao: EventDao) : ViewModel() {
      */
     fun insert(event: EventLocal) = viewModelScope.launch {
         eventDao.insert(event)
-        Log.d(TAG, "INSERTING EVENT INTO LOCAL DB")
     }
 }
 
