@@ -84,7 +84,7 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_my_item_requests)
+        setContentView(R.layout.activity_staff_item_requests)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         staffUserId = intent.getStringExtra(EXTRA_ID_USER_STAFF)!!

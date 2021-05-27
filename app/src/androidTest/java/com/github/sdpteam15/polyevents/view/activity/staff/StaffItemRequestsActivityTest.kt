@@ -5,9 +5,12 @@ import android.content.Intent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
+import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.RecyclerViewItemCountAssertion
 import com.github.sdpteam15.polyevents.TestHelper
@@ -15,6 +18,7 @@ import com.github.sdpteam15.polyevents.fakedatabase.*
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.entity.*
+import com.github.sdpteam15.polyevents.model.entity.MaterialRequest.Status.*
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.adapter.ItemRequestAdminAdapter
 import org.junit.After
@@ -46,6 +50,7 @@ class StaffItemRequestsActivityTest {
     @Before
     fun setup() {
         Database.currentDatabase = FakeDatabase
+        FakeDatabase.CURRENT_USER = UserEntity("staff", "STAFF")
         availableItems = mutableMapOf()
         availableItems[Item("i1", "Bananas", "Fruit")] = 30
         availableItems[Item("i2", "Kiwis", "Fruit")] = 10
@@ -78,7 +83,7 @@ class StaffItemRequestsActivityTest {
                 LocalDateTime.of(2021, 3, 24, 12, 23),
                 Database.currentDatabase.currentUser!!.uid,
                 "e1",
-                MaterialRequest.Status.RETURN_REQUESTED,
+                MaterialRequest.Status.ACCEPTED,
                 null,
                 null
             ),
@@ -92,9 +97,9 @@ class StaffItemRequestsActivityTest {
                 LocalDateTime.of(2021, 3, 29, 1, 6),
                 Database.currentDatabase.currentUser!!.uid,
                 "e1",
-                MaterialRequest.Status.PENDING,
+                MaterialRequest.Status.DELIVERING,
                 null,
-                null
+                "staff"
             ),
             MaterialRequest(
                 "r3",
@@ -104,7 +109,19 @@ class StaffItemRequestsActivityTest {
                 LocalDateTime.of(2021, 3, 29, 1, 6),
                 Database.currentDatabase.currentUser!!.uid,
                 "e1",
-                MaterialRequest.Status.PENDING,
+                MaterialRequest.Status.DELIVERED,
+                null,
+                null
+            ),
+            MaterialRequest(
+                "r4",
+                mutableMapOf(
+                    Pair("i3", 10)
+                ),
+                LocalDateTime.of(2021, 3, 29, 1, 6),
+                Database.currentDatabase.currentUser!!.uid,
+                "e1",
+                MaterialRequest.Status.DELIVERED,
                 null,
                 null
             )
@@ -153,37 +170,42 @@ class StaffItemRequestsActivityTest {
     }
 
     @Test
-    fun requestsAreAllDisplayed() {
-        Espresso.onView(ViewMatchers.withId(R.id.id_recycler_item_requests))
-            .check(RecyclerViewItemCountAssertion(availableRequests.size))
+    fun acceptedRequestsAreAllDisplayed() {
+        onView(withId(R.id.id_recycler_staff_item_requests))
+            .check(RecyclerViewItemCountAssertion(availableRequests.filter { it.status in listOf(ACCEPTED,DELIVERING,DELIVERED) }.size))
+        onView(withId(R.id.id_change_request_status_right))
+            .perform(click())
 
+        onView(withId(R.id.id_recycler_staff_item_requests))
+            .check(RecyclerViewItemCountAssertion(availableRequests.filter { it.status in listOf(RETURN_REQUESTED,RETURNING,RETURNED) }.size))
     }
 
     @Test
     fun acceptRequestChangeStatus() {
-        Espresso.onView(ViewMatchers.withId(R.id.id_recycler_item_requests)).perform(
+        onView(withId(R.id.id_recycler_staff_item_requests)).perform(
             RecyclerViewActions.actionOnItemAtPosition<ItemRequestAdminAdapter.ItemViewHolder>(
                 0,
-                TestHelper.clickChildViewWithId(R.id.id_request_accept)
+                TestHelper.clickChildViewWithId(R.id.id_modify_request)
             )
         )
-        assert(FakeDatabaseMaterialRequest.requests.values.any { it.status == MaterialRequest.Status.ACCEPTED })
+        assert(FakeDatabaseMaterialRequest.requests.values.any { it.status == ACCEPTED })
+
     }
 
     @Test
     fun refusePopupAndChangeStatus() {
-        Espresso.onView(ViewMatchers.withId(R.id.id_recycler_item_requests)).perform(
+        onView(withId(R.id.id_recycler_staff_item_requests)).perform(
             RecyclerViewActions.actionOnItemAtPosition<ItemRequestAdminAdapter.ItemViewHolder>(
                 0,
                 TestHelper.clickChildViewWithId(R.id.id_request_refuse)
             )
         )
 
-        Espresso.onView(ViewMatchers.withId(R.id.id_txt_refusal_explanation))
+        onView(withId(R.id.id_txt_refusal_explanation))
             .perform(ViewActions.typeText(explanation))
         Espresso.closeSoftKeyboard()
-        Espresso.onView(ViewMatchers.withId(R.id.id_btn_confirm_refuse_request))
-            .perform(ViewActions.click())
+        onView(withId(R.id.id_btn_confirm_refuse_request))
+            .perform(click())
 
 
         assert(FakeDatabaseMaterialRequest.requests.values.any { it.status == MaterialRequest.Status.REFUSED && it.adminMessage == explanation })
