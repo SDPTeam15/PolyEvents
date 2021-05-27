@@ -27,6 +27,7 @@ import java.sql.Time
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
 
+@Suppress("UNCHECKED_CAST","TYPE_INFERENCE_ONLY_INPUT_TYPES_WARNING")
 class TimeTableActivityTest {
     lateinit var mockedDatabase: DatabaseInterface
     lateinit var mockedEventDB: EventDatabaseInterface
