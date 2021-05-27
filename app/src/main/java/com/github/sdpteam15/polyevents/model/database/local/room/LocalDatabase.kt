@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 // TODO: consider using repositories
 // TODO: Firebase database objects are technically daos, consider refactoring?
 // TODO: when user logs in, should fetch all info to store in local db
-@Database(entities = [EventLocal::class, UserSettings::class], version = 2, exportSchema = false)
+@Database(entities = [EventLocal::class, UserSettings::class], version = 3, exportSchema = false)
 @TypeConverters(HelperFunctions.Converters::class)
 abstract class LocalDatabase : RoomDatabase() {
     /**
@@ -106,6 +106,7 @@ abstract class LocalDatabase : RoomDatabase() {
         suspend fun populateDatabaseWithUserEvents(eventDao: EventDao, scope: CoroutineScope) {
             Log.d(TAG, "Populating the database with user's events")
 
+            // TODO: need to clear notifications for events here or in MainActivity
             eventDao.deleteAll()
             if (currentDatabase.currentUser != null) {
                 eventsLocalObservable.observe {

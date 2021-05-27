@@ -43,7 +43,9 @@ data class EventLocal(
     @ColumnInfo(name = "end_time")
     val endTime: LocalDateTime? = null,
     @ColumnInfo(name = "notification_id")
-    var notificationId: Int? = null
+    var notificationId: Int? = null,
+    @ColumnInfo(name = "is_limited")
+    val isLimited: Boolean = false
 ) {
     fun toEvent(): Event =
         Event(
@@ -53,7 +55,8 @@ data class EventLocal(
             zoneName = zoneName,
             description = description,
             startTime = startTime,
-            endTime = endTime
+            endTime = endTime,
+            limitedEvent = isLimited
         )
 
     companion object {
@@ -65,7 +68,8 @@ data class EventLocal(
                 zoneName = e.zoneName,
                 description = e.description,
                 startTime = e.startTime,
-                endTime = e.endTime
+                endTime = e.endTime,
+                isLimited = e.isLimitedEvent()
             )
     }
 }
