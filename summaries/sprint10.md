@@ -1,6 +1,10 @@
 # Summary for week 10
 
 ## Alessio
+This week I implemented the event edit request activity so that an event organiser can propose an event edit. My time estimates were really good this week and I had to time one or two bugs as well as helping some of the team mates. 
+
+Next week, I will focus on fixing bugs to get the app ready for next Friday.
+
 
 ## Florian 
 
