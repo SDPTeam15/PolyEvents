@@ -723,7 +723,7 @@ class ObservableMap<K, T>(val creator: Any? = null) : MutableMap<K, T> {
      *  @param observableList observer for the live data
      *  @return if the observer have been remove
      */
-    fun value(
+    fun values(
         lifecycle: LifecycleOwner,
         observableList: ObservableList<T> = ObservableList(creator = creator),
     ) = Observable.observeOnDestroy(lifecycle, values(observableList))

@@ -18,6 +18,9 @@ import java.time.LocalDateTime
  * @property description a description of the event
  * @property startTime the starting time of the event (as LocalDateTime)
  * @property endTime the ending time of the event (as LocalDateTime)
+ * @property notificationId every event stored in the local database will be assigned its own notification
+ * with its own unique id. We store the unique id of the notification in the event instance, so we
+ * can easily fetch the notification by having this event instance and getting that notification id.
  */
 @Entity(tableName = "event_table")
 data class EventLocal(
@@ -39,6 +42,10 @@ data class EventLocal(
     val startTime: LocalDateTime? = null,
     @ColumnInfo(name = "end_time")
     val endTime: LocalDateTime? = null,
+    @ColumnInfo(name = "notification_id")
+    var notificationId: Int? = null,
+    @ColumnInfo(name = "is_limited")
+    val isLimited: Boolean = false
 ) {
     fun toEvent(): Event =
         Event(
@@ -48,7 +55,8 @@ data class EventLocal(
             zoneName = zoneName,
             description = description,
             startTime = startTime,
-            endTime = endTime
+            endTime = endTime,
+            limitedEvent = isLimited
         )
 
     companion object {
@@ -60,7 +68,8 @@ data class EventLocal(
                 zoneName = e.zoneName,
                 description = e.description,
                 startTime = e.startTime,
-                endTime = e.endTime
+                endTime = e.endTime,
+                isLimited = e.isLimitedEvent()
             )
     }
 }

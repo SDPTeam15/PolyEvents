@@ -26,6 +26,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial
  * Extra containing the event ID to show on the launched event page
  */
 const val EXTRA_EVENT_ID = "com.github.sdpteam15.polyevents.event.EVENT_ID"
+const val EXTRA_EVENT_NAME = "com.github.sdpteam15.polyevents.event.EVENT_NAME"
 
 /**
  * Shows the list of events and displays them in a new event when we click on one of them
@@ -107,13 +108,7 @@ class EventListFragment : Fragment() {
      */
     private fun myEventsSwitchCallback(isChecked: Boolean) {
         if (isChecked) {
-            if (currentDatabase.currentUser == null) {
-                // Cannot switch to my Events if no user logged in
-                myEventsSwitch.isChecked = false
-                HelperFunctions.showToast(resources.getString(R.string.my_events_log_in), context)
-            } else {
-                getUserLocalSubscribedEvents()
-            }
+            getUserLocalSubscribedEvents()
         } else {
             getEventsListAndDisplay(context)
         }

@@ -343,8 +343,8 @@ class EventManagementActivity : AppCompatActivity() {
             if (isActivityProvider) {
                 currentDatabase.eventDatabase!!.createEventEdit(getInformation()).observe(this) {
                     redirectOrDisplayError(
-                        getString(R.string.event_update_success),
-                        getString(R.string.failed_to_update_event_info),
+                        getString(R.string.event_edit_request_successfully_sent),
+                        getString(R.string.event_edit_request_error),
                         it.value
                     )
                 }
@@ -370,8 +370,8 @@ class EventManagementActivity : AppCompatActivity() {
                     currentDatabase.eventDatabase!!.updateEventEdit(getInformation())
                         .observe(this) {
                             redirectOrDisplayError(
-                                getString(R.string.event_update_success),
-                                getString(R.string.failed_to_update_event_info),
+                                getString(R.string.event_edit_request_successfully_sent),
+                                getString(R.string.event_edit_request_error),
                                 it.value
                             )
                         }
@@ -379,8 +379,8 @@ class EventManagementActivity : AppCompatActivity() {
                     currentDatabase.eventDatabase!!.createEventEdit(getInformation())
                         .observe(this) {
                             redirectOrDisplayError(
-                                getString(R.string.event_update_success),
-                                getString(R.string.failed_to_update_event_info),
+                                getString(R.string.event_edit_request_successfully_sent),
+                                getString(R.string.event_edit_request_error),
                                 it.value
                             )
                         }

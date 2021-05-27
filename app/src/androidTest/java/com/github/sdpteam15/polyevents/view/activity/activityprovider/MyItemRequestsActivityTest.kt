@@ -35,6 +35,7 @@ import org.mockito.kotlin.anyOrNull
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
 
+@Suppress("UNCHECKED_CAST","TYPE_INFERENCE_ONLY_INPUT_TYPES_WARNING")
 class MyItemRequestsActivityTest {
 
     lateinit var itemsAdminActivity: ActivityScenario<MyItemRequestsActivity>

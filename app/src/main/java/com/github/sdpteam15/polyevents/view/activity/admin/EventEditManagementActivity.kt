@@ -34,6 +34,16 @@ class EventEditManagementActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         recyclerView = findViewById(R.id.id_recycler_event_edits)
+        recyclerView.adapter =
+            EventEditAdminAdapter(
+                this,
+                this,
+                eventEdits,
+                origEvents,
+                acceptEventEditRequest,
+                declineEventEdit,
+                seeEventEdit
+            )
 
 
         val eventList = ObservableList<Event>()
@@ -66,17 +76,6 @@ class EventEditManagementActivity : AppCompatActivity() {
             if (!it.value) {
                 HelperFunctions.showToast("Failed to get the list of material requests", this)
                 finish()
-            } else {
-                recyclerView.adapter =
-                    EventEditAdminAdapter(
-                        this,
-                        this,
-                        eventEdits,
-                        origEvents,
-                        acceptEventEditRequest,
-                        declineEventEdit,
-                        seeEventEdit
-                    )
             }
         }
     }
@@ -100,7 +99,6 @@ class EventEditManagementActivity : AppCompatActivity() {
 
     private val acceptEventEditRequest = { event: Event ->
         if (event.status == Event.EventStatus.PENDING) {
-            println(event)
             event.status = Event.EventStatus.ACCEPTED
 
             Database.currentDatabase.eventDatabase!!.updateEventEdit(

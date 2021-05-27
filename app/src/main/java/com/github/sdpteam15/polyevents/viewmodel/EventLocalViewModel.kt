@@ -22,6 +22,17 @@ class EventLocalViewModel(private val eventDao: EventDao) : ViewModel() {
         obs.addAll(events)
     }
 
+    fun getEventById(eventId: String, obs: ObservableList<EventLocal>) = viewModelScope.launch {
+        val eventLocal = eventDao.getEventById(eventId)
+        if (eventLocal.isEmpty()) {
+            Log.d(TAG, "EventLocal Not found!")
+            obs.addAll(eventLocal)
+        } else {
+            Log.d(TAG, "EventLocal found!: ${eventLocal[0]}")
+            obs.addAll(eventLocal)
+        }
+    }
+
     /**
      * Launch a coroutine on the viewmodelscope to remove an event from the room database.
      * @param event the event to delete
@@ -36,7 +47,6 @@ class EventLocalViewModel(private val eventDao: EventDao) : ViewModel() {
      */
     fun insert(event: EventLocal) = viewModelScope.launch {
         eventDao.insert(event)
-        Log.d(TAG, "INSERTING EVENT INTO LOCAL DB")
     }
 }
 

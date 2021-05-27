@@ -113,6 +113,7 @@ abstract class LocalDatabase : RoomDatabase() {
         suspend fun populateDatabaseWithUserEvents(eventDao: EventDao, scope: CoroutineScope) {
             Log.d(TAG, "Populating the database with user's events")
 
+            // TODO: need to clear notifications for events here or in MainActivity
             eventDao.deleteAll()
             if (currentDatabase.currentUser != null) {
                 eventsLocalObservable.observe {

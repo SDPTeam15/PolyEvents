@@ -1,9 +1,11 @@
 package com.github.sdpteam15.polyevents.view.fragments.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -14,12 +16,16 @@ import com.github.sdpteam15.polyevents.model.database.remote.NUMBER_UPCOMING_EVE
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication.Companion.inTest
+import com.github.sdpteam15.polyevents.view.activity.ItemRequestActivity
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
+import com.github.sdpteam15.polyevents.view.activity.TimeTableActivity
 
 /**
  * The fragment for the home page.
  */
 class VisitorHomeFragment : Fragment() {
+
 
     private lateinit var listUpcomingEventsLayout: LinearLayout
     val events = ObservableList<Event>()
@@ -48,8 +54,14 @@ class VisitorHomeFragment : Fragment() {
             updateContent()
         }
 
-        HelperFunctions.getLocationPermission(requireActivity())
+        if(!inTest)
+            HelperFunctions.getLocationPermission(requireActivity())
         MainActivity.instance!!.switchRoles(fragmentView!!.findViewById(R.id.spinner_visitor), UserRole.PARTICIPANT)
+
+        fragmentView.findViewById<Button>(R.id.id_timetable_button).setOnClickListener {
+            val intent = Intent(activity, TimeTableActivity::class.java)
+            startActivity(intent)
+        }
 
         return fragmentView
     }
