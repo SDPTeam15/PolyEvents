@@ -27,7 +27,6 @@ import com.github.sdpteam15.polyevents.model.room.EventLocal
 import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
 import com.schibsted.spain.barista.assertion.BaristaProgressBarAssertions.assertProgress
 import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertDisplayed
-import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertNotDisplayed
 import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertNotExist
 import com.schibsted.spain.barista.interaction.BaristaClickInteractions.clickOn
 import kotlinx.coroutines.runBlocking
@@ -41,10 +40,7 @@ import org.mockito.Mockito.mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.anyOrNull
 import java.time.LocalDateTime
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNotEquals
-import kotlin.test.assertNull
+import kotlin.test.*
 import org.mockito.Mockito.`when` as When
 
 
@@ -117,6 +113,12 @@ class EventActivityTest {
             EventActivity.obsEvent.postValue(testPublicEvent)
             Observable(true)
         }
+
+        When(
+            mockedEventDatabase.updateEvent(
+                event = anyOrNull(), anyOrNull()
+            )
+        ).thenReturn(Observable(true))
 
         // Create local db
         val context: Context = ApplicationProvider.getApplicationContext()
@@ -206,9 +208,9 @@ class EventActivityTest {
 
         val retrievedLocalEventsAfterSubscription = localDatabase.eventDao().getAll()
         assert(retrievedLocalEventsAfterSubscription.isNotEmpty())
-        assertEquals(
-                retrievedLocalEventsAfterSubscription[0],
-                EventLocal.fromEvent(testLimitedEvent)
+        testEventLocalEqualsEventEntity(
+            retrievedLocalEventsAfterSubscription[0],
+            testLimitedEvent
         )
 
         assertDisplayed(R.id.button_subscribe_event, R.string.event_unsubscribe)
@@ -589,6 +591,13 @@ class EventActivityTest {
         EventActivity.database = localDatabase
 
         Thread.sleep(1000)
+    }
+
+    private fun testEventLocalEqualsEventEntity(eventLocal: EventLocal, event: Event) {
+        val eventLocalWithCommonAttributes = eventLocal.copy(
+            notificationId = null
+        )
+        assertEquals(eventLocalWithCommonAttributes, EventLocal.fromEvent(event))
     }
 
 
