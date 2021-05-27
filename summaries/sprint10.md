@@ -16,6 +16,11 @@ Next week, I will focus on all the remaining tasks we have to do for the last sp
 ## Mathieu
 
 ## Robin
+This week I add a generic local cash and an implementation for RouteDatabase in FirestoreDatabaseProvider.
+
+I underestimate the time of work, it was due to the age differences between Firestore and Room.
+
+Next week, I will fix some reminder bugs.
 
 ## Stephane
 This week I implemented the follow event functionality, as well as receiving notifications when you 
