@@ -94,7 +94,11 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
             if (it.value != "") {
                 PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
                     PolyEventsApplication.application.database.genericEntityDao().insert(
-                        LocalAdapterToDocument(adapter).toDocument(element, it.value)!!
+                        LocalAdapterToDocument(adapter).toDocument(
+                            element,
+                            it.value,
+                            collection.value
+                        )!!
                     )
                 }
             }
@@ -116,7 +120,8 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
                         PolyEventsApplication.application.database.genericEntityDao().insert(
                             LocalAdapterToDocument(adapter).toDocument(
                                 value.second,
-                                value.first!!
+                                value.first!!,
+                                collection.value
                             )!!
                         )
             }
@@ -137,7 +142,7 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
             if (it.value) {
                 PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
                     PolyEventsApplication.application.database.genericEntityDao().insert(
-                        LocalAdapterToDocument(adapter).toDocument(element, id)!!
+                        LocalAdapterToDocument(adapter).toDocument(element, id, collection.value)!!
                     )
                 }
             }
@@ -159,7 +164,8 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
                         PolyEventsApplication.application.database.genericEntityDao().insert(
                             LocalAdapterToDocument(adapter).toDocument(
                                 value.second.second,
-                                value.second.first
+                                value.second.first,
+                                collection.value
                             )!!
                         )
             }
@@ -174,7 +180,8 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
         val ended = Observable<Boolean>()
         PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
             val result = LocalAdapterFromDocument(adapter).fromDocument(
-                PolyEventsApplication.application.database.genericEntityDao().get(id, collection.value)
+                PolyEventsApplication.application.database.genericEntityDao()
+                    .get(id, collection.value)
             )
             element.postValue(result, db)
             if (result != null)
@@ -269,11 +276,9 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
                 if (result != null)
                     map[value.id] = result
             }
-            println("ICICI ${map.size} $map")
-            if(map.isNotEmpty()) {
-                elements.updateAll(map, db)
-                ended.postValue(true, db)
-            }
+            //TODO check why route are not display the first time
+            elements.updateAll(map, db)
+            ended.postValue(true, db)
         }
     }
 
@@ -307,17 +312,14 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
                         val document = LocalAdapterToDocument(
                             (adapterToDocument ?: collection.adapter)
                                     as AdapterToDocumentInterface<in T>
-                        ).toDocument(it.value[key], key)
+                        ).toDocument(it.value[key], key, collection.value)
                         if (document != null) {
-                            PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
-                                PolyEventsApplication.application.database.genericEntityDao()
-                                    .insert(document)
-                            }
+                            PolyEventsApplication.application.database.genericEntityDao()
+                                .insert(document)
                         }
                     }
                 }
                 if (element != null && id != null) {
-                    println("LA ${it.value.size} ${it.value}")
                     if (element.value != it.value[id])
                         if (it.value[id] != null) {
                             element.postValue(it.value[id], it.sender)
@@ -327,9 +329,7 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
                         ended.postValue(false, it.sender)
                 }
                 if (elements != null) {
-                    println("LLAA ${it.value.size} ${it.value}")
                     if (ids != null) {
-                        println("GG")
                         val map = mutableMapOf<String, T>()
                         for (id in ids) {
                             if (elements[id] != it.value[id])
@@ -338,7 +338,6 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
                         }
                         elements.putAll(map, it.sender)
                     } else {
-                        println("Pas GG")
                         val query =
                             CodeQuery.CodeQueryFromIterator(it.value.entries.iterator()) {
                                 QueryDocumentSnapshot(
@@ -347,17 +346,13 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
                                     it.key
                                 )
                             }
-                        (matcher?.match(query) ?: query).get().addOnSuccessListener { qs->
-                            println("GO")
+                        (matcher?.match(query) ?: query).get().addOnSuccessListener { qs ->
                             val map = mutableMapOf<String, T>()
                             for (value in qs) {
-                                println("OH $value")
                                 val result = adapterFromDocument.fromDocument(value.data, value.id)
-                                println("OHR $result")
                                 if (result != null)
                                     map[value.id] = result
                             }
-                            println("GO jony ${map.size} $map")
                             elements.updateAll(map, db)
                             ended.postValue(true, db)
                         }

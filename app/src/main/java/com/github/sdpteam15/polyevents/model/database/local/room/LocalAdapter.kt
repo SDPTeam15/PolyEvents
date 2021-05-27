@@ -27,8 +27,8 @@ class LocalAdapter<T>(adapter: AdapterInterface<T>) {
      * @param date from last update
      * @return a GenericEntity fields to their values
      */
-    fun toDocument(element: T?, id: String, date: LocalDateTime?): GenericEntity? =
-        toDocument.toDocument(element, id, date)
+    fun toDocument(element: T?, id: String, collection: String?, date: LocalDateTime?): GenericEntity? =
+        toDocument.toDocument(element, id, collection, date)
 
     /**
      * Convert document data to a user entity in our model.
@@ -56,11 +56,12 @@ class LocalAdapterToDocument<T>(private val adapter: AdapterToDocumentInterface<
      * @param date from last update
      * @return a GenericEntity fields to their values
      */
-    fun toDocument(element: T?, id: String, date: LocalDateTime? = null): GenericEntity? {
+    fun toDocument(element: T?, id: String, collection: String?, date: LocalDateTime? = null): GenericEntity? {
         val result = adapter.toDocument(element)
         return if (result == null) null
         else GenericEntity(
             id,
+            collection = collection ?: "",
             data = fromMap(result),
             update_time = fromDate(
                 HelperFunctions.localDateTimeToDate(
