@@ -7,6 +7,11 @@ Next week, I will focus on fixing bugs to get the app ready for next Friday.
 
 
 ## Florian 
+This week I implementd the material request management for staffs, so they can take in charge item requests and deliver them to event providers
+
+My time estitmates where a bit too optimistic, as I didn't take some aspects of my task into account when assigning the task, for example to allow staffs to return items after event providers finished to use them.
+
+Next week, I will focus on all the remaining tasks we have to do for the last sprint.
 
 ## Mathieu
 
