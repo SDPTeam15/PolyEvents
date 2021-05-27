@@ -322,6 +322,9 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         }
     }
 
+    /**
+     * Cancel all notifications associated to this event
+     */
     private fun cancelNotification(eventId: String) {
         val notificationManager = ContextCompat.getSystemService(
             application as PolyEventsApplication,
