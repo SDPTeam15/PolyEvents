@@ -123,26 +123,47 @@
                 android:paddingStart="10dp"
                 android:paddingEnd="0dp">
 
-                <com.google.android.material.textfield.TextInputLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:color/transparent"
-                    android:hint="@string/birthdayPlaceholder"
-                    app:boxBackgroundColor="@android:color/transparent">
+                    android:layout_height="match_parent">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/profileBirthdayET"
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:drawableStart="@drawable/ic_profile_birthday"
-                        android:drawablePadding="10dp"
-                        android:inputType="date"
-                        android:paddingStart="20dp"
-                        android:paddingEnd="0dp"
-                        android:text=""
-                        android:textStyle="bold" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:background="@android:color/transparent"
+                        android:hint="@string/birthdayPlaceholder"
+                        android:enabled="false"
+                        app:boxBackgroundColor="@android:color/transparent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/profileBirthdayET"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:drawableStart="@drawable/ic_profile_birthday"
+                            android:drawablePadding="10dp"
+                            android:paddingStart="20dp"
+                            android:paddingEnd="0dp"
+                            android:clickable="false"
+                            android:focusable="false"
+                            android:cursorVisible="false"
+                            android:textStyle="bold" />
+
+                        <Button
+                            android:id="@+id/btnBirthday"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/select_birthday"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="@+id/profileBirthdayET"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </LinearLayout>
 
             <LinearLayout

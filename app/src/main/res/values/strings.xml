@@ -234,5 +234,6 @@
     <!-- Timetable -->
     <string name="time_timetable">%1$d:00</string>
     <string name="time_name">" Time"</string>
+    <string name="select_birthday">Select birthday</string>
 
 </resources>

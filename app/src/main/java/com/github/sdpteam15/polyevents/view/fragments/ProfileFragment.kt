@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.view.fragments
 
 import android.annotation.SuppressLint
+import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -25,6 +26,7 @@ import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.view.activity.EditProfileActivity
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import com.github.sdpteam15.polyevents.view.adapter.ProfileAdapter
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 /**
@@ -38,6 +40,7 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
 
     val userInfoLiveData = Observable<UserEntity>()
     private val adminMode = userId != null
+    private val obsDate = Observable<LocalDate>()
     private lateinit var profileNameET: EditText
     private lateinit var profileEmailET: EditText
     private lateinit var profileUsernameET: EditText
@@ -66,6 +69,12 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
             //call method to bind the listerner and observer to the correct fields
             addListener(viewRoot)
             addObserver(viewRoot)
+
+            obsDate.observe(this) {
+                val europeanDateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+
+                viewRoot.findViewById<EditText>(R.id.profileBirthdayET).setText(europeanDateFormatter.format(it.value))
+            }
 
 
             if (adminMode) {
@@ -129,12 +138,7 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
             profileNameET.setText(userInfoValue.name)
             profileEmailET.setText(userInfoValue.email)
             profileUsernameET.setText(userInfoValue.username)
-
-            val userBirthDate = userInfoValue.birthDate
-            val birthDateFormatted =
-                if (userBirthDate == null) ""
-                else userBirthDate.format(DateTimeFormatter.ISO_LOCAL_DATE)
-            viewRoot.findViewById<EditText>(R.id.profileBirthdayET).setText(birthDateFormatted)
+            obsDate.postValue(userInfoValue.birthDate)
         }
     }
 
@@ -147,8 +151,9 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
             //Clear the previous map and add every field
             currentUser!!.username = profileUsernameET.text.toString()
             // TODO: editText should have birthday input and convert it to Timestamp otherwise things crash
-            //hashMapNewInfo[USER_BIRTH_DATE] = viewRoot.findViewById<EditText>(R.id.profileBirthdayET).text.toString()
-
+            if(obsDate.value!=null) {
+                currentUser!!.birthDate = obsDate.value
+            }
             //Call the DB to update the user information and getUserInformation once it is done
             currentDatabase.userDatabase!!.updateUserInformation(
                 currentUser!!
@@ -162,6 +167,20 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
                     HelperFunctions.showToast(getString(R.string.fail_to_update), activity)
                 }
             }
+        }
+
+        viewRoot.findViewById<Button>(R.id.btnBirthday).setOnClickListener {
+            val date = obsDate.value?:LocalDate.now()
+            val dialog = DatePickerDialog(
+                requireContext(),
+                { _: DatePicker, year: Int, month: Int, day: Int ->
+                    obsDate.postValue(LocalDate.of(year,month+1,day))
+                },
+                date.year,
+                date.monthValue - 1,
+                date.dayOfMonth
+            )
+            dialog.show()
         }
 
         //Logout button handler
