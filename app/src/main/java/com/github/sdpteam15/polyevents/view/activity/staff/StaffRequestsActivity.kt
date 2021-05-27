@@ -10,15 +10,11 @@ import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
-import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.MaterialRequestConstant.MATERIAL_REQUEST_STATUS
-import com.github.sdpteam15.polyevents.model.entity.Item
-import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
+import com.github.sdpteam15.polyevents.model.entity.*
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest.Status.*
-import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
@@ -43,9 +39,12 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
     private val materialRequest =
         ObservableMap<StaffRequestStatus, ObservableList<MaterialRequest>>()
     private val currentStatus = Observable(DELIVERY)
-    private var staffName = Database.currentDatabase.currentUser!!.name
+    private val staffId = currentDatabase.currentUser!!.uid
+    private val users = ObservableList<UserEntity>()
     private val userNames = ObservableMap<String, String>()
     private val itemNames = ObservableMap<String, String>()
+    private val zones = ObservableList<Zone>()
+    private val zoneNameFromEventId = ObservableMap<String, String>()
     private val items = ObservableList<Triple<Item, Int, Int>>()
     private val statusNames = ArrayList<String>()
 
@@ -120,9 +119,11 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
                 currentStatus,
                 itemNames,
                 userNames,
-                staffName,
+                zoneNameFromEventId,
+                staffId,
                 acceptMaterialDelivery,
-                cancelMaterialDelivery
+                cancelMaterialDelivery,
+                onMaterialDelivered
             )
 
         currentStatus.observe(this) {
@@ -143,6 +144,12 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
             }
         }
 
+        items.observeUpdate(this) {
+            if(it.sender != currentDatabase){
+                currentDatabase.itemDatabase!!.updateItem(it.value.first,it.value.second,it.value.third)
+            }
+        }
+
         items.group(this) { it.first.itemId!! }.then.map(this, itemNames) {
             it[0].first.itemName!!
         }
@@ -150,6 +157,11 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
         requests.group(this, materialRequest) {
             staffRequestStatusFromMaterialStatus(it.status)
         }
+
+
+        users.group(this) { it.uid }.then.map(this, userNames) { it[0].name ?: "UNKNOWN" }
+
+
     }
 
     override fun onResume() {
@@ -170,25 +182,53 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
             }
         ).observeOnce(this) {
             if (!it.value) {
-                HelperFunctions.showToast("Failed to get the list of material requests", this)
+                showToast("Failed to get the list of material requests", this)
+            } else {
+                val sentEventIds = mutableListOf<String>()
+                for (request in requests) {
+                    if (request.eventId !in sentEventIds) {
+                        sentEventIds.add(request.eventId)
+                        val event = Observable<Event>()
+                        val zone = Observable<Zone>()
+                        currentDatabase.eventDatabase!!.getEventFromId(request.eventId, event)
+                            .observeOnce(this) {
+                                if (it.value) {
+                                    currentDatabase.zoneDatabase!!.getZoneInformation(
+                                        event.value!!.zoneId!!,
+                                        zone
+                                    ).observeOnce(this) {
+                                        if (it.value) {
+                                            zoneNameFromEventId[event.value!!.eventId!!] =
+                                                zone.value!!.zoneName!!
+                                        }
+                                    }
+                                }
+                            }
+                    }
+
+                }
             }
         }
+
         currentDatabase.itemDatabase!!.getItemsList(items)
             .observeOnce(this) {
                 if (!it.value) {
-                    HelperFunctions.showToast("Failed to get the list of items", this)
+                    showToast("Failed to get the list of items", this)
                 }
             }
 
-        val tempUsers = ObservableList<UserEntity>()
-        tempUsers.group(this) { it.uid }.then.map(this, userNames) { it[0].name ?: "UNKNOWN" }
-        currentDatabase.userDatabase!!.getListAllUsers(tempUsers)
+
+        currentDatabase.userDatabase!!.getListAllUsers(users)
             .observeOnce(this) {
                 if (!it.value) {
-                    HelperFunctions.showToast("Failed to get the list of users", this)
+                    showToast("Failed to get the list of users", this)
                 }
             }
+
+        val tempZones = ObservableList<Zone>()
+        tempZones.group { }
     }
+
     /**
      * Accept a material request delivery / return
      */
@@ -200,6 +240,29 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
                 else -> request // should never happen
             }, this
         )
+        Unit
+    }
+
+    /**
+     * Accept a material request delivery / return
+     */
+    private val onMaterialDelivered = { request: MaterialRequest ->
+        requests.set(
+            requests.indexOfFirst { it.requestId == request.requestId }, when (request.status) {
+                DELIVERING -> request.copy(status = DELIVERED)
+                RETURNING -> {
+                    for(item in request.items){
+                        val oldItemIndex = items.indexOfFirst { it.first.itemId == item.key }
+                        items[oldItemIndex] = items[oldItemIndex].copy(third = items[oldItemIndex].third + item.value)
+
+                    }
+                    request.copy(status = RETURNED)
+                }
+                else -> request // should never happen
+            }, this
+        )
+
+
         Unit
     }
 

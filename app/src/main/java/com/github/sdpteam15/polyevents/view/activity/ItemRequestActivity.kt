@@ -1,15 +1,21 @@
 package com.github.sdpteam15.polyevents.view.activity
 
 import android.os.Bundle
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
+import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider.currentUser
+import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
-import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
@@ -20,15 +26,16 @@ import java.time.LocalDateTime
 /**
  * An activity containing items available for request
  */
-class ItemRequestActivity : AppCompatActivity() {
+class ItemRequestActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
+    private lateinit var eventSpinner: Spinner
     private lateinit var recyclerView: RecyclerView
     private lateinit var sendButton: Button
     var mapSelectedItems = ObservableMap<Item, Int>()
     var obsItemsMap = ObservableMap<String, ObservableMap<Item, Pair<Int, Int>>>()
     private var requestId: String? = null
-    var mapZoneNames = ObservableMap<String,String>()
-    lateinit var selectedZoneId : String
+    private val selectedEvent = Observable<Event>()
+    var listEvent = ObservableList<Event>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,6 +50,8 @@ class ItemRequestActivity : AppCompatActivity() {
         sendButton = findViewById(R.id.id_button_make_request)
         sendButton.setOnClickListener { sendItemsRequest() }
 
+        eventSpinner = findViewById(R.id.id_spinner_event)
+
         val requestObservable = ObservableList<Triple<Item, Int, Int>>()
         requestObservable
             .group(this) { it.first.itemType }.then
@@ -50,10 +59,35 @@ class ItemRequestActivity : AppCompatActivity() {
                 it.group(this) { it2 -> it2.first }.then
                     .map(this) { it2 -> Pair(it2[0].second, it2[0].third) }.then
             }
-        val tempZones = ObservableList<Zone>()
-        currentDatabase.zoneDatabase!!.getAllZones(null,null,tempZones).observe (this){
-            if(it.value){
-                tempZones.group (this){ it2 -> it2.zoneId!! }.then.map (this, mapZoneNames) { it2->it2[0].zoneName?:"UNKNOWN LOCATION" }
+
+        currentDatabase.eventDatabase!!.getEvents({
+            it.whereEqualTo(
+                DatabaseConstant.EventConstant.EVENT_ORGANIZER.value,
+                currentUser!!.uid
+            )
+        }, null, listEvent).observeOnce(this) {
+            if (it.value) {
+                if (listEvent.isEmpty()) {
+                    showToast("You must create an event before requesting an item", this)
+                    finish()
+                } else {
+                    if (selectedEvent.value == null) {
+                        selectedEvent.postValue(listEvent[0])
+                    }
+
+                    eventSpinner.adapter =
+                        ArrayAdapter(
+                            this,
+                            android.R.layout.simple_spinner_dropdown_item,
+                            listEvent.map (this){ it.eventName }.then
+                        )
+
+                    eventSpinner.setSelection(listEvent.indexOfFirst { it.eventId == selectedEvent.value!!.eventId })
+                    eventSpinner.onItemSelectedListener = this
+                }
+            } else {
+                showToast("Failed to get the list of events", this)
+                finish()
             }
         }
         currentDatabase.itemDatabase!!.getAvailableItems(requestObservable).observeOnce(this) {
@@ -65,6 +99,11 @@ class ItemRequestActivity : AppCompatActivity() {
                         requestId!!
                     ).observeOnce(this) { it2 ->
                         if (it2.value) {
+                            currentDatabase.eventDatabase!!.getEventFromId(
+                                request.value!!.eventId,
+                                selectedEvent
+                            )
+
                             for (item in request.value!!.items) {
                                 val tripleIndex =
                                     requestObservable.indexOfFirst { itemTriple -> itemTriple.first.itemId == item.key }
@@ -97,44 +136,65 @@ class ItemRequestActivity : AppCompatActivity() {
      * If the request is empty, display an error message.
      */
     private fun sendItemsRequest() {
-        if (mapSelectedItems.isEmpty()) {
-            showToast(getString(R.string.item_request_empty_text), this)
-        } else {
-            if (requestId == null){
-
-                currentDatabase.materialRequestDatabase!!.createMaterialRequest(
-                    MaterialRequest(
-                        null,
-                        mapSelectedItems.keys.map { Pair(it.itemId!!, mapSelectedItems[it]!!) }
-                            .toMap(),
-                        LocalDateTime.now(),
-                        currentDatabase.currentUser?.uid ?: "",
-                        selectedZoneId,
-                        MaterialRequest.Status.PENDING,
-                        null,
-                        null
-                    )
-                )
-            showToast(getString(R.string.item_request_sent_text), this)
-            }else{
-                currentDatabase.materialRequestDatabase!!.updateMaterialRequest(
-                    requestId!!,
-                    MaterialRequest(
-                        requestId,
-                        mapSelectedItems.keys.map { Pair(it.itemId!!, mapSelectedItems[it]!!) }
-                            .toMap(),
-                        LocalDateTime.now(),
-                        currentDatabase.currentUser?.uid ?: "",
-                        selectedZoneId,
-                        MaterialRequest.Status.PENDING,
-                        null,
-                        null
-                    )
-                )
-                showToast("Your request has been successful updated", this)
+        when {
+            mapSelectedItems.isEmpty() -> {
+                showToast(getString(R.string.item_request_empty_text), this)
             }
-            // Go back to previous activity
-            finish()
+            selectedEvent.value == null -> {
+                showToast(getString(R.string.event_not_selected), this)
+            }
+            else -> {
+                if (requestId == null) {
+
+                    currentDatabase.materialRequestDatabase!!.createMaterialRequest(
+                        MaterialRequest(
+                            null,
+                            mapSelectedItems.keys.map { Pair(it.itemId!!, mapSelectedItems[it]!!) }
+                                .toMap(),
+                            LocalDateTime.now(),
+                            currentDatabase.currentUser?.uid ?: "",
+                            selectedEvent.value!!.eventId!!,
+                            MaterialRequest.Status.PENDING,
+                            null,
+                            null
+                        )
+                    ).observeOnce {
+                        if(it.value){
+                            showToast(getString(R.string.item_request_sent_text), this)
+                        }
+                    }
+
+                } else {
+                    currentDatabase.materialRequestDatabase!!.updateMaterialRequest(
+                        requestId!!,
+                        MaterialRequest(
+                            requestId,
+                            mapSelectedItems.keys.map { Pair(it.itemId!!, mapSelectedItems[it]!!) }
+                                .toMap(),
+                            LocalDateTime.now(),
+                            currentDatabase.currentUser?.uid ?: "",
+                            selectedEvent.value!!.eventId!!,
+                            MaterialRequest.Status.PENDING,
+                            null,
+                            null
+                        )
+                    ).observeOnce {
+                        if(it.value){
+                            showToast(getString(R.string.item_request_updated), this)
+                        }
+                    }
+                }
+                // Go back to previous activity
+                finish()
+            }
         }
+    }
+
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        selectedEvent.postValue(listEvent[position])
+    }
+
+    override fun onNothingSelected(parent: AdapterView<*>?) {
+
     }
 }

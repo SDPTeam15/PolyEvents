@@ -2,6 +2,7 @@ package com.github.sdpteam15.polyevents.view.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.LocusId
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
@@ -35,9 +36,11 @@ class StaffItemRequestAdapter(
     private val typeToDisplay: Observable<StaffRequestsActivity.Companion.StaffRequestStatus>,
     private val itemNames: ObservableMap<String, String>,
     private val userNames: ObservableMap<String, String>,
-    private val staffName: String?,
+    private val zoneNameFromEventId: ObservableMap<String,String>,
+    private val staffId: String?,
     private val onAcceptListener: (MaterialRequest) -> Unit,
-    private val onCancelListener: (MaterialRequest) -> Unit
+    private val onCancelListener: (MaterialRequest) -> Unit,
+    private val onDeliveredListener: (MaterialRequest) -> Unit
 ) : RecyclerView.Adapter<StaffItemRequestAdapter.ItemViewHolder>() {
     private val adapterLayout = LayoutInflater.from(context)
 
@@ -46,7 +49,6 @@ class StaffItemRequestAdapter(
         requests.observe(lifecycleOwner) {
             notifyDataSetChanged()
         }
-
         itemNames.observe(lifecycleOwner) {
             notifyDataSetChanged()
         }
@@ -54,6 +56,9 @@ class StaffItemRequestAdapter(
             notifyDataSetChanged()
         }
         userNames.observe(lifecycleOwner){
+            notifyDataSetChanged()
+        }
+        zoneNameFromEventId.observe (lifecycleOwner){
             notifyDataSetChanged()
         }
     }
@@ -66,13 +71,12 @@ class StaffItemRequestAdapter(
 
 
         private val organizer = view.findViewById<TextView>(R.id.id_request_organiser)
+        private val zone = view.findViewById<TextView>(R.id.id_request_zone)
         private val time = view.findViewById<TextView>(R.id.id_request_time)
         private val itemList = view.findViewById<TextView>(R.id.id_request_item_list)
         private val btnAccept = view.findViewById<ImageButton>(R.id.id_modify_request)
         private val btnCancel = view.findViewById<ImageButton>(R.id.id_delete_request)
         private val status = view.findViewById<TextView>(R.id.id_request_status)
-        private val adminMessage = view.findViewById<TextView>(R.id.id_admin_message)
-        private val refusalLayout = view.findViewById<LinearLayout>(R.id.id_reason_of_refusal)
 
         /**
          * Binds the values of each value of a material request to a view
@@ -80,6 +84,7 @@ class StaffItemRequestAdapter(
         @SuppressLint("SetTextI18n")
         fun bind(request: MaterialRequest) {
             organizer.text = userNames[request.userId]
+            zone.text = zoneNameFromEventId[request.eventId]
             time.text =
                 request.time!!.format(DateTimeFormatter.ISO_LOCAL_DATE) + " " + request.time.format(
                     DateTimeFormatter.ISO_LOCAL_TIME
@@ -97,12 +102,20 @@ class StaffItemRequestAdapter(
             })
             status.text = request.status.toString()
 
-            btnAccept.visibility = if (request.status == MaterialRequest.Status.ACCEPTED || request.status == MaterialRequest.Status.RETURN_REQUESTED) VISIBLE else INVISIBLE
-            btnCancel.visibility = if (request.status == MaterialRequest.Status.DELIVERING || request.status == MaterialRequest.Status.RETURNING) VISIBLE else INVISIBLE
-            btnCancel.setOnClickListener { onCancelListener(request) }
-            btnAccept.setOnClickListener { onAcceptListener(request) }
-            refusalLayout.visibility = if(request.adminMessage != null) VISIBLE else GONE
-            adminMessage.text = request.adminMessage
+            if (request.status == MaterialRequest.Status.ACCEPTED || request.status == MaterialRequest.Status.RETURN_REQUESTED){
+                btnAccept.visibility = VISIBLE
+                btnAccept.setOnClickListener { onAcceptListener(request) }
+                btnCancel.visibility = INVISIBLE
+            }else if (request.status == MaterialRequest.Status.DELIVERING || request.status == MaterialRequest.Status.RETURNING) {
+                btnAccept.visibility = VISIBLE
+                btnAccept.setOnClickListener { onDeliveredListener(request) }
+                btnCancel.visibility = VISIBLE
+                btnCancel.setOnClickListener { onCancelListener(request) }
+            }else{
+                btnAccept.visibility = INVISIBLE
+                btnCancel.visibility = INVISIBLE
+            }
+
         }
     }
 
@@ -111,7 +124,7 @@ class StaffItemRequestAdapter(
         viewType: Int
     ): ItemViewHolder {
 
-        val view = adapterLayout.inflate(R.layout.card_my_material_request, parent, false)
+        val view = adapterLayout.inflate(R.layout.card_staff_material_request, parent, false)
         return ItemViewHolder(view)
     }
 

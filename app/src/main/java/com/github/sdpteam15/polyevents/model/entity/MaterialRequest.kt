@@ -15,7 +15,7 @@ data class MaterialRequest(
     val items: Map<String, Int>,
     val time: LocalDateTime?,
     val userId: String,
-    val zoneId: String,
+    val eventId: String,
     var status: Status,
     var adminMessage: String?,
     var staffInChargeId: String?

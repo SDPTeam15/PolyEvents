@@ -17,7 +17,7 @@ object MaterialRequestAdapter : AdapterInterface<MaterialRequest> {
             MATERIAL_REQUEST_LIST.value to element.items,
             MATERIAL_REQUEST_TIME.value to HelperFunctions.localDateTimeToDate(element.time),
             MATERIAL_REQUEST_USER_ID.value to element.userId,
-            MATERIAL_REQUEST_ZONE_ID.value to element.zoneId,
+            MATERIAL_REQUEST_EVENT_ID.value to element.eventId,
             MATERIAL_REQUEST_STATUS.value to element.status.ordinal,
 
         )
@@ -32,7 +32,7 @@ object MaterialRequestAdapter : AdapterInterface<MaterialRequest> {
             (document[MATERIAL_REQUEST_LIST.value] as Map<String, Long>).mapValues { it.value.toInt() },
             HelperFunctions.dateToLocalDateTime((document[MATERIAL_REQUEST_TIME.value] as Timestamp?)?.toDate()),
             document[MATERIAL_REQUEST_USER_ID.value] as String,
-            document[MATERIAL_REQUEST_ZONE_ID.value] as String,
+            document[MATERIAL_REQUEST_EVENT_ID.value] as String,
             MaterialRequest.Status.fromOrdinal(((document[MATERIAL_REQUEST_STATUS.value]?:0) as Long).toInt())!!,
             document[MATERIAL_REQUEST_ADMIN_MESSAGE.value] as String?,
             document[MATERIAL_REQUEST_STAFF_IN_CHARGE.value] as String?
