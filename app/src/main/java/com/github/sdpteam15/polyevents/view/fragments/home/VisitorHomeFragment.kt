@@ -16,6 +16,7 @@ import com.github.sdpteam15.polyevents.model.database.remote.NUMBER_UPCOMING_EVE
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication.Companion.inTest
 import com.github.sdpteam15.polyevents.view.activity.ItemRequestActivity
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import com.github.sdpteam15.polyevents.view.activity.TimeTableActivity
@@ -24,9 +25,7 @@ import com.github.sdpteam15.polyevents.view.activity.TimeTableActivity
  * The fragment for the home page.
  */
 class VisitorHomeFragment : Fragment() {
-    companion object{
-        var inTest = false
-    }
+
 
     private lateinit var listUpcomingEventsLayout: LinearLayout
     val events = ObservableList<Event>()
