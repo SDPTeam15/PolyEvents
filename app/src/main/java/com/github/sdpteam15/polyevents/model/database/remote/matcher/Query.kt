@@ -7,8 +7,7 @@ interface Query {
     fun get(): Task<QuerySnapshot>
 
     fun limit(limit: Long): Query
-    fun whereEqualTo(value: String, eventId: String): Query
-    fun whereArrayContains(value: String, uid: String): Query
-    fun whereGreaterThan(value: String, localDateTimeToDate: Date): Query
-    fun whereGreaterThan(value: String, long: Long): Query
+    fun whereEqualTo(key: String, value: Any): Query
+    fun whereArrayContains(key: String, value: Any): Query
+    fun whereGreaterThan(key: String, value: Any): Query
 }

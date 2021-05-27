@@ -8,6 +8,7 @@ import com.github.sdpteam15.polyevents.model.database.remote.adapter.EventAdapte
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.EventEditAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.RatingAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
+import com.github.sdpteam15.polyevents.model.database.remote.matcher.Query
 import com.github.sdpteam15.polyevents.model.database.remote.objects.EventDatabase
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Rating
@@ -15,7 +16,6 @@ import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.google.firebase.firestore.Query
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
@@ -282,7 +282,7 @@ class EventDatabaseTest {
     fun getEventListWithMatcherAndLimitNotNull() {
         val events = ObservableList<Event>()
         val userAccess = UserProfile("uid")
-        val matcher = Matcher { q: Query -> q.limitToLast(1000L) }
+        val matcher = Matcher { q: Query -> q.limit(1000L) }
 
         HelperTestFunction.nextGetListEntity { true }
         mockedEventdatabase.getEvents(matcher, 20, events, userAccess)
@@ -294,11 +294,7 @@ class EventDatabaseTest {
         assertNotNull(getList.matcher)
 
         Mockito.`when`(mockQuery.limit(anyOrNull())).then {
-            assertEquals(it.arguments[0] as Long, 20L)
-            mockQuery
-        }
-        Mockito.`when`(mockQuery.limitToLast(anyOrNull())).then {
-            assertEquals(it.arguments[0] as Long, 1000L)
+            assert(it.arguments[0] as Long in listOf(20L, 1000L))
             mockQuery
         }
         getList.matcher.match(mockQuery)

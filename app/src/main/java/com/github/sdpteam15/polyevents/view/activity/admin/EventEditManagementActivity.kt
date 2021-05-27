@@ -57,10 +57,11 @@ class EventEditManagementActivity : AppCompatActivity() {
     private fun getEventEdit() {
         //Wait until we have both requests accepted from the database to show the material requests
         Database.currentDatabase.eventDatabase!!.getEventEdits(
-            { collection ->
-                collection.orderBy(DatabaseConstant.EventEditConstant.EVENT_EDIT_STATUS.value)
-            },
-            eventEdits,
+            null,
+            ObservableList<Event>().observe(this) {
+                eventEdits.clear(it.sender)
+                eventEdits.addAll(it.value.toList().sortedBy { it.status }, it.sender)
+            }.then
         ).observeOnce(this) {
             if (!it.value) {
                 HelperFunctions.showToast("Failed to get the list of material requests", this)

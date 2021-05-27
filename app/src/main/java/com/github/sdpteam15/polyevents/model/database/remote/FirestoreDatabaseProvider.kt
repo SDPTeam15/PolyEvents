@@ -13,7 +13,6 @@ import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.model.observable.Observable
-import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
@@ -301,7 +300,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
                             synchronized(this) {
                                 val index = ids.indexOf(it.id)
                                 val result = adapter.fromDocument(it.data!!, it.id)
-                                mutableList[index] = Triple(result != null, it.id,result)
+                                mutableList[index] = Triple(result != null, it.id, result)
                                 if (mutableList.fold(true) { a, p -> a && p != null }) {
                                     val map = mutableMapOf<String, T>()
                                     for (e in mutableList)
@@ -316,21 +315,19 @@ object FirestoreDatabaseProvider : DatabaseInterface {
                     }
                     .addOnFailureListener(lastFailureListener)
             }
-
         } else {
-            val task = matcher?.match(FirestoreQuery(fsCollection))?.get() ?: FirestoreQuery(
-                fsCollection
-            ).get()
-            task.addOnSuccessListener {
-                val map = mutableMapOf<String, T>()
-                for (e in it) {
-                    val result = adapter.fromDocument(e.data, e.id)
-                    if (result != null)
-                        map[e.id] = result
+            (matcher?.match(FirestoreQuery(fsCollection)) ?: FirestoreQuery(fsCollection))
+                .get()
+                .addOnSuccessListener {
+                    val map = mutableMapOf<String, T>()
+                    for (e in it) {
+                        val result = adapter.fromDocument(e.data, e.id)
+                        if (result != null)
+                            map[e.id] = result
+                    }
+                    elements.updateAll(map, this)
+                    ended.postValue(true, this)
                 }
-                elements.updateAll(map, this)
-                ended.postValue(true, this)
-            }
                 .addOnFailureListener(lastFailureListener)
         }
         return ended

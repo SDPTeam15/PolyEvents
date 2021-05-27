@@ -37,7 +37,7 @@ class RatingAdapterTest {
 
     @Test
     fun conversionOfRatingDocumentPreservesData() {
-        val document = RatingAdapter.toDocument(rating)
+        val document = RatingAdapter.toDocument(rating)!!
 
         Assert.assertEquals(document[DatabaseConstant.RatingConstant.RATING_USER_ID.value], userID)
 
