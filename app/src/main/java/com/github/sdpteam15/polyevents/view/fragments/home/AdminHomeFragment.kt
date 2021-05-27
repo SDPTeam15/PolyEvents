@@ -49,6 +49,11 @@ class AdminHomeFragment : Fragment() {
             val intent = Intent(inflater.context, ItemsAdminActivity::class.java)
             startActivity(intent)
         }
+        viewRoot.findViewById<Button>(R.id.btnRedirectEventEditManager).setOnClickListener {
+            val intent = Intent(inflater.context, EventEditManagementActivity::class.java)
+            startActivity(intent)
+        }
+
         MainActivity.instance!!.switchRoles(viewRoot.findViewById(R.id.spinner_admin), UserRole.ADMIN)
         return viewRoot
     }

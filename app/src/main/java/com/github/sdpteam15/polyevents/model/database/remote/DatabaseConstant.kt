@@ -26,6 +26,7 @@ object DatabaseConstant {
         NODE_COLLECTION("nodes", RouteNodeAdapter),
         EDGE_COLLECTION("edges", RouteEdgeAdapter),
         RATING_COLLECTION("ratings", RatingAdapter),
+        EVENT_EDIT_COLLECTION("eventEdits", EventEditAdapter),
 
 
         TEST_COLLECTION("test", object : AdapterInterface<StringWithID> {
@@ -56,6 +57,14 @@ object DatabaseConstant {
         EVENT_LIMITED("limitedEvent"),
         EVENT_PARTICIPANTS("participants"),
         EVENT_ZONE_ID("zoneId");
+
+        override fun toString(): String = value
+    }
+
+    enum class EventEditConstant(val value: String) {
+        EVENT_EDIT_DOCUMENT_ID("eventEditId"),
+        EVENT_EDIT_ADMIN_MESSAGE("adminMessage"),
+        EVENT_EDIT_STATUS("status");
 
         override fun toString(): String = value
     }
