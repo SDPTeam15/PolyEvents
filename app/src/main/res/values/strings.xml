@@ -127,7 +127,9 @@
     <string name="event_successfully_followed">You are now following this event!</string>
     <string name="event_successfully_unfollowed">You are no longer following this event</string>
     <string name="event_successfully_subscribed">Successfully registered to event!</string>
+    <string name="event_subscription_fail">Could not subscribe to event, please try again later</string>
     <string name="event_successfully_unsubscribed">Successfully unsubscribed from event!</string>
+    <string name="event_unsubscribe_fail">Failed to unsubscribe from event, please try again later</string>
     <string name="toast_subscribe_warning">"You have to be logged in to subscribe"</string>
     <string name="event_already_subscribed">You are already registered to this event</string>
     <string name="event_subscribe_at_max_capacity">
@@ -193,5 +195,12 @@
     <string name="event_name">Event Name</string>
     <string name="event_time">Event Time</string>
     <string name="go_back_to_map_fragment">go back to map fragment</string>
+
+    <!-- Notifications -->
+    <string name="event_notification_channel_id">event_channel</string>
+    <string name="event_notification_channel_name">Event Channel</string>
+    <string name="event_notification_channel_description">Event reminder</string>
+    <string name="event_start_soon">Event %s will start soon!</string>
+    <string name="event_started">Event %s has started</string>
 
 </resources>
