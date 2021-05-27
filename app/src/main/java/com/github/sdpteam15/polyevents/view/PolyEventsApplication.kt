@@ -7,6 +7,9 @@ import kotlinx.coroutines.SupervisorJob
 
 // TODO: consider instantiating Firebase database here
 class PolyEventsApplication : Application() {
+    companion object{
+        var inTest = false
+    }
     // No need to cancel this scope as it'll be torn down with the process
     val applicationScope = CoroutineScope(SupervisorJob())
 
