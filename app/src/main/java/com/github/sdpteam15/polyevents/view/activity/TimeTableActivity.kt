@@ -17,6 +17,7 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.entity.Event
+import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
 import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
@@ -57,9 +58,9 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
     var widthDP = 250
 
     private var nowBar: View? = null
+    private var obsDate = Observable<LocalDateTime>()
     private var selectedDate = LocalDateTime.now()
     private var selectedZone: String? = null
-
 
     val hourToLine: MutableMap<Int, Int> = mutableMapOf()
 
@@ -71,22 +72,26 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         leftButton = findViewById(R.id.id_change_zone_left)
         rightButton = findViewById(R.id.id_change_zone_right)
 
+        obsDate.observe(this){
+            selectedDate = it.value
+            setupDate()
+            if(selectedZone != null)
+                drawZoneEvents(selectedZone!!)
+        }
+
         //Setup of buttons
         rightButton.setOnClickListener {
-            selectedDate = selectedDate.plusDays(1)
-            setupDate()
-            drawZoneEvents(selectedZone!!)
+            obsDate.postValue(selectedDate.plusDays(1), this)
         }
         leftButton.setOnClickListener {
-            selectedDate = selectedDate.minusDays(1)
-            setupDate()
-            drawZoneEvents(selectedZone!!)
+            obsDate.postValue(selectedDate.minusDays(1), this)
         }
         spinner = findViewById(R.id.id_title_zone)
 
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         setupSpinner()
-        setupDate()
+        obsDate.postValue(LocalDateTime.now(), this)
+
 
         generateTime(0, 23)
         getEventsFromDB()
