@@ -75,7 +75,9 @@ class MyItemRequestsActivityTest {
                 ),
                 LocalDateTime.of(2021, 3, 24, 12, 23),
                 Database.currentDatabase.currentUser!!.uid,
+                "1",
                 MaterialRequest.Status.PENDING,
+                null,
                 null
             ),
             MaterialRequest(
@@ -87,7 +89,9 @@ class MyItemRequestsActivityTest {
                 ),
                 LocalDateTime.of(2021, 3, 29, 1, 6),
                 Database.currentDatabase.currentUser!!.uid,
+                "1",
                 MaterialRequest.Status.PENDING,
+                null,
                 null
             ),
             MaterialRequest(
@@ -97,7 +101,9 @@ class MyItemRequestsActivityTest {
                 ),
                 LocalDateTime.of(2021, 3, 29, 1, 6),
                 Database.currentDatabase.currentUser!!.uid,
+                "2",
                 MaterialRequest.Status.PENDING,
+                null,
                 null
             ),
             MaterialRequest(
@@ -107,7 +113,9 @@ class MyItemRequestsActivityTest {
                 ),
                 LocalDateTime.of(2021, 3, 24, 12, 23),
                 Database.currentDatabase.currentUser!!.uid,
+                "3",
                 MaterialRequest.Status.ACCEPTED,
+                null,
                 null
             ),
             MaterialRequest(
@@ -119,7 +127,9 @@ class MyItemRequestsActivityTest {
                 ),
                 LocalDateTime.of(2021, 3, 29, 1, 6),
                 Database.currentDatabase.currentUser!!.uid,
+                "3",
                 MaterialRequest.Status.ACCEPTED,
+                null,
                 null
             ),
             MaterialRequest(
@@ -129,7 +139,9 @@ class MyItemRequestsActivityTest {
                 ),
                 LocalDateTime.of(2021, 3, 29, 1, 6),
                 Database.currentDatabase.currentUser!!.uid,
+                "2",
                 MaterialRequest.Status.REFUSED,
+                null,
                 null
             )
         )
