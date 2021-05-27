@@ -24,9 +24,12 @@ import com.github.sdpteam15.polyevents.view.adapter.ItemRequestAdminAdapter
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito
 import java.time.LocalDateTime
 
 class StaffItemRequestsActivityTest {
+
+
 
     lateinit var staffItemActivity: ActivityScenario<StaffRequestsActivity>
     lateinit var availableItems: MutableMap<Item, Int>
@@ -40,6 +43,7 @@ class StaffItemRequestsActivityTest {
     val availableUsersList = ObservableList<UserEntity>()
     val availableEventList = ObservableList<Event>()
     val explanation = "TESTREFUSE"
+    val staffId = "staff"
 
 
     @After
@@ -50,7 +54,7 @@ class StaffItemRequestsActivityTest {
     @Before
     fun setup() {
         Database.currentDatabase = FakeDatabase
-        FakeDatabase.CURRENT_USER = UserEntity("staff", "STAFF")
+        FakeDatabase.CURRENT_USER = UserEntity(staffId, "STAFF")
         availableItems = mutableMapOf()
         availableItems[Item("i1", "Bananas", "Fruit")] = 30
         availableItems[Item("i2", "Kiwis", "Fruit")] = 10
@@ -63,7 +67,7 @@ class StaffItemRequestsActivityTest {
         availableUsers = mutableListOf(
             UserEntity("u1", "U1"),
             UserEntity("u2", "U2"),
-            UserEntity("staff", "STAFF")
+            UserEntity(staffId, "STAFF")
         )
 
         availableEvents = mutableListOf(
@@ -83,7 +87,7 @@ class StaffItemRequestsActivityTest {
                 LocalDateTime.of(2021, 3, 24, 12, 23),
                 Database.currentDatabase.currentUser!!.uid,
                 "e1",
-                MaterialRequest.Status.ACCEPTED,
+                ACCEPTED,
                 null,
                 null
             ),
@@ -97,9 +101,9 @@ class StaffItemRequestsActivityTest {
                 LocalDateTime.of(2021, 3, 29, 1, 6),
                 Database.currentDatabase.currentUser!!.uid,
                 "e1",
-                MaterialRequest.Status.DELIVERING,
+                ACCEPTED,
                 null,
-                "staff"
+                null,
             ),
             MaterialRequest(
                 "r3",
@@ -109,9 +113,9 @@ class StaffItemRequestsActivityTest {
                 LocalDateTime.of(2021, 3, 29, 1, 6),
                 Database.currentDatabase.currentUser!!.uid,
                 "e1",
-                MaterialRequest.Status.DELIVERED,
+                DELIVERED,
                 null,
-                null
+                staffId
             ),
             MaterialRequest(
                 "r4",
@@ -121,9 +125,21 @@ class StaffItemRequestsActivityTest {
                 LocalDateTime.of(2021, 3, 29, 1, 6),
                 Database.currentDatabase.currentUser!!.uid,
                 "e1",
-                MaterialRequest.Status.DELIVERED,
+                RETURN_REQUESTED,
                 null,
                 null
+            ),
+            MaterialRequest(
+                "r5",
+                mutableMapOf(
+                    Pair("i3", 10)
+                ),
+                LocalDateTime.of(2021, 3, 29, 1, 6),
+                Database.currentDatabase.currentUser!!.uid,
+                "e1",
+                RETURNED,
+                null,
+                staffId
             )
         )
 
@@ -163,10 +179,10 @@ class StaffItemRequestsActivityTest {
             Intent(
                 ApplicationProvider.getApplicationContext(),
                 StaffRequestsActivity::class.java
-            ).also { it.putExtra(EXTRA_ID_USER_STAFF, "staff") }
+            ).also { it.putExtra(EXTRA_ID_USER_STAFF, staffId) }
         staffItemActivity = ActivityScenario.launch(intent)
 
-        Thread.sleep(500)
+        Thread.sleep(200)
     }
 
     @Test
@@ -181,34 +197,117 @@ class StaffItemRequestsActivityTest {
     }
 
     @Test
-    fun acceptRequestChangeStatus() {
+    fun statusIsCorrectlyUpdated(){
         onView(withId(R.id.id_recycler_staff_item_requests)).perform(
             RecyclerViewActions.actionOnItemAtPosition<ItemRequestAdminAdapter.ItemViewHolder>(
                 0,
                 TestHelper.clickChildViewWithId(R.id.id_modify_request)
             )
         )
-        assert(FakeDatabaseMaterialRequest.requests.values.any { it.status == ACCEPTED })
+        Thread.sleep(100)
+        assert(FakeDatabaseMaterialRequest.requests.values.any { it.status == DELIVERING })
+        var id = FakeDatabaseMaterialRequest.requests.entries.first{it.value.status == DELIVERING}.key
+
+        onView(withId(R.id.id_recycler_staff_item_requests)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<ItemRequestAdminAdapter.ItemViewHolder>(
+                0,
+                TestHelper.clickChildViewWithId(R.id.id_delete_request)
+            )
+        )
+        Thread.sleep(100)
+        assert(FakeDatabaseMaterialRequest.requests[id]!!.status == ACCEPTED)
+        onView(withId(R.id.id_recycler_staff_item_requests)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<ItemRequestAdminAdapter.ItemViewHolder>(
+                0,
+                TestHelper.clickChildViewWithId(R.id.id_modify_request)
+            )
+        )
+        Thread.sleep(100)
+        assert(FakeDatabaseMaterialRequest.requests[id]!!.status == DELIVERING)
+        onView(withId(R.id.id_recycler_staff_item_requests)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<ItemRequestAdminAdapter.ItemViewHolder>(
+                0,
+                TestHelper.clickChildViewWithId(R.id.id_modify_request)
+            )
+        )
+        Thread.sleep(100)
+        assert(FakeDatabaseMaterialRequest.requests[id]!!.status == DELIVERED)
+
+//----------------------------------------
+
+        onView(withId(R.id.id_change_request_status_right)).perform(click())
+
+        onView(withId(R.id.id_recycler_staff_item_requests)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<ItemRequestAdminAdapter.ItemViewHolder>(
+                0,
+                TestHelper.clickChildViewWithId(R.id.id_modify_request)
+            )
+        )
+        Thread.sleep(100)
+
+
+        assert(FakeDatabaseMaterialRequest.requests.values.any { it.status == RETURNING })
+
+        id = FakeDatabaseMaterialRequest.requests.entries.first{it.value.status == RETURNING}.key
+
+
+        onView(withId(R.id.id_recycler_staff_item_requests)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<ItemRequestAdminAdapter.ItemViewHolder>(
+                0,
+                TestHelper.clickChildViewWithId(R.id.id_delete_request)
+            )
+        )
+        Thread.sleep(100)
+        assert(FakeDatabaseMaterialRequest.requests[id]!!.status == RETURN_REQUESTED)
+        onView(withId(R.id.id_recycler_staff_item_requests)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<ItemRequestAdminAdapter.ItemViewHolder>(
+                0,
+                TestHelper.clickChildViewWithId(R.id.id_modify_request)
+            )
+        )
+        Thread.sleep(100)
+        assert(FakeDatabaseMaterialRequest.requests[id]!!.status == RETURNING)
+        onView(withId(R.id.id_recycler_staff_item_requests)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<ItemRequestAdminAdapter.ItemViewHolder>(
+                0,
+                TestHelper.clickChildViewWithId(R.id.id_modify_request)
+            )
+        )
+        Thread.sleep(100)
+        assert(FakeDatabaseMaterialRequest.requests[id]!!.status == RETURNED)
+
 
     }
 
     @Test
-    fun refusePopupAndChangeStatus() {
+    fun returnAddItemsToDataBase() {
+        onView(withId(R.id.id_change_request_status_right)).perform(click())
+
         onView(withId(R.id.id_recycler_staff_item_requests)).perform(
             RecyclerViewActions.actionOnItemAtPosition<ItemRequestAdminAdapter.ItemViewHolder>(
                 0,
-                TestHelper.clickChildViewWithId(R.id.id_request_refuse)
+                TestHelper.clickChildViewWithId(R.id.id_modify_request)
             )
         )
+        Thread.sleep(100)
+        assert(FakeDatabaseMaterialRequest.requests.values.any { it.status == RETURNING })
 
-        onView(withId(R.id.id_txt_refusal_explanation))
-            .perform(ViewActions.typeText(explanation))
-        Espresso.closeSoftKeyboard()
-        onView(withId(R.id.id_btn_confirm_refuse_request))
-            .perform(click())
+        val request = FakeDatabaseMaterialRequest.requests.values.first{it.status == RETURNING}
 
+        val oldItems = FakeDatabaseItem.items.toMutableMap()
 
-        assert(FakeDatabaseMaterialRequest.requests.values.any { it.status == MaterialRequest.Status.REFUSED && it.adminMessage == explanation })
+        onView(withId(R.id.id_recycler_staff_item_requests)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<ItemRequestAdminAdapter.ItemViewHolder>(
+                0,
+                TestHelper.clickChildViewWithId(R.id.id_modify_request)
+            )
+        )
+        Thread.sleep(100)
+        assert(FakeDatabaseMaterialRequest.requests[request.requestId]!!.status == RETURNED)
+        for (itemId in request.items.entries){
+            val itemTriple = FakeDatabaseItem.items[itemId.key]
+            assert(oldItems[itemId.key]!!.third + itemId.value == itemTriple!!.third )
+        }
     }
 
 }
