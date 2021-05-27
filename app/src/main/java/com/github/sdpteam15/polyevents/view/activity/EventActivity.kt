@@ -30,7 +30,6 @@ import com.github.sdpteam15.polyevents.model.room.EventLocal
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.adapter.CommentItemAdapter
 import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
-import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_NAME
 import com.github.sdpteam15.polyevents.view.fragments.LeaveEventReviewFragment
 import com.github.sdpteam15.polyevents.view.service.AlarmReceiver
 import com.github.sdpteam15.polyevents.view.service.ReviewHasChanged
@@ -274,7 +273,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
             currentDatabase.eventDatabase!!.updateEvent(event).observeOnce(this) {
                 if (it.value) {
                     // Now store the event in local cache and set a notification for it
-                    val newNotificationId = getNotificationId()
+                    val newNotificationId = generateNewNotificationId()
                     localEventViewModel.insert(EventLocal.fromEvent(event).also {
                         it.notificationId = newNotificationId
                     })
@@ -296,7 +295,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
      * at the start of the event.
      */
     private fun followEvent() {
-        val newNotificationId = getNotificationId()
+        val newNotificationId = generateNewNotificationId()
         localEventViewModel.insert(EventLocal.fromEvent(event).also {
             it.notificationId = newNotificationId
         })
@@ -336,7 +335,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
                 val eventRetrievedNotificationId = it.value[0].notificationId
                 if (eventRetrievedNotificationId != null) {
                     notificationManager.cancelNotification(eventRetrievedNotificationId)
-                    notificationManager.cancelNotification(-eventRetrievedNotificationId)
+                    notificationManager.cancelNotification(eventRetrievedNotificationId + 1)
                 }
             }
             localEventViewModel.delete(EventLocal.fromEvent(event))
@@ -361,13 +360,13 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         val notifyIntent15MinBefore = Intent(app, AlarmReceiver::class.java).apply {
             putExtra(EXTRA_EVENT_ID, eventId)
             // We put the negative notification id for the 15 min notification
-            putExtra(EXTRA_NOTIFICATION_ID, -notificationId)
+            putExtra(EXTRA_NOTIFICATION_ID, notificationId + 1)
             val notificationMessage = getString(R.string.event_start_soon, event.eventName)
             putExtra(EXTRA_NOTIFICATION_MESSAGE, notificationMessage)
         }
         val notifyPendingIntent15MinBefore = PendingIntent.getBroadcast(
             app,
-            REQUEST_CODE,
+            notificationId + 1,
             notifyIntent15MinBefore,
             PendingIntent.FLAG_UPDATE_CURRENT
         )
@@ -388,7 +387,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         }
         val notifyPendingIntent = PendingIntent.getBroadcast(
             app,
-            REQUEST_CODE,
+            notificationId,
             notifyIntent,
             PendingIntent.FLAG_UPDATE_CURRENT
         )
@@ -405,12 +404,15 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
      * Generate a new notification id, by getting the max out of all the current notifications ids
      * and incrementing it.
      */
-    private fun getNotificationId(): Int = runBlocking {
+    private fun generateNewNotificationId(): Int = runBlocking {
+        // TODO: maybe try with an observable instead of run blocking, but this will do for now
         val eventNotificationsIds = database.eventDao().getAll().map { it.notificationId }
         val max = eventNotificationsIds.maxByOrNull {
-            it ?: 0
-        }  ?: 0
-        max + 1
+            it ?: -1
+        }  ?: -1
+        // Increment by two since with each event, we associate 2 notifications, one before and one
+        // when it starts.
+        max + 2
     }
 
     /**
