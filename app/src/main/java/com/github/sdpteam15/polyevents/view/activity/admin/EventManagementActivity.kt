@@ -3,7 +3,6 @@ package com.github.sdpteam15.polyevents.view.activity.admin
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.*
@@ -13,6 +12,7 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.localDatetimeToString
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.entity.Event
+import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
@@ -43,23 +43,23 @@ class EventManagementActivity : AppCompatActivity() {
         fun postValueDate(type: String, year: Int, month: Int, day: Int, hour: Int, minute: Int) {
             if (type == TYPE_START) {
                 dateStart.postValue(
-                        LocalDateTime.of(
-                                year,
-                                month,
-                                day,
-                                hour,
-                                minute
-                        )
+                    LocalDateTime.of(
+                        year,
+                        month,
+                        day,
+                        hour,
+                        minute
+                    )
                 )
             } else {
                 dateEnd.postValue(
-                        LocalDateTime.of(
-                                year,
-                                month,
-                                day,
-                                hour,
-                                minute
-                        )
+                    LocalDateTime.of(
+                        year,
+                        month,
+                        day,
+                        hour,
+                        minute
+                    )
                 )
             }
         }
@@ -67,7 +67,10 @@ class EventManagementActivity : AppCompatActivity() {
 
     private val zoneName = ArrayList<String>()
     private val mapIndexToId: MutableMap<Int, String> = mutableMapOf()
+    private val organiserName = ArrayList<String>()
+    private val mapIndexToOrganiserId: MutableMap<Int, String> = mutableMapOf()
     private val zoneObserver = ObservableList<Zone>()
+    private val organiserObserver = ObservableList<UserEntity>()
     private lateinit var dialogStartDate: DatePickerDialog
     private lateinit var dialogEndDate: DatePickerDialog
     private lateinit var dialogStartTime: TimePickerDialog
@@ -76,6 +79,12 @@ class EventManagementActivity : AppCompatActivity() {
     private var curId = ""
     private val observableEvent = Observable<Event>()
 
+    // True if the current user is not an admin
+    private var isActivityProvider = false
+
+    // True if the current user is not an admin and he is currently editing an event edit request.
+    private var isModificationActivityProvider = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_event_management)
@@ -83,34 +92,20 @@ class EventManagementActivity : AppCompatActivity() {
 
         // Get intent value (if not NEW_EVENT_ID we know that we are in edition mode)
         val id = intent.getStringExtra(EventManagementListActivity.EVENT_ID_INTENT)!!
+        // See if there are intents related to managers so that we can display everything accordingly.
+        isActivityProvider = intent.hasExtra(EventManagementListActivity.INTENT_MANAGER)
+        isModificationActivityProvider =
+            intent.hasExtra(EventManagementListActivity.INTENT_MANAGER_EDIT)
+
         isCreation = id == EventManagementListActivity.NEW_EVENT_ID
         curId = id
 
+        setupSpinnerAdapter()
         setupDateListener()
+
         // Default date
         dateStart.postValue(LocalDateTime.now().withSecond(0).withNano(0))
         dateEnd.postValue(LocalDateTime.now().withSecond(0).withNano(0))
-
-        val adapter =
-                ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, zoneName)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        findViewById<Spinner>(R.id.spinner_zone).adapter = adapter
-
-        // Add all the zones retrieve from the database to the spinner
-        zoneObserver.observeAdd(this) {
-            val name = it.value.zoneName!!
-            zoneName.add(name)
-            mapIndexToId[zoneName.indexOf(name)] = it.value.zoneId!!
-            adapter.notifyDataSetChanged()
-        }
-
-        // Get all zones from the database or redirect if there is a problem
-        currentDatabase.zoneDatabase!!.getAllZones(null, null, zoneObserver).observe(this) {
-            if (!it.value) {
-                HelperFunctions.showToast(getString(R.string.failed_get_zones), this)
-                startActivity(Intent(this, EventManagementListActivity::class.java))
-            }
-        }
 
         // Call all the setup method
         setDateListener()
@@ -130,6 +125,57 @@ class EventManagementActivity : AppCompatActivity() {
         }
         dateEnd.observe(this) {
             updateTextDate(TYPE_END)
+        }
+    }
+
+    /**
+     * Get all the resources from the database and setup all the adapter for the spinner in the activity
+     */
+    private fun setupSpinnerAdapter() {
+        val adapter =
+            ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, zoneName)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        findViewById<Spinner>(R.id.spinner_zone).adapter = adapter
+
+        // Add all the zones retrieve from the database to the spinner
+        zoneObserver.observeAdd(this) {
+            val name = it.value.zoneName!!
+            zoneName.add(name)
+            mapIndexToId[zoneName.indexOf(name)] = it.value.zoneId!!
+            adapter.notifyDataSetChanged()
+        }
+
+        // Get all zones from the database or redirect if there is a problem
+        currentDatabase.zoneDatabase!!.getAllZones(null, null, zoneObserver).observe(this) {
+            if (!it.value) {
+                HelperFunctions.showToast(getString(R.string.failed_get_zones), this)
+                finish()
+            }
+        }
+
+        // We only allow to choose the user if the current user is an admin
+        // if the current user is an activity provider which will propose a event edit request, we will simply put its user id.
+        if (!isActivityProvider) {
+            val adapter2 =
+                ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, organiserName)
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            findViewById<Spinner>(R.id.spinner_organiser).adapter = adapter2
+
+            // Get all users from the database or redirect if there is a problem
+            currentDatabase.userDatabase!!.getListAllUsers(organiserObserver, null).observe(this) {
+                if (!it.value) {
+                    HelperFunctions.showToast(getString(R.string.failed_get_zones), this)
+                    finish()
+                }
+            }
+
+            // Add all the zones retrieve from the database to the spinner
+            organiserObserver.observeAdd(this) {
+                val name = it.value.name!!
+                organiserName.add(name)
+                mapIndexToOrganiserId[organiserName.indexOf(name)] = it.value.uid
+                adapter2.notifyDataSetChanged()
+            }
         }
     }
 
@@ -178,6 +224,17 @@ class EventManagementActivity : AppCompatActivity() {
         val descET = findViewById<EditText>(R.id.eventManagementDescriptionField)
         val nameET = findViewById<EditText>(R.id.eventManagementNameField)
         val nbpart = findViewById<EditText>(R.id.etNbPart)
+        val spinnerOrg = findViewById<Spinner>(R.id.spinner_organiser)
+        val spinnerZone = findViewById<Spinner>(R.id.spinner_zone)
+        val tvSpinnerOrganiser = findViewById<TextView>(R.id.tvSpinnerOrganiser)
+        if (isActivityProvider) {
+            tvSpinnerOrganiser.visibility = View.INVISIBLE
+            spinnerOrg.visibility = View.INVISIBLE
+        } else {
+            tvSpinnerOrganiser.visibility = View.VISIBLE
+            spinnerOrg.visibility = View.VISIBLE
+        }
+
 
         if (!onCallback) {
             btnManage.text = getString(R.string.create_event_btn_text)
@@ -204,6 +261,30 @@ class EventManagementActivity : AppCompatActivity() {
             dateEnd.postValue(event.endTime!!)
             updateTextDate(TYPE_END)
             updateTextDate(TYPE_START)
+
+            // Select the correct organiser
+            organiserObserver.observeOnce(this) {
+                var idx = 0
+                for (u in it.value.withIndex()) {
+                    if (u.value.uid == event.organizer) {
+                        idx = u.index
+                        break
+                    }
+                }
+                spinnerOrg.setSelection(idx)
+            }
+
+            // Select the correct zone
+            zoneObserver.observeOnce(this) {
+                var idx = 0
+                for (u in it.value.withIndex()) {
+                    if (u.value.zoneId == event.zoneId) {
+                        idx = u.index
+                        break
+                    }
+                }
+                spinnerZone.setSelection(idx)
+            }
         }
     }
 
@@ -215,34 +296,102 @@ class EventManagementActivity : AppCompatActivity() {
         val btnManage = findViewById<Button>(R.id.btnManageEvent)
         if (isCreation) {
             btnManage.setOnClickListener {
-                if (verifyCondition()) {
-                    currentDatabase.eventDatabase!!.createEvent(getInformation()).observe(this) {
-                        redirectOrDisplayError(
-                                getString(R.string.event_creation_success),
-                                getString(R.string.event_creation_failed),
-                                it.value
-                        )
-                    }
-                }
+                handleCreateClick()
             }
         } else {
             btnManage.setOnClickListener {
-                if (verifyCondition()) {
-                    currentDatabase.eventDatabase!!.updateEvent(getInformation()).observe(this) {
-                        redirectOrDisplayError(
-                                getString(R.string.event_update_success),
-                                getString(R.string.failed_to_update_event_info),
-                                it.value
-                        )
+                handleUpdateClick()
+            }
+            // Get the correct information depending on if we edit an event edit request
+            if (isModificationActivityProvider) {
+                currentDatabase.eventDatabase!!.getEventEditFromId(curId, observableEvent)
+                    .observe(this) {
+                        if (it.value) {
+                            setupViewInActivity(true)
+                        } else {
+                            HelperFunctions.showToast(
+                                getString(R.string.failed_get_event_information),
+                                this
+                            )
+                            finish()
+                        }
                     }
+            } else {
+                // Or if we edit an existing event
+                currentDatabase.eventDatabase!!.getEventFromId(curId, observableEvent)
+                    .observe(this) {
+                        if (it.value) {
+                            setupViewInActivity(true)
+                        } else {
+                            HelperFunctions.showToast(
+                                getString(R.string.failed_get_event_information),
+                                this
+                            )
+                            finish()
+                        }
+                    }
+            }
+        }
+
+    }
+
+    /**
+     * Handle the click on the create button
+     */
+    private fun handleCreateClick() {
+        if (verifyCondition()) {
+            if (isActivityProvider) {
+                currentDatabase.eventDatabase!!.createEventEdit(getInformation()).observe(this) {
+                    redirectOrDisplayError(
+                        getString(R.string.event_edit_request_successfully_sent),
+                        getString(R.string.event_edit_request_error),
+                        it.value
+                    )
+                }
+            } else {
+                currentDatabase.eventDatabase!!.createEvent(getInformation()).observe(this) {
+                    redirectOrDisplayError(
+                        getString(R.string.event_creation_success),
+                        getString(R.string.event_creation_failed),
+                        it.value
+                    )
                 }
             }
-            currentDatabase.eventDatabase!!.getEventFromId(curId, observableEvent).observe(this) {
-                if (it.value) {
-                    setupViewInActivity(true)
+        }
+    }
+
+    /**
+     * Handle the click on the update button
+     */
+    private fun handleUpdateClick() {
+        if (verifyCondition()) {
+            if (isActivityProvider) {
+                if (isModificationActivityProvider) {
+                    currentDatabase.eventDatabase!!.updateEventEdit(getInformation())
+                        .observe(this) {
+                            redirectOrDisplayError(
+                                getString(R.string.event_edit_request_successfully_sent),
+                                getString(R.string.event_edit_request_error),
+                                it.value
+                            )
+                        }
                 } else {
-                    HelperFunctions.showToast(getString(R.string.failed_get_event_information), this)
-                    startActivity(Intent(this, EventManagementListActivity::class.java))
+                    currentDatabase.eventDatabase!!.createEventEdit(getInformation())
+                        .observe(this) {
+                            redirectOrDisplayError(
+                                getString(R.string.event_edit_request_successfully_sent),
+                                getString(R.string.event_edit_request_error),
+                                it.value
+                            )
+                        }
+                }
+            } else {
+                currentDatabase.eventDatabase!!.updateEvent(getInformation()).observe(this) {
+                    redirectOrDisplayError(
+                        getString(R.string.event_update_success),
+                        getString(R.string.failed_to_update_event_info),
+                        it.value
+                    )
                 }
             }
         }
@@ -254,7 +403,8 @@ class EventManagementActivity : AppCompatActivity() {
      */
     private fun updateTextDate(type: String) {
         if (TYPE_START == type) {
-            findViewById<TextView>(R.id.et_start_date).text = localDatetimeToString(dateStart.value!!)
+            findViewById<TextView>(R.id.et_start_date).text =
+                localDatetimeToString(dateStart.value!!)
         } else {
             findViewById<TextView>(R.id.et_end_date).text = localDatetimeToString(dateEnd.value!!)
         }
@@ -269,7 +419,7 @@ class EventManagementActivity : AppCompatActivity() {
     private fun redirectOrDisplayError(msgSuccess: String, msgError: String, success: Boolean) {
         if (success) {
             HelperFunctions.showToast(msgSuccess, this)
-            startActivity(Intent(this, EventManagementListActivity::class.java))
+            finish()
         } else {
             HelperFunctions.showToast(msgError, this)
         }
@@ -285,21 +435,35 @@ class EventManagementActivity : AppCompatActivity() {
         val name = findViewById<EditText>(R.id.eventManagementNameField).text.toString()
         val desc = findViewById<EditText>(R.id.eventManagementDescriptionField).text.toString()
         val selectedZone = findViewById<Spinner>(R.id.spinner_zone).selectedItemPosition
+        val selectedOrganiser = findViewById<Spinner>(R.id.spinner_organiser).selectedItemPosition
         val limitedEvent = findViewById<Switch>(R.id.swtLimitedEvent).isChecked
         val nbParticipant = findViewById<EditText>(R.id.etNbPart).text.toString().toInt()
 
         val zoneNa = zoneName[selectedZone]
         val zoneId = mapIndexToId[selectedZone]
+        var status: Event.EventStatus? = null
+
+        // Add the event organiser id and the status if the current user is not an admin -> event edit request
+        val organiserId: String
+        if (!isActivityProvider) {
+            organiserId = mapIndexToOrganiserId[selectedOrganiser]!!
+        } else {
+            organiserId = currentDatabase.currentUser!!.uid
+            status = Event.EventStatus.PENDING
+        }
+
         return Event(
-                eventId = eventId,
-                zoneId = zoneId,
-                zoneName = zoneNa,
-                startTime = dateStart.value,
-                endTime = dateEnd.value,
-                eventName = name,
-                description = desc,
-                limitedEvent = limitedEvent,
-                maxNumberOfSlots = nbParticipant
+            eventId = eventId,
+            zoneId = zoneId,
+            zoneName = zoneNa,
+            startTime = dateStart.value,
+            endTime = dateEnd.value,
+            eventName = name,
+            description = desc,
+            limitedEvent = limitedEvent,
+            maxNumberOfSlots = nbParticipant,
+            organizer = organiserId,
+            status = status
         )
     }
 
@@ -308,33 +472,33 @@ class EventManagementActivity : AppCompatActivity() {
      */
     private fun setDateListener() {
         dialogEndDate = DatePickerDialog(
-                this, { _: DatePicker, year: Int, month: Int, day: Int ->
-            postValueDate(
+            this, { _: DatePicker, year: Int, month: Int, day: Int ->
+                postValueDate(
                     TYPE_END,
                     year,
                     month + 1,
                     day,
                     dateEnd.value!!.hour,
                     dateEnd.value!!.minute
-            )
-        }, dateEnd.value!!.year, dateEnd.value!!.monthValue - 1, dateEnd.value!!.dayOfMonth
+                )
+            }, dateEnd.value!!.year, dateEnd.value!!.monthValue - 1, dateEnd.value!!.dayOfMonth
         )
 
         dialogStartDate = DatePickerDialog(
-                this,
-                { _: DatePicker, year: Int, month: Int, day: Int ->
-                    postValueDate(
-                            TYPE_START,
-                            year,
-                            month + 1,
-                            day,
-                            dateStart.value!!.hour,
-                            dateStart.value!!.minute
-                    )
-                },
-                dateStart.value!!.year,
-                dateStart.value!!.monthValue - 1,
-                dateStart.value!!.dayOfMonth
+            this,
+            { _: DatePicker, year: Int, month: Int, day: Int ->
+                postValueDate(
+                    TYPE_START,
+                    year,
+                    month + 1,
+                    day,
+                    dateStart.value!!.hour,
+                    dateStart.value!!.minute
+                )
+            },
+            dateStart.value!!.year,
+            dateStart.value!!.monthValue - 1,
+            dateStart.value!!.dayOfMonth
         )
     }
 
@@ -343,41 +507,41 @@ class EventManagementActivity : AppCompatActivity() {
      */
     private fun setTimeListener() {
         dialogStartTime = TimePickerDialog(
-                this, { _: TimePicker, hour: Int, minute: Int ->
-            postValueDate(
+            this, { _: TimePicker, hour: Int, minute: Int ->
+                postValueDate(
                     TYPE_START,
                     dateStart.value!!.year,
                     dateStart.value!!.monthValue,
                     dateStart.value!!.dayOfMonth,
                     hour,
                     minute
-            )
-        },
-                dateStart.value!!.hour,
-                dateStart.value!!.minute,
-                true
+                )
+            },
+            dateStart.value!!.hour,
+            dateStart.value!!.minute,
+            true
         )
 
         dialogEndTime = TimePickerDialog(
-                this, { _: TimePicker, hour: Int, minute: Int ->
-            postValueDate(
+            this, { _: TimePicker, hour: Int, minute: Int ->
+                postValueDate(
                     TYPE_END,
                     dateEnd.value!!.year,
                     dateEnd.value!!.monthValue,
                     dateEnd.value!!.dayOfMonth,
                     hour,
                     minute
-            )
-        },
-                dateEnd.value!!.hour,
-                dateEnd.value!!.minute,
-                true
+                )
+            },
+            dateEnd.value!!.hour,
+            dateEnd.value!!.minute,
+            true
         )
     }
 
     /**
      * Verify that all the condition are satisfied. If it is not the case, display the corresponding error message
-     * @return if all the conditions are satisfied or not
+     * @return true if all the conditions are satisfied or false otherwise
      */
     private fun verifyCondition(): Boolean {
         var good = true
@@ -397,17 +561,16 @@ class EventManagementActivity : AppCompatActivity() {
 
         if (findViewById<Switch>(R.id.swtLimitedEvent).isChecked) {
             if (findViewById<EditText>(R.id.etNbPart).text.toString()
-                            .toInt() < MIN_PART_NB
+                    .toInt() < MIN_PART_NB
             ) {
                 good = false
                 HelperFunctions.showToast(
-                        "The number of participant must be >= $MIN_PART_NB",
-                        this
+                    getString(R.string.number_of_event_greater_than_0,MIN_PART_NB),
+                    this
                 )
             }
         }
 
         return good
     }
-
 }

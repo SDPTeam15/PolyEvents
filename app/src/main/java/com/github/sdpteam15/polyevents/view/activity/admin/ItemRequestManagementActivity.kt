@@ -59,11 +59,20 @@ class ItemRequestManagementActivity : AppCompatActivity() {
             }
         }
 
-
         items.group(this) { it.first.itemId!! }.then.map(this, itemNames) {
             it[0].first.itemName!!
         }
 
+        recyclerView.adapter =
+            ItemRequestAdminAdapter(
+                this,
+                this,
+                requests,
+                userNames,
+                itemNames,
+                acceptMaterialRequest,
+                declineMaterialRequest
+            )
 
         //Wait until we have both requests accepted from the database to show the material requests
         currentDatabase.materialRequestDatabase!!.getMaterialRequestList(
@@ -80,16 +89,6 @@ class ItemRequestManagementActivity : AppCompatActivity() {
                             if (!it2.value) {
                                 HelperFunctions.showToast("Failed to get the list of items", this)
                             }
-                            recyclerView.adapter =
-                                ItemRequestAdminAdapter(
-                                    this,
-                                    this,
-                                    requests,
-                                    userNames,
-                                    itemNames,
-                                    acceptMaterialRequest,
-                                    declineMaterialRequest
-                                )
                         }
                 }
             }
