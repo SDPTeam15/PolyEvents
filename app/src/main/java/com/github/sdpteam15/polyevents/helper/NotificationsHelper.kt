@@ -9,9 +9,6 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.view.activity.EventActivity
 import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
 
-// TODO: will have to increment for each event
-private val NOTIFICATION_ID = 0
-
 const val EXTRA_NOTIFICATION_ID = "com.github.sdpteam15.polyevents.helper.NOTIFICATION_ID"
 const val EXTRA_NOTIFICATION_MESSAGE = "com.github.sdpteam15.polyevents.helper.NOTIFICATION_MESSAGE"
 const val REQUEST_CODE =  0
@@ -46,7 +43,7 @@ fun NotificationManager.sendEventNotification(
      */
     val contentPendingIntent = PendingIntent.getActivity(
         applicationContext,
-        NOTIFICATION_ID,
+        notificationId,
         contentIntent,
         PendingIntent.FLAG_UPDATE_CURRENT
     )
