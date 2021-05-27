@@ -537,6 +537,25 @@ class EventActivityTest {
         assert(retrievedEventsAfterUnfollow.isEmpty())
     }
 
+    @Test
+    fun testOpeningAFollowedEventShouldDisplayUnfollow() = runBlocking {
+        When(mockedEventDatabase.currentUser).thenReturn(null)
+        localDatabase.eventDao().insert(EventLocal.fromEvent(testPublicEvent))
+
+        goToEventActivityWithIntent(publicEventId)
+        assertDisplayed(R.id.button_subscribe_event, R.string.event_unfollow)
+
+        val retrievedEvents = localDatabase.eventDao().getEventById(publicEventId)
+        assertFalse(retrievedEvents.isEmpty())
+        assertEquals(retrievedEvents[0].toEvent(), testPublicEvent)
+
+
+        // Now unfollow
+        clickOn(R.id.button_subscribe_event)
+        val retrievedEventsAfterUnfollow = localDatabase.eventDao().getEventById(publicEventId)
+        assert(retrievedEventsAfterUnfollow.isEmpty())
+    }
+
 
     /**
      * Idea taken from StackOverflow
