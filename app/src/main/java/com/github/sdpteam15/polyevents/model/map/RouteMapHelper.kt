@@ -436,14 +436,36 @@ object RouteMapHelper {
         context: Context?,
         lifecycleOwner: LifecycleOwner
     ): Observable<Boolean> {
-        val result = Database.currentDatabase.routeDatabase!!.getRoute(nodes, edges, zones)
+        val edgesToAdd = mutableListOf<RouteEdge>()
         edges.observeAdd(lifecycleOwner) {
-            edgeAddedNotification(context, it.value)
-        }
-        edges.observeRemove(lifecycleOwner) {
+            synchronized(this) {
+                edgesToAdd.add(it.value)
+                it.value.start = nodes.first{ n -> n.id == it.value.startId}
+                it.value.end = nodes.first{ n -> n.id == it.value.endId}
+                for (e in edgesToAdd.toList())
+                    if (e.start != null && e.end != null) {
+                        edgeAddedNotification(context, e)
+                        edgesToAdd.remove(e)
+                    }
+            }
+        }.then.observeRemove(lifecycleOwner) {
             edgeRemovedNotification(it.value)
         }
-        return result
+        nodes.observeAdd(lifecycleOwner) {
+            synchronized(this) {
+                for (e in edgesToAdd.toList()) {
+                    if(e.startId == it.value.id)
+                        e.start = it.value
+                    if(e.endId == it.value.id)
+                        e.end = it.value
+                    if (e.start != null && e.end != null) {
+                        edgeAddedNotification(context, e)
+                        edgesToAdd.remove(e)
+                    }
+                }
+            }
+        }
+        return Database.currentDatabase.routeDatabase!!.getRoute(nodes, edges, zones)
     }
 
 

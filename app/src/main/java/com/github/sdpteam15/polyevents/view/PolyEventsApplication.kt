@@ -10,6 +10,7 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 
 // TODO: consider instantiating Firebase database here
 class PolyEventsApplication : Application() {
@@ -20,6 +21,10 @@ class PolyEventsApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         application = this
+
+        applicationScope.launch {
+            database.genericEntityDao().deleteAll()
+        }
     }
     // No need to cancel this scope as it'll be torn down with the process
     val applicationScope = CoroutineScope(SupervisorJob())

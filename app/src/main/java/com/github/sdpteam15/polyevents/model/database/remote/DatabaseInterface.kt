@@ -214,7 +214,7 @@ interface DatabaseInterface {
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterFromDocumentInterface<out T> = collection.adapter as AdapterFromDocumentInterface<T>
     ): Observable<Boolean> = getMapEntity(
-        ObservableMap<String, T>().observeOnce {
+        ObservableMap<String, T>().observe {
             val list = mutableListOf<T>()
             for (key in it.value.keys)
                 list.add(it.value[key]!!)

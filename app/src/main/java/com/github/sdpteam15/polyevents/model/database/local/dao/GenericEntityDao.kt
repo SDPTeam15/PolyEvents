@@ -11,10 +11,10 @@ import java.util.*
 @Dao
 interface GenericEntityDao {
 
-    @Query("SELECT * FROM entity_table WHERE collection LIKE :collection")
+    @Query("SELECT * FROM entity_table WHERE collection = :collection")
     suspend fun getAll(collection: String): List<GenericEntity>
 
-    @Query("SELECT * FROM entity_table WHERE id LIKE :id AND collection LIKE :collection ")
+    @Query("SELECT * FROM entity_table WHERE id = :id AND collection = :collection ")
     suspend fun get(id: String, collection: String): GenericEntity
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -29,6 +29,6 @@ interface GenericEntityDao {
     @Query("DELETE FROM entity_table")
     suspend fun deleteAll()
 
-    @Query("SELECT MAX(update_time) FROM entity_table WHERE collection LIKE :collection")
+    @Query("SELECT MAX(update_time) FROM entity_table WHERE collection = :collection")
     suspend fun lastUpdate(collection: String) : String?
 }

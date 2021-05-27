@@ -34,23 +34,12 @@ class RouteDatabase(private val db: DatabaseInterface) : RouteDatabaseInterface 
                     if (!it.value)
                         end.postValue(it.value, it.sender)
                     else {
-                        val tempEdges = ObservableList<RouteEdge>()
                         db.getListEntity(
-                            tempEdges,
+                            edges,
                             null,
                             null,
                             EDGE_COLLECTION
                         ).observeOnce {
-                            if (it.value) {
-                                val keyToNode =
-                                    nodes.groupOnce { it.id }.then.mapOnce { it[0] }.then
-                                for (e in tempEdges) {
-                                    e.start = keyToNode[e.startId]
-                                    e.end = keyToNode[e.endId]
-                                }
-                            }
-                            edges.clear(it.sender)
-                            edges.addAll(tempEdges, it.sender)
                             end.postValue(it.value, it.sender)
                         }
                     }

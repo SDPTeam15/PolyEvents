@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.model.database.local.room
 
+import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
@@ -178,16 +179,25 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
         adapter: AdapterFromDocumentInterface<out T>
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
-        PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
-            val result = LocalAdapterFromDocument(adapter).fromDocument(
-                PolyEventsApplication.application.database.genericEntityDao()
-                    .get(id, collection.value)
-            )
-            element.postValue(result, db)
-            if (result != null)
-                ended.postValue(true, db)
-            update(collection, adapter, ended, element = element, id = id)
-        }
+        HelperFunctions.run(Runnable {
+            PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
+                val result = LocalAdapterFromDocument(adapter).fromDocument(
+                    PolyEventsApplication.application.database.genericEntityDao()
+                        .get(id, collection.value)
+                )
+                element.postValue(result, db)
+                if (result != null)
+                    ended.postValue(true, db)
+
+                update(
+                    collection,
+                    adapter,
+                    ended,
+                    element = element,
+                    id = id
+                )
+            }
+        })
         return ended
     }
 
@@ -199,37 +209,39 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
         adapter: AdapterFromDocumentInterface<out T>
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
-        if (ids != null) {
+        HelperFunctions.run(Runnable {
+            if (ids != null) {
+                PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
+                    onList(
+                        elements,
+                        ids,
+                        collection,
+                        adapter,
+                        ended
+                    )
+                }
+            } else {
+                PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
+                    onMatcher(
+                        elements,
+                        matcher,
+                        collection,
+                        adapter,
+                        ended
+                    )
+                }
+            }
             PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
-                onList(
-                    elements,
-                    ids,
+                update(
                     collection,
                     adapter,
-                    ended
+                    ended,
+                    elements = elements,
+                    ids = ids,
+                    matcher = matcher
                 )
             }
-        } else {
-            PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
-                onMatcher(
-                    elements,
-                    matcher,
-                    collection,
-                    adapter,
-                    ended
-                )
-            }
-        }
-        PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
-            update(
-                collection,
-                adapter,
-                ended,
-                elements = elements,
-                ids = ids,
-                matcher = matcher
-            )
-        }
+        })
         return ended
     }
 
@@ -287,7 +299,11 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
         adapter: AdapterInterface<T>
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
-        update(collection, adapter, ended, adapterToDocument = adapter)
+        HelperFunctions.run(Runnable {
+            PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
+                update(collection, adapter, ended, adapterToDocument = adapter)
+            }
+        })
         return ended
     }
 
