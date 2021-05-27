@@ -3,6 +3,7 @@ import androidx.room.*
 import com.github.sdpteam15.polyevents.model.database.local.entity.GenericEntity
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant
 import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
+import java.util.*
 
 /**
  * Data access object for the GenericEntity entity on the local room database
@@ -14,7 +15,7 @@ interface GenericEntityDao {
     suspend fun getAll(collection: CollectionConstant): List<GenericEntity>
 
     @Query("SELECT * FROM entity_table WHERE id LIKE :id AND collection LIKE :collection ")
-    suspend fun getEventById(id: String, collection: CollectionConstant): GenericEntity
+    suspend fun get(id: String, collection: CollectionConstant): GenericEntity
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(event: GenericEntity)
@@ -27,4 +28,7 @@ interface GenericEntityDao {
 
     @Query("DELETE FROM entity_table")
     suspend fun deleteAll()
+
+    @Query("SELECT MAX(update_time) FROM entity_table WHERE collection LIKE :collection")
+    suspend fun lastUpdate(collection: CollectionConstant) : String?
 }

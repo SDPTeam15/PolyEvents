@@ -75,6 +75,7 @@ class ObservableList<T>(
         removeAt,
         removeAll,
         retainAll,
+        updateAll,
         clear,
         itemUpdated
     }
@@ -394,6 +395,29 @@ class ObservableList<T>(
 
     override fun retainAll(elements: Collection<T>): Boolean =
         retainAll(elements, null)
+
+    /**
+     * Update the elements in this collection to that are contained in the specified collection.
+     * @param items items list.
+     * @param sender The source of the event.
+     */
+    fun updateAll(items: Collection<T>, sender: Any? = null) {
+        val toremove = mutableListOf<Observable<T>>()
+        val added = mutableListOf<Observable<T>>()
+        val toadd = mutableListOf<T>()
+        toadd.addAll(items)
+        for (item in listValues) {
+            if (item.value !in items)
+                toremove.add(item)
+            else
+                toadd.remove(item.value)
+        }
+        for (item in toremove)
+            remove(item, sender, false)
+        for (item in toadd)
+            added.add(add(item, sender, false)!!)
+        notifyUpdate(sender, Info.updateAll, Triple(items, toremove, added))
+    }
 
     override fun subList(fromIndex: Int, toIndex: Int): MutableList<T> {
         TODO("Not yet implemented")
@@ -763,6 +787,10 @@ class ObservableList<T>(
                         val (items, _) = it.args as Pair<Collection<T>, MutableList<Observable<T>>>
                         observableList.retainAll(items.map(mapper), it.sender)
                     }
+                    Info.updateAll -> {
+                        val (items, _, _) = it.args as Triple<Collection<T>, MutableList<Observable<T>>, MutableList<T>>
+                        observableList.updateAll(items.map(mapper), it.sender)
+                    }
                     Info.clear -> {
                         observableList.clear(it.sender)
                     }
@@ -913,6 +941,13 @@ class ObservableList<T>(
                         val (_, observables) = it.args as Pair<Collection<T>, MutableList<Observable<T>>>
                         for (observable in observables)
                             removeLambda(it, observable)
+                    }
+                    Info.updateAll -> {
+                        val (_, observables, items) = it.args as Triple<Collection<T>, MutableList<Observable<T>>, MutableList<Observable<T>>>
+                        for (observable in observables)
+                            removeLambda(it, observable)
+                        for (item in items)
+                            addLambda(it, item)
                     }
                     Info.clear -> {
                         observableMap.clear(it.sender)

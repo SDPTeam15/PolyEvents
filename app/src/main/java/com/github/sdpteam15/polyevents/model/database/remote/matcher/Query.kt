@@ -11,5 +11,4 @@ interface Query {
     fun whereArrayContains(value: String, uid: String): Query
     fun whereGreaterThan(value: String, localDateTimeToDate: Date): Query
     fun whereGreaterThan(value: String, long: Long): Query
-    fun orderBy(value: String): Query
 }

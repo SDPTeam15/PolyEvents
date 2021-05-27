@@ -4,6 +4,7 @@ import androidx.annotation.NonNull
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.util.*
 
 @Entity(tableName = "entity_table", primaryKeys = ["id", "collection"])
 data class GenericEntity(
@@ -15,6 +16,6 @@ data class GenericEntity(
     val collection: String = "",
     @ColumnInfo(name = "data")
     val data: String? = null,
-    @ColumnInfo(name = "update")
-    val update: String? = null,
+    @ColumnInfo(name = "update_time")
+    val update_time: String? = null,
 )

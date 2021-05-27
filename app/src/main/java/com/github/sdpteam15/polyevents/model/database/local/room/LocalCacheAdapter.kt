@@ -2,14 +2,15 @@ package com.github.sdpteam15.polyevents.model.database.local.room
 
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
-import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterToDocumentInterface
+import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.objects.*
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.model.observable.ObservableMap
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -101,13 +102,19 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
         elements: List<T>,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterToDocumentInterface<in T>
-    ): Observable<Pair<Boolean, List<String>?>> =
+    ): Observable<Pair<Boolean, List<String?>>> =
         db.addListEntity(
             elements,
             collection,
             LogAdapterToDocument(adapter)
         ).observeOnce {
-            TODO("Not yet implemented")
+            PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
+                for (value in it.value.second.zip(elements))
+                    if (value.first != null)
+                        PolyEventsApplication.application.database.genericEntityDao().insert(
+                            LocalAdapterToDocument(adapter).toDocument(value.second, value.first!!)!!
+                        )
+            }
         }.then
 
     override fun <T : Any> setEntity(
@@ -122,20 +129,35 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
             collection,
             LogAdapterToDocument(adapter)
         ).observeOnce {
-            TODO("Not yet implemented")
+            if (it.value) {
+                PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
+                    PolyEventsApplication.application.database.genericEntityDao().insert(
+                        LocalAdapterToDocument(adapter).toDocument(element, id)!!
+                    )
+                }
+            }
         }.then
 
     override fun <T : Any> setListEntity(
         elements: List<Pair<String, T?>>,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterToDocumentInterface<in T>
-    ): Observable<Boolean> =
+    ): Observable<Pair<Boolean, List<Boolean>>> =
         db.setListEntity(
             elements,
             collection,
             LogAdapterToDocument(adapter)
         ).observeOnce {
-            TODO("Not yet implemented")
+            PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
+                for (value in it.value.second.zip(elements))
+                    if (value.first)
+                        PolyEventsApplication.application.database.genericEntityDao().insert(
+                            LocalAdapterToDocument(adapter).toDocument(
+                                value.second.second,
+                                value.second.first
+                            )!!
+                        )
+            }
         }.then
 
     override fun <T : Any> getEntity(
@@ -143,30 +165,40 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
         id: String,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterFromDocumentInterface<out T>
-    ): Observable<Boolean> =
-        db.getEntity(
-            element,
-            id,
-            collection,
-            LogAdapterFromDocument(adapter)
-        ).observeOnce {
-            TODO("Not yet implemented")
-        }.then
+    ): Observable<Boolean> {
+        val ended = Observable<Boolean>()
+        PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
+            val result = LocalAdapterFromDocument(adapter).fromDocument(
+                PolyEventsApplication.application.database.genericEntityDao().get(id, collection)
+            )
+            element.postValue(result, db)
+            if (result != null)
+                ended.postValue(true, db)
+            Update(collection, ended)
+        }
+        return ended
+    }
 
-    override fun <T : Any> getListEntity(
-        elements: ObservableList<T>,
+    override fun <T : Any> getMapEntity(
+        elements: ObservableMap<String, T>,
         ids: List<String>?,
         matcher: Matcher?,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterFromDocumentInterface<out T>
-    ): Observable<Boolean> =
-        db.getListEntity(
-            elements,
-            ids,
-            matcher,
-            collection,
-            LogAdapterFromDocument(adapter)
-        ).observeOnce {
-            TODO("Not yet implemented")
-        }.then
+    ): Observable<Boolean> {
+        val ended = Observable<Boolean>()
+        TODO()
+        return ended
+    }
+
+    fun Update(collection: DatabaseConstant.CollectionConstant, ended: Observable<Boolean>) {
+        PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
+            val date =
+                PolyEventsApplication.application.database.genericEntityDao().lastUpdate(collection)
+
+            if (date != null)
+                LocalAdapterFromDocument.toDate(date)
+        }
+
+    }
 }
