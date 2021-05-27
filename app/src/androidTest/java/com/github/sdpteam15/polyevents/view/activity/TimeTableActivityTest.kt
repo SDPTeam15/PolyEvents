@@ -9,6 +9,7 @@ import androidx.test.espresso.matcher.ViewMatchers
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
+import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.database.remote.objects.EventDatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.objects.ZoneDatabaseInterface
 import com.github.sdpteam15.polyevents.model.entity.Event
@@ -17,6 +18,7 @@ import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.activity.admin.EventManagementListActivity
 import org.hamcrest.CoreMatchers
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
@@ -126,6 +128,13 @@ class TimeTableActivityTest {
 
         Database.currentDatabase = mockedDatabase
         scenario = ActivityScenario.launch(intent)
+    }
+
+    @After
+    fun teardown() {
+        scenario.close()
+        // close and remove the mock local database
+        Database.currentDatabase = FirestoreDatabaseProvider
     }
 
     @Test
