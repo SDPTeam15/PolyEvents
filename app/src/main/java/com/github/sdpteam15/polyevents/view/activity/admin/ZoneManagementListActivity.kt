@@ -67,6 +67,4 @@ class ZoneManagementListActivity : AppCompatActivity() {
         intent.putExtra(EXTRA_ID, zoneId)
         startActivity(intent)
     }
-
-
 }

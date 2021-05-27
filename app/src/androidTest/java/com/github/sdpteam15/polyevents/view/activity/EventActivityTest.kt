@@ -86,12 +86,12 @@ class EventActivityTest {
             startTime = LocalDateTime.of(2021, 3, 7, 21, 15),
             organizer = "AcademiC DeCibel",
             zoneName = "Concert Hall",
-            tags = mutableSetOf("music", "live", "pogo")
+            tags = mutableListOf("music", "live", "pogo")
         )
         testPublicEvent = testLimitedEvent.copy(
                 eventId = publicEventId,
                 eventName = "public Event only",
-                tags = mutableSetOf()
+                tags = mutableListOf()
         )
 
         testLimitedEvent.makeLimitedEvent(3)

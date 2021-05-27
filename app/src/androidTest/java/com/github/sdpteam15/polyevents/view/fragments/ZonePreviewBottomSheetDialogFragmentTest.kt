@@ -64,7 +64,7 @@ class ZonePreviewBottomSheetDialogFragmentTest {
             endTime = LocalDateTime.of(2021, 3, 7, 13, 0, 0),
             organizer = "The fish band",
             zoneName = "Kitchen",
-            tags = mutableSetOf("sushi", "japan", "cooking")
+            tags = mutableListOf("sushi", "japan", "cooking")
         )
         event1.makeLimitedEvent(25)
 
@@ -85,7 +85,7 @@ class ZonePreviewBottomSheetDialogFragmentTest {
             startTime = LocalDateTime.of(2021, 3, 7, 21, 15),
             organizer = "AcademiC DeCibel",
             zoneName = "Concert Hall",
-            tags = mutableSetOf("music", "live", "pogo")
+            tags = mutableListOf("music", "live", "pogo")
         )
 
         mockedDatabase = mock(DatabaseInterface::class.java)

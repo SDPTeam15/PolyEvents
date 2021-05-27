@@ -46,7 +46,7 @@ class UpcomingEventsVisitorHomeFragmentTest {
                 startTime = LocalDateTime.of(2021, 3, 7, 12, 15),
                 organizer = "The fish band",
                 zoneName = "Kitchen",
-                tags = mutableSetOf("sushi", "japan", "cooking")
+                tags = mutableListOf("sushi", "japan", "cooking")
             )
         )
 

@@ -14,17 +14,17 @@ import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementListAct
 
 class ZoneItemAdapter(
     private val zones: ObservableList<Zone>,
-    private val listener: (Zone) -> Unit
+    val listener: (Zone) -> Unit
 ) : RecyclerView.Adapter<ZoneItemAdapter.ItemViewHolder>() {
-
     /**
      * adapted ViewHolder for each Zone
      * Takes the corresponding event view
      */
-    class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         private val eventName = view.findViewById<TextView>(R.id.id_zone_name_text)
         private val btnRemove = view.findViewById<ImageButton>(R.id.id_zone_remove_item)
+        private val btnEdit = view.findViewById<ImageButton>(R.id.id_zone_modify_item)
 
         /**
          * Binds the values of each field of a zone to the layout of an event
@@ -36,7 +36,9 @@ class ZoneItemAdapter(
                 ZoneManagementListActivity.deleteZone(zone)
                 zones.remove(zone)
             }
-
+            btnEdit.setOnClickListener{
+                listener(zone)
+            }
         }
     }
 
@@ -60,5 +62,4 @@ class ZoneItemAdapter(
             listener(zone)
         }
     }
-
 }
