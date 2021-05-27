@@ -235,5 +235,6 @@
     <string name="time_timetable">%1$d:00</string>
     <string name="time_name">" Time"</string>
     <string name="select_birthday">Select birthday</string>
+    <string name="tags_separate_them_with_a_coma">Tags (separated by a coma)</string>
 
 </resources>

@@ -224,6 +224,7 @@ class EventManagementActivity : AppCompatActivity() {
         val descET = findViewById<EditText>(R.id.eventManagementDescriptionField)
         val nameET = findViewById<EditText>(R.id.eventManagementNameField)
         val nbpart = findViewById<EditText>(R.id.etNbPart)
+        val tagsEt = findViewById<EditText>(R.id.event_management_tags_edit)
         val spinnerOrg = findViewById<Spinner>(R.id.spinner_organiser)
         val spinnerZone = findViewById<Spinner>(R.id.spinner_zone)
         val tvSpinnerOrganiser = findViewById<TextView>(R.id.tvSpinnerOrganiser)
@@ -248,7 +249,16 @@ class EventManagementActivity : AppCompatActivity() {
             btnManage.text = getString(R.string.update_event_btn_text)
             nameET.setText(event.eventName)
             descET.setText(event.description)
-
+            var tagTxt = ""
+            if (event.tags.size != 0) {
+                val txt = event.tags.map {
+                    "$it, "
+                }.reduce { v, v2 ->
+                    v + v2
+                }
+                tagTxt = txt.substring(0, txt.length - 2)
+            }
+            tagsEt.setText(tagTxt)
             nbpart.setText(EMPTY_PART_NB)
             nbpart.visibility = View.INVISIBLE
 
@@ -438,6 +448,21 @@ class EventManagementActivity : AppCompatActivity() {
         val selectedOrganiser = findViewById<Spinner>(R.id.spinner_organiser).selectedItemPosition
         val limitedEvent = findViewById<Switch>(R.id.swtLimitedEvent).isChecked
         val nbParticipant = findViewById<EditText>(R.id.etNbPart).text.toString().toInt()
+        val tags =
+            if (findViewById<EditText>(R.id.event_management_tags_edit).text.toString() != "") {
+                findViewById<EditText>(R.id.event_management_tags_edit)
+                    .text
+                    .toString()
+                    .trim()
+                    .split(",")
+                    .map {
+                        it.trim()
+                    }
+                    .toSet()
+                    .toMutableList()
+            } else {
+                mutableListOf()
+            }
 
         val zoneNa = zoneName[selectedZone]
         val zoneId = mapIndexToId[selectedZone]
@@ -463,7 +488,8 @@ class EventManagementActivity : AppCompatActivity() {
             limitedEvent = limitedEvent,
             maxNumberOfSlots = nbParticipant,
             organizer = organiserId,
-            status = status
+            status = status,
+            tags = tags
         )
     }
 
@@ -565,7 +591,7 @@ class EventManagementActivity : AppCompatActivity() {
             ) {
                 good = false
                 HelperFunctions.showToast(
-                    getString(R.string.number_of_event_greater_than_0,MIN_PART_NB),
+                    getString(R.string.number_of_event_greater_than_0, MIN_PART_NB),
                     this
                 )
             }
