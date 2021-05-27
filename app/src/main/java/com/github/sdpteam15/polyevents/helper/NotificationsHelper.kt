@@ -11,7 +11,6 @@ import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
 
 const val EXTRA_NOTIFICATION_ID = "com.github.sdpteam15.polyevents.helper.NOTIFICATION_ID"
 const val EXTRA_NOTIFICATION_MESSAGE = "com.github.sdpteam15.polyevents.helper.NOTIFICATION_MESSAGE"
-const val REQUEST_CODE =  0
 
 /**
  * Extension function to the Notification manager, to create a custom notification
