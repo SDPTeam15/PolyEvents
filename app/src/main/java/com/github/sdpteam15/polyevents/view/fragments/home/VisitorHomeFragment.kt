@@ -24,6 +24,9 @@ import com.github.sdpteam15.polyevents.view.activity.TimeTableActivity
  * The fragment for the home page.
  */
 class VisitorHomeFragment : Fragment() {
+    companion object{
+        var inTest = false
+    }
 
     private lateinit var listUpcomingEventsLayout: LinearLayout
     val events = ObservableList<Event>()
@@ -52,7 +55,8 @@ class VisitorHomeFragment : Fragment() {
             updateContent()
         }
 
-        HelperFunctions.getLocationPermission(requireActivity())
+        if(!inTest)
+            HelperFunctions.getLocationPermission(requireActivity())
         MainActivity.instance!!.switchRoles(fragmentView!!.findViewById(R.id.spinner_visitor), UserRole.PARTICIPANT)
 
         fragmentView.findViewById<Button>(R.id.id_timetable_button).setOnClickListener {

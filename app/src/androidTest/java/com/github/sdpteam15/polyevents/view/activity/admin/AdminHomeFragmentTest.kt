@@ -21,6 +21,7 @@ import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
+import com.github.sdpteam15.polyevents.view.fragments.home.VisitorHomeFragment
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -56,6 +57,7 @@ class AdminHubFragmentTest {
         )
         MainActivity.currentUser = testUser
         MainActivity.currentUserObservable = Observable(testUser)
+        VisitorHomeFragment.inTest = true
 
         val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
         ActivityScenario.launch<MainActivity>(intent)
