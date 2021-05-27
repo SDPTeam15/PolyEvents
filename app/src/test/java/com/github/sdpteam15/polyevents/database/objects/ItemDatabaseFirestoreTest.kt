@@ -89,11 +89,11 @@ class ItemDatabaseFirestoreTest {
     fun addItem() {
         val userAccess = UserProfile()
 
-        HelperTestFunction.nextAddEntity { true }
+        HelperTestFunction.nextAddEntityAndGetId { itemId }
         mockedItemDatabase.createItem(item,itemTotal, userAccess)
-            .observeOnce { assert(it.value) }.then.postValue(true)
+            .observeOnce { assert(it.value == itemId) }.then.postValue("")
 
-        val set = HelperTestFunction.lastAddEntity()!!
+        val set = HelperTestFunction.lastAddEntityAndGetId()!!
 
         assertEquals(createdItemTriple, set.element)
         assertEquals(DatabaseConstant.CollectionConstant.ITEM_COLLECTION, set.collection)
@@ -106,7 +106,7 @@ class ItemDatabaseFirestoreTest {
         val userAccess = UserProfile("uid")
 
         HelperTestFunction.nextGetListEntity { true }
-        mockedItemDatabase.getItemsList(items,  userAccess)
+        mockedItemDatabase.getItemsList(items, userAccess = userAccess)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         val getList = HelperTestFunction.lastGetListEntity()!!

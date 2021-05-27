@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.view.activity
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -63,7 +64,7 @@ class ItemRequestActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
         currentDatabase.eventDatabase!!.getEvents({
             it.whereEqualTo(
                 DatabaseConstant.EventConstant.EVENT_ORGANIZER.value,
-                currentUser!!.uid
+                currentDatabase.currentUser!!.uid
             )
         }, null, listEvent).observeOnce(this) {
             if (it.value) {

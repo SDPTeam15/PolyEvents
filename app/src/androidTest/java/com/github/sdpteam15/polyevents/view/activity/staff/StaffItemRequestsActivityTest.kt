@@ -146,7 +146,7 @@ class StaffItemRequestsActivityTest {
             Intent(
                 ApplicationProvider.getApplicationContext(),
                 StaffRequestsActivity::class.java
-            )
+            ).also { it.putExtra(EXTRA_ID_USER_STAFF, "staff") }
         staffItemActivity = ActivityScenario.launch(intent)
 
         Thread.sleep(500)

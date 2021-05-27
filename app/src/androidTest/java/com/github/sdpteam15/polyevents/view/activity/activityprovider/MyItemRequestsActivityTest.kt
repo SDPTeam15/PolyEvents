@@ -16,8 +16,11 @@ import com.github.sdpteam15.polyevents.TestHelper
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
+import com.github.sdpteam15.polyevents.model.database.remote.objects.EventDatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.objects.ItemDatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.objects.MaterialRequestDatabaseInterface
+import com.github.sdpteam15.polyevents.model.database.remote.objects.UserDatabaseInterface
+import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
@@ -26,10 +29,12 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.activity.ItemRequestActivity
 import com.github.sdpteam15.polyevents.view.adapter.EventItemAdapter
 import com.github.sdpteam15.polyevents.view.fragments.home.ProviderHomeFragment
+import com.google.firebase.firestore.auth.User
 import org.hamcrest.CoreMatchers.anything
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.kotlin.anyOrNull
 import java.time.LocalDateTime
@@ -37,10 +42,16 @@ import kotlin.test.assertEquals
 
 class MyItemRequestsActivityTest {
 
+
+    lateinit var events: MutableList<Event>
+    lateinit var allUsers : MutableList<UserEntity>
     lateinit var itemsAdminActivity: ActivityScenario<MyItemRequestsActivity>
     lateinit var mockedDatabase: DatabaseInterface
     lateinit var mockedMaterialRequestDB: MaterialRequestDatabaseInterface
     lateinit var mockedItemDB: ItemDatabaseInterface
+    lateinit var mockedUserDB: UserDatabaseInterface
+    lateinit var mockedEventDB: EventDatabaseInterface
+
 
     lateinit var availableItems: MutableMap<Item, Int>
     lateinit var allRequests: MutableList<MaterialRequest>
@@ -146,6 +157,18 @@ class MyItemRequestsActivityTest {
             )
         )
 
+        allUsers = mutableListOf(
+            UserEntity("u1", "U1"),
+            UserEntity("u2", "U2"),
+            UserEntity("staff", "STAFF"),
+            UserEntity(fakeUserId,fakeUsername)
+        )
+        events = mutableListOf(
+            Event("1", "EVENT1", "u1"),
+            Event("2", "EVENT2", "u2"),
+            Event("3","EVENT3", "u1")
+        )
+
         for (r in allRequests) {
             when (r.status) {
                 MaterialRequest.Status.ACCEPTED -> accepted++
@@ -166,6 +189,8 @@ class MyItemRequestsActivityTest {
         mockedDatabase = Mockito.mock(DatabaseInterface::class.java)
         mockedMaterialRequestDB = Mockito.mock(MaterialRequestDatabaseInterface::class.java)
         mockedItemDB = Mockito.mock(ItemDatabaseInterface::class.java)
+        mockedUserDB = Mockito.mock(UserDatabaseInterface::class.java)
+        mockedEventDB = Mockito.mock(EventDatabaseInterface::class.java)
 
         Database.currentDatabase = mockedDatabase
 
@@ -173,9 +198,17 @@ class MyItemRequestsActivityTest {
         Mockito.`when`(mockedDatabase.currentUser).thenReturn(userEntity)
         Mockito.`when`(mockedDatabase.materialRequestDatabase).thenReturn(mockedMaterialRequestDB)
         Mockito.`when`(mockedDatabase.itemDatabase).thenReturn(mockedItemDB)
+        Mockito.`when`(mockedDatabase.userDatabase).thenReturn(mockedUserDB)
+        Mockito.`when`(mockedDatabase.eventDatabase).thenReturn(mockedEventDB)
 
         setupItemRequests()
 
+        Mockito.`when`(
+            mockedUserDB.getListAllUsers(anyOrNull(), anyOrNull())
+        ).thenAnswer{
+            (it.arguments[0] as ObservableList<UserEntity>).addAll(allUsers)
+            Observable(true,this)
+        }
         Mockito.`when`(
             mockedMaterialRequestDB.getMaterialRequestListByUser(
                 anyOrNull(),
@@ -184,6 +217,12 @@ class MyItemRequestsActivityTest {
             )
         ).thenAnswer {
             (it.arguments[0] as ObservableList<MaterialRequest>).addAll(allRequests)
+            Observable(true, this)
+        }
+        Mockito.`when`(
+            mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())
+        ).thenAnswer{
+            (it.arguments[2] as ObservableList<Event>).addAll(events)
             Observable(true, this)
         }
 
@@ -204,7 +243,7 @@ class MyItemRequestsActivityTest {
                 (it.arguments[0] as Observable<MaterialRequest>).postValue(allRequests.first { it2 -> it2.requestId == it.arguments[1] })
                 Observable(true, this)
             }
-        Mockito.`when`(mockedItemDB.getItemsList(anyOrNull(), anyOrNull())).thenAnswer {
+        Mockito.`when`(mockedItemDB.getItemsList(anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
             (it.arguments[0] as ObservableList<Triple<Item, Int, Int>>).addAll(availableItemsList)
             Observable(true, this)
         }
@@ -288,6 +327,7 @@ class MyItemRequestsActivityTest {
             .perform(ViewActions.click())
         Espresso.onData(anything()).atPosition(0).perform(ViewActions.click())
         Intents.init()
+        var c = Database.currentDatabase
         Espresso.onView(ViewMatchers.withId(R.id.id_recycler_my_item_requests)).perform(
             RecyclerViewActions.actionOnItemAtPosition<EventItemAdapter.ItemViewHolder>(
                 0, TestHelper.clickChildViewWithId(R.id.id_modify_request)

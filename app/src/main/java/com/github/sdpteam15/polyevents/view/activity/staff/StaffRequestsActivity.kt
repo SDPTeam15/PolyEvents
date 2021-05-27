@@ -88,7 +88,7 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         staffUserId = intent.getStringExtra(EXTRA_ID_USER_STAFF)!!
-        recyclerView = findViewById(R.id.id_recycler_my_item_requests)
+        recyclerView = findViewById(R.id.id_recycler_staff_item_requests)
         leftButton = findViewById(R.id.id_change_request_status_left)
         rightButton = findViewById(R.id.id_change_request_status_right)
         spinner = findViewById(R.id.id_title_item_request)
