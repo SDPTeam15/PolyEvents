@@ -79,6 +79,19 @@ class CodeQuery(private val getfun: () -> Task<QuerySnapshot>) : Query {
 
     override fun whereGreaterThan(key: String, value: Any) =
         filter { it, _ -> it.data[key] < value }
+
+    override fun whereLessThan(key: String, value: Any) =
+        filter { it, _ -> it.data[key] > value }
+
+    override fun whereGreaterThanOrEqualTo(key: String, value: Any) =
+        filter { it, _ -> it.data[key] >= value }
+
+    override fun whereLessThanOrEqualTo(key: String, value: Any) =
+        filter { it, _ -> it.data[key] <= value }
+
+    override fun orderBy(key: String): Query {
+        TODO("Not yet implemented")
+    }
 }
 
 private operator fun Any?.compareTo(value: Any): Int {
