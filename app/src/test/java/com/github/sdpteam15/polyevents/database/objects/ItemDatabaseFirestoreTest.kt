@@ -117,6 +117,22 @@ class ItemDatabaseFirestoreTest {
     }
 
     @Test
+    fun getAvailableItems() {
+        val items = ObservableList<Triple<Item,Int, Int>>()
+        val userAccess = UserProfile("uid")
+
+        HelperTestFunction.nextGetListEntity { true }
+        mockedItemDatabase.getAvailableItems(items, userAccess = userAccess)
+            .observeOnce { assert(it.value) }.then.postValue(false)
+
+        val getList = HelperTestFunction.lastGetListEntity()!!
+
+        assertEquals(items, getList.element)
+        assertEquals(DatabaseConstant.CollectionConstant.ITEM_COLLECTION, getList.collection)
+        assertEquals(ItemEntityAdapter, getList.adapter)
+    }
+
+    @Test
     fun removeItem() {
         val userAccess = UserProfile("uid")
 
@@ -145,5 +161,22 @@ class ItemDatabaseFirestoreTest {
         assertEquals(items, getList.element)
         assertEquals(DatabaseConstant.CollectionConstant.ITEM_TYPE_COLLECTION, getList.collection)
         assertEquals(ItemTypeAdapter, getList.adapter)
+    }
+
+
+
+    @Test
+    fun createItemType(){
+        val userAccess = UserProfile()
+        val itemType = "itemTypeTest"
+        HelperTestFunction.nextAddEntity { true }
+        mockedItemDatabase.createItemType(itemType, userAccess)
+            .observeOnce { assert(it.value) }.then.postValue(false)
+
+        val add = HelperTestFunction.lastAddEntity()!!
+
+        assertEquals(itemType, add.element)
+        assertEquals(DatabaseConstant.CollectionConstant.ITEM_TYPE_COLLECTION, add.collection)
+        assertEquals(ItemTypeAdapter, add.adapter)
     }
 }

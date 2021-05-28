@@ -119,7 +119,7 @@ class MyItemRequestsActivityTest {
                 null
             ),
             MaterialRequest(
-                "r1",
+                "r4",
                 mutableMapOf(
                     Pair("1", 5)
                 ),
@@ -131,7 +131,7 @@ class MyItemRequestsActivityTest {
                 null
             ),
             MaterialRequest(
-                "r2",
+                "r5",
                 mutableMapOf(
                     Pair("3", 10),
                     Pair("1", 5),
@@ -145,7 +145,7 @@ class MyItemRequestsActivityTest {
                 null
             ),
             MaterialRequest(
-                "r3",
+                "r6",
                 mutableMapOf(
                     Pair("3", 10)
                 ),
