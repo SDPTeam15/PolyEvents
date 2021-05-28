@@ -15,16 +15,13 @@ import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider.currentUser
 import com.github.sdpteam15.polyevents.model.entity.Event
-import com.github.sdpteam15.polyevents.model.entity.Item
-import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
-import com.github.sdpteam15.polyevents.view.activity.ItemRequestActivity
 import com.github.sdpteam15.polyevents.view.activity.admin.EventManagementActivity
 import com.github.sdpteam15.polyevents.view.activity.admin.EventManagementListActivity
 import com.github.sdpteam15.polyevents.view.adapter.MyEventEditRequestAdapter
-import com.github.sdpteam15.polyevents.view.fragments.home.ProviderHomeFragment
+import com.github.sdpteam15.polyevents.view.fragments.admin.EventEditDifferenceFragment
 
 class EventManagementActivityProvider : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
@@ -37,6 +34,7 @@ class EventManagementActivityProvider : AppCompatActivity(), AdapterView.OnItemS
     private lateinit var userId: String
 
     private val eventRequests = ObservableList<Event>()
+    private val origEvent = ObservableMap<String, Event>()
     private val materialRequest =
         ObservableMap<Event.EventStatus, ObservableList<Event>>()
     private val observableStatus = Observable(currentStatus)
@@ -114,8 +112,10 @@ class EventManagementActivityProvider : AppCompatActivity(), AdapterView.OnItemS
                 this,
                 materialRequest,
                 observableStatus,
+                origEvent,
                 modifyEventRequest,
-                cancelEventRequest
+                cancelEventRequest,
+                seeDifference
             )
 
         observableStatus.observe(this) { recyclerView.adapter!!.notifyDataSetChanged() }
@@ -134,15 +134,28 @@ class EventManagementActivityProvider : AppCompatActivity(), AdapterView.OnItemS
      * Get the item request of the user and then gets the item list
      */
     private fun getEventEditRequestsFromDB() {
+        val eventList = ObservableList<Event>()
+        eventList.observeAdd(this) {
+            origEvent[it.value.eventId!!]=it.value
+        }
         //Gets the item request of the user and then gets the item list
-        Database.currentDatabase.eventDatabase!!.getEventEdits(
-            {
-                it.whereEqualTo(DatabaseConstant.EventConstant.EVENT_NAME.value,userId)
-            },
-            eventRequests
-        ).observeOnce(this) {
-            if (!it.value) {
-                HelperFunctions.showToast("Failed to get the list of event edit requests", this)
+        Database.currentDatabase.eventDatabase!!.getEvents(null, null, eventList).observe(this) {
+            if (it.value) {
+                Database.currentDatabase.eventDatabase!!.getEventEdits(
+                    {
+                        it.whereEqualTo(DatabaseConstant.EventConstant.EVENT_NAME.value, userId)
+                    },
+                    eventRequests
+                ).observeOnce(this) {
+                    if (!it.value) {
+                        HelperFunctions.showToast(
+                            "Failed to get the list of event edit requests",
+                            this
+                        )
+                    }
+                }
+            } else {
+                HelperFunctions.showToast("Failed to get the list of events", this)
             }
         }
     }
@@ -157,6 +170,14 @@ class EventManagementActivityProvider : AppCompatActivity(), AdapterView.OnItemS
             putExtra(EventManagementListActivity.EVENT_ID_INTENT, event.eventEditId)
         }
         startActivity(intent)
+    }
+
+    /**
+     * Launch the activity to modify the item request
+     */
+    private val seeDifference = { event: Event, creation: Boolean, eventOrig: Event? ->
+        val fragment = EventEditDifferenceFragment(event, creation, eventOrig)
+        fragment.show(supportFragmentManager, EventEditDifferenceFragment.TAG)
     }
 
     /**

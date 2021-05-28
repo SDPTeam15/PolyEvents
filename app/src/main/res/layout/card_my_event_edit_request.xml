@@ -51,9 +51,10 @@
                 android:id="@+id/id_modify_event_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Small"
                 app:layout_constraintBottom_toTopOf="@+id/id_reason_of_refusal"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="@+id/id_reason_of_refusal" />
 
             <ImageButton
                 android:id="@+id/id_modify_request"
@@ -64,6 +65,17 @@
 
                 app:srcCompat="@drawable/ic_edit"
                 tools:ignore="ContentDescription" />
+
+            <ImageButton
+                android:id="@+id/id_see_event"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                app:layout_constraintEnd_toStartOf="@+id/id_modify_request"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_baseline_remove_red_eye_24"
+                tools:ignore="ContentDescription" />
+
             <LinearLayout
                 android:id="@+id/id_reason_of_refusal"
                 android:layout_width="match_parent"
@@ -86,6 +98,14 @@
                     android:layout_marginStart="4dp"
                     android:layout_marginBottom="8dp"/>
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvMode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                app:layout_constraintStart_toStartOf="@+id/id_reason_of_refusal"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

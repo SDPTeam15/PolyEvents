@@ -14,11 +14,9 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.entity.Event
-import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
-import java.time.format.DateTimeFormatter
 
 /**
  * Recycler Adapter for the list of items
@@ -32,8 +30,10 @@ class MyEventEditRequestAdapter(
     lifecycleOwner: LifecycleOwner,
     private val requests: ObservableMap<Event.EventStatus, ObservableList<Event>>,
     private val typeToDisplay: Observable<Event.EventStatus>,
+    private val events: ObservableMap<String, Event>,
     private val onModifyListener: (Event) -> Unit,
-    private val onCancelListener: (Event) -> Unit
+    private val onCancelListener: (Event) -> Unit,
+    private val seeListener: (Event, Boolean, Event?) -> Unit
 ) : RecyclerView.Adapter<MyEventEditRequestAdapter.ItemViewHolder>() {
     private val adapterLayout = LayoutInflater.from(context)
 
@@ -41,6 +41,8 @@ class MyEventEditRequestAdapter(
         requests.observe(lifecycleOwner) {
             notifyDataSetChanged()
         }
+
+        events.observe(lifecycleOwner) { notifyDataSetChanged() }
     }
 
     /**
@@ -54,6 +56,8 @@ class MyEventEditRequestAdapter(
         private val status = view.findViewById<TextView>(R.id.id_request_status)
         private val adminMessage = view.findViewById<TextView>(R.id.id_admin_message)
         private val refusalLayout = view.findViewById<LinearLayout>(R.id.id_reason_of_refusal)
+        private val btnSee = view.findViewById<ImageButton>(R.id.id_see_event)
+        private val tvMode = view.findViewById<TextView>(R.id.tvMode)
 
         /**
          * Binds the values of each value of a material request to a view
@@ -61,20 +65,41 @@ class MyEventEditRequestAdapter(
         @SuppressLint("SetTextI18n")
         fun bind(event: Event) {
 
-            eventName.text = event.eventName
-            status.setTextColor(when(event.status!!){
-                Event.EventStatus.ACCEPTED -> Color.GREEN
-                Event.EventStatus.PENDING -> Color.BLACK
-                Event.EventStatus.REFUSED -> Color.RED
-            })
+            eventName.text = "Event name: " + event.eventName
+            status.setTextColor(
+                when (event.status!!) {
+                    Event.EventStatus.ACCEPTED -> Color.GREEN
+                    Event.EventStatus.PENDING -> Color.BLACK
+                    Event.EventStatus.REFUSED -> Color.RED
+                }
+            )
             status.text = event.status.toString()
 
-            btnModify.visibility = if (event.status ==  Event.EventStatus.PENDING) VISIBLE else INVISIBLE
-            btnCancel.visibility = if (event.status ==  Event.EventStatus.PENDING) VISIBLE else INVISIBLE
+            btnModify.visibility =
+                if (event.status == Event.EventStatus.PENDING) VISIBLE else INVISIBLE
+            btnCancel.visibility =
+                if (event.status == Event.EventStatus.PENDING) VISIBLE else INVISIBLE
             btnCancel.setOnClickListener { onCancelListener(event) }
+            if (event.eventId == null) {
+                btnSee.setOnClickListener { seeListener(event, true, null) }
+            } else {
+                btnSee.setOnClickListener {
+                    seeListener(
+                        event,
+                        false,
+                        events[event.eventId!!]
+                    )
+                }
+            }
+
             btnModify.setOnClickListener { onModifyListener(event) }
-            refusalLayout.visibility = if(event.adminMessage != null) VISIBLE else GONE
+            refusalLayout.visibility = if (event.adminMessage != null) VISIBLE else GONE
             adminMessage.text = event.adminMessage
+            tvMode.text = if (event.eventId == null) {
+                "Creation"
+            } else {
+                "Modification"
+            }
         }
     }
 
