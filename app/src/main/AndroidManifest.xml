@@ -20,7 +20,6 @@
 
         <activity android:name=".view.activity.admin.EventEditManagementActivity"
             android:parentActivityName=".view.activity.MainActivity">
-
         </activity>
 
         <activity
@@ -105,7 +104,6 @@
             android:launchMode="singleTop"> <!-- the main activity is not recreated when we press the back button. Src: https://stackoverflow.com/questions/16434445/using-actionbar-home-as-up-button-home-activity-saveinstancestate-is-always-nul -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
