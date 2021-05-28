@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.fakedatabase
 
+import com.github.sdpteam15.polyevents.model.database.remote.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.objects.ItemDatabaseInterface
 import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
@@ -38,11 +39,11 @@ object FakeDatabaseItem : ItemDatabaseInterface {
         item: Item,
         total: Int,
         userAccess: UserProfile?
-    ): Observable<Boolean> {
+    ): Observable<String> {
         // generate random document ID like in firebase
         val itemId = FakeDatabase.generateRandomKey()
         val b = items.put(itemId, Triple(Item(itemId, item.itemName, item.itemType), total, total)) == null
-        return Observable(b, FakeDatabase)
+        return Observable(itemId, FakeDatabase)
     }
 
     override fun removeItem(itemId: String, userAccess: UserProfile?): Observable<Boolean> {
@@ -62,8 +63,10 @@ object FakeDatabaseItem : ItemDatabaseInterface {
         return Observable(true, FakeDatabase)
     }
 
+
     override fun getItemsList(
         itemList: ObservableList<Triple<Item, Int, Int>>,
+        matcher: Matcher?,
         userAccess: UserProfile?
     ): Observable<Boolean> {
         itemList.clear(this)

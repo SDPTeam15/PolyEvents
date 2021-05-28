@@ -581,7 +581,7 @@ class RouteMapHelperTest {
                 RouteEdge.fromRouteNode(RouteMapHelper.nodes[i++], RouteMapHelper.nodes[i++]),
                 RouteEdge.fromRouteNode(RouteMapHelper.nodes[i++], RouteMapHelper.nodes[i++]),
                 RouteEdge.fromRouteNode(RouteMapHelper.nodes[i++], RouteMapHelper.nodes[i++]),
-                RouteEdge.fromRouteNode(RouteMapHelper.nodes[i++], RouteMapHelper.nodes[i++]),
+                RouteEdge.fromRouteNode(RouteMapHelper.nodes[i++], RouteMapHelper.nodes[i]),
             )
         )
 

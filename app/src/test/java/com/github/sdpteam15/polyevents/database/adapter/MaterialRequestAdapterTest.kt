@@ -15,7 +15,8 @@ class MaterialRequestAdapterTest {
 
     val time = LocalDateTime.now()
     val userid = "u1"
-
+    val eventid = "e1"
+    val staffid = "u2"
     lateinit var materialRequest: MaterialRequest
 
     @Before
@@ -25,8 +26,10 @@ class MaterialRequestAdapterTest {
             items,
             time,
             userid,
+            eventid,
             MaterialRequest.Status.PENDING,
-            ""
+            "",
+            staffid
         )
     }
 
@@ -34,9 +37,10 @@ class MaterialRequestAdapterTest {
     fun conversionOfMatReqToDocumentPreservesData() {
         val document = MaterialRequestAdapter.toDocument(materialRequest)
         assertEquals(document[MATERIAL_REQUEST_LIST.value], materialRequest.items)
-
+        assertEquals(document[MATERIAL_REQUEST_ADMIN_MESSAGE.value], materialRequest.adminMessage)
         assertEquals(document[MATERIAL_REQUEST_USER_ID.value], materialRequest.userId)
-
+        assertEquals(document[MATERIAL_REQUEST_STAFF_IN_CHARGE.value], materialRequest.staffInChargeId )
+        assertEquals(document[MATERIAL_REQUEST_STATUS.value], materialRequest.status.ordinal)
     }
 
     @Test
@@ -48,7 +52,9 @@ class MaterialRequestAdapterTest {
             MATERIAL_REQUEST_LIST.value to materialRequest.items,
             MATERIAL_REQUEST_USER_ID.value to materialRequest.userId,
             MATERIAL_REQUEST_STATUS.value to materialRequest.status.ordinal.toLong(),
-            MATERIAL_REQUEST_ADMIN_MESSAGE.value to materialRequest.adminMessage
+            MATERIAL_REQUEST_ADMIN_MESSAGE.value to materialRequest.adminMessage,
+            MATERIAL_REQUEST_STAFF_IN_CHARGE.value to materialRequest.staffInChargeId,
+            MATERIAL_REQUEST_EVENT_ID.value to materialRequest.eventId
         )
 
         val matReqWithoutDate = materialRequest.copy(time = null)

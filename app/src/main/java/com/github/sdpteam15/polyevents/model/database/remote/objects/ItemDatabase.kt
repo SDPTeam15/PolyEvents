@@ -5,6 +5,7 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.Co
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.ITEM_TYPE_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ItemConstants.ITEM_REMAINING
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
+import com.github.sdpteam15.polyevents.model.database.remote.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.ItemEntityAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.ItemTypeAdapter
 import com.github.sdpteam15.polyevents.model.entity.Item
@@ -17,7 +18,7 @@ class ItemDatabase(private val db: DatabaseInterface) : ItemDatabaseInterface {
         item: Item,
         total: Int,
         userAccess: UserProfile?
-    ): Observable<Boolean> = db.addEntity(Triple(item, total,total), ITEM_COLLECTION, ItemEntityAdapter)
+    ): Observable<String> = db.addEntityAndGetId(Triple(item, total,total), ITEM_COLLECTION, ItemEntityAdapter)
 
     override fun removeItem(itemId: String, userAccess: UserProfile?): Observable<Boolean> =
         db.deleteEntity(itemId, ITEM_COLLECTION)
@@ -32,9 +33,10 @@ class ItemDatabase(private val db: DatabaseInterface) : ItemDatabaseInterface {
 
     override fun getItemsList(
         itemList: ObservableList<Triple<Item, Int, Int>>,
+        matcher : Matcher?,
         userAccess: UserProfile?
     ): Observable<Boolean> =
-        db.getListEntity(itemList, null, null, ITEM_COLLECTION, ItemEntityAdapter)
+        db.getListEntity(itemList, null, matcher, ITEM_COLLECTION, ItemEntityAdapter)
 
     override fun getAvailableItems(
         itemList: ObservableList<Triple<Item, Int, Int>>,
