@@ -1,9 +1,10 @@
 package com.github.sdpteam15.polyevents.model.database.remote.objects
 
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.EventConstant.*
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.EventEditConstant.*
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.*
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.EventConstant.EVENT_NAME
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.EventConstant.EVENT_START_TIME
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.EventEditConstant.EVENT_EDIT_STATUS
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.EventAdapter
@@ -13,7 +14,6 @@ import com.github.sdpteam15.polyevents.model.entity.Rating
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.google.firebase.firestore.Query
 
 const val TAG = "EventDatabase"
 
@@ -76,7 +76,7 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
             eventList,
             null,
             {
-            it.orderBy(EVENT_EDIT_STATUS.value)
+                it.orderBy(EVENT_EDIT_STATUS.value)
             },
             EVENT_EDIT_COLLECTION
         )
@@ -176,7 +176,8 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
             events,
             null,
             {
-                val query = it.whereEqualTo(DatabaseConstant.EventConstant.EVENT_ZONE_ID.value, zoneId)
+                val query =
+                    it.whereEqualTo(DatabaseConstant.EventConstant.EVENT_ZONE_ID.value, zoneId)
                 if (limit != null) query.limit(limit)
                 query
             },
