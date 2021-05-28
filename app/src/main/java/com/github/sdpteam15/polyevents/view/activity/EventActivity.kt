@@ -202,9 +202,6 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         findViewById<TextView>(R.id.txt_event_date).apply {
             text = event.formattedStartTime()
         }
-        findViewById<TextView>(R.id.txt_event_organizer).apply {
-            text = event.organizer
-        }
         findViewById<TextView>(R.id.txt_event_description).apply {
             text = event.description
         }
