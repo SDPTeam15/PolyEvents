@@ -133,7 +133,7 @@ class EventEditDifferenceFragmentTest {
             )
         Database.currentDatabase = mockedDatabase
         ActivityScenario.launch<EventEditManagementActivity>(intent)
-        Thread.sleep(1000)
+        Thread.sleep(500)
 
     }
 
@@ -240,6 +240,7 @@ class EventEditDifferenceFragmentTest {
         )
         onView(withId(R.id.tvModZone)).check(matches(withText(eventEdit2.zoneName!!)))
         onView(withId(R.id.btnCloseFragment)).perform(click())
+        onView(withId(R.id.id_recycler_event_edits)).check(matches(isDisplayed()))
     }
 
     @Test
@@ -271,6 +272,9 @@ class EventEditDifferenceFragmentTest {
                 1, TestHelper.clickChildViewWithId(R.id.id_edit_accept)
             )
         )
+
+        Thread.sleep(1000)
+        onView(withId(R.id.id_recycler_event_edits)).check(matches(isDisplayed()))
     }
 
     @Test
@@ -290,6 +294,7 @@ class EventEditDifferenceFragmentTest {
         onView(withId(R.id.id_btn_confirm_refuse_request)).perform(
             click()
         )
+        onView(withId(R.id.id_recycler_event_edits)).check(matches(isDisplayed()))
     }
 
     @Test
@@ -309,7 +314,6 @@ class EventEditDifferenceFragmentTest {
         onView(withId(R.id.id_btn_confirm_refuse_request)).perform(
             click()
         )
-
 
         onView(withId(R.id.id_recycler_event_edits)).check(matches(isDisplayed()))
     }
