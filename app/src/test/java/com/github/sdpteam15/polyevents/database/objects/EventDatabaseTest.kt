@@ -36,7 +36,7 @@ private const val rate = 4.5F
 private const val feedback = "feedback "
 private val startTime = LocalDateTime.of(2021, 3, 7, 12, 15)
 private val endTime = LocalDateTime.of(2021, 3, 7, 12, 45)
-private val tags = mutableSetOf("sushi", "japan", "cooking")
+private val tags = mutableListOf("sushi", "japan", "cooking")
 
 @Suppress("UNCHECKED_CAST", "TYPE_INFERENCE_ONLY_INPUT_TYPES_WARNING")
 class EventDatabaseTest {
@@ -359,7 +359,7 @@ class EventDatabaseTest {
         val mockQuery = Mockito.mock(Query::class.java)
         assertNotNull(getList.matcher)
 
-        Mockito.`when`(mockQuery.whereEqualTo(anyOrNull<String>(), anyOrNull())).then {
+        Mockito.`when`(mockQuery.whereEqualTo(anyOrNull(), anyOrNull())).then {
             mockQuery
         }
         getList.matcher.match(mockQuery)
@@ -415,7 +415,7 @@ class EventDatabaseTest {
 
         val mockQuery = Mockito.mock(Query::class.java)
 
-        Mockito.`when`(mockQuery.whereEqualTo(anyOrNull<String>(), anyOrNull())).then {
+        Mockito.`when`(mockQuery.whereEqualTo(anyOrNull(), anyOrNull())).then {
             mockQuery
         }
         getList.matcher.match(mockQuery)

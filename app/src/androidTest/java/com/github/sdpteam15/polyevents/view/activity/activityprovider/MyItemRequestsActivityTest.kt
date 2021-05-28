@@ -175,6 +175,7 @@ class MyItemRequestsActivityTest {
                 MaterialRequest.Status.ACCEPTED -> accepted++
                 MaterialRequest.Status.REFUSED -> refused++
                 MaterialRequest.Status.PENDING -> pending++
+                else -> 0
             }
         }
     }
@@ -328,7 +329,7 @@ class MyItemRequestsActivityTest {
             .perform(ViewActions.click())
         Espresso.onData(anything()).atPosition(0).perform(ViewActions.click())
         Intents.init()
-        var c = Database.currentDatabase
+
         Espresso.onView(ViewMatchers.withId(R.id.id_recycler_my_item_requests)).perform(
             RecyclerViewActions.actionOnItemAtPosition<EventItemAdapter.ItemViewHolder>(
                 0, TestHelper.clickChildViewWithId(R.id.id_modify_request)

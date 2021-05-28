@@ -132,7 +132,7 @@ class EventEditDifferenceFragmentTest {
                 EventEditManagementActivity::class.java
             )
         Database.currentDatabase = mockedDatabase
-        val scenario = ActivityScenario.launch<EventEditManagementActivity>(intent)
+        ActivityScenario.launch<EventEditManagementActivity>(intent)
         Thread.sleep(1000)
 
     }

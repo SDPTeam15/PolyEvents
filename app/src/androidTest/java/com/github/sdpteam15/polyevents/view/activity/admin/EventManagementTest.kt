@@ -330,7 +330,7 @@ class EventManagementTest {
                 EventManagementListActivity::class.java
             )
 
-        val scenario = ActivityScenario.launch<EventManagementListActivity>(intent)
+        ActivityScenario.launch<EventManagementListActivity>(intent)
         onView(withId(R.id.btnNewEvent)).perform(click())
 
         obs.postValue(false)
@@ -466,7 +466,7 @@ class EventManagementTest {
             Intent(ApplicationProvider.getApplicationContext(), EventManagementActivity::class.java)
         intent.putExtra(EventManagementListActivity.INTENT_MANAGER, "edit")
         intent.putExtra(EventManagementListActivity.EVENT_ID_INTENT,EventManagementListActivity.NEW_EVENT_ID)
-        val activity =  ActivityScenario.launch<EventManagementActivity>(intent)
+        ActivityScenario.launch<EventManagementActivity>(intent)
 
         val startDate = EventManagementActivity.dateStart.value!!
         val endDate = EventManagementActivity.dateEnd.value!!

@@ -107,6 +107,10 @@ object FakeDatabaseEvent : EventDatabaseInterface {
         TODO("Not yet implemented")
     }
 
+    override fun removeEventEdit(eventId: String, userAccess: UserProfile?): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
     override fun getEventEditFromId(
         id: String,
         returnEvent: Observable<Event>,

@@ -81,7 +81,7 @@ object HelperTestFunction {
                 Mockito.`when`(mock.getUserProfilesList(anyOrNull(), anyOrNull(), anyOrNull()))
                     .thenAnswer {
                         (it!!.arguments[0] as ObservableList<UserProfile>).clear()
-                        (it!!.arguments[0] as ObservableList<UserProfile>).add(UserProfile(userRole = UserRole.ADMIN))
+                        (it.arguments[0] as ObservableList<UserProfile>).add(UserProfile(userRole = UserRole.ADMIN))
                         Observable(true)
                     }
                 mock

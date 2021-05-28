@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.fakedatabase
 
-import com.github.sdpteam15.polyevents.model.database.remote.Matcher
+
+import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.objects.ItemDatabaseInterface
 import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
@@ -42,7 +43,7 @@ object FakeDatabaseItem : ItemDatabaseInterface {
     ): Observable<String> {
         // generate random document ID like in firebase
         val itemId = FakeDatabase.generateRandomKey()
-        val b = items.put(itemId, Triple(Item(itemId, item.itemName, item.itemType), total, total)) == null
+        items[itemId] = Triple(Item(itemId, item.itemName, item.itemType), total, total)
         return Observable(itemId, FakeDatabase)
     }
 
