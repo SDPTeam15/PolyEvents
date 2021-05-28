@@ -43,10 +43,10 @@ class ZoneManagementListActivity : AppCompatActivity() {
         println(Database.currentDatabase)
         Database.currentDatabase.zoneDatabase!!.getAllZones(
             {
-            it.orderBy(DatabaseConstant.ZoneConstant.ZONE_NAME.value)
+                it.orderBy(DatabaseConstant.ZoneConstant.ZONE_NAME.value)
             },
             50,
-           zones
+            zones
         ).observe(this) {
             if (!it.value) {
                 HelperFunctions.showToast("Failed to get the list of zones", this)
