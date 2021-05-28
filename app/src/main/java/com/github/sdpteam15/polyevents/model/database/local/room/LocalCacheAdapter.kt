@@ -32,12 +32,6 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
             db.currentUser = value
         }
 
-    override var currentProfile: UserProfile?
-        get() = db.currentProfile
-        set(value) {
-            db.currentProfile = value
-        }
-
     override var itemDatabase: ItemDatabaseInterface?
         get() = db.itemDatabase
         set(value) {

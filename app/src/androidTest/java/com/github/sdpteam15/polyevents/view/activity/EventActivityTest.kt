@@ -116,7 +116,7 @@ class EventActivityTest {
 
         When(
             mockedEventDatabase.updateEvent(
-                event = anyOrNull(), anyOrNull()
+                event = anyOrNull()
             )
         ).thenReturn(Observable(true))
 
@@ -360,7 +360,7 @@ class EventActivityTest {
         var createdRating: Rating? = null
         When(
             mockedEventDatabase.addRatingToEvent(
-                anyOrNull(), anyOrNull()
+                anyOrNull()
             )
         ).thenAnswer {
             createdRating = (it.arguments[0] as Rating?)
@@ -387,7 +387,7 @@ class EventActivityTest {
         var createdRating: Rating? = null
         When(
             mockedEventDatabase.addRatingToEvent(
-                anyOrNull(), anyOrNull()
+                anyOrNull()
             )
         ).thenAnswer {
             createdRating = (it.arguments[0] as Rating?)
@@ -421,8 +421,7 @@ class EventActivityTest {
             mockedEventDatabase.getUserRatingFromEvent(
                 userId = anyOrNull(),
                 eventId = anyOrNull(),
-                returnedRating = anyOrNull(),
-                userAccess = anyOrNull()
+                returnedRating = anyOrNull()
             )
         ).thenAnswer {
             // Not very robust, need to change if changed method signature
@@ -434,8 +433,7 @@ class EventActivityTest {
 
         When(
             mockedEventDatabase.updateRating(
-                rating = anyOrNull(),
-                userAccess = anyOrNull()
+                rating = anyOrNull()
             )
         ).then {
             existingRating = it.arguments[0] as Rating
@@ -473,8 +471,7 @@ class EventActivityTest {
             mockedEventDatabase.getUserRatingFromEvent(
                 userId = anyOrNull(),
                 eventId = anyOrNull(),
-                returnedRating = anyOrNull(),
-                userAccess = anyOrNull()
+                returnedRating = anyOrNull()
             )
         ).thenAnswer {
             // Not very robust, need to change if changed method signature
@@ -486,8 +483,7 @@ class EventActivityTest {
 
         When(
             mockedEventDatabase.updateRating(
-                rating = anyOrNull(),
-                userAccess = anyOrNull()
+                rating = anyOrNull()
             )
         ).then {
             // Update failed

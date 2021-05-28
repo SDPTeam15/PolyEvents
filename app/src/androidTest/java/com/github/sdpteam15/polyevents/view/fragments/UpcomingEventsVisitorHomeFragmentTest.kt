@@ -93,7 +93,6 @@ class UpcomingEventsVisitorHomeFragmentTest {
             mockEventDatabase!!.getEvents(
                 anyOrNull(),
                 anyOrNull(),
-                anyOrNull(),
                 anyOrNull()
             )
         ).thenAnswer {

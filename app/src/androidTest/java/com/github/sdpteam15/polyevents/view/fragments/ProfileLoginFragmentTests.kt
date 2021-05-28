@@ -306,7 +306,7 @@ class ProfileLoginFragmentTests {
         var endingRequestUpdate = Observable<Boolean>()
         var updated = false
         When(
-            mockedUserDatabase.updateUserInformation(anyOrNull(), anyOrNull())
+            mockedUserDatabase.updateUserInformation(anyOrNull())
         ).thenAnswer { _ ->
             updated = true
             endingRequestUpdate
@@ -523,7 +523,6 @@ class ProfileLoginFragmentTests {
         When(
             mockedUserDatabase.getUserProfilesList(
                 anyOrNull(),
-                anyOrNull(),
                 anyOrNull()
             )
         ).thenAnswer {
@@ -569,7 +568,6 @@ class ProfileLoginFragmentTests {
         When(
             mockedUserDatabase.addUserProfileAndAddToUser(
                 anyOrNull(),
-                anyOrNull(),
                 anyOrNull()
             )
         ).thenAnswer {
@@ -577,7 +575,6 @@ class ProfileLoginFragmentTests {
         }
         When(
             mockedUserDatabase.getUserProfilesList(
-                anyOrNull(),
                 anyOrNull(),
                 anyOrNull()
             )
@@ -627,7 +624,6 @@ class ProfileLoginFragmentTests {
         When(
             mockedUserDatabase.getUserProfilesList(
                 anyOrNull(),
-                anyOrNull(),
                 anyOrNull()
             )
         ).thenAnswer {
@@ -645,7 +641,6 @@ class ProfileLoginFragmentTests {
         }
         When(
             mockedUserDatabase.removeProfileFromUser(
-                anyOrNull(),
                 anyOrNull(),
                 anyOrNull()
             )
@@ -676,7 +671,6 @@ class ProfileLoginFragmentTests {
         //Mock the profile
         When(
             mockedUserDatabase.getUserProfilesList(
-                anyOrNull(),
                 anyOrNull(),
                 anyOrNull()
             )

@@ -157,7 +157,6 @@ class ZoneManagementTest {
         When(
             mockedZoneDatabase.updateZoneInformation(
                 anyOrNull(),
-                anyOrNull(),
                 anyOrNull()
             )
         ).thenReturn(obs)

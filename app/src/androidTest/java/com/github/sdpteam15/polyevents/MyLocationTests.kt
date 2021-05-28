@@ -43,8 +43,6 @@ class MyLocationTests {
     @Before
     fun setup() {
         mockedDatabase = HelperTestFunction.defaultMockDatabase()
-        val mockedUserProfile = UserProfile("TestID", "TestName")
-        Mockito.`when`(mockedDatabase.currentProfile).thenReturn(mockedUserProfile)
 
         Database.currentDatabase = mockedDatabase
 

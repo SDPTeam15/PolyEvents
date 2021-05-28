@@ -98,7 +98,6 @@ class TimeTableActivityTest {
             mockedZoneDB.getAllZones(
                 anyOrNull(),
                 anyOrNull(),
-                anyOrNull(),
                 anyOrNull()
             )
         ).thenAnswer {
@@ -115,13 +114,13 @@ class TimeTableActivityTest {
 
         Mockito.`when`(mockedDatabase.eventDatabase).thenReturn(mockedEventDB)
         Mockito.`when`(mockedDatabase.zoneDatabase).thenReturn(mockedZoneDB)
-        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
+        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull()))
             .thenAnswer {
                 (it.arguments[2] as ObservableList<Event>).addAll(events)
                 Observable(true, this)
             }
 
-        Mockito.`when`(mockedEventDB.getEventFromId(anyOrNull(), anyOrNull(), anyOrNull()))
+        Mockito.`when`(mockedEventDB.getEventFromId(anyOrNull(), anyOrNull()))
             .thenAnswer {
                 (it.arguments[1] as Observable<Event>).postValue(event1)
                 Observable(true)

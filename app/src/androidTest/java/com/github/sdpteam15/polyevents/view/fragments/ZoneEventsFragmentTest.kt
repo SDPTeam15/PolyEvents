@@ -88,8 +88,7 @@ class ZoneEventsFragmentTest {
             mockedDatabase.eventDatabase!!.getEventsByZoneId(
                 zoneId = anyOrNull(),
                 limit = anyOrNull(),
-                events = anyOrNull(),
-                userAccess = anyOrNull()
+                events = anyOrNull()
             )
         ).then {
             (it.arguments[2] as ObservableList<Event>?)

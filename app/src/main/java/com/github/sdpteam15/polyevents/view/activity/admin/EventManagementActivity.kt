@@ -162,7 +162,7 @@ class EventManagementActivity : AppCompatActivity() {
             findViewById<Spinner>(R.id.spinner_organiser).adapter = adapter2
 
             // Get all users from the database or redirect if there is a problem
-            currentDatabase.userDatabase!!.getListAllUsers(organiserObserver, null).observe(this) {
+            currentDatabase.userDatabase!!.getListAllUsers(organiserObserver).observe(this) {
                 if (!it.value) {
                     HelperFunctions.showToast(getString(R.string.failed_get_zones), this)
                     finish()

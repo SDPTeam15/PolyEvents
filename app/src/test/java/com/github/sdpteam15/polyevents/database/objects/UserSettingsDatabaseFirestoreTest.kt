@@ -38,7 +38,7 @@ class UserSettingsDatabaseFirestoreTest {
     fun testUpdatingUserSettings() {
         val userSettings = UserSettings()
         HelperTestFunction.nextSetEntity { true }
-        mockUserSettingsDatabase.updateUserSettings(userSettings, userAccess = UserProfile())
+        mockUserSettingsDatabase.updateUserSettings(userSettings)
                 .observeOnce { assert(it.value) }.then.postValue(false)
 
         val setUserSettings = HelperTestFunction.lastSetEntity()!!
@@ -51,13 +51,11 @@ class UserSettingsDatabaseFirestoreTest {
     @Test
     fun testGettingUserSettings() {
         val userSettingsObservable = Observable<UserSettings>()
-        val userAccess = UserProfile()
 
         HelperTestFunction.nextGetListEntity { true }
         mockUserSettingsDatabase.getUserSettings(
                 id = mockUserId,
-                userSettingsObservable = userSettingsObservable,
-                userAccess = userAccess
+                userSettingsObservable = userSettingsObservable
         ).observeOnce {
             assert(it.value)
         }.then.postValue(false)

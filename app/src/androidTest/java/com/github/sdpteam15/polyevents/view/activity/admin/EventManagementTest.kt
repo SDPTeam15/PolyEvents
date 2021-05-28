@@ -103,7 +103,6 @@ class EventManagementTest {
             mockedZoneDB.getAllZones(
                 anyOrNull(),
                 anyOrNull(),
-                anyOrNull(),
                 anyOrNull()
             )
         ).thenAnswer {
@@ -113,15 +112,14 @@ class EventManagementTest {
 
         When(
             mockedUserDb.getListAllUsers(
-                anyOrNull(),
-                anyOrNull(),
+                anyOrNull()
             )
         ).thenAnswer {
             (it.arguments[0] as ObservableList<UserEntity>).addAll(listUser)
             Observable(true)
         }
 
-        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
+        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull()))
             .thenReturn(
                 Observable(true)
             )
@@ -180,12 +178,12 @@ class EventManagementTest {
 
     private fun addAddListener(): Observable<Boolean> {
         val obs = Observable<Boolean>()
-        When(mockedEventDB.createEvent(anyOrNull(), anyOrNull())).thenAnswer {
+        When(mockedEventDB.createEvent(anyOrNull())).thenAnswer {
             event = (it.arguments[0] as Event)
             obs
         }
 
-        When(mockedEventDB.createEventEdit(anyOrNull(), anyOrNull())).thenAnswer {
+        When(mockedEventDB.createEventEdit(anyOrNull())).thenAnswer {
             event = (it.arguments[0] as Event)
             obs
         }
@@ -194,12 +192,12 @@ class EventManagementTest {
 
     private fun addUpdateListener(): Observable<Boolean> {
         val obs = Observable<Boolean>()
-        When(mockedEventDB.updateEvent(anyOrNull(), anyOrNull())).thenAnswer {
+        When(mockedEventDB.updateEvent(anyOrNull())).thenAnswer {
             event = (it.arguments[0] as Event)
             obs
         }
 
-        When(mockedEventDB.updateEventEdit(anyOrNull(), anyOrNull())).thenAnswer {
+        When(mockedEventDB.updateEventEdit(anyOrNull())).thenAnswer {
             event = (it.arguments[0] as Event)
             obs
         }
@@ -296,11 +294,11 @@ class EventManagementTest {
         When(mockedDatabase.eventDatabase).thenReturn(mockedEventDB)
         When(mockedDatabase.zoneDatabase).thenReturn(mockedZoneDB)
         When(mockedDatabase.userDatabase).thenReturn(mockedUserDb)
-        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
+        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull()))
             .thenReturn(
                 Observable(true)
             )
-        Mockito.`when`(mockedUserDb.getUserProfilesList(anyOrNull(), anyOrNull(), anyOrNull()))
+        Mockito.`when`(mockedUserDb.getUserProfilesList(anyOrNull(), anyOrNull()))
             .thenAnswer {
                 (it.arguments[0] as ObservableList<UserProfile>).add(
                     UserProfile(
@@ -314,7 +312,6 @@ class EventManagementTest {
         val obs = Observable<Boolean>()
         When(
             mockedZoneDB.getAllZones(
-                anyOrNull(),
                 anyOrNull(),
                 anyOrNull(),
                 anyOrNull()
@@ -351,7 +348,7 @@ class EventManagementTest {
         When(mockedDatabase.userDatabase).thenReturn(mockedUserDb)
 
 
-        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
+        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull()))
             .thenReturn(
                 Observable(true)
             )
@@ -361,14 +358,13 @@ class EventManagementTest {
             mockedZoneDB.getAllZones(
                 anyOrNull(),
                 anyOrNull(),
-                anyOrNull(),
                 anyOrNull()
             )
         ).thenAnswer {
             (it.arguments[2] as ObservableList<Zone>).addAll(listZone)
             Observable(true)
         }
-        Mockito.`when`(mockedUserDb.getUserProfilesList(anyOrNull(), anyOrNull(), anyOrNull()))
+        Mockito.`when`(mockedUserDb.getUserProfilesList(anyOrNull(), anyOrNull()))
             .thenAnswer {
                 (it.arguments[0] as ObservableList<UserProfile>).add(
                     UserProfile(
@@ -382,7 +378,6 @@ class EventManagementTest {
         val obs = Observable<Boolean>()
         When(
             mockedUserDb.getListAllUsers(
-                anyOrNull(),
                 anyOrNull()
             )
         ).thenAnswer {
@@ -411,14 +406,13 @@ class EventManagementTest {
         When(
             mockedEventDB.getEventFromId(
                 anyOrNull(),
-                anyOrNull(),
                 anyOrNull()
             )
         ).thenAnswer {
             obs
         }
 
-        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
+        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull()))
             .thenAnswer {
                 (it.arguments[2] as ObservableList<Event>).addAll(events)
                 Observable(true, this)
@@ -448,13 +442,11 @@ class EventManagementTest {
     }
 
 
-
     @Test
     fun gettedInformationCorrectlySet() {
         val obs = Observable<Boolean>()
         When(
             mockedEventDB.getEventFromId(
-                anyOrNull(),
                 anyOrNull(),
                 anyOrNull()
             )
@@ -548,7 +540,7 @@ class EventManagementTest {
             EventManagementListActivity.EVENT_ID_INTENT,
             EventManagementListActivity.NEW_EVENT_ID
         )
-        val activity = ActivityScenario.launch<EventManagementActivity>(intent)
+        ActivityScenario.launch<EventManagementActivity>(intent)
 
         val startDate = EventManagementActivity.dateStart.value!!
         val endDate = EventManagementActivity.dateEnd.value!!
@@ -570,7 +562,6 @@ class EventManagementTest {
         val obs = Observable<Boolean>()
         When(
             mockedEventDB.getEventFromId(
-                anyOrNull(),
                 anyOrNull(),
                 anyOrNull()
             )
@@ -613,7 +604,6 @@ class EventManagementTest {
         val obs = Observable<Boolean>()
         When(
             mockedEventDB.getEventEditFromId(
-                anyOrNull(),
                 anyOrNull(),
                 anyOrNull()
             )
@@ -668,7 +658,6 @@ class EventManagementTest {
         When(
             mockedEventDB.getEventFromId(
                 anyOrNull(),
-                anyOrNull(),
                 anyOrNull()
             )
         ).thenAnswer {
@@ -683,7 +672,7 @@ class EventManagementTest {
             eventId
         )
         val obs2 = Observable<Boolean>()
-        When(mockedEventDB.createEventEdit(anyOrNull(), anyOrNull())).thenAnswer {
+        When(mockedEventDB.createEventEdit(anyOrNull())).thenAnswer {
             event = (it.arguments[0] as Event)
             obs2
         }
@@ -728,7 +717,6 @@ class EventManagementTest {
         val obs = Observable<Boolean>()
         When(
             mockedEventDB.getEventFromId(
-                anyOrNull(),
                 anyOrNull(),
                 anyOrNull()
             )

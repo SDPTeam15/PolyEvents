@@ -75,8 +75,6 @@ class EditProfileActivityTest {
 
 
         When(mockedDatabaseInterface.currentUser).thenReturn(mockedUserEntity)
-        When(mockedDatabaseInterface.currentProfile).thenReturn(mockedUserProfile)
-
         When(mockedUserDatabase.getProfileById(EditProfileActivity.updater, pid)).thenAnswer {
             EditProfileActivity.updater.postValue(mockedUserProfile)
             Observable(true)

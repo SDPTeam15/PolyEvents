@@ -175,7 +175,7 @@ class MyItemRequestsActivityTest {
                 MaterialRequest.Status.ACCEPTED -> accepted++
                 MaterialRequest.Status.REFUSED -> refused++
                 MaterialRequest.Status.PENDING -> pending++
-                else -> 0
+                else -> {}
             }
         }
     }
@@ -206,14 +206,13 @@ class MyItemRequestsActivityTest {
         setupItemRequests()
 
         Mockito.`when`(
-            mockedUserDB.getListAllUsers(anyOrNull(), anyOrNull())
+            mockedUserDB.getListAllUsers(anyOrNull())
         ).thenAnswer{
             (it.arguments[0] as ObservableList<UserEntity>).addAll(allUsers)
             Observable(true,this)
         }
         Mockito.`when`(
             mockedMaterialRequestDB.getMaterialRequestListByUser(
-                anyOrNull(),
                 anyOrNull(),
                 anyOrNull()
             )
@@ -222,13 +221,13 @@ class MyItemRequestsActivityTest {
             Observable(true, this)
         }
         Mockito.`when`(
-            mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())
+            mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull())
         ).thenAnswer{
             (it.arguments[2] as ObservableList<Event>).addAll(events)
             Observable(true, this)
         }
 
-        Mockito.`when`(mockedMaterialRequestDB.deleteMaterialRequest(anyOrNull(), anyOrNull()))
+        Mockito.`when`(mockedMaterialRequestDB.deleteMaterialRequest(anyOrNull()))
             .thenAnswer {
                 allRequests.remove(it)
                 pending--
@@ -237,7 +236,6 @@ class MyItemRequestsActivityTest {
         Mockito.`when`(
             mockedMaterialRequestDB.getMaterialRequestById(
                 anyOrNull(),
-                anyOrNull(),
                 anyOrNull()
             )
         )
@@ -245,11 +243,11 @@ class MyItemRequestsActivityTest {
                 (it.arguments[0] as Observable<MaterialRequest>).postValue(allRequests.first { it2 -> it2.requestId == it.arguments[1] })
                 Observable(true, this)
             }
-        Mockito.`when`(mockedItemDB.getItemsList(anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
+        Mockito.`when`(mockedItemDB.getItemsList(anyOrNull(), anyOrNull())).thenAnswer {
             (it.arguments[0] as ObservableList<Triple<Item, Int, Int>>).addAll(availableItemsList)
             Observable(true, this)
         }
-        Mockito.`when`(mockedItemDB.getAvailableItems(anyOrNull(), anyOrNull())).thenAnswer {
+        Mockito.`when`(mockedItemDB.getAvailableItems(anyOrNull())).thenAnswer {
             (it.arguments[0] as ObservableList<Triple<Item, Int, Int>>).addAll(availableItemsList)
             Observable(true, this)
         }

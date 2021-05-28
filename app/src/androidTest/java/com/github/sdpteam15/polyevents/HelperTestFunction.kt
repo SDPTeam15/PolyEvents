@@ -39,7 +39,7 @@ object HelperTestFunction {
         val zoneDatabase = Mockito.mock(ZoneDatabaseInterface::class.java)
         val heatmapDatabase = Mockito.mock(HeatmapDatabaseInterface::class.java)
         Mockito.`when`(database.zoneDatabase).thenAnswer { zoneDatabase }
-        Mockito.`when`(zoneDatabase.getAllZones(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
+        Mockito.`when`(zoneDatabase.getAllZones(anyOrNull(), anyOrNull(), anyOrNull()))
             .thenAnswer {
                 val res = it!!.arguments[2] as ObservableList<Zone>
                 res.add(
@@ -71,14 +71,14 @@ object HelperTestFunction {
         Mockito.`when`(database.eventDatabase)
             .thenAnswer {
                 val mock = Mockito.mock(EventDatabaseInterface::class.java)
-                Mockito.`when`(mock.getEvents(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
+                Mockito.`when`(mock.getEvents(anyOrNull(), anyOrNull(), anyOrNull()))
                     .thenReturn(Observable(true))
                 mock
             }
         Mockito.`when`(database.userDatabase)
             .thenAnswer {
                 val mock = Mockito.mock(UserDatabaseInterface::class.java)
-                Mockito.`when`(mock.getUserProfilesList(anyOrNull(), anyOrNull(), anyOrNull()))
+                Mockito.`when`(mock.getUserProfilesList(anyOrNull(), anyOrNull()))
                     .thenAnswer {
                         (it!!.arguments[0] as ObservableList<UserProfile>).clear()
                         (it.arguments[0] as ObservableList<UserProfile>).add(UserProfile(userRole = UserRole.ADMIN))

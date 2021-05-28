@@ -64,19 +64,16 @@ class ZoneDatabaseTest {
         Database.currentDatabase = mockedDatabase
         assertEquals(mockedZoneDatabase.currentUser, UserEntity(""))
 
-        Mockito.`when`(mockedDatabase.currentProfile).thenReturn(UserProfile(""))
         Database.currentDatabase = mockedDatabase
-        assertEquals(mockedZoneDatabase.currentProfile, UserProfile(""))
 
         Database.currentDatabase = FirestoreDatabaseProvider
     }
 
     @Test
     fun updateZone() {
-        val userAccess = UserProfile()
 
         HelperTestFunction.nextSetEntity { true }
-        mockedZoneDatabase.updateZoneInformation(zone.zoneId!!, zone, userAccess)
+        mockedZoneDatabase.updateZoneInformation(zone.zoneId!!, zone)
             .observeOnce { assert(it.value) }.then.postValue(true)
 
         val set = HelperTestFunction.lastSetEntity()!!
@@ -89,10 +86,9 @@ class ZoneDatabaseTest {
 
     @Test
     fun addZone() {
-        val userAccess = UserProfile()
 
         HelperTestFunction.nextAddEntity { true }
-        mockedZoneDatabase.createZone(zone, userAccess)
+        mockedZoneDatabase.createZone(zone)
             .observeOnce { assert(it.value) }.then.postValue(true)
 
         val set = HelperTestFunction.lastAddEntity()!!
@@ -105,10 +101,9 @@ class ZoneDatabaseTest {
     @Test
     fun getZoneList() {
         val zones = ObservableList<Zone>()
-        val userAccess = UserProfile("uid")
 
         HelperTestFunction.nextGetListEntity { true }
-        mockedZoneDatabase.getAllZones(null, null, zones, userAccess)
+        mockedZoneDatabase.getAllZones(null, null, zones)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         val getList = HelperTestFunction.lastGetListEntity()!!
@@ -120,10 +115,9 @@ class ZoneDatabaseTest {
 
     @Test
     fun removeZone() {
-        val userAccess = UserProfile("uid")
 
         HelperTestFunction.nextSetEntity { true }
-        mockedZoneDatabase.deleteZone(zone, userAccess)
+        mockedZoneDatabase.deleteZone(zone)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
 
@@ -136,10 +130,9 @@ class ZoneDatabaseTest {
     @Test
     fun getZoneFromId() {
         val zones = Observable<Zone>()
-        val userAccess = UserProfile("uid")
 
         HelperTestFunction.nextGetEntity { true }
-        mockedZoneDatabase.getZoneInformation(zone.zoneId!!, zones, userAccess)
+        mockedZoneDatabase.getZoneInformation(zone.zoneId!!, zones)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         val getEntity = HelperTestFunction.lastGetEntity()!!
