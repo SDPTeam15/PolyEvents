@@ -234,5 +234,8 @@
     <!-- Timetable -->
     <string name="time_timetable">%1$d:00</string>
     <string name="time_name">" Time"</string>
+    <string name="event_not_selected">Please select an event</string>
+    <string name="item_request_updated">Your request has been successful updated</string>
+    <string name="select_your_event">Select your event :</string>
 
 </resources>
