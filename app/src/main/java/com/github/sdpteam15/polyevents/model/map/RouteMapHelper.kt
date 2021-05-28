@@ -442,8 +442,8 @@ object RouteMapHelper {
         edges.observeAdd(lifecycleOwner) {
             synchronized(this) {
                 edgesToAdd.add(it.value)
-                it.value.start = nodes.first{ n -> n.id == it.value.startId}
-                it.value.end = nodes.first{ n -> n.id == it.value.endId}
+                it.value.start = nodes.firstOrNull{ n -> n.id == it.value.startId}
+                it.value.end = nodes.firstOrNull{ n -> n.id == it.value.endId}
                 for (e in edgesToAdd.toList())
                     if (e.start != null && e.end != null) {
                         edgeAddedNotification(context, e)
