@@ -38,14 +38,13 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
         userAccess: UserProfile?
     ): Observable<Boolean> =
         db.getListEntity(
-            ObservableList<Event>().observe {
-                var list = it.value.toList().sortedBy { e -> e.startTime }
-                if (limit != null)
-                    list = list.filterIndexed { i, _ -> i < limit }
-                eventList.updateAll(list, it.sender)
-            }.then,
+            eventList,
             null,
-            matcher,
+            {
+                var query = it
+                if (limit != null) query = query.limit(limit)
+                query.orderBy(DatabaseConstant.EventConstant.EVENT_START_TIME.value)
+            },
             EVENT_COLLECTION
         )
 
