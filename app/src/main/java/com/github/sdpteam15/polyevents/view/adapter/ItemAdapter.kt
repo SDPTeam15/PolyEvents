@@ -18,7 +18,8 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableList
 class ItemAdapter(
     lifecycleOwner: LifecycleOwner,
     private val items: ObservableList<Triple<Item, Int, Int>>,
-    private val listener: (Triple<Item, Int, Int>) -> Unit
+    private val addItemlistener: (Triple<Item, Int, Int>) -> Unit,
+    private val removeItemListener: (Triple<Item, Int, Int>) -> Unit
 ) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
     init {
@@ -44,7 +45,7 @@ class ItemAdapter(
         @SuppressLint("SetTextI18n")
         fun bind(item: Triple<Item, Int, Int>) {
             btnRemove.setOnClickListener {
-                items.remove(item)
+                removeItemListener(item)
             }
             itemName.text = item.first.itemName
             itemType.text = item.first.itemType
@@ -62,7 +63,7 @@ class ItemAdapter(
         val item = items[position]
         holder.bind(item)
         holder.itemView.setOnClickListener {
-            listener(item)
+            addItemlistener(item)
         }
     }
 

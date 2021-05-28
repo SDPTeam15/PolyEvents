@@ -32,6 +32,10 @@
         <activity android:name=".view.activity.activityprovider.EventManagementActivityProvider" />
 
         <activity
+            android:name=".view.activity.staff.StaffRequestsActivity"
+            android:label="Staff Items Deliveries"
+            android:parentActivityName=".view.activity.MainActivity" />
+        <activity
             android:name=".view.activity.admin.RouteManagementActivity"
             android:label="@string/admin_hub_btn_route_text"
             android:parentActivityName=".view.activity.MainActivity" />
