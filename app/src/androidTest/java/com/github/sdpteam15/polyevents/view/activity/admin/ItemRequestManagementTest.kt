@@ -59,7 +59,9 @@ class ItemRequestManagementTest {
                 ),
                 LocalDateTime.of(2021, 3, 24, 12, 23),
                 Database.currentDatabase.currentUser!!.uid,
+                "1",
                 MaterialRequest.Status.PENDING,
+                null,
                 null
             ),
             MaterialRequest(
@@ -71,7 +73,9 @@ class ItemRequestManagementTest {
                 ),
                 LocalDateTime.of(2021, 3, 29, 1, 6),
                 Database.currentDatabase.currentUser!!.uid,
+                "1",
                 MaterialRequest.Status.PENDING,
+                null,
                 null
             ),
             MaterialRequest(
@@ -81,7 +85,9 @@ class ItemRequestManagementTest {
                 ),
                 LocalDateTime.of(2021, 3, 29, 1, 6),
                 Database.currentDatabase.currentUser!!.uid,
+                "1",
                 MaterialRequest.Status.PENDING,
+                null,
                 null
             )
         )

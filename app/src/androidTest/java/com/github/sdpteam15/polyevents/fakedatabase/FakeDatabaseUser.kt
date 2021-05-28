@@ -5,27 +5,28 @@ import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.google.firebase.firestore.auth.User
 
 object FakeDatabaseUser : UserDatabaseInterface {
     lateinit var profiles: MutableList<UserProfile>
-
+    var allUsers = mutableListOf<UserEntity>()
     override var firstConnectionUser: UserEntity = UserEntity(uid = "DEFAULT")
     override fun updateUserInformation(
         user: UserEntity,
         userAccess: UserProfile?
-    ) = Observable(true, this)
+    ) = Observable(true, FakeDatabase)
 
     override fun firstConnexion(
         user: UserEntity
-    ) = Observable(true, this)
+    ) = Observable(true, FakeDatabase)
 
     override fun inDatabase(
         isInDb: Observable<Boolean>,
         uid: String,
         userAccess: UserProfile?
     ): Observable<Boolean> {
-        isInDb.postValue(true, this)
-        return Observable(true, this)
+        isInDb.postValue(true, FakeDatabase)
+        return Observable(true, FakeDatabase)
     }
 
     override fun getUserInformation(
@@ -34,14 +35,17 @@ object FakeDatabaseUser : UserDatabaseInterface {
         userAccess: UserProfile?
     ):Observable<Boolean> {
         user.postValue(FakeDatabase.CURRENT_USER)
-        return Observable(true,this)
+        return Observable(true,FakeDatabase)
     }
 
     override fun getListAllUsers(
         users: ObservableList<UserEntity>,
         userAccess: UserProfile?
     ): Observable<Boolean> {
-        return Observable(true)
+        users.clear(FakeDatabase)
+        users.addAll(allUsers, FakeDatabase)
+
+        return Observable(true,FakeDatabase)
     }
 
     override fun addUserProfileAndAddToUser(

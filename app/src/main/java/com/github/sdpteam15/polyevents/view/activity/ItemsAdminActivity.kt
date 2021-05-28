@@ -4,14 +4,16 @@ import android.content.Context
 import android.os.Bundle
 import android.transition.Slide
 import android.transition.TransitionManager
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.adapter.ItemAdapter
@@ -29,31 +31,47 @@ class ItemsAdminActivity : AppCompatActivity() {
      */
     private lateinit var recyclerView: RecyclerView
 
+    private fun getItemsFromDB() {
+        currentDatabase.itemDatabase!!.getItemsList(
+            items,
+            //we consider objects with 0
+            { it.whereNotEqualTo(DatabaseConstant.ItemConstants.ITEM_TOTAL.value, 0) })
+            .observe(this) {
+                if (!it.value)
+                    showToast(getString(R.string.failed_to_get_item), this)
+            }
+    }
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_items_admin)
 
-        currentDatabase.itemDatabase!!.getItemsList(items).observe(this) {
-            if (!it.value)
-                HelperFunctions.showToast(getString(R.string.failed_to_get_item), this)
-        }
+        getItemsFromDB()
         currentDatabase.itemDatabase!!.getItemTypes(itemTypes).observe(this) {
             if (!it.value)
-                HelperFunctions.showToast(getString(R.string.query_not_satisfied), this)
+                showToast(getString(R.string.query_not_satisfied), this)
         }
         items.observeRemove(this) {
             if (it.sender != currentDatabase) {
                 if (it.value.first.itemId != null) {
-                    currentDatabase.itemDatabase!!.removeItem(it.value.first.itemId!!)
+                    currentDatabase.itemDatabase!!.updateItem(it.value.first, 0, 0)
                 }
             }
         }
         items.observeAdd(this) {
             if (it.sender != currentDatabase) {
                 currentDatabase.itemDatabase!!.createItem(it.value.first, it.value.second)
-                    .observe { it1 ->
-                        if (it1.value) {
-                            currentDatabase.itemDatabase!!.getItemsList(items)
+                    .observeOnce { it2 ->
+                        if (it2.value != "") {
+                            showToast("set item", this)
+
+                            showToast("itemid changed", this)
+                            items[it.index].first.itemId = it2.value
+
+                        } else {
+                            showToast("Failed to add the item to the database", this)
                         }
                     }
             }
@@ -68,9 +86,18 @@ class ItemsAdminActivity : AppCompatActivity() {
         val modifyItem = { item: Triple<Item, Int, Int> ->
             createItemPopup(item)
         }
+        val deleteItem = { item: Triple<Item, Int, Int> ->
+            //check if there if there is no accepted request with the requested item
+            if (item.second != item.third) {
+                showToast("This item is in use by an event provider", this)
+            }else{
+                items.remove(item)
+            }
+            Unit
+        }
 
         recyclerView = findViewById(R.id.id_recycler_items_list)
-        recyclerView.adapter = ItemAdapter(this, items, modifyItem)
+        recyclerView.adapter = ItemAdapter(this, items, modifyItem, deleteItem)
 
         val btnAdd = findViewById<ImageButton>(R.id.id_add_item_button)
         btnAdd.setOnClickListener { createItemPopup(null) }
@@ -129,44 +156,57 @@ class ItemsAdminActivity : AppCompatActivity() {
 
         // Set a click listener for popup's button widget
         confirmButton.setOnClickListener {
-            val newTotal = itemQuantity.text.toString().toInt()
-            if (itemUsed > newTotal) {
-                HelperFunctions.showToast("The new total is less than attributed items", this)
+            if (itemName.text.toString().trim() != "" &&
+                itemQuantity.text.toString().trim() != "" &&
+                itemTypeTextView.text.toString().trim() != ""
+            ) {
+                val newTotal = itemQuantity.text.toString().toInt()
+                when {
+                    newTotal <= 0 -> {
+                        showToast("The quantity must be positive", this)
+                    }
+                    itemUsed > newTotal -> {
+                        showToast("The new total is less than attributed items", this)
 
-            } else {
+                    }
+                    else -> {
 
-                val itemType = itemTypeTextView.text.toString()
+                        val itemType = itemTypeTextView.text.toString()
 
-                // add new item Type if not already present
-                if (itemType !in itemTypes) {
-                    itemTypes.add(itemType)
-                }
-                if (item == null) {
-                    // add new item
-                    items.add(
-                        Triple(
-                            Item(null, itemName.text.toString(), itemType),
-                            newTotal,
-                            newTotal
-                        ), this
-                    )
-                } else {
-                    //Modify item
-                    currentDatabase.itemDatabase!!.updateItem(
-                        Item(
-                            item.first.itemId,
-                            itemName.text.toString(),
-                            itemType
-                        ), newTotal,
-                        newTotal - itemUsed
-                    ).observe { it1 ->
-                        if (it1.value) {
-                            currentDatabase.itemDatabase!!.getItemsList(items)
+                        // add new item Type if not already present
+                        if (itemType !in itemTypes) {
+                            itemTypes.add(itemType)
                         }
+                        if (item == null) {
+                            // add new item
+                            items.add(
+                                Triple(
+                                    Item(null, itemName.text.toString(), itemType),
+                                    newTotal,
+                                    newTotal
+                                ), this
+                            )
+                        } else {
+                            //Modify item
+                            currentDatabase.itemDatabase!!.updateItem(
+                                Item(
+                                    item.first.itemId,
+                                    itemName.text.toString(),
+                                    itemType
+                                ), newTotal,
+                                newTotal - itemUsed
+                            ).observe { it1 ->
+                                if (it1.value) {
+                                    getItemsFromDB()
+                                }
+                            }
+                        }
+                        // Dismiss the popup window
+                        popupWindow.dismiss()
                     }
                 }
-                // Dismiss the popup window
-                popupWindow.dismiss()
+            } else {
+                showToast("Please fill all the fields above", this)
             }
         }
 
