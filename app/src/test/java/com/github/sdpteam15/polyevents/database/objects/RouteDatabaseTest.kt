@@ -121,7 +121,7 @@ class RouteDatabaseTest {
 
         HelperTestFunction.nextAddListEntity { Pair(true, listOf("n2", "n3"))}
         HelperTestFunction.nextAddListEntity { Pair(true, listOf("e3", "e4"))}
-        HelperTestFunction.nextDeleteListEntity { true }
+        HelperTestFunction.nextDeleteListEntity { Pair(true, listOf()) }
         mackRouteDatabase.updateEdges(newEdges, removeEdges, edges, nodes)
             .observeOnce { assert(it.value) }.then.postValue(false)
 

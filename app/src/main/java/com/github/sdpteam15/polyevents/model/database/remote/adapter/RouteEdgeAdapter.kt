@@ -9,13 +9,15 @@ import com.github.sdpteam15.polyevents.model.entity.RouteEdge
  * DTO (Data transfer object) concept.
  */
 object RouteEdgeAdapter : AdapterInterface<RouteEdge> {
-    override fun toDocument(element: RouteEdge): HashMap<String, Any?>  = hashMapOf(
-        EDGE_ID.value to element.id,
-        START_ID.value to element.startId,
-        END_ID.value to element.endId
-    )
+    override fun toDocument(element: RouteEdge?): HashMap<String, Any?>? =
+        if (element == null) null
+        else hashMapOf(
+            EDGE_ID.value to element.id,
+            START_ID.value to element.startId,
+            END_ID.value to element.endId
+        )
 
-    override fun fromDocument(document: MutableMap<String, Any?>, id: String) = RouteEdge(
+    override fun fromDocument(document: Map<String, Any?>, id: String) = RouteEdge(
         id = id,
         startInitId = document[START_ID.value] as String?,
         endInitId = document[END_ID.value] as String?

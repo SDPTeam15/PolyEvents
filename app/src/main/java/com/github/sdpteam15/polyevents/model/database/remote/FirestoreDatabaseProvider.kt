@@ -1,18 +1,20 @@
 package com.github.sdpteam15.polyevents.model.database.remote
 
 import android.annotation.SuppressLint
-import android.util.Log
+import com.github.sdpteam15.polyevents.model.database.local.room.LocalCacheAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterToDocumentInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.UserAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
+import com.github.sdpteam15.polyevents.model.database.remote.matcher.FirestoreQuery
+import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.objects.*
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.model.observable.Observable
-import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.model.observable.ObservableMap
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.firestore.DocumentReference
@@ -20,6 +22,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import java.time.LocalTime
 
 object FirestoreDatabaseProvider : DatabaseInterface {
     @SuppressLint("StaticFieldLeak")
@@ -58,7 +61,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         }
     override var routeDatabase: RouteDatabaseInterface? = null
         get() {
-            field = field ?: RouteDatabase(this)
+            field = field ?: RouteDatabase(LocalCacheAdapter(this))
             return field
         }
     override var userSettingsDatabase: UserSettingsDatabaseInterface? = null
@@ -123,45 +126,53 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         }
         firestore!!
             .collection(collection.value)
-            .add(adapter.toDocument(element))
+            .add(adapter.toDocument(element)!!)
             .addOnSuccessListener(successListener)
             .addOnFailureListener(failureListener)
         return ended
     }
 
-    override fun <T : Any> addEntity(
-        element: T,
-        collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterToDocumentInterface<in T>
-    ): Observable<Boolean> =
-        addEntityAndGetId(element, collection, adapter).mapOnce { it != "" }.then
-
     override fun <T : Any> addListEntity(
         elements: List<T>,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterToDocumentInterface<in T>
-    ): Observable<Pair<Boolean, List<String>?>> {
+    ): Observable<Pair<Boolean, List<String?>>> {
         if (elements.isEmpty())
             return Observable(Pair(true, listOf()))
-        val ended = Observable<Pair<Boolean, List<String>?>>()
-        val mutableList = mutableListOf<String?>()
+        val ended = Observable<Pair<Boolean, List<String?>>>()
+        val mutableList = mutableListOf<Pair<Boolean, String?>?>()
         for (elementWithIndex in elements.withIndex()) {
             mutableList.add(null)
             firestore!!
                 .collection(collection.value)
-                .add(adapter.toDocument(elementWithIndex.value))
+                .add(adapter.toDocument(elementWithIndex.value)!!)
                 .addOnSuccessListener {
                     synchronized(this) {
-                        mutableList[elementWithIndex.index] = it.id
+                        mutableList[elementWithIndex.index] = Pair(true, it.id)
                         if (mutableList.fold(true) { a, p -> a && p != null }) {
-                            val list = mutableListOf<String>()
+                            val list = mutableListOf<String?>()
                             for (e in mutableList)
-                                list.add(e!!)
-                            ended.postValue(Pair(true, list), this)
+                                list.add(e!!.second)
+                            ended.postValue(
+                                Pair(
+                                    mutableList.fold(true) { a, p -> a && p!!.second != null },
+                                    list
+                                ), this
+                            )
                         }
                     }
                 }
-                .addOnFailureListener { ended.postValue(Pair(false, null), this) }
+                .addOnFailureListener {
+                    synchronized(this) {
+                        mutableList[elementWithIndex.index] = Pair(true, null)
+                        if (mutableList.fold(true) { a, p -> a && p != null }) {
+                            val list = mutableListOf<String?>()
+                            for (e in mutableList)
+                                list.add(e!!.second)
+                            ended.postValue(Pair(false, list), this)
+                        }
+                    }
+                }
         }
         return ended
     }
@@ -181,8 +192,9 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         val document = firestore!!
             .collection(collection.value)
             .document(id)
-        (if (element == null) document.delete()
-        else document.set(adapter.toDocument(element)))
+        val result = adapter.toDocument(element)
+        (if (result == null) document.delete()
+        else document.set(result))
             .addOnSuccessListener(successListener)
             .addOnFailureListener(failureListener)
         return ended
@@ -192,28 +204,45 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         elements: List<Pair<String, T?>>,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterToDocumentInterface<in T>
-    ): Observable<Boolean> {
+    ): Observable<Pair<Boolean, List<Boolean>>> {
         if (elements.isEmpty())
-            return Observable(true)
-        val ended = Observable<Boolean>()
-        val mutableList = mutableListOf<Boolean>()
+            return Observable(Pair(true, listOf()))
+        val ended = Observable<Pair<Boolean, List<Boolean>>>()
+        val mutableList = mutableListOf<Boolean?>()
         for (elementWithIndex in elements.withIndex()) {
-            mutableList.add(false)
+            mutableList.add(null)
             val document = firestore!!
                 .collection(collection.value)
                 .document(elementWithIndex.value.first)
-            val task = if (elementWithIndex.value.second != null)
-                document.set(adapter.toDocument(elementWithIndex.value.second!!))
+            val result = adapter.toDocument(elementWithIndex.value.second)
+            val task = if (result != null)
+                document.set(result)
             else
                 document.delete()
             task.addOnSuccessListener {
                 synchronized(this) {
                     mutableList[elementWithIndex.index] = true
-                    if (mutableList.reduce { a, b -> a && b })
-                        ended.postValue(true, this)
+                    if (mutableList.fold(true) { a, b -> a && b != null })
+                        ended.postValue(
+                            Pair(
+                                mutableList.fold(true) { a, b -> a && b!! },
+                                mutableList.map { it!! }.toList()
+                            ), this
+                        )
                 }
             }
-                .addOnFailureListener { ended.postValue(false, this) }
+                .addOnFailureListener {
+                    synchronized(this) {
+                        mutableList[elementWithIndex.index] = false
+                        if (mutableList.fold(true) { a, b -> a && b != null })
+                            ended.postValue(
+                                Pair(
+                                    false,
+                                    mutableList.map { it!! }.toList()
+                                ), this
+                            )
+                    }
+                }
         }
         return ended
     }
@@ -227,8 +256,12 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         val ended = Observable<Boolean>()
         val successListener = OnSuccessListener<DocumentSnapshot> {
             if (it.data != null) {
-                element.postValue(adapter.fromDocument(it.data!!, it.id), this)
-                ended.postValue(true, this)
+                val result = adapter.fromDocument(it.data!!, it.id)
+                if (result != null) {
+                    element.postValue(result, this)
+                    ended.postValue(true, this)
+                } else
+                    ended.postValue(false, this)
             } else
                 ended.postValue(false, this)
         }
@@ -243,8 +276,8 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         return ended
     }
 
-    override fun <T : Any> getListEntity(
-        elements: ObservableList<T>,
+    override fun <T : Any> getMapEntity(
+        elements: ObservableMap<String, T>,
         ids: List<String>?,
         matcher: Matcher?,
         collection: DatabaseConstant.CollectionConstant,
@@ -257,8 +290,8 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         }
         val fsCollection = firestore!!.collection(collection.value)
         if (ids != null) {
-            val mutableList = mutableListOf<T?>()
-            if(ids.isEmpty())
+            val mutableList = mutableListOf<Triple<Boolean, String?, T?>?>()
+            if (ids.isEmpty())
                 ended.postValue(true, this)
             for (id in ids) {
                 mutableList.add(null)
@@ -268,13 +301,14 @@ object FirestoreDatabaseProvider : DatabaseInterface {
                         if (it.data != null) {
                             synchronized(this) {
                                 val index = ids.indexOf(it.id)
-                                mutableList[index] = adapter.fromDocument(it.data!!, it.id)
+                                val result = adapter.fromDocument(it.data!!, it.id)
+                                mutableList[index] = Triple(result != null, it.id, result)
                                 if (mutableList.fold(true) { a, p -> a && p != null }) {
-                                    elements.clear(this)
-                                    val list = mutableListOf<T>()
+                                    val map = mutableMapOf<String, T>()
                                     for (e in mutableList)
-                                        list.add(e!!)
-                                    elements.addAll(list, this)
+                                        if (e!!.first)
+                                            map[e.second!!] = e.third!!
+                                    elements.updateAll(map, this)
                                     ended.postValue(true, this)
                                 }
                             }
@@ -283,17 +317,19 @@ object FirestoreDatabaseProvider : DatabaseInterface {
                     }
                     .addOnFailureListener(lastFailureListener)
             }
-
         } else {
-            val task = matcher?.match(fsCollection)?.get() ?: fsCollection.get()
-            task.addOnSuccessListener {
-                elements.clear(this)
-                val list = mutableListOf<T>()
-                for (e in it)
-                    list.add(adapter.fromDocument(e.data, e.id))
-                elements.addAll(list, this)
-                ended.postValue(true, this)
-            }
+            (matcher?.match(FirestoreQuery(fsCollection)) ?: FirestoreQuery(fsCollection))
+                .get()
+                .addOnSuccessListener {
+                    val map = mutableMapOf<String, T>()
+                    for (e in it) {
+                        val result = adapter.fromDocument(e.data, e.id)
+                        if (result != null)
+                            map[e.id] = result
+                    }
+                    elements.updateAll(map, this)
+                    ended.postValue(true, this)
+                }
                 .addOnFailureListener(lastFailureListener)
         }
         return ended

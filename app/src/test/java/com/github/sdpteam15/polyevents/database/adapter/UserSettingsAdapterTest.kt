@@ -2,7 +2,7 @@ package com.github.sdpteam15.polyevents.database.adapter
 
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.UserSettingsConstant.*
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.UserSettingsAdapter
-import com.github.sdpteam15.polyevents.model.room.UserSettings
+import com.github.sdpteam15.polyevents.model.database.local.entity.UserSettings
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -17,7 +17,7 @@ class UserSettingsAdapterTest {
     @Before
     fun setup() {
         userSettings = UserSettings(isSendingLocationOn = isSendingLocationOn)
-        userSettingsDocument = UserSettingsAdapter.toDocument(userSettings)
+        userSettingsDocument = UserSettingsAdapter.toDocument(userSettings)!!
     }
 
     @Test

@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.github.sdpteam15.polyevents.model.room.UserSettings
+import com.github.sdpteam15.polyevents.model.database.local.entity.UserSettings
 
 @Dao
 interface UserSettingsDao {

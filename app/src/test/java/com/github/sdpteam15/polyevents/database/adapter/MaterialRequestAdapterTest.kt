@@ -35,7 +35,7 @@ class MaterialRequestAdapterTest {
 
     @Test
     fun conversionOfMatReqToDocumentPreservesData() {
-        val document = MaterialRequestAdapter.toDocument(materialRequest)
+        val document = MaterialRequestAdapter.toDocument(materialRequest)!!
         assertEquals(document[MATERIAL_REQUEST_LIST.value], materialRequest.items)
         assertEquals(document[MATERIAL_REQUEST_ADMIN_MESSAGE.value], materialRequest.adminMessage)
         assertEquals(document[MATERIAL_REQUEST_USER_ID.value], materialRequest.userId)

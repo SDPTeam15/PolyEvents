@@ -6,7 +6,7 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.Ev
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.EventConstant.EVENT_START_TIME
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.EventEditConstant.EVENT_EDIT_STATUS
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
-import com.github.sdpteam15.polyevents.model.database.remote.Matcher
+import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.EventAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.RatingAdapter
 import com.github.sdpteam15.polyevents.model.entity.Event

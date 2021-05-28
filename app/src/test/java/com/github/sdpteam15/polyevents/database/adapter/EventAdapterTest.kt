@@ -53,7 +53,7 @@ class EventAdapterTest {
 
     @Test
     fun conversionOfEventToDocumentPreservesData() {
-        val document = EventAdapter.toDocument(event)
+        val document = EventAdapter.toDocument(event)!!
 
         assertEquals(document[EVENT_NAME.value], event.eventName)
         assertEquals(document[EVENT_ZONE_ID.value],event.zoneId)
@@ -102,7 +102,7 @@ class EventAdapterTest {
 
     @Test
     fun testConversionWithNullValues() {
-        val document = EventAdapter.toDocument(event)
+        val document = EventAdapter.toDocument(event)!!
         assertNull(document[EVENT_END_TIME])
     }
 }

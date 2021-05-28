@@ -8,8 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
-import com.github.sdpteam15.polyevents.model.database.remote.Matcher
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.map.ZoneAreaMapHelper
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
@@ -41,10 +39,16 @@ class ZoneManagementListActivity : AppCompatActivity() {
         }
 
         recyclerView.adapter = ZoneItemAdapter(zones, openZone)
-        val matcher = Matcher { collection -> collection.orderBy(DatabaseConstant.ZoneConstant.ZONE_NAME.value) }
 
         println(Database.currentDatabase)
-        Database.currentDatabase.zoneDatabase!!.getAllZones(matcher, 50, zones).observe(this) {
+        Database.currentDatabase.zoneDatabase!!.getAllZones(
+            null,
+            50,
+            ObservableList<Zone>().observe(this) {
+                zones.clear(it.sender)
+                zones.addAll(it.value.toList().sortedBy { it.zoneName }, it.sender)
+            }.then
+        ).observe(this) {
             if (!it.value) {
                 HelperFunctions.showToast("Failed to get the list of zones", this)
                 finish()

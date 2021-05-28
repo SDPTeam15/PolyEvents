@@ -7,6 +7,7 @@ import com.github.sdpteam15.polyevents.model.entity.RouteNode
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.model.observable.ObservableMap
 
 class RouteDatabase(private val db: DatabaseInterface) : RouteDatabaseInterface {
     override fun getRoute(
@@ -33,23 +34,12 @@ class RouteDatabase(private val db: DatabaseInterface) : RouteDatabaseInterface 
                     if (!it.value)
                         end.postValue(it.value, it.sender)
                     else {
-                        val tempEdges = ObservableList<RouteEdge>()
                         db.getListEntity(
-                            tempEdges,
+                            edges,
                             null,
                             null,
                             EDGE_COLLECTION
                         ).observeOnce {
-                            if (it.value) {
-                                val keyToNode =
-                                    nodes.groupOnce { it.id }.then.mapOnce { it[0] }.then
-                                for (e in tempEdges) {
-                                    e.start = keyToNode[e.startId]
-                                    e.end = keyToNode[e.endId]
-                                }
-                            }
-                            edges.clear(it.sender)
-                            edges.addAll(tempEdges, it.sender)
                             end.postValue(it.value, it.sender)
                         }
                     }
@@ -100,9 +90,9 @@ class RouteDatabase(private val db: DatabaseInterface) : RouteDatabaseInterface 
                             removeEdges.map { it.id!! },
                             EDGE_COLLECTION
                         ).observeOnce {
-                            if (it.value)
+                            if (it.value.first)
                                 edges.removeAll(removeEdges, db)
-                            end.postValue(it.value, it.sender)
+                            end.postValue(it.value.first, it.sender)
                         }
                     } else
                         end.postValue(false, it.sender)
@@ -154,7 +144,7 @@ class RouteDatabase(private val db: DatabaseInterface) : RouteDatabaseInterface 
                     NODE_COLLECTION
                 ).observeOnce {
                     nodes.removeAll(removeNode, it.sender)
-                    end.postValue(it.value, it.sender)
+                    end.postValue(it.value.first, it.sender)
                 }
             }
         }

@@ -18,7 +18,9 @@ import com.google.firebase.Timestamp
  */
 @Suppress("UNCHECKED_CAST")
 object EventAdapter : AdapterInterface<Event> {
-    override fun toDocument(element: Event): HashMap<String, Any?> = hashMapOf(
+    override fun toDocument(element: Event?): HashMap<String, Any?>? =
+        if (element == null) null
+        else hashMapOf(
         EVENT_NAME.value to element.eventName,
         EVENT_ORGANIZER.value to element.organizer,
         EVENT_ZONE_ID.value to element.zoneId,
@@ -36,7 +38,7 @@ object EventAdapter : AdapterInterface<Event> {
         EVENT_PARTICIPANTS.value to element.getParticipants().toList()
     )
 
-    override fun fromDocument(document: MutableMap<String, Any?>, id: String): Event {
+    override fun fromDocument(document: Map<String, Any?>, id: String): Event {
         return Event(
             eventId = id,
             eventName = document[EVENT_NAME.value] as String?,

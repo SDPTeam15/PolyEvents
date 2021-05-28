@@ -8,10 +8,11 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.It
  * DTO (Data transfer object) concept.
  */
 object ItemTypeAdapter : AdapterInterface<String> {
-    override fun toDocument(element: String): HashMap<String, Any?> =
-        hashMapOf(ITEM_TYPE.value to element)
+    override fun toDocument(element: String?): HashMap<String, Any?>? =
+        if (element == null) null
+        else hashMapOf(ITEM_TYPE.value to element)
 
-    override fun fromDocument(document: MutableMap<String, Any?>, id: String): String =
+    override fun fromDocument(document: Map<String, Any?>, id: String): String =
         document[ITEM_TYPE.value] as String
 
 }

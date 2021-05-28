@@ -364,4 +364,6 @@ class Observable<T>(value: T? = null, val creator: Any? = null) {
             })
         return ThenOrRemove(this, creator, { true })
     }
+
+    override fun toString(): String = "Observable'${updateArgs?.value}'"
 }

@@ -31,8 +31,9 @@ class ObservableMap<K, T>(val creator: Any? = null) : MutableMap<K, T> {
         put,
         putAll,
         remove,
+        updateAll,
         clear,
-        itemUpdated
+        itemUpdated,
     }
 
     override val size get() = mapValues.size
@@ -177,6 +178,28 @@ class ObservableMap<K, T>(val creator: Any? = null) : MutableMap<K, T> {
 
     override fun remove(key: K): T? = remove(key, null)?.value
 
+    /**
+     * Update the elements in this collection to that are contained in the specified collection.
+     * @param items items map.
+     * @param sender The source of the event.
+     */
+    fun updateAll(items: Map<K, T>, sender: Any? = null) {
+        val toremove = mutableMapOf<K, Observable<T>>()
+        val added = mutableMapOf<K, Observable<T>>()
+        val toadd = mutableMapOf<K, T>()
+        toadd.putAll(items)
+        for (key in mapValues.keys) {
+            if (mapValues[key]!!.value != items[key])
+                toremove[key] = mapValues[key]!!
+            else
+                toadd.remove(key)
+        }
+        for (key in toremove.keys)
+            remove(key, sender, false)
+        for (key in toadd.keys)
+            added[key] = put(key, toadd[key]!!, sender, false)!!
+        notifyUpdate(sender, Info.updateAll, Triple(items, toremove, added))
+    }
 
     override fun clear() = clear(null)
 
@@ -539,6 +562,13 @@ class ObservableMap<K, T>(val creator: Any? = null) : MutableMap<K, T> {
                         val (key, _) = it.args as Pair<K, Observable<T>>
                         observableMap.remove(key, it.sender)
                     }
+                    Info.updateAll -> {
+                        val (items, _, _) = it.args as Triple<Map<K, T>, Map<K, Observable<T>>, Map<K, Observable<T>>>
+                        val tempMap2 = mutableMapOf<K, U>()
+                        for (key in items.keys)
+                            tempMap2[key] = mapper(items[key]!!)
+                        observableMap.updateAll(tempMap2)
+                    }
                     Info.clear -> {
                         observableMap.clear(it.sender)
                     }
@@ -647,10 +677,16 @@ class ObservableMap<K, T>(val creator: Any? = null) : MutableMap<K, T> {
                         val (_, observable) = it.args as Pair<K, Observable<T>>
                         observableList.remove(observable)
                     }
+                    Info.updateAll -> {
+                        val (items, _, _) = it.args as Triple<Map<K, T>, Map<K, Observable<T>>, Map<K, Observable<T>>>
+                        observableList.updateAll(items.map { it.value })
+                    }
                     Info.clear -> {
                         observableList.clear(it.sender)
                     }
                     Info.itemUpdated -> {
+                        val value = it.args as UpdateKeyedValue<K, T>
+                        //TODO IF NEEDED
                     }
                 }
                 condition()
@@ -751,4 +787,6 @@ class ObservableMap<K, T>(val creator: Any? = null) : MutableMap<K, T> {
                     leave(obs)
         }
     }
+
+    override fun toString(): String = "ObservableMap$mapValues"
 }

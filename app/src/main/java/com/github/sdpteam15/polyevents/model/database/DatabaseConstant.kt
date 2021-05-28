@@ -30,11 +30,13 @@ object DatabaseConstant {
 
 
         TEST_COLLECTION("test", object : AdapterInterface<StringWithID> {
-            override fun toDocument(element: StringWithID): HashMap<String, Any?> =
-                hashMapOf(TEST_STR to element.string)
+            override fun toDocument(element: StringWithID?): HashMap<String, Any?>? =
+                if (element == null) null
+                else
+                    hashMapOf(TEST_STR to element.string)
 
             override fun fromDocument(
-                document: MutableMap<String, Any?>,
+                document: Map<String, Any?>,
                 id: String
             ) = StringWithID(id, document[TEST_STR] as String)
         });
@@ -157,7 +159,7 @@ object DatabaseConstant {
         override fun toString(): String = value
     }
 
-    enum class RatingConstant(val value:String){
+    enum class RatingConstant(val value: String) {
         RATING_EVENT_ID("eventId"),
         RATING_USER_ID("uid"),
         RATING_DESCRIPTION("ratingDescription"),

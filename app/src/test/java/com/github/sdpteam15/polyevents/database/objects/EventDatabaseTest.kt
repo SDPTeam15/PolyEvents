@@ -7,6 +7,8 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.Co
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.EventAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.EventEditAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.RatingAdapter
+import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
+import com.github.sdpteam15.polyevents.model.database.remote.matcher.Query
 import com.github.sdpteam15.polyevents.model.database.remote.objects.EventDatabase
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Rating
@@ -35,7 +37,7 @@ private const val rate = 4.5F
 private const val feedback = "feedback "
 private val startTime = LocalDateTime.of(2021, 3, 7, 12, 15)
 private val endTime = LocalDateTime.of(2021, 3, 7, 12, 45)
-private val tags = mutableListOf("sushi", "japan", "cooking")
+private val tags = mutableSetOf("sushi", "japan", "cooking")
 
 
 @Suppress("UNCHECKED_CAST", "TYPE_INFERENCE_ONLY_INPUT_TYPES_WARNING")
@@ -287,15 +289,18 @@ class EventDatabaseTest {
     fun getEventListWithMatcherAndLimitNotNull() {
         val events = ObservableList<Event>()
         val userAccess = UserProfile("uid")
-        val matcher = Matcher { q: Query -> q.limitToLast(1000L) }
+        val matcher = Matcher { q: Query -> q.limit(1000L) }
+
+        HelperTestFunction.nextGetListEntity { true }
+        mockedEventdatabase.getEvents(matcher, 20, events, userAccess)
+            .observeOnce { assert(it.value) }.then.postValue(false)
+
+        val getList = HelperTestFunction.lastGetListEntity()!!
+
         val mockQuery = Mockito.mock(Query::class.java)
 
         Mockito.`when`(mockQuery.limit(anyOrNull())).then {
-            assertEquals(it.arguments[0] as Long, 20L)
-            mockQuery
-        }
-        Mockito.`when`(mockQuery.limitToLast(anyOrNull())).then {
-            assertEquals(it.arguments[0] as Long, 1000L)
+            assert(it.arguments[0] as Long in listOf(20L, 1000L))
             mockQuery
         }
 
@@ -307,12 +312,7 @@ class EventDatabaseTest {
         mockedEventdatabase.getEvents(matcher, 20, events, userAccess)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
-        val getList = HelperTestFunction.lastGetListEntity()!!
-
-
         assertNotNull(getList.matcher)
-
-
 
         getList.matcher.match(mockQuery)
         assertEquals(events, getList.element)

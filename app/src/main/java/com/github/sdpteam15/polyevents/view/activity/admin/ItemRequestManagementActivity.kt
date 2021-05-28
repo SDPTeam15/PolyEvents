@@ -17,6 +17,7 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
+import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
@@ -76,10 +77,10 @@ class ItemRequestManagementActivity : AppCompatActivity() {
 
         //Wait until we have both requests accepted from the database to show the material requests
         currentDatabase.materialRequestDatabase!!.getMaterialRequestList(
-            requests,
-            { collection ->
-                collection.orderBy(DatabaseConstant.MaterialRequestConstant.MATERIAL_REQUEST_STATUS.value)
-            })
+            ObservableList<MaterialRequest>().observe(this) {
+                requests.clear(it.sender)
+                requests.addAll(it.value.toList().sortedBy { it.status }, it.sender)
+            }.then)
             .observeOnce(this) {
                 if (!it.value) {
                     HelperFunctions.showToast("Failed to get the list of material requests", this)

@@ -12,7 +12,8 @@ import com.github.sdpteam15.polyevents.model.entity.Zone
  */
 @Suppress("UNCHECKED_CAST")
 object ZoneAdapter : AdapterInterface<Zone> {
-    override fun toDocument(element: Zone): HashMap<String, Any?> {
+    override fun toDocument(element: Zone?): HashMap<String, Any?>? {
+        if (element == null) return null
         val map = hashMapOf(
             ZONE_NAME.value to element.zoneName,
             ZONE_LOCATION.value to element.location,
@@ -25,7 +26,7 @@ object ZoneAdapter : AdapterInterface<Zone> {
         return map
     }
 
-    override fun fromDocument(document: MutableMap<String, Any?>, id: String): Zone = Zone(
+    override fun fromDocument(document: Map<String, Any?>, id: String): Zone = Zone(
         zoneId = id,
         zoneName = document[ZONE_NAME.value] as String?,
         location = document[ZONE_LOCATION.value] as String?,

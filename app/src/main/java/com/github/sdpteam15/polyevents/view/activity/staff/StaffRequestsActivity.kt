@@ -178,10 +178,9 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
         //Gets the item request of the user and then gets the item list
 
         currentDatabase.materialRequestDatabase!!.getMaterialRequestList(
-            requests,
-            {
-                it.orderBy(MATERIAL_REQUEST_STATUS.value)
-            }
+            ObservableList<MaterialRequest>().observe(this){
+                requests.updateAll(it.value.sortedBy { e -> e.status }, it.sender)
+            }.then
         ).observeOnce(this) {
             if (!it.value) {
                 showToast("Failed to get the list of material requests", this)

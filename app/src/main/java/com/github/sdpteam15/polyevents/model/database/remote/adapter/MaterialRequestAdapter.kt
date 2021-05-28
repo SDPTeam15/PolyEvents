@@ -12,7 +12,8 @@ import com.google.firebase.Timestamp
  */
 @Suppress("UNCHECKED_CAST")
 object MaterialRequestAdapter : AdapterInterface<MaterialRequest> {
-    override fun toDocument(element: MaterialRequest): HashMap<String, Any?> {
+    override fun toDocument(element: MaterialRequest?): HashMap<String, Any?>? {
+        if (element == null) return null
         val map = hashMapOf(
             MATERIAL_REQUEST_LIST.value to element.items,
             MATERIAL_REQUEST_TIME.value to HelperFunctions.localDateTimeToDate(element.time),
@@ -20,13 +21,13 @@ object MaterialRequestAdapter : AdapterInterface<MaterialRequest> {
             MATERIAL_REQUEST_EVENT_ID.value to element.eventId,
             MATERIAL_REQUEST_STATUS.value to element.status.ordinal,
 
-        )
+            )
         if (element.adminMessage != null) map[MATERIAL_REQUEST_ADMIN_MESSAGE.value] = element.adminMessage
         if (element.staffInChargeId != null) map[MATERIAL_REQUEST_STAFF_IN_CHARGE.value] = element.staffInChargeId
         return map
     }
 
-    override fun fromDocument(document: MutableMap<String, Any?>, id: String): MaterialRequest {
+    override fun fromDocument(document: Map<String, Any?>, id: String): MaterialRequest {
         return MaterialRequest(
             id,
             (document[MATERIAL_REQUEST_LIST.value] as Map<String, Long>).mapValues { it.value.toInt() },
