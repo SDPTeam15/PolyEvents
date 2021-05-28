@@ -92,7 +92,6 @@ class MainActivity : AppCompatActivity() {
                             currentDatabase.heatmapDatabase!!.setLocation(LatLng.value)
                     }
             }
-
         }
 
         //Set the basic fragment to the home one or to admin hub if it is logged in

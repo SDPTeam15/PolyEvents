@@ -47,7 +47,7 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
                 var query = it
                 if (matcher != null) query = matcher.match(it)
                 if (limit != null) query = query.limit(limit)
-                query.orderBy(EVENT_START_TIME.value).orderBy(EVENT_NAME.value)
+                query.orderBy(EVENT_START_TIME.value)
             },
             EVENT_COLLECTION
         )
@@ -75,9 +75,7 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
         db.getListEntity(
             eventList,
             null,
-            {
-                it.orderBy(EVENT_EDIT_STATUS.value)
-            },
+            null,
             EVENT_EDIT_COLLECTION
         )
 

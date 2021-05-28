@@ -13,6 +13,7 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
+import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider.currentUser
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
@@ -20,6 +21,8 @@ import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
 import com.github.sdpteam15.polyevents.view.activity.ItemRequestActivity
+import com.github.sdpteam15.polyevents.view.activity.admin.EventManagementActivity
+import com.github.sdpteam15.polyevents.view.activity.admin.EventManagementListActivity
 import com.github.sdpteam15.polyevents.view.adapter.MyEventEditRequestAdapter
 import com.github.sdpteam15.polyevents.view.fragments.home.ProviderHomeFragment
 
@@ -76,7 +79,7 @@ class EventManagementActivityProvider : AppCompatActivity(), AdapterView.OnItemS
         setContentView(R.layout.activity_event_management_provider)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
-        userId = intent.getStringExtra(ProviderHomeFragment.ID_USER)!!
+        userId = currentUser!!.uid
         recyclerView = findViewById(R.id.id_recycler_my_event_edit_requests)
         leftButton = findViewById(R.id.id_change_request_status_left)
         rightButton = findViewById(R.id.id_change_request_status_right)
@@ -148,9 +151,10 @@ class EventManagementActivityProvider : AppCompatActivity(), AdapterView.OnItemS
      * Launch the activity to modify the item request
      */
     private val modifyEventRequest = { event: Event ->
-
-        val intent = Intent(this, ItemRequestActivity::class.java).apply {
-            putExtra(EXTRA_ITEM_REQUEST_ID, event.eventEditId)
+        val intent = Intent(this, EventManagementActivity::class.java).apply {
+            putExtra(EventManagementListActivity.INTENT_MANAGER, userId)
+            putExtra(EventManagementListActivity.INTENT_MANAGER_EDIT, userId)
+            putExtra(EventManagementListActivity.EVENT_ID_INTENT, event.eventEditId)
         }
         startActivity(intent)
     }

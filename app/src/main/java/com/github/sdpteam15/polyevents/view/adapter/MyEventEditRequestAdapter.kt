@@ -83,7 +83,7 @@ class MyEventEditRequestAdapter(
         viewType: Int
     ): ItemViewHolder {
 
-        val view = adapterLayout.inflate(R.layout.card_my_material_request, parent, false)
+        val view = adapterLayout.inflate(R.layout.card_my_event_edit_request, parent, false)
         return ItemViewHolder(view)
     }
 

@@ -76,7 +76,6 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
                 viewRoot.findViewById<EditText>(R.id.profileBirthdayET).setText(europeanDateFormatter.format(it.value))
             }
 
-
             if (adminMode) {
                 //If an admin want to see the profile of somme user
                 setupAdminMode(viewRoot)
@@ -111,9 +110,9 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
     private fun setupAdminMode(viewRoot: View) {
         viewRoot.findViewById<Button>(R.id.btnUpdateInfos).visibility = View.INVISIBLE
         viewRoot.findViewById<Button>(R.id.btnLogout).visibility = View.INVISIBLE
+        viewRoot.findViewById<Button>(R.id.btnBirthday).visibility = View.INVISIBLE
         viewRoot.findViewById<EditText>(R.id.profileBirthdayET).isEnabled = false
         viewRoot.findViewById<EditText>(R.id.profileUsernameET).isEnabled = false
-
     }
 
     /**
@@ -123,6 +122,7 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
     private fun setupUserMode(viewRoot: View) {
         viewRoot.findViewById<Button>(R.id.btnUpdateInfos).visibility = View.VISIBLE
         viewRoot.findViewById<Button>(R.id.btnLogout).visibility = View.VISIBLE
+        viewRoot.findViewById<Button>(R.id.btnBirthday).visibility = View.VISIBLE
         viewRoot.findViewById<EditText>(R.id.profileBirthdayET).isEnabled = true
         viewRoot.findViewById<EditText>(R.id.profileUsernameET).isEnabled = true
     }
@@ -150,7 +150,6 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
         viewRoot.findViewById<Button>(R.id.btnUpdateInfos).setOnClickListener {
             //Clear the previous map and add every field
             currentUser!!.username = profileUsernameET.text.toString()
-            // TODO: editText should have birthday input and convert it to Timestamp otherwise things crash
             if(obsDate.value!=null) {
                 currentUser!!.birthDate = obsDate.value
             }
@@ -247,7 +246,6 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
         val slideOut = Slide()
         slideOut.slideEdge = Gravity.END
         popupWindow.exitTransition = slideOut
-
 
         // Get the widgets reference from custom view
         val profileName = view.findViewById<EditText>(R.id.id_edittext_profile_name)
