@@ -227,13 +227,11 @@ class EventManagementActivity : AppCompatActivity() {
         val tagsEt = findViewById<EditText>(R.id.event_management_tags_edit)
         val spinnerOrg = findViewById<Spinner>(R.id.spinner_organiser)
         val spinnerZone = findViewById<Spinner>(R.id.spinner_zone)
-        val tvSpinnerOrganiser = findViewById<TextView>(R.id.tvSpinnerOrganiser)
+
         if (isActivityProvider) {
-            tvSpinnerOrganiser.visibility = View.INVISIBLE
-            spinnerOrg.visibility = View.INVISIBLE
+            findViewById<LinearLayout>(R.id.eventManagementSpinnerLayoutOrganiser).visibility = View.INVISIBLE
         } else {
-            tvSpinnerOrganiser.visibility = View.VISIBLE
-            spinnerOrg.visibility = View.VISIBLE
+            findViewById<LinearLayout>(R.id.eventManagementSpinnerLayoutOrganiser).visibility = View.VISIBLE
         }
 
 

@@ -164,6 +164,7 @@ class EventManagementTest {
 
     @After
     fun teardown() {
+        Thread.sleep(1000)
         Database.currentDatabase = FirestoreDatabaseProvider
     }
 

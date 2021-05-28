@@ -173,7 +173,7 @@
 
             </LinearLayout>
             <LinearLayout
-                android:id="@+id/eventManagementSpinnerLayoutOrganiser"
+                android:id="@+id/eventManagementSpinnerLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -185,7 +185,7 @@
                 app:layout_constraintTop_toBottomOf="@id/event_management_tags_layout">
 
                 <TextView
-                    android:id="@+id/tvSpinnerOrganiser"
+                    android:id="@+id/tvSpinnerChoice"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="2.5"
@@ -200,7 +200,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/eventManagementSpinnerLayout"
+                android:id="@+id/eventManagementSpinnerLayoutOrganiser"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -212,7 +212,7 @@
                 app:layout_constraintTop_toBottomOf="@id/eventManagementSpinnerLayoutOrganiser">
 
                 <TextView
-                    android:id="@+id/tvSpinnerChoice"
+                    android:id="@+id/tvSpinnerOrganiser"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="2.5"
