@@ -109,9 +109,6 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             currentUserObservable.postValue(value, this)
         }
 
-    //TODO change once the current profile has been developed
-    override var currentProfile: UserProfile? = UserProfile(userRole = UserRole.ADMIN)
-
 
     override fun <T : Any> addEntityAndGetId(
         element: T,

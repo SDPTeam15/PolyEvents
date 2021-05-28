@@ -10,29 +10,26 @@ import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 
 class ZoneDatabase(private val db: DatabaseInterface) : ZoneDatabaseInterface {
-    override fun createZone(zone: Zone, userAccess: UserProfile?): Observable<Boolean> =
+    override fun createZone(zone: Zone): Observable<Boolean> =
         db.addEntity(zone, ZONE_COLLECTION, ZoneAdapter)
 
     override fun getZoneInformation(
         zoneId: String,
-        zone: Observable<Zone>,
-        userAccess: UserProfile?
+        zone: Observable<Zone>
     ): Observable<Boolean> = db.getEntity(zone, zoneId, ZONE_COLLECTION, ZoneAdapter)
 
     override fun updateZoneInformation(
         zoneId: String,
-        newZone: Zone,
-        userAccess: UserProfile?
+        newZone: Zone
     ): Observable<Boolean> = db.setEntity(newZone, zoneId, ZONE_COLLECTION)
 
     override fun getAllZones(
         matcher: Matcher?,
         number: Long?,
-        zones: ObservableList<Zone>,
-        userAccess: UserProfile?
+        zones: ObservableList<Zone>
     ): Observable<Boolean> =
         db.getListEntity(zones, null, matcher, ZONE_COLLECTION, ZoneAdapter)
 
-    override fun deleteZone(zone: Zone, userAccess: UserProfile?): Observable<Boolean> =
+    override fun deleteZone(zone: Zone): Observable<Boolean> =
         db.deleteEntity(zone.zoneId!!, ZONE_COLLECTION)
 }

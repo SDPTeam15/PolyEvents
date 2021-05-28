@@ -14,8 +14,7 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
     var profiles: MutableList<UserProfile> = mutableListOf()
 
     override fun updateUserInformation(
-        user: UserEntity,
-        userAccess: UserProfile?
+        user: UserEntity
     ): Observable<Boolean> =
         db.setEntity(
             user,
@@ -36,8 +35,7 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
 
     override fun inDatabase(
         isInDb: Observable<Boolean>,
-        uid: String,
-        userAccess: UserProfile?
+        uid: String
     ) = db.getEntity(
         Observable(),
         uid,
@@ -46,15 +44,14 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
 
     override fun getUserInformation(
         user: Observable<UserEntity>,
-        uid: String,
-        userAccess: UserProfile?
+        uid: String
     ) = db.getEntity(
         user,
         uid,
         USER_COLLECTION
     )
 
-    override fun getListAllUsers(users: ObservableList<UserEntity>, userAccess: UserProfile?) =
+    override fun getListAllUsers(users: ObservableList<UserEntity>) =
         db.getListEntity(
             users,
             null,
@@ -64,8 +61,7 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
 
     override fun addUserProfileAndAddToUser(
         profile: UserProfile,
-        user: UserEntity,
-        userAccess: UserEntity?
+        user: UserEntity
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
 
@@ -99,8 +95,7 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
 
     override fun removeProfileFromUser(
         profile: UserProfile,
-        user: UserEntity,
-        userAccess: UserProfile?
+        user: UserEntity
     ): Observable<Boolean> {
         user.profiles.remove(profile.pid!!)
         profile.users.remove(user.uid)
@@ -128,17 +123,16 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
         return end
     }
 
-    override fun updateProfile(profile: UserProfile, userAccess: UserEntity?) =
+    override fun updateProfile(profile: UserProfile) =
         db.setEntity(
             profile,
             profile.pid!!,
             PROFILE_COLLECTION
-        ).observeOnce { if(db.currentUser != null) db.currentUser!!.loadSuccess = false }.then
+        ).observeOnce { if (db.currentUser != null) db.currentUser!!.loadSuccess = false }.then
 
     override fun getUserProfilesList(
         profiles: ObservableList<UserProfile>,
-        user: UserEntity,
-        userAccess: UserEntity?
+        user: UserEntity
     ): Observable<Boolean> =
         db.getListEntity(
             profiles,
@@ -149,8 +143,7 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
 
     override fun getProfilesUserList(
         users: ObservableList<UserEntity>,
-        profile: UserProfile,
-        userAccess: UserEntity?
+        profile: UserProfile
     ): Observable<Boolean> =
         db.getListEntity(
             users,
@@ -161,8 +154,7 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
 
     override fun getProfileById(
         profile: Observable<UserProfile>,
-        pid: String,
-        userAccess: UserEntity?
+        pid: String
     ): Observable<Boolean> =
         db.getEntity(
             profile,

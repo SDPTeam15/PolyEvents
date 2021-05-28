@@ -10,7 +10,6 @@ object FakeDatabaseHeatmap : HeatmapDatabaseInterface {
     override fun setLocation(location: LatLng): Observable<Boolean> = Observable(true)
 
     override fun getLocations(
-        usersLocations: ObservableList<LatLng>,
-        userAccess: UserEntity?
+        usersLocations: ObservableList<LatLng>
     ): Observable<Boolean> = Observable(true)
 }

@@ -55,7 +55,7 @@ object FakeDatabaseEvent : EventDatabaseInterface {
 
     }
 
-    override fun createEvent(event: Event, userAccess: UserProfile?): Observable<Boolean> {
+    override fun createEvent(event: Event): Observable<Boolean> {
         val eventId = FakeDatabase.generateRandomKey()
         val b = events.put(
             eventId,
@@ -64,21 +64,20 @@ object FakeDatabaseEvent : EventDatabaseInterface {
         return Observable(b, this)
     }
 
-    override fun updateEvent(event: Event, userAccess: UserProfile?): Observable<Boolean> {
+    override fun updateEvent(event: Event): Observable<Boolean> {
         // TODO should update add item if non existent in database ?
         // if (event.eventId == null) return createEvent(event, profile)
         events[event.eventId!!] = event
         return Observable(true, this)
     }
 
-    override fun removeEvent(eventId: String, userAccess: UserProfile?): Observable<Boolean> {
+    override fun removeEvent(eventId: String): Observable<Boolean> {
         TODO("Not yet implemented")
     }
 
     override fun getEventFromId(
         id: String,
-        returnEvent: Observable<Event>,
-        userAccess: UserProfile?
+        returnEvent: Observable<Event>
     ): Observable<Boolean> {
         val event = events[id]
         if (event != null)
@@ -90,8 +89,7 @@ object FakeDatabaseEvent : EventDatabaseInterface {
     override fun getEvents(
         matcher: Matcher?,
         limit: Long?,
-        eventList: ObservableList<Event>,
-        userAccess: UserProfile?
+        eventList: ObservableList<Event>
     ): Observable<Boolean> {
         eventList.clear(this)
 
@@ -99,30 +97,28 @@ object FakeDatabaseEvent : EventDatabaseInterface {
         return Observable(true, this)
     }
 
-    override fun createEventEdit(event: Event, userAccess: UserProfile?): Observable<Boolean> {
+    override fun createEventEdit(event: Event): Observable<Boolean> {
         TODO("Not yet implemented")
     }
 
-    override fun updateEventEdit(event: Event, userAccess: UserProfile?): Observable<Boolean> {
+    override fun updateEventEdit(event: Event): Observable<Boolean> {
         TODO("Not yet implemented")
     }
 
-    override fun removeEventEdit(eventId: String, userAccess: UserProfile?): Observable<Boolean> {
+    override fun removeEventEdit(eventId: String): Observable<Boolean> {
         TODO("Not yet implemented")
     }
 
     override fun getEventEditFromId(
         id: String,
-        returnEvent: Observable<Event>,
-        userAccess: UserProfile?
+        returnEvent: Observable<Event>
     ): Observable<Boolean> {
         TODO("Not yet implemented")
     }
 
     override fun getEventEdits(
         matcher: Matcher?,
-        eventList: ObservableList<Event>,
-        userAccess: UserProfile?
+        eventList: ObservableList<Event>
     ): Observable<Boolean> {
         TODO("Not yet implemented")
     }
@@ -130,29 +126,27 @@ object FakeDatabaseEvent : EventDatabaseInterface {
     override fun getRatingsForEvent(
         eventId: String,
         limit: Long?,
-        ratingList: ObservableList<Rating>,
-        userAccess: UserProfile?
+        ratingList: ObservableList<Rating>
     ): Observable<Boolean> {
         ratingList.add(Rating("TEST", 2f, "TEXT"))
         return Observable(true)
     }
 
-    override fun addRatingToEvent(rating: Rating, userAccess: UserProfile?): Observable<Boolean> {
+    override fun addRatingToEvent(rating: Rating): Observable<Boolean> {
         return Observable(true)
     }
 
-    override fun removeRating(rating: Rating, userAccess: UserProfile?): Observable<Boolean> {
+    override fun removeRating(rating: Rating): Observable<Boolean> {
         return Observable(true)
     }
 
-    override fun updateRating(rating: Rating, userAccess: UserProfile?): Observable<Boolean> {
+    override fun updateRating(rating: Rating): Observable<Boolean> {
         return Observable(true)
     }
 
     override fun getMeanRatingForEvent(
         eventId: String,
-        mean: Observable<Float>,
-        userAccess: UserProfile?
+        mean: Observable<Float>
     ): Observable<Boolean> {
         mean.postValue(4f, this)
         return Observable(true)
@@ -161,8 +155,7 @@ object FakeDatabaseEvent : EventDatabaseInterface {
     override fun getUserRatingFromEvent(
         userId: String,
         eventId: String,
-        returnedRating: Observable<Rating>,
-        userAccess: UserProfile?
+        returnedRating: Observable<Rating>
     ): Observable<Boolean> {
         return Observable(true)
     }
@@ -170,8 +163,7 @@ object FakeDatabaseEvent : EventDatabaseInterface {
     override fun getEventsByZoneId(
         zoneId: String,
         limit: Long?,
-        events: ObservableList<Event>,
-        userAccess: UserProfile?
+        events: ObservableList<Event>
     ): Observable<Boolean> {
         return Observable(true)
     }

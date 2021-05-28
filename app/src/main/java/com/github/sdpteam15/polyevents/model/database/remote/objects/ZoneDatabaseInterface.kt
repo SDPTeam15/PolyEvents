@@ -11,44 +11,36 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableList
 interface ZoneDatabaseInterface {
     val currentUser: UserEntity?
         get() = Database.currentDatabase.currentUser
-    val currentProfile: UserProfile?
-        get() = Database.currentDatabase.currentProfile
 
     /**
      * Store the newly created zone information in the database
      * @param zone the zone information we should insert
-     * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun createZone(
-        zone: Zone,
-        userAccess: UserProfile? = currentProfile
+        zone: Zone
     ): Observable<Boolean>
 
     /**
      * Get the zone information from the database
      * @param zoneId The id of the zone we want to get the information
      * @param zone live data that will be set with the zone information from the database
-     * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getZoneInformation(
         zoneId: String,
-        zone: Observable<Zone>,
-        userAccess: UserProfile? = currentProfile
+        zone: Observable<Zone>
     ): Observable<Boolean>
 
     /**
      * Update the zone information in the databae
      * @param zoneId The id of the zone we want to get the information
      * @param newZone The updated zone information we should store in the database
-     * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun updateZoneInformation(
         zoneId: String,
-        newZone: Zone,
-        userAccess: UserProfile? = currentProfile
+        newZone: Zone
     ): Observable<Boolean>
 
     /**
@@ -56,21 +48,18 @@ interface ZoneDatabaseInterface {
      * @param matcher matcher for the search
      * @param number maximum of result
      * @param zones live data that will be set with the list of zones from the database
-     * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getAllZones(
         matcher: Matcher?,
         number: Long?,
-        zones: ObservableList<Zone>,
-        userAccess: UserProfile? = currentProfile
+        zones: ObservableList<Zone>
     ): Observable<Boolean>
 
     /**
      * Deletes a zone from the database
      * @param zone zone to delete
-     * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
-    fun deleteZone(zone: Zone, userAccess: UserProfile? = currentProfile): Observable<Boolean>
+    fun deleteZone(zone: Zone): Observable<Boolean>
 }
