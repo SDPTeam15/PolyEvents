@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.model.database.remote.matcher
 
+import androidx.annotation.NonNull
 import com.google.android.gms.tasks.Task
 import java.util.*
 
@@ -68,4 +69,42 @@ interface Query {
      * @return The created Query.
      */
     fun whereGreaterThan(key: String, value: Any): Query
+
+    /**
+     * Creates and returns a new Query with the additional filter that documents must contain
+     * the specified field and the value should be less than the specified value.
+     *
+     * @param key The name of the field to compare
+     * @param value The value for comparison
+     * @return The created Query.
+     */
+    fun whereLessThan(key: String, value: Any): Query
+
+    /**
+     * Creates and returns a new Query with the additional filter that documents must contain
+     * the specified field and the value should be greater than or equal to the specified value.
+     *
+     * @param key The name of the field to compare
+     * @param value The value for comparison
+     * @return The created Query.
+     */
+    fun whereGreaterThanOrEqualTo(key: String, value: Any): Query
+
+    /**
+     * Creates and returns a new Query with the additional filter that documents must contain
+     * the specified field and the value should be less than or equal to the specified value.
+     *
+     * @param key The name of the field to compare
+     * @param value The value for comparison
+     * @return The created Query.
+     */
+    fun whereLessThanOrEqualTo(key: String, value: Any): Query
+
+    /**
+     * Creates and returns a new Query that's additionally sorted by the specified field.
+     *
+     * @param key The field to sort by.
+     * @return The created Query.
+     */
+    fun orderBy(key: String): Query
 }
