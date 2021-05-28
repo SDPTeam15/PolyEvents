@@ -148,7 +148,7 @@ class EventListFragmentTest {
     }
 
     @Test
-    fun testMyEventsShouldNotBeDisplayedIfNoUserLoggedIn() = runBlocking {
+    fun testMyEventsShouldStillBeDisplayedIfNoUserLoggedIn() = runBlocking {
         // Event id cannot be null if creating eventLocal from event
         localDatabase.eventDao().insert(EventLocal.fromEvent(event1.copy(eventId = "1")))
         localDatabase.eventDao().insert(EventLocal.fromEvent(event2.copy(eventId = "2")))
@@ -159,7 +159,8 @@ class EventListFragmentTest {
 
         clickOn(R.id.event_list_my_events_switch)
 
-        assertUnchecked(R.id.event_list_my_events_switch)
+        assertChecked(R.id.event_list_my_events_switch)
+        assertRecyclerViewItemCount(R.id.recycler_events_list, 2)
     }
 
     @Test

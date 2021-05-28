@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.view.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,8 +17,8 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableList
  */
 class ItemAdapter(
     lifecycleOwner: LifecycleOwner,
-    private val items: ObservableList<Pair<Item, Int>>,
-    private val listener: (Pair<Item, Int>) -> Unit
+    private val items: ObservableList<Triple<Item, Int, Int>>,
+    private val listener: (Triple<Item, Int, Int>) -> Unit
 ) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
     init {
@@ -40,13 +41,14 @@ class ItemAdapter(
         /**
          * Binds the values of each view of an event to the layout of an event
          */
-        fun bind(item: Pair<Item, Int>) {
+        @SuppressLint("SetTextI18n")
+        fun bind(item: Triple<Item, Int, Int>) {
             btnRemove.setOnClickListener {
                 items.remove(item)
             }
             itemName.text = item.first.itemName
             itemType.text = item.first.itemType
-            itemCount.text = item.second.toString()
+            itemCount.text = item.third.toString()+"/"+item.second.toString()
         }
     }
 

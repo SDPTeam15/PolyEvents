@@ -64,11 +64,15 @@ object FakeDatabaseEvent : EventDatabaseInterface {
         return Observable(b, this)
     }
 
-    override fun updateEvents(event: Event, userAccess: UserProfile?): Observable<Boolean> {
+    override fun updateEvent(event: Event, userAccess: UserProfile?): Observable<Boolean> {
         // TODO should update add item if non existent in database ?
         // if (event.eventId == null) return createEvent(event, profile)
         events[event.eventId!!] = event
         return Observable(true, this)
+    }
+
+    override fun removeEvent(eventId: String, userAccess: UserProfile?): Observable<Boolean> {
+        TODO("Not yet implemented")
     }
 
     override fun getEventFromId(
@@ -95,25 +99,50 @@ object FakeDatabaseEvent : EventDatabaseInterface {
         return Observable(true, this)
     }
 
+    override fun createEventEdit(event: Event, userAccess: UserProfile?): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateEventEdit(event: Event, userAccess: UserProfile?): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getEventEditFromId(
+        id: String,
+        returnEvent: Observable<Event>,
+        userAccess: UserProfile?
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getEventEdits(
+        matcher: Matcher?,
+        eventList: ObservableList<Event>,
+        userAccess: UserProfile?
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
     override fun getRatingsForEvent(
         eventId: String,
         limit: Long?,
         ratingList: ObservableList<Rating>,
         userAccess: UserProfile?
     ): Observable<Boolean> {
-        TODO("Not yet implemented")
+        ratingList.add(Rating("TEST", 2f, "TEXT"))
+        return Observable(true)
     }
 
     override fun addRatingToEvent(rating: Rating, userAccess: UserProfile?): Observable<Boolean> {
-        TODO("Not yet implemented")
+        return Observable(true)
     }
 
     override fun removeRating(rating: Rating, userAccess: UserProfile?): Observable<Boolean> {
-        TODO("Not yet implemented")
+        return Observable(true)
     }
 
     override fun updateRating(rating: Rating, userAccess: UserProfile?): Observable<Boolean> {
-        TODO("Not yet implemented")
+        return Observable(true)
     }
 
     override fun getMeanRatingForEvent(
@@ -121,7 +150,8 @@ object FakeDatabaseEvent : EventDatabaseInterface {
         mean: Observable<Float>,
         userAccess: UserProfile?
     ): Observable<Boolean> {
-        TODO("Not yet implemented")
+        mean.postValue(4f, this)
+        return Observable(true)
     }
 
     override fun getUserRatingFromEvent(
@@ -130,6 +160,15 @@ object FakeDatabaseEvent : EventDatabaseInterface {
         returnedRating: Observable<Rating>,
         userAccess: UserProfile?
     ): Observable<Boolean> {
-        TODO("Not yet implemented")
+        return Observable(true)
+    }
+
+    override fun getEventsByZoneId(
+        zoneId: String,
+        limit: Long?,
+        events: ObservableList<Event>,
+        userAccess: UserProfile?
+    ): Observable<Boolean> {
+        return Observable(true)
     }
 }

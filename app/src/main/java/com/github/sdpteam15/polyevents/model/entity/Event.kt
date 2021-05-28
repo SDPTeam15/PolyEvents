@@ -29,7 +29,7 @@ import java.time.format.DateTimeFormatter
 // TODO: add location (Zone or zoneId)
 @IgnoreExtraProperties
 data class Event(
-    val eventId: String? = null,
+    var eventId: String? = null,
     val eventName: String? = null,
     val organizer: String? = null,
     val zoneId:String?=null,
@@ -42,6 +42,11 @@ data class Event(
     val inventory: MutableList<Item> = mutableListOf(),
     // NOTE: Set is not a supported collection in Firebase Firestore so will be stored as list in the db.
     val tags: MutableSet<String> = mutableSetOf(),
+
+    var status: EventStatus?=null,
+    var adminMessage: String?=null,
+    var eventEditId:String?=null,
+
     private var limitedEvent: Boolean = false,
     private var maxNumberOfSlots: Int? = null,
     private val participants: MutableSet<String> = mutableSetOf()
@@ -163,6 +168,22 @@ data class Event(
             //return SimpleDateFormat("k:mm", Locale.getDefault()).format(startTime)
             val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("k:mm")
             return startTime.format(formatter)
+        }
+    }
+
+    enum class EventStatus (private val status: String) {
+        PENDING("pending"),
+        ACCEPTED("accepted"),
+        REFUSED("refused");
+
+        override fun toString(): String {
+            return status
+        }
+
+        companion object {
+            private val map = values().associateBy(EventStatus::status)
+            private val mapOrdinal =  map.mapKeys { it.value.ordinal }
+            fun fromOrdinal(ordinal: Int) = mapOrdinal[ordinal]
         }
     }
 

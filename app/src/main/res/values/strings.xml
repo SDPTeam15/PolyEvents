@@ -25,7 +25,6 @@
     <string name="login_button_text">Sign in with Google</string>
 
     <!-- Item request -->
-    <string name="go_to_items_requests_button_text">Go to items requests</string>
     <string name="send_request_button_text">Send request</string>
     <string name="item_request_sent_text">Your request has been sent !</string>
     <string name="item_request_empty_text">Your request is empty. Please select some items !</string>
@@ -33,12 +32,23 @@
     <string name="item_name_quantity_text">%1$s\n(%2$d available)</string>
     <string name="max_item_quantity_text">There are only %1$s %2$s available !</string>
 
-    <!-- Fragment Admin Hub-->
-    <string name="admin_hub_btn_item_text">Item</string>
+    <!-- Fragment Admin Home-->
+    <string name="admin_hub_btn_item_list_text">Item List</string>
+    <string name="admin_hub_btn_item_request_text">Item Req</string>
+    <string name="admin_hub_btn_route_text">Route</string>
     <string name="admin_hub_btn_zone_text">Zone</string>
     <string name="admin_hub_btn_event_text">Event</string>
     <string name="admin_hub_btn_user_text">User</string>
     <string name="admin_hub_title">Admin management options</string>
+    <string name="event_edit_btn_text">Event edit</string>
+
+    <!-- Fragment Provider Home-->
+    <string name="provider_hub_title">Provider management options</string>
+    <string name="items_requests_button_text">Requests</string>
+    <string name="my_items_requests_button_text">My requests</string>
+
+    <!-- Fragment Staff Home-->
+    <string name="staff_hub_title">Staff management options</string>
 
     <!-- All string for Profile Fragment -->
     <string name="logout_button_text">Logout</string>
@@ -63,7 +73,7 @@
     <string name="EditProfileActivity_Cancel">Cancel</string>
     <string name="EditProfileActivity_DatabaseError">Impossible to update your profile information, please try again.</string>
 
-    <string-array name="EditProfileActivity_Ranks">
+    <string-array name="Ranks">
         <item>Admin</item>
         <item>Activity provider</item>
         <item>Staff</item>
@@ -104,6 +114,7 @@
     <string name="at_hour_text">at %1$s</string>
     <string name="label_activity_description">Description</string>
     <string name="label_tags">Tags</string>
+    <string name="label_comments">Comments</string>
     <string name="event_attendees">%d/%d </string>
     <string name="event_schedule">at %s</string>
     <string name="event_info_fail">Failed to get the event information</string>
@@ -113,8 +124,14 @@
     <!-- EventActivity -->
     <string name="event_unsubscribe">Unsubscribe</string>
     <string name="event_subscribe">Subscribe</string>
+    <string name="event_follow">Follow</string>
+    <string name="event_unfollow">Unfollow</string>
+    <string name="event_successfully_followed">You are now following this event!</string>
+    <string name="event_successfully_unfollowed">You are no longer following this event</string>
     <string name="event_successfully_subscribed">Successfully registered to event!</string>
+    <string name="event_subscription_fail">Could not subscribe to event, please try again later</string>
     <string name="event_successfully_unsubscribed">Successfully unsubscribed from event!</string>
+    <string name="event_unsubscribe_fail">Failed to unsubscribe from event, please try again later</string>
     <string name="toast_subscribe_warning">"You have to be logged in to subscribe"</string>
     <string name="event_already_subscribed">You are already registered to this event</string>
     <string name="event_subscribe_at_max_capacity">
@@ -132,8 +149,9 @@
     <!-- ItemAdminActivity -->
     <string name="query_not_satisfied">Query not satisfied</string>
     <!-- EventListManagementActivity-->
-    <string name="event_list_management">Event List Management</string>
+    <string name="event_list_management">All events</string>
     <string name="btn_new_event_text">+</string>
+    <string name="message_confirm_delete">Are you sure to want to delete %1$s (this action is not reversible)</string>
 
     <!-- EventManagementActivity-->
     <string name="failed_get_event_information">Unable to get the information associated to this event</string>
@@ -159,5 +177,62 @@
     <string name="update_event_btn_text">Update event</string>
     <string name="create_event_btn_text">Create event</string>
     <string name="title_activity_event_list_management">Event List</string>
+    <string name="fail_delete_from_database">Fail to delete the event from the database, please try again</string>
+    <string name="success_delete_from_database">The event was successfully delete from the database</string>
+    <string name="event_deletion_no_button_text">No</string>
+    <string name="event_deletion_yes_button_text">Yes</string>
+    <string name="fail_retrieve_events">Failed to retrieve all the events</string>
+    <string name="number_of_event_greater_than_0">The number of participant must be >= %1$d</string>
+    <string name="choose_an_organiser">Choose an organiser</string>
+    <string name="event_edit_request_successfully_sent">Your event edit request has been successfully sent</string>
+    <string name="event_edit_request_error">Error while sending event edit request, please try again</string>
+
+
+
+    <!-- EventEditDifference Fragments title -->
+    <string name="edit_fragment_creation_title">Creation</string>
+    <string name="edit_title_modification">Modified</string>
+    <string name="edit_original_title">Original</string>
+    <string name="edit_name_label">Name:</string>
+    <string name="edit_start_date_label">Start date:</string>
+    <string name="edit_end_date_label">End date:</string>
+    <string name="edit_zone_label">Zone:</string>
+    <string name="edit_limited_event_label">Limited event ?</string>
+    <string name="edit_desc_label">Description</string>
+    <string name="edit_close_btn_text">Close</string>
+    <string name="fragment_edit_no_text">No.</string>
+    <string name="fragment_edit_limited_text">Yes, %1$s.</string>
+
+    <!-- MyItemRequestsActivity -->
+    <string name="my_item_requests">My item requests</string>
+    <string name="pending_requests">Pending requests</string>
+    <string name="accepted_requests">Accepted requests</string>
+    <string name="refused_requests">Refused requests</string>
+    <string name="reason_of_refusal">Reason of refusal:</string>
+
+    <!--DisplayZoneEventsFragment-->
+    <string name="see_events">See events</string>
+    <string name="show_itinerary">Show itinerary</string>
+    <string name="zone_name">Zone name</string>
+    <string name="zone_description">Zone description</string>
+    <string name="current_event">Current Event</string>
+    <string name="current_event_name">Current Event Name</string>
+    <string name="event_description">Event description</string>
+    <string name="upcoming_events">Upcoming Events</string>
+    <string name="no_upcoming_events">No Upcoming Events</string>
+    <string name="event_name">Event Name</string>
+    <string name="event_time">Event Time</string>
+    <string name="go_back_to_map_fragment">go back to map fragment</string>
+
+    <!-- Notifications -->
+    <string name="event_notification_channel_id">event_channel</string>
+    <string name="event_notification_channel_name">Event Channel</string>
+    <string name="event_notification_channel_description">Event reminder</string>
+    <string name="event_start_soon">Event %s will start soon!</string>
+    <string name="event_started">Event %s has started</string>
+  
+    <!-- Timetable -->
+    <string name="time_timetable">%1$d:00</string>
+    <string name="time_name">" Time"</string>
 
 </resources>

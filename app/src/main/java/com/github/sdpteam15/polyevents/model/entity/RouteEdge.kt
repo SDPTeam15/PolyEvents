@@ -19,26 +19,28 @@ data class RouteEdge(
     private val startInitId: String? = null,
     private val endInitId: String? = null
 ) : Attachable {
-    val startId : String?
+    val startId: String?
         get() = start?.id ?: startInitId
-    val endId : String?
+    val endId: String?
         get() = end?.id ?: endInitId
 
     var start: RouteNode? = null
     var end: RouteNode? = null
 
-    var weight :Double? = null
-        get() = field ?: if(start != null && end != null){
-        euclideanDistance(
-            start!!.longitude,
-            start!!.latitude,
-            end!!.longitude,
-            end!!.latitude)}
-        else{
-                0.0
+    var weight: Double? = null
+        get() = field ?: if (start != null && end != null) {
+            euclideanDistance(
+                start!!.longitude,
+                start!!.latitude,
+                end!!.longitude,
+                end!!.latitude
+            )
+        } else {
+            0.0
         }
-
-        set (value) { field = value }
+        set(value) {
+            field = value
+        }
 
 
     companion object {
@@ -81,29 +83,59 @@ data class RouteEdge(
                     end!!.toLatLng()
                 )
                 if (intersection != null) {
-                    removeEdges.add(this)
+                    //intersection type
+                    // in the comment `e` is represented by the horizontal line (start left, end right) and `this` is represented by the vertical line (start up, end down)
                     when {
+                        // ┃
+                        // ┣━━━━
+                        // ┃
                         euclideanDistance(e.start!!.toLatLng(), intersection) < THRESHOLD -> {
+                            removeEdges.add(this)
                             newEdges.add(fromRouteNode(start!!, e.start!!))
                             newEdges.add(fromRouteNode(e.start!!, end!!))
                         }
+                        //     ┃
+                        // ━━━━┫
+                        //     ┃
                         euclideanDistance(e.end!!.toLatLng(), intersection) < THRESHOLD -> {
+                            removeEdges.add(this)
                             newEdges.add(fromRouteNode(start!!, e.end!!))
                             newEdges.add(fromRouteNode(e.end!!, end!!))
                         }
+                        // ━━┳━━
+                        //   ┃
+                        //   ┃
+                        euclideanDistance(start!!.toLatLng(), intersection) < THRESHOLD -> {
+                            newEdges.remove(e)
+                            newEdges.add(fromRouteNode(e.start!!, start!!))
+                            newEdges.add(fromRouteNode(start!!, e.end!!))
+                        }
+                        //   ┃
+                        //   ┃
+                        // ━━┻━━
+                        euclideanDistance(end!!.toLatLng(), intersection) < THRESHOLD -> {
+                            newEdges.remove(e)
+                            newEdges.add(fromRouteNode(e.start!!, end!!))
+                            newEdges.add(fromRouteNode(end!!, e.end!!))
+                        }
+                        //   ┃
+                        // ━━╋━━
+                        //   ┃
                         else -> {
+                            removeEdges.add(this)
                             newEdges.remove(e)
                             val mid = RouteNode.fromLatLong(intersection)
                             newEdges.add(fromRouteNode(start!!, mid))
-                            newEdges.add(fromRouteNode(end!!, mid))
+                            newEdges.add(fromRouteNode(mid, end!!))
                             newEdges.add(fromRouteNode(e.start!!, mid))
-                            newEdges.add(fromRouteNode(e.end!!, mid))
+                            newEdges.add(fromRouteNode(mid, e.end!!))
                         }
                     }
                 }
             }
         }
     }
+
     override fun equals(other: Any?): Boolean {
         return (other != null && other is RouteEdge && ((start == other.start && end == other.end) || (start == other.end && end == other.start)))
     }

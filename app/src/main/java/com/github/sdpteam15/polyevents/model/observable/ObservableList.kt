@@ -622,32 +622,47 @@ class ObservableList<T>(
 
     /**
      *  Add an observer for the live data while it return true
+     *  @param update update on start observing
      *  @param observer observer for the live data
      *  @return a method to remove the observer
      */
-    fun observeWhileTrue(observer: (Observable.UpdateValue<List<T>>) -> Boolean): Observable.ThenOrRemove<ObservableList<T>> {
-        observers.add(observer)
+    fun observeWhileTrue(
+        update: Boolean = true,
+        observer: (Observable.UpdateValue<List<T>>) -> Boolean
+    ): Observable.ThenOrRemove<ObservableList<T>> {
+        if (update) {
+            val valueList = ObserversInfo(this as List<T>, Info.addAll, this, creator)
+            if (observer(valueList))
+                observers.add(observer)
+        } else
+            observers.add(observer)
         return Observable.ThenOrRemove(this, creator, { leave(observer) })
     }
 
     /**
      *  Add an observer for the live data while it return true
      *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @param update update on start observing
      *  @param observer observer for the live data
      *  @return a method to remove the observer
      */
     fun observeWhileTrue(
         lifecycle: LifecycleOwner,
+        update: Boolean = true,
         observer: (Observable.UpdateValue<List<T>>) -> Boolean
     ) =
-        Observable.observeOnDestroy(lifecycle, observeWhileTrue(observer))
+        Observable.observeOnDestroy(lifecycle, observeWhileTrue(update, observer))
 
     /**
      *  Add an observer for the live data
+     *  @param update update on start observing
      *  @param observer observer for the live data
      *  @return a method to remove the observer
      */
-    fun observe(observer: (Observable.UpdateValue<List<T>>) -> Unit) = observeWhileTrue {
+    fun observe(
+        update: Boolean = true,
+        observer: (Observable.UpdateValue<List<T>>) -> Unit
+    ) = observeWhileTrue(update) {
         observer(it)
         true
     }
@@ -655,18 +670,26 @@ class ObservableList<T>(
     /**
      *  Add an observer for the live data
      *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @param update update on start observing
      *  @param observer observer for the live data
      *  @return a method to remove the observer
      */
-    fun observe(lifecycle: LifecycleOwner, observer: (Observable.UpdateValue<List<T>>) -> Unit) =
-        Observable.observeOnDestroy(lifecycle, observe(observer))
+    fun observe(
+        lifecycle: LifecycleOwner,
+        update: Boolean = true,
+        observer: (Observable.UpdateValue<List<T>>) -> Unit
+    ) = Observable.observeOnDestroy(lifecycle, observe(update, observer))
 
     /**
      *  Add an observer for the live data once
      *  @param observer observer for the live data
+     *  @param update update on start observing
      *  @return a method to remove the observer
      */
-    fun observeOnce(observer: (Observable.UpdateValue<List<T>>) -> Unit) = observeWhileTrue {
+    fun observeOnce(
+        update: Boolean = true,
+        observer: (Observable.UpdateValue<List<T>>) -> Unit
+    ) = observeWhileTrue(update) {
         observer(it)
         false
     }
@@ -674,14 +697,15 @@ class ObservableList<T>(
     /**
      *  Add an observer for the live data once
      *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
+     *  @param update update on start observing
      *  @param observer observer for the live data
      *  @return a method to remove the observer
      */
     fun observeOnce(
         lifecycle: LifecycleOwner,
+        update: Boolean = true,
         observer: (Observable.UpdateValue<List<T>>) -> Unit
-    ) =
-        Observable.observeOnDestroy(lifecycle, observeOnce(observer))
+    ) = Observable.observeOnDestroy(lifecycle, observeOnce(update, observer))
 
     /**
      *  remove an observer for the live data
@@ -1007,8 +1031,7 @@ class ObservableList<T>(
 
     private fun notifyUpdate(sender: Any? = null, info: Info, args: Any? = null) {
         if (observers.isNotEmpty()) {
-            val valueList =
-                ObserversInfo(this as List<T>, info, args, sender)
+            val valueList = ObserversInfo(this as List<T>, info, args, sender)
             for (obs in observers.toList())
                 if (!obs(valueList))
                     leave(obs)

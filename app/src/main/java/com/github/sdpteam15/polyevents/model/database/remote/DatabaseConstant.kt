@@ -26,6 +26,7 @@ object DatabaseConstant {
         NODE_COLLECTION("nodes", RouteNodeAdapter),
         EDGE_COLLECTION("edges", RouteEdgeAdapter),
         RATING_COLLECTION("ratings", RatingAdapter),
+        EVENT_EDIT_COLLECTION("eventEdits", EventEditAdapter),
 
 
         TEST_COLLECTION("test", object : AdapterInterface<StringWithID> {
@@ -60,11 +61,20 @@ object DatabaseConstant {
         override fun toString(): String = value
     }
 
+    enum class EventEditConstant(val value: String) {
+        EVENT_EDIT_DOCUMENT_ID("eventEditId"),
+        EVENT_EDIT_ADMIN_MESSAGE("adminMessage"),
+        EVENT_EDIT_STATUS("status");
+
+        override fun toString(): String = value
+    }
+
     enum class ItemConstants(val value: String) {
         ITEM_DOCUMENT_ID("itemId"),
         ITEM_NAME("name"),
         ITEM_TYPE("itemType"),
-        ITEM_COUNT("itemCount");
+        ITEM_REMAINING("itemRemaining"),
+        ITEM_TOTAL("itemTotal");
 
         override fun toString(): String = value
     }
@@ -118,7 +128,9 @@ object DatabaseConstant {
         MATERIAL_REQUEST_ID("mid"),
         MATERIAL_REQUEST_TIME("time"),
         MATERIAL_REQUEST_LIST("item_list"),
-        MATERIAL_REQUEST_USER_ID("user_id");
+        MATERIAL_REQUEST_USER_ID("user_id"),
+        MATERIAL_REQUEST_STATUS("status"),
+        MATERIAL_REQUEST_ADMIN_MESSAGE("admin_message");
 
         override fun toString(): String = value
     }

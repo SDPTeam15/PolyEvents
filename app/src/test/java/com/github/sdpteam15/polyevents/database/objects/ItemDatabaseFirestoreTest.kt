@@ -1,374 +1,149 @@
 package com.github.sdpteam15.polyevents.database.objects
 
+import com.github.sdpteam15.polyevents.database.HelperTestFunction
+import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.ITEM_COLLECTION
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.ITEM_TYPE_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.ItemEntityAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.ItemTypeAdapter
-import com.github.sdpteam15.polyevents.model.database.remote.login.GoogleUserLogin
-import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
-import com.github.sdpteam15.polyevents.model.database.remote.login.UserLoginInterface
-import com.github.sdpteam15.polyevents.model.database.remote.objects.ItemDatabaseFirestore
+import com.github.sdpteam15.polyevents.model.database.remote.objects.ItemDatabase
+import com.github.sdpteam15.polyevents.model.database.remote.objects.ItemDatabaseInterface
 import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.AuthResult
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.`when` as When
+import kotlin.test.assertEquals
 
 private const val displayNameTest = "Test displayName"
 private const val emailTest = "Test email"
 private const val uidTest = "Test uid"
-private val listProfile = ArrayList<String>()
+private const val itemId = "itemId"
+private const val itemName = "ZONENAME"
+private const val itemType = "ZONEDESC"
+private const val itemTotal = 4
+private const val itemRemaining = 3
+
 
 @Suppress("UNCHECKED_CAST")
 class ItemDatabaseFirestoreTest {
     lateinit var user: UserEntity
-    lateinit var mockedDatabase: FirebaseFirestore
     lateinit var database: DatabaseInterface
+    lateinit var mockedItemDatabase: ItemDatabaseInterface
+    lateinit var item: Item
+    lateinit var createdItemTriple: Triple<Item,Int,Int>
+    lateinit var itemTriple: Triple<Item,Int,Int>
 
     @Before
     fun setup() {
         user = UserEntity(
             uid = uidTest,
             name = displayNameTest,
-            email = emailTest,
-            profiles = listProfile
+            email = emailTest
         )
 
-        //Mock the database and set it as the default database
-        mockedDatabase = mock(FirebaseFirestore::class.java)
-        FirestoreDatabaseProvider.firestore = mockedDatabase
-        //FirestoreDatabaseProvider.userDatabase =  mockedDatabaseUser
-        ItemDatabaseFirestore.firestore = mockedDatabase
 
-        FirestoreDatabaseProvider.lastQuerySuccessListener = null
-        FirestoreDatabaseProvider.lastSetSuccessListener = null
-        FirestoreDatabaseProvider.lastFailureListener = null
-        FirestoreDatabaseProvider.lastGetSuccessListener = null
-        FirestoreDatabaseProvider.lastAddSuccessListener = null
+        item = Item(itemId = itemId,itemName = itemName, itemType = itemType)
+        createdItemTriple = Triple(item, itemTotal, itemTotal)
+        itemTriple = Triple(item, itemTotal, itemRemaining)
+
+        val mockDatabaseInterface = HelperTestFunction.mockDatabaseInterface()
+        mockedItemDatabase = ItemDatabase(mockDatabaseInterface)
+        HelperTestFunction.clearQueue()
     }
 
     @Test
-    fun variableCorrectlySet() {
-        val mockedUserLogin =
-            mock(UserLoginInterface::class.java) as UserLoginInterface<AuthResult>
-        UserLogin.currentUserLogin = mockedUserLogin
-        FirestoreDatabaseProvider.currentUser = user
-        Mockito.`when`(mockedUserLogin.isConnected()).thenReturn(true)
-        FirestoreDatabaseProvider.currentProfile = UserProfile()
-        assert(ItemDatabaseFirestore.currentUser == FirestoreDatabaseProvider.currentUser)
-        assert(ItemDatabaseFirestore.currentProfile == FirestoreDatabaseProvider.currentProfile)
-        assert(ItemDatabaseFirestore.firestore == mockedDatabase)
-    }
+    fun getCurrentUserReturnCorrectOne() {
+        val mockedDatabase = Mockito.mock(DatabaseInterface::class.java)
+        Mockito.`when`(mockedDatabase.currentUser).thenReturn(UserEntity(""))
+        Database.currentDatabase = mockedDatabase
+        assertEquals(mockedItemDatabase.currentUser, UserEntity(""))
 
-    @After
-    fun teardown() {
-        FirestoreDatabaseProvider.firestore = null
-        ItemDatabaseFirestore.firestore = null
-        UserLogin.currentUserLogin = GoogleUserLogin
-    }
+        Mockito.`when`(mockedDatabase.currentProfile).thenReturn(UserProfile(""))
+        Database.currentDatabase = mockedDatabase
+        assertEquals(mockedItemDatabase.currentProfile, UserProfile(""))
 
-
-    @Test
-    fun addItemInDatabaseWorks() {
-        val mockedCollectionReference = mock(CollectionReference::class.java)
-        val taskReferenceMock = mock(Task::class.java) as Task<DocumentReference>
-
-        val testItem = Item("xxxbananaxxx", "banana", "OTHER")
-        val testQuantity = 3
-
-        When(mockedDatabase.collection(ITEM_COLLECTION.value)).thenReturn(mockedCollectionReference)
-        When(
-            mockedCollectionReference.add(
-                ItemEntityAdapter.toItemDocument(
-                    testItem,
-                    testQuantity
-                )
-            )
-        ).thenReturn(
-            taskReferenceMock
-        )
-
-        var itemNameAdded: String? = ""
-        var itemTypeAdded: String? = null
-        var itemCountAdded = 0
-        var itemIdAdded = ""
-
-        When(taskReferenceMock.addOnSuccessListener(any())).thenAnswer {
-            FirestoreDatabaseProvider.lastAddSuccessListener!!.onSuccess(null)
-            //set method in hard to see if the success listener is successfully called
-            itemNameAdded = testItem.itemName
-            itemTypeAdded = testItem.itemType
-            itemCountAdded = testQuantity
-            itemIdAdded = testItem.itemId!!
-            taskReferenceMock
-        }
-        When(taskReferenceMock.addOnFailureListener(any())).thenAnswer {
-            taskReferenceMock
-        }
-
-        val result = FirestoreDatabaseProvider.itemDatabase!!.createItem(testItem, testQuantity)
-        assert(result.value!!)
-        assert(itemNameAdded == testItem.itemName)
-        assert(itemTypeAdded == testItem.itemType)
-        assert(itemCountAdded == testQuantity)
-        assert(itemIdAdded == testItem.itemId!!)
-    }
-
-
-    @Test
-    fun updateItemInDatabaseWorks() {
-        val mockedCollectionReference = mock(CollectionReference::class.java)
-        val documentReference = mock(DocumentReference::class.java) as DocumentReference
-        val taskMock = mock(Task::class.java) as Task<Void>
-
-        val testItem = Item("xxxbananaxxx", "banana", "OTHER")
-        val testQuantity = 3
-
-        When(mockedDatabase.collection(ITEM_COLLECTION.value)).thenReturn(mockedCollectionReference)
-        When(mockedCollectionReference.document(testItem.itemId!!)).thenReturn(documentReference)
-        When(
-            documentReference.set(
-                ItemEntityAdapter.toItemDocument(
-                    testItem,
-                    testQuantity
-                )
-            )
-        ).thenReturn(taskMock)
-
-        var itemNameUpdated: String? = ""
-        var itemTypeUpdated: String? = null
-        var itemCountUpdated = 0
-        var itemIdUpdated = ""
-
-        When(taskMock.addOnSuccessListener(any())).thenAnswer {
-            FirestoreDatabaseProvider.lastSetSuccessListener!!.onSuccess(null)
-            //set method in hard to see if the success listener is successfully called
-            itemNameUpdated = testItem.itemName
-            itemTypeUpdated = testItem.itemType
-            itemCountUpdated = testQuantity
-            itemIdUpdated = testItem.itemId!!
-            taskMock
-        }
-        When(taskMock.addOnFailureListener(any())).thenAnswer {
-            taskMock
-        }
-
-        val result = FirestoreDatabaseProvider.itemDatabase!!.updateItem(testItem, testQuantity)
-        assert(result.value!!)
-        assert(itemNameUpdated == testItem.itemName)
-        assert(itemTypeUpdated == testItem.itemType)
-        assert(itemCountUpdated == testQuantity)
-        assert(itemIdUpdated == testItem.itemId!!)
-    }
-
-
-    @Test
-    fun removeItemFromDatabaseWorks() {
-        val mockedCollectionReference = mock(CollectionReference::class.java)
-        val documentReference = mock(DocumentReference::class.java) as DocumentReference
-        val taskMock = mock(Task::class.java) as Task<Void>
-
-        val testItem = Item("xxxbananaxxx", "banana", "OTHER")
-        val testQuantity = 3
-
-        When(mockedDatabase.collection(ITEM_COLLECTION.value)).thenReturn(mockedCollectionReference)
-        When(mockedCollectionReference.document(testItem.itemId!!)).thenReturn(documentReference)
-        When(documentReference.delete()).thenReturn(taskMock)
-
-        var itemNameAdded: String? = ""
-        var itemTypeAdded: String? = null
-        var itemCountAdded = 0
-        var itemIdAdded = ""
-
-        When(taskMock.addOnSuccessListener(any())).thenAnswer {
-            FirestoreDatabaseProvider.lastSetSuccessListener!!.onSuccess(null)
-            //set method in hard to see if the success listener is successfully called
-            itemNameAdded = testItem.itemName
-            itemTypeAdded = testItem.itemType
-            itemCountAdded = testQuantity
-            itemIdAdded = testItem.itemId!!
-            taskMock
-        }
-        When(taskMock.addOnFailureListener(any())).thenAnswer {
-            taskMock
-        }
-
-        val result = FirestoreDatabaseProvider.itemDatabase!!.removeItem(testItem.itemId as String)
-        assert(result.value!!)
-        assert(itemNameAdded == testItem.itemName)
-        assert(itemTypeAdded == testItem.itemType)
-        assert(itemCountAdded == testQuantity)
-        assert(itemIdAdded == testItem.itemId!!)
+        Database.currentDatabase = FirestoreDatabaseProvider
     }
 
     @Test
-    fun getItemListInDatabaseWorks() {
-        val mockedCollectionReference = mock(CollectionReference::class.java)
-        val taskReferenceMock = mock(Task::class.java) as Task<QuerySnapshot>
-        val mockedQuerySnapshot = mock(QuerySnapshot::class.java) as QuerySnapshot
+    fun updateItem() {
+        val userAccess = UserProfile()
 
-        val testItems = ObservableList<Pair<Item, Int>>()
+        HelperTestFunction.nextSetEntity { true }
+        mockedItemDatabase.updateItem(item,itemTotal, itemRemaining,userAccess)
+            .observeOnce { assert(it.value) }.then.postValue(true)
 
-        val itemToBeAdded = mutableListOf<Pair<Item, Int>>()
-        itemToBeAdded.add(Pair(Item("item1", "230V Plug", "PLUG"), 20))
-        itemToBeAdded.add(Pair(Item("item2", "Cord rewinder (50m)", "PLUG"), 10))
-        itemToBeAdded.add(Pair(Item("item3", "Microphone", "MICROPHONE"), 1))
-        itemToBeAdded.add(Pair(Item("item4", "Cooking plate", "OTHER"), 5))
-        itemToBeAdded.add(Pair(Item("item5", "Cord rewinder (100m)", "PLUG"), 1))
-        itemToBeAdded.add(Pair(Item("item6", "Cord rewinder (10m)", "PLUG"), 30))
-        itemToBeAdded.add(Pair(Item("item7", "Fridge(large)", "OTHER"), 2))
+        val set = HelperTestFunction.lastSetEntity()!!
 
-
-        When(mockedDatabase.collection(ITEM_COLLECTION.value)).thenReturn(mockedCollectionReference)
-        When(mockedCollectionReference.get()).thenReturn(
-            taskReferenceMock
-        )
-
-        When(taskReferenceMock.addOnSuccessListener(any())).thenAnswer {
-            FirestoreDatabaseProvider.lastQuerySuccessListener!!.onSuccess(mockedQuerySnapshot)
-            //set method in hard to see if the success listener is successfully called
-            testItems.addAll(itemToBeAdded)
-            taskReferenceMock
-        }
-        When(taskReferenceMock.addOnFailureListener(any())).thenAnswer {
-            taskReferenceMock
-        }
-
-        val result = FirestoreDatabaseProvider.itemDatabase!!.getItemsList(testItems)
-        assert(result.value!!)
-        for (itemType in itemToBeAdded) {
-            assert(itemType in testItems)
-        }
+        assertEquals(itemTriple, set.element)
+        assertEquals(itemId, set.id)
+        assertEquals(DatabaseConstant.CollectionConstant.ITEM_COLLECTION, set.collection)
+        assertEquals(ItemEntityAdapter, set.adapter)
     }
 
     @Test
-    fun getAvailableItemsWorks() {
-        val mockedCollectionReference = mock(CollectionReference::class.java)
-        val mockedCollectionReferenceFiltered = mock(CollectionReference::class.java)
-        val taskReferenceMock = mock(Task::class.java) as Task<QuerySnapshot>
-        val mockedQuerySnapshot = mock(QuerySnapshot::class.java) as QuerySnapshot
+    fun addItem() {
+        val userAccess = UserProfile()
 
-        val testItems = ObservableList<Pair<Item, Int>>()
+        HelperTestFunction.nextAddEntity { true }
+        mockedItemDatabase.createItem(item,itemTotal, userAccess)
+            .observeOnce { assert(it.value) }.then.postValue(true)
 
-        val itemToBeAdded = mutableListOf<Pair<Item, Int>>()
-        itemToBeAdded.add(Pair(Item("item1", "230V Plug", "PLUG"), 20))
-        itemToBeAdded.add(Pair(Item("item2", "Cord rewinder (50m)", "PLUG"), 10))
-        itemToBeAdded.add(Pair(Item("item3", "Microphone", "MICROPHONE"), 1))
-        itemToBeAdded.add(Pair(Item("item4", "Cooking plate", "OTHER"), 5))
-        itemToBeAdded.add(Pair(Item("item5", "Cord rewinder (100m)", "PLUG"), 1))
-        itemToBeAdded.add(Pair(Item("item6", "Cord rewinder (10m)", "PLUG"), 30))
-        itemToBeAdded.add(Pair(Item("item7", "Fridge(large)", "OTHER"), 2))
+        val set = HelperTestFunction.lastAddEntity()!!
 
-
-        When(mockedDatabase.collection(ITEM_COLLECTION.value)).thenReturn(mockedCollectionReference)
-        When(
-            mockedCollectionReference.whereGreaterThan(
-                DatabaseConstant.ItemConstants.ITEM_COUNT.value,
-                0
-            )
-        ).thenReturn(mockedCollectionReferenceFiltered)
-        When(mockedCollectionReferenceFiltered.get()).thenReturn(
-            taskReferenceMock
-        )
-
-        When(taskReferenceMock.addOnSuccessListener(any())).thenAnswer {
-            FirestoreDatabaseProvider.lastQuerySuccessListener!!.onSuccess(mockedQuerySnapshot)
-            //set method in hard to see if the success listener is successfully called
-            testItems.addAll(itemToBeAdded)
-            taskReferenceMock
-        }
-        When(taskReferenceMock.addOnFailureListener(any())).thenAnswer {
-            taskReferenceMock
-        }
-
-        val result = FirestoreDatabaseProvider.itemDatabase!!.getAvailableItems(testItems)
-        assert(result.value!!)
-        for (itemType in itemToBeAdded) {
-            assert(itemType in testItems)
-        }
-    }
-
-
-    @Test
-    fun addItemTypeInDatabaseWorks() {
-        val mockedCollectionReference = mock(CollectionReference::class.java)
-        val taskReferenceMock = mock(Task::class.java) as Task<DocumentReference>
-        val docReferenceMock = mock(DocumentReference::class.java) as DocumentReference
-        val testItemType = "TEST_ITEM_TYPE"
-
-        When(mockedDatabase.collection(ITEM_TYPE_COLLECTION.value)).thenReturn(
-            mockedCollectionReference
-        )
-        When(
-            mockedCollectionReference.add(
-                ItemTypeAdapter.toDocument(testItemType)
-            )
-        ).thenReturn(
-            taskReferenceMock
-        )
-        When(docReferenceMock.id).thenReturn("test")
-
-        var itemTypeAdded: String? = null
-        When(taskReferenceMock.addOnSuccessListener(any())).thenAnswer {
-            FirestoreDatabaseProvider.lastAddSuccessListener!!.onSuccess(docReferenceMock)
-            //set method in hard to see if the success listener is successfully called
-            itemTypeAdded = testItemType
-            taskReferenceMock
-        }
-        When(taskReferenceMock.addOnFailureListener(any())).thenAnswer {
-            taskReferenceMock
-        }
-
-        val result = FirestoreDatabaseProvider.itemDatabase!!.createItemType(testItemType)
-        assert(result.value!!)
-        assert(itemTypeAdded == testItemType)
+        assertEquals(createdItemTriple, set.element)
+        assertEquals(DatabaseConstant.CollectionConstant.ITEM_COLLECTION, set.collection)
+        assertEquals(ItemEntityAdapter, set.adapter)
     }
 
     @Test
-    fun getItemTypesInDatabaseWorks() {
-        val mockedCollectionReference = mock(CollectionReference::class.java)
-        val taskReferenceMock = mock(Task::class.java) as Task<QuerySnapshot>
-        val mockedQuerySnapshot = mock(QuerySnapshot::class.java) as QuerySnapshot
+    fun getItemList() {
+        val items = ObservableList<Triple<Item,Int, Int>>()
+        val userAccess = UserProfile("uid")
 
-        val itemTypesToBeAdded = mutableListOf("Plug", "Microphone", "Wire", "Fridge")
-        val testItemType = ObservableList<String>()
+        HelperTestFunction.nextGetListEntity { true }
+        mockedItemDatabase.getItemsList(items,  userAccess)
+            .observeOnce { assert(it.value) }.then.postValue(false)
 
-        When(mockedDatabase.collection(ITEM_TYPE_COLLECTION.value)).thenReturn(
-            mockedCollectionReference
-        )
-        When(mockedCollectionReference.get()).thenReturn(
-            taskReferenceMock
-        )
+        val getList = HelperTestFunction.lastGetListEntity()!!
 
-        When(taskReferenceMock.addOnSuccessListener(any())).thenAnswer {
-            FirestoreDatabaseProvider.lastQuerySuccessListener!!.onSuccess(mockedQuerySnapshot)
-            //set method in hard to see if the success listener is successfully called
-            testItemType.addAll(itemTypesToBeAdded)
-            taskReferenceMock
-        }
-        When(taskReferenceMock.addOnFailureListener(any())).thenAnswer {
-            taskReferenceMock
-        }
+        assertEquals(items, getList.element)
+        assertEquals(DatabaseConstant.CollectionConstant.ITEM_COLLECTION, getList.collection)
+        assertEquals(ItemEntityAdapter, getList.adapter)
+    }
 
-        val result = FirestoreDatabaseProvider.itemDatabase!!.getItemTypes(testItemType)
-        assert(result.value!!)
-        for (itemType in itemTypesToBeAdded) {
-            assert(itemType in testItemType)
-        }
+    @Test
+    fun removeItem() {
+        val userAccess = UserProfile("uid")
+
+        HelperTestFunction.nextSetEntity { true }
+        mockedItemDatabase.removeItem(itemId, userAccess)
+            .observeOnce { assert(it.value) }.then.postValue(false)
+
+
+        val del = HelperTestFunction.lastDeleteEntity()!!
+
+        assertEquals(itemId, del.id)
+        assertEquals(DatabaseConstant.CollectionConstant.ITEM_COLLECTION, del.collection)
+    }
+
+    @Test
+    fun getItemTypeList() {
+        val items = ObservableList<String>()
+        val userAccess = UserProfile("uid")
+
+        HelperTestFunction.nextGetListEntity { true }
+        mockedItemDatabase.getItemTypes(items,  userAccess)
+            .observeOnce { assert(it.value) }.then.postValue(false)
+
+        val getList = HelperTestFunction.lastGetListEntity()!!
+
+        assertEquals(items, getList.element)
+        assertEquals(DatabaseConstant.CollectionConstant.ITEM_TYPE_COLLECTION, getList.collection)
+        assertEquals(ItemTypeAdapter, getList.adapter)
     }
 }

@@ -145,7 +145,7 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
     private fun addListener(viewRoot: View) {
         viewRoot.findViewById<Button>(R.id.btnUpdateInfos).setOnClickListener {
             //Clear the previous map and add every field
-            currentUser!!.name = profileUsernameET.text.toString()
+            currentUser!!.username = profileUsernameET.text.toString()
             // TODO: editText should have birthday input and convert it to Timestamp otherwise things crash
             //hashMapNewInfo[USER_BIRTH_DATE] = viewRoot.findViewById<EditText>(R.id.profileBirthdayET).text.toString()
 
@@ -198,7 +198,7 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
 
         recyclerView = viewRoot.findViewById(R.id.id_recycler_profile_list)
 
-        recyclerView.adapter = ProfileAdapter(this, user.userProfiles)
+        recyclerView.adapter = ProfileAdapter(this, user, user.userProfiles)
 
         viewRoot.findViewById<ImageButton>(R.id.id_add_profile_button)
             .setOnClickListener { createProfilePopup(user) }

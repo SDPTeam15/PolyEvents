@@ -9,8 +9,8 @@ import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFrom
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.DeviceLocationAdapter
 import com.github.sdpteam15.polyevents.model.entity.DeviceLocation
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
-import com.github.sdpteam15.polyevents.model.map.GoogleMapHelper.neBound
-import com.github.sdpteam15.polyevents.model.map.GoogleMapHelper.swBound
+import com.github.sdpteam15.polyevents.model.map.GoogleMapOptions.neBound
+import com.github.sdpteam15.polyevents.model.map.GoogleMapOptions.swBound
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.google.android.gms.maps.model.LatLng
@@ -65,7 +65,7 @@ class HeatmapDatabase(private val db: DatabaseInterface) : HeatmapDatabaseInterf
             if (!it.value)
                 end.postValue(it.value, it.sender)
         }
-        tempUsersLocations.observeOnce {
+        tempUsersLocations.observeOnce(false) {
             val list = mutableListOf<LatLng>()
             for (e in it.value)
                 list.add(e)

@@ -16,12 +16,13 @@ interface ItemDatabaseInterface {
     /**
      * create a new Item
      * @param item item we want to add in the database
+     * @param total total amount of items
      * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun createItem(
         item: Item,
-        count: Int,
+        total: Int,
         userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
@@ -37,12 +38,15 @@ interface ItemDatabaseInterface {
 
     /**
      * @param item item we want to update in the database
+     * @param total total amount of items
+     * @param remaining remaining amount of items
      * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun updateItem(
         item: Item,
-        count: Int,
+        total: Int,
+        remaining: Int,
         userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
@@ -53,7 +57,7 @@ interface ItemDatabaseInterface {
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getItemsList(
-        itemList: ObservableList<Pair<Item, Int>>,
+        itemList: ObservableList<Triple<Item, Int, Int>>,
         userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
@@ -64,7 +68,7 @@ interface ItemDatabaseInterface {
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getAvailableItems(
-        itemList: ObservableList<Pair<Item, Int>>,
+        itemList: ObservableList<Triple<Item, Int, Int>>,
         userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 

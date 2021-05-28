@@ -133,7 +133,7 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
             profile,
             profile.pid!!,
             PROFILE_COLLECTION
-        )
+        ).observeOnce { if(db.currentUser != null) db.currentUser!!.loadSuccess = false }.then
 
     override fun getUserProfilesList(
         profiles: ObservableList<UserProfile>,

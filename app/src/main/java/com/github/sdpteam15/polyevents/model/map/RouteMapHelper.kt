@@ -8,6 +8,8 @@ import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.entity.RouteEdge
 import com.github.sdpteam15.polyevents.model.entity.RouteNode
 import com.github.sdpteam15.polyevents.model.entity.Zone
+import com.github.sdpteam15.polyevents.model.map.GoogleMapHelper.map
+import com.github.sdpteam15.polyevents.model.map.GoogleMapHelperFunctions.newMarker
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.divide
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.minus
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.norm
@@ -26,16 +28,12 @@ import kotlin.math.pow
 const val THRESHOLD = 0.00002
 const val MAGNET_DISTANCE_THRESHOLD = 0.00005
 
-private val ROUTE_COLOR = Color.rgb(0, 162, 232)
-private val DEFAULT_ROAD_COLOR = Color.argb(50, 0, 0, 0)
-
 object RouteMapHelper {
 
     val nodes = ObservableList<RouteNode>()
     val edges = ObservableList<RouteEdge>()
     val zones = ObservableList<Zone>()
 
-    var map: MapsInterface? = null
     val toDeleteLines: MutableList<Polyline> = ArrayList()
     val lineToEdge: MutableMap<RouteEdge, Polyline> = mutableMapOf()
     val idToEdge: MutableMap<String, RouteEdge> = mutableMapOf()
@@ -50,6 +48,22 @@ object RouteMapHelper {
     var route: MutableList<Polyline> = mutableListOf()
 
     /**
+     * Clear all route variables (Does not work yet!)
+     */
+    /*fun resetAll() {
+        nodes.clear()
+        edges.clear()
+        zones.clear()
+
+        for ((key, value) in lineToEdge) {
+            value.remove()
+        }
+
+        lineToEdge.clear()
+        idToEdge.clear()
+    }*/
+
+    /**
      * Add a line to dataBase
      * @param start pair containing the Position of the first point and eventually an attached object
      * @param end pair containing the Position of the second point and eventually an attached object
@@ -57,7 +71,7 @@ object RouteMapHelper {
     fun addLine(
         start: Pair<LatLng, Attachable?>,
         end: Pair<LatLng, Attachable?>
-    ) {
+    ): Observable<Boolean> {
         val newEdges = mutableListOf<RouteEdge>()
         val removeEdges = mutableListOf<RouteEdge>()
 
@@ -75,11 +89,15 @@ object RouteMapHelper {
         edge.end = to
         newEdges.add(edge)
 
-        for (e in nodes) e.splitOnIntersection(newEdges, removeEdges)
         for (e in edges) e.splitOnIntersection(newEdges, removeEdges)
         for (e in zones) e.splitOnIntersection(newEdges, removeEdges)
 
-        Database.currentDatabase.routeDatabase!!.updateEdges(newEdges, removeEdges, edges, nodes)
+        return Database.currentDatabase.routeDatabase!!.updateEdges(
+            newEdges,
+            removeEdges,
+            edges,
+            nodes
+        )
     }
 
     /**
@@ -95,12 +113,17 @@ object RouteMapHelper {
      * @param targetZoneId the Zone where the person wants to go to
      * @return The list of points that the person needs to follow, null if there is no path nearby
      */
-    fun getShortestPath(startPosition: LatLng, targetZoneId: String): List<LatLng>? {
-
+    fun getShortestPath(
+        startPosition: LatLng,
+        targetZoneId: String,
+        locationActivated: Boolean
+    ): List<LatLng>? {
+        if (!locationActivated)
+            return null
         // gets the closest point on the map where we can go from our current position
         val nearestPos = getPosOnNearestAttachable(startPosition)
-        // if nothing to attach to, no path can be found
-        if (nearestPos.second == null) {
+        // if nothing to attach to or the zone is not connected to the graph, no path can be found
+        if (nearestPos.second == null || nodes.all{it.areaId != targetZoneId}) {
             return null
         }
         val nodesForShortestPath = mutableSetOf<RouteNode>()
@@ -197,10 +220,13 @@ object RouteMapHelper {
          * linking each node to its previous node on the tree
          */
         fun dijkstra(
-            nodes: Set<RouteNode>,
             edges: Set<RouteEdge>,
             start: RouteNode
         ): Map<RouteNode, RouteNode?> {
+            val nodes = edges
+                .flatMap { listOf(it.start!!, it.end!!) }
+                .toSet()
+
             if (start !in nodes) throw IllegalArgumentException("Start route not in set of nodes for Dijkstra")
             val done: MutableSet<RouteNode> = mutableSetOf()
 
@@ -243,7 +269,6 @@ object RouteMapHelper {
                     .key
 
                 // compute the cost to get to neighboring nodes and update the weight and previous node if a shorter path is found
-
                 for (neighbor in adjList[v]!!.filter { !done.contains(it.first) }) {
                     val newPath = costs[v]!! + neighbor.second
                     if (newPath < costs[neighbor.first]!!) {
@@ -260,7 +285,7 @@ object RouteMapHelper {
 
         setUpGraph()
 
-        val shortestPaths = dijkstra(nodesForShortestPath, edgesForShortestPath, startingNode)
+        val shortestPaths = dijkstra(edgesForShortestPath, startingNode)
 
         // convert the path to the tree to the target node into a list of point
         val pointlist: MutableList<LatLng> = mutableListOf()
@@ -272,7 +297,6 @@ object RouteMapHelper {
         }
         return pointlist.reversed()
     }
-
 
     /**
      * Draws a new route from the "chemin" variable, a list of LatLng and converts it into a Polyline
@@ -286,7 +310,7 @@ object RouteMapHelper {
             for (end in cheminTemp) {
                 route.add(
                     map!!.addPolyline(
-                        PolylineOptions().add(start).add(end).color(ROUTE_COLOR)
+                        PolylineOptions().add(start).add(end).color(Color.rgb(0, 162, 232))
                             .width(15f)
                     )
                 )
@@ -443,7 +467,7 @@ object RouteMapHelper {
         val option = PolylineOptions()
         option.add(edge.start!!.toLatLng())
         option.add(edge.end!!.toLatLng())
-        option.color(DEFAULT_ROAD_COLOR)
+        option.color(Color.argb(50, 0, 0, 0))
         option.clickable(true)
         val route = map!!.addPolyline(option)
 
@@ -520,6 +544,7 @@ object RouteMapHelper {
         attachables = Pair(null, null)
     }
 
+    //TODO move variables
     var startMarker: Marker? = null
     var endMarker: Marker? = null
 
@@ -560,7 +585,7 @@ object RouteMapHelper {
         val dimension = IconDimension(100, 100)
 
         startMarker = map!!.addMarker(
-            GoogleMapHelper.newMarker(
+            newMarker(
                 context,
                 startPos,
                 anchor,
@@ -574,7 +599,7 @@ object RouteMapHelper {
         )
 
         endMarker = map!!.addMarker(
-            GoogleMapHelper.newMarker(
+            newMarker(
                 context,
                 endPos,
                 anchor,
@@ -627,16 +652,6 @@ object RouteMapHelper {
             endMarker!!.position = points[1]
             tempLatLng[0] = startMarker!!.position
             tempLatLng[1] = endMarker!!.position
-        }
-    }
-
-    /**
-     * Handles the click on a polyline : if on delete mode, deletes the polyline
-     * @param polyline polyline clicked
-     */
-    fun polylineClick(polyline: Polyline) {
-        if (deleteMode) {
-            removeLine(idToEdge[polyline.tag]!!)
         }
     }
 }

@@ -55,7 +55,7 @@ class NavigationViewFragmentTest {
 
         //Initial state
         Espresso.onView(withId(R.id.ic_home)).perform(click())
-        Espresso.onView(withId(R.id.id_fragment_home)).check(matches(isDisplayed()))
+        Espresso.onView(withId(R.id.id_fragment_home_visitor)).check(matches(isDisplayed()))
 
         //Espresso.onView(withId(R.id.ic_map)).perform(click())
         //Espresso.onView(withId(R.id.id_fragment_map)).check(matches(isDisplayed()))

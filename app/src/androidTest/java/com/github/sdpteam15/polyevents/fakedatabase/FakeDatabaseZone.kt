@@ -3,19 +3,20 @@ package com.github.sdpteam15.polyevents.fakedatabase
 import com.github.sdpteam15.polyevents.model.database.remote.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.objects.ZoneDatabaseInterface
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
+import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 
 object FakeDatabaseZone : ZoneDatabaseInterface {
-    override fun createZone(zone: Zone, userAccess: UserEntity?): Observable<Boolean> {
+    override fun createZone(zone: Zone, userAccess: UserProfile?): Observable<Boolean> {
         return Observable(true)
     }
 
     override fun getZoneInformation(
         zoneId: String,
         zone: Observable<Zone>,
-        userAccess: UserEntity?
+        userAccess: UserProfile?
     ): Observable<Boolean> {
         zone.postValue(Zone("ID1", "Esplanade", "Espla", "a cool zone"), this)
         return Observable(true)
@@ -24,7 +25,7 @@ object FakeDatabaseZone : ZoneDatabaseInterface {
     override fun updateZoneInformation(
         zoneId: String,
         newZone: Zone,
-        userAccess: UserEntity?
+        userAccess: UserProfile?
     ): Observable<Boolean> {
         return Observable(true)
     }
@@ -33,13 +34,13 @@ object FakeDatabaseZone : ZoneDatabaseInterface {
         matcher: Matcher?,
         number: Long?,
         zones: ObservableList<Zone>,
-        userAccess: UserEntity?
+        userAccess: UserProfile?
     ): Observable<Boolean> {
         zones.add(Zone("ID2", "2222", "222222", "22222"), this)
         return Observable(true)
     }
 
-    override fun deleteZone(zone: Zone, userAccess: UserEntity?): Observable<Boolean> {
+    override fun deleteZone(zone: Zone, userAccess: UserProfile?): Observable<Boolean> {
         return Observable(true)
     }
 }

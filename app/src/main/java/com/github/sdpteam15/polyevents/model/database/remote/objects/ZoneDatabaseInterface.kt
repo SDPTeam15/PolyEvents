@@ -22,7 +22,7 @@ interface ZoneDatabaseInterface {
      */
     fun createZone(
         zone: Zone,
-        userAccess: UserEntity? = currentUser
+        userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**
@@ -35,7 +35,7 @@ interface ZoneDatabaseInterface {
     fun getZoneInformation(
         zoneId: String,
         zone: Observable<Zone>,
-        userAccess: UserEntity? = currentUser
+        userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**
@@ -48,7 +48,7 @@ interface ZoneDatabaseInterface {
     fun updateZoneInformation(
         zoneId: String,
         newZone: Zone,
-        userAccess: UserEntity? = currentUser
+        userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**
@@ -63,7 +63,7 @@ interface ZoneDatabaseInterface {
         matcher: Matcher?,
         number: Long?,
         zones: ObservableList<Zone>,
-        userAccess: UserEntity? = currentUser
+        userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
     /**
@@ -72,5 +72,5 @@ interface ZoneDatabaseInterface {
      * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
-    fun deleteZone(zone: Zone, userAccess: UserEntity? = currentUser): Observable<Boolean>
+    fun deleteZone(zone: Zone, userAccess: UserProfile? = currentProfile): Observable<Boolean>
 }

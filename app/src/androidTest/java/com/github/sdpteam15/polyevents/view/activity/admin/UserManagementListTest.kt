@@ -115,12 +115,12 @@ class UserManagementListTest {
         val userObs = Observable<UserEntity>()
         When(mockDatabase.currentUserObservable).thenReturn(userObs)
 
-        val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
+        val intent = Intent(ApplicationProvider.getApplicationContext(), UserManagementListActivity::class.java)
         scenario = ActivityScenario.launch(intent)
-        Espresso.onView(withId(R.id.ic_home)).perform(ViewActions.click())
-        Espresso.onView(withId(R.id.id_fragment_admin_hub))
+        /*Espresso.onView(withId(R.id.ic_home)).perform(ViewActions.click())
+        Espresso.onView(withId(R.id.id_fragment_home_admin))
             .check(ViewAssertions.matches(isDisplayed()))
-        Espresso.onView(withId(R.id.btnRedirectUserManagement)).perform(ViewActions.click())
+        Espresso.onView(withId(R.id.btnRedirectUserManagement)).perform(ViewActions.click())*/
         When(mockUserDB.getUserProfilesList(anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
             obs2
         }
