@@ -1,6 +1,8 @@
 package com.github.sdpteam15.polyevents.model.database.remote.objects
 
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.EventConstant.*
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.EventEditConstant.*
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.*
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.Matcher
@@ -11,6 +13,7 @@ import com.github.sdpteam15.polyevents.model.entity.Rating
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.google.firebase.firestore.Query
 
 const val TAG = "EventDatabase"
 
@@ -44,7 +47,7 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
                 var query = it
                 if (matcher != null) query = matcher.match(it)
                 if (limit != null) query = query.limit(limit)
-                query
+                query.orderBy(EVENT_START_TIME.value).orderBy(EVENT_NAME.value)
             },
             EVENT_COLLECTION
         )
@@ -54,6 +57,9 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
 
     override fun updateEventEdit(event: Event, userAccess: UserProfile?): Observable<Boolean> =
         db.setEntity(event, event.eventEditId!!, EVENT_EDIT_COLLECTION)
+
+    override fun removeEventEdit(eventId: String, userAccess: UserProfile?): Observable<Boolean> =
+        db.deleteEntity(eventId, EVENT_EDIT_COLLECTION)
 
     override fun getEventEditFromId(
         id: String,
@@ -69,7 +75,9 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
         db.getListEntity(
             eventList,
             null,
-            null,
+            {
+            it.orderBy(EVENT_EDIT_STATUS.value)
+            },
             EVENT_EDIT_COLLECTION
         )
 

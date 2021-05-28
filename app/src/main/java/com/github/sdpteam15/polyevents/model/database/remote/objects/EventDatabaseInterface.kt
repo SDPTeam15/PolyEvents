@@ -45,6 +45,8 @@ interface EventDatabaseInterface {
         userAccess: UserProfile?=currentProfile
     ): Observable<Boolean>
 
+
+
     /**
      * Get event from ID
      * @param id The id of the event we want to retrieve
@@ -94,6 +96,14 @@ interface EventDatabaseInterface {
     fun updateEventEdit(
         event: Event,
         userAccess: UserProfile? = currentProfile
+    ): Observable<Boolean>
+
+    /**
+     *
+     */
+    fun removeEventEdit(
+        eventId:String,
+        userAccess: UserProfile?=currentProfile
     ): Observable<Boolean>
 
 
