@@ -1,9 +1,8 @@
 package com.github.sdpteam15.polyevents.model.database.local.dao
+
 import androidx.room.*
-import com.github.sdpteam15.polyevents.model.database.local.entity.GenericEntity
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant
 import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
-import java.util.*
+import com.github.sdpteam15.polyevents.model.database.local.entity.GenericEntity
 
 /**
  * Data access object for the GenericEntity entity on the local room database
@@ -30,5 +29,5 @@ interface GenericEntityDao {
     suspend fun deleteAll()
 
     @Query("SELECT MAX(update_time) FROM entity_table WHERE collection = :collection")
-    suspend fun lastUpdate(collection: String) : String?
+    suspend fun lastUpdate(collection: String): String?
 }

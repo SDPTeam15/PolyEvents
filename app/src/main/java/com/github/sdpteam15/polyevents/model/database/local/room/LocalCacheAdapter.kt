@@ -18,6 +18,10 @@ import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+/**
+ * Add a local cash for any entity called by the DatabaseInterface given
+ * @param db the database
+ */
 class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
     override val currentUserObservable: Observable<UserEntity>
         get() = db.currentUserObservable
@@ -294,6 +298,9 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
         }
     }
 
+    /**
+     * update a collection in local db from the remote db
+     */
     suspend fun <T : Any> update(
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterInterface<T>

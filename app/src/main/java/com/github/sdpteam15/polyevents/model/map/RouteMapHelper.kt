@@ -436,6 +436,8 @@ object RouteMapHelper {
         context: Context?,
         lifecycleOwner: LifecycleOwner
     ): Observable<Boolean> {
+
+        //Add a listener on edges and nodes adds to display
         val edgesToAdd = mutableListOf<RouteEdge>()
         edges.observeAdd(lifecycleOwner) {
             synchronized(this) {
@@ -465,6 +467,7 @@ object RouteMapHelper {
                 }
             }
         }
+
         return Database.currentDatabase.routeDatabase!!.getRoute(nodes, edges, zones)
     }
 

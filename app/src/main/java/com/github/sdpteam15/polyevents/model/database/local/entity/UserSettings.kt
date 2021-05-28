@@ -17,20 +17,20 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "user_settings_table")
 data class UserSettings(
     @PrimaryKey
-        @ColumnInfo(name = "user_uid")
-        @NonNull
-        // Ideally should have its setter private but Room needs it to reconstruct objects
-        val userUid: Int = DEFAULT_ID,
+    @ColumnInfo(name = "user_uid")
+    @NonNull
+    // Ideally should have its setter private but Room needs it to reconstruct objects
+    val userUid: Int = DEFAULT_ID,
     @ColumnInfo(name = "track_location")
-        val trackLocation: Boolean = false,
+    val trackLocation: Boolean = false,
     @ColumnInfo(name = "is_sending_location_on")
-        val isSendingLocationOn: Boolean = false,
+    val isSendingLocationOn: Boolean = false,
     @ColumnInfo(name = "location_id")
-        val locationId: String? = null,
+    val locationId: String? = null,
     @ColumnInfo(name = "enable_notifications")
-        val enableNotifications:Boolean = false
+    val enableNotifications: Boolean = false
 ) {
-        companion object {
-                const val DEFAULT_ID = 0
-        }
+    companion object {
+        const val DEFAULT_ID = 0
+    }
 }

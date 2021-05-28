@@ -11,6 +11,10 @@ object LogAdapter {
     const val IS_VALID = "IS_VALID"
 }
 
+/**
+ * Add Log to an entity on the database from a other adapter
+ * @param adapter the adapter
+ */
 class LogAdapterToDocument<T>(private val adapter: AdapterToDocumentInterface<T>) :
     AdapterToDocumentInterface<T> {
     override fun toDocument(element: T?): Map<String, Any?> =
@@ -29,11 +33,22 @@ class LogAdapterToDocument<T>(private val adapter: AdapterToDocumentInterface<T>
     }
 }
 
+/**
+ * Add Log to an entity on the database from a other adapter
+ * @param adapter the adapter
+ */
 class LogAdapterFromDocument<T>(private val adapter: AdapterFromDocumentInterface<T>) :
     AdapterFromDocumentInterface<T> {
     override fun fromDocument(document: Map<String, Any?>, id: String): T? =
         fromDocumentWithDate(document, id).first
 
+    /**
+     * Convert document data to a entity in our model and the Date of last update.
+     * Data retrieved from the database are always a mutable map that maps strings (names of the fields of our entity) to their values,
+     * which can be of any type..
+     * @param document this is the data we retrieve from the document.
+     * @return the corresponding entity and the date.
+     */
     fun fromDocumentWithDate(document: Map<String, Any?>, id: String): Pair<T?, LocalDateTime?> {
         return if (document[LogAdapter.IS_VALID] as? Boolean != false)
             Pair(

@@ -1,6 +1,8 @@
 package com.github.sdpteam15.polyevents.model.database.remote.matcher
 
-
+/**
+ * Transform a firestore.QuerySnapshot to a QuerySnapshot
+ */
 class FirestoreQuerySnapshot(private val querySnapshot: com.google.firebase.firestore.QuerySnapshot) :
     QuerySnapshot {
     override fun iterator() =

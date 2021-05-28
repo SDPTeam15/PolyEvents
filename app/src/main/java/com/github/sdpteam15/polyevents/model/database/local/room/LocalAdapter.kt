@@ -27,7 +27,12 @@ class LocalAdapter<T>(adapter: AdapterInterface<T>) {
      * @param date from last update
      * @return a GenericEntity fields to their values
      */
-    fun toDocument(element: T?, id: String, collection: String?, date: LocalDateTime?): GenericEntity? =
+    fun toDocument(
+        element: T?,
+        id: String,
+        collection: String?,
+        date: LocalDateTime?
+    ): GenericEntity? =
         toDocument.toDocument(element, id, collection, date)
 
     /**
@@ -56,7 +61,12 @@ class LocalAdapterToDocument<T>(private val adapter: AdapterToDocumentInterface<
      * @param date from last update
      * @return a GenericEntity fields to their values
      */
-    fun toDocument(element: T?, id: String, collection: String?, date: LocalDateTime? = null): GenericEntity? {
+    fun toDocument(
+        element: T?,
+        id: String,
+        collection: String?,
+        date: LocalDateTime? = null
+    ): GenericEntity? {
         val result = adapter.toDocument(element)
         return if (result == null) null
         else GenericEntity(
@@ -71,7 +81,7 @@ class LocalAdapterToDocument<T>(private val adapter: AdapterToDocumentInterface<
         )
     }
 
-    private fun fromAny(element: Any?) = when (element) {
+    fun fromAny(element: Any?) = when (element) {
         null -> "n"
         is String -> "s${fromString(element)}"
         is Boolean -> "b${fromBoolean(element)}"
@@ -86,22 +96,22 @@ class LocalAdapterToDocument<T>(private val adapter: AdapterToDocumentInterface<
         else -> "n"
     }
 
-    private fun fromString(element: String) = element
-    private fun fromBoolean(element: Boolean) = if (element) "T" else "F"
-    private fun fromInt(element: Int) = element.toString()
-    private fun fromLong(element: Long) = element.toString()
-    private fun fromFloat(element: Float) = element.toString()
-    private fun fromDouble(element: Double) = element.toString()
-    private fun fromDate(element: Date) = LocalAdapter.SimpleDateFormat.format(element).toString()
+    fun fromString(element: String) = element
+    fun fromBoolean(element: Boolean) = if (element) "T" else "F"
+    fun fromInt(element: Int) = element.toString()
+    fun fromLong(element: Long) = element.toString()
+    fun fromFloat(element: Float) = element.toString()
+    fun fromDouble(element: Double) = element.toString()
+    fun fromDate(element: Date) = LocalAdapter.SimpleDateFormat.format(element).toString()
 
-    private fun fromMap(element: Map<*, *>): String {
+    fun fromMap(element: Map<*, *>): String {
         val mapResult = mutableMapOf<String, String>()
         for (key in element.keys)
             mapResult[fromAny(key)] = fromAny(element[key])
         return JSONObject(mapResult as Map<String, String>).toString()
     }
 
-    private fun fromList(element: List<*>): String {
+    fun fromList(element: List<*>): String {
         val mapResult = mutableMapOf<String, String>()
         var i = 0
         for (e in element)
@@ -109,7 +119,7 @@ class LocalAdapterToDocument<T>(private val adapter: AdapterToDocumentInterface<
         return JSONObject(mapResult as Map<String, String>).accumulate(":", element.size).toString()
     }
 
-    private fun fromSet(element: Set<*>): String {
+    fun fromSet(element: Set<*>): String {
         val mapResult = mutableMapOf<String, String>()
         var i = 0
         for (e in element)

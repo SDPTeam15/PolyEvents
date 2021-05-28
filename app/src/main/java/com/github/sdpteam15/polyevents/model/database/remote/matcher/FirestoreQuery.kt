@@ -3,6 +3,9 @@ package com.github.sdpteam15.polyevents.model.database.remote.matcher
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 
+/**
+ * Transform a firestore.Query to a Query
+ */
 class FirestoreQuery(private val query: com.google.firebase.firestore.Query) : Query {
     override fun get(): Task<QuerySnapshot> = query
         .get()

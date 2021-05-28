@@ -3,6 +3,9 @@ package com.github.sdpteam15.polyevents.model.database.remote.matcher
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 
+/**
+ * Turn a code version of a query into a query
+ */
 class CodeQuery(private val getfun: () -> Task<QuerySnapshot>) : Query {
     companion object {
         fun <T> CodeQueryFromIterator(
@@ -22,7 +25,11 @@ class CodeQuery(private val getfun: () -> Task<QuerySnapshot>) : Query {
 
     override fun get(): Task<QuerySnapshot> = getfun()
 
-    fun filter(filter: (QueryDocumentSnapshot, Int) -> Boolean) = CodeQuery {
+    /**
+     * add a filter to a query
+     * @param filter the filter to apply
+     */
+    private fun filter(filter: (QueryDocumentSnapshot, Int) -> Boolean) = CodeQuery {
         get().onSuccessTask {
             Tasks.forResult(
                 object : QuerySnapshot {
@@ -72,6 +79,5 @@ class CodeQuery(private val getfun: () -> Task<QuerySnapshot>) : Query {
 }
 
 private operator fun Any?.compareTo(value: Any): Int {
-    val from = (this as? Comparable<*>)
-    return this?.compareTo(value) ?: 0
+    return (this as? Comparable<*>)?.compareTo(value) ?: 0
 }
