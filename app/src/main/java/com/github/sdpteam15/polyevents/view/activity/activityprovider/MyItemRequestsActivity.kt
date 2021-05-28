@@ -193,7 +193,7 @@ class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLi
      * Launches the activity to modify the item request
      */
     private val returnMaterialRequest = { request: MaterialRequest ->
-        val newRequest = request.copy(status = RETURN_REQUESTED)
+        val newRequest = request.copy(status = RETURN_REQUESTED, staffInChargeId = null)
         Database.currentDatabase.materialRequestDatabase!!.updateMaterialRequest(
             request.requestId!!,
             newRequest
