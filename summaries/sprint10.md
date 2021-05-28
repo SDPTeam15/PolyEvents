@@ -15,6 +15,12 @@ Next week, I will focus on all the remaining tasks we have to do for the last sp
 
 ## Mathieu
 
+This week, I implemented the timetable for the visitors so that they can see events that happen on a certain day an zone. 
+
+My time estimate were good, I was scared it would take me more time but it turned out not so complicated.
+
+Next week, I will focus on bug fix and enhancement for the app to prepare it for the final presentation.
+
 ## Robin
 This week I add a generic local cash and an implementation for RouteDatabase in FirestoreDatabaseProvider.
 
