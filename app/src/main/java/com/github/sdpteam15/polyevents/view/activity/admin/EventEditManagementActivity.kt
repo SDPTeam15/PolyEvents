@@ -53,7 +53,10 @@ class EventEditManagementActivity : AppCompatActivity() {
             origEvents[event.eventId!!] = event
         }
 
-        Database.currentDatabase.eventDatabase!!.getEvents({it.orderBy(DatabaseConstant.EventEditConstant.EVENT_EDIT_STATUS.value)}, null, eventList)
+        Database.currentDatabase.eventDatabase!!.getEvents(eventList =
+            ObservableList<Event>().observe(this){
+                eventList.updateAll(it.value.sortedBy { e -> e.status }, it.sender)
+            }.then)
             .observeOnce(this) {
                 if (!it.value) {
                     HelperFunctions.showToast("Failed to get the list of all events", this)

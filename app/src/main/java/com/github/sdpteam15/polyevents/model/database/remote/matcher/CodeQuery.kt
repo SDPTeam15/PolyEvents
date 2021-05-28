@@ -71,6 +71,9 @@ class CodeQuery(private val getfun: () -> Task<QuerySnapshot>) : Query {
     override fun whereEqualTo(key: String, value: Any) =
         filter { it, _ -> it.data[key] == value }
 
+    override fun whereNotEqualTo(key: String, value: Any) =
+        filter { it, _ -> it.data[key] != value }
+
     override fun whereArrayContains(key: String, value: Any) =
         filter { it, _ -> (it.data[key] as? List<out Any>)?.contains(value) ?: false }
 

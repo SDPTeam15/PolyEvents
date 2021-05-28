@@ -18,6 +18,10 @@ class FirestoreQuery(private val query: com.google.firebase.firestore.Query) : Q
         query.whereEqualTo(key, value)
     )
 
+    override fun whereNotEqualTo(key: String, value: Any) = FirestoreQuery(
+        query.whereNotEqualTo(key, value)
+    )
+
     override fun whereArrayContains(key: String, value: Any) = FirestoreQuery(
         query.whereArrayContains(key, value)
     )

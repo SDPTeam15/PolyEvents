@@ -412,7 +412,6 @@ class ObservableList<T>(
             else
                 toadd.remove(item.value)
         }
-        println("updateAll $toremove, $toadd")
         for (item in toremove)
             remove(item, sender, false)
         for (item in toadd)

@@ -34,6 +34,19 @@ interface Query {
 
     /**
      * Creates and returns a new Query with the additional filter that documents must contain
+     * the specified field and the value does not equal the specified value.
+     *
+     * A Query can have only one whereNotEqualTo() filter, and it cannot be
+     * combined with whereNotIn().
+     *
+     * @param key The name of the field to compare
+     * @param value The value for comparison
+     * @return The created Query.
+     */
+    fun whereNotEqualTo(key: String, value: Any): Query
+
+    /**
+     * Creates and returns a new Query with the additional filter that documents must contain
      * the specified field, the value must be an array, and that the array must contain the provided
      * value.
      *
