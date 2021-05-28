@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.model.database.remote.objects
 
 import com.github.sdpteam15.polyevents.model.database.remote.Database
+import com.github.sdpteam15.polyevents.model.database.remote.Matcher
 import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
@@ -24,7 +25,7 @@ interface ItemDatabaseInterface {
         item: Item,
         total: Int,
         userAccess: UserProfile? = currentProfile
-    ): Observable<Boolean>
+    ): Observable<String>
 
     /**
      * @param itemId id of the item we want to remove from the database
@@ -53,11 +54,13 @@ interface ItemDatabaseInterface {
     /**
      * Get list of items
      * @param itemList the list of items that will be set when the DB returns the information
+     * @param matcher to add a filter to our request
      * @param userAccess profile for database access
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getItemsList(
         itemList: ObservableList<Triple<Item, Int, Int>>,
+        matcher: Matcher? = null,
         userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
 
@@ -93,4 +96,6 @@ interface ItemDatabaseInterface {
         itemTypeList: ObservableList<String>,
         userAccess: UserProfile? = currentProfile
     ): Observable<Boolean>
+
+
 }

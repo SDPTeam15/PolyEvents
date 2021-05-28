@@ -29,18 +29,20 @@
 
             <ImageButton
                 android:id="@+id/id_delete_request"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="51dp"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/id_modify_request"
                 app:layout_constraintTop_toBottomOf="@+id/id_modify_request"
-                app:srcCompat="@android:drawable/ic_delete" />
+                app:srcCompat="@drawable/ic_clear" />
 
             <TextView
                 android:id="@+id/id_request_organiser"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -49,7 +51,7 @@
                 android:id="@+id/id_request_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 app:layout_constraintEnd_toStartOf="@+id/id_modify_request"
@@ -59,11 +61,22 @@
                 android:id="@+id/id_request_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="60dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 app:layout_constraintEnd_toStartOf="@+id/id_delete_request"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/id_request_time" />
+
+            <TextView
+                android:id="@+id/id_request_staffName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                app:layout_constraintEnd_toStartOf="@+id/id_delete_request"
+                app:layout_constraintTop_toBottomOf="@+id/id_request_status" />
 
             <TextView
                 android:id="@+id/id_request_item_list"
@@ -71,11 +84,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="30dp"
+                android:layout_marginBottom="8dp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                app:layout_constraintBottom_toTopOf="@+id/id_reason_of_refusal"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/id_request_organiser" />
+                app:layout_constraintTop_toBottomOf="@+id/id_request_zone" />
 
             <ImageButton
                 android:id="@+id/id_modify_request"
@@ -84,39 +97,18 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
 
-                app:srcCompat="@drawable/ic_edit" />
+                app:srcCompat="@drawable/ic_baseline_check_24" />
 
-            <ImageButton
-                android:id="@+id/id_return_request"
-                android:layout_width="56dp"
-                android:layout_height="51dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
 
-                app:srcCompat="@android:drawable/ic_menu_revert" />
-
-            <LinearLayout
-                android:id="@+id/id_reason_of_refusal"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/id_request_zone"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
                 android:layout_marginStart="16dp"
-                app:layout_constraintTop_toBottomOf="@+id/id_delete_request"
-                android:orientation="vertical">
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:textSize="18sp"
-                    android:text="@string/reason_of_refusal"
-                    />
-                <TextView
-                    android:id="@+id/id_admin_message"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="4dp"
-                    android:layout_marginBottom="8dp"/>
-            </LinearLayout>
+                android:layout_marginTop="8dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/id_request_organiser" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
