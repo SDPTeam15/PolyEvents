@@ -16,7 +16,7 @@ import com.google.firebase.firestore.IgnoreExtraProperties
  */
 @IgnoreExtraProperties
 data class Item(
-    val itemId: String?,
+    var itemId: String?,
     val itemName: String?,
     val itemType: String
 )

@@ -89,11 +89,11 @@ class ItemDatabaseFirestoreTest {
     fun addItem() {
         val userAccess = UserProfile()
 
-        HelperTestFunction.nextAddEntity { true }
+        HelperTestFunction.nextAddEntityAndGetId { itemId }
         mockedItemDatabase.createItem(item,itemTotal, userAccess)
-            .observeOnce { assert(it.value) }.then.postValue(true)
+            .observeOnce { assert(it.value == itemId) }.then.postValue("")
 
-        val set = HelperTestFunction.lastAddEntity()!!
+        val set = HelperTestFunction.lastAddEntityAndGetId()!!
 
         assertEquals(createdItemTriple, set.element)
         assertEquals(DatabaseConstant.CollectionConstant.ITEM_COLLECTION, set.collection)
@@ -106,7 +106,23 @@ class ItemDatabaseFirestoreTest {
         val userAccess = UserProfile("uid")
 
         HelperTestFunction.nextGetListEntity { true }
-        mockedItemDatabase.getItemsList(items,  userAccess)
+        mockedItemDatabase.getItemsList(items, userAccess = userAccess)
+            .observeOnce { assert(it.value) }.then.postValue(false)
+
+        val getList = HelperTestFunction.lastGetListEntity()!!
+
+        assertEquals(items, getList.element)
+        assertEquals(DatabaseConstant.CollectionConstant.ITEM_COLLECTION, getList.collection)
+        assertEquals(ItemEntityAdapter, getList.adapter)
+    }
+
+    @Test
+    fun getAvailableItems() {
+        val items = ObservableList<Triple<Item,Int, Int>>()
+        val userAccess = UserProfile("uid")
+
+        HelperTestFunction.nextGetListEntity { true }
+        mockedItemDatabase.getAvailableItems(items, userAccess = userAccess)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         val getList = HelperTestFunction.lastGetListEntity()!!
@@ -145,5 +161,22 @@ class ItemDatabaseFirestoreTest {
         assertEquals(items, getList.element)
         assertEquals(DatabaseConstant.CollectionConstant.ITEM_TYPE_COLLECTION, getList.collection)
         assertEquals(ItemTypeAdapter, getList.adapter)
+    }
+
+
+
+    @Test
+    fun createItemType(){
+        val userAccess = UserProfile()
+        val itemType = "itemTypeTest"
+        HelperTestFunction.nextAddEntity { true }
+        mockedItemDatabase.createItemType(itemType, userAccess)
+            .observeOnce { assert(it.value) }.then.postValue(false)
+
+        val add = HelperTestFunction.lastAddEntity()!!
+
+        assertEquals(itemType, add.element)
+        assertEquals(DatabaseConstant.CollectionConstant.ITEM_TYPE_COLLECTION, add.collection)
+        assertEquals(ItemTypeAdapter, add.adapter)
     }
 }
