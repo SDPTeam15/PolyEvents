@@ -459,9 +459,9 @@ class EventManagementActivity : AppCompatActivity() {
                         it.trim()
                     }
                     .toSet()
-                    .toMutableList()
+                    .toMutableSet()
             } else {
-                mutableListOf()
+                mutableSetOf()
             }
 
         val zoneNa = zoneName[selectedZone]

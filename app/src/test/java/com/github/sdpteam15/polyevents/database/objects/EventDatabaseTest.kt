@@ -16,7 +16,6 @@ import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.google.firebase.firestore.Query
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
@@ -38,7 +37,6 @@ private const val feedback = "feedback "
 private val startTime = LocalDateTime.of(2021, 3, 7, 12, 15)
 private val endTime = LocalDateTime.of(2021, 3, 7, 12, 45)
 private val tags = mutableSetOf("sushi", "japan", "cooking")
-
 
 @Suppress("UNCHECKED_CAST", "TYPE_INFERENCE_ONLY_INPUT_TYPES_WARNING")
 class EventDatabaseTest {
@@ -267,9 +265,6 @@ class EventDatabaseTest {
             assertEquals(it.arguments[0] as Long, 1000L)
             mockQuery
         }
-        Mockito.`when`(mockQuery.orderBy(anyOrNull<String>())).then {
-            mockQuery
-        }
 
         HelperTestFunction.nextGetListEntity { true }
         mockedEventdatabase.getEvents(matcher, null, events, userAccess)
@@ -301,10 +296,6 @@ class EventDatabaseTest {
 
         Mockito.`when`(mockQuery.limit(anyOrNull())).then {
             assert(it.arguments[0] as Long in listOf(20L, 1000L))
-            mockQuery
-        }
-
-        Mockito.`when`(mockQuery.orderBy(anyOrNull<String>())).then {
             mockQuery
         }
 

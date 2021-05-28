@@ -41,7 +41,7 @@ data class Event(
     val endTime: LocalDateTime? = null,
     val inventory: MutableList<Item> = mutableListOf(),
     // NOTE: Set is not a supported collection in Firebase Firestore so will be stored as list in the db.
-    val tags: MutableList<String> = mutableListOf(),
+    val tags: MutableSet<String> = mutableSetOf(),
 
     var status: EventStatus?=null,
     var adminMessage: String?=null,

@@ -2,13 +2,10 @@ package com.github.sdpteam15.polyevents.model.database.remote.objects
 
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.*
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.EventConstant.EVENT_NAME
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.EventConstant.EVENT_START_TIME
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.EventEditConstant.EVENT_EDIT_STATUS
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
-import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.EventAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.RatingAdapter
+import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Rating
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
@@ -41,14 +38,14 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
         userAccess: UserProfile?
     ): Observable<Boolean> =
         db.getListEntity(
-            eventList,
+            ObservableList<Event>().observe {
+                var list = it.value.toList().sortedBy { e -> e.startTime }
+                if (limit != null)
+                    list = list.filterIndexed { i, _ -> i < limit }
+                eventList.updateAll(list, it.sender)
+            }.then,
             null,
-            {
-                var query = it
-                if (matcher != null) query = matcher.match(it)
-                if (limit != null) query = query.limit(limit)
-                query.orderBy(EVENT_START_TIME.value)
-            },
+            matcher,
             EVENT_COLLECTION
         )
 
