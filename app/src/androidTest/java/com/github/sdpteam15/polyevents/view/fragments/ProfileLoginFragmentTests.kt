@@ -587,7 +587,7 @@ class ProfileLoginFragmentTests {
         user.profiles.add(pidTest)
         userObservable.postValue(user)
 
-        onView(withId(R.id.id_add_profile_button)).perform(click())
+        onView(withId(R.id.id_add_profile_button)).perform(scrollTo(), click())
         onView(withId(R.id.id_edittext_profile_name)).perform(ViewActions.typeText(displayNameTest))
         Espresso.closeSoftKeyboard()
         onView(withId(R.id.id_confirm_add_item_button)).perform(click())
