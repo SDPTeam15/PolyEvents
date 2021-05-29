@@ -18,7 +18,7 @@
     <string name="nav_menu_map">Map</string>
     <string name="nav_menu_events">Events</string>
     <string name="nav_menu_profile">Profile</string>
-    <string name="nav_menu_more">More</string>
+    <string name="nav_menu_settings">Settings</string>
 
     <!-- Login Fragment strings-->
     <string name="login_failed_text">Failed to log into your account</string>
@@ -237,5 +237,14 @@
     <string name="event_not_selected">Please select an event</string>
     <string name="item_request_updated">Your request has been successful updated</string>
     <string name="select_your_event">Select your event :</string>
+
+    <!-- SettingsFragment-->
+    <string name="settings">Settings</string>
+    <string name="enable_notifications">Enable Notifications</string>
+    <string name="track_location">Track Location</string>
+    <string name="send_location">Send Location</string>
+    <string name="enable_notifications_description">Enable notifications from Polyevents</string>
+    <string name="track_location_description">Track your location on the map</string>
+    <string name="send_location_description">Collect your location data to send to the heatmap</string>
 
 </resources>

@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.github.sdpteam15.polyevents.model.database.local.dao.UserSettingsDao
 import com.github.sdpteam15.polyevents.model.observable.Observable
@@ -23,5 +24,19 @@ class UserSettingsViewModel(private val userSettingsDao: UserSettingsDao): ViewM
 
     companion object {
         const val TAG = "UserSettingsViewModel"
+    }
+
+    /**
+     * A ViewModelProvider.Factory that gets as a parameter the dependencies needed to create
+     * an UserSettingsViewModel.
+     */
+    class UserSettingsViewModelFactory(private val userSettingsDao: UserSettingsDao) : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(UserSettingsViewModel::class.java)) {
+                @Suppress("UNCHECKED_CAST")
+                return UserSettingsViewModel(userSettingsDao) as T
+            }
+            throw IllegalArgumentException("Unknown ViewModel class")
+        }
     }
 }
