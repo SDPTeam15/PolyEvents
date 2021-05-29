@@ -24,6 +24,7 @@ import com.github.sdpteam15.polyevents.model.entity.Rating
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
+import com.github.sdpteam15.polyevents.model.database.remote.objects.UserDatabaseInterface
 import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
 import com.schibsted.spain.barista.assertion.BaristaProgressBarAssertions.assertProgress
 import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertDisplayed
@@ -58,6 +59,7 @@ class EventActivityTest {
     val limitedEventId = "limitedEvent"
 
     lateinit var mockedDatabase: DatabaseInterface
+    lateinit var mockedUserDatabase: UserDatabaseInterface
     lateinit var mockedEventDatabase: EventDatabaseInterface
 
     lateinit var scenario: ActivityScenario<EventActivity>
@@ -65,17 +67,21 @@ class EventActivityTest {
     private lateinit var localDatabase: LocalDatabase
 
     @Before
+    @Suppress("UNCHECKED_CAST")
     fun setup() {
         testUser = UserEntity(
             uid = uid,
             username = username,
-            email = email
+            email = email,
+            name = "Test name"
         )
 
         mockedDatabase = mock(DatabaseInterface::class.java)
         mockedEventDatabase = mock(EventDatabaseInterface::class.java)
+        mockedUserDatabase = mock(UserDatabaseInterface::class.java)
         When(mockedDatabase.currentUser).thenReturn(testUser)
         When(mockedDatabase.eventDatabase).thenReturn(mockedEventDatabase)
+        When(mockedDatabase.userDatabase).thenReturn(mockedUserDatabase)
 
         currentDatabase = mockedDatabase
 
@@ -102,6 +108,11 @@ class EventActivityTest {
             )
         ).then {
             EventActivity.obsEvent.postValue(testLimitedEvent)
+            Observable(true)
+        }
+
+        When(mockedUserDatabase.getUserInformation(anyOrNull(), anyOrNull())).thenAnswer {
+            (it.arguments[0] as Observable<UserEntity>).postValue(testUser)
             Observable(true)
         }
 
@@ -165,7 +176,7 @@ class EventActivityTest {
 
 
         onView(withId(R.id.txt_event_organizer))
-            .check(matches(withText(containsString(testLimitedEvent.organizer))))
+            .check(matches(withText(containsString(testUser.name))))
 
         onView(withId(R.id.txt_event_zone))
             .check(matches(withText(containsString(testLimitedEvent.zoneName))))

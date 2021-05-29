@@ -68,7 +68,7 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
 
             //call method to bind the listerner and observer to the correct fields
             addListener(viewRoot)
-            addObserver(viewRoot)
+            addObserver()
 
             obsDate.observe(this) {
                 val europeanDateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
@@ -129,9 +129,8 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
 
     /**
      * Add the observers to make the fragment works properly
-     * @param viewRoot the current view of the fragment
      */
-    private fun addObserver(viewRoot: View) {
+    private fun addObserver() {
         //When user Info live data is updated, set the correct value in the textview
         userInfoLiveData.observe(this) { userInfo ->
             val userInfoValue = userInfo.value
