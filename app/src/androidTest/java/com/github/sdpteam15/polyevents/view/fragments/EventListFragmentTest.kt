@@ -191,6 +191,7 @@ class EventListFragmentTest {
     }
 
     @Test
+    @Suppress("UNCHECKED_CAST")
     fun eventActivityShowsValuesFromGivenActivity() {
         val intent = Intent(
             ApplicationProvider.getApplicationContext(),

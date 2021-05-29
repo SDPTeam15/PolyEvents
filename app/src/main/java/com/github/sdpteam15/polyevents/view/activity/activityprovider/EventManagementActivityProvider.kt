@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
+import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
-import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider.currentUser
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
@@ -77,7 +77,7 @@ class EventManagementActivityProvider : AppCompatActivity(), AdapterView.OnItemS
         setContentView(R.layout.activity_event_management_provider)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
-        userId = currentUser!!.uid
+        userId = currentDatabase.currentUser!!.uid
         recyclerView = findViewById(R.id.id_recycler_my_event_edit_requests)
         leftButton = findViewById(R.id.id_change_request_status_left)
         rightButton = findViewById(R.id.id_change_request_status_right)
@@ -136,12 +136,12 @@ class EventManagementActivityProvider : AppCompatActivity(), AdapterView.OnItemS
     private fun getEventEditRequestsFromDB() {
         val eventList = ObservableList<Event>()
         eventList.observeAdd(this) {
-            origEvent[it.value.eventId!!]=it.value
+            origEvent[it.value.eventId!!] = it.value
         }
         //Gets the item request of the user and then gets the item list
-        Database.currentDatabase.eventDatabase!!.getEvents(null, null, eventList).observe(this) {
+        currentDatabase.eventDatabase!!.getEvents(null, null, eventList).observe(this) {
             if (it.value) {
-                Database.currentDatabase.eventDatabase!!.getEventEdits(
+                currentDatabase.eventDatabase!!.getEventEdits(
                     {
                         it.whereEqualTo(DatabaseConstant.EventConstant.EVENT_NAME.value, userId)
                     },
@@ -152,10 +152,12 @@ class EventManagementActivityProvider : AppCompatActivity(), AdapterView.OnItemS
                             "Failed to get the list of event edit requests",
                             this
                         )
+                        finish()
                     }
                 }
             } else {
                 HelperFunctions.showToast("Failed to get the list of events", this)
+                finish()
             }
         }
     }
@@ -185,7 +187,7 @@ class EventManagementActivityProvider : AppCompatActivity(), AdapterView.OnItemS
      */
     private val cancelEventRequest = { event: Event ->
         val l =
-            Database.currentDatabase.eventDatabase!!.removeEventEdit(event.eventEditId!!)
+            currentDatabase.eventDatabase!!.removeEventEdit(event.eventEditId!!)
         l.observe(this) {
             if (it.value)
                 eventRequests.remove(event)
