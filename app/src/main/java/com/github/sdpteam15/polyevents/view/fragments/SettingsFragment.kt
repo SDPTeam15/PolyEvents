@@ -25,7 +25,6 @@ class SettingsFragment : Fragment() {
 
     private lateinit var sendLocationSwitchButton: SwitchMaterial
     private lateinit var trackLocationSwitchButton: SwitchMaterial
-    private lateinit var enableNotificationsSwitchButton: SwitchMaterial
 
     private lateinit var userSettingsSaveButton: Button
 
@@ -44,12 +43,10 @@ class SettingsFragment : Fragment() {
 
         sendLocationSwitchButton = fragmentView.findViewById(R.id.fragment_settings_is_sending_location_switch)
         trackLocationSwitchButton = fragmentView.findViewById(R.id.fragment_settings_track_location_switch)
-        enableNotificationsSwitchButton = fragmentView.findViewById(R.id.fragment_settings_enable_notifications_switch)
 
         userSettingsSaveButton = fragmentView.findViewById(R.id.fragment_settings_button_save)
         userSettingsSaveButton.setOnClickListener {
-            // TODO: check notifications enabled: If enabled get all events in local and reinit the notifications if they have
-            // a non null notification id, otherwise retrieve all events, and disable the notifications
+            
         }
         return fragmentView
     }
