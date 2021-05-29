@@ -132,6 +132,7 @@ class EventActivityTest {
 
     @After
     fun teardown() {
+        Thread.sleep(1000)
         scenario.close()
         // close and remove the mock local database
         localDatabase.close()
