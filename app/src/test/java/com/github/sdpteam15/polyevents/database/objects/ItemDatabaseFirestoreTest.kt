@@ -28,7 +28,7 @@ private const val itemTotal = 4
 private const val itemRemaining = 3
 
 
-@Suppress("UNCHECKED_CAST")
+@Suppress("UNCHECKED_CAST", "TYPE_INFERENCE_ONLY_INPUT_TYPES_WARNING")
 class ItemDatabaseFirestoreTest {
     lateinit var user: UserEntity
     lateinit var database: DatabaseInterface

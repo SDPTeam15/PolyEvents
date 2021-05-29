@@ -564,6 +564,7 @@ class EventActivityTest {
         localDatabase.eventDao().insert(EventLocal.fromEvent(testPublicEvent))
 
         goToEventActivityWithIntent(publicEventId)
+        Thread.sleep(100)
         assertDisplayed(R.id.button_subscribe_event, R.string.event_unfollow)
 
         val retrievedEvents = localDatabase.eventDao().getEventById(publicEventId)

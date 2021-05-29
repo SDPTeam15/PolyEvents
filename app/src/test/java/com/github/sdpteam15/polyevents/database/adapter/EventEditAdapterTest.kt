@@ -65,10 +65,9 @@ class EventEditAdapterTest {
         assertEquals(document[EVENT_ZONE_NAME.value], event.zoneName)
         assertEquals(document[EVENT_ICON.value], event.icon)
         assertEquals(document[DatabaseConstant.EventEditConstant.EVENT_EDIT_ADMIN_MESSAGE.value], event.adminMessage)
-        assertEquals(document[DatabaseConstant.EventConstant.EVENT_DOCUMENT_ID.value], event.eventId)
+        assertEquals(document[EVENT_DOCUMENT_ID.value], event.eventId)
         assertEquals(document[DatabaseConstant.EventEditConstant.EVENT_EDIT_STATUS.value], event.status!!.ordinal)
 
-        val storedEventInventory = document[EVENT_INVENTORY.value] as List<Item>
 
         val storedEventTags = document[EVENT_TAGS.value] as List<String>
         assertTrue(storedEventTags.contains(tag1))

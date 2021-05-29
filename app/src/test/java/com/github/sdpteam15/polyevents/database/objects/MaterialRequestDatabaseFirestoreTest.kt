@@ -33,7 +33,7 @@ private val date = LocalDateTime.now()
 private const val eventid = "eventId"
 private val status = MaterialRequest.Status.PENDING
 
-@Suppress("UNCHECKED_CAST")
+@Suppress("UNCHECKED_CAST", "TYPE_INFERENCE_ONLY_INPUT_TYPES_WARNING")
 class MaterialRequestDatabaseFirestoreTest {
     lateinit var user: UserEntity
     lateinit var database: DatabaseInterface

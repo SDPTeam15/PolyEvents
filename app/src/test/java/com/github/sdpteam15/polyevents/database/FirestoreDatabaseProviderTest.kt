@@ -223,7 +223,7 @@ class FirestoreDatabaseProviderTest {
             DatabaseConstant.CollectionConstant.TEST_COLLECTION
         ).observeOnce {
             assert(it.value.first)
-            assert(it.value.second!!.isEmpty())
+            assert(it.value.second.isEmpty())
         }.then.postValue(Pair(false, listOf()))
 
         val end = FirestoreDatabaseProvider.addListEntity(
@@ -261,9 +261,9 @@ class FirestoreDatabaseProviderTest {
         lastAddSuccessListener[1].onSuccess(mockDocumentReference2)
         end.observeOnce {
             assert(it.value.first)
-            assertEquals(2, it.value.second!!.size)
-            assertEquals(TEST_ID1, it.value.second!![0])
-            assertEquals(TEST_ID2, it.value.second!![1])
+            assertEquals(2, it.value.second.size)
+            assertEquals(TEST_ID1, it.value.second[0])
+            assertEquals(TEST_ID2, it.value.second[1])
         }.then.postValue(Pair(false, listOf()))
     }
 

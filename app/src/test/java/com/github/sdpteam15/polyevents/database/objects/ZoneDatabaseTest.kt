@@ -27,7 +27,7 @@ private const val displayNameTest = "Test displayName"
 private const val emailTest = "Test email"
 private const val uidTest = "Test uid"
 
-@Suppress("UNCHECKED_CAST")
+@Suppress("UNCHECKED_CAST", "TYPE_INFERENCE_ONLY_INPUT_TYPES_WARNING")
 class ZoneDatabaseTest {
     lateinit var user: UserEntity
     lateinit var database: DatabaseInterface
