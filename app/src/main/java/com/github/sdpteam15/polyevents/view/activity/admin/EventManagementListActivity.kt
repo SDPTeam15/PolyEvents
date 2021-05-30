@@ -157,27 +157,5 @@ class EventManagementListActivity : AppCompatActivity() {
         val list = obsEventsMap[zoneId]!!
         list.second.remove(event)
         obsEventsMap[zoneId] = list
-        /*
-        currentDatabase.eventDatabase!!.removeEvent(event.eventId!!).observe(this) {
-            if (it.value) {
-                HelperFunctions.showToast(
-                    getString(R.string.success_delete_from_database),
-                    this
-                )
-                // Remove the event in the current recycler view
-                val list = obsEventsMap[zoneId]!!
-                list.second.remove(event)
-                obsEventsMap[zoneId] = list
-
-                // TODO remove all event edit requests related to this event
-                // TODO remove all material requests related to this event and put the correct number of items available
-            } else {
-                // If fail to delete, display an error message
-                HelperFunctions.showToast(
-                    getString(R.string.fail_delete_from_database),
-                    this
-                )
-            }
-        }*/
     }
 }

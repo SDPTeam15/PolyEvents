@@ -2,11 +2,14 @@ package com.github.sdpteam15.polyevents.helper
 
 import com.github.sdpteam15.polyevents.database.HelperTestFunction
 import com.github.sdpteam15.polyevents.model.database.remote.Database
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.database.remote.login.GoogleUserLogin
 import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
 import com.github.sdpteam15.polyevents.model.database.remote.login.UserLoginInterface
+import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
+import com.github.sdpteam15.polyevents.model.database.remote.matcher.Query
 import com.github.sdpteam15.polyevents.model.database.remote.objects.EventDatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.objects.ItemDatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.objects.MaterialRequestDatabaseInterface
@@ -21,6 +24,7 @@ import com.google.firebase.auth.AuthResult
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito.any
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.anyOrNull
 import java.time.LocalDateTime
@@ -153,6 +157,21 @@ class DatabaseHelperTest {
     @Suppress("UNCHECKED_CAST")
     private fun mockMethods() {
 
+        val mockQuery1 = mock(Query::class.java)
+        When(mockQuery1.whereEqualTo(anyOrNull(), anyOrNull())).thenAnswer {
+            assertEquals(DatabaseConstant.EventConstant.EVENT_DOCUMENT_ID.value, it.arguments[0])
+            mockQuery1
+        }
+        val mockQuery2 = mock(Query::class.java)
+        When(mockQuery2.whereEqualTo(anyOrNull(), anyOrNull())).thenAnswer {
+            assertEquals( DatabaseConstant.EventConstant.EVENT_ZONE_ID.value,it.arguments[0])
+            mockQuery2
+        }
+        val mockQuery3 = mock(Query::class.java)
+        When(mockQuery3.whereEqualTo(anyOrNull(), anyOrNull())).thenAnswer {
+            assertEquals(DatabaseConstant.MaterialRequestConstant.MATERIAL_REQUEST_EVENT_ID.value, it.arguments[0] )
+            mockQuery3
+        }
 
         When(mockedMaterialRequestDb.updateMaterialRequest(anyOrNull(), anyOrNull())).thenAnswer {
             cancelMaterialRequest.add(it.arguments[1] as MaterialRequest)
@@ -161,18 +180,22 @@ class DatabaseHelperTest {
 
         When(mockedMaterialRequestDb.getMaterialRequestList(anyOrNull(), anyOrNull())).thenAnswer {
             (it.arguments[0] as ObservableList<MaterialRequest>).addAll(allMaterialRequest)
+            (it.arguments[1] as Matcher).match(mockQuery3)
             assertNotNull(it.arguments[1])
             Observable(true)
         }
 
         When(mockedEventDb.getEvents(anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
             (it.arguments[2] as ObservableList<Event>).addAll(allEvents)
+            (it.arguments[0] as Matcher).match(mockQuery2)
             assertNotNull(it.arguments[0])
             Observable(true)
         }
 
         When(mockedEventDb.getEventEdits(anyOrNull(), anyOrNull())).thenAnswer {
             (it.arguments[1] as ObservableList<Event>).addAll(allEventEdits)
+
+            (it.arguments[0] as Matcher).match(mockQuery1)
             assertNotNull(it.arguments[0])
             Observable(true)
         }

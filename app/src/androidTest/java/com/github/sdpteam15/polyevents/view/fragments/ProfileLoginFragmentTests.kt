@@ -335,6 +335,9 @@ class ProfileLoginFragmentTests {
         //Check if the values are correctly displayed
         onView(withId(R.id.profileName)).check(matches(withText(Matchers.equalTo(displayNameTest2))))
         onView(withId(R.id.profileEmail)).check(matches(withText(Matchers.equalTo(emailTest2))))
+        onView(withId(R.id.btnBirthday)).perform(scrollTo(), click())
+        onView(withText("OK")).perform(scrollTo(), click())
+
 
         //Mock the getUserInformation method to post a user with other values than previously
         //So that we can see if the getUserInformation() has been called (it shouldn't)

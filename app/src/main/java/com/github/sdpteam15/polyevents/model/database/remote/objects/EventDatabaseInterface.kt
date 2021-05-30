@@ -32,7 +32,9 @@ interface EventDatabaseInterface {
     ): Observable<Boolean>
 
     /**
-     *
+     * Remove an event from database
+     * @param eventId The id of the event we want to remove
+     * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun removeEvent(
         eventId:String
@@ -84,7 +86,9 @@ interface EventDatabaseInterface {
     ): Observable<Boolean>
 
     /**
-     *
+     * Remove an event edit from database
+     * @param eventId The id of the event edit we want to remove
+     * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun removeEventEdit(
         eventId:String
