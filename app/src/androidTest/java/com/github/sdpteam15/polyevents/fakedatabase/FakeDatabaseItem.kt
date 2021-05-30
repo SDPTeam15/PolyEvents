@@ -65,7 +65,8 @@ object FakeDatabaseItem : ItemDatabaseInterface {
 
     override fun getItemsList(
         itemList: ObservableList<Triple<Item, Int, Int>>,
-        matcher: Matcher?
+        matcher: Matcher?,
+        ids: List<String>?
     ): Observable<Boolean> {
         itemList.clear(this)
         for (item in items) {

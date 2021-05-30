@@ -32,7 +32,6 @@ object DatabaseHelper {
                 DELIVERED -> updateMaterialRequestStatus(request, RETURN_REQUESTED)
                 CANCELED, RETURNING, RETURNED, RETURN_REQUESTED -> Unit
             }
-
         }
 
         currentDatabase.materialRequestDatabase!!.getMaterialRequestList(materialRequests) {
@@ -79,7 +78,6 @@ object DatabaseHelper {
                 e.eventId!!
             )
         }, eventEdit)
-
     }
 
     /**
@@ -101,7 +99,6 @@ object DatabaseHelper {
                 updateMaterialRequestStatus(materialRequest, CANCELED)
             }
         }
-
     }
 
     /**
@@ -122,8 +119,6 @@ object DatabaseHelper {
                     materialRequest.staffInChargeId
                 }
             )
-
         )
     }
-
 }

@@ -243,7 +243,7 @@ class MyItemRequestsActivityTest {
                 (it.arguments[0] as Observable<MaterialRequest>).postValue(allRequests.first { it2 -> it2.requestId == it.arguments[1] })
                 Observable(true, this)
             }
-        Mockito.`when`(mockedItemDB.getItemsList(anyOrNull(), anyOrNull())).thenAnswer {
+        Mockito.`when`(mockedItemDB.getItemsList(anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
             (it.arguments[0] as ObservableList<Triple<Item, Int, Int>>).addAll(availableItemsList)
             Observable(true, this)
         }
