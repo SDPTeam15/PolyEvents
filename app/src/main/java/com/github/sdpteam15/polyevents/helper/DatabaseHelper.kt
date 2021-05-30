@@ -10,9 +10,15 @@ import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 
-
+/**
+ * The goal of this objects is to create function to nested relation from the database
+ */
 object DatabaseHelper {
 
+    /**
+     * Delete an event and all its material request and event edits from the database
+     * @param e the event we want to delete
+     */
     fun deleteEvent(e: Event) {
         val materialRequests = ObservableList<MaterialRequest>()
         materialRequests.observeAdd {
@@ -41,6 +47,10 @@ object DatabaseHelper {
         }
     }
 
+    /**
+     * Delete a zone and all its associated event from the database
+     * @param zone the zone we want to delete
+     */
     fun deleteZone(zone: Zone) {
         val events = ObservableList<Event>()
         events.observeAdd { deleteEvent(it.value) }
@@ -54,6 +64,10 @@ object DatabaseHelper {
         currentDatabase.zoneDatabase!!.deleteZone(zone)
     }
 
+    /**
+     * Cancel all event edits of the given event in the database
+     * @param e The event from which we want to cancel all event edits
+     */
     private fun deleteEventEdit(e: Event): Observable<Boolean> {
         val eventEdit = ObservableList<Event>()
         eventEdit.observeAdd {
@@ -68,6 +82,10 @@ object DatabaseHelper {
 
     }
 
+    /**
+     * Cancel a material request and give back items
+     * @param materialRequest The material requet we want to cancel
+     */
     fun cancelMaterialRequest(materialRequest: MaterialRequest) {
         val items = ObservableList<Triple<Item, Int, Int>>()
         items.observeAdd {
@@ -86,7 +104,12 @@ object DatabaseHelper {
 
     }
 
-    fun updateMaterialRequestStatus(
+    /**
+     * Update the material to the given status
+     * @param materialRequest the material request we want to update
+     * @param status the new status of the material request
+     */
+    private fun updateMaterialRequestStatus(
         materialRequest: MaterialRequest,
         status: MaterialRequest.Status
     ) {
