@@ -39,9 +39,10 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
             eventList,
             null,
             {
-                var query = it
+                var query = matcher?.match(it) ?: it.orderBy(DatabaseConstant.EventConstant.EVENT_START_TIME.value)
+
                 if (limit != null) query = query.limit(limit)
-                query.orderBy(DatabaseConstant.EventConstant.EVENT_START_TIME.value)
+                query
             },
             EVENT_COLLECTION
         )
@@ -67,7 +68,7 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
         db.getListEntity(
             eventList,
             null,
-            null,
+            matcher,
             EVENT_EDIT_COLLECTION
         )
 

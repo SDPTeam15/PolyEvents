@@ -162,19 +162,20 @@ data class Event(
      * @return string HH:MM
      */
     fun formattedStartTime(): String {
-        if (startTime == null) {
-            return ""
+        return if (startTime == null) {
+            ""
         } else {
             //return SimpleDateFormat("k:mm", Locale.getDefault()).format(startTime)
             val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("k:mm")
-            return startTime.format(formatter)
+            startTime.format(formatter)
         }
     }
 
     enum class EventStatus (private val status: String) {
         PENDING("pending"),
         ACCEPTED("accepted"),
-        REFUSED("refused");
+        REFUSED("refused"),
+        CANCELED("canceled");
 
         override fun toString(): String {
             return status

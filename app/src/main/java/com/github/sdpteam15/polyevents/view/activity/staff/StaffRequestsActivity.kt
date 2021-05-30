@@ -313,7 +313,8 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
             RETURNED to RETURN,
 
             PENDING to OTHERS,
-            REFUSED to OTHERS
+            REFUSED to OTHERS,
+            CANCELED to OTHERS
         )
 
         private fun staffRequestStatusFromMaterialStatus(status: MaterialRequest.Status): StaffRequestStatus {

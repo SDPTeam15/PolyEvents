@@ -47,11 +47,13 @@ interface ItemDatabaseInterface {
      * Get list of items
      * @param itemList the list of items that will be set when the DB returns the information
      * @param matcher to add a filter to our request
+     * @param ids ids to retrieve
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getItemsList(
         itemList: ObservableList<Triple<Item, Int, Int>>,
-        matcher: Matcher? = null
+        matcher: Matcher? = null,
+        ids: List<String>? = null
     ): Observable<Boolean>
 
     /**

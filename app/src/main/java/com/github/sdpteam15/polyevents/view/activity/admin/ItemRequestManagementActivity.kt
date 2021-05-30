@@ -127,7 +127,7 @@ class ItemRequestManagementActivity : AppCompatActivity() {
      */
     private fun canAccept(materialRequest: MaterialRequest): Boolean {
         return materialRequest.status == MaterialRequest.Status.PENDING && materialRequest.items.all {
-            items.first { it2 -> it2.first.itemId == it.key }.third > it.value
+            items.first { it2 -> it2.first.itemId == it.key }.third >= it.value
         }
     }
 

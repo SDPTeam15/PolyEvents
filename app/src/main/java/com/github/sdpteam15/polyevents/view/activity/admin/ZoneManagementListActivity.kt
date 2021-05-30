@@ -21,9 +21,6 @@ class ZoneManagementListActivity : AppCompatActivity() {
         val NEW_ZONE = "-1"
         var zones = ObservableList<Zone>()
 
-        fun deleteZone(zone: Zone) {
-            Database.currentDatabase.zoneDatabase!!.deleteZone(zone)
-        }
     }
 
     private lateinit var recyclerView: RecyclerView

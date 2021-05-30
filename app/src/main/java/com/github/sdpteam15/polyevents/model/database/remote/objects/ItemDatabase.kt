@@ -30,9 +30,10 @@ class ItemDatabase(private val db: DatabaseInterface) : ItemDatabaseInterface {
 
     override fun getItemsList(
         itemList: ObservableList<Triple<Item, Int, Int>>,
-        matcher : Matcher?
+        matcher : Matcher?,
+        ids : List<String>?
     ): Observable<Boolean> =
-        db.getListEntity(itemList, null, matcher, ITEM_COLLECTION, ItemEntityAdapter)
+        db.getListEntity(itemList, ids, matcher, ITEM_COLLECTION, ItemEntityAdapter)
 
     override fun getAvailableItems(
         itemList: ObservableList<Triple<Item, Int, Int>>

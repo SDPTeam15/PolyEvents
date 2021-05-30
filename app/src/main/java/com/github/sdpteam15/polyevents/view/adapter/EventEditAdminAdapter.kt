@@ -78,6 +78,7 @@ class EventEditAdminAdapter(
                 Event.EventStatus.ACCEPTED -> Color.GREEN
                 Event.EventStatus.PENDING -> Color.BLACK
                 Event.EventStatus.REFUSED -> Color.RED
+                else -> Color.BLACK
             })
 
             status.text = event.status.toString()

@@ -7,6 +7,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.helper.DatabaseHelper.deleteEvent
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
@@ -151,6 +152,12 @@ class EventManagementListActivity : AppCompatActivity() {
      * @param zoneId The zoneId where the deleted event happen
      */
     private fun eventDeletion(event: Event, zoneId: String) {
+        deleteEvent(event)
+        // Remove the event in the current recycler view
+        val list = obsEventsMap[zoneId]!!
+        list.second.remove(event)
+        obsEventsMap[zoneId] = list
+        /*
         currentDatabase.eventDatabase!!.removeEvent(event.eventId!!).observe(this) {
             if (it.value) {
                 HelperFunctions.showToast(
@@ -171,6 +178,6 @@ class EventManagementListActivity : AppCompatActivity() {
                     this
                 )
             }
-        }
+        }*/
     }
 }

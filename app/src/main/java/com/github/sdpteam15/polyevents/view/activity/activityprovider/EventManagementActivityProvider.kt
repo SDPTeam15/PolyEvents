@@ -48,6 +48,7 @@ class EventManagementActivityProvider : AppCompatActivity(), AdapterView.OnItemS
             Event.EventStatus.PENDING -> Event.EventStatus.ACCEPTED
             Event.EventStatus.ACCEPTED -> Event.EventStatus.REFUSED
             Event.EventStatus.REFUSED -> Event.EventStatus.PENDING
+            else -> currentStatus
         }
         observableStatus.postValue(currentStatus)
     }
@@ -60,6 +61,7 @@ class EventManagementActivityProvider : AppCompatActivity(), AdapterView.OnItemS
             Event.EventStatus.PENDING -> Event.EventStatus.REFUSED
             Event.EventStatus.REFUSED -> Event.EventStatus.ACCEPTED
             Event.EventStatus.ACCEPTED -> Event.EventStatus.PENDING
+            else -> currentStatus
         }
         observableStatus.postValue(currentStatus)
     }
