@@ -2,9 +2,9 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/id_fragment_profile"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/id_fragment_profile"
     tools:context=".view.fragments.ProfileFragment">
 
     <ScrollView
@@ -19,7 +19,8 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:layout_gravity="center">
 
                 <LinearLayout
                     android:id="@+id/linearLayout"
