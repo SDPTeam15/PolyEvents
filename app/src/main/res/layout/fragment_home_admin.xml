@@ -48,7 +48,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/white"
-            android:drawableTop="@drawable/ic_pencil"
+            android:drawableTop="@drawable/ic_pencil_menu"
             android:drawableTint="@color/purple_500"
             android:gravity="center"
             android:paddingHorizontal="25dp"
@@ -56,14 +56,13 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textColor="@color/purple_500"
             app:strokeColor="@color/purple_500"
-            app:strokeWidth="2dp"
-            tools:ignore="ButtonStyle" />
+            app:strokeWidth="2dp" />
 
         <Button
             android:id="@+id/btnRedirectUserManagement"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
             android:backgroundTint="@color/white"
             android:drawableTop="@drawable/ic_account_circle"
             android:drawableTint="@color/purple_500"
@@ -129,7 +128,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/white"
-            android:drawableTop="@drawable/ic_pencil"
+            android:drawableTop="@drawable/ic_pencil_menu"
             android:drawableTint="@color/purple_500"
             android:gravity="center"
             android:paddingHorizontal="25dp"
