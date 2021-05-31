@@ -10,6 +10,7 @@ import java.util.*
 
 /**
  * A class for converting between user entities in our code and GenericEntity in the database.
+ *
  */
 object LocalAdapter {
     @SuppressLint("SimpleDateFormat")
@@ -23,23 +24,20 @@ object LocalAdapter {
      * @return a GenericEntity fields to their values
      */
     fun toDocument(
-        element: Map<String, Any?>?,
+        element: Map<String, Any?>,
         id: String,
         collection: String?,
         date: LocalDateTime? = null
-    ): GenericEntity? {
-        return if (element == null) null
-        else GenericEntity(
-            id,
-            collection = collection ?: "",
-            data = fromMap(element),
-            update_time = fromDate(
-                HelperFunctions.localDateTimeToDate(
-                    date ?: LocalDateTime.now()
-                )!!
-            )
+    ) = GenericEntity(
+        id,
+        collection = collection ?: "",
+        data = fromMap(element),
+        update_time = fromDate(
+            HelperFunctions.localDateTimeToDate(
+                date ?: LocalDateTime.now()
+            )!!
         )
-    }
+    )
 
     /**
      * Convert document data to a user entity in our model.

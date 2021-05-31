@@ -22,9 +22,8 @@ object ItemEntityAdapter : AdapterInterface<Triple<Item, Int, Int>> {
         )
     }
 
-    override fun toDocument(element: Triple<Item, Int, Int>?): HashMap<String, Any?>? =
-        if (element == null) null
-        else toItemDocument(element.first, element.second, element.third)
+    override fun toDocument(element: Triple<Item, Int, Int>): HashMap<String, Any?> =
+        toItemDocument(element.first, element.second, element.third)
 
     override fun fromDocument(
         document: Map<String, Any?>,

@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.model.database.remote
 
 import android.annotation.SuppressLint
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.thenReturn
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalCacheAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
@@ -192,7 +193,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         val document = firestore!!
             .collection(collection.value)
             .document(id)
-        val result = adapter.toDocument(element)
+        val result = element.thenReturn { adapter.toDocument(it) }
         (if (result == null) document.delete()
         else document.set(result))
             .addOnSuccessListener(successListener)
@@ -214,7 +215,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             val document = firestore!!
                 .collection(collection.value)
                 .document(elementWithIndex.value.first)
-            val result = adapter.toDocument(elementWithIndex.value.second)
+            val result = elementWithIndex.value.second.thenReturn { adapter.toDocument(it) }
             val task = if (result != null)
                 document.set(result)
             else
