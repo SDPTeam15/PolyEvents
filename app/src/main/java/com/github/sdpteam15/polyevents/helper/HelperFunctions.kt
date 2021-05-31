@@ -277,7 +277,7 @@ object HelperFunctions {
      * @param run the function to execute
      * @return if this object is not null apply run else return default
      */
-    fun <S, T> S?.apply(default: () -> T, run: (S) -> T) = if (this != null) run(this) else default()
+    fun <S, T> S?.apply(run: (S) -> T, default: Lazy<T>) = if (this != null) run(this) else default.value
 
     /**
      * if this object is not null apply run else return null

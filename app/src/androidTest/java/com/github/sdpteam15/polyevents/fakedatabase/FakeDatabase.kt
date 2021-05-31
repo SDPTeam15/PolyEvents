@@ -74,7 +74,7 @@ object FakeDatabase : DatabaseInterface {
         elements: List<T>,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterToDocumentInterface<in T>
-    ): Observable<Pair<Boolean, List<String?>>> {
+    ): Observable<Pair<Boolean, List<String>>> {
         TODO("Not yet implemented")
     }
 

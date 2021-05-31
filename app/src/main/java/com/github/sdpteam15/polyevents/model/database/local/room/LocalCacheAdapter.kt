@@ -120,7 +120,7 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
                         PolyEventsApplication.application.database.genericEntityDao().insert(
                             LocalAdapter.toDocument(
                                 adapter.toDocument(value.second),
-                                value.first!!,
+                                value.first,
                                 collection.value
                             )
                         )
@@ -184,6 +184,7 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
         HelperFunctions.run(Runnable {
+            //Get from local cache
             PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
                 val pair = LocalAdapter.fromDocument(
                     PolyEventsApplication.application.database.genericEntityDao()
@@ -194,13 +195,16 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
                 if (result != null)
                     ended.postValue(true, db)
 
-                update(
-                    collection,
-                    adapter,
-                    ended,
-                    element = element,
-                    id = id
-                )
+                //Update local cache and modify the result if necessary
+                PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
+                    update(
+                        collection,
+                        adapter,
+                        ended,
+                        element = element,
+                        id = id
+                    )
+                }
             }
         })
         return ended
@@ -214,29 +218,49 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
         adapter: AdapterFromDocumentInterface<out T>
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
+
         HelperFunctions.run(Runnable {
-            if (ids != null) {
+            //Get from local cache
+            ids.apply({ ids ->
                 PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
-                    onList(
-                        elements,
-                        ids,
-                        collection,
-                        adapter,
-                        ended
-                    )
+                    val map = mutableMapOf<String, T>()
+                    for (id in ids) {
+                        val pair = LocalAdapter.fromDocument(
+                            PolyEventsApplication.application.database.genericEntityDao()
+                                .get(id, collection.value)
+                        )
+                        adapter.fromDocument(pair.first, pair.second).apply { map[id] = it }
+                    }
+                    elements.updateAll(map, db)
+                    ended.postValue(true, db)
                 }
-            } else {
+            }, lazy {
                 PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
-                    onMatcher(
-                        elements,
-                        matcher,
-                        collection,
-                        adapter,
-                        ended
-                    )
+                    val query = CodeQuery.CodeQueryFromIterator(
+                        PolyEventsApplication.application.database.genericEntityDao()
+                            .getAll(collection.value).iterator()
+                    ) {
+                        QueryDocumentSnapshot(
+                            LocalAdapter.fromDocument(it).first,
+                            it.id
+                        )
+                    }
+                    (matcher?.match(query) ?: query).get().addOnSuccessListener {
+                        val map = mutableMapOf<String, T>()
+                        for (value in it) {
+                            val result = adapter.fromDocument(value.data, value.id)
+                            if (result != null)
+                                map[value.id] = result
+                        }
+                        elements.updateAll(map, db)
+                        ended.postValue(true, db)
+                    }
                 }
-            }
+            })
+
+            //Update local cache and modify the result if necessary
             PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
+                //Update local cache and modify the result if necessary
                 update(
                     collection,
                     adapter,
@@ -248,55 +272,6 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
             }
         })
         return ended
-    }
-
-    private suspend fun <T> onList(
-        elements: ObservableMap<String, T>,
-        ids: List<String>,
-        collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterFromDocumentInterface<out T>,
-        ended: Observable<Boolean>
-    ) {
-        val map = mutableMapOf<String, T>()
-        for (id in ids) {
-            val pair = LocalAdapter.fromDocument(
-                PolyEventsApplication.application.database.genericEntityDao()
-                    .get(id, collection.value)
-            )
-            val result = adapter.fromDocument(pair.first, pair.second)
-            if (result != null)
-                map[id] = result
-        }
-        elements.updateAll(map, db)
-        ended.postValue(true, db)
-    }
-
-    private suspend fun <T> onMatcher(
-        elements: ObservableMap<String, T>,
-        matcher: Matcher?,
-        collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterFromDocumentInterface<out T>,
-        ended: Observable<Boolean>
-    ) {
-        val query = CodeQuery.CodeQueryFromIterator(
-            PolyEventsApplication.application.database.genericEntityDao()
-                .getAll(collection.value).iterator()
-        ) {
-            QueryDocumentSnapshot(
-                LocalAdapter.fromDocument(it).first,
-                it.id
-            )
-        }
-        (matcher?.match(query) ?: query).get().addOnSuccessListener {
-            val map = mutableMapOf<String, T>()
-            for (value in it) {
-                val result = adapter.fromDocument(value.data, value.id)
-                if (result != null)
-                    map[value.id] = result
-            }
-            elements.updateAll(map, db)
-            ended.postValue(true, db)
-        }
     }
 
     /**
@@ -326,10 +301,12 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
         ids: List<String>? = null,
         matcher: Matcher? = null,
     ) {
-        val dao = PolyEventsApplication.application.database.genericEntityDao()
-        val date = dao.lastUpdateDate(collection.value)
+        //Get all elements outdated in the cache
+        val date = PolyEventsApplication.application.database.genericEntityDao()
+            .lastUpdateDate(collection.value)
         db.getMapEntity(
             ObservableMap<String, T>().observeOnce {
+                //Update local cache
                 PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
                     for (key in it.value.keys) {
                         PolyEventsApplication.application.database.genericEntityDao()
@@ -344,53 +321,67 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
                             )
                     }
                 }
+
+                //If from getEntity
                 if (element != null && id != null) {
-                    if (element.value != it.value[id])
-                        if (it.value[id] != null) {
-                            element.postValue(it.value[id], it.sender)
+                    if (element.value != it.value[id]) {
+                        element.postValue(it.value[id], it.sender)
+                        if (element.value != null)
                             ended.postValue(true, it.sender)
-                        }
+                    }
                     if (element.value == null)
                         ended.postValue(false, it.sender)
                 }
-                if (elements != null) {
-                    if (ids != null) {
-                        val map = mutableMapOf<String, T>()
-                        for (eid in ids) {
-                            if (elements[eid] != it.value[eid])
-                                if (it.value[eid] != null)
-                                    map[eid] = it.value[eid]!!
-                        }
-                        elements.putAll(map, it.sender)
-                    } else {
 
+                //If from getMapEntity
+                if (elements != null) {
+                    ids.apply({ ids ->
+                        val map = mutableMapOf<String, T>()
+                        ids.forEach { eid ->
+                            it.value[eid].apply { value ->
+                                if (elements[eid] != value)
+                                    map[eid] = value
+                            }
+                        }
+                        if (map.isNotEmpty()) {
+                            elements.putAll(map, it.sender)
+                            ended.postValue(true, it.sender)
+                        }
+                    }, lazy {
+                        //Create the query form the iterator of the db
                         val query =
-                            CodeQuery.CodeQueryFromIterator(it.value.entries.iterator()) {
+                            CodeQuery.CodeQueryFromIterator(it.value.entries.iterator()) { entrie ->
                                 ((adapterToDocument ?: collection.adapter)
                                         as AdapterToDocumentInterface<in T>)
-                                    .toDocument(it.value).apply { data ->
+                                    .toDocument(entrie.value).apply { data ->
                                         QueryDocumentSnapshot(
                                             data,
-                                            it.key
+                                            entrie.key
                                         )
                                     }
                             }
+
+                        //Apply the matcher and add all new elements to the result
                         (matcher?.match(query) ?: query).get().addOnSuccessListener { qs ->
                             val map = mutableMapOf<String, T>()
-                            for (value in qs) {
-                                val result = adapterFromDocument.fromDocument(value.data, value.id)
-                                if (result != null)
-                                    map[value.id] = result
+                            qs.forEach { value ->
+                                adapterFromDocument.fromDocument(value.data, value.id)
+                                    .apply { entity -> map[value.id] = entity }
                             }
-                            elements.putAll(map, db)
-                            ended.postValue(true, db)
+                            if (map.isNotEmpty()) {
+                                elements.putAll(map, it.sender)
+                                ended.postValue(true, it.sender)
+                            }
                         }
-                    }
+                    })
                 }
-            }.then, null, {
-                if (date != null) it.whereGreaterThan(LogAdapter.LAST_UPDATE, date)
-                else it
-            }, collection, adapterFromDocument
+            }.then,
+            null,
+            {
+                date.apply(it) { date -> it.whereGreaterThan(LogAdapter.LAST_UPDATE, date) }
+            },
+            collection,
+            adapterFromDocument
         ).observeOnce {
             if (ended.value == null)
                 ended.postValue(it.value, it.sender)

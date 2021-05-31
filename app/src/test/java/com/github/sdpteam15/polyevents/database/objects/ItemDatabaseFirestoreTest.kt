@@ -71,7 +71,7 @@ class ItemDatabaseFirestoreTest {
     fun updateItem() {
 
         HelperTestFunction.nextSetEntity { true }
-        mockedItemDatabase.updateItem(item,itemTotal, itemRemaining)
+        mockedItemDatabase.updateItem(item, itemTotal, itemRemaining)
             .observeOnce { assert(it.value) }.then.postValue(true)
 
         val set = HelperTestFunction.lastSetEntity()!!
@@ -86,7 +86,7 @@ class ItemDatabaseFirestoreTest {
     fun addItem() {
 
         HelperTestFunction.nextAddEntityAndGetId { itemId }
-        mockedItemDatabase.createItem(item,itemTotal)
+        mockedItemDatabase.createItem(item, itemTotal)
             .observeOnce { assert(it.value == itemId) }.then.postValue("")
 
         val set = HelperTestFunction.lastAddEntityAndGetId()!!
@@ -98,7 +98,7 @@ class ItemDatabaseFirestoreTest {
 
     @Test
     fun getItemList() {
-        val items = ObservableList<Triple<Item,Int, Int>>()
+        val items = ObservableList<Triple<Item, Int, Int>>()
 
         HelperTestFunction.nextGetListEntity { true }
         mockedItemDatabase.getItemsList(items)
@@ -113,7 +113,7 @@ class ItemDatabaseFirestoreTest {
 
     @Test
     fun getAvailableItems() {
-        val items = ObservableList<Triple<Item,Int, Int>>()
+        val items = ObservableList<Triple<Item, Int, Int>>()
 
         HelperTestFunction.nextGetListEntity { true }
         mockedItemDatabase.getAvailableItems(items)
@@ -157,7 +157,7 @@ class ItemDatabaseFirestoreTest {
 
 
     @Test
-    fun createItemType(){
+    fun createItemType() {
         val itemType = "itemTypeTest"
         HelperTestFunction.nextAddEntity { true }
         mockedItemDatabase.createItemType(itemType)

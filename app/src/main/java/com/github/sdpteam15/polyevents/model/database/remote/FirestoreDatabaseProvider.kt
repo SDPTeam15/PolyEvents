@@ -264,9 +264,9 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     ): Observable<Boolean> {
         val fsCollection = firestore!!.collection(collection.value)
         return ids.apply({
-            getMapEntity(elements, matcher, fsCollection, adapter)
-        }, {
             getMapEntity(elements, it, fsCollection, adapter)
+        }, lazy {
+            getMapEntity(elements, matcher, fsCollection, adapter)
         })
     }
 

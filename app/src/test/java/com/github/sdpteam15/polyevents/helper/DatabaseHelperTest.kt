@@ -164,12 +164,15 @@ class DatabaseHelperTest {
         }
         val mockQuery2 = mock(Query::class.java)
         When(mockQuery2.whereEqualTo(anyOrNull(), anyOrNull())).thenAnswer {
-            assertEquals( DatabaseConstant.EventConstant.EVENT_ZONE_ID.value,it.arguments[0])
+            assertEquals(DatabaseConstant.EventConstant.EVENT_ZONE_ID.value, it.arguments[0])
             mockQuery2
         }
         val mockQuery3 = mock(Query::class.java)
         When(mockQuery3.whereEqualTo(anyOrNull(), anyOrNull())).thenAnswer {
-            assertEquals(DatabaseConstant.MaterialRequestConstant.MATERIAL_REQUEST_EVENT_ID.value, it.arguments[0] )
+            assertEquals(
+                DatabaseConstant.MaterialRequestConstant.MATERIAL_REQUEST_EVENT_ID.value,
+                it.arguments[0]
+            )
             mockQuery3
         }
 

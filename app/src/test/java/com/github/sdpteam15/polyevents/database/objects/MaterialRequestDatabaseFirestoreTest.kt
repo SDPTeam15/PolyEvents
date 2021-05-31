@@ -81,7 +81,7 @@ class MaterialRequestDatabaseFirestoreTest {
     fun updateMaterialRequest() {
 
         HelperTestFunction.nextSetEntity { true }
-        mockedMaterialRequestDatabase.updateMaterialRequest(requestId,materialRequest)
+        mockedMaterialRequestDatabase.updateMaterialRequest(requestId, materialRequest)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         val set = HelperTestFunction.lastSetEntity()!!
@@ -135,7 +135,10 @@ class MaterialRequestDatabaseFirestoreTest {
         val materialRequests = ObservableList<MaterialRequest>()
 
         HelperTestFunction.nextGetListEntity { true }
-        mockedMaterialRequestDatabase.getMaterialRequestListByUser(materialRequests, userId = uidTest)
+        mockedMaterialRequestDatabase.getMaterialRequestListByUser(
+            materialRequests,
+            userId = uidTest
+        )
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         val getList = HelperTestFunction.lastGetListEntity()!!
