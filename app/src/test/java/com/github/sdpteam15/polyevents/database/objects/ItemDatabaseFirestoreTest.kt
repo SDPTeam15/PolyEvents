@@ -34,8 +34,8 @@ class ItemDatabaseFirestoreTest {
     lateinit var database: DatabaseInterface
     lateinit var mockedItemDatabase: ItemDatabaseInterface
     lateinit var item: Item
-    lateinit var createdItemTriple: Triple<Item,Int,Int>
-    lateinit var itemTriple: Triple<Item,Int,Int>
+    lateinit var createdItemTriple: Triple<Item, Int, Int>
+    lateinit var itemTriple: Triple<Item, Int, Int>
 
     @Before
     fun setup() {
@@ -46,7 +46,7 @@ class ItemDatabaseFirestoreTest {
         )
 
 
-        item = Item(itemId = itemId,itemName = itemName, itemType = itemType)
+        item = Item(itemId = itemId, itemName = itemName, itemType = itemType)
         createdItemTriple = Triple(item, itemTotal, itemTotal)
         itemTriple = Triple(item, itemTotal, itemRemaining)
 
@@ -74,7 +74,7 @@ class ItemDatabaseFirestoreTest {
         val userAccess = UserProfile()
 
         HelperTestFunction.nextSetEntity { true }
-        mockedItemDatabase.updateItem(item,itemTotal, itemRemaining,userAccess)
+        mockedItemDatabase.updateItem(item, itemTotal, itemRemaining, userAccess)
             .observeOnce { assert(it.value) }.then.postValue(true)
 
         val set = HelperTestFunction.lastSetEntity()!!
@@ -90,7 +90,7 @@ class ItemDatabaseFirestoreTest {
         val userAccess = UserProfile()
 
         HelperTestFunction.nextAddEntityAndGetId { itemId }
-        mockedItemDatabase.createItem(item,itemTotal, userAccess)
+        mockedItemDatabase.createItem(item, itemTotal, userAccess)
             .observeOnce { assert(it.value == itemId) }.then.postValue("")
 
         val set = HelperTestFunction.lastAddEntityAndGetId()!!
@@ -102,7 +102,7 @@ class ItemDatabaseFirestoreTest {
 
     @Test
     fun getItemList() {
-        val items = ObservableList<Triple<Item,Int, Int>>()
+        val items = ObservableList<Triple<Item, Int, Int>>()
         val userAccess = UserProfile("uid")
 
         HelperTestFunction.nextGetListEntity { true }
@@ -118,7 +118,7 @@ class ItemDatabaseFirestoreTest {
 
     @Test
     fun getAvailableItems() {
-        val items = ObservableList<Triple<Item,Int, Int>>()
+        val items = ObservableList<Triple<Item, Int, Int>>()
         val userAccess = UserProfile("uid")
 
         HelperTestFunction.nextGetListEntity { true }
@@ -153,7 +153,7 @@ class ItemDatabaseFirestoreTest {
         val userAccess = UserProfile("uid")
 
         HelperTestFunction.nextGetListEntity { true }
-        mockedItemDatabase.getItemTypes(items,  userAccess)
+        mockedItemDatabase.getItemTypes(items, userAccess)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         val getList = HelperTestFunction.lastGetListEntity()!!
@@ -164,9 +164,8 @@ class ItemDatabaseFirestoreTest {
     }
 
 
-
     @Test
-    fun createItemType(){
+    fun createItemType() {
         val userAccess = UserProfile()
         val itemType = "itemTypeTest"
         HelperTestFunction.nextAddEntity { true }

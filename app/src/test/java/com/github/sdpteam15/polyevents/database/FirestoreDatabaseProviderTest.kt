@@ -39,12 +39,11 @@ class FirestoreDatabaseProviderTest {
     @Before
     fun setup() {
         mockFirestore = mock(FirebaseFirestore::class.java)
-
         FirestoreDatabaseProvider.firestore = mockFirestore
     }
 
     @Test
-    fun canAddAndEditField(){
+    fun canAddAndEditField() {
         assertNotNull(currentDatabase.routeDatabase)
         assertNotNull(currentDatabase.materialRequestDatabase)
         assertNotNull(currentDatabase.userDatabase)
@@ -54,14 +53,14 @@ class FirestoreDatabaseProviderTest {
         assertNotNull(currentDatabase.heatmapDatabase)
         assertNotNull(currentDatabase.eventDatabase)
 
-        val materialRequestDB= mock(MaterialRequestDatabaseInterface::class.java)
+        val materialRequestDB = mock(MaterialRequestDatabaseInterface::class.java)
         val userDb = mock(UserDatabaseInterface::class.java)
-        val routeDb= mock(RouteDatabaseInterface::class.java)
-        val userSettingsDb= mock(UserSettingsDatabaseInterface::class.java)
-        val eventDb= mock(EventDatabaseInterface::class.java)
-        val heatmapDb= mock(HeatmapDatabaseInterface::class.java)
-        val ItemDb= mock(ItemDatabaseInterface::class.java)
-        val zoneDb= mock(ZoneDatabaseInterface::class.java)
+        val routeDb = mock(RouteDatabaseInterface::class.java)
+        val userSettingsDb = mock(UserSettingsDatabaseInterface::class.java)
+        val eventDb = mock(EventDatabaseInterface::class.java)
+        val heatmapDb = mock(HeatmapDatabaseInterface::class.java)
+        val ItemDb = mock(ItemDatabaseInterface::class.java)
+        val zoneDb = mock(ZoneDatabaseInterface::class.java)
 
         currentDatabase.eventDatabase = eventDb
         currentDatabase.heatmapDatabase = heatmapDb
@@ -224,8 +223,8 @@ class FirestoreDatabaseProviderTest {
             DatabaseConstant.CollectionConstant.TEST_COLLECTION
         ).observeOnce {
             assert(it.value.first)
-            assert(it.value.second!!.isEmpty())
-        }.then.postValue(Pair(false, null))
+            assert(it.value.second.isEmpty())
+        }.then.postValue(Pair(false, listOf()))
 
         val end = FirestoreDatabaseProvider.addListEntity(
             listOf(
@@ -240,15 +239,14 @@ class FirestoreDatabaseProviderTest {
         assertEquals(2, lastFailureListener.size)
 
         lastFailureListener[0].onFailure(Exception())
-        end.observeOnce {
-            assert(!it.value.first)
-            assertNull(it.value.second)
-        }.then.postValue(Pair(true, null))
         lastFailureListener[1].onFailure(Exception())
         end.observeOnce {
             assert(!it.value.first)
-            assertNull(it.value.second)
-        }.then.postValue(Pair(true, null))
+        }.then.postValue(Pair(true, listOf()))
+        lastFailureListener[1].onFailure(Exception())
+        end.observeOnce {
+            assert(!it.value.first)
+        }.then.postValue(Pair(true, listOf()))
 
         val mockDocumentReference1 = mock(DocumentReference::class.java)
         When(mockDocumentReference1.id).thenAnswer {
@@ -263,10 +261,10 @@ class FirestoreDatabaseProviderTest {
         lastAddSuccessListener[1].onSuccess(mockDocumentReference2)
         end.observeOnce {
             assert(it.value.first)
-            assertEquals(2, it.value.second!!.size)
-            assertEquals(TEST_ID1, it.value.second!![0])
-            assertEquals(TEST_ID2, it.value.second!![1])
-        }.then.postValue(Pair(false, null))
+            assertEquals(2, it.value.second.size)
+            assertEquals(TEST_ID1, it.value.second[0])
+            assertEquals(TEST_ID2, it.value.second[1])
+        }.then.postValue(Pair(false, listOf()))
     }
 
     @Test
@@ -334,7 +332,7 @@ class FirestoreDatabaseProviderTest {
                 When(mock2.set(anyOrNull())).thenAnswer {
                     hashMap.add(it!!.arguments[0] as HashMap<String, Any?>)
                     val mock3 = mock(Task::class.java) as Task<DocumentReference>
-                    When(mock3.addOnSuccessListener(anyOrNull())).thenAnswer {it2->
+                    When(mock3.addOnSuccessListener(anyOrNull())).thenAnswer { it2 ->
                         lastAddSuccessListener.add(
                             it2!!.arguments[0] as OnSuccessListener<Void>
                         )
@@ -363,8 +361,8 @@ class FirestoreDatabaseProviderTest {
             listOf<Pair<String, StringWithID?>>(),
             DatabaseConstant.CollectionConstant.TEST_COLLECTION
         ).observeOnce {
-            assert(it.value)
-        }.then.postValue(false)
+            assert(it.value.first)
+        }.then.postValue(Pair(false, listOf()))
 
         assertEquals(2, hashMap.size)
         assertEquals(2, lastAddSuccessListener.size)
@@ -373,22 +371,22 @@ class FirestoreDatabaseProviderTest {
 
         lastFailureListener[0].onFailure(Exception())
         end.observeOnce {
-            assert(!it.value)
-        }.then.postValue(true)
+            assert(!it.value.first)
+        }.then.postValue(Pair(false, listOf()))
         lastFailureListener[1].onFailure(Exception())
         end.observeOnce {
-            assert(!it.value)
-        }.then.postValue(true)
+            assert(!it.value.first)
+        }.then.postValue(Pair(false, listOf()))
 
-        end.postValue(false)
+        end.postValue(Pair(false, listOf()))
         lastAddSuccessListener[0].onSuccess(null)
         end.observeOnce {
-            assert(!it.value)
+            assert(!it.value.first)
         }
         lastAddSuccessListener[1].onSuccess(null)
         end.observeOnce {
-            assert(it.value)
-        }.then.postValue(false)
+            assert(it.value.first)
+        }.then.postValue(Pair(false, listOf()))
     }
 
     @Test
@@ -464,7 +462,7 @@ class FirestoreDatabaseProviderTest {
         }
 
         val end = FirestoreDatabaseProvider.deleteListEntity(
-            listOf(TEST_ID1,TEST_ID2),
+            listOf(TEST_ID1, TEST_ID2),
             DatabaseConstant.CollectionConstant.TEST_COLLECTION
         )
 
@@ -474,22 +472,22 @@ class FirestoreDatabaseProviderTest {
 
         lastFailureListener[0].onFailure(Exception())
         end.observeOnce {
-            assert(!it.value)
-        }.then.postValue(true)
+            assert(!it.value.first)
+        }.then.postValue(Pair(false, listOf()))
         lastFailureListener[1].onFailure(Exception())
         end.observeOnce {
-            assert(!it.value)
-        }.then.postValue(true)
+            assert(!it.value.first)
+        }.then.postValue(Pair(false, listOf()))
 
-        end.postValue(false)
+        end.postValue(Pair(false, listOf()))
         lastAddSuccessListener[0].onSuccess(null)
         end.observeOnce {
-            assert(!it.value)
+            assert(!it.value.first)
         }
         lastAddSuccessListener[1].onSuccess(null)
         end.observeOnce {
-            assert(it.value)
-        }.then.postValue(false)
+            assert(it.value.first)
+        }.then.postValue(Pair(false, listOf()))
     }
 
     @Test
@@ -569,7 +567,8 @@ class FirestoreDatabaseProviderTest {
     fun getListEntity() {
         val lastAddSuccessListenerDocumentSnapshot =
             mutableMapOf<String, OnSuccessListener<DocumentSnapshot>>()
-        var lastAddSuccessListenerQuerySnapshot: OnSuccessListener<QuerySnapshot>? = null
+        var lastAddSuccessListenerQuerySnapshot: OnSuccessListener<com.github.sdpteam15.polyevents.model.database.remote.matcher.QuerySnapshot>? =
+            null
 
         var lastFailureListener: OnFailureListener? = null
 
@@ -597,11 +596,18 @@ class FirestoreDatabaseProviderTest {
                 val mock2 = mock(Task::class.java) as Task<QuerySnapshot>
                 When(mock2.addOnSuccessListener(anyOrNull())).thenAnswer {
                     lastAddSuccessListenerQuerySnapshot =
-                        it!!.arguments[0] as OnSuccessListener<QuerySnapshot>
+                        it!!.arguments[0] as OnSuccessListener<com.github.sdpteam15.polyevents.model.database.remote.matcher.QuerySnapshot>
                     mock2
                 }
                 When(mock2.addOnFailureListener(anyOrNull())).thenAnswer {
                     lastFailureListener = it!!.arguments[0] as OnFailureListener
+                    mock2
+                }
+                When(
+                    mock2.onSuccessTask<com.github.sdpteam15.polyevents.model.database.remote.matcher.QuerySnapshot>(
+                        anyOrNull()
+                    )
+                ).thenAnswer {
                     mock2
                 }
                 mock2
@@ -679,7 +685,8 @@ class FirestoreDatabaseProviderTest {
         assertNotNull(lastAddSuccessListenerQuerySnapshot)
         assertNotNull(lastFailureListener)
 
-        val mockQuerySnapshot = mock(QuerySnapshot::class.java)
+        val mockQuerySnapshot =
+            mock(com.github.sdpteam15.polyevents.model.database.remote.matcher.QuerySnapshot::class.java)
 
         lastFailureListener!!.onFailure(Exception())
         end.observeOnce {
@@ -687,16 +694,14 @@ class FirestoreDatabaseProviderTest {
         }.then.postValue(true)
 
         When(mockQuerySnapshot.iterator()).thenAnswer {
-            val mock = mock(QueryDocumentSnapshot::class.java)
-            When(mock.data).thenAnswer {
-                mapOf<String, Any?>(
-                    TEST_STR to TEST_STRING
+            listOf(
+                com.github.sdpteam15.polyevents.model.database.remote.matcher.QueryDocumentSnapshot(
+                    mapOf<String, Any?>(
+                        TEST_STR to TEST_STRING
+                    ),
+                    TEST_ID
                 )
-            }
-            When(mock.id).thenAnswer {
-                TEST_ID
-            }
-            listOf<QueryDocumentSnapshot>(mock).iterator()
+            ).iterator()
         }
 
         lastAddSuccessListenerQuerySnapshot!!.onSuccess(mockQuerySnapshot)
@@ -706,7 +711,7 @@ class FirestoreDatabaseProviderTest {
         end = FirestoreDatabaseProvider.getListEntity(
             result,
             null,
-                { collection -> collection },
+            { collection -> collection },
             DatabaseConstant.CollectionConstant.TEST_COLLECTION
         )
 
@@ -718,27 +723,14 @@ class FirestoreDatabaseProviderTest {
             assert(!it.value)
         }.then.postValue(true)
 
-        When(mockQuerySnapshot.iterator()).thenAnswer {
-            val mock = mock(QueryDocumentSnapshot::class.java)
-            When(mock.data).thenAnswer {
-                mapOf<String, Any?>(
-                    TEST_STR to TEST_STRING
-                )
-            }
-            When(mock.id).thenAnswer {
-                TEST_ID
-            }
-            listOf<QueryDocumentSnapshot>(mock).iterator()
-        }
-
         lastAddSuccessListenerQuerySnapshot!!.onSuccess(mockQuerySnapshot)
 
         assert(!result.isEmpty())
     }
 
     @Test
-    fun getCurrentUser(){
-        val user = UserEntity("UserId", "UserUsername","userName")
+    fun getCurrentUser() {
+        val user = UserEntity("UserId", "UserUsername", "userName")
         val mockUserLogin = mock(UserLoginInterface::class.java) as UserLoginInterface<AuthResult>
         UserLogin.currentUserLogin = mockUserLogin
         When(mockUserLogin.isConnected()).thenReturn(false)
@@ -748,19 +740,19 @@ class FirestoreDatabaseProviderTest {
         currentDatabase.currentUser = user
         assertEquals(user, currentDatabase.currentUser)
 
-        currentDatabase.currentUser=null
+        currentDatabase.currentUser = null
 
         val mockCollectionReference = mock(CollectionReference::class.java)
         val mockDocumentReference = mock(DocumentReference::class.java)
         val mockTask = mock(Task::class.java) as Task<DocumentSnapshot>
-        var lastSuccessListener:OnSuccessListener<DocumentSnapshot>?=null
-        var lastFailureListener:OnFailureListener?=null
+        var lastSuccessListener: OnSuccessListener<DocumentSnapshot>? = null
+        var lastFailureListener: OnFailureListener? = null
         val mockDocumentSnapshot = mock(DocumentSnapshot::class.java)
 
         When(mockFirestore.collection(anyOrNull())).thenReturn(mockCollectionReference)
         When(mockCollectionReference.document(anyOrNull())).thenReturn(mockDocumentReference)
         When(mockDocumentReference.get()).thenReturn(mockTask)
-        When(mockTask.addOnSuccessListener(anyOrNull())).thenAnswer{
+        When(mockTask.addOnSuccessListener(anyOrNull())).thenAnswer {
 
             lastSuccessListener = it.arguments[0] as OnSuccessListener<DocumentSnapshot>
             mockTask
@@ -773,7 +765,7 @@ class FirestoreDatabaseProviderTest {
 
         When(mockUserLogin.isConnected()).thenReturn(true)
         When(mockUserLogin.getCurrentUser()).thenReturn(user)
-        assertEquals(FirestoreDatabaseProvider.currentUser,user)
+        assertEquals(FirestoreDatabaseProvider.currentUser, user)
 
 
         val userInfo = UserAdapter.toDocument(user)
@@ -783,12 +775,12 @@ class FirestoreDatabaseProviderTest {
 
         lastSuccessListener!!.onSuccess(mockDocumentSnapshot)
 
-        assertEquals(FirestoreDatabaseProvider.currentUser,user)
+        assertEquals(FirestoreDatabaseProvider.currentUser, user)
         When(mockDocumentSnapshot.data).thenReturn(null)
         lastSuccessListener!!.onSuccess(mockDocumentSnapshot)
-        assertEquals(FirestoreDatabaseProvider.currentUser,user)
+        assertEquals(FirestoreDatabaseProvider.currentUser, user)
         lastFailureListener!!.onFailure(java.lang.Exception())
-        assertEquals(FirestoreDatabaseProvider.currentUser,user)
+        assertEquals(FirestoreDatabaseProvider.currentUser, user)
 
 
         UserLogin.currentUserLogin = GoogleUserLogin

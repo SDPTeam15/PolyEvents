@@ -54,7 +54,7 @@ class EventTest {
         assertEquals(event.organizer, organizer)
         assertEquals(event.zoneName, zoneName)
         assertEquals(event.icon, icon)
-        assertEquals(event.zoneId,zoneId)
+        assertEquals(event.zoneId, zoneId)
         assertEquals(event.startTime, startTime)
         assertEquals(event.endTime, endTime)
     }

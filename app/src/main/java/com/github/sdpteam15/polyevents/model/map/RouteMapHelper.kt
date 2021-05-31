@@ -436,14 +436,43 @@ object RouteMapHelper {
         context: Context?,
         lifecycleOwner: LifecycleOwner
     ): Observable<Boolean> {
-        Database.currentDatabase.routeDatabase!!.getRoute(nodes, edges, zones)
+        if(edges.isNotEmpty())
+            edges.toList().forEach {
+                edgeAddedNotification(context, it)
+            }
+
+        //Add a listener on edges and nodes adds to display
+        val edgesToAdd = mutableListOf<RouteEdge>()
         edges.observeAdd(lifecycleOwner) {
-            edgeAddedNotification(context, it.value)
-        }
-        edges.observeRemove(lifecycleOwner) {
+            synchronized(this) {
+                println("edgesToAdd : ${it.value}")
+                edgesToAdd.add(it.value)
+                it.value.start = nodes.first{ n -> n.id == it.value.startId}
+                it.value.end = nodes.first{ n -> n.id == it.value.endId}
+                for (e in edgesToAdd.toList())
+                    if (e.start != null && e.end != null) {
+                        edgeAddedNotification(context, e)
+                        edgesToAdd.remove(e)
+                    }
+            }
+        }.then.observeRemove(lifecycleOwner) {
             edgeRemovedNotification(it.value)
         }
-        return Observable(true)
+        nodes.observeAdd(lifecycleOwner) {
+            synchronized(this) {
+                for (e in edgesToAdd.toList()) {
+                    if(e.startId == it.value.id)
+                        e.start = it.value
+                    if(e.endId == it.value.id)
+                        e.end = it.value
+                    if (e.start != null && e.end != null) {
+                        edgeAddedNotification(context, e)
+                        edgesToAdd.remove(e)
+                    }
+                }
+            }
+        }
+        return Database.currentDatabase.routeDatabase!!.getRoute(nodes, edges, zones)
     }
 
 
@@ -462,6 +491,7 @@ object RouteMapHelper {
      * @param edge new edge
      */
     fun edgeAddedNotification(context: Context?, edge: RouteEdge) {
+
         //Remove all creation lines when we get an answer from the database
         removeAllLinesToRemove()
         val option = PolylineOptions()

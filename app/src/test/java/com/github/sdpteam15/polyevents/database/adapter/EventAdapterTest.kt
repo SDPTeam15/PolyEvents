@@ -10,7 +10,7 @@ import org.junit.Before
 import org.junit.Test
 import java.time.LocalDateTime
 
-@Suppress("UNCHECKED_CAST","TYPE_INFERENCE_ONLY_INPUT_TYPES_WARNING")
+@Suppress("UNCHECKED_CAST", "TYPE_INFERENCE_ONLY_INPUT_TYPES_WARNING")
 class EventAdapterTest {
     val eventId = "xxxEventxxx"
     val eventName = "someEvent"
@@ -56,7 +56,7 @@ class EventAdapterTest {
         val document = EventAdapter.toDocument(event)
 
         assertEquals(document[EVENT_NAME.value], event.eventName)
-        assertEquals(document[EVENT_ZONE_ID.value],event.zoneId)
+        assertEquals(document[EVENT_ZONE_ID.value], event.zoneId)
         assertEquals(document[EVENT_ORGANIZER.value], event.organizer)
         assertEquals(document[EVENT_ZONE_NAME.value], event.zoneName)
         assertEquals(document[EVENT_ICON.value], event.icon)

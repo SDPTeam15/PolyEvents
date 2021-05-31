@@ -1,7 +1,7 @@
 package com.github.sdpteam15.polyevents.model.database.remote.objects
 
 import com.github.sdpteam15.polyevents.model.database.remote.Database
-import com.github.sdpteam15.polyevents.model.database.remote.Matcher
+import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile

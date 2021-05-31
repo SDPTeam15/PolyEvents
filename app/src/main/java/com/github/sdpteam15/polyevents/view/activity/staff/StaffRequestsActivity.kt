@@ -179,9 +179,7 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
 
         currentDatabase.materialRequestDatabase!!.getMaterialRequestList(
             requests,
-            {
-                it.orderBy(MATERIAL_REQUEST_STATUS.value)
-            }
+            { it.orderBy(MATERIAL_REQUEST_STATUS.value) }
         ).observeOnce(this) {
             if (!it.value) {
                 showToast("Failed to get the list of material requests", this)

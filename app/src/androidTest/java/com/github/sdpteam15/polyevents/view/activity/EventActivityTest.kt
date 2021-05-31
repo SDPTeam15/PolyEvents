@@ -23,7 +23,7 @@ import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Rating
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.observable.Observable
-import com.github.sdpteam15.polyevents.model.room.EventLocal
+import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
 import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
 import com.schibsted.spain.barista.assertion.BaristaProgressBarAssertions.assertProgress
 import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertDisplayed

@@ -53,6 +53,7 @@ class GoogleUserLoginTest {
         val user2 = GoogleUserLogin.getCurrentUser()
         assert(user2 == null)
     }
+
     @Test
     fun SignOutIsProperlyCalled() {
         var called = false

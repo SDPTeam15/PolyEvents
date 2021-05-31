@@ -55,7 +55,13 @@ class GoogleMapHelperTest {
         }
         correctString =
             correctString.substring(0, correctString.length - POINTS_SEP.value.length)
-        assert(correctString == GoogleMapHelperFunctions.areaToFormattedStringLocation(listLngLat.dropLast(1)))
+        assert(
+            correctString == GoogleMapHelperFunctions.areaToFormattedStringLocation(
+                listLngLat.dropLast(
+                    1
+                )
+            )
+        )
     }
 
     @Test
@@ -92,11 +98,12 @@ class GoogleMapHelperTest {
         val areas = mutableListOf<Int>()
         val mockedzzt = Mockito.mock(zzt::class.java)
         var areaId: Int
-        for(i in 0 until map.size){
-            mutableList.add(i,Mockito.mock(zzw::class.java))
+        for (i in 0 until map.size) {
+            mutableList.add(i, Mockito.mock(zzw::class.java))
             Mockito.`when`((mutableList[i]).points).thenReturn(map[i])
             areaId = GoogleMapHelper.uidArea++
-            ZoneAreaMapHelper.areasPoints[areaId] = Triple(zoneId, Marker(mockedzzt), Polygon(mutableList[i]))
+            ZoneAreaMapHelper.areasPoints[areaId] =
+                Triple(zoneId, Marker(mockedzzt), Polygon(mutableList[i]))
             areas.add(areaId)
         }
         ZoneAreaMapHelper.zonesToArea[zoneId] = Pair(null, areas)

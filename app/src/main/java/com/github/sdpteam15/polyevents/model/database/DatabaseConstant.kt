@@ -34,7 +34,7 @@ object DatabaseConstant {
                 hashMapOf(TEST_STR to element.string)
 
             override fun fromDocument(
-                document: MutableMap<String, Any?>,
+                document: Map<String, Any?>,
                 id: String
             ) = StringWithID(id, document[TEST_STR] as String)
         });
@@ -157,7 +157,7 @@ object DatabaseConstant {
         override fun toString(): String = value
     }
 
-    enum class RatingConstant(val value:String){
+    enum class RatingConstant(val value: String) {
         RATING_EVENT_ID("eventId"),
         RATING_USER_ID("uid"),
         RATING_DESCRIPTION("ratingDescription"),
