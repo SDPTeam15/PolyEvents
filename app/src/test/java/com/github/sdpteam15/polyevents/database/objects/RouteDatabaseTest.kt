@@ -31,8 +31,8 @@ class RouteDatabaseTest {
         val edges = ObservableList<RouteEdge>()
         val zone = ObservableList<Zone>()
 
-        HelperTestFunction.nextGetListEntity{true}
-        HelperTestFunction.nextGetListEntity  {
+        HelperTestFunction.nextGetListEntity { true }
+        HelperTestFunction.nextGetListEntity {
             nodes.addAll(
                 listOf(
                     RouteNode("id1", 0.0, 0.0),
@@ -41,7 +41,7 @@ class RouteDatabaseTest {
             )
             true
         }
-        HelperTestFunction.nextGetListEntity  {
+        HelperTestFunction.nextGetListEntity {
             edges.addAll(
                 listOf(
                     RouteEdge("id0", "id1", "id2"),
@@ -119,8 +119,8 @@ class RouteDatabaseTest {
         newEdges.add(RouteEdge.fromRouteNode(n3, n4))
         removeEdges.add(edges[0])
 
-        HelperTestFunction.nextAddListEntity { Pair(true, listOf("n2", "n3"))}
-        HelperTestFunction.nextAddListEntity { Pair(true, listOf("e3", "e4"))}
+        HelperTestFunction.nextAddListEntity { Pair(true, listOf("n2", "n3")) }
+        HelperTestFunction.nextAddListEntity { Pair(true, listOf("e3", "e4")) }
         HelperTestFunction.nextDeleteListEntity { Pair(true, listOf()) }
         mackRouteDatabase.updateEdges(newEdges, removeEdges, edges, nodes)
             .observeOnce { assert(it.value) }.then.postValue(false)

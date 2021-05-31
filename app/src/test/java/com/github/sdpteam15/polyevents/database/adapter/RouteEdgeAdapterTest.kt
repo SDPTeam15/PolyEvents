@@ -17,7 +17,7 @@ class RouteEdgeAdapterTest {
             startInitId = startInitId,
             endInitId = endInitId,
         )
-        val to = RouteEdgeAdapter.fromDocument(RouteEdgeAdapter.toDocument(from)!!, id)
+        val to = RouteEdgeAdapter.fromDocument(RouteEdgeAdapter.toDocument(from), id)
 
         assertEquals(from, to)
     }

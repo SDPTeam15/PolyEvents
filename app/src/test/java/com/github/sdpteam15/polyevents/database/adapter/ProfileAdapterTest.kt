@@ -19,31 +19,37 @@ class ProfileAdapterTest {
     @Before
     fun setupProfile() {
         profile = UserProfile(
-                profileId,profileName, profileRank, users
+            profileId, profileName, profileRank, users
         )
     }
 
     @Test
     fun conversionOfProfileoDocumentPreservesData() {
-        val document = ProfileAdapter.toDocument(profile)!!
+        val document = ProfileAdapter.toDocument(profile)
 
         Assert.assertEquals(document[DatabaseConstant.ProfileConstants.PROFILE_ID.value], profileId)
-        Assert.assertEquals(document[DatabaseConstant.ProfileConstants.PROFILE_NAME.value], profileName)
-        Assert.assertEquals(document[DatabaseConstant.ProfileConstants.PROFILE_RANK.value], profileRank.userRole)
+        Assert.assertEquals(
+            document[DatabaseConstant.ProfileConstants.PROFILE_NAME.value],
+            profileName
+        )
+        Assert.assertEquals(
+            document[DatabaseConstant.ProfileConstants.PROFILE_RANK.value],
+            profileRank.userRole
+        )
         Assert.assertEquals(document[DatabaseConstant.ProfileConstants.PROFILE_USERS.value], users)
     }
 
     @Test
     fun conversionOfDocumentToEventPreservesData() {
         val profil: HashMap<String, Any?> = hashMapOf(
-                DatabaseConstant.ProfileConstants.PROFILE_ID.value to profile.pid,
-                DatabaseConstant.ProfileConstants.PROFILE_NAME.value to profile.profileName,
-                DatabaseConstant.ProfileConstants.PROFILE_RANK.value to profile.userRole.userRole,
-                DatabaseConstant.ProfileConstants.PROFILE_USERS.value to profile.users
+            DatabaseConstant.ProfileConstants.PROFILE_ID.value to profile.pid,
+            DatabaseConstant.ProfileConstants.PROFILE_NAME.value to profile.profileName,
+            DatabaseConstant.ProfileConstants.PROFILE_RANK.value to profile.userRole.userRole,
+            DatabaseConstant.ProfileConstants.PROFILE_USERS.value to profile.users
         )
 
         val obtainedProfile =
-                ProfileAdapter.fromDocument(profil, profileId)
+            ProfileAdapter.fromDocument(profil, profileId)
 
         assert(obtainedProfile.pid == profile.pid)
         assert(obtainedProfile.profileName == profile.profileName)
@@ -52,16 +58,16 @@ class ProfileAdapterTest {
     }
 
     @Test
-    fun conversonWithoutRolePutParticipant(){
+    fun conversonWithoutRolePutParticipant() {
         val profil: HashMap<String, Any?> = hashMapOf(
-                DatabaseConstant.ProfileConstants.PROFILE_ID.value to profile.pid,
-                DatabaseConstant.ProfileConstants.PROFILE_NAME.value to profile.profileName,
-                DatabaseConstant.ProfileConstants.PROFILE_RANK.value to null,
-                DatabaseConstant.ProfileConstants.PROFILE_USERS.value to profile.users
+            DatabaseConstant.ProfileConstants.PROFILE_ID.value to profile.pid,
+            DatabaseConstant.ProfileConstants.PROFILE_NAME.value to profile.profileName,
+            DatabaseConstant.ProfileConstants.PROFILE_RANK.value to null,
+            DatabaseConstant.ProfileConstants.PROFILE_USERS.value to profile.users
         )
 
         val obtainedProfile =
-                ProfileAdapter.fromDocument(profil, profileId)
+            ProfileAdapter.fromDocument(profil, profileId)
 
         assert(obtainedProfile.pid == profile.pid)
         assert(obtainedProfile.profileName == profile.profileName)

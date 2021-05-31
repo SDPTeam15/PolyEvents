@@ -12,9 +12,8 @@ import com.google.firebase.Timestamp
  * DTO (Data transfer object) concept.
  */
 object DeviceLocationAdapter : AdapterInterface<DeviceLocation> {
-    override fun toDocument(element: DeviceLocation?): HashMap<String, Any?>? =
-        if (element == null) null
-        else hashMapOf(
+    override fun toDocument(element: DeviceLocation): HashMap<String, Any?> =
+        hashMapOf(
             LocationConstant.LOCATIONS_DEVICE.value to element.device,
             LocationConstant.LOCATIONS_POINT_LATITUDE.value to element.location.latitude,
             LocationConstant.LOCATIONS_POINT_LONGITUDE.value to element.location.longitude,

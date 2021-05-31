@@ -53,10 +53,7 @@ class EventEditManagementActivity : AppCompatActivity() {
             origEvents[event.eventId!!] = event
         }
 
-        Database.currentDatabase.eventDatabase!!.getEvents(eventList =
-            ObservableList<Event>().observe(this){
-                eventList.updateAll(it.value.sortedBy { e -> e.status }, it.sender)
-            }.then)
+        Database.currentDatabase.eventDatabase!!.getEvents({it.orderBy(DatabaseConstant.EventEditConstant.EVENT_EDIT_STATUS.value)}, null, eventList)
             .observeOnce(this) {
                 if (!it.value) {
                     HelperFunctions.showToast("Failed to get the list of all events", this)
@@ -70,11 +67,10 @@ class EventEditManagementActivity : AppCompatActivity() {
     private fun getEventEdit() {
         //Wait until we have both requests accepted from the database to show the material requests
         Database.currentDatabase.eventDatabase!!.getEventEdits(
-            null,
-            ObservableList<Event>().observe(this) {
-                eventEdits.clear(it.sender)
-                eventEdits.addAll(it.value.toList().sortedBy { it.status }, it.sender)
-            }.then
+            { collection ->
+                collection.orderBy(DatabaseConstant.EventEditConstant.EVENT_EDIT_STATUS.value)
+            },
+            eventEdits,
         ).observeOnce(this) {
             if (!it.value) {
                 HelperFunctions.showToast("Failed to get the list of material requests", this)

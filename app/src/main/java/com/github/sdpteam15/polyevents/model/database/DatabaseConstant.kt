@@ -30,10 +30,8 @@ object DatabaseConstant {
 
 
         TEST_COLLECTION("test", object : AdapterInterface<StringWithID> {
-            override fun toDocument(element: StringWithID?): HashMap<String, Any?>? =
-                if (element == null) null
-                else
-                    hashMapOf(TEST_STR to element.string)
+            override fun toDocument(element: StringWithID): HashMap<String, Any?> =
+                hashMapOf(TEST_STR to element.string)
 
             override fun fromDocument(
                 document: Map<String, Any?>,

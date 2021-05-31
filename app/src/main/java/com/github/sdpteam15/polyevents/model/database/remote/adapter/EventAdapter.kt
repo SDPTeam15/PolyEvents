@@ -17,9 +17,8 @@ import com.google.firebase.Timestamp
  */
 @Suppress("UNCHECKED_CAST")
 object EventAdapter : AdapterInterface<Event> {
-    override fun toDocument(element: Event?): HashMap<String, Any?>? =
-        if (element == null) null
-        else hashMapOf(
+    override fun toDocument(element: Event): HashMap<String, Any?> =
+        hashMapOf(
             EVENT_NAME.value to element.eventName,
             EVENT_ORGANIZER.value to element.organizer,
             EVENT_ZONE_ID.value to element.zoneId,

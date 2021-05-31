@@ -39,7 +39,7 @@ class MaterialRequestDatabaseFirestoreTest {
     lateinit var database: DatabaseInterface
     lateinit var mockedMaterialRequestDatabase: MaterialRequestDatabaseInterface
     lateinit var materialRequest: MaterialRequest
-    lateinit var createdMaterialRequest : MaterialRequest
+    lateinit var createdMaterialRequest: MaterialRequest
 
     @Before
     fun setup() {
@@ -88,7 +88,10 @@ class MaterialRequestDatabaseFirestoreTest {
 
         assertEquals(materialRequest, set.element)
         assertEquals(requestId, set.id)
-        assertEquals(DatabaseConstant.CollectionConstant.MATERIAL_REQUEST_COLLECTION, set.collection)
+        assertEquals(
+            DatabaseConstant.CollectionConstant.MATERIAL_REQUEST_COLLECTION,
+            set.collection
+        )
         assertEquals(MaterialRequestAdapter, set.adapter)
     }
 
@@ -102,7 +105,10 @@ class MaterialRequestDatabaseFirestoreTest {
         val set = HelperTestFunction.lastAddEntity()!!
 
         assertEquals(materialRequest, set.element)
-        assertEquals(DatabaseConstant.CollectionConstant.MATERIAL_REQUEST_COLLECTION, set.collection)
+        assertEquals(
+            DatabaseConstant.CollectionConstant.MATERIAL_REQUEST_COLLECTION,
+            set.collection
+        )
         assertEquals(MaterialRequestAdapter, set.adapter)
     }
 
@@ -117,7 +123,10 @@ class MaterialRequestDatabaseFirestoreTest {
         val getList = HelperTestFunction.lastGetListEntity()!!
 
         assertEquals(materialRequests, getList.element)
-        assertEquals(DatabaseConstant.CollectionConstant.MATERIAL_REQUEST_COLLECTION, getList.collection)
+        assertEquals(
+            DatabaseConstant.CollectionConstant.MATERIAL_REQUEST_COLLECTION,
+            getList.collection
+        )
         assertEquals(MaterialRequestAdapter, getList.adapter)
     }
 
@@ -132,7 +141,10 @@ class MaterialRequestDatabaseFirestoreTest {
         val getList = HelperTestFunction.lastGetListEntity()!!
 
         assertEquals(materialRequests, getList.element)
-        assertEquals(DatabaseConstant.CollectionConstant.MATERIAL_REQUEST_COLLECTION, getList.collection)
+        assertEquals(
+            DatabaseConstant.CollectionConstant.MATERIAL_REQUEST_COLLECTION,
+            getList.collection
+        )
         assertEquals(MaterialRequestAdapter, getList.adapter)
     }
 
@@ -147,7 +159,10 @@ class MaterialRequestDatabaseFirestoreTest {
         val del = HelperTestFunction.lastDeleteEntity()!!
 
         assertEquals(requestId, del.id)
-        assertEquals(DatabaseConstant.CollectionConstant.MATERIAL_REQUEST_COLLECTION, del.collection)
+        assertEquals(
+            DatabaseConstant.CollectionConstant.MATERIAL_REQUEST_COLLECTION,
+            del.collection
+        )
     }
 
     @Test
@@ -161,6 +176,9 @@ class MaterialRequestDatabaseFirestoreTest {
         val get = HelperTestFunction.lastGetEntity()!!
 
         assertEquals(requestId, get.id)
-        assertEquals(DatabaseConstant.CollectionConstant.MATERIAL_REQUEST_COLLECTION, get.collection)
+        assertEquals(
+            DatabaseConstant.CollectionConstant.MATERIAL_REQUEST_COLLECTION,
+            get.collection
+        )
     }
 }

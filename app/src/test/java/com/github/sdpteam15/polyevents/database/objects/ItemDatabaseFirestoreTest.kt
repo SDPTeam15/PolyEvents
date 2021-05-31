@@ -34,8 +34,8 @@ class ItemDatabaseFirestoreTest {
     lateinit var database: DatabaseInterface
     lateinit var mockedItemDatabase: ItemDatabaseInterface
     lateinit var item: Item
-    lateinit var createdItemTriple: Triple<Item,Int,Int>
-    lateinit var itemTriple: Triple<Item,Int,Int>
+    lateinit var createdItemTriple: Triple<Item, Int, Int>
+    lateinit var itemTriple: Triple<Item, Int, Int>
 
     @Before
     fun setup() {
@@ -46,7 +46,7 @@ class ItemDatabaseFirestoreTest {
         )
 
 
-        item = Item(itemId = itemId,itemName = itemName, itemType = itemType)
+        item = Item(itemId = itemId, itemName = itemName, itemType = itemType)
         createdItemTriple = Triple(item, itemTotal, itemTotal)
         itemTriple = Triple(item, itemTotal, itemRemaining)
 
@@ -154,7 +154,6 @@ class ItemDatabaseFirestoreTest {
         assertEquals(DatabaseConstant.CollectionConstant.ITEM_TYPE_COLLECTION, getList.collection)
         assertEquals(ItemTypeAdapter, getList.adapter)
     }
-
 
 
     @Test

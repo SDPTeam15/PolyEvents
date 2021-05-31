@@ -9,9 +9,8 @@ import com.github.sdpteam15.polyevents.model.entity.RouteNode
  * DTO (Data transfer object) concept.
  */
 object RouteNodeAdapter : AdapterInterface<RouteNode> {
-    override fun toDocument(element: RouteNode?): HashMap<String, Any?>? =
-        if (element == null) null
-        else hashMapOf(
+    override fun toDocument(element: RouteNode): HashMap<String, Any?> =
+        hashMapOf(
             NODE_ID.value to element.id,
             LATITUDE.value to element.latitude,
             LONGITUDE.value to element.longitude,

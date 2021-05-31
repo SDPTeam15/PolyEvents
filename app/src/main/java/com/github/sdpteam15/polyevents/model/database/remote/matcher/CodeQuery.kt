@@ -10,13 +10,27 @@ class CodeQuery(private val getfun: () -> Task<QuerySnapshot>) : Query {
     companion object {
         fun <T> CodeQueryFromIterator(
             iterator: Iterator<T>,
-            map: (T) -> QueryDocumentSnapshot
+            map: (T) -> QueryDocumentSnapshot?
         ): Query = CodeQuery {
             Tasks.forResult(
                 object : QuerySnapshot {
                     override fun iterator() = object : Iterator<QueryDocumentSnapshot> {
-                        override fun hasNext() = iterator.hasNext()
-                        override fun next() = map(iterator.next())
+                        var nextVal: QueryDocumentSnapshot? = null
+
+                        override fun hasNext(): Boolean {
+                            while (nextVal == null && iterator.hasNext())
+                                nextVal = map(iterator.next())
+                            return nextVal != null
+                        }
+
+                        override fun next(): QueryDocumentSnapshot {
+                            if (hasNext()) {
+                                val result = nextVal!!
+                                nextVal = null
+                                return result
+                            }
+                            return (map(iterator.next())!!)
+                        }
                     }
                 }
             )

@@ -206,7 +206,7 @@ class ObservableListTest {
 
         val list: MutableList<Int> = ObservableList()
 
-        assertFailsWith<NotImplementedError> { list.subList(0,0) }
+        assertFailsWith<NotImplementedError> { list.subList(0, 0) }
 
         list.add(0)
         list.add(1)
@@ -247,13 +247,13 @@ class ObservableListTest {
     }
 
     @Test
-    fun map(){
+    fun map() {
         var updated = false
         val observableList = ObservableList<Int>()
         val list: MutableList<Int> = observableList
-        val mappedObservableList = observableList.map{it.hashCode()}.then
+        val mappedObservableList = observableList.map { it.hashCode() }.then
 
-        assertFailsWith<NotImplementedError> { list.subList(0,0) }
+        assertFailsWith<NotImplementedError> { list.subList(0, 0) }
 
         mappedObservableList.observeOnce { updated = true }
         list.add(0)
@@ -311,22 +311,25 @@ class ObservableListTest {
         val mockedLifecycle = Mockito.mock(Lifecycle::class.java)
         Mockito.`when`(mockedLifecycleOwner.lifecycle).thenReturn(mockedLifecycle)
 
-        assertNotNull(observableList.mapWhileTrue(condition = {true}) { it })
-        assertNotNull(observableList.mapWhileTrue(mockedLifecycleOwner, condition = {true}) { it })
-        assertNotNull(observableList.map{ it })
+        assertNotNull(observableList.mapWhileTrue(condition = { true }) { it })
+        assertNotNull(
+            observableList.mapWhileTrue(
+                mockedLifecycleOwner,
+                condition = { true }) { it })
+        assertNotNull(observableList.map { it })
         assertNotNull(observableList.map(mockedLifecycleOwner) { it })
-        assertNotNull(observableList.mapOnce{ it })
+        assertNotNull(observableList.mapOnce { it })
         assertNotNull(observableList.mapOnce(mockedLifecycleOwner) { it })
     }
 
     @Test
-    fun group(){
+    fun group() {
         var updated = false
         val observableList = ObservableList<Int>()
         val list: MutableList<Int> = observableList
-        val mappedObservableMap = observableList.group{ it % 2 }.then
+        val mappedObservableMap = observableList.group { it % 2 }.then
 
-        assertFailsWith<NotImplementedError> { list.subList(0,0) }
+        assertFailsWith<NotImplementedError> { list.subList(0, 0) }
 
         mappedObservableMap.observeOnce { updated = true }
         list.add(0)
@@ -391,11 +394,70 @@ class ObservableListTest {
         val mockedLifecycle = Mockito.mock(Lifecycle::class.java)
         Mockito.`when`(mockedLifecycleOwner.lifecycle).thenReturn(mockedLifecycle)
 
-        assertNotNull(observableList.groupWhileTrue(condition = {true}) { it % 2 })
-        assertNotNull(observableList.groupWhileTrue(mockedLifecycleOwner, condition = {true}) { it % 2 })
-        assertNotNull(observableList.group{ it % 2 })
+        assertNotNull(observableList.groupWhileTrue(condition = { true }) { it % 2 })
+        assertNotNull(
+            observableList.groupWhileTrue(
+                mockedLifecycleOwner,
+                condition = { true }) { it % 2 })
+        assertNotNull(observableList.group { it % 2 })
         assertNotNull(observableList.group(mockedLifecycleOwner) { it % 2 })
-        assertNotNull(observableList.groupOnce{ it % 2})
+        assertNotNull(observableList.groupOnce { it % 2 })
         assertNotNull(observableList.groupOnce(mockedLifecycleOwner) { it % 2 })
+    }
+
+    @Test
+    fun updateAll() {
+        val from = listOf(
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F",
+        )
+        val to = listOf(
+            "B",
+            "A",
+            "G",
+            "C",
+            "F",
+            "H",
+            "B",
+        )
+        var observable = ObservableList(from)
+        observable.observe(false) {
+            assertEquals(
+                "ObservableList[Observable'B', Observable'A', Observable'G', Observable'C', Observable'F', Observable'H', Observable'B']",
+                it.value.toString()
+            )
+        }
+        observable.observeRemove {
+            assert(
+                it.value in listOf("E", "D", "A")
+            )
+        }
+        observable.observeAdd {
+            assert(
+                it.value in listOf("A", "B", "G", "H")
+            )
+        }
+        observable.updateAll(to)
+
+
+
+        observable = ObservableList(to)
+        observable.observe(false) {
+            assertEquals(
+                "ObservableList[Observable'B', Observable'A', Observable'G', Observable'C', Observable'F', Observable'H', Observable'B']",
+                it.value.toString()
+            )
+        }
+        observable.observeRemove {
+            assert(false)
+        }
+        observable.observeAdd {
+            assert(false)
+        }
+        observable.updateAll(to)
     }
 }

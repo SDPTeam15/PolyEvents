@@ -18,14 +18,18 @@ class ObservableMap<K, T>(val creator: Any? = null) : MutableMap<K, T> {
     private val removeItemObserver: MutableMap<Observable<T>, () -> Boolean> = mutableMapOf()
 
     open class UpdateKeyedValue<K, T>(value: T, val key: K, sender: Any?) :
-        Observable.UpdateValue<T>(value, sender)
+        Observable.UpdateValue<T>(value, sender) {
+        override fun toString() = "value:'$value', key:'$key', sender:'$sender'"
+    }
 
     class ObserversInfo<K, T>(
         value: Map<K, T>,
         val info: Info,
         val args: Any?,
         sender: Any?
-    ) : Observable.UpdateValue<Map<K, T>>(value, sender)
+    ) : Observable.UpdateValue<Map<K, T>>(value, sender){
+        override fun toString() = "value:'$value', info:$info, args:'$args', sender:'$sender'"
+    }
 
     enum class Info {
         put,

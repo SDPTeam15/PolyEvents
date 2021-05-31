@@ -21,10 +21,6 @@ class PolyEventsApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         application = this
-
-        applicationScope.launch {
-            database.genericEntityDao().deleteAll()
-        }
     }
     // No need to cancel this scope as it'll be torn down with the process
     val applicationScope = CoroutineScope(SupervisorJob())

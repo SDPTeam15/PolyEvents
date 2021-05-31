@@ -12,9 +12,8 @@ import com.google.firebase.Timestamp
  */
 @Suppress("UNCHECKED_CAST")
 object UserAdapter : AdapterInterface<UserEntity> {
-    override fun toDocument(element: UserEntity?): HashMap<String, Any?>? =
-        if (element == null) null
-        else hashMapOf(
+    override fun toDocument(element: UserEntity): HashMap<String, Any?> =
+        hashMapOf(
             USER_UID.value to element.uid,
             USER_USERNAME.value to element.username,
             USER_NAME.value to element.name,

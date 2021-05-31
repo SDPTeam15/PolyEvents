@@ -567,7 +567,8 @@ class FirestoreDatabaseProviderTest {
     fun getListEntity() {
         val lastAddSuccessListenerDocumentSnapshot =
             mutableMapOf<String, OnSuccessListener<DocumentSnapshot>>()
-        var lastAddSuccessListenerQuerySnapshot: OnSuccessListener<com.github.sdpteam15.polyevents.model.database.remote.matcher.QuerySnapshot>? = null
+        var lastAddSuccessListenerQuerySnapshot: OnSuccessListener<com.github.sdpteam15.polyevents.model.database.remote.matcher.QuerySnapshot>? =
+            null
 
         var lastFailureListener: OnFailureListener? = null
 
@@ -684,7 +685,8 @@ class FirestoreDatabaseProviderTest {
         assertNotNull(lastAddSuccessListenerQuerySnapshot)
         assertNotNull(lastFailureListener)
 
-        val mockQuerySnapshot = mock(com.github.sdpteam15.polyevents.model.database.remote.matcher.QuerySnapshot::class.java)
+        val mockQuerySnapshot =
+            mock(com.github.sdpteam15.polyevents.model.database.remote.matcher.QuerySnapshot::class.java)
 
         lastFailureListener!!.onFailure(Exception())
         end.observeOnce {

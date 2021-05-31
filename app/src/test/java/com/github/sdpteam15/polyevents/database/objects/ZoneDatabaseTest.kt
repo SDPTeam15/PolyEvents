@@ -50,7 +50,8 @@ class ZoneDatabaseTest {
             ZONE_NAME.value to zoneName
         )
 
-        zone = Zone(zoneId = zoneID,zoneName = zoneName, description = zoneDesc,location = zoneLoc)
+        zone =
+            Zone(zoneId = zoneID, zoneName = zoneName, description = zoneDesc, location = zoneLoc)
 
         val mockDatabaseInterface = HelperTestFunction.mockDatabaseInterface()
         mockedZoneDatabase = ZoneDatabase(mockDatabaseInterface)

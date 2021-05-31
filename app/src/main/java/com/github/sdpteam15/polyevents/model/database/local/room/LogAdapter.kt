@@ -12,12 +12,14 @@ object LogAdapter {
 }
 
 /**
- * Add Log to an entity on the database from a other adapter
+ * Add Log to an entity on the database from a other adapter.
+ * LAST_UPDATE : the last time that the entity was updated
+ * IS_VALID : if the entity is valid (removed or not)
  * @param adapter the adapter
  */
 class LogAdapterToDocument<T>(private val adapter: AdapterToDocumentInterface<T>) :
     AdapterToDocumentInterface<T> {
-    override fun toDocument(element: T?): Map<String, Any?> =
+    override fun toDocument(element: T): Map<String, Any?> =
         toDocumentWithDate(element, null)
 
     fun toDocumentWithDate(element: T?, date: LocalDateTime?): Map<String, Any?> {
@@ -35,6 +37,8 @@ class LogAdapterToDocument<T>(private val adapter: AdapterToDocumentInterface<T>
 
 /**
  * Add Log to an entity on the database from a other adapter
+ * LAST_UPDATE : the last time that the entity was updated
+ * IS_VALID : if the entity is valid (removed or not)
  * @param adapter the adapter
  */
 class LogAdapterFromDocument<T>(private val adapter: AdapterFromDocumentInterface<T>) :

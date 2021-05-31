@@ -9,9 +9,8 @@ import com.github.sdpteam15.polyevents.model.entity.Rating
  * DTO (Data transfer object) concept.
  */
 object RatingAdapter : AdapterInterface<Rating> {
-    override fun toDocument(element: Rating?): HashMap<String, Any?>? =
-        if (element == null) null
-        else hashMapOf(
+    override fun toDocument(element: Rating): HashMap<String, Any?> =
+        hashMapOf(
             RATING_DESCRIPTION.value to element.feedback,
             RATING_SCORE.value to element.rate,
             RATING_USER_ID.value to element.userId,

@@ -9,9 +9,8 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.Us
  * DTO (Data transfer object) concept.
  */
 object UserSettingsAdapter : AdapterInterface<UserSettings> {
-    override fun toDocument(element: UserSettings?): HashMap<String, Any?>? =
-        if (element == null) null
-        else hashMapOf(
+    override fun toDocument(element: UserSettings): HashMap<String, Any?> =
+        hashMapOf(
             USER_SETTINGS_TRACK_LOCATION.value to element.trackLocation,
             USER_SETTINGS_SENDING_LOCATION_ON.value to element.isSendingLocationOn,
             USER_SETTINGS_LOCATION_ID.value to element.locationId
