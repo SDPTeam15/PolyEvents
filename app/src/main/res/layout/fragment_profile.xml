@@ -194,7 +194,7 @@
                                 android:layout_marginEnd="25dp"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintTop_toTopOf="parent"
-                                app:srcCompat="@android:drawable/ic_input_add"
+                                app:srcCompat="@drawable/ic_add_36"
                                 tools:ignore="ContentDescription" />
 
                             <TextView
@@ -232,20 +232,12 @@
                         android:id="@+id/btnUpdateInfos"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentBottom="true"
-                        android:layout_centerInParent="true"
                         android:text="@string/update_infos" />
 
                     <Button
                         android:id="@+id/btnLogout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentBottom="true"
-                        android:layout_centerInParent="true"
                         android:text="@string/logout_button_text" />
 
                 </LinearLayout>
