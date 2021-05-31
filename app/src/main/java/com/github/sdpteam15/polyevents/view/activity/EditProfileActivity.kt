@@ -89,7 +89,7 @@ class EditProfileActivity : AppCompatActivity() {
             currentDatabase.userDatabase!!.updateProfile(profile).observeOnce(this) {
                 if (it.value) {
                     end.postValue(true, this)
-                    currentDatabase.currentUser!!.loadSuccess = false;
+                    //currentDatabase.currentUser!!.loadSuccess = false;
                     onBackPressed()
                 } else
                     HelperFunctions.showToast(
