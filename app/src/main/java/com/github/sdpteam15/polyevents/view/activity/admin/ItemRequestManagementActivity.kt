@@ -77,10 +77,10 @@ class ItemRequestManagementActivity : AppCompatActivity() {
 
         //Wait until we have both requests accepted from the database to show the material requests
         currentDatabase.materialRequestDatabase!!.getMaterialRequestList(
-            ObservableList<MaterialRequest>().observe(this) {
-                requests.clear(it.sender)
-                requests.addAll(it.value.toList().sortedBy { it.status }, it.sender)
-            }.then)
+            requests,
+            { collection ->
+                collection.orderBy(DatabaseConstant.MaterialRequestConstant.MATERIAL_REQUEST_STATUS.value)
+            })
             .observeOnce(this) {
                 if (!it.value) {
                     HelperFunctions.showToast("Failed to get the list of material requests", this)

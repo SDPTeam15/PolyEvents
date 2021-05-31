@@ -46,7 +46,9 @@ class Observable<T>(value: T? = null, val creator: Any? = null) {
      * @property value the value
      * @property  sender object that modified the data
      */
-    open class UpdateValue<T>(val value: T, val sender: Any?)
+    open class UpdateValue<T>(val value: T, val sender: Any?){
+        override fun toString() = "value:'$value', sender:'$sender'"
+    }
 
     companion object {
         /**
