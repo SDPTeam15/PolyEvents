@@ -50,7 +50,9 @@ class EventEditManagementActivity : AppCompatActivity() {
 
         eventList.observeAdd(this) {
             val event = it.value
-            origEvents[event.eventId!!] = event
+            if (event.status != Event.EventStatus.CANCELED) {
+                origEvents[event.eventId!!] = event
+            }
         }
 
         Database.currentDatabase.eventDatabase!!.getEvents({it.orderBy(DatabaseConstant.EventEditConstant.EVENT_EDIT_STATUS.value)}, null, eventList)

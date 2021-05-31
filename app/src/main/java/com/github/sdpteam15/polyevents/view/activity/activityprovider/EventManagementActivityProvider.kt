@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
-import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.entity.Event
@@ -138,7 +137,9 @@ class EventManagementActivityProvider : AppCompatActivity(), AdapterView.OnItemS
     private fun getEventEditRequestsFromDB() {
         val eventList = ObservableList<Event>()
         eventList.observeAdd(this) {
-            origEvent[it.value.eventId!!] = it.value
+            if (it.value.status != Event.EventStatus.CANCELED) {
+                origEvent[it.value.eventId!!] = it.value
+            }
         }
         //Gets the item request of the user and then gets the item list
         currentDatabase.eventDatabase!!.getEvents(null, null, eventList).observe(this) {
