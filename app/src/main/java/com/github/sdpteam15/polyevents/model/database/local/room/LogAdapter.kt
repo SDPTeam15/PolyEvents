@@ -30,7 +30,7 @@ class LogAdapterToDocument<T>(private val adapter: AdapterToDocumentInterface<T>
             LogAdapter.IS_VALID to (element != null),
         )
         if (element != null)
-            result.putAll(adapter.toDocument(element)!!)
+            result.putAll(adapter.toDocument(element))
         return result
     }
 }

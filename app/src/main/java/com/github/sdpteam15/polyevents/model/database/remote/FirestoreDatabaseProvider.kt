@@ -124,7 +124,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         }
         firestore!!
             .collection(collection.value)
-            .add(adapter.toDocument(element)!!)
+            .add(adapter.toDocument(element))
             .addOnSuccessListener(successListener)
             .addOnFailureListener(failureListener)
         return ended
@@ -143,7 +143,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             mutableList.add(null)
             firestore!!
                 .collection(collection.value)
-                .add(adapter.toDocument(elementWithIndex.value)!!)
+                .add(adapter.toDocument(elementWithIndex.value))
                 .addOnSuccessListener {
                     synchronized(this) {
                         mutableList[elementWithIndex.index] = Pair(true, it.id)

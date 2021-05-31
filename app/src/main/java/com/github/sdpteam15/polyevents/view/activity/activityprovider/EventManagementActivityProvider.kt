@@ -152,14 +152,14 @@ class EventManagementActivityProvider : AppCompatActivity(), AdapterView.OnItemS
                 ).observeOnce(this) {
                     if (!it.value) {
                         HelperFunctions.showToast(
-                            "Failed to get the list of event edit requests",
+                            getString(R.string.fail_to_get_list_events_edits_eo),
                             this
                         )
                         finish()
                     }
                 }
             } else {
-                HelperFunctions.showToast("Failed to get the list of events", this)
+                HelperFunctions.showToast(getString(R.string.fail_to_get_list_event_eo), this)
                 finish()
             }
         }

@@ -130,7 +130,7 @@ class EventListFragment : Fragment() {
         // TODO: set limit or not?
         currentDatabase.eventDatabase!!.getEvents(null, null, events).observe(this) {
             if (!it.value) {
-                HelperFunctions.showToast("Failed to get events information", context)
+                HelperFunctions.showToast(getString(R.string.fail_to_get_information), context)
             }
         }
         updateEventsList()

@@ -1,7 +1,6 @@
 package com.github.sdpteam15.polyevents.view.activity.staff
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -97,8 +96,8 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
         spinner = findViewById(R.id.id_title_item_request)
 //-------------------------------------------------------------------------------------------
         //List of status
-        statusNames.add("Deliveries")
-        statusNames.add("Returns")
+        statusNames.add(getString(R.string.deliveries_staff))
+        statusNames.add(getString(R.string.returns_staff))
         val adapter =
             ArrayAdapter(this, R.layout.spinner_dropdown_item, statusNames)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -140,15 +139,19 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
                     it.value
                 ).observeOnce { it2 ->
                     if (!it2.value) {
-                        showToast("Failed to update the material request", this)
+                        showToast(getString(R.string.fail_to_update_material_request), this)
                     }
                 }
             }
         }
 
         items.observeUpdate(this) {
-            if(it.sender != currentDatabase){
-                currentDatabase.itemDatabase!!.updateItem(it.value.first,it.value.second,it.value.third)
+            if (it.sender != currentDatabase) {
+                currentDatabase.itemDatabase!!.updateItem(
+                    it.value.first,
+                    it.value.second,
+                    it.value.third
+                )
             }
         }
 
@@ -182,7 +185,7 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
             { it.orderBy(MATERIAL_REQUEST_STATUS.value) }
         ).observeOnce(this) {
             if (!it.value) {
-                showToast("Failed to get the list of material requests", this)
+                showToast(getString(R.string.fail_to_get_list_material_requests), this)
             } else {
                 val sentEventIds = mutableListOf<String>()
                 for (request in requests) {
@@ -213,7 +216,7 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
         currentDatabase.itemDatabase!!.getItemsList(items)
             .observeOnce(this) {
                 if (!it.value) {
-                    showToast("Failed to get the list of items", this)
+                    showToast(getString(R.string.fail_to_get_list_items_staff), this)
                 }
             }
 
@@ -221,7 +224,7 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
         currentDatabase.userDatabase!!.getListAllUsers(users)
             .observeOnce(this) {
                 if (!it.value) {
-                    showToast("Failed to get the list of users", this)
+                    showToast(getString(R.string.fail_to_get_list_users_staff), this)
                 }
             }
 
@@ -250,9 +253,10 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
             requests.indexOfFirst { it.requestId == request.requestId }, when (request.status) {
                 DELIVERING -> request.copy(status = DELIVERED)
                 RETURNING -> {
-                    for(item in request.items){
+                    for (item in request.items) {
                         val oldItemIndex = items.indexOfFirst { it.first.itemId == item.key }
-                        items[oldItemIndex] = items[oldItemIndex].copy(third = items[oldItemIndex].third + item.value)
+                        items[oldItemIndex] =
+                            items[oldItemIndex].copy(third = items[oldItemIndex].third + item.value)
 
                     }
                     request.copy(status = RETURNED)
@@ -288,7 +292,6 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
     }
 
 
-
     companion object {
         /**
          * Status to display on the staff request activity
@@ -300,6 +303,7 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
             RETURN,
             OTHERS;
         }
+
         private val mapOrdinal = StaffRequestStatus.values().map { it.ordinal to it }.toMap()
 
         private val mapCategory = mapOf(

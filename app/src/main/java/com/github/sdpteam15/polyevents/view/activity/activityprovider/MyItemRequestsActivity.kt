@@ -153,12 +153,12 @@ class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLi
             userId
         ).observeOnce(this) {
             if (!it.value) {
-                HelperFunctions.showToast("Failed to get the list of material requests", this)
+                HelperFunctions.showToast(getString(R.string.fail_to_get_list_material_requests_eo), this)
             } else {
                 Database.currentDatabase.itemDatabase!!.getItemsList(items)
                     .observeOnce(this) { it2 ->
                         if (!it2.value) {
-                            HelperFunctions.showToast("Failed to get the list of items", this)
+                            HelperFunctions.showToast(getString(R.string.fail_to_get_list_items), this)
                         }
                     }
             }

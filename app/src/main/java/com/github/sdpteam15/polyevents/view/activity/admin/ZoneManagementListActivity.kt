@@ -46,7 +46,7 @@ class ZoneManagementListActivity : AppCompatActivity() {
             zones
         ).observe(this) {
             if (!it.value) {
-                HelperFunctions.showToast("Failed to get the list of zones", this)
+                HelperFunctions.showToast(getString(R.string.fail_to_get_list_zones), this)
                 finish()
             }
         }
