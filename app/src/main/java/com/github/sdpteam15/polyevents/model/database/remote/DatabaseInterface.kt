@@ -108,7 +108,7 @@ interface DatabaseInterface {
         elements: List<T>,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterToDocumentInterface<in T> = collection.adapter as AdapterToDocumentInterface<T>
-    ): Observable<Pair<Boolean, List<String?>>>
+    ): Observable<Pair<Boolean, List<String>>>
 
     /**
      * Set an Entity to the data base

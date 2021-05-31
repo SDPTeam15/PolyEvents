@@ -1,7 +1,7 @@
 package com.github.sdpteam15.polyevents.model.database.local.room
 
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
-import com.github.sdpteam15.polyevents.helper.HelperFunctions.thenReturn
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.apply
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
@@ -12,7 +12,6 @@ import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.matcher.QueryDocumentSnapshot
 import com.github.sdpteam15.polyevents.model.database.remote.objects.*
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
-import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication
@@ -108,7 +107,7 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
         elements: List<T>,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterToDocumentInterface<in T>
-    ): Observable<Pair<Boolean, List<String?>>> =
+    ): Observable<Pair<Boolean, List<String>>> =
         db.addListEntity(
             elements,
             collection,
@@ -116,7 +115,7 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
         ).observeOnce {
             PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
                 for (value in it.value.second.zip(elements))
-                    if (value.first != null)
+                    if (value.first != "")
                         PolyEventsApplication.application.database.genericEntityDao().insert(
                             LocalAdapter.toDocument(
                                 adapter.toDocument(value.second),
@@ -368,7 +367,7 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
                             CodeQuery.CodeQueryFromIterator(it.value.entries.iterator()) {
                                 ((adapterToDocument ?: collection.adapter)
                                         as AdapterToDocumentInterface<in T>)
-                                    .toDocument(it.value).thenReturn { data ->
+                                    .toDocument(it.value).apply { data ->
                                         QueryDocumentSnapshot(
                                             data,
                                             it.key

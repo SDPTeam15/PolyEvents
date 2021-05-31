@@ -1,10 +1,9 @@
 package com.github.sdpteam15.polyevents.model.database.local.dao
 
 import androidx.room.*
-import com.github.sdpteam15.polyevents.helper.HelperFunctions.thenReturn
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.apply
 import com.github.sdpteam15.polyevents.model.database.local.entity.GenericEntity
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalAdapter
-import java.util.*
 
 /**
  * Data access object for the GenericEntity entity on the local room database
@@ -71,8 +70,8 @@ interface GenericEntityDao {
              * @param collection the collection
              * @return the date
              */
-    fun lastUpdateDate(collection: String): Date? =
-        lastUpdate(collection).thenReturn { LocalAdapter.SimpleDateFormat.parse(it) }
+    fun lastUpdateDate(collection: String) =
+        lastUpdate(collection).apply { LocalAdapter.SimpleDateFormat.parse(it) }
 }
 
 
