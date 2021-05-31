@@ -19,7 +19,7 @@ class RouteNodeAdapterTest {
             longitude = longitude,
             areaId = areaId,
         )
-        val to = RouteNodeAdapter.fromDocument(RouteNodeAdapter.toDocument(from)!!, id)
+        val to = RouteNodeAdapter.fromDocument(RouteNodeAdapter.toDocument(from), id)
 
         assertEquals(from, to)
     }

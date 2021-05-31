@@ -88,7 +88,7 @@ class ObservableTest {
     }
 
     @Test
-    fun mapUpdate(){
+    fun mapUpdate() {
         var isUpdate = false
         val mockedLifecycleOwner = mock(LifecycleOwner::class.java)
         val mockedLifecycle = mock(Lifecycle::class.java)
@@ -96,7 +96,9 @@ class ObservableTest {
 
         var v = Observable<Boolean>()
         var observe = true
-        v.mapWhileTrue(mockedLifecycleOwner) { Pair(it, observe) }.then.observe { isUpdate = it.value }
+        v.mapWhileTrue(mockedLifecycleOwner) { Pair(it, observe) }.then.observe {
+            isUpdate = it.value
+        }
 
         assert(!isUpdate)
         v.postValue(true)
@@ -199,7 +201,10 @@ class ObservableTest {
 
         var v = Observable<Boolean>()
         var observe = true
-        v.updateWhileTrue(mockedLifecycleOwner, Observable<Boolean>().observe { isUpdate = it.value }.then) { observe }
+        v.updateWhileTrue(
+            mockedLifecycleOwner,
+            Observable<Boolean>().observe { isUpdate = it.value }.then
+        ) { observe }
 
         assert(!isUpdate)
         v.postValue(true)
@@ -217,7 +222,10 @@ class ObservableTest {
         assert(!isUpdate)
 
         v = Observable()
-        v.updateOnce(mockedLifecycleOwner, Observable<Boolean>().observe { isUpdate = it.value }.then)
+        v.updateOnce(
+            mockedLifecycleOwner,
+            Observable<Boolean>().observe { isUpdate = it.value }.then
+        )
         assert(!isUpdate)
         v.postValue(true)
         assert(isUpdate)
