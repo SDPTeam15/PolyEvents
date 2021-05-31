@@ -3,6 +3,7 @@ package com.github.sdpteam15.polyevents.view.activity.admin
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
@@ -53,7 +54,7 @@ class ZoneManagementListActivity : AppCompatActivity() {
 
         zones.observe(this) { recyclerView.adapter!!.notifyDataSetChanged() }
         zones.observeAdd(this) { ZoneAreaMapHelper.importNewZone(this, it.value, false) }
-        findViewById<Button>(R.id.btnNewZone).setOnClickListener {
+        findViewById<ImageButton>(R.id.btnNewZone).setOnClickListener {
             startActivityZone(NEW_ZONE)
         }
         zones.observeRemove(this) {
