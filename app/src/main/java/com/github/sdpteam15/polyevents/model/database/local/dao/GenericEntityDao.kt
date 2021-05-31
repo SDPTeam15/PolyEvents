@@ -1,8 +1,10 @@
 package com.github.sdpteam15.polyevents.model.database.local.dao
 
 import androidx.room.*
-import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.thenReturn
 import com.github.sdpteam15.polyevents.model.database.local.entity.GenericEntity
+import com.github.sdpteam15.polyevents.model.database.local.room.LocalAdapter
+import java.util.*
 
 /**
  * Data access object for the GenericEntity entity on the local room database
@@ -57,8 +59,20 @@ interface GenericEntityDao {
     /**
      * Get the last time the collection has been updated
      * @param collection the collection
-     * @return serialized version of a date
+     * @return serialized version of the date
      */
     @Query("SELECT MAX(update_time) FROM entity_table WHERE collection = :collection")
     suspend fun lastUpdate(collection: String): String?
+
+
+    suspend
+            /**
+             * Get the last time the collection has been updated
+             * @param collection the collection
+             * @return the date
+             */
+    fun lastUpdateDate(collection: String): Date? =
+        lastUpdate(collection).thenReturn { LocalAdapter.SimpleDateFormat.parse(it) }
 }
+
+

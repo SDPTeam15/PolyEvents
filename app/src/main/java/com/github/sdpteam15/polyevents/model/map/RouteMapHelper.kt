@@ -436,11 +436,16 @@ object RouteMapHelper {
         context: Context?,
         lifecycleOwner: LifecycleOwner
     ): Observable<Boolean> {
+        if(edges.isNotEmpty())
+            edges.toList().forEach {
+                edgeAddedNotification(context, it)
+            }
 
         //Add a listener on edges and nodes adds to display
         val edgesToAdd = mutableListOf<RouteEdge>()
         edges.observeAdd(lifecycleOwner) {
             synchronized(this) {
+                println("edgesToAdd : ${it.value}")
                 edgesToAdd.add(it.value)
                 it.value.start = nodes.first{ n -> n.id == it.value.startId}
                 it.value.end = nodes.first{ n -> n.id == it.value.endId}
@@ -467,7 +472,6 @@ object RouteMapHelper {
                 }
             }
         }
-
         return Database.currentDatabase.routeDatabase!!.getRoute(nodes, edges, zones)
     }
 
@@ -487,6 +491,7 @@ object RouteMapHelper {
      * @param edge new edge
      */
     fun edgeAddedNotification(context: Context?, edge: RouteEdge) {
+
         //Remove all creation lines when we get an answer from the database
         removeAllLinesToRemove()
         val option = PolylineOptions()
