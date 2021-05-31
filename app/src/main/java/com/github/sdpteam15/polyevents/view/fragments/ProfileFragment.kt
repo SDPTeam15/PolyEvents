@@ -31,7 +31,7 @@ import java.time.format.DateTimeFormatter
  *  [Fragment] subclass that represents the profile page allowing the user to modify its private information
  *  @param userId the id of the user we display the information or null if it is the current user of the application
  */
-class ProfileFragment(private val userId: String? = null) : Fragment() {
+class ProfileFragment(private val userId: String? = null) : Fragment(), UserModifiedInterface {
     //Return currentUser if we are not in test, but we can use a fake user in test this way
     var currentUser: UserEntity? = null
         get() = field ?: currentDatabase.currentUser
@@ -261,6 +261,7 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
         )
 
         intent.putExtra(EditProfileActivity.EDIT_PROFILE_ID, item.pid.toString())
+        EditProfileActivity.callback = this
         startActivity(intent)
 
         /*
@@ -270,5 +271,12 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
                 recyclerView.adapter!!.notifyDataSetChanged()
             }
         }*/
+    }
+
+    override fun profileHasChanged() {
+        currentDatabase.userDatabase!!.getUserInformation(
+            userInfoLiveData,
+            currentUID
+        )
     }
 }

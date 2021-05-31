@@ -24,6 +24,7 @@ import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.view.activity.EditProfileActivity.Companion.CALLER_RANK
 import com.github.sdpteam15.polyevents.view.activity.EditProfileActivity.Companion.EDIT_PROFILE_ID
+import com.github.sdpteam15.polyevents.view.fragments.UserModifiedInterface
 import org.hamcrest.Matchers.not
 import org.junit.After
 import org.junit.Test
@@ -50,6 +51,7 @@ class EditProfileActivityTest {
     private val name: ViewInteraction get() = Espresso.onView(withId(R.id.EditProfileActivity_Name))
     private val cancel: ViewInteraction get() = Espresso.onView(withId(R.id.EditProfileActivity_Cancel))
     private val save: ViewInteraction get() = Espresso.onView(withId(R.id.EditProfileActivity_Save))
+
 
     fun setup(rank: UserRole, pid: String) {
         val intent =
