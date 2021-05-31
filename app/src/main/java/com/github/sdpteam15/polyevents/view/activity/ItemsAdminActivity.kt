@@ -65,13 +65,9 @@ class ItemsAdminActivity : AppCompatActivity() {
                 currentDatabase.itemDatabase!!.createItem(it.value.first, it.value.second)
                     .observeOnce { it2 ->
                         if (it2.value != "") {
-                            showToast("set item", this)
-
-                            showToast("itemid changed", this)
                             items[it.index].first.itemId = it2.value
-
                         } else {
-                            showToast("Failed to add the item to the database", this)
+                            showToast(getString(R.string.fail_to_add_items), this)
                         }
                     }
             }
@@ -89,7 +85,7 @@ class ItemsAdminActivity : AppCompatActivity() {
         val deleteItem = { item: Triple<Item, Int, Int> ->
             //check if there if there is no accepted request with the requested item
             if (item.second != item.third) {
-                showToast("This item is in use by an event provider", this)
+                showToast(getString(R.string.item_already_in_use), this)
             }else{
                 items.remove(item)
             }
@@ -163,10 +159,10 @@ class ItemsAdminActivity : AppCompatActivity() {
                 val newTotal = itemQuantity.text.toString().toInt()
                 when {
                     newTotal <= 0 -> {
-                        showToast("The quantity must be positive", this)
+                        showToast(getString(R.string.quantity_should_be_positive), this)
                     }
                     itemUsed > newTotal -> {
-                        showToast("The new total is less than attributed items", this)
+                        showToast(getString(R.string.new_total_less_items), this)
 
                     }
                     else -> {
@@ -206,7 +202,7 @@ class ItemsAdminActivity : AppCompatActivity() {
                     }
                 }
             } else {
-                showToast("Please fill all the fields above", this)
+                showToast(getString(R.string.fill_all_fields), this)
             }
         }
 

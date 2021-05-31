@@ -224,9 +224,9 @@ class EventManagementTest {
         )
         onView(withId(R.id.eventManagementNameField)).check(matches(isDisplayed()))
         clickAndCheckNotRedirect()
-        onView(withId(R.id.eventManagementNameField)).perform(replaceText(eventName))
+        onView(withId(R.id.eventManagementNameField)).perform(scrollTo(), replaceText(eventName))
         clickAndCheckNotRedirect()
-        onView(withId(R.id.eventManagementDescriptionField)).perform(replaceText(eventDesc))
+        onView(withId(R.id.eventManagementDescriptionField)).perform(scrollTo(),replaceText(eventDesc))
         clickAndCheckNotRedirect()
         closeKeyboard()
         onView(withId(R.id.swtLimitedEvent)).perform(click())
@@ -263,9 +263,9 @@ class EventManagementTest {
             )
         )
         clickAndCheckNotRedirect()
-        onView(withId(R.id.eventManagementNameField)).perform(replaceText(eventName))
+        onView(withId(R.id.eventManagementNameField)).perform(scrollTo(), replaceText(eventName))
         clickAndCheckNotRedirect()
-        onView(withId(R.id.eventManagementDescriptionField)).perform(replaceText(eventDesc))
+        onView(withId(R.id.eventManagementDescriptionField)).perform(scrollTo(), replaceText(eventDesc))
         clickAndCheckNotRedirect()
         closeKeyboard()
         onView(withId(R.id.swtLimitedEvent)).perform(click())
@@ -627,7 +627,7 @@ class EventManagementTest {
         onView(withId(R.id.swtLimitedEvent)).perform(click())
         onView(withId(R.id.etNbPart)).perform(replaceText(eventNb))
 
-        onView(withId(R.id.btnManageEvent)).perform(click())
+        onView(withId(R.id.btnManageEvent)).perform(scrollTo(), click())
 
         obs2.postValue(true)
 
@@ -685,7 +685,7 @@ class EventManagementTest {
         onView(withId(R.id.swtLimitedEvent)).perform(click())
         onView(withId(R.id.etNbPart)).perform(replaceText(eventNb))
 
-        onView(withId(R.id.btnManageEvent)).perform(click())
+        onView(withId(R.id.btnManageEvent)).perform(scrollTo(), click())
 
         obs2.postValue(true)
 
@@ -738,7 +738,7 @@ class EventManagementTest {
         onView(withId(R.id.swtLimitedEvent)).perform(click())
         onView(withId(R.id.etNbPart)).perform(replaceText(eventNb))
 
-        onView(withId(R.id.btnManageEvent)).perform(click())
+        onView(withId(R.id.btnManageEvent)).perform(scrollTo(), click())
 
         obs2.postValue(true)
 

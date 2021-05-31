@@ -54,7 +54,7 @@ class ItemRequestManagementActivity : AppCompatActivity() {
                         if (ans.value) {
                             userNames[it.key] = tempUsers.value?.name ?: "ANONYMOUS"
                         } else {
-                            HelperFunctions.showToast("Failed to get Username from database", this)
+                            HelperFunctions.showToast(getString(R.string.failed_to_get_username_from_database), this)
                         }
                     }
             }

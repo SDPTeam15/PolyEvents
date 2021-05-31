@@ -88,6 +88,7 @@ class CodeQuery(private val getfun: () -> Task<QuerySnapshot>) : Query {
     override fun whereNotEqualTo(key: String, value: Any) =
         filter { it, _ -> it.data[key] != value }
 
+    @Suppress("UNCHECKED_CAST")
     override fun whereArrayContains(key: String, value: Any) =
         filter { it, _ -> (it.data[key] as? List<out Any>)?.contains(value) ?: false }
 

@@ -14,6 +14,7 @@ import java.util.*
  */
 object LocalAdapter {
     @SuppressLint("SimpleDateFormat")
+    @Suppress("UNCHECKED_CAST")
     val SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
     /**

@@ -69,7 +69,7 @@ class ItemRequestActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
         }, null, listEvent).observeOnce(this) {
             if (it.value) {
                 if (listEvent.isEmpty()) {
-                    showToast("You must create an event before requesting an item", this)
+                    showToast(getString(R.string.create_event_before_items), this)
                     finish()
                 } else {
                     if (selectedEvent.value == null) {
@@ -87,7 +87,7 @@ class ItemRequestActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
                     eventSpinner.onItemSelectedListener = this
                 }
             } else {
-                showToast("Failed to get the list of events", this)
+                showToast(getString(R.string.fail_to_get_event_list), this)
                 finish()
             }
         }

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- MyItemRequestsActivity -->
+    <string name="my_item_requests">My item requests</string>
+    <string name="pending_requests">Pending requests</string>
+    <string name="accepted_requests">Accepted requests</string>
+    <string name="refused_requests">Refused requests</string>
+    <string name="reason_of_refusal">Reason of refusal:</string>
+    <string name="fail_to_get_list_items">Failed to get the list of items</string>
+    <string name="fail_to_get_list_material_requests_eo">Failed to get the list of material requests</string>
+
+    <!-- ItemRequestsActivity-->
+    <string name="send_request_button_text">Send request</string>
+    <string name="item_request_sent_text">Your request has been sent !</string>
+    <string name="item_request_empty_text">Your request is empty. Please select some items !</string>
+    <string name="item_quantity_positive_text">The quantity must be positive !</string>
+    <string name="item_name_quantity_text">%1$s\n(%2$d available)</string>
+    <string name="max_item_quantity_text">There are only %1$s %2$s available !</string>
+    <string name="event_not_selected">Please select an event</string>
+    <string name="item_request_updated">Your request has been successful updated</string>
+    <string name="select_your_event">Select your event :</string>
+    <string name="create_event_before_items">You must create an event before requesting an item</string>
+    <string name="fail_to_get_event_list">Failed to get the list of events</string>
+
+    <!-- MyEventEditRequest -->
+    <string name="fail_to_get_list_events_edits_eo">Failed to get the list of event edit requests</string>
+    <string name="fail_to_get_list_event_eo">Failed to get the list of events</string>
+
+</resources>

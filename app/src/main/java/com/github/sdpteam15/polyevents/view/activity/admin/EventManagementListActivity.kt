@@ -3,6 +3,7 @@ package com.github.sdpteam15.polyevents.view.activity.admin
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageButton
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
@@ -58,7 +59,7 @@ class EventManagementListActivity : AppCompatActivity() {
         recyclerView.setHasFixedSize(false)
 
         // Add the lister on the create button
-        findViewById<Button>(R.id.btnNewEvent).setOnClickListener {
+        findViewById<ImageButton>(R.id.btnNewEvent).setOnClickListener {
             val intent = Intent(this, EventManagementActivity::class.java)
             if (isOrganiser) {
                 intent.putExtra(INTENT_MANAGER, "MANAGER")

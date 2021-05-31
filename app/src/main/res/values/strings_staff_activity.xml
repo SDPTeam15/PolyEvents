@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- StaffRequestActivity -->
+    <string name="fail_to_get_list_material_requests">Failed to get the list of material requests</string>
+    <string name="fail_to_get_list_items_staff">Failed to get the list of items</string>
+    <string name="fail_to_get_list_users_staff">Failed to get the list of users</string>
+    <string name="fail_to_update_material_request">Failed to update the material request</string>
+    <string name="deliveries_staff">Deliveries</string>
+    <string name="returns_staff">Returns</string>
+</resources>
