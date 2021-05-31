@@ -635,11 +635,6 @@ class FirestoreDatabaseProviderTest {
             null
         }
 
-        lastAddSuccessListenerDocumentSnapshot[TEST_ID]!!.onSuccess(mockDocumentSnapshot)
-        end.observeOnce {
-            assert(!it.value)
-        }.then.postValue(true)
-
         When(mockDocumentSnapshot.data).thenAnswer {
             mapOf<String, Any?>(
                 TEST_STR to TEST_STRING
@@ -664,15 +659,23 @@ class FirestoreDatabaseProviderTest {
             assert(it.value)
         }.then.postValue(false)
 
+        When(mockDocumentSnapshot.id).thenAnswer {
+            TEST_ID
+        }
+        When(mockDocumentSnapshot.data).thenAnswer {
+            null
+        }
+        lastAddSuccessListenerDocumentSnapshot[TEST_ID]!!.onSuccess(mockDocumentSnapshot)
+
+        end.observeOnce {
+            assert(!it.value)
+        }.then.postValue(true)
+
         lastFailureListener!!.onFailure(Exception())
         end.observeOnce {
             assert(!it.value)
-            assertEquals(TEST_ID, result[0].id)
+            assertEquals(1, result.size)
             assertEquals(TEST_STRING, result[0].string)
-            assertEquals(TEST_ID1, result[1].id)
-            assertEquals(TEST_STRING, result[1].string)
-            assertEquals(TEST_ID2, result[2].id)
-            assertEquals(TEST_STRING, result[2].string)
         }
 
         end = FirestoreDatabaseProvider.getListEntity(

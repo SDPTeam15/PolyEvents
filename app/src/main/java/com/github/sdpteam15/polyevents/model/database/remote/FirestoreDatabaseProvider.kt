@@ -279,7 +279,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         val ended = Observable<Boolean>()
         if (ids.isEmpty())
             ended.postValue(true, this)
-        val mutableList = MutableList<Pair<String?, T?>?>(elements.size) { null }
+        val mutableList = MutableList<Pair<String?, T?>?>(ids.size) { null }
 
         //The check to notify the end of all the process
         val checkIfDone = { index: Int, data: Map<String, Any>?, id: String? ->
@@ -300,7 +300,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
                         }
                     }
                     elements.updateAll(map, this)
-                    ended.postValue(true, this)
+                    ended.postValue(mutableList.fold(true) { a, p -> a && p?.second != null }, this)
                 }
             }
         }
