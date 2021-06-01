@@ -91,6 +91,7 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
             collection,
             LogAdapterToDocument(adapter)
         ).observeOnce {
+            //If added on remote db add it to the cache
             if (it.value != "") {
                 PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
                     PolyEventsApplication.application.database.genericEntityDao().insert(
@@ -114,6 +115,7 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
             collection,
             LogAdapterToDocument(adapter)
         ).observeOnce {
+            //If added on remote db add it to the cache
             PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
                 for (value in it.value.second.zip(elements))
                     if (value.first != "")
@@ -139,6 +141,7 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
             collection,
             LogAdapterToDocument(adapter)
         ).observeOnce {
+            //If set on remote db add it to the cache
             if (it.value) {
                 PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
                     if (element != null)
@@ -163,6 +166,7 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
             collection,
             LogAdapterToDocument(adapter)
         ).observeOnce {
+            //If set on remote db add it to the cache
             PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
                 for (value in it.value.second.zip(elements))
                     if (value.first && value.second.second != null)

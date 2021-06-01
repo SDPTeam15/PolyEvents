@@ -123,7 +123,7 @@ object RouteMapHelper {
         // gets the closest point on the map where we can go from our current position
         val nearestPos = getPosOnNearestAttachable(startPosition)
         // if nothing to attach to or the zone is not connected to the graph, no path can be found
-        if (nearestPos.second == null || nodes.all{it.areaId != targetZoneId}) {
+        if (nearestPos.second == null || nodes.all { it.areaId != targetZoneId }) {
             return null
         }
         val nodesForShortestPath = mutableSetOf<RouteNode>()
@@ -436,19 +436,24 @@ object RouteMapHelper {
         context: Context?,
         lifecycleOwner: LifecycleOwner
     ): Observable<Boolean> {
-        if(edges.isNotEmpty())
-            edges.toList().forEach {
-                edgeAddedNotification(context, it)
-            }
-
         //Add a listener on edges and nodes adds to display
         val edgesToAdd = mutableListOf<RouteEdge>()
+
+        if (edges.isNotEmpty())
+            synchronized(this) {
+                edges.toList().forEach {
+                    if (it.start != null && it.end != null)
+                        edgeAddedNotification(context, it)
+                    else
+                        edgesToAdd.add(it)
+                }
+            }
+
         edges.observeAdd(lifecycleOwner) {
             synchronized(this) {
-                println("edgesToAdd : ${it.value}")
                 edgesToAdd.add(it.value)
-                it.value.start = nodes.firstOrNull{ n -> n.id == it.value.startId}
-                it.value.end = nodes.firstOrNull{ n -> n.id == it.value.endId}
+                it.value.start = nodes.firstOrNull { n -> n.id == it.value.startId }
+                it.value.end = nodes.firstOrNull { n -> n.id == it.value.endId }
                 for (e in edgesToAdd.toList())
                     if (e.start != null && e.end != null) {
                         edgeAddedNotification(context, e)
@@ -461,9 +466,9 @@ object RouteMapHelper {
         nodes.observeAdd(lifecycleOwner) {
             synchronized(this) {
                 for (e in edgesToAdd.toList()) {
-                    if(e.startId == it.value.id)
+                    if (e.startId == it.value.id)
                         e.start = it.value
-                    if(e.endId == it.value.id)
+                    if (e.endId == it.value.id)
                         e.end = it.value
                     if (e.start != null && e.end != null) {
                         edgeAddedNotification(context, e)
