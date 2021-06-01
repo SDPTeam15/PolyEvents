@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.helper.NotificationsHelper
+import com.github.sdpteam15.polyevents.helper.NotificationsScheduler
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.entity.Event
@@ -47,8 +48,11 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         val obsComments: ObservableList<Rating> = ObservableList()
         lateinit var event: Event
 
-        // for testing purposes
+        // Keep an instance for testing purposes
         lateinit var database: LocalDatabase
+
+        // Keep an instance for testing purposes
+        lateinit var notificationsScheduler: NotificationsScheduler
     }
 
     private lateinit var eventId: String
@@ -84,6 +88,8 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         eventId = intent.getStringExtra(EXTRA_EVENT_ID)!!
 
         database = (application as PolyEventsApplication).database
+
+        notificationsScheduler = NotificationsHelper(applicationContext)
 
         subscribeButton = findViewById(R.id.button_subscribe_follow_event)
         recyclerView = findViewById(R.id.id_recycler_comment_list)
@@ -336,18 +342,16 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
                 val eventBeforeNotificationId = eventRetrieved.eventBeforeNotificationId
                 // Cancel the notification set before the event
                 if (eventBeforeNotificationId != null) {
-                    NotificationsHelper.cancelNotification(
-                        eventBeforeNotificationId,
-                        applicationContext
+                    notificationsScheduler.cancelNotification(
+                        eventBeforeNotificationId
                     )
                 }
 
                 val eventStartNotificationId = eventRetrieved.eventStartNotificationId
                 // Cancel the notification set at the start of the event
                 if (eventStartNotificationId != null) {
-                    NotificationsHelper.cancelNotification(
-                        eventStartNotificationId,
-                        applicationContext
+                    notificationsScheduler.cancelNotification(
+                        eventStartNotificationId
                     )
                 }
                 // Now remove event from local cache since we're not following it anymore
@@ -365,18 +369,16 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
     private fun scheduleNotificationsAndSaveEvent() {
         val event15MinBeforeNotificationMessage =
             getString(R.string.event_start_soon, event.eventName)
-        val event15MinBeforeNotificationId = NotificationsHelper.scheduleEventNotification(
+        val event15MinBeforeNotificationId = notificationsScheduler.scheduleEventNotification(
             eventId = eventId,
             notificationMessage = event15MinBeforeNotificationMessage,
-            scheduledTime = event.startTime!!.minusMinutes(15L),
-            applicationContext = applicationContext
+            scheduledTime = event.startTime!!.minusMinutes(15L)
         )
         val eventStartNotificationMessage = getString(R.string.event_started, event.eventName)
-        val eventStartNotificationId = NotificationsHelper.scheduleEventNotification(
+        val eventStartNotificationId = notificationsScheduler.scheduleEventNotification(
             eventId = eventId,
             notificationMessage = eventStartNotificationMessage,
-            scheduledTime = event.startTime!!,
-            applicationContext = applicationContext
+            scheduledTime = event.startTime!!
         )
 
         // Save the event in local cache, as well as its associated notifications ids, to easily

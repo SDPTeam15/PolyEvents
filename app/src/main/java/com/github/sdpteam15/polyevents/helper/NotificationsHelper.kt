@@ -35,18 +35,17 @@ enum class NotificationType(private val notificationType: String) {
 }
 
 /**
- * Notifications Helper object that offer helper methods to schedule notifications
+ * Notifications Helper that implement notifications scheduling
  * with the Alarm manager, as well as Notification manager related methods to send
  * notifications and/or cancel them
  */
-object NotificationsHelper {
+class NotificationsHelper(private val applicationContext: Context): NotificationsScheduler {
     /**
      * Cancel the notification associated with the id provided as well as the pending intent
      * scheduling the alarm to fire up the notification.
      * @param notificationId the id of the notification to cancel
-     * @param applicationContext the context of the application
      */
-    fun cancelNotification(notificationId: Int, applicationContext: Context) {
+    override fun cancelNotification(notificationId: Int) {
         val app = applicationContext as PolyEventsApplication
 
         // Get the alarm manager from the system
@@ -76,16 +75,14 @@ object NotificationsHelper {
      * trigger a notification.
      * @param scheduledIntent the intent to launch when the scheduled time arrives
      * @param scheduledTime the time at which the intent should be launched
-     * @param applicationContext the context
      */
     private fun scheduleNotification(
         scheduledIntent: Intent,
-        scheduledTime: LocalDateTime,
-        applicationContext: Context
+        scheduledTime: LocalDateTime
     ): Int {
         val app = (applicationContext as PolyEventsApplication)
 
-        val newNotificationId = generateNewNotificationId(applicationContext)
+        val newNotificationId = generateNewNotificationId()
         scheduledIntent.putExtra(EXTRA_NOTIFICATION_ID, newNotificationId)
 
         // Get the alarm manager from the system
@@ -116,13 +113,11 @@ object NotificationsHelper {
      * @param eventId the id of the event for which we are scheduling a notification
      * @param notificationMessage the body of the message for the notification
      * @param scheduledTime the time at which the notification is scheduled for
-     * @param applicationContext the context of the application
      */
-    fun scheduleEventNotification(
+    override fun scheduleEventNotification(
         eventId: String,
         notificationMessage: String,
-        scheduledTime: LocalDateTime,
-        applicationContext: Context
+        scheduledTime: LocalDateTime
     ): Int {
         val app = (applicationContext as PolyEventsApplication)
         // Set the alarm before the event start by 15 min
@@ -134,18 +129,14 @@ object NotificationsHelper {
 
         return scheduleNotification(
             scheduledIntent = notifyEventIntent,
-            scheduledTime = scheduledTime,
-            applicationContext = applicationContext
+            scheduledTime = scheduledTime
         )
     }
 
     /**
      * Generate a new notification id for a notification
-     * @param applicationContext the application context
      */
-    fun generateNewNotificationId(
-        applicationContext: Context
-    ): Int = runBlocking {
+    override fun generateNewNotificationId(): Int = runBlocking {
         val app = (applicationContext as PolyEventsApplication)
         val notificationUid = app.database.notificationUidDao().getNotificationUid()
         if (notificationUid.isEmpty()) {

@@ -14,6 +14,7 @@ import androidx.test.espresso.ViewAction
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.helper.NotificationsScheduler
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
@@ -65,6 +66,7 @@ class EventActivityTest {
     lateinit var scenario: ActivityScenario<EventActivity>
 
     private lateinit var localDatabase: LocalDatabase
+    private lateinit var mockedNotificationsScheduler: NotificationsScheduler
 
     @Before
     fun setup() {
@@ -121,6 +123,13 @@ class EventActivityTest {
                 event = anyOrNull(), anyOrNull()
             )
         ).thenReturn(Observable(true))
+
+        mockedNotificationsScheduler = mock(NotificationsScheduler::class.java)
+        When(mockedNotificationsScheduler.cancelNotification(anyOrNull())).then { }
+        When(mockedNotificationsScheduler.generateNewNotificationId()).thenReturn(0)
+        When(mockedNotificationsScheduler.scheduleEventNotification(
+            eventId = anyOrNull(), notificationMessage = anyOrNull(), scheduledTime = anyOrNull()
+        )).thenReturn(0)
 
         // Create local db
         val context: Context = ApplicationProvider.getApplicationContext()
@@ -625,6 +634,7 @@ class EventActivityTest {
         scenario = ActivityScenario.launch(intent)
 
         EventActivity.database = localDatabase
+        EventActivity.notificationsScheduler = mockedNotificationsScheduler
 
         Thread.sleep(1000)
     }
