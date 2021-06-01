@@ -13,6 +13,7 @@ import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
@@ -39,6 +40,7 @@ class ItemDatabaseFirestoreTest {
 
     @Before
     fun setup() {
+        PolyEventsApplication.inTest = true
         user = UserEntity(
             uid = uidTest,
             name = displayNameTest,

@@ -13,6 +13,7 @@ import com.github.sdpteam15.polyevents.model.database.remote.objects.ZoneDatabas
 import com.github.sdpteam15.polyevents.model.entity.*
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.google.firebase.firestore.FirebaseFirestore
 import org.junit.Before
 import org.junit.Test
@@ -37,6 +38,7 @@ class ZoneDatabaseTest {
 
     @Before
     fun setup() {
+        PolyEventsApplication.inTest = true
         user = UserEntity(
             uid = uidTest,
             name = displayNameTest,

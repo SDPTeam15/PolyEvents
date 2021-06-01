@@ -17,6 +17,7 @@ import androidx.fragment.app.commit
 import androidx.room.TypeConverter
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import java.time.*
@@ -146,11 +147,14 @@ object HelperFunctions {
 
     @SuppressLint("RestrictedApi")
     fun run(runnable: Runnable) {
-        try {
-            ArchTaskExecutor.getInstance().postToMainThread(runnable)
-        } catch (e: RuntimeException) {
+        if (!PolyEventsApplication.inTest)
+            try {
+                ArchTaskExecutor.getInstance().postToMainThread(runnable)
+            } catch (e: RuntimeException) {
+                runnable.run()
+            }
+        else
             runnable.run()
-        }
     }
 
     /**
