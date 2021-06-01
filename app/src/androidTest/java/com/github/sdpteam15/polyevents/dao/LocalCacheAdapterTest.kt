@@ -15,7 +15,7 @@ import org.junit.Test
 import org.mockito.Mockito.mock
 import kotlin.test.assertEquals
 
-
+/*
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
@@ -30,8 +30,9 @@ import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import kotlinx.coroutines.*
 import org.junit.After
 import org.mockito.kotlin.anyOrNull
+import java.io.IOException
 import org.mockito.Mockito.`when` as When
-
+*/
 
 @Suppress("UNCHECKED_CAST")
 class LocalCacheAdapterTest {
@@ -102,7 +103,7 @@ class LocalCacheAdapterTest {
 
         }
         localCacheDatabase = LocalCacheAdapter(database)
-
+        /*
         val scope = mock(Scope::class.java)
         PolyEventsApplication.application.applicationScope = scope
 
@@ -123,16 +124,16 @@ class LocalCacheAdapterTest {
 
         PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
             PolyEventsApplication.application.localDatabase.genericEntityDao().deleteAll()
-        }
+        }*/
     }
 
-
+    /*
     @After
     fun closeDb() {
         PolyEventsApplication.application.localDatabase.close()
         PolyEventsApplication.application.localDatabase = PolyEventsApplication.application.defaultLocalDatabase
     }
-
+    */
     @Test
     fun returnRightSubDataBase() {
         assertEquals(
@@ -203,7 +204,7 @@ class LocalCacheAdapterTest {
         localCacheDatabase.routeDatabase =
             database.routeDatabase
     }
-
+    /*
     @Test
     fun addEntityAndGetId() {
         localCacheDatabase.addEntityAndGetId(
@@ -353,5 +354,5 @@ class LocalCacheAdapterTest {
     fun getMapEntity() {
 
     }
-
+    */
 }
