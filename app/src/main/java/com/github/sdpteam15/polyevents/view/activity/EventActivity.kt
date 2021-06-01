@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.view.activity
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -40,6 +41,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         val obsEvent: Observable<Event> = Observable()
         val obsRating: Observable<Float> = Observable()
         val obsComments: ObservableList<Rating> = ObservableList()
+        val obsNonEmptyComments: ObservableList<Rating> = ObservableList()
         lateinit var event: Event
 
         // for testing purposes
@@ -72,7 +74,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         recyclerView = findViewById(R.id.id_recycler_comment_list)
         leaveReviewDialogFragment = LeaveEventReviewFragment(eventId, this)
 
-        recyclerView.adapter = CommentItemAdapter(obsComments)
+        recyclerView.adapter = CommentItemAdapter(obsNonEmptyComments)
         recyclerView.setHasFixedSize(false)
 
         refreshEvent()
@@ -104,8 +106,11 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
                 eventId,
                 obsRating
         )
-        obsRating.observeOnce(this, updateIfNotNull = false) { updateRating(it.value) }
+        obsRating.observeOnce(this, updateIfNotNull = false) {
+            updateRating(it.value)
+        }
     }
+
 
     /**
      * Get the comments of an event
@@ -118,11 +123,39 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         )
         obsComments.observeAdd(this) {
             //If the comment doesn't have a review, we don't want to display it
-            if (it.value.feedback == "") {
-                obsComments.remove(it.value)
-            } else {
+            Log.d(
+                "ADD",
+                "SIZE IS ${obsComments.size}"
+            )
+            if (it.value.feedback != "") {
+                obsNonEmptyComments.add(it.value)
                 recyclerView.adapter!!.notifyDataSetChanged()
             }
+        }
+        obsComments.observeRemove(this) {
+            Log.d(
+                "REMOVE",
+                "SIZE IS ${obsComments.size}"
+            )
+        }
+
+        obsComments.observe(this){
+            updateNumberReviews()
+        }
+        obsNonEmptyComments.observe(this){
+            updateNumberComments()
+        }
+    }
+
+    private fun updateNumberReviews(){
+        findViewById<TextView>(R.id.id_number_reviews).apply {
+            setText(obsComments.size.toString())
+        }
+    }
+
+    private fun updateNumberComments(){
+        findViewById<TextView>(R.id.id_number_comments).apply {
+            setText(obsNonEmptyComments.size.toString())
         }
     }
 
