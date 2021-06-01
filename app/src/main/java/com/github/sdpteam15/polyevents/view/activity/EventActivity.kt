@@ -89,6 +89,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         recyclerView.adapter = CommentItemAdapter(obsNonEmptyComments)
         recyclerView.setHasFixedSize(false)
 
+        setObservers()
         refreshEvent()
     }
 
@@ -104,6 +105,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
      */
     private fun refreshEvent() {
         obsComments.clear()
+        obsNonEmptyComments.clear()
         getEventAndObserve()
         getEventRating()
         getCommentsAndObserve()
@@ -146,6 +148,25 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         }
     }
 
+    /**
+     * Sets the observe add and modify of the observable list of reviews
+     */
+    private fun setObservers(){
+        obsComments.observeAdd(this) {
+            //If the comment doesn't have a review, we don't want to display it
+            if (it.value.feedback != "") {
+                obsNonEmptyComments.add(it.value)
+                recyclerView.adapter!!.notifyDataSetChanged()
+            }
+        }
+        obsComments.observe(this){
+            updateNumberReviews()
+        }
+        obsNonEmptyComments.observe(this){
+            updateNumberComments()
+        }
+    }
+
 
     /**
      * Get the comments of an event
@@ -156,38 +177,20 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
                 null,
                 obsComments
         )
-        obsComments.observeAdd(this) {
-            //If the comment doesn't have a review, we don't want to display it
-            Log.d(
-                "ADD",
-                "SIZE IS ${obsComments.size}"
-            )
-            if (it.value.feedback != "") {
-                obsNonEmptyComments.add(it.value)
-                recyclerView.adapter!!.notifyDataSetChanged()
-            }
-        }
-        obsComments.observeRemove(this) {
-            Log.d(
-                "REMOVE",
-                "SIZE IS ${obsComments.size}"
-            )
-        }
-
-        obsComments.observe(this){
-            updateNumberReviews()
-        }
-        obsNonEmptyComments.observe(this){
-            updateNumberComments()
-        }
     }
 
+    /**
+     * Updates the number of reviews on the xml
+     */
     private fun updateNumberReviews(){
         findViewById<TextView>(R.id.id_number_reviews).apply {
             setText(obsComments.size.toString())
         }
     }
 
+    /**
+     * Updates the number of comments on the xml
+     */
     private fun updateNumberComments(){
         findViewById<TextView>(R.id.id_number_comments).apply {
             setText(obsNonEmptyComments.size.toString())
