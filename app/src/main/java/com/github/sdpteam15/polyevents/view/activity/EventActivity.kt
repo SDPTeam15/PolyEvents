@@ -384,14 +384,6 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
             it.eventBeforeNotificationId = event15MinBeforeNotificationId
         }
         localEventViewModel.insert(eventLocalInstance)
-        /*val logObservable = ObservableList<EventLocal>()
-        logObservable.observeOnce(this) {
-            if (!it.value.isEmpty()) {
-                val retrieved = it.value[0]
-                Log.d(TAG, "retrieved event with notifications ${retrieved.eventStartNotificationId} and ${retrieved.eventBeforeNotificationId}")
-            }
-        }
-        localEventViewModel.getEventById(eventId, logObservable)*/
     }
 
     /**
