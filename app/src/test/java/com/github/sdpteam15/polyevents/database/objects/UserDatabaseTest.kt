@@ -23,6 +23,7 @@ class UserDatabaseTest {
 
     @Before
     fun setup() {
+        PolyEventsApplication.inTest = true
         val mockDatabaseInterface = HelperTestFunction.mockDatabaseInterface()
         mockUserDatabase = UserDatabase(mockDatabaseInterface)
         HelperTestFunction.clearQueue()
@@ -106,8 +107,6 @@ class UserDatabaseTest {
 
         HelperTestFunction.nextAddEntityAndGetId { "pid" }
         HelperTestFunction.nextSetEntity { true }
-        mockUserDatabase.addUserProfileAndAddToUser(profile, user)
-            .observeOnce { assert(it.value) }.then.postValue(false)
         mockUserDatabase.addUserProfileAndAddToUser(profile, user)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
