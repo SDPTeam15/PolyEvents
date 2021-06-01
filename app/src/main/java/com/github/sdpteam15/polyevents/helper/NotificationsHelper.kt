@@ -137,7 +137,7 @@ object NotificationsHelper {
     /**
      * Generate a new notification id for a notification
      */
-    private fun generateNewNotificationId(applicationContext: Context): Int = runBlocking {
+    private fun generateNewNotificationId(applicationContext: Context): Int = 100/*runBlocking {
         val app = (applicationContext as PolyEventsApplication)
         val notificationUid = app.database.notificationUidDao().getNotificationUid()
         if (notificationUid == null) {
@@ -149,7 +149,7 @@ object NotificationsHelper {
                 .insert(notificationUid.copy(uid = notificationUid.uid + 1))
             notificationUid.uid
         }
-    }
+    }*/
 }
 
 /**
