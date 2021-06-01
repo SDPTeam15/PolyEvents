@@ -56,6 +56,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
     private lateinit var subscribeButton: Button
     private lateinit var recyclerView: RecyclerView
     private lateinit var leaveReviewDialogFragment: LeaveEventReviewFragment
+    private lateinit var leaveReviewButton: Button
     //private lateinit var progressDialogFragment: ProgressDialogFragment
 
     // Lazily initialized view models, instantiated only when accessed for the first time
@@ -84,9 +85,10 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
 
         database = (application as PolyEventsApplication).database
 
-        subscribeButton = findViewById(R.id.button_subscribe_event)
+        subscribeButton = findViewById(R.id.button_subscribe_follow_event)
         recyclerView = findViewById(R.id.id_recycler_comment_list)
         leaveReviewDialogFragment = LeaveEventReviewFragment(eventId, this)
+        leaveReviewButton = findViewById(R.id.event_leave_review_button)
 
         recyclerView.adapter = CommentItemAdapter(obsComments)
         recyclerView.setHasFixedSize(false)
@@ -122,14 +124,13 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
                 subscribeButton.setOnClickListener {
                     followEvent()
                 }
-                subscribeButton.visibility = View.VISIBLE
+                subscribeButton.isEnabled = true
             } else {
                 subscribeButton.setText(R.string.event_unfollow)
-                subscribeButton.visibility = View.VISIBLE
                 subscribeButton.setOnClickListener {
                     unFollowEvent()
                 }
-                subscribeButton.visibility = View.VISIBLE
+                subscribeButton.isEnabled = true
             }
         }
         localEventViewModel.getEventById(eventId, localEventObservable)
@@ -221,13 +222,18 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
             //TODO : change image
         }
 
+        leaveReviewButton.isEnabled = true
+
         if (event.isLimitedEvent()) {
             subscribeButton.visibility = View.VISIBLE
             if (currentDatabase.currentUser != null
                 && event.getParticipants().contains(currentDatabase.currentUser!!.uid)
             ) {
                 subscribeButton.text = resources.getString(R.string.event_unsubscribe)
+            } else {
+                subscribeButton.text = resources.getString(R.string.event_subscribe)
             }
+            subscribeButton.isEnabled = true
         } else {
             // Check if we're following the event
             fetchEventFromLocalDatabase()
