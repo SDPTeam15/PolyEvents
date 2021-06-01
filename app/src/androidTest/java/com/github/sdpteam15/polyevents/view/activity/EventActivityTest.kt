@@ -608,7 +608,8 @@ class EventActivityTest {
 
     private fun testEventLocalEqualsEventEntity(eventLocal: EventLocal, event: Event) {
         val eventLocalWithCommonAttributes = eventLocal.copy(
-            notificationId = null
+            eventStartNotificationId = null,
+            eventBeforeNotificationId = null
         )
         assertEquals(eventLocalWithCommonAttributes, EventLocal.fromEvent(event))
     }
