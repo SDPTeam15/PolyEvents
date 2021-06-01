@@ -225,7 +225,6 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         leaveReviewButton.isEnabled = true
 
         if (event.isLimitedEvent()) {
-            subscribeButton.visibility = View.VISIBLE
             if (currentDatabase.currentUser != null
                 && event.getParticipants().contains(currentDatabase.currentUser!!.uid)
             ) {

@@ -53,8 +53,10 @@ object NotificationsHelper {
         val alarmManager =
             app.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
         val pendingIntent =
-            PendingIntent.getBroadcast(app, notificationId, Intent(app, AlarmReceiver::class.java),
-                PendingIntent.FLAG_UPDATE_CURRENT)
+            PendingIntent.getBroadcast(
+                app, notificationId, Intent(app, AlarmReceiver::class.java),
+                PendingIntent.FLAG_UPDATE_CURRENT
+            )
         if (pendingIntent != null && alarmManager != null) {
             // Cancel the pending intent
             alarmManager.cancel(pendingIntent)
@@ -72,6 +74,9 @@ object NotificationsHelper {
      * Set the alarm at the scheduled time using the Alarm manager. The alarm manager will notify
      * the alarm receiver which is a broadcast receiver from inside and outside the app, and will
      * trigger a notification.
+     * @param scheduledIntent the intent to launch when the scheduled time arrives
+     * @param scheduledTime the time at which the intent should be launched
+     * @param applicationContext the context
      */
     private fun scheduleNotification(
         scheduledIntent: Intent,
@@ -136,20 +141,24 @@ object NotificationsHelper {
 
     /**
      * Generate a new notification id for a notification
+     * @param applicationContext the application context
      */
-    private fun generateNewNotificationId(applicationContext: Context): Int = 100/*runBlocking {
+    fun generateNewNotificationId(
+        applicationContext: Context
+    ): Int = runBlocking {
         val app = (applicationContext as PolyEventsApplication)
         val notificationUid = app.database.notificationUidDao().getNotificationUid()
-        if (notificationUid == null) {
+        if (notificationUid.isEmpty()) {
             // If no notificationUid instance already created, create one
             app.database.notificationUidDao().insert(NotificationUid(uid = 1))
             0
         } else {
+            val currentNotificationUid = notificationUid[0]
             app.database.notificationUidDao()
-                .insert(notificationUid.copy(uid = notificationUid.uid + 1))
-            notificationUid.uid
+                .insert(currentNotificationUid.copy(uid = currentNotificationUid.uid + 1))
+            currentNotificationUid.uid
         }
-    }*/
+    }
 }
 
 /**
