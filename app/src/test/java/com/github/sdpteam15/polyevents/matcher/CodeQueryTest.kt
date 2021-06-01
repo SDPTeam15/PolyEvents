@@ -1,4 +1,4 @@
-/*package com.github.sdpteam15.polyevents.matcher
+package com.github.sdpteam15.polyevents.matcher
 
 import com.github.sdpteam15.polyevents.model.database.remote.matcher.CodeQuery
 import com.github.sdpteam15.polyevents.model.database.remote.matcher.Query
@@ -129,4 +129,4 @@ class CodeQueryTest {
             assertEquals(2, nb)
         }
     }
-}*/
+}
