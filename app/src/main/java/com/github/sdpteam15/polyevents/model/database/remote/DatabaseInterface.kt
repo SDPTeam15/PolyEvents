@@ -29,7 +29,9 @@ interface DatabaseInterface {
      */
     var currentUser: UserEntity?
         get() = currentUserObservable.value
-        set(value) {currentUserObservable.value = value}
+        set(value) {
+            currentUserObservable.value = value
+        }
 
 
     /**

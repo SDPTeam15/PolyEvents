@@ -49,12 +49,15 @@ class ItemRequestManagementActivity : AppCompatActivity() {
         requests.group(this) { it.userId }.then.observePut(this) {
             if (!userNames.containsKey(it.key)) {
                 val tempUsers = Observable<UserEntity>()
-                Database.currentDatabase.userDatabase!!.getUserInformation(tempUsers, it.key)
+                Database.currentDatabase.userDatabase.getUserInformation(tempUsers, it.key)
                     .observeOnce(this) { ans ->
                         if (ans.value) {
                             userNames[it.key] = tempUsers.value?.name ?: "ANONYMOUS"
                         } else {
-                            HelperFunctions.showToast(getString(R.string.failed_to_get_username_from_database), this)
+                            HelperFunctions.showToast(
+                                getString(R.string.failed_to_get_username_from_database),
+                                this
+                            )
                         }
                     }
             }
@@ -76,7 +79,7 @@ class ItemRequestManagementActivity : AppCompatActivity() {
             )
 
         //Wait until we have both requests accepted from the database to show the material requests
-        currentDatabase.materialRequestDatabase!!.getMaterialRequestList(
+        currentDatabase.materialRequestDatabase.getMaterialRequestList(
             requests,
             { collection ->
                 collection.orderBy(DatabaseConstant.MaterialRequestConstant.MATERIAL_REQUEST_STATUS.value)
@@ -85,7 +88,7 @@ class ItemRequestManagementActivity : AppCompatActivity() {
                 if (!it.value) {
                     HelperFunctions.showToast("Failed to get the list of material requests", this)
                 } else {
-                    currentDatabase.itemDatabase!!.getItemsList(items)
+                    currentDatabase.itemDatabase.getItemsList(items)
                         .observeOnce(this) { it2 ->
                             if (!it2.value) {
                                 HelperFunctions.showToast("Failed to get the list of items", this)
@@ -99,7 +102,7 @@ class ItemRequestManagementActivity : AppCompatActivity() {
 
         if (canAccept(request)) {
             request.status = MaterialRequest.Status.ACCEPTED
-            currentDatabase.materialRequestDatabase!!.updateMaterialRequest(
+            currentDatabase.materialRequestDatabase.updateMaterialRequest(
                 request.requestId!!,
                 request
             ).observeOnce(this) {
@@ -115,7 +118,11 @@ class ItemRequestManagementActivity : AppCompatActivity() {
             }
             for (item in request.items) {
                 val oldItem = items.first { it.first.itemId == item.key }
-                currentDatabase.itemDatabase!!.updateItem(oldItem.first, oldItem.second, oldItem.third - item.value)
+                currentDatabase.itemDatabase.updateItem(
+                    oldItem.first,
+                    oldItem.second,
+                    oldItem.third - item.value
+                )
             }
         } else {
             HelperFunctions.showToast("Can not accept this request", this)
@@ -172,7 +179,7 @@ class ItemRequestManagementActivity : AppCompatActivity() {
         confirmButton.setOnClickListener {
             request.status = MaterialRequest.Status.REFUSED
             request.adminMessage = message.text.toString()
-            Database.currentDatabase.materialRequestDatabase!!.updateMaterialRequest(
+            Database.currentDatabase.materialRequestDatabase.updateMaterialRequest(
                 request.requestId!!,
                 request
             ).observeOnce(this) {

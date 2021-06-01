@@ -1,4 +1,4 @@
-package com.github.sdpteam15.polyevents.model.database.local.room
+package com.github.sdpteam15.polyevents.model.database.local
 
 import android.annotation.SuppressLint
 import com.github.sdpteam15.polyevents.helper.HelperFunctions

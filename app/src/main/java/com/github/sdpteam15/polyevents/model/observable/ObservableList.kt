@@ -466,7 +466,7 @@ class ObservableList<T>(
         //Add all missing elements
         for (fromIndex in fromPastIndex.indices) {
             if (fromIndex !in keep) {
-                if(fromPastIndex[fromIndex] != -1)
+                if (fromPastIndex[fromIndex] != -1)
                     add(fromIndex, valuesList[fromPastIndex[fromIndex]], sender, false)
                 else
                     added.add(add(fromIndex, itemsList[fromIndex], sender, false)!!)

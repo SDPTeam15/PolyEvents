@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
  * A view model for user settings. All its operations are run on coroutines launched
  * on the viewModelScope
  */
-class UserSettingsViewModel(private val userSettingsDao: UserSettingsDao): ViewModel() {
+class UserSettingsViewModel(private val userSettingsDao: UserSettingsDao) : ViewModel() {
 
     fun getUserSettings(obs: Observable<UserSettings>) = viewModelScope.launch {
         obs.postValue(userSettingsDao.get())

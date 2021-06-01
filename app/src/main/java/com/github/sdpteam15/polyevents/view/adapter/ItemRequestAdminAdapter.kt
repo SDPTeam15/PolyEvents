@@ -78,16 +78,20 @@ class ItemRequestAdminAdapter(
                 ).subSequence(0, 5)
             itemList.text = request.items.map { itemNames[it.key] + " : " + it.value }
                 .joinToString(separator = "\n") { it }
-            status.setTextColor(when(request.status){
-                MaterialRequest.Status.ACCEPTED -> Color.GREEN
-                MaterialRequest.Status.PENDING -> Color.BLACK
-                MaterialRequest.Status.REFUSED -> Color.RED
-                else -> Color.BLACK //should never happen
-            })
+            status.setTextColor(
+                when (request.status) {
+                    MaterialRequest.Status.ACCEPTED -> Color.GREEN
+                    MaterialRequest.Status.PENDING -> Color.BLACK
+                    MaterialRequest.Status.REFUSED -> Color.RED
+                    else -> Color.BLACK //should never happen
+                }
+            )
             status.text = request.status.toString()
 
-            btnAccept.visibility = if (request.status == MaterialRequest.Status.PENDING) VISIBLE else INVISIBLE
-            btnRefuse.visibility = if (request.status == MaterialRequest.Status.PENDING) VISIBLE else INVISIBLE
+            btnAccept.visibility =
+                if (request.status == MaterialRequest.Status.PENDING) VISIBLE else INVISIBLE
+            btnRefuse.visibility =
+                if (request.status == MaterialRequest.Status.PENDING) VISIBLE else INVISIBLE
             btnRefuse.setOnClickListener { onRefuseListener(request) }
             btnAccept.setOnClickListener { onAcceptListener(request) }
         }

@@ -9,7 +9,7 @@ import com.google.android.gms.tasks.Tasks
 class FirestoreQuery(private val query: com.google.firebase.firestore.Query) : Query {
     override fun get(): Task<QuerySnapshot> = query
         .get()
-        .onSuccessTask{
+        .onSuccessTask {
             Tasks.forResult(FirestoreQuerySnapshot(it))
         }
 

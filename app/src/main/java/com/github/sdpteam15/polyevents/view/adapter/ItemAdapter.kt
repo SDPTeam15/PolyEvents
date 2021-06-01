@@ -54,7 +54,7 @@ class ItemAdapter(
 
             itemName.text = item.first.itemName
             itemType.text = item.first.itemType
-            itemCount.text = item.third.toString()+"/"+item.second.toString()
+            itemCount.text = item.third.toString() + "/" + item.second.toString()
         }
     }
 

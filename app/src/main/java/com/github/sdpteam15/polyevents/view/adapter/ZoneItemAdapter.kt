@@ -37,7 +37,7 @@ class ZoneItemAdapter(
                 DatabaseHelper.deleteZone(zone)
                 zones.remove(zone)
             }
-            btnEdit.setOnClickListener{
+            btnEdit.setOnClickListener {
                 listener(zone)
             }
         }

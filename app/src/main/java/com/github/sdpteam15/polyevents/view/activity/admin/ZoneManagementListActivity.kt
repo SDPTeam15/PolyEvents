@@ -39,7 +39,7 @@ class ZoneManagementListActivity : AppCompatActivity() {
         recyclerView.adapter = ZoneItemAdapter(zones, openZone)
 
         println(Database.currentDatabase)
-        Database.currentDatabase.zoneDatabase!!.getAllZones(
+        Database.currentDatabase.zoneDatabase.getAllZones(
             {
                 it.orderBy(DatabaseConstant.ZoneConstant.ZONE_NAME.value)
             },

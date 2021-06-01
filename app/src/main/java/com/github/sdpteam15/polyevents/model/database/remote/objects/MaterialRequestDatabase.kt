@@ -50,7 +50,6 @@ class MaterialRequestDatabase(private val db: DatabaseInterface) :
         db.deleteEntity(materialRequestId, MATERIAL_REQUEST_COLLECTION)
 
 
-
     override fun createMaterialRequest(request: MaterialRequest) =
         db.addEntity(request, MATERIAL_REQUEST_COLLECTION, MaterialRequestAdapter)
 

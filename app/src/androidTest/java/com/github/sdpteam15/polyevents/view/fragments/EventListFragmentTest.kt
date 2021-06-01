@@ -95,13 +95,13 @@ class EventListFragmentTest {
         )
 
         FakeDatabaseEvent.events.clear()
-        FakeDatabase.eventDatabase!!.createEvent(
+        FakeDatabase.eventDatabase.createEvent(
             event1
         )
-        FakeDatabase.eventDatabase!!.createEvent(
+        FakeDatabase.eventDatabase.createEvent(
             event2
         )
-        FakeDatabase.eventDatabase!!.createEvent(
+        FakeDatabase.eventDatabase.createEvent(
             event3
         )
 
@@ -205,7 +205,7 @@ class EventListFragmentTest {
         }
 
         val events = ObservableList<Event>()
-        currentDatabase.eventDatabase!!.getEvents(null, 1, events)
+        currentDatabase.eventDatabase.getEvents(null, 1, events)
         currentDatabase.userDatabase = mockedUserDatabase
 
         val eventToTest = events[0]

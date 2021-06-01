@@ -85,7 +85,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
 
         eventId = intent.getStringExtra(EXTRA_EVENT_ID)!!
 
-        database = (application as PolyEventsApplication).database
+        database = (application as PolyEventsApplication).localDatabase
 
         subscribeButton = findViewById(R.id.button_subscribe_event)
         recyclerView = findViewById(R.id.id_recycler_comment_list)
@@ -161,7 +161,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
      * get the rating of the event
      */
     private fun getEventRating() {
-        currentDatabase.eventDatabase!!.getMeanRatingForEvent(
+        currentDatabase.eventDatabase.getMeanRatingForEvent(
             eventId,
             obsRating
         )
@@ -172,7 +172,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
      * Get the comments of an event
      */
     private fun getCommentsAndObserve() {
-        currentDatabase.eventDatabase!!.getRatingsForEvent(
+        currentDatabase.eventDatabase.getRatingsForEvent(
             eventId,
             null,
             obsComments
@@ -191,7 +191,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
      * Get all the informations of the event
      */
     private fun getEventAndObserve() {
-        currentDatabase.eventDatabase!!.getEventFromId(
+        currentDatabase.eventDatabase.getEventFromId(
             eventId,
             obsEvent
         )
@@ -200,7 +200,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
                     showToast(getString(R.string.event_info_fail), this)
                 } else {
                     if (obsEvent.value!!.organizer != null) {
-                        currentDatabase.userDatabase!!.getUserInformation(
+                        currentDatabase.userDatabase.getUserInformation(
                             obsOrganiser,
                             obsEvent.value!!.organizer!!
                         ).observeOnce(this) {
@@ -284,7 +284,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
     private fun unsubscribeFromEvent() {
         event.removeParticipant(currentDatabase.currentUser!!.uid)
 
-        currentDatabase.eventDatabase!!.updateEvent(event).observeOnce(this) {
+        currentDatabase.eventDatabase.updateEvent(event).observeOnce(this) {
             if (it.value) {
                 cancelNotification(eventId)
                 showToast(resources.getString(R.string.event_successfully_unsubscribed), this)
@@ -305,7 +305,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         try {
             event.addParticipant(currentDatabase.currentUser!!.uid)
 
-            currentDatabase.eventDatabase!!.updateEvent(event).observeOnce(this) {
+            currentDatabase.eventDatabase.updateEvent(event).observeOnce(this) {
                 if (it.value) {
                     // Now store the event in local cache and set a notification for it
                     val newNotificationId = generateNewNotificationId()

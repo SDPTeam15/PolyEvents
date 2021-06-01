@@ -3,7 +3,7 @@ package com.github.sdpteam15.polyevents.model.database.local.dao
 import androidx.room.*
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.apply
 import com.github.sdpteam15.polyevents.model.database.local.entity.GenericEntity
-import com.github.sdpteam15.polyevents.model.database.local.room.LocalAdapter
+import com.github.sdpteam15.polyevents.model.database.local.LocalAdapter
 
 /**
  * Data access object for the GenericEntity entity on the local room database
@@ -34,12 +34,11 @@ interface GenericEntityDao {
      * @param collection collection where is the element
      * @return the generic entity
      */
-    suspend fun get(id: String, collection: String): GenericEntity?
-        {
-            val list = getList(id, collection)
-            return if(list.isEmpty()) null
-            else list[0]
-        }
+    suspend fun get(id: String, collection: String): GenericEntity? {
+        val list = getList(id, collection)
+        return if (list.isEmpty()) null
+        else list[0]
+    }
 
     /**
      * Insert a element
@@ -83,15 +82,15 @@ interface GenericEntityDao {
     @Query("SELECT MAX(update_time) FROM entity_table WHERE collection = :collection")
     suspend fun lastUpdate(collection: String): String?
 
-
-    suspend
-            /**
-             * Get the last time the collection has been updated
-             * @param collection the collection
-             * @return the date
-             */
-    fun lastUpdateDate(collection: String) =
-        lastUpdate(collection).apply { LocalAdapter.SimpleDateFormat.parse(it) }
+    /**
+     * Get the last time the collection has been updated
+     * @param collection the collection
+     * @return the date
+     */
+    suspend fun lastUpdateDate(collection: String) =
+        lastUpdate(collection).apply {
+            LocalAdapter.SimpleDateFormat.parse(it)
+        }
 }
 
 

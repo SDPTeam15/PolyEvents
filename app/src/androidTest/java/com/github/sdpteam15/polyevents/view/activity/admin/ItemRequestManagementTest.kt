@@ -97,19 +97,19 @@ class ItemRequestManagementTest {
 
         for ((item, count) in availableItems) {
 
-            Database.currentDatabase.itemDatabase!!.updateItem(item, count, count)
+            Database.currentDatabase.itemDatabase.updateItem(item, count, count)
         }
-        Database.currentDatabase.itemDatabase!!.getItemsList(availableItemsList)
+        Database.currentDatabase.itemDatabase.getItemsList(availableItemsList)
 
 
         for (request in availableRequests) {
 
-            Database.currentDatabase.materialRequestDatabase!!.updateMaterialRequest(
+            Database.currentDatabase.materialRequestDatabase.updateMaterialRequest(
                 request.requestId!!,
                 request
             )
         }
-        Database.currentDatabase.materialRequestDatabase!!.getMaterialRequestList(
+        Database.currentDatabase.materialRequestDatabase.getMaterialRequestList(
             availableRequestsList
         )
 

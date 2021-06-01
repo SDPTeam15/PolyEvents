@@ -54,7 +54,10 @@ class AdminHomeFragment : Fragment() {
             startActivity(intent)
         }
 
-        MainActivity.instance!!.switchRoles(viewRoot.findViewById(R.id.spinner_admin), UserRole.ADMIN)
+        MainActivity.instance!!.switchRoles(
+            viewRoot.findViewById(R.id.spinner_admin),
+            UserRole.ADMIN
+        )
         return viewRoot
     }
 }

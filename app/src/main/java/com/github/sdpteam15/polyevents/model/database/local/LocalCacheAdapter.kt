@@ -1,7 +1,9 @@
-package com.github.sdpteam15.polyevents.model.database.local.room
+package com.github.sdpteam15.polyevents.model.database.local
 
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.apply
+import com.github.sdpteam15.polyevents.model.database.local.room.LogAdapter
+import com.github.sdpteam15.polyevents.model.database.local.room.LogAdapterToDocument
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
@@ -16,7 +18,6 @@ import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 /**
  * Add a local cash for any entity called by the DatabaseInterface given
@@ -94,7 +95,7 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
             //If added on remote db add it to the cache
             if (it.value != "") {
                 PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
-                    PolyEventsApplication.application.database.genericEntityDao().insert(
+                    PolyEventsApplication.application.localDatabase.genericEntityDao().insert(
                         LocalAdapter.toDocument(
                             adapter.toDocument(element),
                             it.value,
@@ -119,7 +120,7 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
             PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
                 for (value in it.value.second.zip(elements))
                     if (value.first != "")
-                        PolyEventsApplication.application.database.genericEntityDao().insert(
+                        PolyEventsApplication.application.localDatabase.genericEntityDao().insert(
                             LocalAdapter.toDocument(
                                 adapter.toDocument(value.second),
                                 value.first,
@@ -145,7 +146,7 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
             if (it.value) {
                 PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
                     if (element != null)
-                        PolyEventsApplication.application.database.genericEntityDao().insert(
+                        PolyEventsApplication.application.localDatabase.genericEntityDao().insert(
                             LocalAdapter.toDocument(
                                 adapter.toDocument(element),
                                 id,
@@ -170,7 +171,7 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
             PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
                 for (value in it.value.second.zip(elements))
                     if (value.first && value.second.second != null)
-                        PolyEventsApplication.application.database.genericEntityDao().insert(
+                        PolyEventsApplication.application.localDatabase.genericEntityDao().insert(
                             LocalAdapter.toDocument(
                                 adapter.toDocument(value.second.second!!),
                                 value.second.first,
@@ -190,7 +191,7 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
         HelperFunctions.run(Runnable {
             //Get from local cache
             PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
-                PolyEventsApplication.application.database.genericEntityDao()
+                PolyEventsApplication.application.localDatabase.genericEntityDao()
                     .get(id, collection.value).apply {
                         val pair = LocalAdapter.fromDocument(it)
                         val result = adapter.fromDocument(pair.first, pair.second)
@@ -229,7 +230,7 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
                 PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
                     val map = mutableMapOf<String, T>()
                     for (id in ids) {
-                        PolyEventsApplication.application.database.genericEntityDao()
+                        PolyEventsApplication.application.localDatabase.genericEntityDao()
                             .get(id, collection.value)
                             .apply {
                                 val pair = LocalAdapter.fromDocument(it)
@@ -242,7 +243,7 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
             }, lazy {
                 PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
                     val query = CodeQuery.CodeQueryFromIterator(
-                        PolyEventsApplication.application.database.genericEntityDao()
+                        PolyEventsApplication.application.localDatabase.genericEntityDao()
                             .getAll(collection.value).iterator()
                     ) {
                         QueryDocumentSnapshot(
@@ -307,14 +308,14 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
         matcher: Matcher? = null,
     ) {
         //Get all elements outdated in the cache
-        val date = PolyEventsApplication.application.database.genericEntityDao()
+        val date = PolyEventsApplication.application.localDatabase.genericEntityDao()
             .lastUpdateDate(collection.value)
         db.getMapEntity(
             ObservableMap<String, T>().observeOnce {
                 //Update local cache
                 PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
                     for (key in it.value.keys) {
-                        PolyEventsApplication.application.database.genericEntityDao()
+                        PolyEventsApplication.application.localDatabase.genericEntityDao()
                             .insert(
                                 LocalAdapter.toDocument(
                                     ((adapterToDocument ?: collection.adapter)

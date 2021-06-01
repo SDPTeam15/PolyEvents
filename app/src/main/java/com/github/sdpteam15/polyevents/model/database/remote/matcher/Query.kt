@@ -106,5 +106,6 @@ interface Query {
      * @param key The field to sort by.
      * @return The created Query.
      */
+    @Deprecated("To remove because Firestore needs index")
     fun orderBy(key: String): Query
 }

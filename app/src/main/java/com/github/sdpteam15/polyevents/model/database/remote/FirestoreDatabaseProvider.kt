@@ -2,7 +2,7 @@ package com.github.sdpteam15.polyevents.model.database.remote
 
 import android.annotation.SuppressLint
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.apply
-import com.github.sdpteam15.polyevents.model.database.local.room.LocalCacheAdapter
+import com.github.sdpteam15.polyevents.model.database.local.LocalCacheAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterToDocumentInterface

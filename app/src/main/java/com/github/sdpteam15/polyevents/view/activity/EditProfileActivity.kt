@@ -16,7 +16,7 @@ import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.view.fragments.UserModifiedInterface
 import com.google.android.material.textfield.TextInputEditText
 
-class EditProfileActivity: AppCompatActivity() {
+class EditProfileActivity : AppCompatActivity() {
     companion object {
         val updater = Observable<UserProfile>()
         var end = Observable<Boolean>()
@@ -75,7 +75,7 @@ class EditProfileActivity: AppCompatActivity() {
             lastName = profile.profileName ?: ""
             name.setText(profile.profileName ?: "")
         }
-        currentDatabase.userDatabase!!.getProfileById(updater, pid)
+        currentDatabase.userDatabase.getProfileById(updater, pid)
 
         cancel.setOnClickListener {
             onBackPressed()
@@ -88,7 +88,7 @@ class EditProfileActivity: AppCompatActivity() {
             profile.userRole = newRank
             profile.profileName = newName
 
-            currentDatabase.userDatabase!!.updateProfile(profile).observeOnce(this) {
+            currentDatabase.userDatabase.updateProfile(profile).observeOnce(this) {
                 if (it.value) {
                     end.postValue(true, this)
                     //currentDatabase.currentUser!!.loadSuccess = false

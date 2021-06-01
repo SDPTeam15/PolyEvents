@@ -19,7 +19,7 @@ import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
  * will be used to notify the user for example of the start of an event.
  * Check https://developer.android.com/guide/components/broadcasts?hl=en
  */
-class AlarmReceiver: BroadcastReceiver() {
+class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         val notificationManager = ContextCompat.getSystemService(
             context!!,

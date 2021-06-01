@@ -8,6 +8,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.model.Scope
 import com.github.sdpteam15.polyevents.model.database.local.dao.EventDao
 import com.github.sdpteam15.polyevents.model.database.local.dao.GenericEntityDao
 import com.github.sdpteam15.polyevents.model.database.local.dao.UserSettingsDao
@@ -26,7 +27,11 @@ import kotlinx.coroutines.launch
 // TODO: consider using repositories
 // TODO: Firebase database objects are technically daos, consider refactoring?
 // TODO: when user logs in, should fetch all info to store in local db
-@Database(entities = [EventLocal::class, UserSettings::class, GenericEntity::class], version = 4, exportSchema = false)
+@Database(
+    entities = [EventLocal::class, UserSettings::class, GenericEntity::class],
+    version = 4,
+    exportSchema = false
+)
 @TypeConverters(HelperFunctions.Converters::class)
 abstract class LocalDatabase : RoomDatabase() {
     /**
@@ -42,10 +47,11 @@ abstract class LocalDatabase : RoomDatabase() {
     /**
      * Get the GenericEntity Dao
      */
-    abstract fun genericEntityDao() : GenericEntityDao
+    abstract fun genericEntityDao(): GenericEntityDao
 
     companion object {
         private const val TAG = "LocalDatabase"
+
         @Volatile
         private var INSTANCE: LocalDatabase? = null
 
@@ -54,7 +60,7 @@ abstract class LocalDatabase : RoomDatabase() {
 
         fun getDatabase(
             context: Context,
-            scope: CoroutineScope
+            scope: Scope
         ): LocalDatabase {
             // if the INSTANCE is not null, then return it,
             // if it is, then create the database
@@ -87,7 +93,7 @@ abstract class LocalDatabase : RoomDatabase() {
          * use application scope defined in Polyevents Application
          */
         private class PolyEventsDatabaseCallback(
-            private val scope: CoroutineScope
+            private val scope: Scope
         ) : RoomDatabase.Callback() {
             /**
              * Override the onCreate method to populate the database.
@@ -110,7 +116,7 @@ abstract class LocalDatabase : RoomDatabase() {
         /**
          * Populate the database in a new coroutine.
          */
-        suspend fun populateDatabaseWithUserEvents(eventDao: EventDao, scope: CoroutineScope) {
+        suspend fun populateDatabaseWithUserEvents(eventDao: EventDao, scope: Scope) {
             Log.d(TAG, "Populating the database with user's events")
 
             // TODO: need to clear notifications for events here or in MainActivity
@@ -122,28 +128,29 @@ abstract class LocalDatabase : RoomDatabase() {
                     }
                 }
 
-                currentDatabase.eventDatabase!!
-                        .getEvents(
-                                eventList = eventsLocalObservable,
-                                matcher = {
-                                    // Get all events to which the current user is registered to
-                                    // and order them by start date
-                                    it.whereArrayContains(
-                                            DatabaseConstant.EventConstant.EVENT_PARTICIPANTS.value,
-                                            currentDatabase.currentUser!!.uid
-                                    // TODO: why is orderby not working (need indices?)
-                                    )/*.orderBy(
+                currentDatabase.eventDatabase
+                    .getEvents(
+                        eventList = eventsLocalObservable,
+                        matcher = {
+                            // Get all events to which the current user is registered to
+                            // and order them by start date
+                            it.whereArrayContains(
+                                DatabaseConstant.EventConstant.EVENT_PARTICIPANTS.value,
+                                currentDatabase.currentUser!!.uid
+                                // TODO: why is orderby not working (need indices?)
+                            )/*.orderBy(
                                             DatabaseConstant.EventConstant.EVENT_START_TIME.value,
                                             Query.Direction.ASCENDING
                                     )*/
-                                },
-                        )
+                        },
+                    )
                 Log.d(TAG, "Finished retrieving from remote")
             }
         }
 
         suspend fun populateDatabaseWithUserSettings(
-                userSettingsDao: UserSettingsDao, scope: CoroutineScope) {
+            userSettingsDao: UserSettingsDao, scope: Scope
+        ) {
             if (currentDatabase.currentUser != null) {
                 userSettingsObservable.observe {
                     scope.launch(Dispatchers.IO) {
@@ -151,9 +158,9 @@ abstract class LocalDatabase : RoomDatabase() {
                     }
                 }
 
-                currentDatabase.userSettingsDatabase!!.getUserSettings(
-                        id = currentDatabase.currentUser!!.uid,
-                        userSettingsObservable = userSettingsObservable
+                currentDatabase.userSettingsDatabase.getUserSettings(
+                    id = currentDatabase.currentUser!!.uid,
+                    userSettingsObservable = userSettingsObservable
                 )
             }
         }

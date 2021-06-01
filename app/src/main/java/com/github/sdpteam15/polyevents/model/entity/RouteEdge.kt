@@ -39,9 +39,6 @@ data class RouteEdge(
         } else {
             0.0
         }
-        set(value) {
-            field = value
-        }
 
 
     companion object {

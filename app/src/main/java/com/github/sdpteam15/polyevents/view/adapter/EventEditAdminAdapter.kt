@@ -68,29 +68,34 @@ class EventEditAdminAdapter(
          * Binds the values of each value of a event edit to a view and add the listener to each button of the view.
          */
         fun bind(event: Event) {
-            title.text= when(event.eventId){
+            title.text = when (event.eventId) {
                 null -> "Creation"
                 else -> "Modification"
             }
 
             eventName.text = event.eventName
-            status.setTextColor(when(event.status!!){
-                Event.EventStatus.ACCEPTED -> Color.GREEN
-                Event.EventStatus.PENDING -> Color.BLACK
-                Event.EventStatus.REFUSED -> Color.RED
-                else -> Color.BLACK
-            })
+            status.setTextColor(
+                when (event.status!!) {
+                    Event.EventStatus.ACCEPTED -> Color.GREEN
+                    Event.EventStatus.PENDING -> Color.BLACK
+                    Event.EventStatus.REFUSED -> Color.RED
+                    else -> Color.BLACK
+                }
+            )
 
             status.text = event.status.toString()
 
-            btnAccept.visibility = if (event.status == Event.EventStatus.PENDING) VISIBLE else INVISIBLE
-            btnRefuse.visibility = if (event.status == Event.EventStatus.PENDING) VISIBLE else INVISIBLE
-            btnSee.visibility = if (event.status != Event.EventStatus.CANCELED) VISIBLE else INVISIBLE
+            btnAccept.visibility =
+                if (event.status == Event.EventStatus.PENDING) VISIBLE else INVISIBLE
+            btnRefuse.visibility =
+                if (event.status == Event.EventStatus.PENDING) VISIBLE else INVISIBLE
+            btnSee.visibility =
+                if (event.status != Event.EventStatus.CANCELED) VISIBLE else INVISIBLE
 
-            btnSee.setOnClickListener{
-                if (event.eventId!=null){
+            btnSee.setOnClickListener {
+                if (event.eventId != null) {
                     onSeeListener(event, false, origEvent[event.eventId])
-                }else{
+                } else {
                     onSeeListener(event, true, null)
                 }
             }

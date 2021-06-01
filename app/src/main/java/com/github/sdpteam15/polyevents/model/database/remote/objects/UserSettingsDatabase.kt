@@ -10,24 +10,26 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
-class UserSettingsDatabase(private val db: DatabaseInterface):
-        UserSettingsDatabaseInterface {
+class UserSettingsDatabase(private val db: DatabaseInterface) :
+    UserSettingsDatabaseInterface {
     @SuppressLint("StaticFieldLeak")
     var firestore: FirebaseFirestore? = null
         get() = field ?: Firebase.firestore
 
     override fun updateUserSettings(userSettings: UserSettings): Observable<Boolean> =
         db.setEntity(
-                userSettings,
-                db.currentUser!!.uid,
-                DatabaseConstant.CollectionConstant.USER_SETTINGS_COLLECTION
+            userSettings,
+            db.currentUser!!.uid,
+            DatabaseConstant.CollectionConstant.USER_SETTINGS_COLLECTION
         )
 
-    override fun getUserSettings(id: String?,
-                                 userSettingsObservable: Observable<UserSettings>): Observable<Boolean> =
+    override fun getUserSettings(
+        id: String?,
+        userSettingsObservable: Observable<UserSettings>
+    ): Observable<Boolean> =
         db.getEntity(
-                userSettingsObservable,
-                id!!,
-                DatabaseConstant.CollectionConstant.USER_SETTINGS_COLLECTION
+            userSettingsObservable,
+            id!!,
+            DatabaseConstant.CollectionConstant.USER_SETTINGS_COLLECTION
         )
 }

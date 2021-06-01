@@ -1,27 +1,36 @@
 package com.github.sdpteam15.polyevents.dao
 
-import com.github.sdpteam15.polyevents.helper.HelperFunctions.apply
-import com.github.sdpteam15.polyevents.model.database.local.room.LocalAdapter
-import com.github.sdpteam15.polyevents.model.database.local.room.LocalCacheAdapter
+import com.github.sdpteam15.polyevents.model.database.local.LocalCacheAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.TEST_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
-import com.github.sdpteam15.polyevents.model.database.remote.StringWithID
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
-import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterToDocumentInterface
 import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.objects.*
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
-import com.github.sdpteam15.polyevents.view.PolyEventsApplication
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.mock
 import kotlin.test.assertEquals
+
+
+import android.content.Context
+import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.apply
+import com.github.sdpteam15.polyevents.model.Scope
+import com.github.sdpteam15.polyevents.model.database.local.LocalAdapter
+import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.TEST_COLLECTION
+import com.github.sdpteam15.polyevents.model.database.remote.StringWithID
+import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterInterface
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
+import kotlinx.coroutines.*
+import org.junit.After
+import org.mockito.kotlin.anyOrNull
+import org.mockito.Mockito.`when` as When
 
 
 @Suppress("UNCHECKED_CAST")
@@ -94,10 +103,34 @@ class LocalCacheAdapterTest {
         }
         localCacheDatabase = LocalCacheAdapter(database)
 
-        PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
-            PolyEventsApplication.application.database.genericEntityDao()
-                .deleteAll(TEST_COLLECTION.value)
+        val scope = mock(Scope::class.java)
+        PolyEventsApplication.application.applicationScope = scope
+
+        When(scope.launch(anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
+            runBlocking {
+                (it.arguments[2] as suspend CoroutineScope.() -> Unit)()
+            }
         }
+
+        val context: Context = ApplicationProvider.getApplicationContext()
+        // Using an in-memory database because the information stored here disappears when the
+        // process is killed.
+        PolyEventsApplication.application.localDatabase =
+            Room.inMemoryDatabaseBuilder(context, LocalDatabase::class.java)
+            // Allowing main thread queries, just for testing.
+            .allowMainThreadQueries()
+            .build()
+
+        PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
+            PolyEventsApplication.application.localDatabase.genericEntityDao().deleteAll()
+        }
+    }
+
+
+    @After
+    fun closeDb() {
+        PolyEventsApplication.application.localDatabase.close()
+        PolyEventsApplication.application.localDatabase = PolyEventsApplication.application.defaultLocalDatabase
     }
 
     @Test
@@ -171,7 +204,6 @@ class LocalCacheAdapterTest {
             database.routeDatabase
     }
 
-    /*
     @Test
     fun addEntityAndGetId() {
         localCacheDatabase.addEntityAndGetId(
@@ -180,10 +212,12 @@ class LocalCacheAdapterTest {
         ).observeOnce {
             PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
                 assert(
-                    PolyEventsApplication.application.database.genericEntityDao().get(
+                    PolyEventsApplication.application.localDatabase.genericEntityDao().get(
                         "ID",
                         TEST_COLLECTION.value
-                    ).apply(false) { it.id == "ID" }
+                    ).apply(false) {
+                        it.id == "ID"
+                    }
                 )
             }
         }.then.postValue("ID")
@@ -194,7 +228,7 @@ class LocalCacheAdapterTest {
         ).observeOnce {
             PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
                 assert(
-                    PolyEventsApplication.application.database.genericEntityDao().get(
+                    PolyEventsApplication.application.localDatabase.genericEntityDao().get(
                         "ID2",
                         TEST_COLLECTION.value
                     ).apply(true) { false }
@@ -214,19 +248,19 @@ class LocalCacheAdapterTest {
         ).observeOnce {
             PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
                 assert(
-                    PolyEventsApplication.application.database.genericEntityDao().get(
+                    PolyEventsApplication.application.localDatabase.genericEntityDao().get(
                         "ID",
                         TEST_COLLECTION.value
                     ).apply(false) { it.id == "ID" }
                 )
                 assert(
-                    PolyEventsApplication.application.database.genericEntityDao().get(
+                    PolyEventsApplication.application.localDatabase.genericEntityDao().get(
                         "ID2",
                         TEST_COLLECTION.value
-                    ).apply(false) { it.id == "ID2" }
+                    ).apply(true) { false }
                 )
             }
-        }.then.postValue(Pair(false, listOf("", "ID")))
+        }.then.postValue(Pair(false, listOf("ID", "")))
     }
 
     @Test
@@ -238,7 +272,7 @@ class LocalCacheAdapterTest {
         ).observeOnce {
             PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
                 assert(
-                    PolyEventsApplication.application.database.genericEntityDao().get(
+                    PolyEventsApplication.application.localDatabase.genericEntityDao().get(
                         "ID",
                         TEST_COLLECTION.value
                     ).apply(false) { it.id == "ID" }
@@ -253,7 +287,7 @@ class LocalCacheAdapterTest {
         ).observeOnce {
             PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
                 assert(
-                    PolyEventsApplication.application.database.genericEntityDao().get(
+                    PolyEventsApplication.application.localDatabase.genericEntityDao().get(
                         "ID2",
                         TEST_COLLECTION.value
                     ).apply(true) { false }
@@ -273,13 +307,13 @@ class LocalCacheAdapterTest {
         ).observeOnce {
             PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
                 assert(
-                    PolyEventsApplication.application.database.genericEntityDao().get(
+                    PolyEventsApplication.application.localDatabase.genericEntityDao().get(
                         "ID",
                         TEST_COLLECTION.value
                     ).apply(false) { it.id == "ID" }
                 )
                 assert(
-                    PolyEventsApplication.application.database.genericEntityDao().get(
+                    PolyEventsApplication.application.localDatabase.genericEntityDao().get(
                         "ID2",
                         TEST_COLLECTION.value
                     ).apply(true) { false }
@@ -291,7 +325,7 @@ class LocalCacheAdapterTest {
     @Test
     fun getEntity() {
         PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
-            PolyEventsApplication.application.database.genericEntityDao().insert(
+            PolyEventsApplication.application.localDatabase.genericEntityDao().insert(
                 LocalAdapter.toDocument(
                     (TEST_COLLECTION.adapter as AdapterInterface<StringWithID>).toDocument(
                         StringWithID("ID", "STR")
@@ -305,16 +339,19 @@ class LocalCacheAdapterTest {
         localCacheDatabase.getEntity(
             Observable<StringWithID>().observeOnce {
                 val i = 0
+                assert(i == 0)
             }.then,
             "ID",
             TEST_COLLECTION
         ).observeOnce {
             val i = 0
+            assert(i == 0)
         }
     }
 
     @Test
     fun getMapEntity() {
 
-    }*/
+    }
+
 }

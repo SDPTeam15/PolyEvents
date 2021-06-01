@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity() {
                 if (Settings.IsSendingLocationOn)
                     HelperFunctions.getLoc(this).observeOnce { LatLng ->
                         if (LatLng.value != null)
-                            currentDatabase.heatmapDatabase!!.setLocation(LatLng.value)
+                            currentDatabase.heatmapDatabase.setLocation(LatLng.value)
                     }
             }
         }

@@ -250,12 +250,20 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
     //-----------START LISTENER---------------------------------------
 
     override fun onPolygonClick(polygon: Polygon) =
-        GoogleMapActionHandler.onPolygonClickHandler(mod, requireContext(),
-                polygon, activity = requireActivity(), lifecycle = this, locationActivated = useUserLocation)
+        GoogleMapActionHandler.onPolygonClickHandler(
+            mod,
+            requireContext(),
+            polygon,
+            activity = requireActivity(),
+            lifecycle = this,
+            locationActivated = useUserLocation
+        )
 
     override fun onMarkerClick(marker: Marker): Boolean {
-        GoogleMapActionHandler.onMarkerClickHandler(marker,
-                activity = requireActivity(), lifecycle = this, locationActivated = useUserLocation)
+        GoogleMapActionHandler.onMarkerClickHandler(
+            marker,
+            activity = requireActivity(), lifecycle = this, locationActivated = useUserLocation
+        )
 
         //Return true to say that we don't want the event to go further (to the usual event when a marker is clicked)
         return true
