@@ -54,8 +54,8 @@ class EventEditManagementActivity : AppCompatActivity() {
                 origEvents[event.eventId!!] = event
             }
         }
-
-        Database.currentDatabase.eventDatabase!!.getEvents({it.orderBy(DatabaseConstant.EventEditConstant.EVENT_EDIT_STATUS.value)}, null, eventList)
+    //TODO sort event by status ordinal (ascending)
+        Database.currentDatabase.eventDatabase!!.getEvents(null, null, eventList)
             .observeOnce(this) {
                 if (!it.value) {
                     HelperFunctions.showToast(getString(R.string.fail_to_get_list_events), this)
@@ -68,10 +68,9 @@ class EventEditManagementActivity : AppCompatActivity() {
 
     private fun getEventEdit() {
         //Wait until we have both requests accepted from the database to show the material requests
+        //TODO sort event by status ordinal (ascending)
         Database.currentDatabase.eventDatabase!!.getEventEdits(
-            { collection ->
-                collection.orderBy(DatabaseConstant.EventEditConstant.EVENT_EDIT_STATUS.value)
-            },
+            null,
             eventEdits,
         ).observeOnce(this) {
             if (!it.value) {
