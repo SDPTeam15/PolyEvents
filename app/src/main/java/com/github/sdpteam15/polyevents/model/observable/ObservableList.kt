@@ -807,8 +807,7 @@ class ObservableList<T>(
         condition: () -> Boolean,
         mapper: (T) -> U
     ): Observable.ThenOrRemove<ObservableList<U>> {
-        observableList.clear()
-        observableList.addAll(listValues.map { mapper(it.value!!) }, this)
+        observableList.updateAll(listValues.map { mapper(it.value!!) }, this)
         val result: (ObserversInfo<T>) -> Boolean =
             {
                 when (it.info) {

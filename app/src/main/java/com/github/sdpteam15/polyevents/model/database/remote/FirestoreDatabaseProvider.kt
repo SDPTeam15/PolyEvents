@@ -26,46 +26,22 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     var firestore: FirebaseFirestore? = null
         get() = field ?: Firebase.firestore
 
-    override var itemDatabase: ItemDatabaseInterface? = null
-        get() {
-            field = field ?: ItemDatabase(this)
-            return field
-        }
-    override var zoneDatabase: ZoneDatabaseInterface? = null
-        get() {
-            field = field ?: ZoneDatabase(this)
-            return field
-        }
-    override var userDatabase: UserDatabaseInterface? = null
-        get() {
-            field = field ?: UserDatabase(this)
-            return field
-        }
-    override var heatmapDatabase: HeatmapDatabaseInterface? = null
-        get() {
-            field = field ?: HeatmapDatabase(this)
-            return field
-        }
-    override var eventDatabase: EventDatabaseInterface? = null
-        get() {
-            field = field ?: EventDatabase(this)
-            return field
-        }
-    override var materialRequestDatabase: MaterialRequestDatabaseInterface? = null
-        get() {
-            field = field ?: MaterialRequestDatabase(this)
-            return field
-        }
-    override var routeDatabase: RouteDatabaseInterface? = null
-        get() {
-            field = field ?: RouteDatabase(LocalCacheAdapter(this))
-            return field
-        }
-    override var userSettingsDatabase: UserSettingsDatabaseInterface? = null
-        get() {
-            field = field ?: UserSettingsDatabase(this)
-            return field
-        }
+    override var itemDatabase: ItemDatabaseInterface =
+        ItemDatabase(this)
+    override var zoneDatabase: ZoneDatabaseInterface =
+        ZoneDatabase(this)
+    override var userDatabase: UserDatabaseInterface =
+        UserDatabase(this)
+    override var heatmapDatabase: HeatmapDatabaseInterface =
+        HeatmapDatabase(this)
+    override var eventDatabase: EventDatabaseInterface =
+        EventDatabase(this)
+    override var materialRequestDatabase: MaterialRequestDatabaseInterface =
+        MaterialRequestDatabase(this)
+    override var routeDatabase: RouteDatabaseInterface =
+        RouteDatabase(LocalCacheAdapter(this))
+    override var userSettingsDatabase: UserSettingsDatabaseInterface =
+        UserSettingsDatabase(this)
 
     override val currentUserObservable = Observable<UserEntity>()
     private var loadSuccess: Boolean? = false

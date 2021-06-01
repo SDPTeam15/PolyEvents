@@ -33,49 +33,49 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
             db.currentUser = value
         }
 
-    override var itemDatabase: ItemDatabaseInterface?
+    override var itemDatabase: ItemDatabaseInterface
         get() = db.itemDatabase
         set(value) {
             db.itemDatabase = value
         }
 
-    override var zoneDatabase: ZoneDatabaseInterface?
+    override var zoneDatabase: ZoneDatabaseInterface
         get() = db.zoneDatabase
         set(value) {
             db.zoneDatabase = value
         }
 
-    override var userDatabase: UserDatabaseInterface?
+    override var userDatabase: UserDatabaseInterface
         get() = db.userDatabase
         set(value) {
             db.userDatabase = value
         }
 
-    override var heatmapDatabase: HeatmapDatabaseInterface?
+    override var heatmapDatabase: HeatmapDatabaseInterface
         get() = db.heatmapDatabase
         set(value) {
             db.heatmapDatabase = value
         }
 
-    override var eventDatabase: EventDatabaseInterface?
+    override var eventDatabase: EventDatabaseInterface
         get() = db.eventDatabase
         set(value) {
             db.eventDatabase = value
         }
 
-    override var materialRequestDatabase: MaterialRequestDatabaseInterface?
+    override var materialRequestDatabase: MaterialRequestDatabaseInterface
         get() = db.materialRequestDatabase
         set(value) {
             db.materialRequestDatabase = value
         }
 
-    override var userSettingsDatabase: UserSettingsDatabaseInterface?
+    override var userSettingsDatabase: UserSettingsDatabaseInterface
         get() = db.userSettingsDatabase
         set(value) {
             db.userSettingsDatabase = value
         }
 
-    override var routeDatabase: RouteDatabaseInterface?
+    override var routeDatabase: RouteDatabaseInterface
         get() = db.routeDatabase
         set(value) {
             db.routeDatabase = value
@@ -190,14 +190,14 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
         HelperFunctions.run(Runnable {
             //Get from local cache
             PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
-                val pair = LocalAdapter.fromDocument(
-                    PolyEventsApplication.application.database.genericEntityDao()
-                        .get(id, collection.value)
-                )
-                val result = adapter.fromDocument(pair.first, pair.second)
-                element.postValue(result, db)
-                if (result != null)
-                    ended.postValue(true, db)
+                PolyEventsApplication.application.database.genericEntityDao()
+                    .get(id, collection.value).apply {
+                        val pair = LocalAdapter.fromDocument(it)
+                        val result = adapter.fromDocument(pair.first, pair.second)
+                        element.postValue(result, db)
+                        if (result != null)
+                            ended.postValue(true, db)
+                    }
 
                 //Update local cache and modify the result if necessary
                 PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
@@ -229,11 +229,12 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
                 PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
                     val map = mutableMapOf<String, T>()
                     for (id in ids) {
-                        val pair = LocalAdapter.fromDocument(
-                            PolyEventsApplication.application.database.genericEntityDao()
-                                .get(id, collection.value)
-                        )
-                        adapter.fromDocument(pair.first, pair.second).apply { map[id] = it }
+                        PolyEventsApplication.application.database.genericEntityDao()
+                            .get(id, collection.value)
+                            .apply {
+                                val pair = LocalAdapter.fromDocument(it)
+                                adapter.fromDocument(pair.first, pair.second).apply { map[id] = it }
+                            }
                     }
                     elements.updateAll(map, db)
                     ended.postValue(true, db)

@@ -26,7 +26,7 @@ interface GenericEntityDao {
      * @return the generic entity
      */
     @Query("SELECT * FROM entity_table WHERE id = :id AND collection = :collection ")
-    suspend fun get(id: String, collection: String): GenericEntity
+    suspend fun get(id: String, collection: String): GenericEntity?
 
     /**
      * Insert a element
