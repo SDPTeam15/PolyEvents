@@ -1,4 +1,4 @@
-package com.github.sdpteam15.polyevents.view.activity
+package com.github.sdpteam15.polyevents.view.activity.admin
 
 import android.content.Context
 import android.os.Bundle
@@ -40,8 +40,6 @@ class ItemsAdminActivity : AppCompatActivity() {
                     showToast(getString(R.string.failed_to_get_item), this)
             }
     }
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,7 +95,6 @@ class ItemsAdminActivity : AppCompatActivity() {
         val btnAdd = findViewById<ImageButton>(R.id.id_add_item_button)
         btnAdd.setOnClickListener { createItemPopup(null) }
     }
-
 
     private fun createItemPopup(item: Triple<Item, Int, Int>?) {
         // Initialize a new layout inflater instance
@@ -208,11 +205,8 @@ class ItemsAdminActivity : AppCompatActivity() {
             }
         }
 
-
         // Finally, show the popup window on app
         TransitionManager.beginDelayedTransition(this.recyclerView)
         popupWindow.showAtLocation(this.recyclerView, Gravity.CENTER, 0, 0)
     }
-
-
 }

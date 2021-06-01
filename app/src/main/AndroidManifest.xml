@@ -116,7 +116,7 @@
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".view.activity.ItemsAdminActivity"
+            android:name=".view.activity.admin.ItemsAdminActivity"
             android:configChanges="orientation"
             android:label="@string/title_activity_items_admin"
             android:parentActivityName=".view.activity.MainActivity"
@@ -129,7 +129,7 @@
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".view.activity.ItemRequestActivity"
+            android:name=".view.activity.activityprovider.ItemRequestActivity"
             android:configChanges="orientation"
             android:label="@string/title_activity_item_request"
             android:parentActivityName=".view.activity.MainActivity"

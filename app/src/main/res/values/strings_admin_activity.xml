@@ -36,10 +36,8 @@
     <!-- ItemRequestManagementActivity -->
     <string name="failed_to_get_username_from_database">Failed to get username from database</string>
 
-
     <!-- User management list -->
     <string name="failed_to_get_list_users">Failed to get users information</string>
-
 
     <!-- EventListManagementActivity-->
     <string name="event_list_management">All events</string>
@@ -111,6 +109,4 @@
     <string name="quantity_should_be_positive">The quantity must be positive</string>
     <string name="new_total_less_items">The new total is less than attributed items</string>
     <string name="fill_all_fields">Please fill all the fields above</string>
-
-
 </resources>

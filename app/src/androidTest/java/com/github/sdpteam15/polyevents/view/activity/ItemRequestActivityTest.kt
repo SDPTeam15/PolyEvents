@@ -23,6 +23,7 @@ import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.activity.activityprovider.ItemRequestActivity
 import com.github.sdpteam15.polyevents.view.adapter.ItemRequestAdapter
 import org.hamcrest.CoreMatchers.`is`
 import org.junit.After

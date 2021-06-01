@@ -185,7 +185,7 @@
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"
                             android:layout_height="200dp"
-                            tools:context=".view.activity.ItemsAdminActivity">
+                            tools:context=".view.activity.admin.ItemsAdminActivity">
 
                             <ImageButton
                                 android:id="@+id/id_add_profile_button"
