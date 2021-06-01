@@ -24,7 +24,7 @@
             android:configChanges="orientation"
             android:parentActivityName=".view.activity.MainActivity"
             android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity"></activity>
+            tools:ignore="LockedOrientationActivity" />
 
         <activity
             android:name=".view.activity.TimeTableActivity"
@@ -90,6 +90,7 @@
             android:label="@string/title_activity_event_list_management"
             android:parentActivityName=".view.activity.MainActivity"
             android:screenOrientation="portrait"
+            android:launchMode="singleTop"
             tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".view.activity.admin.UserManagementListActivity"
@@ -170,7 +171,7 @@
         <receiver
             android:name=".view.service.AlarmReceiver"
             android:enabled="true"
-            android:exported="false"></receiver>
+            android:exported="false" />
     </application>
 
 </manifest>
