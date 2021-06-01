@@ -334,6 +334,7 @@ class EventManagementTest {
         onView(withId(R.id.btnNewEvent)).perform(click())
 
         obs.postValue(false)
+        Thread.sleep(10)
         onView(withId(R.id.event_management_list_id)).check(matches(isDisplayed()))
     }
 

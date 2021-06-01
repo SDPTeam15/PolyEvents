@@ -5,7 +5,7 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.github.sdpteam15.polyevents.model.database.local.dao.EventDao
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
-import com.github.sdpteam15.polyevents.model.room.EventLocal
+import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -13,6 +13,7 @@ import org.junit.Test
 import java.io.IOException
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 
 class EventDaoTest {
     private lateinit var eventDao: EventDao
@@ -20,11 +21,11 @@ class EventDaoTest {
 
     private val event_uid = "1"
     private val testEventLocal = EventLocal(
-        eventId = event_uid,
-        eventName = "testEvent",
-        description = "this is a test event",
-        organizer = "some organizer",
-        startTime = LocalDateTime.now()
+            eventId = event_uid,
+            eventName = "testEvent",
+            description = "this is a test event",
+            organizer = "some organizer",
+            startTime = LocalDateTime.now()
     )
 
     @Before
@@ -33,9 +34,9 @@ class EventDaoTest {
         // Using an in-memory database because the information stored here disappears when the
         // process is killed.
         localDatabase = Room.inMemoryDatabaseBuilder(context, LocalDatabase::class.java)
-            // Allowing main thread queries, just for testing.
-            .allowMainThreadQueries()
-            .build()
+                // Allowing main thread queries, just for testing.
+                .allowMainThreadQueries()
+                .build()
         eventDao = localDatabase.eventDao()
     }
 
@@ -58,9 +59,11 @@ class EventDaoTest {
     @Throws(Exception::class)
     fun testGetEventById() = runBlocking {
         eventDao.insert(testEventLocal)
+        val retrievedEvent = eventDao.getEventById(testEventLocal.eventId)
+        assertFalse(retrievedEvent.isEmpty())
         assertEquals(
-            eventDao.getEventById(testEventLocal.eventId),
-            testEventLocal
+                retrievedEvent[0],
+                testEventLocal
         )
     }
 
@@ -109,10 +112,10 @@ class EventDaoTest {
         val retrievedEvents = eventDao.getAll()
         assertEquals(retrievedEvents.size, 2)
 
-        val retrievedFirstEvent = eventDao.getEventById(event_uid)
+        val retrievedFirstEvent = eventDao.getEventById(event_uid)[0]
         assertEquals(testEventLocal, retrievedFirstEvent)
 
-        val retrievedSecondEvent = eventDao.getEventById(newUid)
+        val retrievedSecondEvent = eventDao.getEventById(newUid)[0]
         assertEquals(testEventLocal2, retrievedSecondEvent)
     }
 

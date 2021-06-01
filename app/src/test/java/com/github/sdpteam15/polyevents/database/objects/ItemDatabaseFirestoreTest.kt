@@ -34,8 +34,8 @@ class ItemDatabaseFirestoreTest {
     lateinit var database: DatabaseInterface
     lateinit var mockedItemDatabase: ItemDatabaseInterface
     lateinit var item: Item
-    lateinit var createdItemTriple: Triple<Item,Int,Int>
-    lateinit var itemTriple: Triple<Item,Int,Int>
+    lateinit var createdItemTriple: Triple<Item, Int, Int>
+    lateinit var itemTriple: Triple<Item, Int, Int>
 
     @Before
     fun setup() {
@@ -46,7 +46,7 @@ class ItemDatabaseFirestoreTest {
         )
 
 
-        item = Item(itemId = itemId,itemName = itemName, itemType = itemType)
+        item = Item(itemId = itemId, itemName = itemName, itemType = itemType)
         createdItemTriple = Triple(item, itemTotal, itemTotal)
         itemTriple = Triple(item, itemTotal, itemRemaining)
 
@@ -74,7 +74,7 @@ class ItemDatabaseFirestoreTest {
         val userAccess = UserProfile()
 
         HelperTestFunction.nextSetEntity { true }
-        mockedItemDatabase.updateItem(item,itemTotal, itemRemaining,userAccess)
+        mockedItemDatabase.updateItem(item, itemTotal, itemRemaining, userAccess)
             .observeOnce { assert(it.value) }.then.postValue(true)
 
         val set = HelperTestFunction.lastSetEntity()!!
@@ -89,11 +89,11 @@ class ItemDatabaseFirestoreTest {
     fun addItem() {
         val userAccess = UserProfile()
 
-        HelperTestFunction.nextAddEntity { true }
-        mockedItemDatabase.createItem(item,itemTotal, userAccess)
-            .observeOnce { assert(it.value) }.then.postValue(true)
+        HelperTestFunction.nextAddEntityAndGetId { itemId }
+        mockedItemDatabase.createItem(item, itemTotal, userAccess)
+            .observeOnce { assert(it.value == itemId) }.then.postValue("")
 
-        val set = HelperTestFunction.lastAddEntity()!!
+        val set = HelperTestFunction.lastAddEntityAndGetId()!!
 
         assertEquals(createdItemTriple, set.element)
         assertEquals(DatabaseConstant.CollectionConstant.ITEM_COLLECTION, set.collection)
@@ -102,11 +102,27 @@ class ItemDatabaseFirestoreTest {
 
     @Test
     fun getItemList() {
-        val items = ObservableList<Triple<Item,Int, Int>>()
+        val items = ObservableList<Triple<Item, Int, Int>>()
         val userAccess = UserProfile("uid")
 
         HelperTestFunction.nextGetListEntity { true }
-        mockedItemDatabase.getItemsList(items,  userAccess)
+        mockedItemDatabase.getItemsList(items, userAccess = userAccess)
+            .observeOnce { assert(it.value) }.then.postValue(false)
+
+        val getList = HelperTestFunction.lastGetListEntity()!!
+
+        assertEquals(items, getList.element)
+        assertEquals(DatabaseConstant.CollectionConstant.ITEM_COLLECTION, getList.collection)
+        assertEquals(ItemEntityAdapter, getList.adapter)
+    }
+
+    @Test
+    fun getAvailableItems() {
+        val items = ObservableList<Triple<Item, Int, Int>>()
+        val userAccess = UserProfile("uid")
+
+        HelperTestFunction.nextGetListEntity { true }
+        mockedItemDatabase.getAvailableItems(items, userAccess = userAccess)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         val getList = HelperTestFunction.lastGetListEntity()!!
@@ -137,7 +153,7 @@ class ItemDatabaseFirestoreTest {
         val userAccess = UserProfile("uid")
 
         HelperTestFunction.nextGetListEntity { true }
-        mockedItemDatabase.getItemTypes(items,  userAccess)
+        mockedItemDatabase.getItemTypes(items, userAccess)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         val getList = HelperTestFunction.lastGetListEntity()!!
@@ -145,5 +161,21 @@ class ItemDatabaseFirestoreTest {
         assertEquals(items, getList.element)
         assertEquals(DatabaseConstant.CollectionConstant.ITEM_TYPE_COLLECTION, getList.collection)
         assertEquals(ItemTypeAdapter, getList.adapter)
+    }
+
+
+    @Test
+    fun createItemType() {
+        val userAccess = UserProfile()
+        val itemType = "itemTypeTest"
+        HelperTestFunction.nextAddEntity { true }
+        mockedItemDatabase.createItemType(itemType, userAccess)
+            .observeOnce { assert(it.value) }.then.postValue(false)
+
+        val add = HelperTestFunction.lastAddEntity()!!
+
+        assertEquals(itemType, add.element)
+        assertEquals(DatabaseConstant.CollectionConstant.ITEM_TYPE_COLLECTION, add.collection)
+        assertEquals(ItemTypeAdapter, add.adapter)
     }
 }

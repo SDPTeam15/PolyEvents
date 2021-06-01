@@ -1,7 +1,6 @@
 package com.github.sdpteam15.polyevents.fakedatabase
 
-import com.github.sdpteam15.polyevents.TestHelper
-import com.github.sdpteam15.polyevents.model.database.remote.Matcher
+import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.objects.MaterialRequestDatabaseInterface
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
@@ -24,8 +23,8 @@ object FakeDatabaseMaterialRequest : MaterialRequestDatabaseInterface {
         matcher: Matcher?,
         userAccess: UserProfile?
     ): Observable<Boolean> {
-        materialList.clear()
-        materialList.addAll(requests.values)
+        materialList.clear(FakeDatabase)
+        materialList.addAll(requests.values,FakeDatabase)
         return Observable(true)
     }
 
@@ -43,9 +42,9 @@ object FakeDatabaseMaterialRequest : MaterialRequestDatabaseInterface {
         userId: String,
         userAccess: UserProfile?
     ): Observable<Boolean> {
-        materialList.clear()
+        materialList.clear(FakeDatabase)
         for (request in requests.values)
-            materialList.add(request)
+            materialList.add(request,FakeDatabase)
         return Observable(true)
     }
 
@@ -62,7 +61,7 @@ object FakeDatabaseMaterialRequest : MaterialRequestDatabaseInterface {
         requestId: String,
         userAccess: UserProfile?
     ): Observable<Boolean> {
-        materialRequest.postValue(requests[requestId])
+        materialRequest.postValue(requests[requestId],FakeDatabase)
         return Observable(true)
     }
 

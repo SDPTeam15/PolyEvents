@@ -40,8 +40,10 @@ class UserAdapterTest {
         val document = UserAdapter.toDocument(user)
         assertEquals(document[USER_UID.value], googleId)
         assertEquals(document[USER_USERNAME.value], username)
-        assertEquals(document[USER_BIRTH_DATE.value],
-            HelperFunctions.localDateTimeToDate(birthDate.atStartOfDay()))
+        assertEquals(
+            document[USER_BIRTH_DATE.value],
+            HelperFunctions.localDateTimeToDate(birthDate.atStartOfDay())
+        )
         assertEquals(document[USER_NAME.value], name)
         assertEquals(document[USER_EMAIL.value], email)
         assertEquals(document[USER_PHONE.value], telephone)

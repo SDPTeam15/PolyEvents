@@ -85,6 +85,16 @@
                 app:layout_constraintTop_toTopOf="parent"
 
                 app:srcCompat="@drawable/ic_edit" />
+
+            <ImageButton
+                android:id="@+id/id_return_request"
+                android:layout_width="56dp"
+                android:layout_height="51dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+
+                app:srcCompat="@android:drawable/ic_menu_revert" />
+
             <LinearLayout
                 android:id="@+id/id_reason_of_refusal"
                 android:layout_width="match_parent"

@@ -19,7 +19,7 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.model.room.EventLocal
+import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
 import com.github.sdpteam15.polyevents.view.activity.EventActivity
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModel
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModelFactory
@@ -148,7 +148,7 @@ class EventListFragmentTest {
     }
 
     @Test
-    fun testMyEventsShouldNotBeDisplayedIfNoUserLoggedIn() = runBlocking {
+    fun testMyEventsShouldStillBeDisplayedIfNoUserLoggedIn() = runBlocking {
         // Event id cannot be null if creating eventLocal from event
         localDatabase.eventDao().insert(EventLocal.fromEvent(event1.copy(eventId = "1")))
         localDatabase.eventDao().insert(EventLocal.fromEvent(event2.copy(eventId = "2")))
@@ -159,7 +159,8 @@ class EventListFragmentTest {
 
         clickOn(R.id.event_list_my_events_switch)
 
-        assertUnchecked(R.id.event_list_my_events_switch)
+        assertChecked(R.id.event_list_my_events_switch)
+        assertRecyclerViewItemCount(R.id.recycler_events_list, 2)
     }
 
     @Test

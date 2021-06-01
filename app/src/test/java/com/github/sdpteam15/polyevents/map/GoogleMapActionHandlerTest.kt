@@ -35,6 +35,7 @@ class GoogleMapActionHandlerTest {
         Mockito.`when`(mockedMap.cameraPosition).thenReturn(camera)
         Mockito.`when`(mockedMap.setMinZoomPreference(GoogleMapOptions.minZoom)).then {}
     }
+
     //Depends on setupEditZone or create the edit zone markers by hand
     @Test
     fun interactionMarkerTest() {

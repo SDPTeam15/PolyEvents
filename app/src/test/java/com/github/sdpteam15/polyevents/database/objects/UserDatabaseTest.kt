@@ -34,7 +34,7 @@ class UserDatabaseTest {
 
         HelperTestFunction.nextSetEntity { true }
         mockUserDatabase.updateUserInformation(user, userAccess)
-                .observeOnce { assert(it.value) }.then.postValue(false)
+            .observeOnce { assert(it.value) }.then.postValue(false)
 
         val set = HelperTestFunction.lastSetEntity()!!
 
@@ -67,7 +67,7 @@ class UserDatabaseTest {
 
         HelperTestFunction.nextGetEntity { true }
         mockUserDatabase.inDatabase(isInDb.observeOnce { assert(it.value) }.then, uid, userAccess)
-                .observeOnce { assert(it.value) }.then.postValue(false)
+            .observeOnce { assert(it.value) }.then.postValue(false)
 
         val get = HelperTestFunction.lastGetEntity()!!
 
@@ -85,7 +85,7 @@ class UserDatabaseTest {
 
         HelperTestFunction.nextGetEntity { true }
         mockUserDatabase.getUserInformation(user, uid, userAccess)
-                .observeOnce { assert(it.value) }.then.postValue(false)
+            .observeOnce { assert(it.value) }.then.postValue(false)
 
         val get = HelperTestFunction.lastGetEntity()!!
 
@@ -104,7 +104,7 @@ class UserDatabaseTest {
         HelperTestFunction.nextAddEntityAndGetId { "pid" }
         HelperTestFunction.nextSetEntity { true }
         mockUserDatabase.addUserProfileAndAddToUser(profile, user, userAccess)
-                .observeOnce { assert(it.value) }.then.postValue(false)
+            .observeOnce { assert(it.value) }.then.postValue(false)
 
         val add = HelperTestFunction.lastAddEntityAndGetId()!!
         val set = HelperTestFunction.lastSetEntity()!!
@@ -125,9 +125,9 @@ class UserDatabaseTest {
         val user = UserEntity("uid")
         val userAccess = UserEntity("uid")
 
-        HelperTestFunction.nextAddEntityAndGetId{""}
+        HelperTestFunction.nextAddEntityAndGetId { "" }
         mockUserDatabase.addUserProfileAndAddToUser(profile, user, userAccess)
-                .observeOnce { assert(!it.value) }.then.postValue(true)
+            .observeOnce { assert(!it.value) }.then.postValue(true)
 
         val add = HelperTestFunction.lastAddEntityAndGetId()!!
 
@@ -142,10 +142,10 @@ class UserDatabaseTest {
         val user = UserEntity("uid")
         val userAccess = UserEntity("uid")
 
-        HelperTestFunction.nextAddEntityAndGetId{"pid"}
+        HelperTestFunction.nextAddEntityAndGetId { "pid" }
         HelperTestFunction.nextSetEntity { true }
         mockUserDatabase.addUserProfileAndAddToUser(profile, user, userAccess)
-                .observeOnce { assert(it.value) }.then.postValue(false)
+            .observeOnce { assert(it.value) }.then.postValue(false)
 
         val set1 = HelperTestFunction.lastSetEntity()!!
         val set2 = HelperTestFunction.lastSetEntity()!!
@@ -170,7 +170,7 @@ class UserDatabaseTest {
         HelperTestFunction.nextSetEntity { true }
         HelperTestFunction.nextDeleteEntity { true }
         mockUserDatabase.removeProfileFromUser(profile, user, userAccess)
-                .observeOnce { assert(it.value) }.then.postValue(false)
+            .observeOnce { assert(it.value) }.then.postValue(false)
 
 
         val set = HelperTestFunction.lastSetEntity()!!
@@ -194,7 +194,7 @@ class UserDatabaseTest {
 
         HelperTestFunction.nextSetEntity { false }
         mockUserDatabase.removeProfileFromUser(profile, user, userAccess)
-                .observeOnce { assert(!it.value) }.then.postValue(true)
+            .observeOnce { assert(!it.value) }.then.postValue(true)
 
 
         val set = HelperTestFunction.lastSetEntity()!!
@@ -214,7 +214,7 @@ class UserDatabaseTest {
         HelperTestFunction.nextSetEntity { true }
         HelperTestFunction.nextSetEntity { true }
         mockUserDatabase.removeProfileFromUser(profile, user, userAccess)
-                .observeOnce { assert(it.value) }.then.postValue(false)
+            .observeOnce { assert(it.value) }.then.postValue(false)
 
 
         val set1 = HelperTestFunction.lastSetEntity()!!
@@ -238,7 +238,7 @@ class UserDatabaseTest {
 
         HelperTestFunction.nextSetEntity { true }
         mockUserDatabase.updateProfile(profile, userAccess)
-                .observeOnce { assert(it.value) }.then.postValue(false)
+            .observeOnce { assert(it.value) }.then.postValue(false)
 
         val set = HelperTestFunction.lastSetEntity()!!
 
@@ -256,7 +256,7 @@ class UserDatabaseTest {
 
         HelperTestFunction.nextGetListEntity { true }
         mockUserDatabase.getUserProfilesList(profiles, user, userAccess)
-                .observeOnce { assert(it.value) }.then.postValue(false)
+            .observeOnce { assert(it.value) }.then.postValue(false)
 
         val getList = HelperTestFunction.lastGetListEntity()!!
 
@@ -274,7 +274,7 @@ class UserDatabaseTest {
 
         HelperTestFunction.nextGetListEntity { true }
         mockUserDatabase.getListAllUsers(users, userAccess = userAccess)
-                .observeOnce { assert(it.value) }.then.postValue(false)
+            .observeOnce { assert(it.value) }.then.postValue(false)
 
         val getList = HelperTestFunction.lastGetListEntity()!!
 
@@ -292,7 +292,7 @@ class UserDatabaseTest {
 
         HelperTestFunction.nextGetListEntity { true }
         mockUserDatabase.getProfilesUserList(users, profile, userAccess)
-                .observeOnce { assert(it.value) }.then.postValue(false)
+            .observeOnce { assert(it.value) }.then.postValue(false)
 
         val getList = HelperTestFunction.lastGetListEntity()!!
 
@@ -311,7 +311,7 @@ class UserDatabaseTest {
 
         HelperTestFunction.nextGetEntity { true }
         mockUserDatabase.getProfileById(profile, pid, userAccess)
-                .observeOnce { assert(it.value) }.then.postValue(false)
+            .observeOnce { assert(it.value) }.then.postValue(false)
 
         val get = HelperTestFunction.lastGetEntity()!!
 
