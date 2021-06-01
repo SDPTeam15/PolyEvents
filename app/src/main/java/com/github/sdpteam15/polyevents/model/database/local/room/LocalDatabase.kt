@@ -9,6 +9,7 @@ import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.local.dao.EventDao
+import com.github.sdpteam15.polyevents.model.database.local.dao.NotificationUidDao
 import com.github.sdpteam15.polyevents.model.database.local.dao.UserSettingsDao
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
@@ -16,6 +17,7 @@ import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.room.EventLocal
+import com.github.sdpteam15.polyevents.model.room.NotificationUid
 import com.github.sdpteam15.polyevents.model.room.UserSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +26,10 @@ import kotlinx.coroutines.launch
 // TODO: consider using repositories
 // TODO: Firebase database objects are technically daos, consider refactoring?
 // TODO: when user logs in, should fetch all info to store in local db
-@Database(entities = [EventLocal::class, UserSettings::class], version = 4, exportSchema = false)
+@Database(
+    entities = [EventLocal::class, UserSettings::class, NotificationUid::class],
+    version = 5, exportSchema = false
+)
 @TypeConverters(HelperFunctions.Converters::class)
 abstract class LocalDatabase : RoomDatabase() {
     /**
@@ -37,8 +42,14 @@ abstract class LocalDatabase : RoomDatabase() {
      */
     abstract fun userSettingsDao(): UserSettingsDao
 
+    /**
+     * Get the dao for the notification uid.
+     */
+    abstract fun notificationUidDao(): NotificationUidDao
+
     companion object {
         private const val TAG = "LocalDatabase"
+
         @Volatile
         private var INSTANCE: LocalDatabase? = null
 
@@ -116,27 +127,28 @@ abstract class LocalDatabase : RoomDatabase() {
                 }
 
                 currentDatabase.eventDatabase!!
-                        .getEvents(
-                                eventList = eventsLocalObservable,
-                                matcher = {
-                                    // Get all events to which the current user is registered to
-                                    // and order them by start date
-                                    it.whereArrayContains(
-                                            DatabaseConstant.EventConstant.EVENT_PARTICIPANTS.value,
-                                            currentDatabase.currentUser!!.uid
-                                    // TODO: why is orderby not working (need indices?)
-                                    )/*.orderBy(
+                    .getEvents(
+                        eventList = eventsLocalObservable,
+                        matcher = {
+                            // Get all events to which the current user is registered to
+                            // and order them by start date
+                            it.whereArrayContains(
+                                DatabaseConstant.EventConstant.EVENT_PARTICIPANTS.value,
+                                currentDatabase.currentUser!!.uid
+                                // TODO: why is orderby not working (need indices?)
+                            )/*.orderBy(
                                             DatabaseConstant.EventConstant.EVENT_START_TIME.value,
                                             Query.Direction.ASCENDING
                                     )*/
-                                },
-                        )
+                        },
+                    )
                 Log.d(TAG, "Finished retrieving from remote")
             }
         }
 
         suspend fun populateDatabaseWithUserSettings(
-                userSettingsDao: UserSettingsDao, scope: CoroutineScope) {
+            userSettingsDao: UserSettingsDao, scope: CoroutineScope
+        ) {
             if (currentDatabase.currentUser != null) {
                 userSettingsObservable.observe {
                     scope.launch(Dispatchers.IO) {
@@ -145,8 +157,8 @@ abstract class LocalDatabase : RoomDatabase() {
                 }
 
                 currentDatabase.userSettingsDatabase!!.getUserSettings(
-                        id = currentDatabase.currentUser!!.uid,
-                        userSettingsObservable = userSettingsObservable
+                    id = currentDatabase.currentUser!!.uid,
+                    userSettingsObservable = userSettingsObservable
                 )
             }
         }
