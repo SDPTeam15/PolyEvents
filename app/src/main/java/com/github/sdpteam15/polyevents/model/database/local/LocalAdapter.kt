@@ -3,7 +3,6 @@ package com.github.sdpteam15.polyevents.model.database.local
 import android.annotation.SuppressLint
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.local.entity.GenericEntity
-import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.util.*
@@ -75,7 +74,7 @@ object LocalAdapter {
         val mapResult = mutableMapOf<String, String>()
         for (key in element.keys)
             mapResult[fromAny(key)] = fromAny(element[key])
-        return JSONObject(mapResult as Map<String, String>).toString()
+        return (mapResult as Map<String, String>).toSerString()
     }
 
     private fun fromList(element: List<*>): String {
@@ -83,7 +82,8 @@ object LocalAdapter {
         var i = 0
         for (e in element)
             mapResult[(i++).toString()] = fromAny(e)
-        return JSONObject(mapResult as Map<String, String>).accumulate(":", element.size).toString()
+        mapResult[":"] = i.toString()
+        return (mapResult as Map<String, String>).toSerString()
     }
 
     private fun fromSet(element: Set<*>): String {
@@ -91,7 +91,7 @@ object LocalAdapter {
         var i = 0
         for (e in element)
             mapResult[(i++).toString()] = fromAny(e)
-        return JSONObject(mapResult as Map<String, String>).toString()
+        return (mapResult as Map<String, String>).toSerString()
     }
 
     private fun toAny(element: String): Any? {
@@ -124,25 +124,45 @@ object LocalAdapter {
 
     private fun toMap(element: String): Map<Any?, Any?> {
         val mapResult = mutableMapOf<Any?, Any?>()
-        val jsonObject = JSONObject(element)
-        for (key in jsonObject.keys())
-            mapResult[toAny(key)] = toAny(jsonObject.getString(key))
+        val map = element.toSerMap()
+        for (key in map.keys)
+            mapResult[toAny(key)] = toAny(map[key]!!)
         return mapResult
     }
 
     private fun toList(element: String): List<Any?> {
         val listResult = mutableListOf<Any?>()
-        val jsonObject = JSONObject(element)
-        for (key in 0 until jsonObject.getInt(":"))
-            listResult.add(toAny(jsonObject.getString(key.toString())))
+        val map = element.toSerMap()
+        for (key in 0 until map[":"]!!.toInt())
+            listResult.add(toAny(map[key.toString()]!!))
         return listResult
     }
 
     private fun toSet(element: String): Set<Any?> {
         val setResult = mutableSetOf<Any?>()
-        val jsonObject = JSONObject(element)
-        for (key in jsonObject.keys())
-            setResult.add(toAny(jsonObject.getString(key)))
+        val map = element.toSerMap()
+        for (key in map.keys)
+            setResult.add(toAny(map[key]!!))
         return setResult
+    }
+
+    fun Map<String, String>.toSerString(): String {
+        if(this.isEmpty())
+            return "{}"
+        var s = ""
+        for (key in this.keys)
+            s += ", \"${key.replace("\"", "\\\"")}\":\"${this[key]!!.replace("\"", "\\\"")}\""
+        return "{" + s.substring(2) + "}"
+    }
+
+    fun String.toSerMap(): Map<String, String> {
+        if(this.length <= 2 || this[0] != '{' || this[this.length - 1] != '}')
+            return mapOf()
+        val map = mutableMapOf<String, String>()
+        for (paire in this.substring(2, this.length - 2).split("\", \"")){
+            val splited = paire.split("\":\"")
+            map[splited[0].replace("\\\"", "\"")] = splited[1].replace("\\\"", "\"")
+        }
+        return map
     }
 }
