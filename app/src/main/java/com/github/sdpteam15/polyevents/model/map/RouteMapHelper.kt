@@ -213,7 +213,6 @@ object RouteMapHelper {
         /**
          * Applies Dijkstra algorithm on the given graph to find the shortest path from the starting
          * node to each other node of the graph
-         * @param nodes set of nodes in the graph
          * @param edges set of edges in the graph
          * @param start starting node of the graph
          * @return a map describing the shortest path tree, the root being the starting node,
@@ -530,8 +529,7 @@ object RouteMapHelper {
      * @param context the current context
      */
     fun createNewRoute(context: Context?) {
-        if(deleteMode)
-            removeRoute()
+        deleteMode = false
         if (tempPolyline != null) {
             tempPolyline!!.remove()
             tempVariableClear()

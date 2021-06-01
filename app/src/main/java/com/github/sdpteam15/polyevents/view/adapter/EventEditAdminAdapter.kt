@@ -85,6 +85,7 @@ class EventEditAdminAdapter(
 
             btnAccept.visibility = if (event.status == Event.EventStatus.PENDING) VISIBLE else INVISIBLE
             btnRefuse.visibility = if (event.status == Event.EventStatus.PENDING) VISIBLE else INVISIBLE
+            btnSee.visibility = if (event.status != Event.EventStatus.CANCELED) VISIBLE else INVISIBLE
 
             btnSee.setOnClickListener{
                 if (event.eventId!=null){

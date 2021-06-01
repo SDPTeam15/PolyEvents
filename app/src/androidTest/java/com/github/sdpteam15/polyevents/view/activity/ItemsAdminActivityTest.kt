@@ -18,6 +18,7 @@ import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabaseItem
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.entity.Item
+import com.github.sdpteam15.polyevents.view.activity.admin.ItemsAdminActivity
 import com.github.sdpteam15.polyevents.view.adapter.EventItemAdapter
 import org.hamcrest.CoreMatchers
 import org.junit.After

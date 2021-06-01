@@ -27,6 +27,7 @@
     <string name="failed_to_get_item">Failed to get items</string>
     <string name="go_to_admin_item_list">go to admin item list</string>
     <string name="add_a_new_item">Add a new item</string>
+    <string name="modify_an_item">Modify an item</string>
     <string name="item_name">Item name</string>
     <string name="quantity">Quantity</string>
     <string name="item_type">Item type</string>
@@ -35,10 +36,8 @@
     <!-- ItemRequestManagementActivity -->
     <string name="failed_to_get_username_from_database">Failed to get username from database</string>
 
-
     <!-- User management list -->
     <string name="failed_to_get_list_users">Failed to get users information</string>
-
 
     <!-- EventListManagementActivity-->
     <string name="event_list_management">All events</string>
@@ -110,6 +109,4 @@
     <string name="quantity_should_be_positive">The quantity must be positive</string>
     <string name="new_total_less_items">The new total is less than attributed items</string>
     <string name="fill_all_fields">Please fill all the fields above</string>
-
-
 </resources>

@@ -1,10 +1,9 @@
-package com.github.sdpteam15.polyevents.view.activity
+package com.github.sdpteam15.polyevents.view.activity.admin
 
 import android.content.Context
 import android.os.Bundle
 import android.transition.Slide
 import android.transition.TransitionManager
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.*
@@ -41,8 +40,6 @@ class ItemsAdminActivity : AppCompatActivity() {
                     showToast(getString(R.string.failed_to_get_item), this)
             }
     }
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,7 +96,6 @@ class ItemsAdminActivity : AppCompatActivity() {
         btnAdd.setOnClickListener { createItemPopup(null) }
     }
 
-
     private fun createItemPopup(item: Triple<Item, Int, Int>?) {
         // Initialize a new layout inflater instance
         val inflater: LayoutInflater =
@@ -129,6 +125,7 @@ class ItemsAdminActivity : AppCompatActivity() {
         val itemName = view.findViewById<EditText>(R.id.id_edittext_item_name)
         val confirmButton = view.findViewById<ImageButton>(R.id.id_confirm_add_item_button)
         val itemQuantity = view.findViewById<EditText>(R.id.id_edittext_item_quantity)
+        val title = view.findViewById<TextView>(R.id.tvTitleItem)
         val itemTypeTextView = view.findViewById<AutoCompleteTextView>(R.id.id_edittext_item_type)
         var itemUsed = 0
         if (item != null) {
@@ -136,7 +133,9 @@ class ItemsAdminActivity : AppCompatActivity() {
             itemQuantity.setText(item.second.toString())
             itemTypeTextView.setText(item.first.itemType)
             itemUsed = item.second - item.third
-
+            title.text =getString(R.string.modify_an_item)
+        } else{
+            title.text =getString(R.string.add_a_new_item)
         }
 
 
@@ -206,11 +205,8 @@ class ItemsAdminActivity : AppCompatActivity() {
             }
         }
 
-
         // Finally, show the popup window on app
         TransitionManager.beginDelayedTransition(this.recyclerView)
         popupWindow.showAtLocation(this.recyclerView, Gravity.CENTER, 0, 0)
     }
-
-
 }
