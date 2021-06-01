@@ -23,10 +23,23 @@ interface GenericEntityDao {
      * Get a element
      * @param id id of the element
      * @param collection collection where is the element
-     * @return the generic entity
+     * @return the generic entity in a list
      */
     @Query("SELECT * FROM entity_table WHERE id = :id AND collection = :collection ")
+    suspend fun getList(id: String, collection: String): List<GenericEntity>
+
+    /**
+     * Get a element
+     * @param id id of the element
+     * @param collection collection where is the element
+     * @return the generic entity
+     */
     suspend fun get(id: String, collection: String): GenericEntity?
+        {
+            val list = getList(id, collection)
+            return if(list.isEmpty()) null
+            else list[0]
+        }
 
     /**
      * Insert a element
