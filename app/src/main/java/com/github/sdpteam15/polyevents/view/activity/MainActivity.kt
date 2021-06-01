@@ -75,8 +75,8 @@ class MainActivity : AppCompatActivity() {
 
         // Create notification channel for the app
         (application as PolyEventsApplication).createChannel(
-            getString(R.string.event_notification_channel_id),
-            getString(R.string.event_notification_channel_name)
+            getString(R.string.notification_channel_id),
+            getString(R.string.notification_channel_name)
         )
 
         //TODO remove to for local cache
