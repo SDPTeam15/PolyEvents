@@ -24,11 +24,13 @@ import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.view.activity.EditProfileActivity.Companion.CALLER_RANK
 import com.github.sdpteam15.polyevents.view.activity.EditProfileActivity.Companion.EDIT_PROFILE_ID
+import com.github.sdpteam15.polyevents.view.fragments.UserModifiedInterface
 import org.hamcrest.Matchers.not
 import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.mock
+import org.mockito.kotlin.anyOrNull
 import org.mockito.Mockito.`when` as When
 
 @RunWith(AndroidJUnit4::class)
@@ -50,6 +52,7 @@ class EditProfileActivityTest {
     private val cancel: ViewInteraction get() = Espresso.onView(withId(R.id.EditProfileActivity_Cancel))
     private val save: ViewInteraction get() = Espresso.onView(withId(R.id.EditProfileActivity_Save))
 
+
     fun setup(rank: UserRole, pid: String) {
         val intent =
             Intent(ApplicationProvider.getApplicationContext(), EditProfileActivity::class.java)
@@ -63,8 +66,9 @@ class EditProfileActivityTest {
         mockedUserEntity = UserEntity(
             uid = "UID",
             username = "UName",
-            name = "UName"
-        )
+            name = "UName",
+
+            )
         mockedUserProfile = UserProfile(
             pid = "PID",
             profileName = "PName",
@@ -75,10 +79,17 @@ class EditProfileActivityTest {
 
 
         When(mockedDatabaseInterface.currentUser).thenReturn(mockedUserEntity)
+
+        When(mockedDatabaseInterface.currentProfile).thenReturn(mockedUserProfile)
+
         When(mockedUserDatabase.getProfileById(EditProfileActivity.updater, pid)).thenAnswer {
             EditProfileActivity.updater.postValue(mockedUserProfile)
             Observable(true)
         }
+
+        When(mockedUserDatabase.getUserProfilesList(anyOrNull(), anyOrNull(), anyOrNull())).thenReturn(
+            Observable(true)
+        )
         When(mockedUserDatabase.updateProfile(mockedUserProfile)).thenAnswer {
             Observable(true)
         }

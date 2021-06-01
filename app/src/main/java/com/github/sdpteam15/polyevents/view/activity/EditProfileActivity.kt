@@ -13,14 +13,16 @@ import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDat
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.view.fragments.UserModifiedInterface
 import com.google.android.material.textfield.TextInputEditText
 
-class EditProfileActivity : AppCompatActivity() {
+class EditProfileActivity: AppCompatActivity() {
     companion object {
         val updater = Observable<UserProfile>()
         var end = Observable<Boolean>()
         const val CALLER_RANK = "com.github.sdpteam15.polyevents.user.CALLER_RANK"
         const val EDIT_PROFILE_ID = "com.github.sdpteam15.polyevents.user.EDIT_PROFILE_ID"
+        var callback: UserModifiedInterface? = null
     }
 
     private val id: TextInputEditText get() = findViewById(R.id.EditProfileActivity_ID)
@@ -89,6 +91,9 @@ class EditProfileActivity : AppCompatActivity() {
             currentDatabase.userDatabase!!.updateProfile(profile).observeOnce(this) {
                 if (it.value) {
                     end.postValue(true, this)
+                    //currentDatabase.currentUser!!.loadSuccess = false
+                    callback?.profileHasChanged()
+                    callback = null
                     onBackPressed()
                 } else
                     HelperFunctions.showToast(
