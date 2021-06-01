@@ -27,6 +27,7 @@ import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import com.github.sdpteam15.polyevents.view.adapter.EventListAdapter
 import org.junit.After
@@ -123,6 +124,8 @@ class EventManagementListTest {
 
     @Before
     fun setup() {
+        PolyEventsApplication.inTest = true
+
         val intent = Intent(
             ApplicationProvider.getApplicationContext(),
             EventManagementListActivity::class.java

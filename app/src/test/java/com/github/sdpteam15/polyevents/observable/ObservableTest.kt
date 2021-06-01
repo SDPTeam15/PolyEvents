@@ -13,6 +13,7 @@ import org.mockito.Mockito.`when` as When
 const val sender = "sender"
 
 class ObservableTest {
+
     @Before
     fun setup() {
         PolyEventsApplication.inTest = true

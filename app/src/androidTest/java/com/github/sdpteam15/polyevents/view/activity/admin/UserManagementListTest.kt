@@ -23,6 +23,7 @@ import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import com.github.sdpteam15.polyevents.view.adapter.UserListAdapter
 import org.junit.After
@@ -88,6 +89,8 @@ class UserManagementListTest {
 
     @Before
     fun setup() {
+        PolyEventsApplication.inTest = true
+
         setupUser()
         val mockDatabase = HelperTestFunction.defaultMockDatabase()
 

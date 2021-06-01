@@ -1,12 +1,15 @@
 package com.github.sdpteam15.polyevents.database
 
 import com.github.sdpteam15.polyevents.model.database.local.LocalAdapter
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import org.junit.Test
 import kotlin.test.assertEquals
 
 class LocalAdapterTest {
     @Test
     fun adapter() {
+        PolyEventsApplication.inTest = true
+
         val element =
             mapOf<String, Any?>(
                 "null" to null,

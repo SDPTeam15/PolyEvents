@@ -45,6 +45,8 @@ class AdminHubFragmentTest {
 
     @Before
     fun setup() {
+        PolyEventsApplication.inTest = true
+
         val mockedDatabase = HelperTestFunction.defaultMockDatabase()
         Database.currentDatabase = mockedDatabase
 

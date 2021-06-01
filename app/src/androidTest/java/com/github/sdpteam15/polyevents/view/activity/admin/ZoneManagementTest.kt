@@ -27,6 +27,7 @@ import com.github.sdpteam15.polyevents.model.map.GoogleMapHelper
 import com.github.sdpteam15.polyevents.model.map.ZoneAreaMapHelper
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import com.github.sdpteam15.polyevents.view.adapter.EventListAdapter
 import com.github.sdpteam15.polyevents.view.adapter.ZoneItemAdapter
@@ -58,6 +59,8 @@ class ZoneManagementTest {
 
     @Before
     fun setup() {
+        PolyEventsApplication.inTest = true
+
         mockedDatabase = HelperTestFunction.defaultMockDatabase()
         mockedZoneDatabase = mockedDatabase.zoneDatabase
 
