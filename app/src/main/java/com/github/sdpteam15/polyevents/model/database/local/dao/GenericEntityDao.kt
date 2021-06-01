@@ -56,6 +56,13 @@ interface GenericEntityDao {
     suspend fun deleteAll()
 
     /**
+     * Delete all from the local cash in the collection
+     * @param collection collection to clean
+     */
+    @Query("DELETE FROM entity_table WHERE collection = :collection")
+    suspend fun deleteAll(collection: String)
+
+    /**
      * Get the last time the collection has been updated
      * @param collection the collection
      * @return serialized version of the date

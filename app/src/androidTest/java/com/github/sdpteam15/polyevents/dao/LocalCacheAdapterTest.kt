@@ -1,12 +1,14 @@
 package com.github.sdpteam15.polyevents.dao
 
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.apply
+import com.github.sdpteam15.polyevents.model.database.local.room.LocalAdapter
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalCacheAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.TEST_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.StringWithID
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
+import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterToDocumentInterface
 import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.objects.*
@@ -90,6 +92,11 @@ class LocalCacheAdapterTest {
 
         }
         localCacheDatabase = LocalCacheAdapter(database)
+
+        PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
+            PolyEventsApplication.application.database.genericEntityDao()
+                .deleteAll(TEST_COLLECTION.value)
+        }
     }
 
     @Test
@@ -186,11 +193,126 @@ class LocalCacheAdapterTest {
             PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
                 assert(
                     PolyEventsApplication.application.database.genericEntityDao().get(
-                        "ID",
+                        "ID2",
                         TEST_COLLECTION.value
                     ).apply(true) { false }
                 )
             }
         }.then.postValue("")
+    }
+
+    @Test
+    fun addListEntity() {
+        localCacheDatabase.addListEntity(
+            listOf(
+                StringWithID("ID", "STR"),
+                StringWithID("ID2", "STR"),
+            ),
+            TEST_COLLECTION
+        ).observeOnce {
+            PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
+                assert(
+                    PolyEventsApplication.application.database.genericEntityDao().get(
+                        "ID",
+                        TEST_COLLECTION.value
+                    ).apply(false) { it.id == "ID" }
+                )
+                assert(
+                    PolyEventsApplication.application.database.genericEntityDao().get(
+                        "ID2",
+                        TEST_COLLECTION.value
+                    ).apply(false) { it.id == "ID2" }
+                )
+            }
+        }.then.postValue(Pair(false, listOf("", "ID")))
+    }
+
+    @Test
+    fun setEntity() {
+        localCacheDatabase.setEntity(
+            StringWithID("ID", "STR"),
+            "ID",
+            TEST_COLLECTION
+        ).observeOnce {
+            PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
+                assert(
+                    PolyEventsApplication.application.database.genericEntityDao().get(
+                        "ID",
+                        TEST_COLLECTION.value
+                    ).apply(false) { it.id == "ID" }
+                )
+            }
+        }.then.postValue(true)
+
+        localCacheDatabase.setEntity(
+            StringWithID("ID2", "STR"),
+            "ID",
+            TEST_COLLECTION
+        ).observeOnce {
+            PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
+                assert(
+                    PolyEventsApplication.application.database.genericEntityDao().get(
+                        "ID2",
+                        TEST_COLLECTION.value
+                    ).apply(true) { false }
+                )
+            }
+        }.then.postValue(false)
+    }
+
+    @Test
+    fun setListEntity() {
+        localCacheDatabase.setListEntity(
+            listOf(
+                Pair("ID", StringWithID("ID", "STR")),
+                Pair("ID2", StringWithID("ID2", "STR")),
+            ),
+            TEST_COLLECTION
+        ).observeOnce {
+            PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
+                assert(
+                    PolyEventsApplication.application.database.genericEntityDao().get(
+                        "ID",
+                        TEST_COLLECTION.value
+                    ).apply(false) { it.id == "ID" }
+                )
+                assert(
+                    PolyEventsApplication.application.database.genericEntityDao().get(
+                        "ID2",
+                        TEST_COLLECTION.value
+                    ).apply(true) { false }
+                )
+            }
+        }.then.postValue(Pair(false, listOf(true, false)))
+    }
+
+    @Test
+    fun getEntity() {
+        PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
+            PolyEventsApplication.application.database.genericEntityDao().insert(
+                LocalAdapter.toDocument(
+                    (TEST_COLLECTION.adapter as AdapterInterface<StringWithID>).toDocument(
+                        StringWithID("ID", "STR")
+                    ),
+                    "ID",
+                    TEST_COLLECTION.value
+                )
+            )
+        }
+
+        localCacheDatabase.getEntity(
+            Observable<StringWithID>().observeOnce {
+                val i = 0
+            }.then,
+            "ID",
+            TEST_COLLECTION
+        ).observeOnce {
+            val i = 0
+        }
+    }
+
+    @Test
+    fun getMapEntity() {
+
     }
 }
