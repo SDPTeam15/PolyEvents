@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
@@ -21,7 +20,9 @@ import com.google.android.material.switchmaterial.SwitchMaterial
 
 
 /**
- * A simple [Fragment] subclass
+ * User settings fragment.
+ * IMPORTANT: This class and its relevant methods should be updated everytime
+ * a new setting is added
  */
 class SettingsFragment : Fragment() {
 
@@ -30,19 +31,16 @@ class SettingsFragment : Fragment() {
 
         // for testing purposes
         lateinit var localDatabase: LocalDatabase
+        lateinit var localSettingsViewModel: UserSettingsViewModel
     }
 
     private lateinit var sendLocationSwitchButton: SwitchMaterial
     private lateinit var trackLocationSwitchButton: SwitchMaterial
 
     private lateinit var userSettingsSaveButton: Button
+    private lateinit var userSettingsResetToDefaults: Button
 
     private lateinit var userSettings: UserSettings
-
-    // Lazily initialized view model, instantiated only when accessed for the first time
-    private val localSettingsViewModel: UserSettingsViewModel by viewModels {
-        UserSettingsViewModelFactory(localDatabase.userSettingsDao())
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,6 +49,9 @@ class SettingsFragment : Fragment() {
         val fragmentView = inflater.inflate(R.layout.fragment_settings, container, false)
 
         localDatabase = (requireActivity().application as PolyEventsApplication).database
+        localSettingsViewModel = UserSettingsViewModelFactory(
+            localDatabase.userSettingsDao()
+        ).create(UserSettingsViewModel::class.java)
 
         sendLocationSwitchButton =
             fragmentView.findViewById(R.id.fragment_settings_is_sending_location_switch)
@@ -60,12 +61,29 @@ class SettingsFragment : Fragment() {
         userSettingsSaveButton = fragmentView.findViewById(R.id.fragment_settings_button_save)
         userSettingsSaveButton.setOnClickListener {
             saveUserSettings()
+            showToast(getString(R.string.settings_saved), context)
+        }
+
+        userSettingsResetToDefaults =
+            fragmentView.findViewById(R.id.fragment_settings_button_reset_settings)
+        userSettingsResetToDefaults.setOnClickListener {
+            resetToDefault()
+            saveUserSettings()
+            showToast(getString(R.string.settings_reset_to_default), context)
         }
 
         Log.d(TAG, "ON CREATE VIEW")
         fetchUserSettings()
 
         return fragmentView
+    }
+
+    /**
+     * Method to reset the user settings to defaults.
+     */
+    private fun resetToDefault() {
+        trackLocationSwitchButton.isChecked = false
+        sendLocationSwitchButton.isChecked = false
     }
 
     /**
@@ -83,7 +101,6 @@ class SettingsFragment : Fragment() {
                 userSettings.copy(userUid = currentDatabase.currentUser!!.uid)
             )
         }
-        showToast("Your settings have been saved", context)
     }
 
     /**
@@ -104,6 +121,7 @@ class SettingsFragment : Fragment() {
             }
             updateSettingsView(userSettings)
         }
+        Log.d(TAG, "FETCHING USER SETTINGS FROM VIEW MODEL")
         localSettingsViewModel.getUserSettings(userSettingsObservable)
     }
 
@@ -116,5 +134,6 @@ class SettingsFragment : Fragment() {
         trackLocationSwitchButton.isChecked = userSettings.trackLocation
         sendLocationSwitchButton.isChecked = userSettings.isSendingLocationOn
         userSettingsSaveButton.isEnabled = true
+        userSettingsResetToDefaults.isEnabled = true
     }
 }
