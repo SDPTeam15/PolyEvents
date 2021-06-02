@@ -12,6 +12,7 @@ import org.junit.Before
 import org.junit.Test
 import java.io.IOException
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 
 class UserSettingsDaoTest {
     private lateinit var userSettingsDao: UserSettingsDao
@@ -25,9 +26,9 @@ class UserSettingsDaoTest {
         // Using an in-memory database because the information stored here disappears when the
         // process is killed.
         localDatabase = Room.inMemoryDatabaseBuilder(context, LocalDatabase::class.java)
-                // Allowing main thread queries, just for testing.
-                .allowMainThreadQueries()
-                .build()
+            // Allowing main thread queries, just for testing.
+            .allowMainThreadQueries()
+            .build()
         userSettingsDao = localDatabase.userSettingsDao()
 
         userSettings = UserSettings()
@@ -43,7 +44,9 @@ class UserSettingsDaoTest {
     @Throws(Exception::class)
     fun testInsertUserSettings() = runBlocking {
         userSettingsDao.insert(userSettings)
-        val retrievedUserSettings = userSettingsDao.get()
+        val retrieved = userSettingsDao.get()
+        assertFalse(retrieved.isEmpty())
+        val retrievedUserSettings = retrieved[0]
         assertEquals(retrievedUserSettings, userSettings)
     }
 
@@ -54,7 +57,9 @@ class UserSettingsDaoTest {
 
         val newUserSettings = userSettings.copy(trackLocation = true)
         userSettingsDao.insert(newUserSettings)
-        val retrievedUserSettings = userSettingsDao.get()
+        val retrieved = userSettingsDao.get()
+        assertFalse(retrieved.isEmpty())
+        val retrievedUserSettings = retrieved[0]
         assertEquals(retrievedUserSettings, newUserSettings)
     }
 }
