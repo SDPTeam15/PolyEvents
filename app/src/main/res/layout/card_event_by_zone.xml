@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@android:drawable/ic_menu_edit"
+            app:srcCompat="@drawable/ic_pencil"
             tools:ignore="ContentDescription" />
         <ImageButton
             android:id="@+id/idDeleteEventButton"
@@ -46,7 +46,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/idEditEventButton"
             app:layout_constraintVertical_bias="1.0"
-            app:srcCompat="@android:drawable/ic_delete"
+            app:srcCompat="@drawable/ic_clear"
             tools:ignore="ContentDescription" />
         <TextView
             android:id="@+id/tvEventStartDate"

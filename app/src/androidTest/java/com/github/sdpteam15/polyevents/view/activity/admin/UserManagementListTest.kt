@@ -89,7 +89,6 @@ class UserManagementListTest {
     @Before
     fun setup() {
         setupUser()
-        val defProfile = UserProfile(pid = "PID", "PNAME", UserRole.ADMIN)
         val mockDatabase = HelperTestFunction.defaultMockDatabase()
 
         mockUserDB = mock(UserDatabaseInterface::class.java)
@@ -98,17 +97,15 @@ class UserManagementListTest {
         Database.currentDatabase.userDatabase = mockUserDB
         When(mockDatabase.userDatabase).thenReturn(mockUserDB)
 
-        When(mockDatabase.currentProfile).thenReturn(defProfile)
-        When(mockUserDB.currentProfile).thenReturn(defProfile)
         When(mockDatabase.currentUser).thenReturn(userEntity)
         When(mockUserDB.currentUser).thenReturn(userEntity)
 
-        When(mockUserDB.getListAllUsers(anyOrNull(), anyOrNull())).thenAnswer {
+        When(mockUserDB.getListAllUsers(anyOrNull())).thenAnswer {
             (it.arguments[0] as ObservableList<UserEntity>).addAll(users)
             obs
         }
 
-        When(mockUserDB.getUserInformation(anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
+        When(mockUserDB.getUserInformation(anyOrNull(), anyOrNull())).thenAnswer {
             ((it.arguments[0]) as Observable<UserEntity>).postValue(userEntity)
             obs2
         }
@@ -121,7 +118,7 @@ class UserManagementListTest {
         Espresso.onView(withId(R.id.id_fragment_home_admin))
             .check(ViewAssertions.matches(isDisplayed()))
         Espresso.onView(withId(R.id.btnRedirectUserManagement)).perform(ViewActions.click())*/
-        When(mockUserDB.getUserProfilesList(anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
+        When(mockUserDB.getUserProfilesList(anyOrNull(), anyOrNull())).thenAnswer {
             obs2
         }
         obs2.postValue(true)

@@ -16,8 +16,7 @@ class UserSettingsDatabase(private val db: DatabaseInterface):
     var firestore: FirebaseFirestore? = null
         get() = field ?: Firebase.firestore
 
-    override fun updateUserSettings(userSettings: UserSettings,
-                                    userAccess: UserProfile?): Observable<Boolean> =
+    override fun updateUserSettings(userSettings: UserSettings): Observable<Boolean> =
         db.setEntity(
                 userSettings,
                 db.currentUser!!.uid,
@@ -25,8 +24,7 @@ class UserSettingsDatabase(private val db: DatabaseInterface):
         )
 
     override fun getUserSettings(id: String?,
-                                 userSettingsObservable: Observable<UserSettings>,
-                                 userAccess: UserProfile?): Observable<Boolean> =
+                                 userSettingsObservable: Observable<UserSettings>): Observable<Boolean> =
         db.getEntity(
                 userSettingsObservable,
                 id!!,

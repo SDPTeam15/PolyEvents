@@ -40,8 +40,7 @@ class HeatmapDatabase(private val db: DatabaseInterface) : HeatmapDatabaseInterf
 
     //TODO : remove the added points for the final
     override fun getLocations(
-        usersLocations: ObservableList<LatLng>,
-        userAccess: UserEntity?
+        usersLocations: ObservableList<LatLng>
     ): Observable<Boolean> {
         val tempUsersLocations = ObservableList<LatLng>()
         val end = Observable<Boolean>()

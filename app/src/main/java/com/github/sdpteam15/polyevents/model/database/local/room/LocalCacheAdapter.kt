@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
  * Add a local cash for any entity called by the DatabaseInterface given
  * @param db the database
  */
+@Suppress("UNCHECKED_CAST")
 class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
     override val currentUserObservable: Observable<UserEntity>
         get() = db.currentUserObservable
@@ -31,12 +32,6 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
         get() = db.currentUser
         set(value) {
             db.currentUser = value
-        }
-
-    override var currentProfile: UserProfile?
-        get() = db.currentProfile
-        set(value) {
-            db.currentProfile = value
         }
 
     override var itemDatabase: ItemDatabaseInterface?

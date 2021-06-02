@@ -33,7 +33,8 @@ data class MaterialRequest(
         DELIVERED("Delivered"),
         RETURN_REQUESTED("Return requested"),
         RETURNING("In returning"),
-        RETURNED("Returned")
+        RETURNED("Returned"),
+        CANCELED("Canceled")
         ;
 
 

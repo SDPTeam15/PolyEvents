@@ -38,6 +38,7 @@ class ItemAdapter(
         private val itemCount = view.findViewById<TextView>(R.id.id_item_list_count)
         private val itemType = view.findViewById<TextView>(R.id.id_item_list_type)
         private val btnRemove = view.findViewById<ImageButton>(R.id.id_remove_item)
+        private val btnModify = view.findViewById<ImageButton>(R.id.id_modify_item)
 
         /**
          * Binds the values of each view of an event to the layout of an event
@@ -47,6 +48,10 @@ class ItemAdapter(
             btnRemove.setOnClickListener {
                 removeItemListener(item)
             }
+            btnModify.setOnClickListener {
+                addItemlistener(item)
+            }
+
             itemName.text = item.first.itemName
             itemType.text = item.first.itemType
             itemCount.text = item.third.toString()+"/"+item.second.toString()

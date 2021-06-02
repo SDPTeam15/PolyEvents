@@ -33,13 +33,14 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@android:drawable/ic_input_add" />
+                app:srcCompat="@drawable/ic_baseline_check_24"
+                tools:ignore="ContentDescription" />
 
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/tvTitleItem"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Add a new item"
+                android:text="@string/add_a_new_item"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 app:layout_constraintEnd_toStartOf="@+id/id_confirm_add_item_button"
                 app:layout_constraintStart_toStartOf="parent"
@@ -50,28 +51,30 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="Item name"
+                android:hint="@string/item_name"
                 android:inputType="textPersonName"
                 app:layout_constraintEnd_toStartOf="@+id/id_confirm_add_item_button"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView2" />
+                app:layout_constraintTop_toBottomOf="@+id/tvTitleItem"
+                android:autofillHints="no" />
 
             <EditText
                 android:id="@+id/id_edittext_item_quantity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="Quantity"
+                android:hint="@string/quantity"
                 android:inputType="numberSigned"
                 app:layout_constraintEnd_toStartOf="@+id/id_confirm_add_item_button"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/id_edittext_item_name" />
+                app:layout_constraintTop_toBottomOf="@+id/id_edittext_item_name"
+                android:autofillHints="no" />
 
             <AutoCompleteTextView
                 android:id="@+id/id_edittext_item_type"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="Item type"
+                android:hint="@string/item_type"
                 app:layout_constraintEnd_toEndOf="@+id/id_edittext_item_quantity"
                 app:layout_constraintStart_toStartOf="@+id/id_edittext_item_quantity"
                 app:layout_constraintTop_toBottomOf="@+id/id_edittext_item_quantity" />

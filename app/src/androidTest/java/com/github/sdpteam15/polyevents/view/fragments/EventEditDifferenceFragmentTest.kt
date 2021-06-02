@@ -111,15 +111,14 @@ class EventEditDifferenceFragmentTest {
 
         Mockito.`when`(
             mockedDatabaseEvent.getEvents(
-                anyOrNull(), anyOrNull(), anyOrNull(),
-                anyOrNull()
+                anyOrNull(), anyOrNull(), anyOrNull()
             )
         ).thenAnswer {
             (it.arguments[2] as ObservableList<Event>).addAll(events)
             Observable(true)
         }
 
-        Mockito.`when`(mockedDatabaseEvent.getEventEdits(anyOrNull(), anyOrNull(), anyOrNull()))
+        Mockito.`when`(mockedDatabaseEvent.getEventEdits(anyOrNull(), anyOrNull()))
             .thenAnswer {
                 (it.arguments[1] as ObservableList<Event>).addAll(eventsEdit)
                 Observable(true)
@@ -132,8 +131,8 @@ class EventEditDifferenceFragmentTest {
                 EventEditManagementActivity::class.java
             )
         Database.currentDatabase = mockedDatabase
-        val scenario = ActivityScenario.launch<EventEditManagementActivity>(intent)
-        Thread.sleep(1000)
+        ActivityScenario.launch<EventEditManagementActivity>(intent)
+        Thread.sleep(500)
 
     }
 
@@ -240,22 +239,23 @@ class EventEditDifferenceFragmentTest {
         )
         onView(withId(R.id.tvModZone)).check(matches(withText(eventEdit2.zoneName!!)))
         onView(withId(R.id.btnCloseFragment)).perform(click())
+        onView(withId(R.id.id_recycler_event_edits)).check(matches(isDisplayed()))
     }
 
     @Test
     fun canAcceptARequest() {
 
-        Mockito.`when`(mockedDatabaseEvent.updateEventEdit(anyOrNull(), anyOrNull())).thenAnswer {
+        Mockito.`when`(mockedDatabaseEvent.updateEventEdit(anyOrNull())).thenAnswer {
             val eventEdit = (it.arguments[0] as Event)
             assertEquals(eventEdit.status, Event.EventStatus.ACCEPTED)
             Observable(true)
         }
-        Mockito.`when`(mockedDatabaseEvent.updateEvent(anyOrNull(), anyOrNull())).thenAnswer {
+        Mockito.`when`(mockedDatabaseEvent.updateEvent(anyOrNull())).thenAnswer {
             assertEquals(eventEdit1, it.arguments[0] as Event)
             Observable(true)
         }
 
-        Mockito.`when`(mockedDatabaseEvent.createEvent(anyOrNull(), anyOrNull())).thenAnswer {
+        Mockito.`when`(mockedDatabaseEvent.createEvent(anyOrNull())).thenAnswer {
             assertEquals(eventEdit2, it.arguments[0] as Event)
             Observable(true)
         }
@@ -271,12 +271,15 @@ class EventEditDifferenceFragmentTest {
                 1, TestHelper.clickChildViewWithId(R.id.id_edit_accept)
             )
         )
+
+        Thread.sleep(1000)
+        onView(withId(R.id.id_recycler_event_edits)).check(matches(isDisplayed()))
     }
 
     @Test
     fun canRefuseARequest() {
 
-        Mockito.`when`(mockedDatabaseEvent.updateEventEdit(anyOrNull(), anyOrNull())).thenAnswer {
+        Mockito.`when`(mockedDatabaseEvent.updateEventEdit(anyOrNull())).thenAnswer {
             val eventEdit = (it.arguments[0] as Event)
             assertEquals(eventEdit.status, Event.EventStatus.REFUSED)
             Observable(true)
@@ -290,12 +293,13 @@ class EventEditDifferenceFragmentTest {
         onView(withId(R.id.id_btn_confirm_refuse_request)).perform(
             click()
         )
+        onView(withId(R.id.id_recycler_event_edits)).check(matches(isDisplayed()))
     }
 
     @Test
     fun canRefuseARequestAndNotChangeTheRecycler() {
 
-        Mockito.`when`(mockedDatabaseEvent.updateEventEdit(anyOrNull(), anyOrNull())).thenAnswer {
+        Mockito.`when`(mockedDatabaseEvent.updateEventEdit(anyOrNull())).thenAnswer {
             val eventEdit = (it.arguments[0] as Event)
             assertEquals(eventEdit.status, Event.EventStatus.REFUSED)
             Observable(false)
@@ -310,12 +314,11 @@ class EventEditDifferenceFragmentTest {
             click()
         )
 
-
         onView(withId(R.id.id_recycler_event_edits)).check(matches(isDisplayed()))
     }
     @Test
     fun canAcceptARequestAndNotChangeTheRecycler() {
-        Mockito.`when`(mockedDatabaseEvent.updateEventEdit(anyOrNull(), anyOrNull())).thenAnswer {
+        Mockito.`when`(mockedDatabaseEvent.updateEventEdit(anyOrNull())).thenAnswer {
             val eventEdit = (it.arguments[0] as Event)
             assertEquals(eventEdit.status, Event.EventStatus.ACCEPTED)
             Observable(false)

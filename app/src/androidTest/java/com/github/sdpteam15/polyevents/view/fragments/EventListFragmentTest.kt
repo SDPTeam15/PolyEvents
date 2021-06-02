@@ -2,6 +2,7 @@ package com.github.sdpteam15.polyevents.view.fragments
 
 import android.content.Context
 import android.content.Intent
+import android.service.autofill.UserData
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.room.Room
 import androidx.test.core.app.ActivityScenario
@@ -13,6 +14,7 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.RecyclerViewItemCountAssertion
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabase
 import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabaseEvent
+import com.github.sdpteam15.polyevents.fakedatabase.FakeDatabaseUser
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
@@ -20,6 +22,9 @@ import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabasePr
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
+import com.github.sdpteam15.polyevents.model.database.remote.objects.UserDatabaseInterface
+import com.github.sdpteam15.polyevents.model.entity.UserEntity
+import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.view.activity.EventActivity
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModel
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModelFactory
@@ -37,7 +42,9 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
+import org.mockito.Mockito.mock
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.anyOrNull
 import java.time.LocalDateTime
 
 // TODO: test room with internet off?
@@ -46,6 +53,7 @@ class EventListFragmentTest {
     lateinit var event1: Event
     lateinit var event2: Event
     lateinit var event3 : Event
+    lateinit var user: UserEntity
 
     val firstEventName = "Sushi demo"
 
@@ -60,8 +68,10 @@ class EventListFragmentTest {
             endTime = LocalDateTime.of(2021, 3, 7, 13, 0, 0),
             organizer = "The fish band",
             zoneName = "Kitchen",
-            tags = mutableSetOf("sushi", "japan", "cooking")
+            tags = mutableListOf("sushi", "japan", "cooking")
         )
+
+        user = UserEntity(username = "username",uid="uidtest", name="testname",email="emailtest")
         event1.makeLimitedEvent(25)
 
         event2 = Event(
@@ -81,7 +91,7 @@ class EventListFragmentTest {
             startTime = LocalDateTime.of(2021, 3, 7, 21, 15),
             organizer = "AcademiC DeCibel",
             zoneName = "Concert Hall",
-            tags = mutableSetOf("music", "live", "pogo")
+            tags = mutableListOf("music", "live", "pogo")
         )
 
         FakeDatabaseEvent.events.clear()
@@ -153,7 +163,7 @@ class EventListFragmentTest {
         localDatabase.eventDao().insert(EventLocal.fromEvent(event1.copy(eventId = "1")))
         localDatabase.eventDao().insert(EventLocal.fromEvent(event2.copy(eventId = "2")))
 
-        val mockedDatabase = Mockito.mock(DatabaseInterface::class.java)
+        val mockedDatabase = mock(DatabaseInterface::class.java)
         Mockito.`when`(mockedDatabase.currentUser).thenReturn(null)
         currentDatabase = mockedDatabase
 
@@ -181,13 +191,22 @@ class EventListFragmentTest {
     }
 
     @Test
+    @Suppress("UNCHECKED_CAST")
     fun eventActivityShowsValuesFromGivenActivity() {
         val intent = Intent(
             ApplicationProvider.getApplicationContext(),
             EventActivity::class.java
         )
+
+        val mockedUserDatabase = mock(UserDatabaseInterface::class.java)
+        Mockito.`when`(mockedUserDatabase.getUserInformation(anyOrNull(), anyOrNull())).thenAnswer {
+            (it.arguments[0] as Observable<UserEntity>).postValue(user)
+            Observable(true)
+        }
+
         val events = ObservableList<Event>()
         currentDatabase.eventDatabase!!.getEvents(null, 1, events)
+        currentDatabase.userDatabase = mockedUserDatabase
 
         val eventToTest = events[0]
         intent.putExtra(EXTRA_EVENT_ID, eventToTest.eventId!!)
@@ -222,7 +241,7 @@ class EventListFragmentTest {
                 ViewAssertions.matches(
                     ViewMatchers.withText(
                         CoreMatchers.containsString(
-                            eventToTest.organizer
+                            user.name
                         )
                     )
                 )
@@ -259,9 +278,8 @@ class EventListFragmentTest {
                     )
                 )
             )
-
+        currentDatabase.userDatabase = FakeDatabaseUser
         scenario.close()
-        //TODO check image is correct
     }
 
 }

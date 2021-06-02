@@ -46,8 +46,6 @@ class AdminHubFragmentTest {
     @Before
     fun setup() {
         val mockedDatabase = HelperTestFunction.defaultMockDatabase()
-        val mockedUserProfile = UserProfile("TestID", "TestName")
-        When(mockedDatabase.currentProfile).thenReturn(mockedUserProfile)
         Database.currentDatabase = mockedDatabase
 
         UserLogin.currentUserLogin.signOut()
@@ -93,15 +91,12 @@ class AdminHubFragmentTest {
     @Test
     fun clickOnBtnEventDisplayCorrectActivity() {
         val mockedDatabase = HelperTestFunction.defaultMockDatabase()
-        val mockedUserProfile = UserProfile("TestID", "TestName")
-        When(mockedDatabase.currentProfile).thenReturn(mockedUserProfile)
         Database.currentDatabase = mockedDatabase
         val mockedEventDatabase = mock(EventDatabaseInterface::class.java)
         Mockito.`when`(mockedDatabase.eventDatabase).thenReturn(mockedEventDatabase)
 
         Mockito.`when`(
             mockedEventDatabase.getEvents(
-                anyOrNull(),
                 anyOrNull(),
                 anyOrNull(),
                 anyOrNull()

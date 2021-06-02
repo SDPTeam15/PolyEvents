@@ -83,7 +83,6 @@ class LocalDatabaseTest {
         When(mockedEventDatabase.getEvents(
                 eventList = anyOrNull(),
                 matcher = anyOrNull(),
-                userAccess = anyOrNull(),
                 limit = anyOrNull()
         )).thenAnswer {
             LocalDatabase.eventsLocalObservable.addAll(listOf(testEvent1, testEvent2))
@@ -92,8 +91,7 @@ class LocalDatabaseTest {
 
         When(mockedUserSettingsDatabase.getUserSettings(
                 id = anyOrNull(),
-                userSettingsObservable = anyOrNull(),
-                userAccess = anyOrNull()
+                userSettingsObservable = anyOrNull()
         )).then {
             LocalDatabase.userSettingsObservable.postValue(userSettingsTest)
             Observable(true)

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/id_activity_event_edit_management"
     tools:context=".view.activity.admin.EventEditManagementActivity">
 
     <androidx.recyclerview.widget.RecyclerView

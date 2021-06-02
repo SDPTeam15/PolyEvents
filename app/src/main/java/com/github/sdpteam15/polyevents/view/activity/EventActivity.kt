@@ -18,16 +18,20 @@ import androidx.core.app.AlarmManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.helper.*
+import com.github.sdpteam15.polyevents.helper.EXTRA_NOTIFICATION_ID
+import com.github.sdpteam15.polyevents.helper.EXTRA_NOTIFICATION_MESSAGE
+import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
+import com.github.sdpteam15.polyevents.helper.cancelNotification
+import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Rating
+import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.exceptions.MaxAttendeesException
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.adapter.CommentItemAdapter
 import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
@@ -53,6 +57,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         // Refactored here for tests
         val obsEvent: Observable<Event> = Observable()
         val obsRating: Observable<Float> = Observable()
+        val obsOrganiser: Observable<UserEntity> = Observable()
         val obsComments: ObservableList<Rating> = ObservableList()
         lateinit var event: Event
 
@@ -116,6 +121,16 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         getEventAndObserve()
         getEventRating()
         getCommentsAndObserve()
+        getUserAndObserve()
+    }
+
+
+    private fun getUserAndObserve() {
+        obsOrganiser.observe(this) {
+            findViewById<TextView>(R.id.txt_event_organizer).apply {
+                text = it.value.name
+            }
+        }
     }
 
     /**
@@ -123,7 +138,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
      */
     private fun fetchEventFromLocalDatabase() {
         val localEventObservable = ObservableList<EventLocal>()
-        localEventObservable.observe (this) {
+        localEventObservable.observe(this) {
             if (it.value.isEmpty()) {
                 subscribeButton.setText(R.string.event_follow)
                 subscribeButton.setOnClickListener {
@@ -147,8 +162,8 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
      */
     private fun getEventRating() {
         currentDatabase.eventDatabase!!.getMeanRatingForEvent(
-                eventId,
-                obsRating
+            eventId,
+            obsRating
         )
         obsRating.observeOnce(this, updateIfNotNull = false) { updateRating(it.value) }
     }
@@ -158,9 +173,9 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
      */
     private fun getCommentsAndObserve() {
         currentDatabase.eventDatabase!!.getRatingsForEvent(
-                eventId,
-                null,
-                obsComments
+            eventId,
+            null,
+            obsComments
         )
         obsComments.observeAdd(this) {
             //If the comment doesn't have a review, we don't want to display it
@@ -177,14 +192,25 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
      */
     private fun getEventAndObserve() {
         currentDatabase.eventDatabase!!.getEventFromId(
-                eventId,
-                obsEvent
+            eventId,
+            obsEvent
         )
-                .observe(this) { b ->
-                    if (!b.value) {
-                        showToast(getString(R.string.event_info_fail), this)
+            .observe(this) { b ->
+                if (!b.value) {
+                    showToast(getString(R.string.event_info_fail), this)
+                } else {
+                    if (obsEvent.value!!.organizer != null) {
+                        currentDatabase.userDatabase!!.getUserInformation(
+                            obsOrganiser,
+                            obsEvent.value!!.organizer!!
+                        ).observeOnce(this) {
+                            if (!b.value) {
+                                showToast(getString(R.string.event_info_fail), this)
+                            }
+                        }
                     }
                 }
+            }
         obsEvent.observeOnce(this, updateIfNotNull = false) { updateInfo(it.value) }
     }
 
@@ -213,9 +239,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         findViewById<TextView>(R.id.txt_event_date).apply {
             text = event.formattedStartTime()
         }
-        findViewById<TextView>(R.id.txt_event_organizer).apply {
-            text = event.organizer
-        }
+
         findViewById<TextView>(R.id.txt_event_description).apply {
             text = event.description
         }
@@ -229,7 +253,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         if (event.isLimitedEvent()) {
             subscribeButton.visibility = View.VISIBLE
             if (currentDatabase.currentUser != null
-                    && event.getParticipants().contains(currentDatabase.currentUser!!.uid)
+                && event.getParticipants().contains(currentDatabase.currentUser!!.uid)
             ) {
                 subscribeButton.text = resources.getString(R.string.event_unsubscribe)
             }
@@ -341,7 +365,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
             NotificationManager::class.java
         ) as NotificationManager
         val localEventObservable = ObservableList<EventLocal>()
-        localEventObservable.observe (this) {
+        localEventObservable.observe(this) {
             if (it.value.isNotEmpty()) {
                 val eventRetrievedNotificationId = it.value[0].notificationId
                 if (eventRetrievedNotificationId != null) {
@@ -420,7 +444,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         val eventNotificationsIds = database.eventDao().getAll().map { it.notificationId }
         val max = eventNotificationsIds.maxByOrNull {
             it ?: -1
-        }  ?: -1
+        } ?: -1
         // Increment by two since with each event, we associate 2 notifications, one before and one
         // when it starts.
         max + 2
@@ -435,7 +459,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
             showToast(getString(R.string.event_review_warning), this)
         } else {
             leaveReviewDialogFragment.show(
-                    supportFragmentManager, LeaveEventReviewFragment.TAG
+                supportFragmentManager, LeaveEventReviewFragment.TAG
             )
         }
     }

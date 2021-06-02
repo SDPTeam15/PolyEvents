@@ -78,7 +78,6 @@ class EventManagementListTest {
 
         Mockito.`when`(
             mockeduserDb.getListAllUsers(
-                anyOrNull(),
                 anyOrNull()
             )
         ).thenAnswer {
@@ -87,7 +86,6 @@ class EventManagementListTest {
 
         Mockito.`when`(
             mockedZoneDB.getAllZones(
-                anyOrNull(),
                 anyOrNull(),
                 anyOrNull(),
                 anyOrNull()
@@ -107,13 +105,13 @@ class EventManagementListTest {
         Mockito.`when`(mockedDatabase.eventDatabase).thenReturn(mockedEventDB)
         Mockito.`when`(mockedDatabase.zoneDatabase).thenReturn(mockedZoneDB)
         Mockito.`when`(mockedDatabase.userDatabase).thenReturn(mockeduserDb)
-        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
+        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull()))
             .thenAnswer {
                 (it.arguments[2] as ObservableList<Event>).addAll(events)
                 Observable(true, this)
             }
 
-        Mockito.`when`(mockedEventDB.getEventFromId(anyOrNull(), anyOrNull(), anyOrNull()))
+        Mockito.`when`(mockedEventDB.getEventFromId(anyOrNull(), anyOrNull()))
             .thenAnswer {
                 (it.arguments[1] as Observable<Event>).postValue(event1)
                 Observable(true)

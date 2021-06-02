@@ -36,7 +36,7 @@ class EventLocalTest {
             icon = icon,
             startTime = startTime,
             endTime = endTime,
-            tags = mutableSetOf(tag1, tag2)
+            tags = mutableListOf(tag1, tag2)
         )
 
         localEvent = EventLocal(

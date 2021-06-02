@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.github.sdpteam15.polyevents">
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
@@ -18,31 +19,54 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PolyEvents">
 
-        <activity android:name=".view.activity.admin.EventEditManagementActivity"
-            android:parentActivityName=".view.activity.MainActivity">
-
-        </activity>
+        <activity
+            android:name=".view.activity.admin.EventEditManagementActivity"
+            android:configChanges="orientation"
+            android:parentActivityName=".view.activity.MainActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
 
         <activity
             android:name=".view.activity.TimeTableActivity"
-            android:parentActivityName=".view.activity.MainActivity" />
+            android:configChanges="orientation"
+            android:parentActivityName=".view.activity.MainActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".view.activity.activityprovider.MyItemRequestsActivity"
-            android:parentActivityName=".view.activity.MainActivity"/>
-        <activity android:name=".view.activity.activityprovider.EventManagementActivityProvider" />
+            android:configChanges="orientation"
+            android:parentActivityName=".view.activity.MainActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".view.activity.activityprovider.EventManagementActivityProvider"
+            android:configChanges="orientation"
+            android:parentActivityName=".view.activity.MainActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
 
         <activity
             android:name=".view.activity.staff.StaffRequestsActivity"
+            android:configChanges="orientation"
             android:label="Staff Items Deliveries"
-            android:parentActivityName=".view.activity.MainActivity" />
+            android:parentActivityName=".view.activity.MainActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".view.activity.admin.RouteManagementActivity"
+            android:configChanges="orientation"
             android:label="@string/admin_hub_btn_route_text"
-            android:parentActivityName=".view.activity.MainActivity" />
+            android:parentActivityName=".view.activity.MainActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".view.activity.admin.EventManagementActivity"
+            android:configChanges="orientation"
             android:label="@string/title_activity_event_management"
-            android:parentActivityName=".view.activity.admin.EventManagementListActivity" />
+            android:parentActivityName=".view.activity.admin.EventManagementListActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+
         <service
             android:name=".view.service.TimerService"
             android:enabled="true"
@@ -50,43 +74,74 @@
 
         <activity
             android:name=".view.activity.admin.UserManagementActivity"
-            android:parentActivityName=".view.activity.admin.UserManagementListActivity" />
+            android:configChanges="orientation"
+            android:parentActivityName=".view.activity.admin.UserManagementListActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".view.activity.admin.ZoneManagementListActivity"
-            android:parentActivityName=".view.activity.MainActivity" />
+            android:configChanges="orientation"
+            android:parentActivityName=".view.activity.MainActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".view.activity.admin.EventManagementListActivity"
+            android:configChanges="orientation"
             android:label="@string/title_activity_event_list_management"
-            android:parentActivityName=".view.activity.MainActivity" />
+            android:parentActivityName=".view.activity.MainActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".view.activity.admin.UserManagementListActivity"
+            android:configChanges="orientation"
             android:label="@string/title_activity_user_list_management"
             android:launchMode="singleTop"
-            android:parentActivityName=".view.activity.MainActivity" />
+            android:parentActivityName=".view.activity.MainActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".view.activity.admin.ZoneManagementActivity"
+            android:configChanges="orientation"
             android:label="@string/title_activity_zone_management"
             android:launchMode="singleTop"
-            android:parentActivityName=".view.activity.admin.ZoneManagementListActivity" />
+            android:parentActivityName=".view.activity.admin.ZoneManagementListActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".view.activity.admin.ItemRequestManagementActivity"
+            android:configChanges="orientation"
             android:label="@string/title_activity_item_request_management"
-            android:parentActivityName=".view.activity.MainActivity" />
+            android:parentActivityName=".view.activity.MainActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".view.activity.ItemsAdminActivity"
+            android:name=".view.activity.admin.ItemsAdminActivity"
+            android:configChanges="orientation"
             android:label="@string/title_activity_items_admin"
-            android:parentActivityName=".view.activity.MainActivity" />
+            android:parentActivityName=".view.activity.MainActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".view.activity.EditProfileActivity"
-            android:parentActivityName=".view.activity.MainActivity" />
+            android:configChanges="orientation"
+            android:parentActivityName=".view.activity.MainActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".view.activity.ItemRequestActivity"
+            android:name=".view.activity.activityprovider.ItemRequestActivity"
+            android:configChanges="orientation"
             android:label="@string/title_activity_item_request"
-            android:parentActivityName=".view.activity.MainActivity" />
+            android:parentActivityName=".view.activity.MainActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".view.activity.EventActivity"
+            android:configChanges="orientation"
             android:label="@string/title_activity_events"
-            android:parentActivityName=".view.activity.MainActivity" />
+            android:parentActivityName=".view.activity.MainActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -102,10 +157,13 @@
 
         <activity
             android:name=".view.activity.MainActivity"
-            android:launchMode="singleTop"> <!-- the main activity is not recreated when we press the back button. Src: https://stackoverflow.com/questions/16434445/using-actionbar-home-as-up-button-home-activity-saveinstancestate-is-always-nul -->
+            android:configChanges="orientation"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity">
+            <!-- the main activity is not recreated when we press the back button. Src: https://stackoverflow.com/questions/16434445/using-actionbar-home-as-up-button-home-activity-saveinstancestate-is-always-nul -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -113,8 +171,7 @@
         <receiver
             android:name=".view.service.AlarmReceiver"
             android:enabled="true"
-            android:exported="false">
-        </receiver>
+            android:exported="false" />
     </application>
 
 </manifest>

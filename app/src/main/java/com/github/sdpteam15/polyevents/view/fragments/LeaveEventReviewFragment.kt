@@ -71,8 +71,7 @@ class LeaveEventReviewFragment(val eventId: String?, val reviewHasChanged: Revie
             currentDatabase.eventDatabase!!.getUserRatingFromEvent(
                 userId = currentDatabase.currentUser!!.uid,
                 eventId = eventId!!,
-                returnedRating = ratingObservable,
-                userAccess = null
+                returnedRating = ratingObservable
             )
         }
 

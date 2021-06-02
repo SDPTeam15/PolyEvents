@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- String related to the zone management activity-->
+    <string name="btn_create_zone_button_text">Create zone</string>
+    <string name="btn_update_zone_button_text">Update zone</string>
+    <string name="tv_create_zone_text">Create a new zone</string>
+    <string name="tv_update_zone_text">Update an existing zone</string>
+    <string name="missing_field_zone_management">Please fill all the required fields</string>
+    <string name="zone_added_successfully">Your new zone was successfully added</string>
+    <string name="zone_updated_successfully">The zone was successfully updated</string>
+    <string name="zone_add_fail">Error while creating your new zone, please try again !</string>
+    <string name="zone_update_fail">Error while update your zone, please try again !</string>
+    <string name="zone_management_name_text">Name</string>
+    <string name="zone_management_description_text">Description</string>
+    <string name="zone_management_coordinates_text">Zone coordinates</string>
+    <string name="zone_management_coordinates_set">Set</string>
+    <string name="zone_management_coordinates_not_set">Not set</string>
+    <string name="btn_modify_coord_update_text">Update</string>
+    <string name="btn_modify_coord_set_text">Set</string>
+    <string name="btn_delete_coord_text">Delete</string>
+
+    <!-- ZoneManagement List activity-->
+    <string name="fail_to_get_list_zones">Failed to get the list of zones</string>
+    <string name="zone_mangement_list_title">All zones</string>
+
+    <!-- Item management activity-->
+    <string name="failed_to_get_item">Failed to get items</string>
+    <string name="go_to_admin_item_list">go to admin item list</string>
+    <string name="add_a_new_item">Add a new item</string>
+    <string name="modify_an_item">Modify an item</string>
+    <string name="item_name">Item name</string>
+    <string name="quantity">Quantity</string>
+    <string name="item_type">Item type</string>
+    <string name="query_not_satisfied">Query not satisfied</string>
+
+    <!-- ItemRequestManagementActivity -->
+    <string name="failed_to_get_username_from_database">Failed to get username from database</string>
+
+    <!-- User management list -->
+    <string name="failed_to_get_list_users">Failed to get users information</string>
+
+    <!-- EventListManagementActivity-->
+    <string name="event_list_management">All events</string>
+    <string name="btn_new_event_text">+</string>
+    <string name="message_confirm_delete">Are you sure to want to delete %1$s (this action is not reversible)</string>
+
+    <!-- EventManagementActivity-->
+    <string name="failed_get_event_information">Unable to get the information associated to this event</string>
+    <string name="failed_to_update_event_info">Unable to update the event, please try again</string>
+    <string name="event_update_success">Event successfully updated</string>
+    <string name="event_creation_success">Event successfully created</string>
+    <string name="event_creation_failed">Unable to create the event, please try again</string>
+    <string name="failed_get_zones">Impossible to get zones from database</string>
+    <string name="empty_name_field">Name field should not be empty</string>
+    <string name="description_not_empty">Description field should not be empty</string>
+    <string name="end_date_before_start_date">The end date is before the start date</string>
+    <string name="end_date_field">End date</string>
+    <string name="end_date_selection">Select an end date</string>
+    <string name="pick_date_btn">Pick date</string>
+    <string name="pick_time_btn_text">Pick time</string>
+    <string name="description_hint">Description</string>
+    <string name="start_date_text">Start date</string>
+    <string name="start_date_hint">Select a start date</string>
+    <string name="switch_limited_event_text">Limited event</string>
+    <string name="number_participants_hint">Number participants</string>
+    <string name="name_field_hint">Name</string>
+    <string name="choose_a_zone_hint">Choose a zone</string>
+    <string name="update_event_btn_text">Update event</string>
+    <string name="create_event_btn_text">Create event</string>
+    <string name="title_activity_event_list_management">Event List</string>
+    <string name="fail_delete_from_database">Fail to delete the event from the database, please try again</string>
+    <string name="success_delete_from_database">The event was successfully delete from the database</string>
+    <string name="event_deletion_no_button_text">No</string>
+    <string name="event_deletion_yes_button_text">Yes</string>
+    <string name="fail_retrieve_events">Failed to retrieve all the events</string>
+    <string name="number_of_event_greater_than_0">The number of participant must be >= %1$d</string>
+    <string name="choose_an_organiser">Choose an organiser</string>
+    <string name="tags_separate_them_with_a_coma">Tags (separated by a coma)</string>
+
+    <!-- Event edit related constant-->
+    <string name="event_edit_request_successfully_sent">Your event edit request has been successfully sent</string>
+    <string name="event_edit_request_error">Error while sending event edit request, please try again</string>
+
+    <!-- EventEditManagement Activity-->
+    <string name="failed_to_accept_request">Failed to accept the request</string>
+    <string name="activity_edit_cannot_be_requested">The activity edit cannot be requested</string>
+    <string name="cannot_accept_edit_requests">Can not accept this request, please try again</string>
+    <string name="failed_to_decline_requests">Failed to decline the request</string>
+    <string name="fail_to_get_list_events">Failed to get the list of all events</string>
+    <string name="fail_to_get_list_events_edits">Failed to get the list of all event edits</string>
+
+    <!-- EventEditDifference Fragments title -->
+    <string name="edit_fragment_creation_title">Creation</string>
+    <string name="edit_title_modification">Modified</string>
+    <string name="edit_original_title">Original</string>
+    <string name="edit_name_label">Name:</string>
+    <string name="edit_start_date_label">Start date:</string>
+    <string name="edit_end_date_label">End date:</string>
+    <string name="edit_zone_label">Zone:</string>
+    <string name="edit_limited_event_label">Limited event ?</string>
+    <string name="edit_desc_label">Description</string>
+    <string name="edit_close_btn_text">Close</string>
+    <string name="fragment_edit_no_text">No.</string>
+    <string name="fragment_edit_limited_text">Yes, %1$s.</string>
+
+    <!-- ItemAdminActivity-->
+    <string name="fail_to_add_items">Failed to add the item to the database</string>
+    <string name="item_already_in_use">This item is in use by an event provider</string>
+    <string name="quantity_should_be_positive">The quantity must be positive</string>
+    <string name="new_total_less_items">The new total is less than attributed items</string>
+    <string name="fill_all_fields">Please fill all the fields above</string>
+</resources>

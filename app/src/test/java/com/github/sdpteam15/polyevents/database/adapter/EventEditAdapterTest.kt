@@ -77,7 +77,6 @@ class EventEditAdapterTest {
             event.status!!.ordinal
         )
 
-        val storedEventInventory = document[EVENT_INVENTORY.value] as List<Item>
 
         val storedEventTags = document[EVENT_TAGS.value] as List<String>
         assertTrue(storedEventTags.contains(tag1))

@@ -10,8 +10,6 @@ import com.google.android.gms.maps.model.LatLng
 interface HeatmapDatabaseInterface {
     val currentUser: UserEntity?
         get() = Database.currentDatabase.currentUser
-    val currentProfile: UserProfile?
-        get() = Database.currentDatabase.currentProfile
 
     /**
      * Update, or add if it was not already in the database, the current location
@@ -26,11 +24,9 @@ interface HeatmapDatabaseInterface {
     /**
      * Fetch the current users locations.
      * @param usersLocations the list of users locations that will be set when the DB returns the information
-     * @param userAccess the user profile to use its permission
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getLocations(
-        usersLocations: ObservableList<LatLng>,
-        userAccess: UserEntity? = null
+        usersLocations: ObservableList<LatLng>
     ): Observable<Boolean>
 }

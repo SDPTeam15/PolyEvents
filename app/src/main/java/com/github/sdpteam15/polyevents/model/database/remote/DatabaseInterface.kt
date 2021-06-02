@@ -29,11 +29,6 @@ interface DatabaseInterface {
      */
     var currentUser: UserEntity?
 
-    /**
-     * The current profile of the database
-     */
-    @Deprecated("to remove")
-    var currentProfile: UserProfile?
 
     /**
      * The database used to handle query about items
