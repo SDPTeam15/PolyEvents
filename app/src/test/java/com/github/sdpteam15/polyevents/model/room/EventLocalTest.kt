@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.model.room
 
+import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
 import com.github.sdpteam15.polyevents.model.entity.Event
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -35,7 +36,7 @@ class EventLocalTest {
             icon = icon,
             startTime = startTime,
             endTime = endTime,
-            tags = mutableSetOf(tag1, tag2)
+            tags = mutableListOf(tag1, tag2)
         )
 
         localEvent = EventLocal(

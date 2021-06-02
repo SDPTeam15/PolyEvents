@@ -368,7 +368,8 @@ class GoogleMapHelperTest {
         newZone.description = "desc"
         newZone.zoneId = "Zone ${GoogleMapHelper.uidZone++}"
         val id = newZone.zoneId
-        newZone.location = "46.52028185590883|6.565878853201865!46.51992327436586|6.565878853201865!46.51992327436586|6.566596016287803!46.52028185590883|6.566596016287803"
+        newZone.location =
+            "46.52028185590883|6.565878853201865!46.51992327436586|6.565878853201865!46.51992327436586|6.566596016287803!46.52028185590883|6.566596016287803"
         ZoneAreaMapHelper.waitingZones.add(newZone)
         GoogleMapHelper.restoreMapState(null, false)
         assertTrue(ZoneAreaMapHelper.areasPoints.isNotEmpty())
@@ -380,7 +381,6 @@ class GoogleMapHelperTest {
         ZoneAreaMapHelper.clearTemp()
     }
     /**/
-
 
 
     @Test
@@ -524,14 +524,14 @@ class GoogleMapHelperTest {
     }
 
     @Test
-    fun canEditTest(){
+    fun canEditTest() {
         val zone = "Zone ${GoogleMapHelper.uidZone++}"
         ZoneAreaMapHelper.editingZone = zone
         val area1 = 1
         val area2 = 2
         val area3 = 3
         val areaNotModifiable = 50
-        val list = mutableListOf(area1,area2,area3)
+        val list = mutableListOf(area1, area2, area3)
         ZoneAreaMapHelper.zonesToArea[zone] = Pair(null, list)
 
         assertEquals(true, ZoneAreaMapHelper.canEdit(area1.toString()))
@@ -539,7 +539,7 @@ class GoogleMapHelperTest {
     }
 
     @Test
-    fun clearSelectedZoneTest(){
+    fun clearSelectedZoneTest() {
         GoogleMapHelper.selectedZone = null
         clearSelectedZone()
         assertEquals(null, GoogleMapHelper.selectedZone)
@@ -561,7 +561,7 @@ class GoogleMapHelperTest {
     }
 
     @Test
-    fun setSelectedZoneTest(){
+    fun setSelectedZoneTest() {
         val selected = "Zone ${GoogleMapHelper.uidZone++}"
         GoogleMapHelper.selectedZone = null
         val elem1 = GoogleMapHelper.uidArea++
@@ -580,7 +580,7 @@ class GoogleMapHelperTest {
     }
 
     @Test
-    fun setSelectedZoneFromAreaTest(){
+    fun setSelectedZoneFromAreaTest() {
         val selected = "Zone ${GoogleMapHelper.uidZone++}"
         GoogleMapHelper.selectedZone = null
         val elem1 = GoogleMapHelper.uidArea++
@@ -599,13 +599,13 @@ class GoogleMapHelperTest {
     }
 
     @Test
-    fun removeAreaNotInListTest(){
+    fun removeAreaNotInListTest() {
         ZoneAreaMapHelper.areasPoints.clear()
         ZoneAreaMapHelper.removeArea(GoogleMapHelper.uidArea++)
     }
 
     @Test
-    fun importNewZoneTest(){
+    fun importNewZoneTest() {
         ZoneAreaMapHelper.areasPoints.clear()
         ZoneAreaMapHelper.zonesToArea.clear()
         val mockedzzt = Mockito.mock(zzt::class.java)
@@ -621,7 +621,8 @@ class GoogleMapHelperTest {
         newZone.description = "desc"
         newZone.zoneId = "Zone ${GoogleMapHelper.uidZone++}"
         val id = newZone.zoneId
-        newZone.location = "46.52028185590883|6.565878853201865!46.51992327436586|6.565878853201865!46.51992327436586|6.566596016287803!46.52028185590883|6.566596016287803"
+        newZone.location =
+            "46.52028185590883|6.565878853201865!46.51992327436586|6.565878853201865!46.51992327436586|6.566596016287803!46.52028185590883|6.566596016287803"
         ZoneAreaMapHelper.importNewZone(null, newZone, false)
 
         assertEquals(newZone.hashCode(), ZoneAreaMapHelper.zonesToArea[id]!!.first.hashCode())

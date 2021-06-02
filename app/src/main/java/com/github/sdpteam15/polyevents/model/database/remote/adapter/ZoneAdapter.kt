@@ -18,14 +18,13 @@ object ZoneAdapter : AdapterInterface<Zone> {
             ZONE_LOCATION.value to element.location,
             ZONE_DESCRIPTION.value to element.description
         ) as HashMap<String, Any?>
-
         if (element.zoneId != null) {
             map[ZONE_DOCUMENT_ID.value] = element.zoneId!!
         }
         return map
     }
 
-    override fun fromDocument(document: MutableMap<String, Any?>, id: String): Zone = Zone(
+    override fun fromDocument(document: Map<String, Any?>, id: String): Zone = Zone(
         zoneId = id,
         zoneName = document[ZONE_NAME.value] as String?,
         location = document[ZONE_LOCATION.value] as String?,

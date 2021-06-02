@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.activity.ItemRequestActivity">
+    tools:context=".view.activity.activityprovider.MyItemRequestsActivity">
     <LinearLayout
         android:id="@+id/layout_title"
         android:layout_width="wrap_content"

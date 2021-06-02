@@ -23,11 +23,11 @@ import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Rating
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.observable.Observable
-import com.github.sdpteam15.polyevents.model.room.EventLocal
+import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
+import com.github.sdpteam15.polyevents.model.database.remote.objects.UserDatabaseInterface
 import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
 import com.schibsted.spain.barista.assertion.BaristaProgressBarAssertions.assertProgress
 import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertDisplayed
-import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertNotDisplayed
 import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertNotExist
 import com.schibsted.spain.barista.interaction.BaristaClickInteractions.clickOn
 import kotlinx.coroutines.runBlocking
@@ -41,9 +41,7 @@ import org.mockito.Mockito.mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.anyOrNull
 import java.time.LocalDateTime
-import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
-import kotlin.test.assertNull
+import kotlin.test.*
 import org.mockito.Mockito.`when` as When
 
 
@@ -56,9 +54,12 @@ class EventActivityTest {
     val email = "user@email.com"
 
     lateinit var testLimitedEvent: Event
+    lateinit var testPublicEvent: Event
+    val publicEventId = "publicEventId"
     val limitedEventId = "limitedEvent"
 
     lateinit var mockedDatabase: DatabaseInterface
+    lateinit var mockedUserDatabase: UserDatabaseInterface
     lateinit var mockedEventDatabase: EventDatabaseInterface
 
     lateinit var scenario: ActivityScenario<EventActivity>
@@ -66,17 +67,21 @@ class EventActivityTest {
     private lateinit var localDatabase: LocalDatabase
 
     @Before
+    @Suppress("UNCHECKED_CAST")
     fun setup() {
         testUser = UserEntity(
             uid = uid,
             username = username,
-            email = email
+            email = email,
+            name = "Test name"
         )
 
         mockedDatabase = mock(DatabaseInterface::class.java)
         mockedEventDatabase = mock(EventDatabaseInterface::class.java)
+        mockedUserDatabase = mock(UserDatabaseInterface::class.java)
         When(mockedDatabase.currentUser).thenReturn(testUser)
         When(mockedDatabase.eventDatabase).thenReturn(mockedEventDatabase)
+        When(mockedDatabase.userDatabase).thenReturn(mockedUserDatabase)
 
         currentDatabase = mockedDatabase
 
@@ -87,8 +92,14 @@ class EventActivityTest {
             startTime = LocalDateTime.of(2021, 3, 7, 21, 15),
             organizer = "AcademiC DeCibel",
             zoneName = "Concert Hall",
-            tags = mutableSetOf("music", "live", "pogo")
+            tags = mutableListOf("music", "live", "pogo")
         )
+        testPublicEvent = testLimitedEvent.copy(
+                eventId = publicEventId,
+                eventName = "public Event only",
+                tags = mutableListOf()
+        )
+
         testLimitedEvent.makeLimitedEvent(3)
 
         When(
@@ -99,6 +110,26 @@ class EventActivityTest {
             EventActivity.obsEvent.postValue(testLimitedEvent)
             Observable(true)
         }
+
+        When(mockedUserDatabase.getUserInformation(anyOrNull(), anyOrNull())).thenAnswer {
+            (it.arguments[0] as Observable<UserEntity>).postValue(testUser)
+            Observable(true)
+        }
+
+        When(
+                mockedEventDatabase.getEventFromId(
+                        id = publicEventId, returnEvent = EventActivity.obsEvent
+                )
+        ).then {
+            EventActivity.obsEvent.postValue(testPublicEvent)
+            Observable(true)
+        }
+
+        When(
+            mockedEventDatabase.updateEvent(
+                event = anyOrNull()
+            )
+        ).thenReturn(Observable(true))
 
         // Create local db
         val context: Context = ApplicationProvider.getApplicationContext()
@@ -120,7 +151,7 @@ class EventActivityTest {
 
     @Test
     fun newCommentAdded() {
-        goToEventActivityWithIntent()
+        goToEventActivityWithIntent(limitedEventId)
 
         assertEquals(0, EventActivity.obsComments.size)
         val comment = Rating("Rating 1", 5f, "TROP COOL yes")
@@ -135,7 +166,7 @@ class EventActivityTest {
 
     @Test
     fun eventActivityCorrectlyShowsEvent() {
-        goToEventActivityWithIntent()
+        goToEventActivityWithIntent(limitedEventId)
 
         onView(withId(R.id.txt_event_Name))
             .check(matches(withText(containsString(testLimitedEvent.eventName))))
@@ -145,7 +176,7 @@ class EventActivityTest {
 
 
         onView(withId(R.id.txt_event_organizer))
-            .check(matches(withText(containsString(testLimitedEvent.organizer))))
+            .check(matches(withText(containsString(testUser.name))))
 
         onView(withId(R.id.txt_event_zone))
             .check(matches(withText(containsString(testLimitedEvent.zoneName))))
@@ -162,7 +193,7 @@ class EventActivityTest {
 
     @Test
     fun testEventSubscription() {
-        goToEventActivityWithIntent()
+        goToEventActivityWithIntent(limitedEventId)
 
         clickOn(R.id.button_subscribe_event)
 
@@ -181,16 +212,16 @@ class EventActivityTest {
 
     @Test
     fun testEventSubscriptionUpdatesLocalDatabase() = runBlocking {
-        goToEventActivityWithIntent()
+        goToEventActivityWithIntent(limitedEventId)
 
         // Subscribe to event
         clickOn(R.id.button_subscribe_event)
 
         val retrievedLocalEventsAfterSubscription = localDatabase.eventDao().getAll()
         assert(retrievedLocalEventsAfterSubscription.isNotEmpty())
-        assertEquals(
+        testEventLocalEqualsEventEntity(
             retrievedLocalEventsAfterSubscription[0],
-            EventLocal.fromEvent(testLimitedEvent)
+            testLimitedEvent
         )
 
         assertDisplayed(R.id.button_subscribe_event, R.string.event_unsubscribe)
@@ -208,7 +239,7 @@ class EventActivityTest {
         testLimitedEvent.addParticipant("bogusId")
         assert(testLimitedEvent.getMaxNumberOfSlots() == testLimitedEvent.getParticipants().size)
 
-        goToEventActivityWithIntent()
+        goToEventActivityWithIntent(limitedEventId)
 
         assertDisplayed(R.id.button_subscribe_event, R.string.event_subscribe)
 
@@ -222,7 +253,7 @@ class EventActivityTest {
     fun testSubscriptionToEventWithNoUserLoggedIn() {
         When(mockedDatabase.currentUser).thenReturn(null)
 
-        goToEventActivityWithIntent()
+        goToEventActivityWithIntent(limitedEventId)
 
         assertDisplayed(R.id.button_subscribe_event, R.string.event_subscribe)
 
@@ -236,7 +267,7 @@ class EventActivityTest {
     fun testEventActivityWhenAlreadySubscribedToEvent() {
         testLimitedEvent.addParticipant(uid)
 
-        goToEventActivityWithIntent()
+        goToEventActivityWithIntent(limitedEventId)
         assert(EventActivity.obsEvent.value!!.getParticipants().contains(uid))
 
         assertDisplayed(R.id.button_subscribe_event, R.string.event_unsubscribe)
@@ -258,7 +289,7 @@ class EventActivityTest {
             )
         ).thenReturn(Observable(false))
 
-        goToEventActivityWithIntent()
+        goToEventActivityWithIntent(limitedEventId)
 
         // Nothing displayed
         onView(withId(R.id.txt_event_Name))
@@ -266,7 +297,7 @@ class EventActivityTest {
     }
 
     @Test
-    fun testPublicEventShouldHaveNoSubscribeButton() {
+    fun testPublicEventShouldHaveFollowButtonNotSubscribe() {
         When(
             mockedEventDatabase.getEventFromId(
                 id = limitedEventId, returnEvent = EventActivity.obsEvent
@@ -280,14 +311,14 @@ class EventActivityTest {
             Observable(true)
         }
 
-        goToEventActivityWithIntent()
+        goToEventActivityWithIntent(limitedEventId)
 
-        assertNotDisplayed(R.id.button_subscribe_event)
+        assertDisplayed(R.id.button_subscribe_event, R.string.event_follow)
     }
 
     @Test
     fun testLeaveReviewIsCorrectlyDisplayed() {
-        goToEventActivityWithIntent()
+        goToEventActivityWithIntent(limitedEventId)
         assertDisplayed(R.id.event_leave_review_button)
 
         // Click review event
@@ -311,7 +342,7 @@ class EventActivityTest {
     @Test
     fun testUserNotLoggedInCantLeaveReview() {
         When(mockedDatabase.currentUser).thenReturn(null)
-        goToEventActivityWithIntent()
+        goToEventActivityWithIntent(limitedEventId)
 
         assertNotExist(R.id.leave_review_fragment_save_button)
         assertNotExist(R.id.leave_review_fragment_title)
@@ -322,7 +353,7 @@ class EventActivityTest {
 
     @Test
     fun testUserShouldNotBeAbleToStoreRatingIfHasNotRatedYet() {
-        goToEventActivityWithIntent()
+        goToEventActivityWithIntent(limitedEventId)
         assertDisplayed(R.id.event_leave_review_button)
 
         // Click review event
@@ -340,14 +371,14 @@ class EventActivityTest {
         var createdRating: Rating? = null
         When(
             mockedEventDatabase.addRatingToEvent(
-                anyOrNull(), anyOrNull()
+                anyOrNull()
             )
         ).thenAnswer {
             createdRating = (it.arguments[0] as Rating?)
             Observable(true)
         }
 
-        goToEventActivityWithIntent()
+        goToEventActivityWithIntent(limitedEventId)
 
         // Click review event
         clickOn(R.id.event_leave_review_button)
@@ -367,14 +398,14 @@ class EventActivityTest {
         var createdRating: Rating? = null
         When(
             mockedEventDatabase.addRatingToEvent(
-                anyOrNull(), anyOrNull()
+                anyOrNull()
             )
         ).thenAnswer {
             createdRating = (it.arguments[0] as Rating?)
             Observable(true)
         }
 
-        goToEventActivityWithIntent()
+        goToEventActivityWithIntent(limitedEventId)
 
         // Click review event
         clickOn(R.id.event_leave_review_button)
@@ -401,8 +432,7 @@ class EventActivityTest {
             mockedEventDatabase.getUserRatingFromEvent(
                 userId = anyOrNull(),
                 eventId = anyOrNull(),
-                returnedRating = anyOrNull(),
-                userAccess = anyOrNull()
+                returnedRating = anyOrNull()
             )
         ).thenAnswer {
             // Not very robust, need to change if changed method signature
@@ -414,15 +444,14 @@ class EventActivityTest {
 
         When(
             mockedEventDatabase.updateRating(
-                rating = anyOrNull(),
-                userAccess = anyOrNull()
+                rating = anyOrNull()
             )
         ).then {
             existingRating = it.arguments[0] as Rating
             Observable(true)
         }
 
-        goToEventActivityWithIntent()
+        goToEventActivityWithIntent(limitedEventId)
 
         // Click review event
         clickOn(R.id.event_leave_review_button)
@@ -453,8 +482,7 @@ class EventActivityTest {
             mockedEventDatabase.getUserRatingFromEvent(
                 userId = anyOrNull(),
                 eventId = anyOrNull(),
-                returnedRating = anyOrNull(),
-                userAccess = anyOrNull()
+                returnedRating = anyOrNull()
             )
         ).thenAnswer {
             // Not very robust, need to change if changed method signature
@@ -466,15 +494,14 @@ class EventActivityTest {
 
         When(
             mockedEventDatabase.updateRating(
-                rating = anyOrNull(),
-                userAccess = anyOrNull()
+                rating = anyOrNull()
             )
         ).then {
             // Update failed
             Observable(false)
         }
 
-        goToEventActivityWithIntent()
+        goToEventActivityWithIntent(limitedEventId)
 
         // Click review event
         clickOn(R.id.event_leave_review_button)
@@ -489,6 +516,66 @@ class EventActivityTest {
 
         assertNotExist(R.id.leave_review_dialog_fragment)
         assertNotEquals(existingRating.rate, 3.0f)
+    }
+
+    @Test
+    fun testFollowEventButtonIsDisplayed() {
+        goToEventActivityWithIntent(publicEventId)
+
+        assertDisplayed(R.id.button_subscribe_event, R.string.event_follow)
+    }
+
+    @Test
+    fun testFollowEventDoesNotRequireUserLogIn() = runBlocking {
+        When(mockedEventDatabase.currentUser).thenReturn(null)
+
+        goToEventActivityWithIntent(publicEventId)
+        assertDisplayed(R.id.button_subscribe_event, R.string.event_follow)
+        // Click on follow event
+        clickOn(R.id.button_subscribe_event)
+
+        val retrievedEvents = localDatabase.eventDao().getEventById(publicEventId)
+        assertFalse(retrievedEvents.isEmpty())
+        assertEquals(retrievedEvents[0].toEvent(), testPublicEvent)
+    }
+
+    @Test
+    fun testFollowUnFollowEventFlow() = runBlocking {
+        When(mockedEventDatabase.currentUser).thenReturn(null)
+
+        goToEventActivityWithIntent(publicEventId)
+        assertDisplayed(R.id.button_subscribe_event, R.string.event_follow)
+        // Click on follow event
+        clickOn(R.id.button_subscribe_event)
+
+        val retrievedEvents = localDatabase.eventDao().getEventById(publicEventId)
+        assertFalse(retrievedEvents.isEmpty())
+        assertEquals(retrievedEvents[0].toEvent(), testPublicEvent)
+
+        // Now unfollow
+        clickOn(R.id.button_subscribe_event)
+        val retrievedEventsAfterUnfollow = localDatabase.eventDao().getEventById(publicEventId)
+        assert(retrievedEventsAfterUnfollow.isEmpty())
+    }
+
+    @Test
+    fun testOpeningAFollowedEventShouldDisplayUnfollow() = runBlocking {
+        When(mockedEventDatabase.currentUser).thenReturn(null)
+        localDatabase.eventDao().insert(EventLocal.fromEvent(testPublicEvent))
+
+        goToEventActivityWithIntent(publicEventId)
+        Thread.sleep(100)
+        assertDisplayed(R.id.button_subscribe_event, R.string.event_unfollow)
+
+        val retrievedEvents = localDatabase.eventDao().getEventById(publicEventId)
+        assertFalse(retrievedEvents.isEmpty())
+        assertEquals(retrievedEvents[0].toEvent(), testPublicEvent)
+
+
+        // Now unfollow
+        clickOn(R.id.button_subscribe_event)
+        val retrievedEventsAfterUnfollow = localDatabase.eventDao().getEventById(publicEventId)
+        assert(retrievedEventsAfterUnfollow.isEmpty())
     }
 
 
@@ -511,12 +598,12 @@ class EventActivityTest {
         }
     }
 
-    private fun goToEventActivityWithIntent() {
+    private fun goToEventActivityWithIntent(eventId: String) {
         val intent = Intent(
             ApplicationProvider.getApplicationContext(),
             EventActivity::class.java
         ).apply {
-            putExtra(EXTRA_EVENT_ID, limitedEventId)
+            putExtra(EXTRA_EVENT_ID, eventId)
         }
 
         scenario = ActivityScenario.launch(intent)
@@ -524,6 +611,13 @@ class EventActivityTest {
         EventActivity.database = localDatabase
 
         Thread.sleep(1000)
+    }
+
+    private fun testEventLocalEqualsEventEntity(eventLocal: EventLocal, event: Event) {
+        val eventLocalWithCommonAttributes = eventLocal.copy(
+            notificationId = null
+        )
+        assertEquals(eventLocalWithCommonAttributes, EventLocal.fromEvent(event))
     }
 
 

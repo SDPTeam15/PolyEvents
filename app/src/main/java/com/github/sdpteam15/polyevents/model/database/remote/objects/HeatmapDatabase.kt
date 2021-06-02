@@ -40,8 +40,7 @@ class HeatmapDatabase(private val db: DatabaseInterface) : HeatmapDatabaseInterf
 
     //TODO : remove the added points for the final
     override fun getLocations(
-        usersLocations: ObservableList<LatLng>,
-        userAccess: UserEntity?
+        usersLocations: ObservableList<LatLng>
     ): Observable<Boolean> {
         val tempUsersLocations = ObservableList<LatLng>()
         val end = Observable<Boolean>()
@@ -58,7 +57,7 @@ class HeatmapDatabase(private val db: DatabaseInterface) : HeatmapDatabaseInterf
                 },
             LOCATION_COLLECTION,
             object : AdapterFromDocumentInterface<LatLng> {
-                override fun fromDocument(document: MutableMap<String, Any?>, id: String): LatLng =
+                override fun fromDocument(document: Map<String, Any?>, id: String): LatLng =
                     DeviceLocationAdapter.fromDocument(document, id).location
             }
         ).observeOnce {

@@ -5,7 +5,7 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
-import com.github.sdpteam15.polyevents.model.room.UserSettings
+import com.github.sdpteam15.polyevents.model.database.local.entity.UserSettings
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -16,8 +16,7 @@ class UserSettingsDatabase(private val db: DatabaseInterface):
     var firestore: FirebaseFirestore? = null
         get() = field ?: Firebase.firestore
 
-    override fun updateUserSettings(userSettings: UserSettings,
-                                    userAccess: UserProfile?): Observable<Boolean> =
+    override fun updateUserSettings(userSettings: UserSettings): Observable<Boolean> =
         db.setEntity(
                 userSettings,
                 db.currentUser!!.uid,
@@ -25,8 +24,7 @@ class UserSettingsDatabase(private val db: DatabaseInterface):
         )
 
     override fun getUserSettings(id: String?,
-                                 userSettingsObservable: Observable<UserSettings>,
-                                 userAccess: UserProfile?): Observable<Boolean> =
+                                 userSettingsObservable: Observable<UserSettings>): Observable<Boolean> =
         db.getEntity(
                 userSettingsObservable,
                 id!!,

@@ -7,7 +7,6 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
-import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.matcher.ViewMatchers.*
 import com.github.sdpteam15.polyevents.HelperTestFunction
 import com.github.sdpteam15.polyevents.R
@@ -67,6 +66,7 @@ class EventManagementTest {
         Event(eventName = "Test 4", eventId = "Id4", zoneId = " zid3", zoneName = "zoneName3")
     private lateinit var events: MutableList<Event>
     private lateinit var zones: MutableList<Zone>
+    private val tags = "Cool, Fine"
 
     private fun setupEventsAndZones() {
         events = mutableListOf(event1, event2, event3, event4)
@@ -103,7 +103,6 @@ class EventManagementTest {
             mockedZoneDB.getAllZones(
                 anyOrNull(),
                 anyOrNull(),
-                anyOrNull(),
                 anyOrNull()
             )
         ).thenAnswer {
@@ -113,15 +112,14 @@ class EventManagementTest {
 
         When(
             mockedUserDb.getListAllUsers(
-                anyOrNull(),
-                anyOrNull(),
+                anyOrNull()
             )
         ).thenAnswer {
             (it.arguments[0] as ObservableList<UserEntity>).addAll(listUser)
             Observable(true)
         }
 
-        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
+        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull()))
             .thenReturn(
                 Observable(true)
             )
@@ -146,7 +144,8 @@ class EventManagementTest {
             maxNumberOfSlots = eventNb.toInt(),
             limitedEvent = true,
             startTime = startTime,
-            endTime = endTime
+            endTime = endTime,
+            tags = tags.trim().split(",").map { s -> s.trim() }.toMutableList()
         )
 
         setupMockDatabase()
@@ -163,6 +162,7 @@ class EventManagementTest {
 
     @After
     fun teardown() {
+        Thread.sleep(1000)
         Database.currentDatabase = FirestoreDatabaseProvider
     }
 
@@ -178,12 +178,12 @@ class EventManagementTest {
 
     private fun addAddListener(): Observable<Boolean> {
         val obs = Observable<Boolean>()
-        When(mockedEventDB.createEvent(anyOrNull(), anyOrNull())).thenAnswer {
+        When(mockedEventDB.createEvent(anyOrNull())).thenAnswer {
             event = (it.arguments[0] as Event)
             obs
         }
 
-        When(mockedEventDB.createEventEdit(anyOrNull(), anyOrNull())).thenAnswer {
+        When(mockedEventDB.createEventEdit(anyOrNull())).thenAnswer {
             event = (it.arguments[0] as Event)
             obs
         }
@@ -192,12 +192,12 @@ class EventManagementTest {
 
     private fun addUpdateListener(): Observable<Boolean> {
         val obs = Observable<Boolean>()
-        When(mockedEventDB.updateEvent(anyOrNull(), anyOrNull())).thenAnswer {
+        When(mockedEventDB.updateEvent(anyOrNull())).thenAnswer {
             event = (it.arguments[0] as Event)
             obs
         }
 
-        When(mockedEventDB.updateEventEdit(anyOrNull(), anyOrNull())).thenAnswer {
+        When(mockedEventDB.updateEventEdit(anyOrNull())).thenAnswer {
             event = (it.arguments[0] as Event)
             obs
         }
@@ -224,9 +224,9 @@ class EventManagementTest {
         )
         onView(withId(R.id.eventManagementNameField)).check(matches(isDisplayed()))
         clickAndCheckNotRedirect()
-        onView(withId(R.id.eventManagementNameField)).perform(replaceText(eventName))
+        onView(withId(R.id.eventManagementNameField)).perform(scrollTo(), replaceText(eventName))
         clickAndCheckNotRedirect()
-        onView(withId(R.id.eventManagementDescriptionField)).perform(replaceText(eventDesc))
+        onView(withId(R.id.eventManagementDescriptionField)).perform(scrollTo(),replaceText(eventDesc))
         clickAndCheckNotRedirect()
         closeKeyboard()
         onView(withId(R.id.swtLimitedEvent)).perform(click())
@@ -263,9 +263,9 @@ class EventManagementTest {
             )
         )
         clickAndCheckNotRedirect()
-        onView(withId(R.id.eventManagementNameField)).perform(replaceText(eventName))
+        onView(withId(R.id.eventManagementNameField)).perform(scrollTo(), replaceText(eventName))
         clickAndCheckNotRedirect()
-        onView(withId(R.id.eventManagementDescriptionField)).perform(replaceText(eventDesc))
+        onView(withId(R.id.eventManagementDescriptionField)).perform(scrollTo(), replaceText(eventDesc))
         clickAndCheckNotRedirect()
         closeKeyboard()
         onView(withId(R.id.swtLimitedEvent)).perform(click())
@@ -294,11 +294,11 @@ class EventManagementTest {
         When(mockedDatabase.eventDatabase).thenReturn(mockedEventDB)
         When(mockedDatabase.zoneDatabase).thenReturn(mockedZoneDB)
         When(mockedDatabase.userDatabase).thenReturn(mockedUserDb)
-        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
+        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull()))
             .thenReturn(
                 Observable(true)
             )
-        Mockito.`when`(mockedUserDb.getUserProfilesList(anyOrNull(), anyOrNull(), anyOrNull()))
+        Mockito.`when`(mockedUserDb.getUserProfilesList(anyOrNull(), anyOrNull()))
             .thenAnswer {
                 (it.arguments[0] as ObservableList<UserProfile>).add(
                     UserProfile(
@@ -312,7 +312,6 @@ class EventManagementTest {
         val obs = Observable<Boolean>()
         When(
             mockedZoneDB.getAllZones(
-                anyOrNull(),
                 anyOrNull(),
                 anyOrNull(),
                 anyOrNull()
@@ -330,10 +329,74 @@ class EventManagementTest {
                 EventManagementListActivity::class.java
             )
 
-        val scenario = ActivityScenario.launch<EventManagementListActivity>(intent)
+        ActivityScenario.launch<EventManagementListActivity>(intent)
         onView(withId(R.id.btnNewEvent)).perform(click())
 
         obs.postValue(false)
+        Thread.sleep(10)
+        onView(withId(R.id.event_management_list_id)).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun redirectToManagementListIfFailToGetUsers() {
+        mockedDatabase = HelperTestFunction.defaultMockDatabase()
+        mockedEventDB = mock(EventDatabaseInterface::class.java)
+        mockedZoneDB = mock(ZoneDatabaseInterface::class.java)
+        mockedUserDb = mock(UserDatabaseInterface::class.java)
+        When(mockedDatabase.eventDatabase).thenReturn(mockedEventDB)
+        When(mockedDatabase.zoneDatabase).thenReturn(mockedZoneDB)
+        When(mockedDatabase.userDatabase).thenReturn(mockedUserDb)
+
+
+        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull()))
+            .thenReturn(
+                Observable(true)
+            )
+
+
+        When(
+            mockedZoneDB.getAllZones(
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenAnswer {
+            (it.arguments[2] as ObservableList<Zone>).addAll(listZone)
+            Observable(true)
+        }
+        Mockito.`when`(mockedUserDb.getUserProfilesList(anyOrNull(), anyOrNull()))
+            .thenAnswer {
+                (it.arguments[0] as ObservableList<UserProfile>).add(
+                    UserProfile(
+                        pid = "test",
+                        userRole = UserRole.ADMIN
+                    )
+                )
+                Observable(true)
+            }
+
+        val obs = Observable<Boolean>()
+        When(
+            mockedUserDb.getListAllUsers(
+                anyOrNull()
+            )
+        ).thenAnswer {
+            obs
+        }
+
+        Database.currentDatabase = mockedDatabase
+
+        val intent =
+            Intent(
+                ApplicationProvider.getApplicationContext(),
+                EventManagementListActivity::class.java
+            )
+
+        ActivityScenario.launch<EventManagementListActivity>(intent)
+        onView(withId(R.id.btnNewEvent)).perform(click())
+
+        obs.postValue(false)
+        Thread.sleep(10)
         onView(withId(R.id.event_management_list_id)).check(matches(isDisplayed()))
     }
 
@@ -343,14 +406,13 @@ class EventManagementTest {
         When(
             mockedEventDB.getEventFromId(
                 anyOrNull(),
-                anyOrNull(),
                 anyOrNull()
             )
         ).thenAnswer {
             obs
         }
 
-        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
+        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull()))
             .thenAnswer {
                 (it.arguments[2] as ObservableList<Event>).addAll(events)
                 Observable(true, this)
@@ -379,12 +441,12 @@ class EventManagementTest {
         onView(withId(R.id.event_management_list_id)).check(matches(isDisplayed()))
     }
 
+
     @Test
     fun gettedInformationCorrectlySet() {
         val obs = Observable<Boolean>()
         When(
             mockedEventDB.getEventFromId(
-                anyOrNull(),
                 anyOrNull(),
                 anyOrNull()
             )
@@ -438,6 +500,16 @@ class EventManagementTest {
                 )
             )
         )
+
+        onView(withId(R.id.event_management_tags_edit)).check(
+            matches(
+                withText(
+                    CoreMatchers.containsString(
+                        tags
+                    )
+                )
+            )
+        )
         onView(withId(R.id.swtLimitedEvent)).check(matches(isChecked()))
 
     }
@@ -464,8 +536,11 @@ class EventManagementTest {
         val intent =
             Intent(ApplicationProvider.getApplicationContext(), EventManagementActivity::class.java)
         intent.putExtra(EventManagementListActivity.INTENT_MANAGER, "edit")
-        intent.putExtra(EventManagementListActivity.EVENT_ID_INTENT,EventManagementListActivity.NEW_EVENT_ID)
-        val activity =  ActivityScenario.launch<EventManagementActivity>(intent)
+        intent.putExtra(
+            EventManagementListActivity.EVENT_ID_INTENT,
+            EventManagementListActivity.NEW_EVENT_ID
+        )
+        ActivityScenario.launch<EventManagementActivity>(intent)
 
         val startDate = EventManagementActivity.dateStart.value!!
         val endDate = EventManagementActivity.dateEnd.value!!
@@ -487,7 +562,6 @@ class EventManagementTest {
         val obs = Observable<Boolean>()
         When(
             mockedEventDB.getEventFromId(
-                anyOrNull(),
                 anyOrNull(),
                 anyOrNull()
             )
@@ -531,7 +605,6 @@ class EventManagementTest {
         When(
             mockedEventDB.getEventEditFromId(
                 anyOrNull(),
-                anyOrNull(),
                 anyOrNull()
             )
         ).thenAnswer {
@@ -554,7 +627,7 @@ class EventManagementTest {
         onView(withId(R.id.swtLimitedEvent)).perform(click())
         onView(withId(R.id.etNbPart)).perform(replaceText(eventNb))
 
-        onView(withId(R.id.btnManageEvent)).perform(click())
+        onView(withId(R.id.btnManageEvent)).perform(scrollTo(), click())
 
         obs2.postValue(true)
 
@@ -585,7 +658,6 @@ class EventManagementTest {
         When(
             mockedEventDB.getEventFromId(
                 anyOrNull(),
-                anyOrNull(),
                 anyOrNull()
             )
         ).thenAnswer {
@@ -599,8 +671,8 @@ class EventManagementTest {
             EventManagementListActivity.EVENT_ID_INTENT,
             eventId
         )
-        val obs2=Observable<Boolean>()
-        When(mockedEventDB.createEventEdit(anyOrNull(), anyOrNull())).thenAnswer {
+        val obs2 = Observable<Boolean>()
+        When(mockedEventDB.createEventEdit(anyOrNull())).thenAnswer {
             event = (it.arguments[0] as Event)
             obs2
         }
@@ -613,7 +685,7 @@ class EventManagementTest {
         onView(withId(R.id.swtLimitedEvent)).perform(click())
         onView(withId(R.id.etNbPart)).perform(replaceText(eventNb))
 
-        onView(withId(R.id.btnManageEvent)).perform(click())
+        onView(withId(R.id.btnManageEvent)).perform(scrollTo(), click())
 
         obs2.postValue(true)
 
@@ -646,7 +718,6 @@ class EventManagementTest {
         When(
             mockedEventDB.getEventFromId(
                 anyOrNull(),
-                anyOrNull(),
                 anyOrNull()
             )
         ).thenAnswer {
@@ -667,7 +738,7 @@ class EventManagementTest {
         onView(withId(R.id.swtLimitedEvent)).perform(click())
         onView(withId(R.id.etNbPart)).perform(replaceText(eventNb))
 
-        onView(withId(R.id.btnManageEvent)).perform(click())
+        onView(withId(R.id.btnManageEvent)).perform(scrollTo(), click())
 
         obs2.postValue(true)
 

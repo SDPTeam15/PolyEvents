@@ -18,7 +18,8 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableList
 class ItemAdapter(
     lifecycleOwner: LifecycleOwner,
     private val items: ObservableList<Triple<Item, Int, Int>>,
-    private val listener: (Triple<Item, Int, Int>) -> Unit
+    private val addItemlistener: (Triple<Item, Int, Int>) -> Unit,
+    private val removeItemListener: (Triple<Item, Int, Int>) -> Unit
 ) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
     init {
@@ -37,6 +38,7 @@ class ItemAdapter(
         private val itemCount = view.findViewById<TextView>(R.id.id_item_list_count)
         private val itemType = view.findViewById<TextView>(R.id.id_item_list_type)
         private val btnRemove = view.findViewById<ImageButton>(R.id.id_remove_item)
+        private val btnModify = view.findViewById<ImageButton>(R.id.id_modify_item)
 
         /**
          * Binds the values of each view of an event to the layout of an event
@@ -44,8 +46,12 @@ class ItemAdapter(
         @SuppressLint("SetTextI18n")
         fun bind(item: Triple<Item, Int, Int>) {
             btnRemove.setOnClickListener {
-                items.remove(item)
+                removeItemListener(item)
             }
+            btnModify.setOnClickListener {
+                addItemlistener(item)
+            }
+
             itemName.text = item.first.itemName
             itemType.text = item.first.itemType
             itemCount.text = item.third.toString()+"/"+item.second.toString()
@@ -62,7 +68,7 @@ class ItemAdapter(
         val item = items[position]
         holder.bind(item)
         holder.itemView.setOnClickListener {
-            listener(item)
+            addItemlistener(item)
         }
     }
 

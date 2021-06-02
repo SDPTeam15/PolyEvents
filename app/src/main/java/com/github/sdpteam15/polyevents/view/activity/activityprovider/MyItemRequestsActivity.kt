@@ -14,10 +14,10 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
+import com.github.sdpteam15.polyevents.model.entity.MaterialRequest.Status.*
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
-import com.github.sdpteam15.polyevents.view.activity.ItemRequestActivity
 import com.github.sdpteam15.polyevents.view.adapter.MyItemRequestAdapter
 import com.github.sdpteam15.polyevents.view.fragments.home.ProviderHomeFragment
 
@@ -27,7 +27,7 @@ import com.github.sdpteam15.polyevents.view.fragments.home.ProviderHomeFragment
 const val EXTRA_ITEM_REQUEST_ID = "com.github.sdpteam15.polyevents.requests.ITEM_REQUEST_ID"
 
 class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
-    private var currentStatus: MaterialRequest.Status = MaterialRequest.Status.PENDING
+    private var currentStatus: MaterialRequest.Status = PENDING
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var leftButton: ImageButton
@@ -49,9 +49,10 @@ class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLi
      */
     private fun nextStatus() {
         currentStatus = when (currentStatus) {
-            MaterialRequest.Status.PENDING -> MaterialRequest.Status.ACCEPTED
-            MaterialRequest.Status.ACCEPTED -> MaterialRequest.Status.REFUSED
-            MaterialRequest.Status.REFUSED -> MaterialRequest.Status.PENDING
+            PENDING -> ACCEPTED
+            ACCEPTED -> REFUSED
+            REFUSED -> PENDING
+            else -> currentStatus //should never happen
         }
         observableStatus.postValue(currentStatus)
     }
@@ -61,9 +62,10 @@ class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLi
      */
     private fun previousStatus() {
         currentStatus = when (currentStatus) {
-            MaterialRequest.Status.PENDING -> MaterialRequest.Status.REFUSED
-            MaterialRequest.Status.REFUSED -> MaterialRequest.Status.ACCEPTED
-            MaterialRequest.Status.ACCEPTED -> MaterialRequest.Status.PENDING
+            PENDING -> REFUSED
+            REFUSED -> ACCEPTED
+            ACCEPTED -> PENDING
+            else -> currentStatus //should never happen
         }
         observableStatus.postValue(currentStatus)
     }
@@ -117,7 +119,8 @@ class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLi
                 userName,
                 itemNames,
                 modifyMaterialRequest,
-                cancelMaterialRequest
+                cancelMaterialRequest,
+                returnMaterialRequest
             )
 
         observableStatus.observe(this) { recyclerView.adapter!!.notifyDataSetChanged() }
@@ -127,7 +130,10 @@ class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLi
         }
 
         requests.group(this, materialRequest) {
-            it.status
+            when (it.status) {
+                DELIVERING, DELIVERED, RETURN_REQUESTED, RETURNING, RETURNED -> ACCEPTED
+                else -> it.status
+            }
         }
     }
 
@@ -139,19 +145,19 @@ class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLi
     /**
      * Gets the item request of the user and then gets the item list
      */
-    private fun getItemRequestsFromDB(){
+    private fun getItemRequestsFromDB() {
         //Gets the item request of the user and then gets the item list
         Database.currentDatabase.materialRequestDatabase!!.getMaterialRequestListByUser(
             requests,
             userId
         ).observeOnce(this) {
             if (!it.value) {
-                HelperFunctions.showToast("Failed to get the list of material requests", this)
+                HelperFunctions.showToast(getString(R.string.fail_to_get_list_material_requests_eo), this)
             } else {
                 Database.currentDatabase.itemDatabase!!.getItemsList(items)
                     .observeOnce(this) { it2 ->
                         if (!it2.value) {
-                            HelperFunctions.showToast("Failed to get the list of items", this)
+                            HelperFunctions.showToast(getString(R.string.fail_to_get_list_items), this)
                         }
                     }
             }
@@ -178,6 +184,23 @@ class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLi
         l.observe(this) {
             if (it.value)
                 requests.remove(request)
+        }
+        Unit
+    }
+
+    /**
+     * Launches the activity to modify the item request
+     */
+    private val returnMaterialRequest = { request: MaterialRequest ->
+        val newRequest = request.copy(status = RETURN_REQUESTED, staffInChargeId = null)
+        Database.currentDatabase.materialRequestDatabase!!.updateMaterialRequest(
+            request.requestId!!,
+            newRequest
+        ).observeOnce(this) {
+            if (it.value) {
+                requests[requests.indexOfFirst { it2 -> it2.requestId == request.requestId }] =
+                    newRequest
+            }
         }
         Unit
     }

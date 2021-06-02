@@ -262,4 +262,7 @@ object HelperFunctions {
             return value?.split(",")?.toMutableSet()
         }
     }
+
+
+    fun <S, T> S?.thenReturn(run: (S) -> T?) = if (this != null) run(this) else null
 }

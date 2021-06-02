@@ -78,12 +78,14 @@ class EventEditAdminAdapter(
                 Event.EventStatus.ACCEPTED -> Color.GREEN
                 Event.EventStatus.PENDING -> Color.BLACK
                 Event.EventStatus.REFUSED -> Color.RED
+                else -> Color.BLACK
             })
 
             status.text = event.status.toString()
 
             btnAccept.visibility = if (event.status == Event.EventStatus.PENDING) VISIBLE else INVISIBLE
             btnRefuse.visibility = if (event.status == Event.EventStatus.PENDING) VISIBLE else INVISIBLE
+            btnSee.visibility = if (event.status != Event.EventStatus.CANCELED) VISIBLE else INVISIBLE
 
             btnSee.setOnClickListener{
                 if (event.eventId!=null){

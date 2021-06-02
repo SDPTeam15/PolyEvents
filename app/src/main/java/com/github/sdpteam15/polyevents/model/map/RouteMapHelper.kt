@@ -123,7 +123,7 @@ object RouteMapHelper {
         // gets the closest point on the map where we can go from our current position
         val nearestPos = getPosOnNearestAttachable(startPosition)
         // if nothing to attach to or the zone is not connected to the graph, no path can be found
-        if (nearestPos.second == null || nodes.all{it.areaId != targetZoneId}) {
+        if (nearestPos.second == null || nodes.all { it.areaId != targetZoneId }) {
             return null
         }
         val nodesForShortestPath = mutableSetOf<RouteNode>()
@@ -213,7 +213,6 @@ object RouteMapHelper {
         /**
          * Applies Dijkstra algorithm on the given graph to find the shortest path from the starting
          * node to each other node of the graph
-         * @param nodes set of nodes in the graph
          * @param edges set of edges in the graph
          * @param start starting node of the graph
          * @return a map describing the shortest path tree, the root being the starting node,
@@ -436,14 +435,49 @@ object RouteMapHelper {
         context: Context?,
         lifecycleOwner: LifecycleOwner
     ): Observable<Boolean> {
-        Database.currentDatabase.routeDatabase!!.getRoute(nodes, edges, zones)
-        edges.observeAdd(lifecycleOwner) {
-            edgeAddedNotification(context, it.value)
+        //Add a listener on edges and nodes adds to display
+        val edgesToAdd = mutableListOf<RouteEdge>()
+
+        if (edges.isNotEmpty()) {
+            synchronized(this) {
+                edges.toList().forEach {
+                    if (it.start != null && it.end != null)
+                        edgeAddedNotification(context, it)
+                    else
+                        edgesToAdd.add(it)
+                }
+            }
         }
-        edges.observeRemove(lifecycleOwner) {
+
+        edges.observeAdd(lifecycleOwner) {
+            synchronized(this) {
+                edgesToAdd.add(it.value)
+                it.value.start = nodes.firstOrNull { n -> n.id == it.value.startId }
+                it.value.end = nodes.firstOrNull { n -> n.id == it.value.endId }
+                for (e in edgesToAdd.toList())
+                    if (e.start != null && e.end != null) {
+                        edgeAddedNotification(context, e)
+                        edgesToAdd.remove(e)
+                    }
+            }
+        }.then.observeRemove(lifecycleOwner) {
             edgeRemovedNotification(it.value)
         }
-        return Observable(true)
+        nodes.observeAdd(lifecycleOwner) {
+            synchronized(this) {
+                for (e in edgesToAdd.toList()) {
+                    if (e.startId == it.value.id)
+                        e.start = it.value
+                    if (e.endId == it.value.id)
+                        e.end = it.value
+                    if (e.start != null && e.end != null) {
+                        edgeAddedNotification(context, e)
+                        edgesToAdd.remove(e)
+                    }
+                }
+            }
+        }
+        return Database.currentDatabase.routeDatabase!!.getRoute(nodes, edges, zones)
     }
 
 
@@ -462,6 +496,7 @@ object RouteMapHelper {
      * @param edge new edge
      */
     fun edgeAddedNotification(context: Context?, edge: RouteEdge) {
+
         //Remove all creation lines when we get an answer from the database
         removeAllLinesToRemove()
         val option = PolylineOptions()
@@ -495,7 +530,8 @@ object RouteMapHelper {
      * @param context the current context
      */
     fun createNewRoute(context: Context?) {
-        deleteMode = false
+        if(deleteMode)
+            removeRoute()
         if (tempPolyline != null) {
             tempPolyline!!.remove()
             tempVariableClear()

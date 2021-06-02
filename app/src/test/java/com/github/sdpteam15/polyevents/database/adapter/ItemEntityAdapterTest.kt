@@ -58,7 +58,8 @@ class ItemEntityAdapterTest {
             itemName = itemName,
             itemType = itemType
         )
-        document = ItemEntityAdapter.toItemDocument(itemEntity2, itemQuantity, itemRemainingQuantity)
+        document =
+            ItemEntityAdapter.toItemDocument(itemEntity2, itemQuantity, itemRemainingQuantity)
 
         assertEquals(document[ITEM_TYPE.value] as String, itemEntity.itemType)
         assertEquals(document[ITEM_TOTAL.value], itemQuantity)

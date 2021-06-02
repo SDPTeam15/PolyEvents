@@ -3,9 +3,9 @@ package com.github.sdpteam15.polyevents.model.database.remote.objects
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.*
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
-import com.github.sdpteam15.polyevents.model.database.remote.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.EventAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.RatingAdapter
+import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Rating
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
@@ -15,69 +15,67 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableList
 const val TAG = "EventDatabase"
 
 class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface {
-    override fun createEvent(event: Event, userAccess: UserProfile?): Observable<Boolean> =
+    override fun createEvent(event: Event): Observable<Boolean> =
         db.addEntity(event, EVENT_COLLECTION, EventAdapter)
 
-    override fun updateEvent(event: Event, userAccess: UserProfile?): Observable<Boolean> =
+    override fun updateEvent(event: Event): Observable<Boolean> =
         db.setEntity(event, event.eventId!!, EVENT_COLLECTION)
 
-    override fun removeEvent(eventId: String, userAccess: UserProfile?): Observable<Boolean> =
+    override fun removeEvent(eventId: String): Observable<Boolean> =
         db.deleteEntity(eventId, EVENT_COLLECTION)
 
     override fun getEventFromId(
         id: String,
-        returnEvent: Observable<Event>,
-        userAccess: UserProfile?
+        returnEvent: Observable<Event>
     ): Observable<Boolean> =
         db.getEntity(returnEvent, id, EVENT_COLLECTION, EventAdapter)
 
     override fun getEvents(
         matcher: Matcher?,
         limit: Long?,
-        eventList: ObservableList<Event>,
-        userAccess: UserProfile?
+        eventList: ObservableList<Event>
     ): Observable<Boolean> =
         db.getListEntity(
             eventList,
             null,
             {
-                var query = it
-                if (matcher != null) query = matcher.match(it)
+                var query = matcher?.match(it) ?: it
+
                 if (limit != null) query = query.limit(limit)
                 query
             },
             EVENT_COLLECTION
         )
 
-    override fun createEventEdit(event: Event, userAccess: UserProfile?): Observable<Boolean> =
+    override fun createEventEdit(event: Event): Observable<Boolean> =
         db.addEntity(event, EVENT_EDIT_COLLECTION)
 
-    override fun updateEventEdit(event: Event, userAccess: UserProfile?): Observable<Boolean> =
+    override fun updateEventEdit(event: Event): Observable<Boolean> =
         db.setEntity(event, event.eventEditId!!, EVENT_EDIT_COLLECTION)
+
+    override fun removeEventEdit(eventId: String): Observable<Boolean> =
+        db.deleteEntity(eventId, EVENT_EDIT_COLLECTION)
 
     override fun getEventEditFromId(
         id: String,
-        returnEvent: Observable<Event>,
-        userAccess: UserProfile?
+        returnEvent: Observable<Event>
     ): Observable<Boolean> = db.getEntity(returnEvent, id, EVENT_EDIT_COLLECTION)
 
     override fun getEventEdits(
         matcher: Matcher?,
-        eventList: ObservableList<Event>,
-        userAccess: UserProfile?
+        eventList: ObservableList<Event>
     ): Observable<Boolean> =
         db.getListEntity(
             eventList,
             null,
-            null,
+            matcher,
             EVENT_EDIT_COLLECTION
         )
 
     override fun getRatingsForEvent(
         eventId: String,
         limit: Long?,
-        ratingList: ObservableList<Rating>,
-        userAccess: UserProfile?
+        ratingList: ObservableList<Rating>
     ): Observable<Boolean> =
         db.getListEntity(
             ratingList,
@@ -92,25 +90,24 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
             }, RATING_COLLECTION
         )
 
-    override fun addRatingToEvent(rating: Rating, userAccess: UserProfile?): Observable<Boolean> =
+    override fun addRatingToEvent(rating: Rating): Observable<Boolean> =
         db.addEntity(rating, RATING_COLLECTION, RatingAdapter)
 
-    override fun removeRating(rating: Rating, userAccess: UserProfile?): Observable<Boolean> =
+    override fun removeRating(rating: Rating): Observable<Boolean> =
         db.deleteEntity(rating.ratingId!!, RATING_COLLECTION)
 
-    override fun updateRating(rating: Rating, userAccess: UserProfile?): Observable<Boolean> =
+    override fun updateRating(rating: Rating): Observable<Boolean> =
         db.setEntity(rating, rating.ratingId!!, RATING_COLLECTION, RatingAdapter)
 
 
     override fun getMeanRatingForEvent(
         eventId: String,
-        mean: Observable<Float>,
-        userAccess: UserProfile?
+        mean: Observable<Float>
     ): Observable<Boolean> {
         val end = Observable<Boolean>()
         val rating = ObservableList<Rating>()
 
-        getRatingsForEvent(eventId, null, rating, userAccess).observeOnce {
+        getRatingsForEvent(eventId, null, rating).observeOnce {
             if (it.value) {
                 val m = rating.fold(
                     Pair(0.0F, 0),
@@ -133,8 +130,7 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
     override fun getUserRatingFromEvent(
         userId: String,
         eventId: String,
-        returnedRating: Observable<Rating>,
-        userAccess: UserProfile?
+        returnedRating: Observable<Rating>
     ): Observable<Boolean> {
         val end = Observable<Boolean>()
         val rating = ObservableList<Rating>()
@@ -161,14 +157,14 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
     override fun getEventsByZoneId(
         zoneId: String,
         limit: Long?,
-        events: ObservableList<Event>,
-        userAccess: UserProfile?
+        events: ObservableList<Event>
     ): Observable<Boolean> =
         db.getListEntity(
             events,
             null,
             {
-                val query = it.whereEqualTo(DatabaseConstant.EventConstant.EVENT_ZONE_ID.value, zoneId)
+                val query =
+                    it.whereEqualTo(DatabaseConstant.EventConstant.EVENT_ZONE_ID.value, zoneId)
                 if (limit != null) query.limit(limit)
                 query
             },

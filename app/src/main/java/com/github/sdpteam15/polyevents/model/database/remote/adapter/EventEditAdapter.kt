@@ -14,7 +14,7 @@ object EventEditAdapter : AdapterInterface<Event> {
         return map
     }
 
-    override fun fromDocument(document: MutableMap<String, Any?>, id: String): Event {
+    override fun fromDocument(document: Map<String, Any?>, id: String): Event {
         val event = EventAdapter.fromDocument(document, id)
         event.eventId = document[EVENT_DOCUMENT_ID.value] as String?
         event.eventEditId = id

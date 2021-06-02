@@ -2,7 +2,7 @@ package com.github.sdpteam15.polyevents.fakedatabase
 
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
-import com.github.sdpteam15.polyevents.model.database.remote.Matcher
+import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterToDocumentInterface
 import com.github.sdpteam15.polyevents.model.database.remote.objects.*
@@ -10,6 +10,7 @@ import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.model.observable.ObservableMap
 import kotlin.random.Random
 
 object FakeDatabase : DatabaseInterface {
@@ -27,8 +28,7 @@ object FakeDatabase : DatabaseInterface {
         } else {
             CURRENT_USER
         }
-    override var currentProfile: UserProfile? = null
-        get() = null
+
 
     override var itemDatabase: ItemDatabaseInterface? = null
         get() = field ?: FakeDatabaseItem
@@ -74,7 +74,7 @@ object FakeDatabase : DatabaseInterface {
         elements: List<T>,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterToDocumentInterface<in T>
-    ): Observable<Pair<Boolean, List<String>?>> {
+    ): Observable<Pair<Boolean, List<String?>>> {
         TODO("Not yet implemented")
     }
 
@@ -91,7 +91,7 @@ object FakeDatabase : DatabaseInterface {
         elements: List<Pair<String, T?>>,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterToDocumentInterface<in T>
-    ): Observable<Boolean> {
+    ): Observable<Pair<Boolean, List<Boolean>>> {
         TODO("Not yet implemented")
     }
 
@@ -104,12 +104,22 @@ object FakeDatabase : DatabaseInterface {
         TODO("Not yet implemented")
     }
 
+    override fun <T : Any> getMapEntity(
+        elements: ObservableMap<String, T>,
+        ids: List<String>?,
+        matcher: Matcher?,
+        collection: DatabaseConstant.CollectionConstant,
+        adapter: AdapterFromDocumentInterface<out T>
+    ): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
     override fun <T : Any> getListEntity(
-            elements: ObservableList<T>,
-            ids: List<String>?,
-            matcher: Matcher?,
-            collection: DatabaseConstant.CollectionConstant,
-            adapter: AdapterFromDocumentInterface<out T>
+        elements: ObservableList<T>,
+        ids: List<String>?,
+        matcher: Matcher?,
+        collection: DatabaseConstant.CollectionConstant,
+        adapter: AdapterFromDocumentInterface<out T>
     ): Observable<Boolean> {
         TODO("Not yet implemented")
     }

@@ -15,13 +15,28 @@ data class MaterialRequest(
     val items: Map<String, Int>,
     val time: LocalDateTime?,
     val userId: String,
+    val eventId: String,
     var status: Status,
-    var adminMessage: String?
+    var adminMessage: String?,
+    var staffInChargeId: String?
 ){
+    /**
+     * Material request status
+     * It indicates the status of a material request
+     * @param status the status in string format
+     */
     enum class Status (private val status: String) {
-        PENDING("pending"),
-        ACCEPTED("accepted"),
-        REFUSED("refused");
+        PENDING("Pending"),
+        ACCEPTED("Accepted"),
+        REFUSED("Refused"),
+        DELIVERING("In delivery"),
+        DELIVERED("Delivered"),
+        RETURN_REQUESTED("Return requested"),
+        RETURNING("In returning"),
+        RETURNED("Returned"),
+        CANCELED("Canceled")
+        ;
+
 
         override fun toString(): String {
             return status

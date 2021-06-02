@@ -9,16 +9,18 @@ object GoogleMapVectorHelper {
     const val TWOPIE = 2 * PI
 
     /**
-     * Projection of vector on the perpendicular of the two positions
+     * Projection of vector on the perpendicular of the two positions in a cartesian space
      * @param vector vector to project
      * @param pos1 position of the first point to compute the perpendicular
      * @param pos2 position of the second point to compute the perpendicular
      */
-    fun projectionVector(vector: LatLng, pos1: LatLng, pos2: LatLng): LatLng {
-        val v = LatLng(pos1.longitude - pos2.longitude, pos2.latitude - pos1.latitude)
-        val norm = v.latitude * v.latitude + v.longitude * v.longitude
-        val scalar = (vector.latitude * v.latitude + vector.longitude * v.longitude) / norm
-        return LatLng(scalar * v.latitude, scalar * v.longitude)
+    fun projectionVectorThroughCartesian(vector: LatLng, pos1: LatLng, pos2: LatLng): LatLng {
+        val vec = equirectangularProjection(vector, LatLng(0.0,0.0))
+        val v = equirectangularProjection(LatLngOperator.minus(pos1, pos2), LatLng(0.0,0.0))
+
+        val norm = v.first * v.first + v.second * v.second
+        val scalar = (vec.first * v.first + vec.second * v.second) / norm
+        return inverseEquirectangularProjection(Pair(scalar * v.first, scalar * v.second), LatLng(0.0,0.0))
     }
 
     /**

@@ -82,13 +82,44 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <LinearLayout
+                android:id="@+id/event_management_tags_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingStart="10dp"
+                android:paddingEnd="0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/eventManagementDescriptionLayout">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:hint="@string/tags_separate_them_with_a_coma"
+                    app:boxBackgroundColor="@android:color/transparent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/event_management_tags_edit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:inputType="text"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="0dp"
+                        android:text=""
+                        android:textStyle="bold" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/limitedEventLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
-                app:layout_constraintTop_toBottomOf="@+id/eventManagementSpinnerLayout">
+                app:layout_constraintTop_toBottomOf="@+id/eventManagementSpinnerLayoutOrganiser">
 
                 <Switch
                     android:id="@+id/swtLimitedEvent"
@@ -142,7 +173,7 @@
 
             </LinearLayout>
             <LinearLayout
-                android:id="@+id/eventManagementSpinnerLayoutOrganiser"
+                android:id="@+id/eventManagementSpinnerLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -151,10 +182,10 @@
                 android:paddingEnd="0dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/eventManagementDescriptionLayout">
+                app:layout_constraintTop_toBottomOf="@id/event_management_tags_layout">
 
                 <TextView
-                    android:id="@+id/tvSpinnerOrganiser"
+                    android:id="@+id/tvSpinnerChoice"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="2.5"
@@ -169,7 +200,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/eventManagementSpinnerLayout"
+                android:id="@+id/eventManagementSpinnerLayoutOrganiser"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -178,10 +209,10 @@
                 android:paddingEnd="0dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/eventManagementSpinnerLayoutOrganiser">
+                app:layout_constraintTop_toBottomOf="@id/eventManagementSpinnerLayout">
 
                 <TextView
-                    android:id="@+id/tvSpinnerChoice"
+                    android:id="@+id/tvSpinnerOrganiser"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="2.5"
@@ -258,6 +289,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/pick_time_btn_text" />
                 </LinearLayout>
+
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,10 +3,12 @@ package com.github.sdpteam15.polyevents.view.activity.admin
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageButton
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.helper.DatabaseHelper.deleteEvent
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
@@ -57,7 +59,7 @@ class EventManagementListActivity : AppCompatActivity() {
         recyclerView.setHasFixedSize(false)
 
         // Add the lister on the create button
-        findViewById<Button>(R.id.btnNewEvent).setOnClickListener {
+        findViewById<ImageButton>(R.id.btnNewEvent).setOnClickListener {
             val intent = Intent(this, EventManagementActivity::class.java)
             if (isOrganiser) {
                 intent.putExtra(INTENT_MANAGER, "MANAGER")
@@ -151,26 +153,10 @@ class EventManagementListActivity : AppCompatActivity() {
      * @param zoneId The zoneId where the deleted event happen
      */
     private fun eventDeletion(event: Event, zoneId: String) {
-        currentDatabase.eventDatabase!!.removeEvent(event.eventId!!).observe(this) {
-            if (it.value) {
-                HelperFunctions.showToast(
-                    getString(R.string.success_delete_from_database),
-                    this
-                )
-                // Remove the event in the current recycler view
-                val list = obsEventsMap[zoneId]!!
-                list.second.remove(event)
-                obsEventsMap[zoneId] = list
-
-                // TODO remove all event edit requests related to this event
-                // TODO remove all material requests related to this event and put the correct number of items available
-            } else {
-                // If fail to delete, display an error message
-                HelperFunctions.showToast(
-                    getString(R.string.fail_delete_from_database),
-                    this
-                )
-            }
-        }
+        deleteEvent(event)
+        // Remove the event in the current recycler view
+        val list = obsEventsMap[zoneId]!!
+        list.second.remove(event)
+        obsEventsMap[zoneId] = list
     }
 }

@@ -14,7 +14,7 @@ import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.model.room.EventLocal
+import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.activity.EventActivity
 import com.github.sdpteam15.polyevents.view.adapter.EventItemAdapter
@@ -26,6 +26,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial
  * Extra containing the event ID to show on the launched event page
  */
 const val EXTRA_EVENT_ID = "com.github.sdpteam15.polyevents.event.EVENT_ID"
+const val EXTRA_EVENT_NAME = "com.github.sdpteam15.polyevents.event.EVENT_NAME"
 
 /**
  * Shows the list of events and displays them in a new event when we click on one of them
@@ -107,13 +108,7 @@ class EventListFragment : Fragment() {
      */
     private fun myEventsSwitchCallback(isChecked: Boolean) {
         if (isChecked) {
-            if (currentDatabase.currentUser == null) {
-                // Cannot switch to my Events if no user logged in
-                myEventsSwitch.isChecked = false
-                HelperFunctions.showToast(resources.getString(R.string.my_events_log_in), context)
-            } else {
-                getUserLocalSubscribedEvents()
-            }
+            getUserLocalSubscribedEvents()
         } else {
             getEventsListAndDisplay(context)
         }
@@ -135,7 +130,7 @@ class EventListFragment : Fragment() {
         // TODO: set limit or not?
         currentDatabase.eventDatabase!!.getEvents(null, null, events).observe(this) {
             if (!it.value) {
-                HelperFunctions.showToast("Failed to get events information", context)
+                HelperFunctions.showToast(getString(R.string.fail_to_get_information), context)
             }
         }
         updateEventsList()

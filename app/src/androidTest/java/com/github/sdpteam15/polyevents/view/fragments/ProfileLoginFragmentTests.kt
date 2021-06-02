@@ -306,7 +306,7 @@ class ProfileLoginFragmentTests {
         var endingRequestUpdate = Observable<Boolean>()
         var updated = false
         When(
-            mockedUserDatabase.updateUserInformation(anyOrNull(), anyOrNull())
+            mockedUserDatabase.updateUserInformation(anyOrNull())
         ).thenAnswer { _ ->
             updated = true
             endingRequestUpdate
@@ -335,6 +335,9 @@ class ProfileLoginFragmentTests {
         //Check if the values are correctly displayed
         onView(withId(R.id.profileName)).check(matches(withText(Matchers.equalTo(displayNameTest2))))
         onView(withId(R.id.profileEmail)).check(matches(withText(Matchers.equalTo(emailTest2))))
+        onView(withId(R.id.btnBirthday)).perform(scrollTo(), click())
+        onView(withText("OK")).perform(scrollTo(), click())
+
 
         //Mock the getUserInformation method to post a user with other values than previously
         //So that we can see if the getUserInformation() has been called (it shouldn't)
@@ -523,7 +526,6 @@ class ProfileLoginFragmentTests {
         When(
             mockedUserDatabase.getUserProfilesList(
                 anyOrNull(),
-                anyOrNull(),
                 anyOrNull()
             )
         ).thenAnswer {
@@ -569,7 +571,6 @@ class ProfileLoginFragmentTests {
         When(
             mockedUserDatabase.addUserProfileAndAddToUser(
                 anyOrNull(),
-                anyOrNull(),
                 anyOrNull()
             )
         ).thenAnswer {
@@ -577,7 +578,6 @@ class ProfileLoginFragmentTests {
         }
         When(
             mockedUserDatabase.getUserProfilesList(
-                anyOrNull(),
                 anyOrNull(),
                 anyOrNull()
             )
@@ -590,7 +590,7 @@ class ProfileLoginFragmentTests {
         user.profiles.add(pidTest)
         userObservable.postValue(user)
 
-        onView(withId(R.id.id_add_profile_button)).perform(click())
+        onView(withId(R.id.id_add_profile_button)).perform(scrollTo(), click())
         onView(withId(R.id.id_edittext_profile_name)).perform(ViewActions.typeText(displayNameTest))
         Espresso.closeSoftKeyboard()
         onView(withId(R.id.id_confirm_add_item_button)).perform(click())
@@ -627,7 +627,6 @@ class ProfileLoginFragmentTests {
         When(
             mockedUserDatabase.getUserProfilesList(
                 anyOrNull(),
-                anyOrNull(),
                 anyOrNull()
             )
         ).thenAnswer {
@@ -645,7 +644,6 @@ class ProfileLoginFragmentTests {
         }
         When(
             mockedUserDatabase.removeProfileFromUser(
-                anyOrNull(),
                 anyOrNull(),
                 anyOrNull()
             )
@@ -676,7 +674,6 @@ class ProfileLoginFragmentTests {
         //Mock the profile
         When(
             mockedUserDatabase.getUserProfilesList(
-                anyOrNull(),
                 anyOrNull(),
                 anyOrNull()
             )

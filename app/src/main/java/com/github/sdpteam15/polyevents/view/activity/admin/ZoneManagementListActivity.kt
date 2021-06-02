@@ -3,13 +3,13 @@ package com.github.sdpteam15.polyevents.view.activity.admin
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
-import com.github.sdpteam15.polyevents.model.database.remote.Matcher
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.map.ZoneAreaMapHelper
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
@@ -22,13 +22,9 @@ class ZoneManagementListActivity : AppCompatActivity() {
         val NEW_ZONE = "-1"
         var zones = ObservableList<Zone>()
 
-        fun deleteZone(zone: Zone) {
-            Database.currentDatabase.zoneDatabase!!.deleteZone(zone)
-        }
     }
 
     private lateinit var recyclerView: RecyclerView
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,19 +37,24 @@ class ZoneManagementListActivity : AppCompatActivity() {
         }
 
         recyclerView.adapter = ZoneItemAdapter(zones, openZone)
-        val matcher = Matcher { collection -> collection.orderBy(DatabaseConstant.ZoneConstant.ZONE_NAME.value) }
 
         println(Database.currentDatabase)
-        Database.currentDatabase.zoneDatabase!!.getAllZones(matcher, 50, zones).observe(this) {
+        Database.currentDatabase.zoneDatabase!!.getAllZones(
+            {
+                it.orderBy(DatabaseConstant.ZoneConstant.ZONE_NAME.value)
+            },
+            50,
+            zones
+        ).observe(this) {
             if (!it.value) {
-                HelperFunctions.showToast("Failed to get the list of zones", this)
+                HelperFunctions.showToast(getString(R.string.fail_to_get_list_zones), this)
                 finish()
             }
         }
 
         zones.observe(this) { recyclerView.adapter!!.notifyDataSetChanged() }
         zones.observeAdd(this) { ZoneAreaMapHelper.importNewZone(this, it.value, false) }
-        findViewById<Button>(R.id.btnNewZone).setOnClickListener {
+        findViewById<ImageButton>(R.id.btnNewZone).setOnClickListener {
             startActivityZone(NEW_ZONE)
         }
         zones.observeRemove(this) {
@@ -67,6 +68,4 @@ class ZoneManagementListActivity : AppCompatActivity() {
         intent.putExtra(EXTRA_ID, zoneId)
         startActivity(intent)
     }
-
-
 }

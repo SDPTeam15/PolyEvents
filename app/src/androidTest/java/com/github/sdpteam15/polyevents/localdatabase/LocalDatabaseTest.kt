@@ -13,8 +13,8 @@ import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.model.room.EventLocal
-import com.github.sdpteam15.polyevents.model.room.UserSettings
+import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
+import com.github.sdpteam15.polyevents.model.database.local.entity.UserSettings
 import org.junit.After
 import org.junit.Before
 import org.mockito.Mockito.mock
@@ -83,7 +83,6 @@ class LocalDatabaseTest {
         When(mockedEventDatabase.getEvents(
                 eventList = anyOrNull(),
                 matcher = anyOrNull(),
-                userAccess = anyOrNull(),
                 limit = anyOrNull()
         )).thenAnswer {
             LocalDatabase.eventsLocalObservable.addAll(listOf(testEvent1, testEvent2))
@@ -92,8 +91,7 @@ class LocalDatabaseTest {
 
         When(mockedUserSettingsDatabase.getUserSettings(
                 id = anyOrNull(),
-                userSettingsObservable = anyOrNull(),
-                userAccess = anyOrNull()
+                userSettingsObservable = anyOrNull()
         )).then {
             LocalDatabase.userSettingsObservable.postValue(userSettingsTest)
             Observable(true)

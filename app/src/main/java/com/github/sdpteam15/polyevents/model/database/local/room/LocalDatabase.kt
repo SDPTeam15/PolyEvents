@@ -9,14 +9,16 @@ import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.local.dao.EventDao
+import com.github.sdpteam15.polyevents.model.database.local.dao.GenericEntityDao
 import com.github.sdpteam15.polyevents.model.database.local.dao.UserSettingsDao
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.model.room.EventLocal
-import com.github.sdpteam15.polyevents.model.room.UserSettings
+import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
+import com.github.sdpteam15.polyevents.model.database.local.entity.GenericEntity
+import com.github.sdpteam15.polyevents.model.database.local.entity.UserSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -24,7 +26,7 @@ import kotlinx.coroutines.launch
 // TODO: consider using repositories
 // TODO: Firebase database objects are technically daos, consider refactoring?
 // TODO: when user logs in, should fetch all info to store in local db
-@Database(entities = [EventLocal::class, UserSettings::class], version = 2, exportSchema = false)
+@Database(entities = [EventLocal::class, UserSettings::class, GenericEntity::class], version = 4, exportSchema = false)
 @TypeConverters(HelperFunctions.Converters::class)
 abstract class LocalDatabase : RoomDatabase() {
     /**
@@ -36,6 +38,11 @@ abstract class LocalDatabase : RoomDatabase() {
      * Get the user settings Dao
      */
     abstract fun userSettingsDao(): UserSettingsDao
+
+    /**
+     * Get the GenericEntity Dao
+     */
+    abstract fun genericEntityDao() : GenericEntityDao
 
     companion object {
         private const val TAG = "LocalDatabase"
@@ -106,6 +113,7 @@ abstract class LocalDatabase : RoomDatabase() {
         suspend fun populateDatabaseWithUserEvents(eventDao: EventDao, scope: CoroutineScope) {
             Log.d(TAG, "Populating the database with user's events")
 
+            // TODO: need to clear notifications for events here or in MainActivity
             eventDao.deleteAll()
             if (currentDatabase.currentUser != null) {
                 eventsLocalObservable.observe {

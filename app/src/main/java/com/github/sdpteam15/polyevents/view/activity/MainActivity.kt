@@ -22,6 +22,7 @@ import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.model.map.MapsFragmentMod
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.fragments.*
 import com.github.sdpteam15.polyevents.view.fragments.home.AdminHomeFragment
 import com.github.sdpteam15.polyevents.view.fragments.home.ProviderHomeFragment
@@ -59,18 +60,21 @@ class MainActivity : AppCompatActivity() {
         var currentUserObservable: Observable<UserEntity>? = null
             get() = field ?: currentDatabase.currentUserObservable
 
-        const val NUMBER_EVENT_TO_DISPLAY = 25
 
         var instance: MainActivity? = null
         var selectedRole: UserRole? = null
     }
 
-    private lateinit var adapter: ArrayAdapter<*>
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         instance = this
         setContentView(R.layout.activity_main)
+
+        // Create notification channel for the app
+        (application as PolyEventsApplication).createChannel(
+            getString(R.string.event_notification_channel_id),
+            getString(R.string.event_notification_channel_name)
+        )
 
         //TODO remove to for local cache
         Settings.mainActivity = this
@@ -85,7 +89,6 @@ class MainActivity : AppCompatActivity() {
                             currentDatabase.heatmapDatabase!!.setLocation(LatLng.value)
                     }
             }
-
         }
 
         //Set the basic fragment to the home one or to admin hub if it is logged in
@@ -109,22 +112,6 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
-
-/*
-        adapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_list_item_1,
-            resources.getStringArray(R.array.countries_array)
-        )*/
-        /*
-        var lv_listView = findViewById<ListView>(R.id.lv_listView)
-        lv_listView.adapter = adapter
-        lv_listView.onItemClickListener = AdapterView.OnItemClickListener{parent, view, position, id ->
-            Toast.makeText(applicationContext, parent?.getItemAtPosition(position).toString(), Toast.LENGTH_SHORT).show()
-        }
-        var tv_emptyTextView = findViewById<TextView>(R.id.tv_emptyTextView)
-        lv_listView.emptyView = tv_emptyTextView
-        */
 
         currentUserObservable!!.observe(this) {
             it.value.roles.observe(this) {
@@ -155,30 +142,6 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         val intent = Intent(applicationContext, TimerService::class.java)
         stopService(intent)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.nav_menu, menu)
-
-        // TODO: replace with settings menu option
-        val search = menu.findItem(R.id.nav_search)
-        val searchView = search.actionView as SearchView
-        searchView.queryHint = "Search something!"
-        /*
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(p0: String?): Boolean {
-                return false
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                adapter.filter.filter(newText)
-                return true
-            }
-        })
-
-         */
-
-        return super.onCreateOptionsMenu(menu)
     }
 
     private fun redirectHome() {
