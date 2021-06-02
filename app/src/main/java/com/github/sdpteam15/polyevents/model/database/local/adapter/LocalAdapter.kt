@@ -1,4 +1,4 @@
-package com.github.sdpteam15.polyevents.model.database.local
+package com.github.sdpteam15.polyevents.model.database.local.adapter
 
 import android.annotation.SuppressLint
 import com.github.sdpteam15.polyevents.helper.HelperFunctions

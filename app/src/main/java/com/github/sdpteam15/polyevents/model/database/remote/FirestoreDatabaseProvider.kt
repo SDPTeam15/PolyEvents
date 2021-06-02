@@ -2,7 +2,7 @@ package com.github.sdpteam15.polyevents.model.database.remote
 
 import android.annotation.SuppressLint
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.apply
-import com.github.sdpteam15.polyevents.model.database.local.LocalCacheAdapter
+import com.github.sdpteam15.polyevents.model.database.local.adapter.LocalCacheAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterToDocumentInterface
@@ -91,7 +91,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         val ended = Observable<String>()
         firestore!!
             .collection(collection.value)
-            .add(adapter.toDocument(element))
+            .add(adapter.toDocumentWithoutNull(element))
             .addOnSuccessListener { ended.postValue(it.id, this) }
             .addOnFailureListener { ended.postValue("", this) }
         return ended
@@ -127,7 +127,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         for (elementWithIndex in elements.withIndex()) {
             firestore!!
                 .collection(collection.value)
-                .add(adapter.toDocument(elementWithIndex.value))
+                .add(adapter.toDocumentWithoutNull(elementWithIndex.value))
                 .addOnSuccessListener {
                     checkIfDone(elementWithIndex.index, it.id)
                 }
@@ -153,11 +153,11 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         val document = firestore!!
             .collection(collection.value)
             .document(id)
-        val result = element.apply { adapter.toDocument(it) }
-        (if (result == null) document.delete()
-        else document.set(result))
-            .addOnSuccessListener(successListener)
-            .addOnFailureListener(failureListener)
+        adapter.toDocument(element).apply({
+            document.set(it)
+                .addOnSuccessListener(successListener)
+                .addOnFailureListener(failureListener)
+        }, lazy { document.delete() })
         return ended
     }
 
@@ -190,7 +190,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
                 .collection(collection.value)
                 .document(elementWithIndex.value.first)
             elementWithIndex.value.second
-                .apply(document.delete()) { document.set(adapter.toDocument(it)) }
+                .apply(document.delete()) { document.set(adapter.toDocumentWithoutNull(it)) }
                 .addOnSuccessListener {
                     checkIfDone(elementWithIndex.index, true)
                 }

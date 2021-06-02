@@ -1,6 +1,6 @@
 package com.github.sdpteam15.polyevents.dao
 
-import com.github.sdpteam15.polyevents.model.database.local.LocalCacheAdapter
+import com.github.sdpteam15.polyevents.model.database.local.adapter.LocalCacheAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
@@ -21,7 +21,7 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.apply
 import com.github.sdpteam15.polyevents.model.Scope
-import com.github.sdpteam15.polyevents.model.database.local.LocalAdapter
+import com.github.sdpteam15.polyevents.model.database.local.adapter.LocalAdapter
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.TEST_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.StringWithID

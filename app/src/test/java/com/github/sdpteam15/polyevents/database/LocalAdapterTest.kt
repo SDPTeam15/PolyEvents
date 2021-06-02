@@ -1,7 +1,7 @@
 package com.github.sdpteam15.polyevents.database
 
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
-import com.github.sdpteam15.polyevents.model.database.local.LocalAdapter
+import com.github.sdpteam15.polyevents.model.database.local.adapter.LocalAdapter
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import org.junit.Test
 import kotlin.test.assertEquals

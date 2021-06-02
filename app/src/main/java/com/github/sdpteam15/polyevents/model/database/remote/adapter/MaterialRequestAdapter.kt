@@ -12,7 +12,7 @@ import com.google.firebase.Timestamp
  */
 @Suppress("UNCHECKED_CAST")
 object MaterialRequestAdapter : AdapterInterface<MaterialRequest> {
-    override fun toDocument(element: MaterialRequest): HashMap<String, Any?> {
+    override fun toDocumentWithoutNull(element: MaterialRequest): HashMap<String, Any?> {
         val map = hashMapOf(
             MATERIAL_REQUEST_LIST.value to element.items,
             MATERIAL_REQUEST_TIME.value to HelperFunctions.localDateTimeToDate(element.time),

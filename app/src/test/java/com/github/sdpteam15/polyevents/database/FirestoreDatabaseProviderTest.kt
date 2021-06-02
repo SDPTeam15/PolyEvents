@@ -771,7 +771,7 @@ class FirestoreDatabaseProviderTest {
         assertEquals(FirestoreDatabaseProvider.currentUser, user)
 
 
-        val userInfo = UserAdapter.toDocument(user)
+        val userInfo = UserAdapter.toDocumentWithoutNull(user)
 
         When(mockDocumentSnapshot.data).thenReturn(userInfo)
         When(mockDocumentSnapshot.id).thenReturn(user.uid)

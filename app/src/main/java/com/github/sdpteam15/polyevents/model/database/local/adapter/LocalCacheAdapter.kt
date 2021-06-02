@@ -1,9 +1,7 @@
-package com.github.sdpteam15.polyevents.model.database.local
+package com.github.sdpteam15.polyevents.model.database.local.adapter
 
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.apply
-import com.github.sdpteam15.polyevents.model.database.local.room.LogAdapter
-import com.github.sdpteam15.polyevents.model.database.local.room.LogAdapterToDocument
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
@@ -97,7 +95,7 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
                 PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
                     PolyEventsApplication.application.localDatabase.genericEntityDao().insert(
                         LocalAdapter.toDocument(
-                            adapter.toDocument(element),
+                            adapter.toDocumentWithoutNull(element),
                             it.value,
                             collection.value
                         )
@@ -122,7 +120,7 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
                     if (value.first != "")
                         PolyEventsApplication.application.localDatabase.genericEntityDao().insert(
                             LocalAdapter.toDocument(
-                                adapter.toDocument(value.second),
+                                adapter.toDocumentWithoutNull(value.second),
                                 value.first,
                                 collection.value
                             )
@@ -148,7 +146,7 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
                     if (element != null)
                         PolyEventsApplication.application.localDatabase.genericEntityDao().insert(
                             LocalAdapter.toDocument(
-                                adapter.toDocument(element),
+                                adapter.toDocumentWithoutNull(element),
                                 id,
                                 collection.value
                             )
@@ -173,7 +171,7 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
                     if (value.first && value.second.second != null)
                         PolyEventsApplication.application.localDatabase.genericEntityDao().insert(
                             LocalAdapter.toDocument(
-                                adapter.toDocument(value.second.second!!),
+                                adapter.toDocumentWithoutNull(value.second.second!!),
                                 value.second.first,
                                 collection.value
                             )
@@ -320,7 +318,7 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
                                 LocalAdapter.toDocument(
                                     ((adapterToDocument ?: collection.adapter)
                                             as AdapterToDocumentInterface<in T>)
-                                        .toDocument(it.value[key]!!),
+                                        .toDocumentWithoutNull(it.value[key]!!),
                                     key,
                                     collection.value
                                 )
@@ -359,7 +357,7 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
                             CodeQuery.CodeQueryFromIterator(it.value.entries.iterator()) { entrie ->
                                 ((adapterToDocument ?: collection.adapter)
                                         as AdapterToDocumentInterface<in T>)
-                                    .toDocument(entrie.value).apply { data ->
+                                    .toDocumentWithoutNull(entrie.value).apply { data ->
                                         QueryDocumentSnapshot(
                                             data,
                                             entrie.key

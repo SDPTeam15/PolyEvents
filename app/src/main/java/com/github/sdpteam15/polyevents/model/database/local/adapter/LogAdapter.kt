@@ -1,4 +1,4 @@
-package com.github.sdpteam15.polyevents.model.database.local.room
+package com.github.sdpteam15.polyevents.model.database.local.adapter
 
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
@@ -19,10 +19,13 @@ object LogAdapter {
  */
 class LogAdapterToDocument<T>(private val adapter: AdapterToDocumentInterface<T>) :
     AdapterToDocumentInterface<T> {
-    override fun toDocument(element: T): Map<String, Any?> =
-        toDocumentWithDate(element, null)
+    override fun toDocumentWithoutNull(element: T): Map<String, Any?> =
+        toDocumentWithDate(element)
 
-    fun toDocumentWithDate(element: T?, date: LocalDateTime?): Map<String, Any?> {
+    override fun toDocument(element: T?): Map<String, Any?> =
+        toDocumentWithDate(element)
+
+    fun toDocumentWithDate(element: T?, date: LocalDateTime? = LocalDateTime.now()): Map<String, Any?> {
         val result = mutableMapOf<String, Any?>(
             LogAdapter.LAST_UPDATE to HelperFunctions.localDateTimeToDate(
                 date ?: LocalDateTime.now()
@@ -30,7 +33,7 @@ class LogAdapterToDocument<T>(private val adapter: AdapterToDocumentInterface<T>
             LogAdapter.IS_VALID to (element != null),
         )
         if (element != null)
-            result.putAll(adapter.toDocument(element))
+            result.putAll(adapter.toDocumentWithoutNull(element))
         return result
     }
 }

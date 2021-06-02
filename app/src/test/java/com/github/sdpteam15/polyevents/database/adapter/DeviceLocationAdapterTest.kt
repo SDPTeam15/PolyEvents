@@ -27,7 +27,7 @@ class DeviceLocationAdapterTest {
             time = HelperFunctions.dateToLocalDateTime(timestamp.toDate())
         )
 
-        document = DeviceLocationAdapter.toDocument(deviceLocation)
+        document = DeviceLocationAdapter.toDocumentWithoutNull(deviceLocation)
     }
 
     @Test
