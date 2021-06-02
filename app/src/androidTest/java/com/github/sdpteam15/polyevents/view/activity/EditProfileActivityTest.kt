@@ -43,7 +43,6 @@ class EditProfileActivityTest {
     lateinit var mockedUserProfile: UserProfile
     lateinit var mockedUserDatabase: UserDatabaseInterface
 
-    private val id: ViewInteraction get() = Espresso.onView(withId(R.id.EditProfileActivity_ID))
     private val idLayout: ViewInteraction get() = Espresso.onView(withId(R.id.EditProfileActivity_IDLayout))
     private val rank: ViewInteraction get() = Espresso.onView(withId(R.id.EditProfileActivity_Rank))
     private val rankLayout: ViewInteraction get() = Espresso.onView(withId(R.id.EditProfileActivity_RankLayout))
@@ -134,7 +133,6 @@ class EditProfileActivityTest {
         name.perform(replaceText("notnull"))
         activity.nameOnFocusChangeListener(false)
         name.check(matches(ViewMatchers.withText("notnull")))
-
         Espresso.closeSoftKeyboard()
 
         save.perform(click())
@@ -157,9 +155,7 @@ class EditProfileActivityTest {
         name.perform(replaceText("notnull"))
         activity.nameOnFocusChangeListener(false)
         name.check(matches(ViewMatchers.withText("notnull")))
-
         Espresso.closeSoftKeyboard()
-
         save.perform(click())
 
         playoff()
@@ -186,6 +182,15 @@ class EditProfileActivityTest {
         setup(UserRole.ORGANIZER, "TestPID")
         idLayout.check(matches(not(isDisplayed())))
         rankLayout.check(matches(not(isDisplayed())))
+        playoff()
+    }
+
+    @Test
+    fun cannotSubmitIfNameEmpty(){
+        setup(UserRole.ORGANIZER, "TestPID")
+        name.perform(replaceText(""))
+        save.perform(click())
+        save.check(matches(isDisplayed()))
         playoff()
     }
 }
