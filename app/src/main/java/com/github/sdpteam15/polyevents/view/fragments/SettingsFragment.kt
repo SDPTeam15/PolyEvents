@@ -1,7 +1,6 @@
 package com.github.sdpteam15.polyevents.view.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,6 +27,7 @@ class SettingsFragment : Fragment() {
     companion object {
         const val TAG = "SettingsFragment"
 
+        // for testing purposes
         lateinit var localDatabase: LocalDatabase
     }
 
