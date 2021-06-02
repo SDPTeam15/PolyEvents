@@ -75,6 +75,9 @@
     <string name="enable_notifications_description">Enable notifications from Polyevents</string>
     <string name="track_location_description">Track your location on the map</string>
     <string name="send_location_description">Collect your location data to send to the heatmap</string>
+    <string name="reset_to_defaults">Reset to defaults</string>
+    <string name="settings_saved">"Your settings have been saved"</string>
+    <string name="settings_reset_to_default">"Your settings have been reset to default"</string>
 
 
 </resources>

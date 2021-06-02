@@ -12,6 +12,8 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.database.remote.objects.UserSettingsDatabaseInterface
 import com.github.sdpteam15.polyevents.model.room.UserSettings
+import com.github.sdpteam15.polyevents.viewmodel.UserSettingsViewModel
+import com.github.sdpteam15.polyevents.viewmodel.UserSettingsViewModelFactory
 import com.schibsted.spain.barista.assertion.BaristaCheckedAssertions.assertChecked
 import com.schibsted.spain.barista.assertion.BaristaCheckedAssertions.assertUnchecked
 import com.schibsted.spain.barista.assertion.BaristaEnabledAssertions.assertEnabled
@@ -36,8 +38,8 @@ class SettingsFragmentTest {
 
     @Before
     fun setup() {
-        testUserSettings =
-            UserSettings(trackLocation = true, isSendingLocationOn = false, locationId = "here")
+        // default user settings (every setting set to false)
+        testUserSettings = UserSettings()
 
         mockedDatabase = mock(DatabaseInterface::class.java)
         mockedUserSettingsDatabase = mock(UserSettingsDatabaseInterface::class.java)
@@ -57,7 +59,12 @@ class SettingsFragmentTest {
         )
 
         SettingsFragment.localDatabase = localTestDatabase
-        scenario.recreate()
+
+        SettingsFragment.localSettingsViewModel = UserSettingsViewModelFactory(
+            localTestDatabase.userSettingsDao()
+        ).create(
+            UserSettingsViewModel::class.java
+        )
     }
 
     @After
@@ -66,11 +73,28 @@ class SettingsFragmentTest {
         currentDatabase = FirestoreDatabaseProvider
     }
 
-    /*@Test
+    @Test
+    fun testResetSettingsToDefault() = runBlocking {
+        assertDisplayed(R.id.fragment_settings_button_reset_settings)
+        assertEnabled(R.id.fragment_settings_button_reset_settings)
+
+        clickOn(R.id.fragment_settings_button_reset_settings)
+
+        assertUnchecked(R.id.fragment_settings_track_location_switch)
+        assertUnchecked(R.id.fragment_settings_is_sending_location_switch)
+
+        val retrieved = localTestDatabase.userSettingsDao().get()
+        assert(retrieved.isNotEmpty())
+        assertEquals(retrieved[0], testUserSettings)
+    }
+
+    @Test
     fun testChangeSettingsFragment() = runBlocking {
         assertDisplayed(R.id.fragment_settings_button_save)
         assertEnabled(R.id.fragment_settings_button_save)
 
+        // reset user settings to default first
+        clickOn(R.id.fragment_settings_button_reset_settings)
         assertDisplayed(R.id.fragment_settings_is_sending_location_switch)
         assertUnchecked(R.id.fragment_settings_is_sending_location_switch)
 
@@ -81,25 +105,11 @@ class SettingsFragmentTest {
         clickOn(R.id.fragment_settings_track_location_switch)
         clickOn(R.id.fragment_settings_button_save)
 
+        assertChecked(R.id.fragment_settings_track_location_switch)
+
+        // Check if correctly updated in local database
         val retrievedUserSettings = localTestDatabase.userSettingsDao().get()
         assert(retrievedUserSettings.isNotEmpty())
         assertEquals(retrievedUserSettings[0].trackLocation, true)
     }
-
-    @Test
-    fun testSettingsFragmentCorrectlyRetrievesUserSettingsInCache() = runBlocking {
-        localTestDatabase.userSettingsDao()
-            .insert(UserSettings(isSendingLocationOn = true, trackLocation = true))
-
-        scenario.recreate()
-
-        assertDisplayed(R.id.fragment_settings_button_save)
-        assertEnabled(R.id.fragment_settings_button_save)
-
-        assertDisplayed(R.id.fragment_settings_is_sending_location_switch)
-        assertChecked(R.id.fragment_settings_is_sending_location_switch)
-
-        assertDisplayed(R.id.fragment_settings_track_location_switch)
-        assertChecked(R.id.fragment_settings_track_location_switch)
-    }*/
 }
