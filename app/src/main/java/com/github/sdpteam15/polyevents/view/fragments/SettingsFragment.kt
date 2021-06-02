@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.view.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -61,6 +62,7 @@ class SettingsFragment : Fragment() {
             saveUserSettings()
         }
 
+        Log.d(TAG, "ON CREATE VIEW")
         fetchUserSettings()
 
         return fragmentView
@@ -89,8 +91,10 @@ class SettingsFragment : Fragment() {
      * cache.
      */
     private fun fetchUserSettings() {
+        Log.d(TAG, "FETCHING USER SETTINGS")
         val userSettingsObservable = ObservableList<UserSettings>()
         userSettingsObservable.observe(this, update = false) {
+            Log.d(TAG, "OBSERVED SOMETHING")
             if (it.value.isEmpty()) {
                 // No user settings yet in the local cache, update with fresh new settings
                 userSettings = UserSettings()
@@ -108,6 +112,7 @@ class SettingsFragment : Fragment() {
      * @param userSettings the user settings to update the views with
      */
     private fun updateSettingsView(userSettings: UserSettings) {
+        Log.d(TAG, "UPDATING SETTINGS VIEW")
         trackLocationSwitchButton.isChecked = userSettings.trackLocation
         sendLocationSwitchButton.isChecked = userSettings.isSendingLocationOn
         userSettingsSaveButton.isEnabled = true

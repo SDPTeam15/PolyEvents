@@ -12,12 +12,17 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.database.remote.objects.UserSettingsDatabaseInterface
 import com.github.sdpteam15.polyevents.model.room.UserSettings
+import com.schibsted.spain.barista.assertion.BaristaCheckedAssertions.assertChecked
 import com.schibsted.spain.barista.assertion.BaristaCheckedAssertions.assertUnchecked
+import com.schibsted.spain.barista.assertion.BaristaEnabledAssertions.assertEnabled
 import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertDisplayed
+import com.schibsted.spain.barista.interaction.BaristaClickInteractions.clickOn
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.mock
+import kotlin.test.assertEquals
 
 class SettingsFragmentTest {
 
@@ -61,18 +66,8 @@ class SettingsFragmentTest {
         currentDatabase = FirestoreDatabaseProvider
     }
 
-    @Test
-    fun testInitial() {
-        assertDisplayed(R.id.fragment_settings_is_sending_location_switch)
-        assertUnchecked(R.id.fragment_settings_is_sending_location_switch)
-
-        assertDisplayed(R.id.fragment_settings_track_location_switch)
-        assertUnchecked(R.id.fragment_settings_track_location_switch)
-    }
-
     /*@Test
     fun testChangeSettingsFragment() = runBlocking {
-        scenario.recreate()
         assertDisplayed(R.id.fragment_settings_button_save)
         assertEnabled(R.id.fragment_settings_button_save)
 
