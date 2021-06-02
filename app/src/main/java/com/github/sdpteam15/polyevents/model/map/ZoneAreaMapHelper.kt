@@ -395,16 +395,12 @@ object ZoneAreaMapHelper {
         // Vector of the marker
         val vec = LatLngOperator.minus(pos.position, moveDiagPos!!)
 
-        //Perpendicular of vector (a,b) is (-b,a)
-        //TODO : Use LatlngOperator here?
-        //TODO : c'est surement ici que la rotation merde
-        //Projection on axis perpendicular to marker 1 and marker 2
-        var diffCoord = GoogleMapVectorHelper.projectionVector(vec, latlng1, latlng2)
-        var diffCoord1 = GoogleMapVectorHelper.projectionVector(vec, latlng2, latlng3)
+        //Projection of the vector on the two axis (in cartesian space)
+        var diffCoord = GoogleMapVectorHelper.projectionVectorThroughCartesian(vec, latlng2, latlng3)
+        var diffCoord1 = GoogleMapVectorHelper.projectionVectorThroughCartesian(vec, latlng1, latlng2)
 
 
         // Move the corresponding corners of the rectangle
-        //TODO : use LatlngOperator here for addition
         when (pos.snippet) {
             PolygonAction.RIGHT.toString() -> {
                 diffCoord = LatLng(0.0, 0.0)
@@ -418,7 +414,7 @@ object ZoneAreaMapHelper {
             }
             else -> { //Should only be DIAG
                 tempLatLng[1] = LatLngOperator.plus(latlng1, diffCoord)
-                tempLatLng[2] = pos.position
+                tempLatLng[2] = LatLngOperator.plus(LatLngOperator.plus(latlng2, diffCoord), diffCoord1)
                 tempLatLng[3] = LatLngOperator.plus(latlng3, diffCoord1)
             }
         }
@@ -477,7 +473,7 @@ object ZoneAreaMapHelper {
         for (i in cornersRotatedLatLng.indices) {
             tempLatLng[i] = cornersRotatedLatLng[i]
         }
-        //TODO : Utiliser LatlgnOperator ici
+
         // Move all the markers on the corresponding corner of the polygon
         rotationMarker!!.position = tempLatLng[INDEX_ROTATION_MARKER]
         rotationPos = rotationMarker!!.position
