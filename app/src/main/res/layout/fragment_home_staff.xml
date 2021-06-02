@@ -7,57 +7,66 @@
     android:layout_height="match_parent"
     tools:context=".view.fragments.home.StaffHomeFragment">
 
-    <Spinner
-        android:id="@+id/spinner_staff"
-        android:layout_width="120dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:entries="@array/Ranks"
-        app:layout_constraintBottom_toTopOf="@+id/textView5"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <ScrollView
+        android:id="@+id/scrollView2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/staff_hub_title"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/spinner_staff"/>
 
-    <TextView
-        android:id="@+id/textView5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:gravity="center"
-        android:text="@string/staff_hub_title"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <Spinner
+            android:id="@+id/spinner_staff"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:entries="@array/Ranks"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 
-    <androidx.gridlayout.widget.GridLayout
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-
-        android:layout_marginTop="16dp"
-        app:alignmentMode="alignBounds"
-
-        app:columnCount="2"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView5">
-
-        <Button
-            android:id="@+id/id_deliveries_button"
+        <androidx.gridlayout.widget.GridLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="15dp"
-            android:backgroundTint="@color/white"
-            android:drawableTop="@drawable/ic_requests"
-            android:drawableTint="@color/purple_500"
-            android:text="@string/items_requests_button_text"
 
-            android:paddingHorizontal="25dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/purple_500"
-            app:strokeColor="@color/purple_500"
-            app:strokeWidth="2dp"
-            tools:ignore="ButtonStyle" />
+            android:layout_marginTop="16dp"
+            app:alignmentMode="alignBounds"
+            app:columnCount="2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView5">
 
-    </androidx.gridlayout.widget.GridLayout>
+            <Button
+                android:id="@+id/id_deliveries_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="15dp"
+                android:backgroundTint="@color/white"
+                android:drawableTop="@drawable/ic_requests"
+                android:drawableTint="@color/purple_500"
+                android:paddingHorizontal="25dp"
+
+                android:text="@string/items_requests_button_text"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/purple_500"
+                app:layout_column="0"
+                app:layout_row="1"
+                app:strokeColor="@color/purple_500"
+                app:strokeWidth="2dp"
+                tools:ignore="ButtonStyle" />
+
+        </androidx.gridlayout.widget.GridLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
