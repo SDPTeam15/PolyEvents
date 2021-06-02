@@ -1,7 +1,7 @@
 package com.github.sdpteam15.polyevents.model.entity
 
 import android.graphics.Bitmap
-import com.github.sdpteam15.polyevents.helper.HelperFunctions.thenReturn
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.apply
 import com.github.sdpteam15.polyevents.model.exceptions.MaxAttendeesException
 import com.google.firebase.firestore.IgnoreExtraProperties
 import java.time.LocalDateTime
@@ -162,15 +162,8 @@ data class Event(
      * hour going between 0-23h.
      * @return string HH:MM
      */
-    fun formattedStartTime(): String {
-        return if (startTime == null) {
-            ""
-        } else {
-            //return SimpleDateFormat("k:mm", Locale.getDefault()).format(startTime)
-            val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("k:mm")
-            startTime.format(formatter)
-        }
-    }
+    fun formattedStartTime(): String =
+        startTime.apply("") { it.format(DateTimeFormatter.ofPattern("k:mm")) }
 
     enum class EventStatus(private val status: String) {
         PENDING("pending"),
