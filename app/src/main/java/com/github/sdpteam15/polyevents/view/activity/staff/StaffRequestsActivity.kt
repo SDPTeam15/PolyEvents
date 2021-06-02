@@ -180,8 +180,8 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
     private fun getItemRequestsFromDB() {
         //Gets the item request of the user and then gets the item list
         currentDatabase.materialRequestDatabase.getMaterialRequestList(
-            requests
-        ) { it.orderBy(MATERIAL_REQUEST_STATUS.value) }.observeOnce(this) {
+            requests.sortAndLimitFrom(this) { it.status }
+        ).observeOnce(this) {
             if (!it.value) {
                 showToast(getString(R.string.fail_to_get_list_material_requests), this)
             } else {

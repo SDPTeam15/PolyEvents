@@ -40,11 +40,8 @@ class ZoneManagementListActivity : AppCompatActivity() {
 
         println(Database.currentDatabase)
         Database.currentDatabase.zoneDatabase.getAllZones(
-            {
-                it.orderBy(DatabaseConstant.ZoneConstant.ZONE_NAME.value)
-            },
-            50,
-            zones
+            zones.sortAndLimitFrom(this){it.zoneName},
+            50
         ).observe(this) {
             if (!it.value) {
                 HelperFunctions.showToast(getString(R.string.fail_to_get_list_zones), this)

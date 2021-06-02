@@ -45,15 +45,15 @@ interface ZoneDatabaseInterface {
 
     /**
      * Gets all the zones from the database
-     * @param matcher matcher for the search
-     * @param number maximum of result
      * @param zones live data that will be set with the list of zones from the database
+     * @param number maximum of result
+     * @param matcher matcher for the search
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getAllZones(
-        matcher: Matcher?,
+        zones: ObservableList<Zone>,
         number: Long?,
-        zones: ObservableList<Zone>
+        matcher: Matcher? = null
     ): Observable<Boolean>
 
     /**
