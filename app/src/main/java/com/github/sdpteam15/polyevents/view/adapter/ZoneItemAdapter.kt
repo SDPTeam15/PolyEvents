@@ -15,7 +15,8 @@ import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementListAct
 
 class ZoneItemAdapter(
     private val zones: ObservableList<Zone>,
-    val listener: (Zone) -> Unit
+    val listener: (Zone) -> Unit,
+    val deleteListener: (Zone)->Unit
 ) : RecyclerView.Adapter<ZoneItemAdapter.ItemViewHolder>() {
     /**
      * adapted ViewHolder for each Zone
@@ -34,7 +35,7 @@ class ZoneItemAdapter(
             eventName.text = zone.zoneName
 
             btnRemove.setOnClickListener {
-                DatabaseHelper.deleteZone(zone)
+                deleteListener(zone)
                 zones.remove(zone)
             }
             btnEdit.setOnClickListener{
