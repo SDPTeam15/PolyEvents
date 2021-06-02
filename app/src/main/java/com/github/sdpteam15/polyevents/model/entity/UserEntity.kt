@@ -84,10 +84,9 @@ data class UserEntity(
      * Check if current user has an admin profile
      * @return if one of the profiles has admin role
      */
-    fun isAdmin(): Boolean {
-        //TODO roles.contains(UserRole.ADMIN)
-        return true
-    }
+    fun isAdmin(): Boolean =
+        roles.contains(UserRole.ADMIN)
+
 
     /**
      * Create a new Profile with the given to the associated user
@@ -105,7 +104,7 @@ data class UserEntity(
 
     /**
      * Remove a Profile with the given name
-     * @param name the name of the profile to remove
+     * @param id the id of the profile to remove
      * @return true if a profile with the given name was found
      */
     fun removeProfile(id: String?): Boolean {
