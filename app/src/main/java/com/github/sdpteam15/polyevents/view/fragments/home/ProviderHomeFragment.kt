@@ -10,10 +10,10 @@ import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.entity.UserRole
-import com.github.sdpteam15.polyevents.view.activity.activityprovider.ItemRequestActivity
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
-import com.github.sdpteam15.polyevents.view.activity.activityprovider.MyItemRequestsActivity
 import com.github.sdpteam15.polyevents.view.activity.activityprovider.EventManagementActivityProvider
+import com.github.sdpteam15.polyevents.view.activity.activityprovider.ItemRequestActivity
+import com.github.sdpteam15.polyevents.view.activity.activityprovider.MyItemRequestsActivity
 import com.github.sdpteam15.polyevents.view.activity.admin.EventManagementListActivity
 
 class ProviderHomeFragment : Fragment() {
