@@ -68,6 +68,12 @@ class LoginFragment : Fragment() {
                                 application.database.eventDao(),
                                 application.applicationScope)
                         }
+                        application.applicationScope.launch(Dispatchers.IO) {
+                            LocalDatabase.populateDatabaseWithUserSettings(
+                                application.database.userSettingsDao(),
+                                application.applicationScope
+                            )
+                        }
 
                         addIfNotInDB()
                     } else {
