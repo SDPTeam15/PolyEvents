@@ -26,7 +26,7 @@ class RatingAdapterTest {
     }
 
     @Test
-    fun canCreateWithoutAnyValues(){
+    fun canCreateWithoutAnyValues() {
         val rating2 = Rating()
         assertNull(rating2.rate)
         assertNull(rating2.feedback)
@@ -45,7 +45,10 @@ class RatingAdapterTest {
             document[DatabaseConstant.RatingConstant.RATING_EVENT_ID.value],
             eventId
         )
-        Assert.assertEquals(document[DatabaseConstant.RatingConstant.RATING_DESCRIPTION.value], feedback)
+        Assert.assertEquals(
+            document[DatabaseConstant.RatingConstant.RATING_DESCRIPTION.value],
+            feedback
+        )
         Assert.assertEquals(document[DatabaseConstant.RatingConstant.RATING_SCORE.value], rate)
 
     }

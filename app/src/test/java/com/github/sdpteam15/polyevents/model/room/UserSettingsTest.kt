@@ -14,9 +14,9 @@ class UserSettingsTest {
     @Before
     fun setup() {
         userSettings = UserSettings(
-                isSendingLocationOn = isSendingLocationOn,
-                trackLocation = trackLocation,
-                locationId = location_id
+            isSendingLocationOn = isSendingLocationOn,
+            trackLocation = trackLocation,
+            locationId = location_id
         )
     }
 

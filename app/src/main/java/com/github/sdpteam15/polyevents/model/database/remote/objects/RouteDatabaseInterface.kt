@@ -8,8 +8,6 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableList
 interface RouteDatabaseInterface {
     val currentUser: UserEntity?
         get() = Database.currentDatabase.currentUser
-    val currentProfile: UserProfile?
-        get() = Database.currentDatabase.currentProfile
 
     /**
      * get all route from the the database and add it into all the ObservableList

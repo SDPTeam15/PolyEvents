@@ -24,7 +24,8 @@ import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Rating
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.observable.Observable
-import com.github.sdpteam15.polyevents.model.room.EventLocal
+import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
+import com.github.sdpteam15.polyevents.model.database.remote.objects.UserDatabaseInterface
 import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
 import com.schibsted.spain.barista.assertion.BaristaEnabledAssertions.assertDisabled
 import com.schibsted.spain.barista.assertion.BaristaEnabledAssertions.assertEnabled
@@ -61,6 +62,7 @@ class EventActivityTest {
     val limitedEventId = "limitedEvent"
 
     lateinit var mockedDatabase: DatabaseInterface
+    lateinit var mockedUserDatabase: UserDatabaseInterface
     lateinit var mockedEventDatabase: EventDatabaseInterface
 
     lateinit var scenario: ActivityScenario<EventActivity>
@@ -69,17 +71,21 @@ class EventActivityTest {
     private lateinit var mockedNotificationsScheduler: NotificationsScheduler
 
     @Before
+    @Suppress("UNCHECKED_CAST")
     fun setup() {
         testUser = UserEntity(
             uid = uid,
             username = username,
-            email = email
+            email = email,
+            name = "Test name"
         )
 
         mockedDatabase = mock(DatabaseInterface::class.java)
         mockedEventDatabase = mock(EventDatabaseInterface::class.java)
+        mockedUserDatabase = mock(UserDatabaseInterface::class.java)
         When(mockedDatabase.currentUser).thenReturn(testUser)
         When(mockedDatabase.eventDatabase).thenReturn(mockedEventDatabase)
+        When(mockedDatabase.userDatabase).thenReturn(mockedUserDatabase)
 
         currentDatabase = mockedDatabase
 
@@ -90,12 +96,12 @@ class EventActivityTest {
             startTime = LocalDateTime.of(2021, 3, 7, 21, 15),
             organizer = "AcademiC DeCibel",
             zoneName = "Concert Hall",
-            tags = mutableSetOf("music", "live", "pogo")
+            tags = mutableListOf("music", "live", "pogo")
         )
         testPublicEvent = testLimitedEvent.copy(
                 eventId = publicEventId,
                 eventName = "public Event only",
-                tags = mutableSetOf()
+                tags = mutableListOf()
         )
 
         testLimitedEvent.makeLimitedEvent(3)
@@ -106,6 +112,11 @@ class EventActivityTest {
             )
         ).then {
             EventActivity.obsEvent.postValue(testLimitedEvent)
+            Observable(true)
+        }
+
+        When(mockedUserDatabase.getUserInformation(anyOrNull(), anyOrNull())).thenAnswer {
+            (it.arguments[0] as Observable<UserEntity>).postValue(testUser)
             Observable(true)
         }
 
@@ -120,7 +131,7 @@ class EventActivityTest {
 
         When(
             mockedEventDatabase.updateEvent(
-                event = anyOrNull(), anyOrNull()
+                event = anyOrNull()
             )
         ).thenReturn(Observable(true))
 
@@ -177,7 +188,7 @@ class EventActivityTest {
 
 
         onView(withId(R.id.txt_event_organizer))
-            .check(matches(withText(containsString(testLimitedEvent.organizer))))
+            .check(matches(withText(containsString(testUser.name))))
 
         onView(withId(R.id.txt_event_zone))
             .check(matches(withText(containsString(testLimitedEvent.zoneName))))
@@ -199,8 +210,7 @@ class EventActivityTest {
     fun testEventFetchFailDisablesButtonsAndDoesNotShowActivity() {
         When(mockedEventDatabase.getEventFromId(
             id = anyOrNull(),
-            returnEvent = anyOrNull(),
-            userAccess = anyOrNull()
+            returnEvent = anyOrNull()
         )).thenReturn(Observable(false))
 
         goToEventActivityWithIntent(limitedEventId)
@@ -393,7 +403,7 @@ class EventActivityTest {
         var createdRating: Rating? = null
         When(
             mockedEventDatabase.addRatingToEvent(
-                anyOrNull(), anyOrNull()
+                anyOrNull()
             )
         ).thenAnswer {
             createdRating = (it.arguments[0] as Rating?)
@@ -420,7 +430,7 @@ class EventActivityTest {
         var createdRating: Rating? = null
         When(
             mockedEventDatabase.addRatingToEvent(
-                anyOrNull(), anyOrNull()
+                anyOrNull()
             )
         ).thenAnswer {
             createdRating = (it.arguments[0] as Rating?)
@@ -454,8 +464,7 @@ class EventActivityTest {
             mockedEventDatabase.getUserRatingFromEvent(
                 userId = anyOrNull(),
                 eventId = anyOrNull(),
-                returnedRating = anyOrNull(),
-                userAccess = anyOrNull()
+                returnedRating = anyOrNull()
             )
         ).thenAnswer {
             // Not very robust, need to change if changed method signature
@@ -467,8 +476,7 @@ class EventActivityTest {
 
         When(
             mockedEventDatabase.updateRating(
-                rating = anyOrNull(),
-                userAccess = anyOrNull()
+                rating = anyOrNull()
             )
         ).then {
             existingRating = it.arguments[0] as Rating
@@ -506,8 +514,7 @@ class EventActivityTest {
             mockedEventDatabase.getUserRatingFromEvent(
                 userId = anyOrNull(),
                 eventId = anyOrNull(),
-                returnedRating = anyOrNull(),
-                userAccess = anyOrNull()
+                returnedRating = anyOrNull()
             )
         ).thenAnswer {
             // Not very robust, need to change if changed method signature
@@ -519,8 +526,7 @@ class EventActivityTest {
 
         When(
             mockedEventDatabase.updateRating(
-                rating = anyOrNull(),
-                userAccess = anyOrNull()
+                rating = anyOrNull()
             )
         ).then {
             // Update failed
@@ -590,6 +596,7 @@ class EventActivityTest {
         localDatabase.eventDao().insert(EventLocal.fromEvent(testPublicEvent))
 
         goToEventActivityWithIntent(publicEventId)
+        Thread.sleep(100)
         assertDisplayed(R.id.button_subscribe_follow_event, R.string.event_unfollow)
 
         val retrievedEvents = localDatabase.eventDao().getEventById(publicEventId)

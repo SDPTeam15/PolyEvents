@@ -75,7 +75,8 @@
                     android:drawablePadding="10dp"
                     android:paddingStart="20dp"
                     android:paddingEnd="0dp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:hint="@string/EditProfileActivity_Rank_description"/>
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
@@ -140,10 +141,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.135"
         app:layout_constraintStart_toStartOf="parent" />
-
-
-
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

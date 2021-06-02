@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.view.fragments
 
 import android.annotation.SuppressLint
+import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -25,19 +26,21 @@ import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.view.activity.EditProfileActivity
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import com.github.sdpteam15.polyevents.view.adapter.ProfileAdapter
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 /**
  *  [Fragment] subclass that represents the profile page allowing the user to modify its private information
  *  @param userId the id of the user we display the information or null if it is the current user of the application
  */
-class ProfileFragment(private val userId: String? = null) : Fragment() {
+class ProfileFragment(private val userId: String? = null) : Fragment(), UserModifiedInterface {
     //Return currentUser if we are not in test, but we can use a fake user in test this way
     var currentUser: UserEntity? = null
         get() = field ?: currentDatabase.currentUser
 
     val userInfoLiveData = Observable<UserEntity>()
     private val adminMode = userId != null
+    private val obsDate = Observable<LocalDate>()
     private lateinit var profileNameET: EditText
     private lateinit var profileEmailET: EditText
     private lateinit var profileUsernameET: EditText
@@ -65,8 +68,13 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
 
             //call method to bind the listerner and observer to the correct fields
             addListener(viewRoot)
-            addObserver(viewRoot)
+            addObserver()
 
+            obsDate.observe(this) {
+                val europeanDateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+
+                viewRoot.findViewById<EditText>(R.id.profileBirthdayET).setText(europeanDateFormatter.format(it.value))
+            }
 
             if (adminMode) {
                 //If an admin want to see the profile of somme user
@@ -102,9 +110,9 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
     private fun setupAdminMode(viewRoot: View) {
         viewRoot.findViewById<Button>(R.id.btnUpdateInfos).visibility = View.INVISIBLE
         viewRoot.findViewById<Button>(R.id.btnLogout).visibility = View.INVISIBLE
+        viewRoot.findViewById<Button>(R.id.btnBirthday).visibility = View.INVISIBLE
         viewRoot.findViewById<EditText>(R.id.profileBirthdayET).isEnabled = false
         viewRoot.findViewById<EditText>(R.id.profileUsernameET).isEnabled = false
-
     }
 
     /**
@@ -114,27 +122,22 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
     private fun setupUserMode(viewRoot: View) {
         viewRoot.findViewById<Button>(R.id.btnUpdateInfos).visibility = View.VISIBLE
         viewRoot.findViewById<Button>(R.id.btnLogout).visibility = View.VISIBLE
+        viewRoot.findViewById<Button>(R.id.btnBirthday).visibility = View.VISIBLE
         viewRoot.findViewById<EditText>(R.id.profileBirthdayET).isEnabled = true
         viewRoot.findViewById<EditText>(R.id.profileUsernameET).isEnabled = true
     }
 
     /**
      * Add the observers to make the fragment works properly
-     * @param viewRoot the current view of the fragment
      */
-    private fun addObserver(viewRoot: View) {
+    private fun addObserver() {
         //When user Info live data is updated, set the correct value in the textview
         userInfoLiveData.observe(this) { userInfo ->
             val userInfoValue = userInfo.value
             profileNameET.setText(userInfoValue.name)
             profileEmailET.setText(userInfoValue.email)
             profileUsernameET.setText(userInfoValue.username)
-
-            val userBirthDate = userInfoValue.birthDate
-            val birthDateFormatted =
-                if (userBirthDate == null) ""
-                else userBirthDate.format(DateTimeFormatter.ISO_LOCAL_DATE)
-            viewRoot.findViewById<EditText>(R.id.profileBirthdayET).setText(birthDateFormatted)
+            obsDate.postValue(userInfoValue.birthDate)
         }
     }
 
@@ -146,9 +149,9 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
         viewRoot.findViewById<Button>(R.id.btnUpdateInfos).setOnClickListener {
             //Clear the previous map and add every field
             currentUser!!.username = profileUsernameET.text.toString()
-            // TODO: editText should have birthday input and convert it to Timestamp otherwise things crash
-            //hashMapNewInfo[USER_BIRTH_DATE] = viewRoot.findViewById<EditText>(R.id.profileBirthdayET).text.toString()
-
+            if(obsDate.value!=null) {
+                currentUser!!.birthDate = obsDate.value
+            }
             //Call the DB to update the user information and getUserInformation once it is done
             currentDatabase.userDatabase!!.updateUserInformation(
                 currentUser!!
@@ -162,6 +165,20 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
                     HelperFunctions.showToast(getString(R.string.fail_to_update), activity)
                 }
             }
+        }
+
+        viewRoot.findViewById<Button>(R.id.btnBirthday).setOnClickListener {
+            val date = obsDate.value?:LocalDate.now()
+            val dialog = DatePickerDialog(
+                requireContext(),
+                { _: DatePicker, year: Int, month: Int, day: Int ->
+                    obsDate.postValue(LocalDate.of(year,month+1,day))
+                },
+                date.year,
+                date.monthValue - 1,
+                date.dayOfMonth
+            )
+            dialog.show()
         }
 
         //Logout button handler
@@ -229,7 +246,6 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
         slideOut.slideEdge = Gravity.END
         popupWindow.exitTransition = slideOut
 
-
         // Get the widgets reference from custom view
         val profileName = view.findViewById<EditText>(R.id.id_edittext_profile_name)
         val confirmButton = view.findViewById<ImageButton>(R.id.id_confirm_add_item_button)
@@ -261,6 +277,7 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
         )
 
         intent.putExtra(EditProfileActivity.EDIT_PROFILE_ID, item.pid.toString())
+        EditProfileActivity.callback = this
         startActivity(intent)
 
         /*
@@ -270,5 +287,12 @@ class ProfileFragment(private val userId: String? = null) : Fragment() {
                 recyclerView.adapter!!.notifyDataSetChanged()
             }
         }*/
+    }
+
+    override fun profileHasChanged() {
+        currentDatabase.userDatabase!!.getUserInformation(
+            userInfoLiveData,
+            currentUID
+        )
     }
 }

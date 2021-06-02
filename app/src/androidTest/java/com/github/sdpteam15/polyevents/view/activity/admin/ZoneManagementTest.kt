@@ -3,13 +3,17 @@ package com.github.sdpteam15.polyevents.view.activity.admin
 import android.content.Intent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.RecyclerViewActions
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import com.github.sdpteam15.polyevents.HelperTestFunction
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.TestHelper
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
@@ -17,11 +21,15 @@ import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
 import com.github.sdpteam15.polyevents.model.database.remote.objects.ZoneDatabaseInterface
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
+import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.map.GoogleMapHelper
 import com.github.sdpteam15.polyevents.model.map.ZoneAreaMapHelper
 import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
+import com.github.sdpteam15.polyevents.view.adapter.EventListAdapter
+import com.github.sdpteam15.polyevents.view.adapter.ZoneItemAdapter
 import com.google.android.gms.internal.maps.zzt
 import com.google.android.gms.internal.maps.zzw
 import com.google.android.gms.maps.model.LatLng
@@ -31,14 +39,12 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.Mockito.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.Mockito.`when` as When
 
 class ZoneManagementTest {
-    lateinit var scenario: ActivityScenario<MainActivity>
     lateinit var scenario2: ActivityScenario<ZoneManagementActivity>
-
-
-    lateinit var testUser: UserEntity
 
     val uid = "testUid"
     val username = "JohnDoe"
@@ -54,33 +60,14 @@ class ZoneManagementTest {
     fun setup() {
         mockedDatabase = HelperTestFunction.defaultMockDatabase()
         mockedZoneDatabase = mockedDatabase.zoneDatabase!!
-        When(mockedDatabase.zoneDatabase).thenReturn(mockedZoneDatabase)
-
-        val mockedUserProfile = UserProfile("TestID", "TestName")
-        When(mockedDatabase.currentProfile).thenReturn(mockedUserProfile)
-
-        testUser = UserEntity(
-            uid = uid,
-            username = username,
-            email = email
-        )
 
         Database.currentDatabase = mockedDatabase
-        When(mockedDatabase.currentUser).thenReturn(testUser)
 
         UserLogin.currentUserLogin.signOut()
 
-        MainActivity.currentUser = testUser
-
-        val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
-        scenario = ActivityScenario.launch(intent)
+        val intent = Intent(ApplicationProvider.getApplicationContext(), ZoneManagementListActivity::class.java)
+        ActivityScenario.launch<ZoneManagementListActivity>(intent)
         ZoneManagementActivity.inTest = false
-
-        onView(withId(R.id.ic_home)).perform(click())
-        onView(withId(R.id.id_fragment_home_admin))
-            .check(matches(isDisplayed()))
-        onView(withId(R.id.btnRedirectZoneManagement))
-            .perform(click())
 
         onView(withId(R.id.btnNewZone)).perform(click())
 
@@ -94,7 +81,6 @@ class ZoneManagementTest {
     @After
     fun teardown() {
         MainActivity.currentUser = null
-        scenario.close()
         Database.currentDatabase = FirestoreDatabaseProvider
     }
 
@@ -159,22 +145,25 @@ class ZoneManagementTest {
         }
 
 
-        val intent =
-            Intent(ApplicationProvider.getApplicationContext(), ZoneManagementActivity::class.java)
-        intent.putExtra(ZoneManagementListActivity.EXTRA_ID, editingZone)
+        val intent = Intent(ApplicationProvider.getApplicationContext(), ZoneManagementListActivity::class.java)
         scenario2 = ActivityScenario.launch(intent)
+        onView(withId(R.id.recycler_zones_list)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<ZoneItemAdapter.ItemViewHolder>(
+                0, TestHelper.clickChildViewWithId(R.id.id_zone_modify_item)
+            )
+        )
 
         obs2.postValue(true)
         When(
             mockedZoneDatabase.updateZoneInformation(
-                ZoneManagementActivity.zoneId,
-                ZoneManagementActivity.zone
+                anyOrNull(),
+                anyOrNull()
             )
         ).thenReturn(obs)
         onView(withId(R.id.zoneManagementName))
             .perform(replaceText(zoneName))
         onView(withId(R.id.zoneManagementDescription))
-            .perform(replaceText(zoneDesc + " 2"))
+            .perform(replaceText("$zoneDesc 2"))
         onView(withId(R.id.btnManage)).perform(click())
         obs.postValue(true)
 

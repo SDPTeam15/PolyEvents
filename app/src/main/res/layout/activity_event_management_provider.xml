@@ -5,5 +5,54 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.activity.activityprovider.EventManagementActivityProvider">
+    <LinearLayout
+        android:id="@+id/layout_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
+        <ImageButton
+            android:id="@+id/id_change_request_status_left"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="8dp"
+            android:background="@null"
+            android:src="@drawable/ic_left_arrow"
+            tools:ignore="ContentDescription" />
+
+        <Spinner
+            android:id="@+id/id_title_event_edit_request"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="@null" />
+
+        <ImageButton
+            android:id="@+id/id_change_request_status_right"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:background="@null"
+            android:src="@drawable/ic_right_arrow"
+            tools:ignore="ContentDescription" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layout_title">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/id_recycler_my_event_edit_requests"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            app:layoutManager="LinearLayoutManager" />
+    </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

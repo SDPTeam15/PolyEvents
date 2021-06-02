@@ -1,10 +1,9 @@
-package com.github.sdpteam15.polyevents.view.activity
+package com.github.sdpteam15.polyevents.view.activity.admin
 
 import android.content.Context
 import android.os.Bundle
 import android.transition.Slide
 import android.transition.TransitionManager
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.*
@@ -42,8 +41,6 @@ class ItemsAdminActivity : AppCompatActivity() {
             }
     }
 
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_items_admin)
@@ -65,13 +62,9 @@ class ItemsAdminActivity : AppCompatActivity() {
                 currentDatabase.itemDatabase!!.createItem(it.value.first, it.value.second)
                     .observeOnce { it2 ->
                         if (it2.value != "") {
-                            showToast("set item", this)
-
-                            showToast("itemid changed", this)
                             items[it.index].first.itemId = it2.value
-
                         } else {
-                            showToast("Failed to add the item to the database", this)
+                            showToast(getString(R.string.fail_to_add_items), this)
                         }
                     }
             }
@@ -89,7 +82,7 @@ class ItemsAdminActivity : AppCompatActivity() {
         val deleteItem = { item: Triple<Item, Int, Int> ->
             //check if there if there is no accepted request with the requested item
             if (item.second != item.third) {
-                showToast("This item is in use by an event provider", this)
+                showToast(getString(R.string.item_already_in_use), this)
             }else{
                 items.remove(item)
             }
@@ -102,7 +95,6 @@ class ItemsAdminActivity : AppCompatActivity() {
         val btnAdd = findViewById<ImageButton>(R.id.id_add_item_button)
         btnAdd.setOnClickListener { createItemPopup(null) }
     }
-
 
     private fun createItemPopup(item: Triple<Item, Int, Int>?) {
         // Initialize a new layout inflater instance
@@ -133,6 +125,7 @@ class ItemsAdminActivity : AppCompatActivity() {
         val itemName = view.findViewById<EditText>(R.id.id_edittext_item_name)
         val confirmButton = view.findViewById<ImageButton>(R.id.id_confirm_add_item_button)
         val itemQuantity = view.findViewById<EditText>(R.id.id_edittext_item_quantity)
+        val title = view.findViewById<TextView>(R.id.tvTitleItem)
         val itemTypeTextView = view.findViewById<AutoCompleteTextView>(R.id.id_edittext_item_type)
         var itemUsed = 0
         if (item != null) {
@@ -140,7 +133,9 @@ class ItemsAdminActivity : AppCompatActivity() {
             itemQuantity.setText(item.second.toString())
             itemTypeTextView.setText(item.first.itemType)
             itemUsed = item.second - item.third
-
+            title.text =getString(R.string.modify_an_item)
+        } else{
+            title.text =getString(R.string.add_a_new_item)
         }
 
 
@@ -163,10 +158,10 @@ class ItemsAdminActivity : AppCompatActivity() {
                 val newTotal = itemQuantity.text.toString().toInt()
                 when {
                     newTotal <= 0 -> {
-                        showToast("The quantity must be positive", this)
+                        showToast(getString(R.string.quantity_should_be_positive), this)
                     }
                     itemUsed > newTotal -> {
-                        showToast("The new total is less than attributed items", this)
+                        showToast(getString(R.string.new_total_less_items), this)
 
                     }
                     else -> {
@@ -206,15 +201,12 @@ class ItemsAdminActivity : AppCompatActivity() {
                     }
                 }
             } else {
-                showToast("Please fill all the fields above", this)
+                showToast(getString(R.string.fill_all_fields), this)
             }
         }
-
 
         // Finally, show the popup window on app
         TransitionManager.beginDelayedTransition(this.recyclerView)
         popupWindow.showAtLocation(this.recyclerView, Gravity.CENTER, 0, 0)
     }
-
-
 }

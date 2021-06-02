@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.view.activity
 
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -10,17 +11,17 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.helper.*
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
-import com.github.sdpteam15.polyevents.helper.NotificationsHelper
-import com.github.sdpteam15.polyevents.helper.NotificationsScheduler
+import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Rating
+import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.exceptions.MaxAttendeesException
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.model.room.EventLocal
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.adapter.CommentItemAdapter
 import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
@@ -30,6 +31,7 @@ import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModel
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModelFactory
 import com.github.sdpteam15.polyevents.viewmodel.NotificationUidViewModel
 import com.github.sdpteam15.polyevents.viewmodel.NotificationUidViewModelFactory
+
 
 /**
  * An activity containing events description. Note that information about the event could be stored from the local
@@ -45,6 +47,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         // Refactored here for tests
         val obsEvent: Observable<Event> = Observable()
         val obsRating: Observable<Float> = Observable()
+        val obsOrganiser: Observable<UserEntity> = Observable()
         val obsComments: ObservableList<Rating> = ObservableList()
         lateinit var event: Event
 
@@ -102,6 +105,15 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         refreshEvent()
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+
+        if (id == android.R.id.home) {
+            finish()
+        }
+        return true
+    }
+
     override fun onResume() {
         super.onResume()
 
@@ -117,6 +129,16 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         getEventAndObserve()
         getEventRating()
         getCommentsAndObserve()
+        getUserAndObserve()
+    }
+
+
+    private fun getUserAndObserve() {
+        obsOrganiser.observe(this) {
+            findViewById<TextView>(R.id.txt_event_organizer).apply {
+                text = it.value.name
+            }
+        }
     }
 
     /**
@@ -176,9 +198,6 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
      * Get all the informations of the event
      */
     private fun getEventAndObserve() {
-        obsEvent.observeOnce(this, updateIfNotNull = false) {
-            updateInfo(it.value)
-        }
         currentDatabase.eventDatabase!!.getEventFromId(
             eventId,
             obsEvent
@@ -186,8 +205,20 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
             .observe(this) { b ->
                 if (!b.value) {
                     showToast(getString(R.string.event_info_fail), this)
+                } else {
+                    if (obsEvent.value!!.organizer != null) {
+                        currentDatabase.userDatabase!!.getUserInformation(
+                            obsOrganiser,
+                            obsEvent.value!!.organizer!!
+                        ).observeOnce(this) {
+                            if (!b.value) {
+                                showToast(getString(R.string.event_info_fail), this)
+                            }
+                        }
+                    }
                 }
             }
+        obsEvent.observeOnce(this, updateIfNotNull = false) { updateInfo(it.value) }
     }
 
     /**
@@ -215,9 +246,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         findViewById<TextView>(R.id.txt_event_date).apply {
             text = event.formattedStartTime()
         }
-        findViewById<TextView>(R.id.txt_event_organizer).apply {
-            text = event.organizer
-        }
+
         findViewById<TextView>(R.id.txt_event_description).apply {
             text = event.description
         }

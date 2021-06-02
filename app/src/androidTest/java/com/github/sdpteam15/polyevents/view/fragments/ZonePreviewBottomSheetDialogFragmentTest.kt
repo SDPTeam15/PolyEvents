@@ -64,7 +64,7 @@ class ZonePreviewBottomSheetDialogFragmentTest {
             endTime = LocalDateTime.of(2021, 3, 7, 13, 0, 0),
             organizer = "The fish band",
             zoneName = "Kitchen",
-            tags = mutableSetOf("sushi", "japan", "cooking")
+            tags = mutableListOf("sushi", "japan", "cooking")
         )
         event1.makeLimitedEvent(25)
 
@@ -85,7 +85,7 @@ class ZonePreviewBottomSheetDialogFragmentTest {
             startTime = LocalDateTime.of(2021, 3, 7, 21, 15),
             organizer = "AcademiC DeCibel",
             zoneName = "Concert Hall",
-            tags = mutableSetOf("music", "live", "pogo")
+            tags = mutableListOf("music", "live", "pogo")
         )
 
         mockedDatabase = mock(DatabaseInterface::class.java)
@@ -102,8 +102,7 @@ class ZonePreviewBottomSheetDialogFragmentTest {
         When(mockedDatabase.eventDatabase!!.getEventsByZoneId(
             zoneId = anyOrNull(),
             limit = anyOrNull(),
-            events = anyOrNull(),
-            userAccess = anyOrNull()
+            events = anyOrNull()
         )).then {
             (it.arguments[2] as ObservableList<Event>?)
                 ?.addAll(mutableListOf(event1, event2, event3))
@@ -112,8 +111,7 @@ class ZonePreviewBottomSheetDialogFragmentTest {
 
         When(mockedZoneDatabase.getZoneInformation(
             zoneId = anyOrNull(),
-            zone = anyOrNull(),
-            userAccess = anyOrNull()
+            zone = anyOrNull()
         )).then {
             (it.arguments[1] as Observable<Zone>?)
                 ?.postValue(zone)
@@ -162,8 +160,7 @@ class ZonePreviewBottomSheetDialogFragmentTest {
     fun testDialogButtonsAreDisabledByDefault() {
         When(mockedZoneDatabase.getZoneInformation(
             zoneId = anyOrNull(),
-            zone = anyOrNull(),
-            userAccess = anyOrNull()
+            zone = anyOrNull()
         )).then {
             Observable(false)
         }
@@ -208,8 +205,7 @@ class ZonePreviewBottomSheetDialogFragmentTest {
         When(mockedEventDatabase.getEventsByZoneId(
             zoneId = anyOrNull(),
             limit = anyOrNull(),
-            events = anyOrNull(),
-            userAccess = anyOrNull()
+            events = anyOrNull()
         )).thenAnswer {
             (it.arguments[2] as ObservableList<Event>)
                 .clear()

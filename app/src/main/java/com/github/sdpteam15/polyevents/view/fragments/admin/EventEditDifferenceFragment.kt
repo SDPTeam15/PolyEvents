@@ -57,7 +57,6 @@ class EventEditDifferenceFragment(
             view.findViewById<TextView>(R.id.tvOrigTitle).visibility = View.INVISIBLE
             view.findViewById<TextView>(R.id.tvModTitle).text =
                 getString(R.string.edit_fragment_creation_title)
-
         }
     }
 
@@ -76,8 +75,6 @@ class EventEditDifferenceFragment(
                 R.string.fragment_edit_limited_text,
                 modifyEvent.getMaxNumberOfSlots().toString()
             )
-
-
         } else {
             view.findViewById<TextView>(R.id.tvModLimited).text =
                 getString(R.string.fragment_edit_no_text)

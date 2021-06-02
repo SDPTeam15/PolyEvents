@@ -46,7 +46,7 @@ class UpcomingEventsVisitorHomeFragmentTest {
                 startTime = LocalDateTime.of(2021, 3, 7, 12, 15),
                 organizer = "The fish band",
                 zoneName = "Kitchen",
-                tags = mutableSetOf("sushi", "japan", "cooking")
+                tags = mutableListOf("sushi", "japan", "cooking")
             )
         )
 
@@ -91,7 +91,6 @@ class UpcomingEventsVisitorHomeFragmentTest {
         When(mockDatabaseInterface.eventDatabase).thenReturn(mockEventDatabase)
         When(
             mockEventDatabase!!.getEvents(
-                anyOrNull(),
                 anyOrNull(),
                 anyOrNull(),
                 anyOrNull()

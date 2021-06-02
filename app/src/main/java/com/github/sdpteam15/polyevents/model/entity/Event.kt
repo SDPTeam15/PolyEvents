@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.model.entity
 
 import android.graphics.Bitmap
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.thenReturn
 import com.github.sdpteam15.polyevents.model.exceptions.MaxAttendeesException
 import com.google.firebase.firestore.IgnoreExtraProperties
 import java.time.LocalDateTime
@@ -41,7 +42,7 @@ data class Event(
     val endTime: LocalDateTime? = null,
     val inventory: MutableList<Item> = mutableListOf(),
     // NOTE: Set is not a supported collection in Firebase Firestore so will be stored as list in the db.
-    val tags: MutableSet<String> = mutableSetOf(),
+    val tags: MutableList<String> = mutableListOf(),
 
     var status: EventStatus?=null,
     var adminMessage: String?=null,
@@ -162,19 +163,20 @@ data class Event(
      * @return string HH:MM
      */
     fun formattedStartTime(): String {
-        if (startTime == null) {
-            return ""
+        return if (startTime == null) {
+            ""
         } else {
             //return SimpleDateFormat("k:mm", Locale.getDefault()).format(startTime)
             val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("k:mm")
-            return startTime.format(formatter)
+            startTime.format(formatter)
         }
     }
 
     enum class EventStatus (private val status: String) {
         PENDING("pending"),
         ACCEPTED("accepted"),
-        REFUSED("refused");
+        REFUSED("refused"),
+        CANCELED("canceled");
 
         override fun toString(): String {
             return status

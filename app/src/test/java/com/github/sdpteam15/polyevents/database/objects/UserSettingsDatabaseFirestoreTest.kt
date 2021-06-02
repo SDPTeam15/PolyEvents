@@ -6,7 +6,6 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.UserSettingsAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.objects.UserSettingsDatabase
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
-import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.room.UserSettings
 import org.junit.Before
@@ -26,9 +25,9 @@ class UserSettingsDatabaseFirestoreTest {
         mockUserSettingsDatabase = UserSettingsDatabase(mockRemoteDatabase)
 
         When(mockRemoteDatabase.currentUser).thenReturn(
-                UserEntity(
-                        uid = mockUserId
-                )
+            UserEntity(
+                uid = mockUserId
+            )
         )
 
         HelperTestFunction.clearQueue()
@@ -38,26 +37,27 @@ class UserSettingsDatabaseFirestoreTest {
     fun testUpdatingUserSettings() {
         val userSettings = UserSettings()
         HelperTestFunction.nextSetEntity { true }
-        mockUserSettingsDatabase.updateUserSettings(userSettings, userAccess = UserProfile())
-                .observeOnce { assert(it.value) }.then.postValue(false)
+        mockUserSettingsDatabase.updateUserSettings(userSettings)
+            .observeOnce { assert(it.value) }.then.postValue(false)
 
         val setUserSettings = HelperTestFunction.lastSetEntity()!!
 
         assertEquals(userSettings, setUserSettings.element)
-        assertEquals(DatabaseConstant.CollectionConstant.USER_SETTINGS_COLLECTION, setUserSettings.collection)
+        assertEquals(
+            DatabaseConstant.CollectionConstant.USER_SETTINGS_COLLECTION,
+            setUserSettings.collection
+        )
         assertEquals(UserSettingsAdapter, setUserSettings.adapter)
     }
 
     @Test
     fun testGettingUserSettings() {
         val userSettingsObservable = Observable<UserSettings>()
-        val userAccess = UserProfile()
 
         HelperTestFunction.nextGetListEntity { true }
         mockUserSettingsDatabase.getUserSettings(
-                id = mockUserId,
-                userSettingsObservable = userSettingsObservable,
-                userAccess = userAccess
+            id = mockUserId,
+            userSettingsObservable = userSettingsObservable
         ).observeOnce {
             assert(it.value)
         }.then.postValue(false)
@@ -67,8 +67,8 @@ class UserSettingsDatabaseFirestoreTest {
         assertEquals(userSettingsObservable, retrievedUserSettings.element)
         assertEquals(mockUserId, retrievedUserSettings.id)
         assertEquals(
-                DatabaseConstant.CollectionConstant.USER_SETTINGS_COLLECTION,
-                retrievedUserSettings.collection
+            DatabaseConstant.CollectionConstant.USER_SETTINGS_COLLECTION,
+            retrievedUserSettings.collection
         )
         assertEquals(UserSettingsAdapter, retrievedUserSettings.adapter)
     }

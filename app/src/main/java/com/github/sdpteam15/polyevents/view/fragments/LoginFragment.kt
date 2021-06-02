@@ -63,7 +63,7 @@ class LoginFragment : Fragment() {
                     if (task.isSuccessful) {
                         Log.d(TAG, "Beginning populating local database")
                         val application = requireActivity().application as PolyEventsApplication
-                        (application).applicationScope.launch(Dispatchers.IO) {
+                        application.applicationScope.launch(Dispatchers.IO) {
                             LocalDatabase.populateDatabaseWithUserEvents(
                                 application.database.eventDao(),
                                 application.applicationScope)

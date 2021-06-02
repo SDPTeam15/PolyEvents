@@ -91,6 +91,7 @@ class MyItemRequestAdapter(
                 RETURN_REQUESTED -> Color.CYAN
                 RETURNING -> Color.CYAN
                 RETURNED -> Color.GREEN
+                CANCELED -> Color.LTGRAY
             })
             status.text = request.status.toString()
 

@@ -58,8 +58,6 @@ class ZoneManagementListTest {
     @Before
     fun setup() {
         mockedDatabase = HelperTestFunction.defaultMockDatabase()
-        val mockedUserProfile = UserProfile("TestID", "TestName")
-        When(mockedDatabase.currentProfile).thenReturn(mockedUserProfile)
 
         Database.currentDatabase = mockedDatabase
 
@@ -79,7 +77,7 @@ class ZoneManagementListTest {
             Zone(zoneId = "zid3", zoneName = "zoneName3")
         )
 
-        Mockito.`when`(zoneDatabase.getAllZones(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
+        Mockito.`when`(zoneDatabase.getAllZones(anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
             (it.arguments[2] as ObservableList<Zone>?)?.clear()
             (it.arguments[2] as ObservableList<Zone>?)?.addAll(zones)
             Observable(true)

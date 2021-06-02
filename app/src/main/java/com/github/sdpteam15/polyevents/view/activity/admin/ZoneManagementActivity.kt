@@ -216,9 +216,8 @@ class ZoneManagementActivity : AppCompatActivity() {
             etDesc.setText("")
             etName.setText("")
             etLoc.setText("")
-            val int = Intent(this, ZoneManagementListActivity::class.java)
             ZoneAreaMapHelper.removeZone(zoneId)
-            startActivity(int)
+            finish()
         } else {
             //show a toast indicating that there was an error and stay on this activity
             HelperFunctions.showToast(failMess, this)

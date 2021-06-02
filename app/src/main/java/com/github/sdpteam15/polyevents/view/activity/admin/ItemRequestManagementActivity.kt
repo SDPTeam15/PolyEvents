@@ -17,6 +17,7 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
+import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
@@ -48,12 +49,12 @@ class ItemRequestManagementActivity : AppCompatActivity() {
         requests.group(this) { it.userId }.then.observePut(this) {
             if (!userNames.containsKey(it.key)) {
                 val tempUsers = Observable<UserEntity>()
-                Database.currentDatabase.userDatabase!!.getUserInformation(tempUsers, it.key)
+                currentDatabase.userDatabase!!.getUserInformation(tempUsers, it.key)
                     .observeOnce(this) { ans ->
                         if (ans.value) {
                             userNames[it.key] = tempUsers.value?.name ?: "ANONYMOUS"
                         } else {
-                            HelperFunctions.showToast("Failed to get Username from database", this)
+                            HelperFunctions.showToast(getString(R.string.failed_to_get_username_from_database), this)
                         }
                     }
             }
@@ -126,7 +127,7 @@ class ItemRequestManagementActivity : AppCompatActivity() {
      */
     private fun canAccept(materialRequest: MaterialRequest): Boolean {
         return materialRequest.status == MaterialRequest.Status.PENDING && materialRequest.items.all {
-            items.first { it2 -> it2.first.itemId == it.key }.third > it.value
+            items.first { it2 -> it2.first.itemId == it.key }.third >= it.value
         }
     }
 
@@ -171,7 +172,7 @@ class ItemRequestManagementActivity : AppCompatActivity() {
         confirmButton.setOnClickListener {
             request.status = MaterialRequest.Status.REFUSED
             request.adminMessage = message.text.toString()
-            Database.currentDatabase.materialRequestDatabase!!.updateMaterialRequest(
+            currentDatabase.materialRequestDatabase!!.updateMaterialRequest(
                 request.requestId!!,
                 request
             ).observeOnce(this) {

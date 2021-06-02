@@ -5,14 +5,15 @@ import com.github.sdpteam15.polyevents.model.map.LatLngOperator.euclideanDistanc
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.getIntersection
 import com.github.sdpteam15.polyevents.model.map.RouteMapHelper.getNearestPoint
 import com.github.sdpteam15.polyevents.model.map.THRESHOLD
+import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.google.android.gms.maps.model.LatLng
 
 /**
  * Undirected edge between two RouteNodes
  * The weight of the node is computed by the distance between both nodes
  * @param id RouteEdge id
- * @param startId RouteNode id
- * @param endId RouteNode id
+ * @param startInitId RouteNode id
+ * @param endInitId RouteNode id
  */
 data class RouteEdge(
     var id: String?,

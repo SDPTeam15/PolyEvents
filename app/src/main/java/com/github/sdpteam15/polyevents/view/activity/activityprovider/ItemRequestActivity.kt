@@ -1,7 +1,6 @@
-package com.github.sdpteam15.polyevents.view.activity
+package com.github.sdpteam15.polyevents.view.activity.activityprovider
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -13,14 +12,12 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
-import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider.currentUser
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
-import com.github.sdpteam15.polyevents.view.activity.activityprovider.EXTRA_ITEM_REQUEST_ID
 import com.github.sdpteam15.polyevents.view.adapter.ItemRequestAdapter
 import java.time.LocalDateTime
 
@@ -45,8 +42,6 @@ class ItemRequestActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         requestId = intent.getStringExtra(EXTRA_ITEM_REQUEST_ID)
-
-
         recyclerView = findViewById(R.id.id_recycler_items_request)
         sendButton = findViewById(R.id.id_button_make_request)
         sendButton.setOnClickListener { sendItemsRequest() }
@@ -69,7 +64,7 @@ class ItemRequestActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
         }, null, listEvent).observeOnce(this) {
             if (it.value) {
                 if (listEvent.isEmpty()) {
-                    showToast("You must create an event before requesting an item", this)
+                    showToast(getString(R.string.create_event_before_items), this)
                     finish()
                 } else {
                     if (selectedEvent.value == null) {
@@ -87,7 +82,7 @@ class ItemRequestActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
                     eventSpinner.onItemSelectedListener = this
                 }
             } else {
-                showToast("Failed to get the list of events", this)
+                showToast(getString(R.string.fail_to_get_event_list), this)
                 finish()
             }
         }
@@ -125,10 +120,8 @@ class ItemRequestActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
                     )
                 recyclerView.setHasFixedSize(false)
             }
-
         }
     }
-
 
     /**
      * Send the items request to the admins
@@ -196,6 +189,5 @@ class ItemRequestActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
-
     }
 }

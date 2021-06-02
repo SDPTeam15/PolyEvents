@@ -1,7 +1,6 @@
 package com.github.sdpteam15.polyevents.fakedatabase
 
-import com.github.sdpteam15.polyevents.TestHelper
-import com.github.sdpteam15.polyevents.model.database.remote.Matcher
+import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.objects.MaterialRequestDatabaseInterface
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
@@ -12,8 +11,7 @@ object FakeDatabaseMaterialRequest : MaterialRequestDatabaseInterface {
     val requests = mutableMapOf<String,MaterialRequest>()
     override fun updateMaterialRequest(
         id: String,
-        materialRequest: MaterialRequest,
-        userAccess: UserProfile?
+        materialRequest: MaterialRequest
     ): Observable<Boolean> {
         requests[id] = materialRequest
         return Observable(true)
@@ -21,8 +19,7 @@ object FakeDatabaseMaterialRequest : MaterialRequestDatabaseInterface {
 
     override fun getMaterialRequestList(
         materialList: ObservableList<MaterialRequest>,
-        matcher: Matcher?,
-        userAccess: UserProfile?
+        matcher: Matcher?
     ): Observable<Boolean> {
         materialList.clear(FakeDatabase)
         materialList.addAll(requests.values,FakeDatabase)
@@ -30,8 +27,7 @@ object FakeDatabaseMaterialRequest : MaterialRequestDatabaseInterface {
     }
 
     override fun createMaterialRequest(
-        request: MaterialRequest,
-        userAccess: UserProfile?
+        request: MaterialRequest
     ): Observable<Boolean> {
         val key = FakeDatabase.generateRandomKey()
         requests[key] = request.copy(requestId = key)
@@ -40,8 +36,7 @@ object FakeDatabaseMaterialRequest : MaterialRequestDatabaseInterface {
 
     override fun getMaterialRequestListByUser(
         materialList: ObservableList<MaterialRequest>,
-        userId: String,
-        userAccess: UserProfile?
+        userId: String
     ): Observable<Boolean> {
         materialList.clear(FakeDatabase)
         for (request in requests.values)
@@ -50,8 +45,7 @@ object FakeDatabaseMaterialRequest : MaterialRequestDatabaseInterface {
     }
 
     override fun deleteMaterialRequest(
-        materialRequestId: String,
-        userAccess: UserProfile?
+        materialRequestId: String
     ): Observable<Boolean> {
         requests.remove(materialRequestId)
         return Observable(true)
@@ -59,8 +53,7 @@ object FakeDatabaseMaterialRequest : MaterialRequestDatabaseInterface {
 
     override fun getMaterialRequestById(
         materialRequest: Observable<MaterialRequest>,
-        requestId: String,
-        userAccess: UserProfile?
+        requestId: String
     ): Observable<Boolean> {
         materialRequest.postValue(requests[requestId],FakeDatabase)
         return Observable(true)

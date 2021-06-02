@@ -1,4 +1,4 @@
-package com.github.sdpteam15.polyevents.model.room
+package com.github.sdpteam15.polyevents.model.database.local.entity
 
 import androidx.annotation.NonNull
 import androidx.room.ColumnInfo

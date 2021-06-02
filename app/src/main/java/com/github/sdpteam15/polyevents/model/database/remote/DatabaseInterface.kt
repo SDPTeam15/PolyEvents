@@ -3,11 +3,13 @@ package com.github.sdpteam15.polyevents.model.database.remote
 import com.github.sdpteam15.polyevents.model.*
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterToDocumentInterface
+import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.objects.*
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.model.observable.ObservableMap
 
 const val NUMBER_UPCOMING_EVENTS = 3
 
@@ -27,11 +29,6 @@ interface DatabaseInterface {
      */
     var currentUser: UserEntity?
 
-    /**
-     * The current profile of the database
-     */
-    @Deprecated("to remove")
-    var currentProfile: UserProfile?
 
     /**
      * The database used to handle query about items
@@ -97,7 +94,8 @@ interface DatabaseInterface {
         element: T,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterToDocumentInterface<in T> = collection.adapter as AdapterToDocumentInterface<T>
-    ): Observable<Boolean>
+    ): Observable<Boolean> =
+        addEntityAndGetId(element, collection, adapter).mapOnce { it != "" }.then
 
     /**
      * Add a list Entity from the database
@@ -110,7 +108,7 @@ interface DatabaseInterface {
         elements: List<T>,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterToDocumentInterface<in T> = collection.adapter as AdapterToDocumentInterface<T>
-    ): Observable<Pair<Boolean, List<String>?>>
+    ): Observable<Pair<Boolean, List<String?>>>
 
     /**
      * Set an Entity to the data base
@@ -129,7 +127,7 @@ interface DatabaseInterface {
 
     /**
      * Set a list Entity to the data base
-     * @param element The id and element to set or null to delete the element from the database
+     * @param elements The list of id and element pairs to set or null to delete the element from the database
      * @param collection The collection in which we want to set the given element
      * @param adapter The adapter converting the element into a HashMap recognised by the database
      * @return An observer that will be set to true if the communication with the DB is over and no error
@@ -138,7 +136,7 @@ interface DatabaseInterface {
         elements: List<Pair<String, T?>>,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterToDocumentInterface<in T> = collection.adapter as AdapterToDocumentInterface<T>
-    ): Observable<Boolean>
+    ): Observable<Pair<Boolean, List<Boolean>>>
 
     /**
      * Delete an Entity to the data base
@@ -160,7 +158,8 @@ interface DatabaseInterface {
     fun deleteListEntity(
         ids: List<String>,
         collection: DatabaseConstant.CollectionConstant
-    ): Observable<Boolean> = setListEntity(ids.map { Pair(it, null) }, collection)
+    ): Observable<Pair<Boolean, List<Boolean>>> =
+        setListEntity(ids.map { Pair(it, null) }, collection)
 
     /**
      * Get an Entity from the database
@@ -173,6 +172,23 @@ interface DatabaseInterface {
     fun <T : Any> getEntity(
         element: Observable<T>,
         id: String,
+        collection: DatabaseConstant.CollectionConstant,
+        adapter: AdapterFromDocumentInterface<out T> = collection.adapter as AdapterFromDocumentInterface<T>
+    ): Observable<Boolean>
+
+    /**
+     * Get a map id to Entity from the database
+     * @param elements An observable map in which the elements will be set once retrieve from the database
+     * @param ids The ids at which we need to get the element, if null get all
+     * @param matcher To filter the elements
+     * @param collection The collection from which we want to retrieve the list of entity
+     * @param adapter The adapter converting the element into a HashMap recognised by the database
+     * @return An observer that will be set to true if the communication with the DB is over and no error
+     */
+    fun <T : Any> getMapEntity(
+        elements: ObservableMap<String, T>,
+        ids: List<String>? = null,
+        matcher: Matcher?,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterFromDocumentInterface<out T> = collection.adapter as AdapterFromDocumentInterface<T>
     ): Observable<Boolean>
@@ -192,5 +208,16 @@ interface DatabaseInterface {
         matcher: Matcher?,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterFromDocumentInterface<out T> = collection.adapter as AdapterFromDocumentInterface<T>
-    ): Observable<Boolean>
+    ): Observable<Boolean> = getMapEntity(
+        ObservableMap<String, T>().observe {
+            val list = mutableListOf<T>()
+            for (key in it.value.keys)
+                list.add(it.value[key]!!)
+            elements.updateAll(list, this)
+        }.then,
+        ids,
+        matcher,
+        collection,
+        adapter
+    )
 }
