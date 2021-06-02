@@ -70,12 +70,14 @@
                     android:id="@+id/EditProfileActivity_Rank"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:editable="false"
                     android:layout_gravity="center_vertical"
                     android:drawableStart="@drawable/ic_baseline_upgrade_24"
                     android:drawablePadding="10dp"
                     android:paddingStart="20dp"
                     android:paddingEnd="0dp"
                     android:textStyle="bold" />
+
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
