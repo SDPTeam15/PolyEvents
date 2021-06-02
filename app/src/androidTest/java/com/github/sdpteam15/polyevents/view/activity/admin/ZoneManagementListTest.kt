@@ -138,6 +138,7 @@ class ZoneManagementListTest {
                 0, TestHelper.clickChildViewWithId(R.id.id_zone_remove_item)
             )
         )
+        Espresso.onView(ViewMatchers.withText("YES")).perform(click())
         Espresso.onView(ViewMatchers.withId(R.id.recycler_zones_list))
             .check(RecyclerViewItemCountAssertion(zones.size-1))
     }
