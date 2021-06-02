@@ -67,8 +67,7 @@ class LoginFragment : Fragment() {
                             LocalDatabase.populateDatabaseWithUserEvents(
                                 application.database.eventDao(),
                                 application.applicationScope)
-                        }
-                        application.applicationScope.launch(Dispatchers.IO) {
+
                             LocalDatabase.populateDatabaseWithUserSettings(
                                 application.database.userSettingsDao(),
                                 application.applicationScope
