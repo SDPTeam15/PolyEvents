@@ -15,10 +15,7 @@ import kotlinx.coroutines.launch
 class UserSettingsViewModel(private val userSettingsDao: UserSettingsDao) : ViewModel() {
 
     fun getUserSettings(obs: ObservableList<UserSettings>) = viewModelScope.launch {
-        if (obs.isNotEmpty()) {
-            obs.clear()
-        }
-        obs.addAll(userSettingsDao.get())
+        obs.updateAll(userSettingsDao.get())
     }
 
     fun updateUserSettings(userSettings: UserSettings) = viewModelScope.launch {
@@ -30,7 +27,7 @@ class UserSettingsViewModel(private val userSettingsDao: UserSettingsDao) : View
     }
 }
 
-/**u
+/**
  * A ViewModelProvider.Factory that gets as a parameter the dependencies needed to create
  * an UserSettingsViewModel.
  */

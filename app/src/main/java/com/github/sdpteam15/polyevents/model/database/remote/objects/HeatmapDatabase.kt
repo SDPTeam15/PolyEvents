@@ -1,6 +1,5 @@
 package com.github.sdpteam15.polyevents.model.database.remote.objects
 
-import com.github.sdpteam15.polyevents.Settings
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.LOCATION_COLLECTION
@@ -8,11 +7,11 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.DeviceLocationAdapter
 import com.github.sdpteam15.polyevents.model.entity.DeviceLocation
-import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.map.GoogleMapOptions.neBound
 import com.github.sdpteam15.polyevents.model.map.GoogleMapOptions.swBound
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.model.room.UserSettings
 import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDateTime
 import kotlin.random.Random
@@ -20,20 +19,22 @@ import kotlin.random.Random
 class HeatmapDatabase(private val db: DatabaseInterface) : HeatmapDatabaseInterface {
 
     override fun setLocation(
-        location: LatLng
+        location: LatLng,
+        userSettings: ObservableList<UserSettings>
     ): Observable<Boolean> {
-        val element = DeviceLocation(Settings.LocationId, location, LocalDateTime.now())
-        return if (Settings.LocationId == "")
+        val userSettingsInstance: UserSettings = userSettings[0]
+        val element = DeviceLocation(userSettingsInstance.locationId, location, LocalDateTime.now())
+        return if (userSettingsInstance.locationId == null)
             db.addEntityAndGetId(
                 element,
                 LOCATION_COLLECTION
             ).mapOnce {
-                Settings.LocationId = it
+                userSettings.updateAll(listOf(userSettingsInstance.copy(locationId = it)))
                 it != ""
             }.then
         else db.setEntity(
             element,
-            Settings.LocationId,
+            userSettingsInstance.locationId!!,
             LOCATION_COLLECTION
         )
     }
@@ -47,14 +48,14 @@ class HeatmapDatabase(private val db: DatabaseInterface) : HeatmapDatabaseInterf
         db.getListEntity(
             tempUsersLocations,
             null,
-                { collection ->
-                    collection.whereGreaterThan(
-                            DatabaseConstant.LocationConstant.LOCATIONS_TIME.value,
-                            HelperFunctions.localDateTimeToDate(
-                                    LocalDateTime.now().minusMinutes(10)
-                            )!!
-                    )
-                },
+            { collection ->
+                collection.whereGreaterThan(
+                    DatabaseConstant.LocationConstant.LOCATIONS_TIME.value,
+                    HelperFunctions.localDateTimeToDate(
+                        LocalDateTime.now().minusMinutes(10)
+                    )!!
+                )
+            },
             LOCATION_COLLECTION,
             object : AdapterFromDocumentInterface<LatLng> {
                 override fun fromDocument(document: Map<String, Any?>, id: String): LatLng =

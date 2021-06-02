@@ -11,8 +11,9 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.helper.*
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
+import com.github.sdpteam15.polyevents.helper.NotificationsHelper
+import com.github.sdpteam15.polyevents.helper.NotificationsScheduler
 import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
@@ -29,8 +30,6 @@ import com.github.sdpteam15.polyevents.view.fragments.LeaveEventReviewFragment
 import com.github.sdpteam15.polyevents.view.service.ReviewHasChanged
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModel
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModelFactory
-import com.github.sdpteam15.polyevents.viewmodel.NotificationUidViewModel
-import com.github.sdpteam15.polyevents.viewmodel.NotificationUidViewModelFactory
 
 
 /**
@@ -69,10 +68,6 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
     // Lazily initialized view models, instantiated only when accessed for the first time
     private val localEventViewModel: EventLocalViewModel by viewModels {
         EventLocalViewModelFactory(database.eventDao())
-    }
-
-    private val notificationUidViewModel: NotificationUidViewModel by viewModels {
-        NotificationUidViewModelFactory(database.notificationUidDao())
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
