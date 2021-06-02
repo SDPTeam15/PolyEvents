@@ -59,8 +59,6 @@ class ZoneManagementTest {
 
     @Before
     fun setup() {
-        PolyEventsApplication.inTest = true
-
         mockedDatabase = HelperTestFunction.defaultMockDatabase()
         mockedZoneDatabase = mockedDatabase.zoneDatabase
 

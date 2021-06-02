@@ -42,8 +42,6 @@ class ItemRequestManagementTest {
 
     @Before
     fun setup() {
-        PolyEventsApplication.inTest = true
-
         Database.currentDatabase = FakeDatabase
         availableItems = mutableMapOf()
         availableItems[Item("1", "Bananas", "Fruit")] = 30

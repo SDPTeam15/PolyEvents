@@ -89,8 +89,6 @@ class UserManagementListTest {
 
     @Before
     fun setup() {
-        PolyEventsApplication.inTest = true
-
         setupUser()
         val mockDatabase = HelperTestFunction.defaultMockDatabase()
 

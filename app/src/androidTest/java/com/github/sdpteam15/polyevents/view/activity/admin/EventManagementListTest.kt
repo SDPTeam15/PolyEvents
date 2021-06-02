@@ -124,8 +124,6 @@ class EventManagementListTest {
 
     @Before
     fun setup() {
-        PolyEventsApplication.inTest = true
-
         val intent = Intent(
             ApplicationProvider.getApplicationContext(),
             EventManagementListActivity::class.java

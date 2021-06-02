@@ -130,8 +130,6 @@ class EventManagementTest {
 
     @Before
     fun setup() {
-        PolyEventsApplication.inTest = true
-
         setupListZone()
         setupListUser()
         setupEventsAndZones()
