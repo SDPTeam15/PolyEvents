@@ -43,28 +43,36 @@ class ObservableList<T>(
     private val observersItemUpdate = mutableSetOf<(UpdateIndexedValue<T>) -> Boolean>()
     private val observers = mutableSetOf<(ObserversInfo<T>) -> Boolean>()
 
-    private var listValues: MutableList<Observable<T>>
-    private var removeItemObserver: MutableMap<Observable<T>, () -> Boolean>
+    private var listValues: MutableList<Observable<T>> = mutableListOf()
+    private var removeItemObserver: MutableMap<Observable<T>, () -> Boolean> = mutableMapOf()
 
     init {
-        listValues = mutableListOf()
-        removeItemObserver = mutableMapOf()
-
         if (collection != null)
             addAll(collection, creator)
         if (observable != null)
             add(observable, creator)
     }
 
+    /**
+     * Use an UpdateIndexedValue object each time we want to set a new value for the data.
+     * It contains the new value and eventually the object that set the new value.
+     * @property value the value
+     * @property index the index
+     * @property  sender object that modified the data
+     */
     open class UpdateIndexedValue<T>(value: T, val index: Int, sender: Any?) :
-        Observable.UpdateValue<T>(value, sender)
+        Observable.UpdateValue<T>(value, sender) {
+        override fun toString() = "value:'$value', index:$index, sender:'$sender'"
+    }
 
     class ObserversInfo<T>(
         value: List<T>,
         val info: Info,
         val args: Any?,
         sender: Any?
-    ) : Observable.UpdateValue<List<T>>(value, sender)
+    ) : Observable.UpdateValue<List<T>>(value, sender) {
+        override fun toString() = "value:'$value', info:$info, args:'$args', sender:'$sender'"
+    }
 
     enum class Info {
         add,
@@ -75,6 +83,7 @@ class ObservableList<T>(
         removeAt,
         removeAll,
         retainAll,
+        updateAll,
         clear,
         itemUpdated
     }
@@ -394,6 +403,78 @@ class ObservableList<T>(
 
     override fun retainAll(elements: Collection<T>): Boolean =
         retainAll(elements, null)
+
+    /**
+     * Update the elements in this collection to that are contained in the specified collection.
+     * @param items items list.
+     * @param sender The source of the event.
+     */
+    fun updateAll(items: Collection<T>, sender: Any? = null) {
+        val itemsList = items.toList()
+        val valuesList = listValues.toList()
+
+        val toNewIndex = valuesList.map { -1 }.toMutableList()
+        val fromPastIndex = itemsList.map { -1 }.toMutableList()
+
+        val removed = mutableListOf<Observable<T>>()
+        val added = mutableListOf<Observable<T>>()
+
+        val keep = mutableListOf<Int>()
+
+        for (toIndex in toNewIndex.indices) {
+
+            //Map index of elements that are the same
+            for (fromIndex in fromPastIndex.indices) {
+                if (
+                    valuesList[toIndex].value == itemsList[fromIndex] &&
+                    fromIndex !in toNewIndex &&
+                    toIndex !in fromPastIndex
+                ) {
+                    toNewIndex[toIndex] = fromIndex
+                    fromPastIndex[fromIndex] = toIndex
+                    break
+                }
+            }
+
+            //Keep index of elements that are the same and sorted
+            if (toNewIndex[toIndex] != -1) {
+                if (keep.size == 0 || toNewIndex[toIndex] > keep[keep.size - 1]) {
+                    keep.add(toNewIndex[toIndex])
+                } else {
+                    for (index in keep.indices) {
+                        if (keep[index] > toNewIndex[toIndex]) {
+                            while (keep.size > index)
+                                keep.removeAt(index)
+                            keep.add(toNewIndex[toIndex])
+                            break
+                        }
+                    }
+                }
+            }
+        }
+
+        //Remove all elements not in the new list or not sorted
+        for (toIndex in toNewIndex.indices.reversed()) {
+            if (toNewIndex[toIndex] !in keep) {
+                if (toNewIndex[toIndex] == -1)
+                    removed.add(removeAt(toIndex, sender, false)!!)
+                else
+                    removeAt(toIndex, sender, false)
+            }
+        }
+
+        //Add all missing elements
+        for (fromIndex in fromPastIndex.indices) {
+            if (fromIndex !in keep) {
+                if(fromPastIndex[fromIndex] != -1)
+                    add(fromIndex, valuesList[fromPastIndex[fromIndex]], sender, false)
+                else
+                    added.add(add(fromIndex, itemsList[fromIndex], sender, false)!!)
+            }
+        }
+
+        notifyUpdate(sender, Info.updateAll, Triple(items, removed, added))
+    }
 
     override fun subList(fromIndex: Int, toIndex: Int): MutableList<T> {
         TODO("Not yet implemented")
@@ -763,6 +844,10 @@ class ObservableList<T>(
                         val (items, _) = it.args as Pair<Collection<T>, MutableList<Observable<T>>>
                         observableList.retainAll(items.map(mapper), it.sender)
                     }
+                    Info.updateAll -> {
+                        val (items, _, _) = it.args as Triple<Collection<T>, MutableList<Observable<T>>, MutableList<T>>
+                        observableList.updateAll(items.map(mapper), it.sender)
+                    }
                     Info.clear -> {
                         observableList.clear(it.sender)
                     }
@@ -913,6 +998,13 @@ class ObservableList<T>(
                         val (_, observables) = it.args as Pair<Collection<T>, MutableList<Observable<T>>>
                         for (observable in observables)
                             removeLambda(it, observable)
+                    }
+                    Info.updateAll -> {
+                        val (_, removed, added) = it.args as Triple<Collection<T>, MutableList<Observable<T>>, MutableList<Observable<T>>>
+                        for (observable in removed)
+                            removeLambda(it, observable)
+                        for (item in added)
+                            addLambda(it, item)
                     }
                     Info.clear -> {
                         observableMap.clear(it.sender)
@@ -1068,4 +1160,6 @@ class ObservableList<T>(
     override fun iterator(): MutableIterator<T> = ObservableListIterator(0)
     override fun listIterator(): MutableListIterator<T> = ObservableListIterator(0)
     override fun listIterator(index: Int): MutableListIterator<T> = ObservableListIterator(index)
+
+    override fun toString(): String = "ObservableList$listValues"
 }

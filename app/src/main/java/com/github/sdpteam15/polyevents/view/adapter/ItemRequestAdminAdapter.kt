@@ -82,6 +82,7 @@ class ItemRequestAdminAdapter(
                 MaterialRequest.Status.ACCEPTED -> Color.GREEN
                 MaterialRequest.Status.PENDING -> Color.BLACK
                 MaterialRequest.Status.REFUSED -> Color.RED
+                else -> Color.BLACK //should never happen
             })
             status.text = request.status.toString()
 

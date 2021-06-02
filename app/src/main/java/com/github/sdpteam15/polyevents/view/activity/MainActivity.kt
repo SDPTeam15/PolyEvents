@@ -22,6 +22,7 @@ import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.model.map.MapsFragmentMod
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.fragments.*
 import com.github.sdpteam15.polyevents.view.fragments.home.AdminHomeFragment
 import com.github.sdpteam15.polyevents.view.fragments.home.ProviderHomeFragment
@@ -71,6 +72,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         instance = this
         setContentView(R.layout.activity_main)
+
+        // Create notification channel for the app
+        (application as PolyEventsApplication).createChannel(
+            getString(R.string.event_notification_channel_id),
+            getString(R.string.event_notification_channel_name)
+        )
 
         //TODO remove to for local cache
         Settings.mainActivity = this

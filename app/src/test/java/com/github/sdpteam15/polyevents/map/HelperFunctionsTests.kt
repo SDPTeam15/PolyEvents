@@ -32,7 +32,7 @@ class HelperFunctionsTests {
     // test string set to string conversions
     val s = "hello,world,1,2,3"
     val set = mutableSetOf(
-            "hello", "world", "1", "2", "3"
+        "hello", "world", "1", "2", "3"
     )
 
     @Test
@@ -99,11 +99,13 @@ class HelperFunctionsTests {
     fun testConvertersLongToLocalDateTime() {
         assertEquals(ldt, HelperFunctions.Converters.fromLong(milliseconds))
         // Just checking localDateTime compares by content not reference
-        assertEquals(LocalDateTime.of(
+        assertEquals(
+            LocalDateTime.of(
                 2021, 12, 1, 1, 1, 1
-        ), LocalDateTime.of(
+            ), LocalDateTime.of(
                 2021, 12, 1, 1, 1, 1
-        ))
+            )
+        )
 
         assertNull(HelperFunctions.Converters.fromLong(null))
     }
@@ -119,7 +121,8 @@ class HelperFunctionsTests {
         assertEquals(
             HelperFunctions.Converters.fromStringSet(
                 set
-            ), s)
+            ), s
+        )
         assertNull(HelperFunctions.Converters.fromStringSet(null))
     }
 
@@ -128,7 +131,8 @@ class HelperFunctionsTests {
         assertEquals(
             HelperFunctions.Converters.fromString(
                 s
-            ), set)
+            ), set
+        )
         assertNull(HelperFunctions.Converters.fromString(null))
     }
 }

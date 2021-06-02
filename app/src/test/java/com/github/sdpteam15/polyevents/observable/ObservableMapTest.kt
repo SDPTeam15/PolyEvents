@@ -48,7 +48,9 @@ class ObservableMapTest {
         assertEquals(0, observable.getObservable(0)!!.value)
         assertNull(observable.put(2, Observable()))
 
-        observable.put(1, Observable(2))!!.observeOnce { assertEquals(2, it.value) }.then.postValue(0)
+        observable.put(1, Observable(2))!!.observeOnce { assertEquals(2, it.value) }.then.postValue(
+            0
+        )
     }
 
     @Test
@@ -181,11 +183,13 @@ class ObservableMapTest {
         isUpdate.add(0)
         observable.observePutOnce(mockedLifecycleOwner) { isUpdate[10]++ }
 
-        map.putAll(mutableMapOf(
-            0 to true,
-            1 to true,
-            2 to true
-        ))
+        map.putAll(
+            mutableMapOf(
+                0 to true,
+                1 to true,
+                2 to true
+            )
+        )
 
         assert(observable.containsValue(true))
         assert(!observable.containsValue(false))
@@ -204,7 +208,7 @@ class ObservableMapTest {
     fun mapIsImplemented() {
         val map: MutableMap<Int, Int> = ObservableMap()
 
-        map.putAll(mutableMapOf(Pair(0,0)))
+        map.putAll(mutableMapOf(Pair(0, 0)))
         map.put(1, 1)
         map.put(2, 2)
 
@@ -214,7 +218,7 @@ class ObservableMapTest {
         assertNotNull(map.keys)
 
         assertNotNull(map.entries)
-        for (e in map.entries){
+        for (e in map.entries) {
             assertNotNull(e.key)
             assertNotNull(e.value)
             assertNotNull(e.setValue(0))
@@ -222,11 +226,11 @@ class ObservableMapTest {
     }
 
     @Test
-    fun map(){
+    fun map() {
         var updated = false
         val observableMap = ObservableMap<Int, Int>()
         val map: MutableMap<Int, Int> = observableMap
-        val mappedObservableMap = observableMap.map{it.hashCode()}.then
+        val mappedObservableMap = observableMap.map { it.hashCode() }.then
 
         mappedObservableMap.observeOnce { updated = true }
         map.put(0, 0)
@@ -264,11 +268,14 @@ class ObservableMapTest {
         val mockedLifecycle = Mockito.mock(Lifecycle::class.java)
         Mockito.`when`(mockedLifecycleOwner.lifecycle).thenReturn(mockedLifecycle)
 
-        assertNotNull(mappedObservableMap.mapWhileTrue(condition = {true}) { it })
-        assertNotNull(mappedObservableMap.mapWhileTrue(mockedLifecycleOwner, condition = {true}) { it })
-        assertNotNull(mappedObservableMap.map{ it })
+        assertNotNull(mappedObservableMap.mapWhileTrue(condition = { true }) { it })
+        assertNotNull(
+            mappedObservableMap.mapWhileTrue(
+                mockedLifecycleOwner,
+                condition = { true }) { it })
+        assertNotNull(mappedObservableMap.map { it })
         assertNotNull(mappedObservableMap.map(mockedLifecycleOwner) { it })
-        assertNotNull(mappedObservableMap.mapOnce{ it })
+        assertNotNull(mappedObservableMap.mapOnce { it })
         assertNotNull(mappedObservableMap.mapOnce(mockedLifecycleOwner) { it })
     }
 }

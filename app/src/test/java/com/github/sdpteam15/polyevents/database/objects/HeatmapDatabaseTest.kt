@@ -16,7 +16,8 @@ import kotlin.test.assertNull
 
 @Suppress("UNCHECKED_CAST")
 class HeatmapDatabaseTest {
-    lateinit var mackHeatmapDatabase : HeatmapDatabase
+    lateinit var mackHeatmapDatabase: HeatmapDatabase
+
     @Before
     fun setup() {
         val mockDatabaseInterface = HelperTestFunction.mockDatabaseInterface()
@@ -27,7 +28,7 @@ class HeatmapDatabaseTest {
     @Test
     fun setLocation() {
         Settings.LocationId = ""
-        val latLng = LatLng(1.0,1.0)
+        val latLng = LatLng(1.0, 1.0)
 
         HelperTestFunction.nextAddEntityAndGetId { "ici" }
         mackHeatmapDatabase.setLocation(latLng).observeOnce { assert(it.value) }
@@ -51,7 +52,7 @@ class HeatmapDatabaseTest {
     }
 
     @Test
-    fun getLocations(){
+    fun getLocations() {
         HelperTestFunction.nextGetListEntity { true }
         mackHeatmapDatabase.getLocations(ObservableList()).observeOnce { assert(it.value) }
 

@@ -12,7 +12,7 @@ import org.junit.Before
 import org.junit.Test
 import java.time.LocalDateTime
 
-@Suppress("UNCHECKED_CAST","TYPE_INFERENCE_ONLY_INPUT_TYPES_WARNING")
+@Suppress("UNCHECKED_CAST", "TYPE_INFERENCE_ONLY_INPUT_TYPES_WARNING")
 class EventEditAdapterTest {
     val eventId = "xxxEventxxx"
     val eventName = "someEvent"
@@ -47,7 +47,7 @@ class EventEditAdapterTest {
             startTime = startTime,
             endTime = endTime,
             adminMessage = eventEditMessage,
-            status =  status,
+            status = status,
             eventEditId = eventEditId
         )
 
@@ -60,13 +60,22 @@ class EventEditAdapterTest {
         val document = EventEditAdapter.toDocument(event)
 
         assertEquals(document[EVENT_NAME.value], event.eventName)
-        assertEquals(document[EVENT_ZONE_ID.value],event.zoneId)
+        assertEquals(document[EVENT_ZONE_ID.value], event.zoneId)
         assertEquals(document[EVENT_ORGANIZER.value], event.organizer)
         assertEquals(document[EVENT_ZONE_NAME.value], event.zoneName)
         assertEquals(document[EVENT_ICON.value], event.icon)
-        assertEquals(document[DatabaseConstant.EventEditConstant.EVENT_EDIT_ADMIN_MESSAGE.value], event.adminMessage)
-        assertEquals(document[DatabaseConstant.EventConstant.EVENT_DOCUMENT_ID.value], event.eventId)
-        assertEquals(document[DatabaseConstant.EventEditConstant.EVENT_EDIT_STATUS.value], event.status!!.ordinal)
+        assertEquals(
+            document[DatabaseConstant.EventEditConstant.EVENT_EDIT_ADMIN_MESSAGE.value],
+            event.adminMessage
+        )
+        assertEquals(
+            document[DatabaseConstant.EventConstant.EVENT_DOCUMENT_ID.value],
+            event.eventId
+        )
+        assertEquals(
+            document[DatabaseConstant.EventEditConstant.EVENT_EDIT_STATUS.value],
+            event.status!!.ordinal
+        )
 
         val storedEventInventory = document[EVENT_INVENTORY.value] as List<Item>
 

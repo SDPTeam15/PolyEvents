@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.model.room
 
+import com.github.sdpteam15.polyevents.model.database.local.entity.UserSettings
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -14,9 +15,9 @@ class UserSettingsTest {
     @Before
     fun setup() {
         userSettings = UserSettings(
-                isSendingLocationOn = isSendingLocationOn,
-                trackLocation = trackLocation,
-                locationId = location_id
+            isSendingLocationOn = isSendingLocationOn,
+            trackLocation = trackLocation,
+            locationId = location_id
         )
     }
 

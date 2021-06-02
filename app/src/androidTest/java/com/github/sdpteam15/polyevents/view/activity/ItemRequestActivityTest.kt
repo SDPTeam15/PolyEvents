@@ -63,6 +63,8 @@ class ItemRequestActivityTest {
 
     @Before
     fun setup() {
+        Database.currentDatabase = FakeDatabase
+
         availableItems = mutableMapOf()
         availableItems[Item(null, "Bananas", "Fruit")] = Pair(30, 20)
         availableItems[Item(null, "Kiwis", "Fruit")] = Pair(10, 5)
@@ -75,7 +77,7 @@ class ItemRequestActivityTest {
         val types = mutableSetOf<String>()
         nbItemTypes = availableItems.count { types.add(it.key.itemType) }
         // TODO : replace by the db interface call
-        Database.currentDatabase = FakeDatabase
+
         FakeDatabaseItem.items.clear()
         for ((item, count) in availableItems) {
             Database.currentDatabase.itemDatabase!!.createItem(item, count.first)
@@ -191,6 +193,7 @@ class ItemRequestActivityTest {
             )
         )
     }
+
 }
 
 
