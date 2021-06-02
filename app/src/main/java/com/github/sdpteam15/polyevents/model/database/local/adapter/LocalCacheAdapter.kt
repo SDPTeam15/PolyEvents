@@ -249,16 +249,18 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
                             it.id
                         )
                     }
-                    (matcher?.match(query) ?: query).get().addOnSuccessListener {
-                        val map = mutableMapOf<String, T>()
-                        for (value in it) {
-                            val result = adapter.fromDocument(value.data, value.id)
-                            if (result != null)
-                                map[value.id] = result
+                    (matcher?.match(query) ?: query).get()
+                        .observeOnce {
+                            it.value.first.apply { qs ->
+                                val map = mutableMapOf<String, T>()
+                                qs.forEach { e ->
+                                    adapter.fromDocument(e.data, e.id)
+                                        .apply { value -> map[e.id] = value }
+                                }
+                                elements.updateAll(map, db)
+                                ended.postValue(true, db)
+                            }
                         }
-                        elements.updateAll(map, db)
-                        ended.postValue(true, db)
-                    }
                 }
             })
 
@@ -366,17 +368,20 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
                             }
 
                         //Apply the matcher and add all new elements to the result
-                        (matcher?.match(query) ?: query).get().addOnSuccessListener { qs ->
-                            val map = mutableMapOf<String, T>()
-                            qs.forEach { value ->
-                                adapterFromDocument.fromDocument(value.data, value.id)
-                                    .apply { entity -> map[value.id] = entity }
+                        (matcher?.match(query) ?: query).get()
+                            .observeOnce { p ->
+                                p.value.first.apply { qs ->
+                                    val map = mutableMapOf<String, T>()
+                                    qs.forEach { value ->
+                                        adapterFromDocument.fromDocument(value.data, value.id)
+                                            .apply { entity -> map[value.id] = entity }
+                                    }
+                                    if (map.isNotEmpty()) {
+                                        elements.putAll(map, it.sender)
+                                        ended.postValue(true, it.sender)
+                                    }
+                                }
                             }
-                            if (map.isNotEmpty()) {
-                                elements.putAll(map, it.sender)
-                                ended.postValue(true, it.sender)
-                            }
-                        }
                     })
                 }
             }.then,

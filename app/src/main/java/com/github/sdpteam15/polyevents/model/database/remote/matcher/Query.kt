@@ -1,8 +1,6 @@
 package com.github.sdpteam15.polyevents.model.database.remote.matcher
 
-import androidx.annotation.NonNull
-import com.google.android.gms.tasks.Task
-import java.util.*
+import com.github.sdpteam15.polyevents.model.observable.Observable
 
 /**
  * A Query from a database
@@ -12,7 +10,7 @@ interface Query {
      * Executes the query and returns the results as a QuerySnapshot.
      * @return A Task that will be resolved with the results of the {@code Query}.
      */
-    fun get(): Task<QuerySnapshot>
+    fun get(): Observable<Pair<QuerySnapshot?, Exception?>>
 
     /**
      * Creates and returns a new Query that only returns the first matching documents up to

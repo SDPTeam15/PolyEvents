@@ -14,8 +14,6 @@ import com.github.sdpteam15.polyevents.model.database.remote.objects.*
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
@@ -146,18 +144,14 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
 
-        val successListener = OnSuccessListener<Void> { ended.postValue(true, this) }
-        val failureListener = OnFailureListener {
-            ended.postValue(false, this)
-        }
         val document = firestore!!
             .collection(collection.value)
             .document(id)
         adapter.toDocument(element).apply({
             document.set(it)
-                .addOnSuccessListener(successListener)
-                .addOnFailureListener(failureListener)
         }, lazy { document.delete() })
+            .addOnSuccessListener { ended.postValue(true, this) }
+            .addOnFailureListener { ended.postValue(false, this) }
         return ended
     }
 
@@ -303,18 +297,17 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         val ended = Observable<Boolean>()
         (matcher?.match(FirestoreQuery(fsCollection)) ?: FirestoreQuery(fsCollection))
             .get()
-            .addOnSuccessListener {
-                val map = mutableMapOf<String, T>()
-                for (e in it) {
-                    val result = adapter.fromDocument(e.data, e.id)
-                    if (result != null)
-                        map[e.id] = result
+            .observeOnce() {
+                it.value.first.apply { qs ->
+                    val map = mutableMapOf<String, T>()
+                    qs.forEach { e ->
+                        adapter.fromDocument(e.data, e.id)
+                            .apply { value -> map[e.id] = value }
+                    }
+                    elements.updateAll(map, this)
+                    ended.postValue(true, this)
                 }
-                elements.updateAll(map, this)
-                ended.postValue(true, this)
-            }
-            .addOnFailureListener {
-                ended.postValue(false, this)
+                it.value.second.apply { ended.postValue(false, this) }
             }
         return ended
     }

@@ -1,17 +1,29 @@
 package com.github.sdpteam15.polyevents.model.database.remote.matcher
 
-import com.google.android.gms.tasks.Task
-import com.google.android.gms.tasks.Tasks
+import com.github.sdpteam15.polyevents.model.observable.Observable
 
 /**
  * Transform a firestore.Query to a Query
  */
 class FirestoreQuery(private val query: com.google.firebase.firestore.Query) : Query {
-    override fun get(): Task<QuerySnapshot> = query
-        .get()
-        .onSuccessTask {
-            Tasks.forResult(FirestoreQuerySnapshot(it))
-        }
+    override fun get(): Observable<Pair<QuerySnapshot?, Exception?>> {
+        val observable = Observable<Pair<QuerySnapshot?, Exception?>>()
+        query
+            .get()
+            .addOnSuccessListener {
+                observable.postValue(
+                    Pair(FirestoreQuerySnapshot(it), null),
+                    this
+                )
+            }
+            .addOnFailureListener {
+                observable.postValue(
+                    Pair(null, it),
+                    this
+                )
+            }
+        return observable
+    }
 
     override fun limit(limit: Long) = FirestoreQuery(query.limit(limit))
     override fun whereEqualTo(key: String, value: Any) = FirestoreQuery(
