@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.github.sdpteam15.polyevents.model.room.NotificationUid
-import com.github.sdpteam15.polyevents.model.room.SENTINEL_VALUE
+import com.github.sdpteam15.polyevents.model.room.NotificationUid.Companion.SENTINEL_VALUE
 
 @Dao
 interface NotificationUidDao {

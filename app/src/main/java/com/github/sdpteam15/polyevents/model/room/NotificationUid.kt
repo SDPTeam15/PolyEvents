@@ -5,8 +5,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-const val SENTINEL_VALUE = 0
-
 /**
  * A local uid generator for notifications on the device. It's designed as a singleton, there's
  * never going to be more than one row for this table.
@@ -23,5 +21,10 @@ data class NotificationUid(
         val id: Int = SENTINEL_VALUE,
         @ColumnInfo(name = "notification_uid")
         @NonNull
-        val uid: Int = 0
-)
+        val uid: Int = DEFAULT_UID
+) {
+    companion object {
+        const val SENTINEL_VALUE = 0
+        const val DEFAULT_UID = 0
+    }
+}

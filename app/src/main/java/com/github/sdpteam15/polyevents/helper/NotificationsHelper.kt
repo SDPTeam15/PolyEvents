@@ -102,7 +102,6 @@ class NotificationsHelper(private val applicationContext: Context): Notification
             HelperFunctions.Converters.fromLocalDateTime(scheduledTime)!!,
             notifyPendingIntent
         )
-        Log.d("NotificationsHelper", "Scheduled notification")
         return newNotificationId
     }
 
