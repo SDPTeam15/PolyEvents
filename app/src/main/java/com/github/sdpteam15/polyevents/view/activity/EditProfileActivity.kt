@@ -16,7 +16,7 @@ import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.view.fragments.UserModifiedInterface
 import com.google.android.material.textfield.TextInputEditText
 
-class EditProfileActivity: AppCompatActivity() {
+class EditProfileActivity : AppCompatActivity() {
     companion object {
         val updater = Observable<UserProfile>()
         var end = Observable<Boolean>()
@@ -83,23 +83,30 @@ class EditProfileActivity: AppCompatActivity() {
 
         save.setOnClickListener {
             val newName = name.text.toString()
-            val newRank = stringToRank(rank.text.toString())
+            if (newName.isNotEmpty()) {
+                val newRank = stringToRank(rank.text.toString())
 
-            profile.userRole = newRank
-            profile.profileName = newName
+                profile.userRole = newRank
+                profile.profileName = newName
 
-            currentDatabase.userDatabase!!.updateProfile(profile).observeOnce(this) {
-                if (it.value) {
-                    end.postValue(true, this)
-                    //currentDatabase.currentUser!!.loadSuccess = false
-                    callback?.profileHasChanged()
-                    callback = null
-                    onBackPressed()
-                } else
-                    HelperFunctions.showToast(
-                        getString(R.string.EditProfileActivity_DatabaseError),
-                        this
-                    )
+                currentDatabase.userDatabase!!.updateProfile(profile).observeOnce(this) {
+                    if (it.value) {
+                        end.postValue(true, this)
+                        //currentDatabase.currentUser!!.loadSuccess = false
+                        callback?.profileHasChanged()
+                        callback = null
+                        onBackPressed()
+                    } else
+                        HelperFunctions.showToast(
+                            getString(R.string.EditProfileActivity_DatabaseError),
+                            this
+                        )
+                }
+            }else{
+                HelperFunctions.showToast(
+                    getString(R.string.EditProfileActivity_NameShouldNotBeEmpty),
+                    this
+                )
             }
         }
     }
