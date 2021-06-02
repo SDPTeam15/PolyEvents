@@ -30,6 +30,7 @@ class SettingsFragment : Fragment() {
 
         // for testing purposes
         lateinit var localDatabase: LocalDatabase
+        lateinit var localSettingsViewModel: UserSettingsViewModel
     }
 
     private lateinit var sendLocationSwitchButton: SwitchMaterial
@@ -39,11 +40,6 @@ class SettingsFragment : Fragment() {
 
     private lateinit var userSettings: UserSettings
 
-    // Lazily initialized view model, instantiated only when accessed for the first time
-    private val localSettingsViewModel: UserSettingsViewModel by viewModels {
-        UserSettingsViewModelFactory(localDatabase.userSettingsDao())
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -51,6 +47,9 @@ class SettingsFragment : Fragment() {
         val fragmentView = inflater.inflate(R.layout.fragment_settings, container, false)
 
         localDatabase = (requireActivity().application as PolyEventsApplication).database
+        localSettingsViewModel = UserSettingsViewModelFactory(
+            localDatabase.userSettingsDao()
+        ).create(UserSettingsViewModel::class.java)
 
         sendLocationSwitchButton =
             fragmentView.findViewById(R.id.fragment_settings_is_sending_location_switch)
@@ -104,6 +103,7 @@ class SettingsFragment : Fragment() {
             }
             updateSettingsView(userSettings)
         }
+        Log.d(TAG, "FETCHING USER SETTINGS FROM VIEW MODEL")
         localSettingsViewModel.getUserSettings(userSettingsObservable)
     }
 
