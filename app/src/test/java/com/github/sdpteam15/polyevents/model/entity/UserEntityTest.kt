@@ -23,8 +23,6 @@ class UserEntityTest {
         userRole = UserRole.ADMIN
     )
 
-    val currentDate = birthDate
-
     // TODO: add more profile related tests
 
     @BeforeTest
@@ -67,10 +65,4 @@ class UserEntityTest {
         assertEquals(birthDate, user.birthDate)
         assertEquals(email, user.email)
     }
-
-    @Test
-    fun testIfUserIsAdmin() {
-        assertTrue(user.isAdmin())
-    }
-
 }
