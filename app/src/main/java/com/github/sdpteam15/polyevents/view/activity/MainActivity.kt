@@ -60,13 +60,10 @@ class MainActivity : AppCompatActivity() {
         var currentUserObservable: Observable<UserEntity>? = null
             get() = field ?: currentDatabase.currentUserObservable
 
-        const val NUMBER_EVENT_TO_DISPLAY = 25
 
         var instance: MainActivity? = null
         var selectedRole: UserRole? = null
     }
-
-    private lateinit var adapter: ArrayAdapter<*>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

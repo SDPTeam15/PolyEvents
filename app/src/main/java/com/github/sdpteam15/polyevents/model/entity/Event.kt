@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.model.entity
 
 import android.graphics.Bitmap
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.thenReturn
 import com.github.sdpteam15.polyevents.model.exceptions.MaxAttendeesException
 import com.google.firebase.firestore.IgnoreExtraProperties
 import java.time.LocalDateTime
