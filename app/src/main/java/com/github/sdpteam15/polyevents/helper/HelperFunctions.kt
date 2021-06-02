@@ -21,6 +21,7 @@ import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import java.time.*
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 const val PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1
@@ -96,18 +97,18 @@ object HelperFunctions {
          */
 
         if (ContextCompat.checkSelfPermission(
-                        activity,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                )
-                == PackageManager.PERMISSION_GRANTED
+                activity,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+            == PackageManager.PERMISSION_GRANTED
         ) {
             return Observable(true)
         } else if (activity is RequestPermissionsRequestCodeValidator) {
             end = Observable<Boolean>()
             ActivityCompat.requestPermissions(
-                    activity,
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
+                activity,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
             )
             return end!!
         } else
@@ -115,16 +116,16 @@ object HelperFunctions {
     }
 
     fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<String>,
-            grantResults: IntArray
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
     ) {
         when (requestCode) {
             PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION -> {
                 end?.value = isPermissionGranted(
-                        permissions,
-                        grantResults,
-                        Manifest.permission.ACCESS_FINE_LOCATION
+                    permissions,
+                    grantResults,
+                    Manifest.permission.ACCESS_FINE_LOCATION
                 )
                 end = null
             }
@@ -137,7 +138,7 @@ object HelperFunctions {
         LocationServices.getFusedLocationProviderClient(activity).lastLocation.addOnSuccessListener {
             if (it != null)
                 end.postValue(
-                        LatLng(it.latitude, it.longitude)
+                    LatLng(it.latitude, it.longitude)
                 )
             else
                 end.postValue(null)
@@ -195,7 +196,7 @@ object HelperFunctions {
      * @return the corresponding LocalDateTime
      */
     fun dateToLocalDateTime(date: Date?): LocalDateTime? =
-            date?.let { LocalDateTime.ofInstant(it.toInstant(), ZoneId.systemDefault()) }
+        date?.let { LocalDateTime.ofInstant(it.toInstant(), ZoneId.systemDefault()) }
 
     /**
      * Convert
@@ -205,7 +206,7 @@ object HelperFunctions {
      * @return the corresponding Date
      */
     fun localDateTimeToDate(ldt: LocalDateTime?): Date? =
-            ldt?.let { Date.from(it.atZone(ZoneId.systemDefault()).toInstant()) }
+        ldt?.let { Date.from(it.atZone(ZoneId.systemDefault()).toInstant()) }
 
     /**
      * Calculates a person's age based on his birthDate and the current chosen date.
@@ -214,7 +215,7 @@ object HelperFunctions {
      * @return the age of the person
      */
     fun calculateAge(birthDate: LocalDate, currentDate: LocalDate): Int =
-            Period.between(birthDate, currentDate).years
+        Period.between(birthDate, currentDate).years
 
     /**
      * Check if a permission was granted
@@ -225,9 +226,9 @@ object HelperFunctions {
      * @return true if the permission was granted
      */
     fun isPermissionGranted(
-            grantPermissions: Array<String>,
-            grantResults: IntArray,
-            permission: String
+        grantPermissions: Array<String>,
+        grantResults: IntArray,
+        permission: String
     ): Boolean {
         for (a in grantPermissions.indices) {
             if (grantPermissions[a] == permission) {
@@ -242,6 +243,40 @@ object HelperFunctions {
      */
     fun localDatetimeToString(date: LocalDateTime?, textIfNull: String = ""): String {
         return date?.toString()?.replace("T", " ") ?: textIfNull
+    }
+
+    /**
+     * Takes date instance with time and another date and returns the format as follows:
+     * - if dateTime occurs the same day we return (e.g. "Today at 07:36")
+     * - if dateTime occurs the day after the other date we return (e.g. "Tomorrow at 8:30"
+     * - else return the date and time (e.g. July 26 at 23:00)
+     * @param dateTime the LocalDateTime instance we're trying to format
+     * @param other the other date, which is just a date without time, so we can compare days
+     * @return the formatted date time with respect to the other date
+     */
+    fun formatDateTimeWithRespectToAnotherDate(dateTime: LocalDateTime?, other: LocalDate): String {
+        var formatted = ""
+
+        if (dateTime != null) {
+            // First format the date time using the time formatter (e.g. 07:36)
+            val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("k:mm")
+            formatted = dateTime.format(timeFormatter)
+
+            val dateTimeToLocalDate = dateTime.toLocalDate()
+
+            if (dateTimeToLocalDate.equals(other)) {
+                // If today
+                formatted = "Today at $formatted"
+            } else if (dateTimeToLocalDate.equals(other.plusDays(1L))) {
+                // If tomorrow
+                formatted = "Tomorrow at $formatted"
+            } else {
+                val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("MMMM dd")
+                // if not on the same day or day after, append the day and month as well
+                formatted = "${dateTime.format(dateFormatter)} at $formatted"
+            }
+        }
+        return formatted
     }
 
     /**
@@ -267,8 +302,8 @@ object HelperFunctions {
         fun fromLong(value: Long?): LocalDateTime? {
             return value?.let {
                 LocalDateTime.ofInstant(
-                        Instant.ofEpochMilli(it),
-                        TimeZone.getDefault().toZoneId()
+                    Instant.ofEpochMilli(it),
+                    TimeZone.getDefault().toZoneId()
                 )
             }
         }

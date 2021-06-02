@@ -39,11 +39,7 @@ class EventItemAdapter(
          */
         fun bind(event: Event) {
             eventName.text = event.eventName
-            // TODO: display hour if today, otherwise display date
-            eventSchedule.text = itemView.resources.getString(
-                R.string.event_schedule,
-                event.formattedStartTime()
-            )
+            eventSchedule.text = event.formattedStartTime()
             eventZone.text = event.zoneName
             eventDescription.text = event.description
 
