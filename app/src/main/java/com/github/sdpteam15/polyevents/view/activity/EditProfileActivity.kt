@@ -16,7 +16,7 @@ import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.view.fragments.UserModifiedInterface
 import com.google.android.material.textfield.TextInputEditText
 
-class EditProfileActivity : AppCompatActivity() {
+class EditProfileActivity: AppCompatActivity() {
     companion object {
         val updater = Observable<UserProfile>()
         var end = Observable<Boolean>()

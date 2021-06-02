@@ -37,8 +37,6 @@ class UserDatabaseTest {
         HelperTestFunction.nextSetEntity { true }
         mockUserDatabase.updateUserInformation(user)
             .observeOnce { assert(it.value) }.then.postValue(false)
-        mockUserDatabase.updateUserInformation(user)
-            .observeOnce { assert(it.value) }.then.postValue(false)
 
         val set = HelperTestFunction.lastSetEntity()!!
 
@@ -71,8 +69,6 @@ class UserDatabaseTest {
         HelperTestFunction.nextGetEntity { true }
         mockUserDatabase.inDatabase(isInDb.observeOnce { assert(it.value) }.then, uid)
             .observeOnce { assert(it.value) }.then.postValue(false)
-        mockUserDatabase.inDatabase(isInDb.observeOnce { assert(it.value) }.then, uid)
-            .observeOnce { assert(it.value) }.then.postValue(false)
 
         val get = HelperTestFunction.lastGetEntity()!!
 
@@ -87,8 +83,6 @@ class UserDatabaseTest {
         val user = Observable<UserEntity>()
         val uid = "uid"
         HelperTestFunction.nextGetEntity { true }
-        mockUserDatabase.getUserInformation(user, uid)
-            .observeOnce { assert(it.value) }.then.postValue(false)
         mockUserDatabase.getUserInformation(user, uid)
             .observeOnce { assert(it.value) }.then.postValue(false)
 

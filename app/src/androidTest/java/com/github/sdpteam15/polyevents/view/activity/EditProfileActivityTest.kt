@@ -51,7 +51,6 @@ class EditProfileActivityTest {
     private val cancel: ViewInteraction get() = Espresso.onView(withId(R.id.EditProfileActivity_Cancel))
     private val save: ViewInteraction get() = Espresso.onView(withId(R.id.EditProfileActivity_Save))
 
-
     fun setup(rank: UserRole, pid: String) {
         val intent =
             Intent(ApplicationProvider.getApplicationContext(), EditProfileActivity::class.java)
@@ -65,9 +64,8 @@ class EditProfileActivityTest {
         mockedUserEntity = UserEntity(
             uid = "UID",
             username = "UName",
-            name = "UName",
-
-            )
+            name = "UName"
+        )
         mockedUserProfile = UserProfile(
             pid = "PID",
             profileName = "PName",
@@ -84,12 +82,7 @@ class EditProfileActivityTest {
             Observable(true)
         }
 
-        When(
-            mockedUserDatabase.getUserProfilesList(
-                anyOrNull(),
-                anyOrNull()
-            )
-        ).thenReturn(
+        When(mockedUserDatabase.getUserProfilesList(anyOrNull(), anyOrNull())).thenReturn(
             Observable(true)
         )
         When(mockedUserDatabase.updateProfile(mockedUserProfile)).thenAnswer {

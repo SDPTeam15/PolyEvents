@@ -11,9 +11,9 @@ import java.util.*
  * A class for converting between user entities in our code and GenericEntity in the database.
  *
  */
+@Suppress("UNCHECKED_CAST")
 object LocalAdapter {
     @SuppressLint("SimpleDateFormat")
-    @Suppress("UNCHECKED_CAST")
     val SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
     /**

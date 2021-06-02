@@ -396,10 +396,8 @@ object ZoneAreaMapHelper {
         val vec = LatLngOperator.minus(pos.position, moveDiagPos!!)
 
         //Projection of the vector on the two axis (in cartesian space)
-        var diffCoord =
-            GoogleMapVectorHelper.projectionVectorThroughCartesian(vec, latlng2, latlng3)
-        var diffCoord1 =
-            GoogleMapVectorHelper.projectionVectorThroughCartesian(vec, latlng1, latlng2)
+        var diffCoord = GoogleMapVectorHelper.projectionVectorThroughCartesian(vec, latlng2, latlng3)
+        var diffCoord1 = GoogleMapVectorHelper.projectionVectorThroughCartesian(vec, latlng1, latlng2)
 
 
         // Move the corresponding corners of the rectangle
@@ -416,8 +414,7 @@ object ZoneAreaMapHelper {
             }
             else -> { //Should only be DIAG
                 tempLatLng[1] = LatLngOperator.plus(latlng1, diffCoord)
-                tempLatLng[2] =
-                    LatLngOperator.plus(LatLngOperator.plus(latlng2, diffCoord), diffCoord1)
+                tempLatLng[2] = LatLngOperator.plus(LatLngOperator.plus(latlng2, diffCoord), diffCoord1)
                 tempLatLng[3] = LatLngOperator.plus(latlng3, diffCoord1)
             }
         }

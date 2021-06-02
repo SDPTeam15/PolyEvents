@@ -15,15 +15,12 @@ object GoogleMapVectorHelper {
      * @param pos2 position of the second point to compute the perpendicular
      */
     fun projectionVectorThroughCartesian(vector: LatLng, pos1: LatLng, pos2: LatLng): LatLng {
-        val vec = equirectangularProjection(vector, LatLng(0.0, 0.0))
-        val v = equirectangularProjection(LatLngOperator.minus(pos1, pos2), LatLng(0.0, 0.0))
+        val vec = equirectangularProjection(vector, LatLng(0.0,0.0))
+        val v = equirectangularProjection(LatLngOperator.minus(pos1, pos2), LatLng(0.0,0.0))
 
         val norm = v.first * v.first + v.second * v.second
         val scalar = (vec.first * v.first + vec.second * v.second) / norm
-        return inverseEquirectangularProjection(
-            Pair(scalar * v.first, scalar * v.second),
-            LatLng(0.0, 0.0)
-        )
+        return inverseEquirectangularProjection(Pair(scalar * v.first, scalar * v.second), LatLng(0.0,0.0))
     }
 
     /**
