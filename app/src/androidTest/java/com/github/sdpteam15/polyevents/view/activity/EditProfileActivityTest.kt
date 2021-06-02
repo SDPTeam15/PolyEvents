@@ -24,7 +24,6 @@ import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.view.activity.EditProfileActivity.Companion.CALLER_RANK
 import com.github.sdpteam15.polyevents.view.activity.EditProfileActivity.Companion.EDIT_PROFILE_ID
-import com.github.sdpteam15.polyevents.view.fragments.UserModifiedInterface
 import org.hamcrest.Matchers.not
 import org.junit.After
 import org.junit.Test
@@ -68,7 +67,7 @@ class EditProfileActivityTest {
             username = "UName",
             name = "UName",
 
-        )
+            )
         mockedUserProfile = UserProfile(
             pid = "PID",
             profileName = "PName",
@@ -84,7 +83,7 @@ class EditProfileActivityTest {
             Observable(true)
         }
 
-        When(mockedUserDatabase.getUserProfilesList(anyOrNull(), anyOrNull(), anyOrNull())).thenReturn(
+        When(mockedUserDatabase.getUserProfilesList(anyOrNull(), anyOrNull())).thenReturn(
             Observable(true)
         )
         When(mockedUserDatabase.updateProfile(mockedUserProfile)).thenAnswer {
