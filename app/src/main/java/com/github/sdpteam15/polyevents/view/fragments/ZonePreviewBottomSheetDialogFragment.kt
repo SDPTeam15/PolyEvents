@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.view.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.activity.EventActivity
 import com.github.sdpteam15.polyevents.view.adapter.EventPreviewAdapter
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
@@ -113,9 +115,14 @@ class ZonePreviewBottomSheetDialogFragment: BottomSheetDialogFragment() {
                 previewUpComingEventsRecyclerView.adapter!!.notifyDataSetChanged()
             }
         }
-
+        val openEvent = { event: Event ->
+            val intent = Intent(inflater.context, EventActivity::class.java).apply {
+                putExtra(EXTRA_EVENT_ID, event.eventId)
+            }
+            startActivity(intent)
+        }
         // setup recycler view for preview events
-        val eventPreviewAdapter = EventPreviewAdapter(eventsObservableList)
+        val eventPreviewAdapter = EventPreviewAdapter(eventsObservableList, openEvent)
         previewUpComingEventsRecyclerView.layoutManager = LinearLayoutManager(v.context)
         previewUpComingEventsRecyclerView.adapter = eventPreviewAdapter
 
