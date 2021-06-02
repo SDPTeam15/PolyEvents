@@ -76,19 +76,33 @@ object GoogleMapActionHandler {
             lifecycle: LifecycleOwner,
             locationActivated: Boolean
     ) {
-        if (!ZoneAreaMapHelper.editMode) {
-            displayZoneDetailsBottomDialog(
+        if(canClickMarker(marker)) {
+            if (!ZoneAreaMapHelper.editMode) {
+                displayZoneDetailsBottomDialog(
                     zoneId = marker.tag.toString(),
                     zoneName = marker.title,
                     activity = activity,
                     lifecycle = lifecycle,
                     locationActivated = locationActivated
-            )
+                )
+            }
+            val tag = marker.tag
+            if (tag != null) {
+                setSelectedZones(tag.toString())
+            }
         }
-        val tag = marker.tag
-        if (tag != null) {
-            setSelectedZones(tag.toString())
-        }
+    }
+
+    fun canClickMarker(marker: Marker):Boolean{
+        if(marker.equals(RouteMapHelper.startMarker)
+            ||marker.equals(RouteMapHelper.endMarker)
+            ||marker.equals(ZoneAreaMapHelper.moveDiagMarker)
+            ||marker.equals(ZoneAreaMapHelper.moveDownMarker)
+            ||marker.equals(ZoneAreaMapHelper.moveMarker)
+            ||marker.equals(ZoneAreaMapHelper.moveRightMarker)
+            ||marker.equals(ZoneAreaMapHelper.rotationMarker))
+                return false
+        return true
     }
 
     /**

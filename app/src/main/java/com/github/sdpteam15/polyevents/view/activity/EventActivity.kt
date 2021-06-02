@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -91,6 +92,15 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
 
         setObservers()
         refreshEvent()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+
+        if (id == android.R.id.home) {
+            finish()
+        }
+        return true
     }
 
     override fun onResume() {
