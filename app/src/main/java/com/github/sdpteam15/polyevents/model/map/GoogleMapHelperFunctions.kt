@@ -91,8 +91,7 @@ object GoogleMapHelperFunctions {
         }
 
         Database.currentDatabase.zoneDatabase.getAllZones(
-            null, 50,
-            ZoneManagementListActivity.zones
+            ZoneManagementListActivity.zones, 50
         ).observe(lifecycleOwner) {
             if (!it.value) {
                 HelperFunctions.showToast("Failed to get the list of zones", context)
