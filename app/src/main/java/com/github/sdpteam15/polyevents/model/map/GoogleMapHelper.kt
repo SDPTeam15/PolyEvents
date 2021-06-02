@@ -9,8 +9,6 @@ import com.github.sdpteam15.polyevents.model.map.ZoneAreaMapHelper.importNewZone
 import com.github.sdpteam15.polyevents.model.map.ZoneAreaMapHelper.waitingZones
 import com.github.sdpteam15.polyevents.model.map.ZoneAreaMapHelper.zonesToArea
 
-//TODO : Refactor file, it is too long
-
 @SuppressLint("StaticFieldLeak")
 object GoogleMapHelper {
     var map: MapsInterface? = null

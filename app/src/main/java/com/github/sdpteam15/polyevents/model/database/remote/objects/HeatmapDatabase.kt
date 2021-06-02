@@ -8,7 +8,6 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.DeviceLocationAdapter
 import com.github.sdpteam15.polyevents.model.entity.DeviceLocation
-import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.map.GoogleMapOptions.neBound
 import com.github.sdpteam15.polyevents.model.map.GoogleMapOptions.swBound
 import com.github.sdpteam15.polyevents.model.observable.Observable

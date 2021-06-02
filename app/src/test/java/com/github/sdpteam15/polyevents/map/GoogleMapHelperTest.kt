@@ -184,7 +184,7 @@ class GoogleMapHelperTest {
             null,
             null,
             true,
-            R.id.ic_more,
+            R.id.ic_settings,
             bound,
             dimension
         )
