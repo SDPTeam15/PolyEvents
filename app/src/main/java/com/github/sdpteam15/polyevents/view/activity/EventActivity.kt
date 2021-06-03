@@ -11,6 +11,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.helper.NotificationsHelper
 import com.github.sdpteam15.polyevents.helper.NotificationsScheduler
@@ -82,7 +83,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowHomeEnabled(true)
 
-        /*progressDialogFragment = ProgressDialogFragment(
+        progressDialogFragment = ProgressDialogFragment(
             HelperFunctions.waitUpdate(
                 this,
                 listOf(
@@ -93,7 +94,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
             )
         )
         progressDialogFragment.isCancelable = false
-        progressDialogFragment.show(supportFragmentManager, ProgressDialogFragment.TAG)*/
+        progressDialogFragment.show(supportFragmentManager, ProgressDialogFragment.TAG)
 
         eventId = intent.getStringExtra(EXTRA_EVENT_ID)!!
 
@@ -175,16 +176,10 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
      * get the rating of the event
      */
     private fun getEventRating() {
-        /*eventRatingFetchDoneObservable.updateOnce(
-            this, currentDatabase.eventDatabase!!.getMeanRatingForEvent(
-                eventId,
-                obsRating
-            )
-        )*/
         currentDatabase.eventDatabase!!.getMeanRatingForEvent(
             eventId,
             obsRating
-        )
+        ).updateOnce(this, eventRatingFetchDoneObservable)
         obsRating.observeOnce(this, updateIfNotNull = false) { updateRating(it.value) }
     }
 
@@ -192,18 +187,11 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
      * Get the comments of an event
      */
     private fun getCommentsAndObserve() {
-        /*eventCommentsFetchDoneObservable.updateOnce(
-            this, currentDatabase.eventDatabase!!.getRatingsForEvent(
-                eventId,
-                null,
-                obsComments
-            )
-        )*/
         currentDatabase.eventDatabase!!.getRatingsForEvent(
             eventId,
             null,
             obsComments
-        )
+        ).updateOnce(this, eventCommentsFetchDoneObservable)
         obsComments.observeAdd(this) {
             //If the comment doesn't have a review, we don't want to display it
             if (it.value.feedback == "") {
@@ -218,34 +206,28 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
      * Get all the informations of the event
      */
     private fun getEventAndObserve() {
-        /*eventFetchDoneObservable.updateOnce(
-            this, currentDatabase.eventDatabase!!.getEventFromId(
-                eventId,
-                obsEvent
-            )
-        )*/
         currentDatabase.eventDatabase!!.getEventFromId(
             eventId,
             obsEvent
-        )
-            /*eventFetchDoneObservable*/.observe(this) { b ->
-                /*eventFetchDone = true
-                checkFetchDataDone()*/
-                if (!b.value) {
-                    showToast(getString(R.string.event_info_fail), this)
-                } else {
-                    if (obsEvent.value!!.organizer != null) {
-                        currentDatabase.userDatabase!!.getUserInformation(
-                            obsOrganiser,
-                            obsEvent.value!!.organizer!!
-                        ).observeOnce(this) {
-                            if (!b.value) {
-                                showToast(getString(R.string.event_info_fail), this)
-                            }
+        ).updateOnce(this, eventFetchDoneObservable)
+        eventFetchDoneObservable.observe(this) { b ->
+            /*eventFetchDone = true
+            checkFetchDataDone()*/
+            if (!b.value) {
+                showToast(getString(R.string.event_info_fail), this)
+            } else {
+                if (obsEvent.value!!.organizer != null) {
+                    currentDatabase.userDatabase!!.getUserInformation(
+                        obsOrganiser,
+                        obsEvent.value!!.organizer!!
+                    ).observeOnce(this) {
+                        if (!b.value) {
+                            showToast(getString(R.string.event_info_fail), this)
                         }
                     }
                 }
             }
+        }
         obsEvent.observeOnce(this, updateIfNotNull = false) { updateInfo(it.value) }
     }
 
