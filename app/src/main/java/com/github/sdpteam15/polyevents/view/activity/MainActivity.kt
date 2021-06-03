@@ -58,7 +58,6 @@ class MainActivity : AppCompatActivity() {
         var currentUserObservable: Observable<UserEntity>? = null
             get() = field ?: currentDatabase.currentUserObservable
 
-
         var instance: MainActivity? = null
         var selectedRole: UserRole? = null
     }
@@ -113,9 +112,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-
-        //Set the basic fragment to the home one or to admin hub if it is logged in
-        //TODO Add a condition to see if the user is an admin or not and if so, redirect him to the admin hub
         redirectHome()
 
         //Add a listener to the menu to switch between fragments
@@ -130,13 +126,10 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.ic_settings -> HelperFunctions.changeFragment(this, fragments[R.id.ic_settings])
                 else ->
-                    //TODO Add a condition to see if the user is an admin or not and if so, redirect him to the admin hub
                     redirectHome()
             }
             true
         }
-
-
     }
 
     override fun onDestroy() {
@@ -145,6 +138,9 @@ class MainActivity : AppCompatActivity() {
         stopService(intent)
     }
 
+    /**
+     * This function redirect the user to the correct fragment depending on his selected role
+     */
     private fun redirectHome() {
         if (currentUser == null) {
             selectedRole = UserRole.PARTICIPANT
@@ -170,6 +166,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private var roles = ObservableList<Pair<String, UserRole>>()
+
+    /**
+     * Switch the role of the user and the corresponding fragment
+     * @param spinner The spinner to be updated
+     * @param role The new selected role
+     */
     fun switchRoles(spinner: Spinner, role: UserRole) {
         spinner.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
