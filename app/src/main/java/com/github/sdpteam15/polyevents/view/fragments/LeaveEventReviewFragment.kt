@@ -18,13 +18,14 @@ import com.github.sdpteam15.polyevents.view.service.ReviewHasChanged
 /**
  * A Dialog Fragment that is displayed over an EventActivity, to leave a review for the event.
  */
-class LeaveEventReviewFragment(val eventId: String?, val reviewHasChanged: ReviewHasChanged):
+class LeaveEventReviewFragment(val eventId: String?, val reviewHasChanged: ReviewHasChanged) :
     DialogFragment(R.layout.fragment_leave_review) {
 
     private lateinit var leaveReviewDialogConfirmButton: Button
     private lateinit var userFeedbackDialogEditText: EditText
     private lateinit var leaveReviewDialogRatingBar: RatingBar
     private lateinit var leaveReviewDialogCancelButton: Button
+    private lateinit var leaveReviewDialogDeleteButton: Button
 
     private var rated = false
 
@@ -35,7 +36,8 @@ class LeaveEventReviewFragment(val eventId: String?, val reviewHasChanged: Revie
     ): View? {
         val view = super.onCreateView(inflater, container, savedInstanceState)
         if (view != null) {
-            leaveReviewDialogConfirmButton = view.findViewById(R.id.leave_review_fragment_save_button)
+            leaveReviewDialogConfirmButton =
+                view.findViewById(R.id.leave_review_fragment_save_button)
 
             userFeedbackDialogEditText = view.findViewById(R.id.leave_review_fragment_feedback_text)
 
@@ -44,7 +46,12 @@ class LeaveEventReviewFragment(val eventId: String?, val reviewHasChanged: Revie
                 rated = true
             }
 
-            leaveReviewDialogCancelButton = view.findViewById(R.id.leave_review_fragment_cancel_button)
+            leaveReviewDialogCancelButton =
+                view.findViewById(R.id.leave_review_fragment_cancel_button)
+            leaveReviewDialogDeleteButton =
+                view.findViewById(R.id.leave_review_fragment_delete_button)
+            leaveReviewDialogDeleteButton.visibility = View.INVISIBLE
+
             leaveReviewDialogCancelButton.setOnClickListener {
                 // Dimiss the dialog if canceled
                 dismiss()
@@ -65,6 +72,11 @@ class LeaveEventReviewFragment(val eventId: String?, val reviewHasChanged: Revie
                 }
                 leaveReviewDialogConfirmButton.setOnClickListener {
                     onClickUpdate(rating)
+                }
+
+                leaveReviewDialogDeleteButton.visibility = View.VISIBLE
+                leaveReviewDialogDeleteButton.setOnClickListener {
+                    onClickDelete(rating)
                 }
             }
 
@@ -93,7 +105,8 @@ class LeaveEventReviewFragment(val eventId: String?, val reviewHasChanged: Revie
     private fun onClickUpdate(rating: Rating) {
         if (!rated) {
             // Check if user has rated, to avoid storing a rating with zero stars.
-            HelperFunctions.showToast(getString(R.string.event_review_leave_rating_warning),
+            HelperFunctions.showToast(
+                getString(R.string.event_review_leave_rating_warning),
                 context
             )
         } else {
@@ -105,7 +118,26 @@ class LeaveEventReviewFragment(val eventId: String?, val reviewHasChanged: Revie
             currentDatabase.eventDatabase!!.updateRating(
                 ratingCopy
             ).observe(this) {
-               showSuccessToastAndDismiss(it.value)
+                showSuccessToastAndDismiss(it.value)
+            }
+        }
+    }
+
+    /**
+     * Remove the given rating from the database
+     * @param rating The rating we want to remove
+     */
+    private fun onClickDelete(rating: Rating) {
+        currentDatabase.eventDatabase!!.removeRating(rating).observeOnce(this) {
+            if (!it.value) {
+                HelperFunctions.showToast(
+                    getString(R.string.delete_review_failed),
+                    context
+                )
+            }else{
+                HelperFunctions.showToast(getString(R.string.event_review_delete), context)
+                reviewHasChanged.onLeaveReview()
+                dismiss()
             }
         }
     }
@@ -116,7 +148,8 @@ class LeaveEventReviewFragment(val eventId: String?, val reviewHasChanged: Revie
     private fun onClickAdd() {
         if (!rated) {
             // Check if user has rated, to avoid storing a rating with zero stars.
-            HelperFunctions.showToast(getString(R.string.event_review_leave_rating_warning),
+            HelperFunctions.showToast(
+                getString(R.string.event_review_leave_rating_warning),
                 context
             )
         } else {
