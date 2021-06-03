@@ -28,7 +28,6 @@ import com.github.sdpteam15.polyevents.view.adapter.ItemRequestAdminAdapter
 
 /**
  * Activity to display item requests to Admins
- * TODO define what happens when an admin answers an item request
  */
 class ItemRequestManagementActivity : AppCompatActivity() {
 
