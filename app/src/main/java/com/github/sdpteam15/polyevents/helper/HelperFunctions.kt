@@ -6,7 +6,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.graphics.Color
 import android.os.Bundle
 import android.widget.Toast
 import androidx.arch.core.executor.ArchTaskExecutor
