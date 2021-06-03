@@ -1,8 +1,6 @@
 package com.github.sdpteam15.polyevents.model.database.remote.matcher
 
-import androidx.annotation.NonNull
 import com.google.android.gms.tasks.Task
-import java.util.*
 
 /**
  * A Query from a database

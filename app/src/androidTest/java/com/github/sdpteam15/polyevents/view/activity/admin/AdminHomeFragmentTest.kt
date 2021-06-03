@@ -18,11 +18,9 @@ import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabasePr
 import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
 import com.github.sdpteam15.polyevents.model.database.remote.objects.EventDatabaseInterface
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
-import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
-import com.github.sdpteam15.polyevents.view.fragments.home.VisitorHomeFragment
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -31,7 +29,6 @@ import org.mockito.Mockito
 import org.mockito.Mockito.mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.anyOrNull
-import org.mockito.Mockito.`when` as When
 
 @RunWith(MockitoJUnitRunner::class)
 class AdminHubFragmentTest {
@@ -46,8 +43,6 @@ class AdminHubFragmentTest {
     @Before
     fun setup() {
         val mockedDatabase = HelperTestFunction.defaultMockDatabase()
-        val mockedUserProfile = UserProfile("TestID", "TestName")
-        When(mockedDatabase.currentProfile).thenReturn(mockedUserProfile)
         Database.currentDatabase = mockedDatabase
 
         UserLogin.currentUserLogin.signOut()
@@ -93,15 +88,12 @@ class AdminHubFragmentTest {
     @Test
     fun clickOnBtnEventDisplayCorrectActivity() {
         val mockedDatabase = HelperTestFunction.defaultMockDatabase()
-        val mockedUserProfile = UserProfile("TestID", "TestName")
-        When(mockedDatabase.currentProfile).thenReturn(mockedUserProfile)
         Database.currentDatabase = mockedDatabase
         val mockedEventDatabase = mock(EventDatabaseInterface::class.java)
         Mockito.`when`(mockedDatabase.eventDatabase).thenReturn(mockedEventDatabase)
 
         Mockito.`when`(
             mockedEventDatabase.getEvents(
-                anyOrNull(),
                 anyOrNull(),
                 anyOrNull(),
                 anyOrNull()

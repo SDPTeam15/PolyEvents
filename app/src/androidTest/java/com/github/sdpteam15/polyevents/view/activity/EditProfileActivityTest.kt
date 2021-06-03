@@ -67,7 +67,7 @@ class EditProfileActivityTest {
             username = "UName",
             name = "UName",
 
-        )
+            )
         mockedUserProfile = UserProfile(
             pid = "PID",
             profileName = "PName",
@@ -78,15 +78,12 @@ class EditProfileActivityTest {
 
 
         When(mockedDatabaseInterface.currentUser).thenReturn(mockedUserEntity)
-
-        When(mockedDatabaseInterface.currentProfile).thenReturn(mockedUserProfile)
-
         When(mockedUserDatabase.getProfileById(EditProfileActivity.updater, pid)).thenAnswer {
             EditProfileActivity.updater.postValue(mockedUserProfile)
             Observable(true)
         }
 
-        When(mockedUserDatabase.getUserProfilesList(anyOrNull(), anyOrNull(), anyOrNull())).thenReturn(
+        When(mockedUserDatabase.getUserProfilesList(anyOrNull(), anyOrNull())).thenReturn(
             Observable(true)
         )
         When(mockedUserDatabase.updateProfile(mockedUserProfile)).thenAnswer {

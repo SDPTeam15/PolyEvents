@@ -19,16 +19,20 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.023" />
 
-    <Button
+
+    <ImageButton
         android:id="@+id/btnNewEvent"
-        android:layout_width="62dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/btn_new_event_text"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.918"
         app:layout_constraintStart_toEndOf="@+id/tvEventListTitle"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_add_36"
+        tools:ignore="ContentDescription" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_events_list_admin"

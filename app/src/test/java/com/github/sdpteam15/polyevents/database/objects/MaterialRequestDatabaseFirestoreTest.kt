@@ -5,17 +5,11 @@ import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
-import com.github.sdpteam15.polyevents.model.database.remote.adapter.ItemEntityAdapter
-import com.github.sdpteam15.polyevents.model.database.remote.adapter.ItemTypeAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.MaterialRequestAdapter
-import com.github.sdpteam15.polyevents.model.database.remote.objects.ItemDatabase
-import com.github.sdpteam15.polyevents.model.database.remote.objects.ItemDatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.objects.MaterialRequestDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.objects.MaterialRequestDatabaseInterface
-import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
-import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import org.junit.Before
@@ -33,7 +27,7 @@ private val date = LocalDateTime.now()
 private const val eventid = "eventId"
 private val status = MaterialRequest.Status.PENDING
 
-@Suppress("UNCHECKED_CAST")
+@Suppress("UNCHECKED_CAST", "TYPE_INFERENCE_ONLY_INPUT_TYPES_WARNING")
 class MaterialRequestDatabaseFirestoreTest {
     lateinit var user: UserEntity
     lateinit var database: DatabaseInterface
@@ -72,20 +66,16 @@ class MaterialRequestDatabaseFirestoreTest {
         Mockito.`when`(mockedDatabase.currentUser).thenReturn(UserEntity(""))
         Database.currentDatabase = mockedDatabase
         assertEquals(mockedMaterialRequestDatabase.currentUser, UserEntity(""))
-
-        Mockito.`when`(mockedDatabase.currentProfile).thenReturn(UserProfile(""))
         Database.currentDatabase = mockedDatabase
-        assertEquals(mockedMaterialRequestDatabase.currentProfile, UserProfile(""))
 
         Database.currentDatabase = FirestoreDatabaseProvider
     }
 
     @Test
     fun updateMaterialRequest() {
-        val userAccess = UserProfile()
 
         HelperTestFunction.nextSetEntity { true }
-        mockedMaterialRequestDatabase.updateMaterialRequest(requestId, materialRequest, userAccess)
+        mockedMaterialRequestDatabase.updateMaterialRequest(requestId,materialRequest)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         val set = HelperTestFunction.lastSetEntity()!!
@@ -101,10 +91,9 @@ class MaterialRequestDatabaseFirestoreTest {
 
     @Test
     fun createMaterialRequest() {
-        val userAccess = UserProfile()
 
         HelperTestFunction.nextAddEntity { true }
-        mockedMaterialRequestDatabase.createMaterialRequest(materialRequest, userAccess)
+        mockedMaterialRequestDatabase.createMaterialRequest(materialRequest)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         val set = HelperTestFunction.lastAddEntity()!!
@@ -120,13 +109,9 @@ class MaterialRequestDatabaseFirestoreTest {
     @Test
     fun getMaterialRequestList() {
         val materialRequests = ObservableList<MaterialRequest>()
-        val userAccess = UserProfile("uid")
 
         HelperTestFunction.nextGetListEntity { true }
-        mockedMaterialRequestDatabase.getMaterialRequestList(
-            materialRequests,
-            userAccess = userAccess
-        )
+        mockedMaterialRequestDatabase.getMaterialRequestList(materialRequests)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         val getList = HelperTestFunction.lastGetListEntity()!!
@@ -142,14 +127,9 @@ class MaterialRequestDatabaseFirestoreTest {
     @Test
     fun getMaterialRequestListByUser() {
         val materialRequests = ObservableList<MaterialRequest>()
-        val userAccess = UserProfile("uid")
 
         HelperTestFunction.nextGetListEntity { true }
-        mockedMaterialRequestDatabase.getMaterialRequestListByUser(
-            materialRequests,
-            userAccess = userAccess,
-            userId = uidTest
-        )
+        mockedMaterialRequestDatabase.getMaterialRequestListByUser(materialRequests, userId = uidTest)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         val getList = HelperTestFunction.lastGetListEntity()!!
@@ -164,10 +144,9 @@ class MaterialRequestDatabaseFirestoreTest {
 
     @Test
     fun deleteMaterialRequest() {
-        val userAccess = UserProfile("uid")
 
         HelperTestFunction.nextSetEntity { true }
-        mockedMaterialRequestDatabase.deleteMaterialRequest(requestId, userAccess)
+        mockedMaterialRequestDatabase.deleteMaterialRequest(requestId)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
 
@@ -182,10 +161,9 @@ class MaterialRequestDatabaseFirestoreTest {
 
     @Test
     fun getMaterialReequestById() {
-        val userAccess = UserProfile("uid")
         val observable = Observable<MaterialRequest>()
         HelperTestFunction.nextGetEntity { true }
-        mockedMaterialRequestDatabase.getMaterialRequestById(observable, requestId, userAccess)
+        mockedMaterialRequestDatabase.getMaterialRequestById(observable, requestId)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
 
@@ -197,5 +175,4 @@ class MaterialRequestDatabaseFirestoreTest {
             get.collection
         )
     }
-
 }

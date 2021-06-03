@@ -11,13 +11,14 @@ class EventLocalTest {
     val eventId = "xxxEventxxx"
     val eventName = "someEvent"
     val organizer = "Student Association"
+    val zoneId = "A"
     val zoneName = "Zone A"
     val description = "A nice little event"
     val icon = null
     val startTime =
-        LocalDateTime.of(
-            2021, 3, 18, 18, 30
-        )
+            LocalDateTime.of(
+                    2021, 3, 18, 18, 30
+            )
     val endTime: LocalDateTime? = null
     val tag1 = "GOOD"
     val tag2 = "BAD"
@@ -28,25 +29,27 @@ class EventLocalTest {
     @Before
     fun setup() {
         event = Event(
-            eventId = eventId,
-            eventName = eventName,
-            organizer = organizer,
-            zoneName = zoneName,
-            description = description,
-            icon = icon,
-            startTime = startTime,
-            endTime = endTime,
-            tags = mutableSetOf(tag1, tag2)
+                eventId = eventId,
+                eventName = eventName,
+                organizer = organizer,
+                zoneId = zoneId,
+                zoneName = zoneName,
+                description = description,
+                icon = icon,
+                startTime = startTime,
+                endTime = endTime,
+                tags = mutableListOf(tag1, tag2)
         )
 
         localEvent = EventLocal(
-            eventId = eventId,
-            eventName = eventName,
-            organizer = organizer,
-            zoneName = zoneName,
-            description = description,
-            startTime = startTime,
-            endTime = endTime
+                eventId = eventId,
+                eventName = eventName,
+                organizer = organizer,
+                zoneId = zoneId,
+                zoneName = zoneName,
+                description = description,
+                startTime = startTime,
+                endTime = endTime
         )
     }
 
@@ -55,6 +58,7 @@ class EventLocalTest {
         assertEquals(localEvent.eventId, eventId)
         assertEquals(localEvent.eventName, eventName)
         assertEquals(localEvent.description, description)
+        assertEquals(localEvent.zoneId, zoneId)
         assertEquals(localEvent.zoneName, zoneName)
         assertEquals(localEvent.organizer, organizer)
         assertEquals(localEvent.startTime, startTime)

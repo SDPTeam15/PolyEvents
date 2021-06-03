@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- EventActivity -->
+    <string name="event_unsubscribe">Unsubscribe</string>
+    <string name="event_subscribe">Subscribe</string>
+    <string name="event_follow">Follow</string>
+    <string name="event_unfollow">Unfollow</string>
+    <string name="event_successfully_followed">You are now following this event!</string>
+    <string name="event_successfully_unfollowed">You are no longer following this event</string>
+    <string name="event_successfully_subscribed">Successfully registered to event!</string>
+    <string name="event_subscription_fail">Could not subscribe to event, please try again later</string>
+    <string name="event_successfully_unsubscribed">Successfully unsubscribed from event!</string>
+    <string name="event_unsubscribe_fail">Failed to unsubscribe from event, please try again later</string>
+    <string name="toast_subscribe_warning">"You have to be logged in to subscribe"</string>
+    <string name="event_already_subscribed">You are already registered to this event</string>
+    <string name="event_subscribe_at_max_capacity">
+        Event has reached the maximum number of participants</string>
+    <string name="event_profile_picture">Event Profile Picture</string>
+    <string name="leave_a_review">Leave a review!</string>
+    <string name="ok">OK</string>
+    <string name="your_review">Your review!</string>
+    <string name="leave_a_review_hint">Leave a review…</string>
+    <string name="event_review_warning">"You need to login to leave a review"</string>
+    <string name="event_review_leave_rating_warning">Please leave a rating before leaving</string>
+    <string name="event_review_saved">Review saved!</string>
+    <string name="event_review_failed">Could not save review</string>
+
+    <!--DisplayZoneEventsFragment-->
+    <string name="see_events">See events</string>
+    <string name="show_itinerary">Show itinerary</string>
+    <string name="zone_name">Zone name</string>
+    <string name="zone_description">Zone description</string>
+    <string name="current_event">Current Event</string>
+    <string name="current_event_name">Current Event Name</string>
+    <string name="event_description">Event description</string>
+    <string name="upcoming_events">Upcoming Events</string>
+    <string name="no_upcoming_events">No Upcoming Events</string>
+    <string name="event_name">Event Name</string>
+    <string name="event_time">Event Time</string>
+    <string name="go_back_to_map_fragment">go back to map fragment</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_id">polyevents_channel</string>
+    <string name="notification_channel_name">PolyEvents Channel</string>
+    <string name="notification_channel_description">PolyEvents notifications channel</string>
+    <string name="event_start_soon">Event %s will start soon!</string>
+    <string name="event_started">Event %s has started</string>
+
+    <!-- Timetable -->
+    <string name="time_timetable">%1$d:00</string>
+    <string name="time_name">" Time"</string>
+
+    <!-- EditProfileActivity -->
+    <string name="EditProfileActivity_Name">Name</string>
+    <string name="EditProfileActivity_ID">ID</string>
+    <string name="EditProfileActivity_Rank">Rank</string>
+    <string name="EditProfileActivity_Rank_description">Your rank</string>
+    <string name="EditProfileActivity_Save">Save</string>
+    <string name="EditProfileActivity_Cancel">Cancel</string>
+    <string name="EditProfileActivity_DatabaseError">Impossible to update your profile information, please try again.</string>
+</resources>

@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="primary">@color/blue_700</color>
+    <color name="primary_variant">@color/blue_900</color>
+    <color name="on_primary">@color/white</color>
+
+    <color name="secondary">@color/teal_200</color>
+    <color name="secondary_variant">@color/teal_700</color>
+    <color name="on_secondary">@color/black</color>
+
+
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -9,4 +18,14 @@
     <color name="semi_black">#88000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="red">#FFFF0000</color>
+
+    <color name="indigo_900">#1A237E</color>
+    <color name="indigo_700">#303F9F</color>
+    <color name="indigo_500">#3F51B5</color>
+    <color name="indigo_200">#9FA8DA</color>
+
+    <color name="blue_900">#0D47A1</color>
+    <color name="blue_700">#1976D2</color>
+    <color name="blue_500">#2196F3</color>
+    <color name="blue_200">#90CAF9</color>
 </resources>

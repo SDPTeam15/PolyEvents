@@ -26,15 +26,12 @@ import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.view.activity.ItemRequestActivity
 import com.github.sdpteam15.polyevents.view.adapter.EventItemAdapter
 import com.github.sdpteam15.polyevents.view.fragments.home.ProviderHomeFragment
-import com.google.firebase.firestore.auth.User
 import org.hamcrest.CoreMatchers.anything
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.kotlin.anyOrNull
 import java.time.LocalDateTime
@@ -175,6 +172,7 @@ class MyItemRequestsActivityTest {
                 MaterialRequest.Status.ACCEPTED -> accepted++
                 MaterialRequest.Status.REFUSED -> refused++
                 MaterialRequest.Status.PENDING -> pending++
+                else -> {}
             }
         }
     }
@@ -205,14 +203,13 @@ class MyItemRequestsActivityTest {
         setupItemRequests()
 
         Mockito.`when`(
-            mockedUserDB.getListAllUsers(anyOrNull(), anyOrNull())
+            mockedUserDB.getListAllUsers(anyOrNull())
         ).thenAnswer{
             (it.arguments[0] as ObservableList<UserEntity>).addAll(allUsers)
             Observable(true,this)
         }
         Mockito.`when`(
             mockedMaterialRequestDB.getMaterialRequestListByUser(
-                anyOrNull(),
                 anyOrNull(),
                 anyOrNull()
             )
@@ -221,13 +218,13 @@ class MyItemRequestsActivityTest {
             Observable(true, this)
         }
         Mockito.`when`(
-            mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())
+            mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull())
         ).thenAnswer{
             (it.arguments[2] as ObservableList<Event>).addAll(events)
             Observable(true, this)
         }
 
-        Mockito.`when`(mockedMaterialRequestDB.deleteMaterialRequest(anyOrNull(), anyOrNull()))
+        Mockito.`when`(mockedMaterialRequestDB.deleteMaterialRequest(anyOrNull()))
             .thenAnswer {
                 allRequests.remove(it)
                 pending--
@@ -235,7 +232,6 @@ class MyItemRequestsActivityTest {
             }
         Mockito.`when`(
             mockedMaterialRequestDB.getMaterialRequestById(
-                anyOrNull(),
                 anyOrNull(),
                 anyOrNull()
             )
@@ -248,7 +244,7 @@ class MyItemRequestsActivityTest {
             (it.arguments[0] as ObservableList<Triple<Item, Int, Int>>).addAll(availableItemsList)
             Observable(true, this)
         }
-        Mockito.`when`(mockedItemDB.getAvailableItems(anyOrNull(), anyOrNull())).thenAnswer {
+        Mockito.`when`(mockedItemDB.getAvailableItems(anyOrNull())).thenAnswer {
             (it.arguments[0] as ObservableList<Triple<Item, Int, Int>>).addAll(availableItemsList)
             Observable(true, this)
         }
@@ -328,7 +324,7 @@ class MyItemRequestsActivityTest {
             .perform(ViewActions.click())
         Espresso.onData(anything()).atPosition(0).perform(ViewActions.click())
         Intents.init()
-        var c = Database.currentDatabase
+
         Espresso.onView(ViewMatchers.withId(R.id.id_recycler_my_item_requests)).perform(
             RecyclerViewActions.actionOnItemAtPosition<EventItemAdapter.ItemViewHolder>(
                 0, TestHelper.clickChildViewWithId(R.id.id_modify_request)

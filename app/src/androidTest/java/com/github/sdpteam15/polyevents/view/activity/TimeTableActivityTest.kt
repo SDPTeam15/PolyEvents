@@ -16,14 +16,12 @@ import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.view.activity.admin.EventManagementListActivity
 import org.hamcrest.CoreMatchers
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.anyOrNull
-import java.sql.Time
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
 
@@ -98,7 +96,6 @@ class TimeTableActivityTest {
             mockedZoneDB.getAllZones(
                 anyOrNull(),
                 anyOrNull(),
-                anyOrNull(),
                 anyOrNull()
             )
         ).thenAnswer {
@@ -115,13 +112,13 @@ class TimeTableActivityTest {
 
         Mockito.`when`(mockedDatabase.eventDatabase).thenReturn(mockedEventDB)
         Mockito.`when`(mockedDatabase.zoneDatabase).thenReturn(mockedZoneDB)
-        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
+        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull()))
             .thenAnswer {
                 (it.arguments[2] as ObservableList<Event>).addAll(events)
                 Observable(true, this)
             }
 
-        Mockito.`when`(mockedEventDB.getEventFromId(anyOrNull(), anyOrNull(), anyOrNull()))
+        Mockito.`when`(mockedEventDB.getEventFromId(anyOrNull(), anyOrNull()))
             .thenAnswer {
                 (it.arguments[1] as Observable<Event>).postValue(event1)
                 Observable(true)

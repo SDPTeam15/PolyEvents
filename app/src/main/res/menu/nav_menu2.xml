@@ -21,7 +21,7 @@
         android:title="@string/nav_menu_profile"/>
 
     <item
-        android:id="@+id/ic_more"
-        android:icon="@drawable/ic_more"
-        android:title="@string/nav_menu_more" />
+        android:id="@+id/ic_settings"
+        android:icon="@drawable/ic_baseline_settings_24"
+        android:title="@string/nav_menu_settings" />
 </menu>

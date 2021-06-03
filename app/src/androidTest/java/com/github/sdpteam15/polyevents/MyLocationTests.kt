@@ -18,11 +18,9 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
-import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import org.junit.After
 import org.junit.Before
-import org.mockito.Mockito
 
 private const val lat = 42.52010210373032
 private const val lng = 8.566237434744834
@@ -43,8 +41,6 @@ class MyLocationTests {
     @Before
     fun setup() {
         mockedDatabase = HelperTestFunction.defaultMockDatabase()
-        val mockedUserProfile = UserProfile("TestID", "TestName")
-        Mockito.`when`(mockedDatabase.currentProfile).thenReturn(mockedUserProfile)
 
         Database.currentDatabase = mockedDatabase
 

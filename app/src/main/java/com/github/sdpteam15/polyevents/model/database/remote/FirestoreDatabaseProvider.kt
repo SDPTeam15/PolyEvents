@@ -12,8 +12,6 @@ import com.github.sdpteam15.polyevents.model.database.remote.matcher.FirestoreQu
 import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.objects.*
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
-import com.github.sdpteam15.polyevents.model.entity.UserProfile
-import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
 import com.google.android.gms.tasks.OnFailureListener
@@ -23,7 +21,6 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import java.time.LocalTime
 
 object FirestoreDatabaseProvider : DatabaseInterface {
     @SuppressLint("StaticFieldLeak")
@@ -110,9 +107,6 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             currentUserObservable.postValue(value, this)
         }
 
-    //TODO change once the current profile has been developed
-    override var currentProfile: UserProfile? = UserProfile(userRole = UserRole.ADMIN)
-
 
     override fun <T : Any> addEntityAndGetId(
         element: T,
@@ -127,7 +121,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         }
         firestore!!
             .collection(collection.value)
-            .add(adapter.toDocument(element)!!)
+            .add(adapter.toDocument(element))
             .addOnSuccessListener(successListener)
             .addOnFailureListener(failureListener)
         return ended
@@ -146,7 +140,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             mutableList.add(null)
             firestore!!
                 .collection(collection.value)
-                .add(adapter.toDocument(elementWithIndex.value)!!)
+                .add(adapter.toDocument(elementWithIndex.value))
                 .addOnSuccessListener {
                     synchronized(this) {
                         mutableList[elementWithIndex.index] = Pair(true, it.id)

@@ -35,7 +35,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@android:drawable/ic_input_add" />
+                app:srcCompat="@drawable/ic_baseline_check_24"
+                tools:ignore="ContentDescription" />
 
             <EditText
                 android:id="@+id/id_edittext_profile_name"
@@ -46,7 +47,8 @@
                 android:inputType="textPersonName"
                 app:layout_constraintEnd_toStartOf="@+id/id_confirm_add_item_button"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                android:autofillHints="no" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

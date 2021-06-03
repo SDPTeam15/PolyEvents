@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
@@ -50,13 +49,15 @@ class EventEditManagementActivity : AppCompatActivity() {
 
         eventList.observeAdd(this) {
             val event = it.value
-            origEvents[event.eventId!!] = event
+            if (event.status != Event.EventStatus.CANCELED) {
+                origEvents[event.eventId!!] = event
+            }
         }
-
-        Database.currentDatabase.eventDatabase!!.getEvents({it.orderBy(DatabaseConstant.EventEditConstant.EVENT_EDIT_STATUS.value)}, null, eventList)
+    //TODO sort event by status ordinal (ascending)
+        Database.currentDatabase.eventDatabase!!.getEvents(null, null, eventList)
             .observeOnce(this) {
                 if (!it.value) {
-                    HelperFunctions.showToast("Failed to get the list of all events", this)
+                    HelperFunctions.showToast(getString(R.string.fail_to_get_list_events), this)
                     finish()
                 } else {
                     getEventEdit()
@@ -66,14 +67,13 @@ class EventEditManagementActivity : AppCompatActivity() {
 
     private fun getEventEdit() {
         //Wait until we have both requests accepted from the database to show the material requests
+        //TODO sort event by status ordinal (ascending)
         Database.currentDatabase.eventDatabase!!.getEventEdits(
-            { collection ->
-                collection.orderBy(DatabaseConstant.EventEditConstant.EVENT_EDIT_STATUS.value)
-            },
+            null,
             eventEdits,
         ).observeOnce(this) {
             if (!it.value) {
-                HelperFunctions.showToast("Failed to get the list of material requests", this)
+                HelperFunctions.showToast(getString(R.string.fail_to_get_list_events_edits), this)
                 finish()
             }
         }
@@ -86,7 +86,7 @@ class EventEditManagementActivity : AppCompatActivity() {
 
     private fun acceptEventEditCallback(success: Boolean, event: Event) {
         if (!success) {
-            HelperFunctions.showToast("Failed to accept the request", this)
+            HelperFunctions.showToast(getString(R.string.failed_to_accept_request), this)
         } else {
             eventEdits.set(
                 eventEdits.indexOfFirst { it2 -> it2.eventEditId == event.eventEditId },
@@ -120,13 +120,13 @@ class EventEditManagementActivity : AppCompatActivity() {
                         }
                     }
                 }else{
-                    HelperFunctions.showToast("The activity edit cannot be requested", this)
+                    HelperFunctions.showToast(getString(R.string.activity_edit_cannot_be_requested), this)
                 }
             }
 
             Unit
         } else {
-            HelperFunctions.showToast("Can not accept this request", this)
+            HelperFunctions.showToast(getString(R.string.cannot_accept_edit_requests), this)
         }
     }
 
@@ -175,7 +175,7 @@ class EventEditManagementActivity : AppCompatActivity() {
                 event
             ).observeOnce(this) {
                 if (!it.value) {
-                    HelperFunctions.showToast("Failed to decline the request", this)
+                    HelperFunctions.showToast(getString(R.string.failed_to_decline_requests), this)
                 } else {
                     eventEdits.set(
                         eventEdits.indexOfFirst { it2 -> it2.eventEditId == event.eventEditId },

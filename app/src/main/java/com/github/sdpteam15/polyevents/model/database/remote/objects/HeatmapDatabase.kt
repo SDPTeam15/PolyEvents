@@ -8,7 +8,6 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.DeviceLocationAdapter
 import com.github.sdpteam15.polyevents.model.entity.DeviceLocation
-import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.map.GoogleMapOptions.neBound
 import com.github.sdpteam15.polyevents.model.map.GoogleMapOptions.swBound
 import com.github.sdpteam15.polyevents.model.observable.Observable
@@ -40,8 +39,7 @@ class HeatmapDatabase(private val db: DatabaseInterface) : HeatmapDatabaseInterf
 
     //TODO : remove the added points for the final
     override fun getLocations(
-        usersLocations: ObservableList<LatLng>,
-        userAccess: UserEntity?
+        usersLocations: ObservableList<LatLng>
     ): Observable<Boolean> {
         val tempUsersLocations = ObservableList<LatLng>()
         val end = Observable<Boolean>()

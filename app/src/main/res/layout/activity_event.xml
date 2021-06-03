@@ -63,7 +63,7 @@
                 android:layout_margin="10dp"
                 android:background="?android:attr/listDivider"
                 app:layout_constraintBottom_toTopOf="@id/event_description_subsection_text_view"
-                app:layout_constraintTop_toBottomOf="@id/button_subscribe_event" />
+                app:layout_constraintTop_toBottomOf="@id/button_subscribe_follow_event" />
 
             <TextView
                 android:id="@+id/txt_event_Name"
@@ -106,7 +106,7 @@
                 android:text="@string/label_activity_description"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
                 app:layout_constraintStart_toStartOf="@+id/img_event_logo"
-                app:layout_constraintTop_toBottomOf="@+id/button_subscribe_event" />
+                app:layout_constraintTop_toBottomOf="@+id/button_subscribe_follow_event" />
 
             <TextView
                 android:id="@+id/txt_event_description"
@@ -148,13 +148,13 @@
                 app:layout_constraintStart_toEndOf="@+id/img_event_logo" />
 
             <Button
-                android:id="@+id/button_subscribe_event"
+                android:id="@+id/button_subscribe_follow_event"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:onClick="onClickEventSubscribe"
-                android:text="@string/event_subscribe"
-                android:visibility="invisible"
+                android:text="@string/event_follow"
+                android:enabled="false"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.502"
                 app:layout_constraintStart_toEndOf="@+id/img_event_logo"
@@ -204,6 +204,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
+        android:enabled="false"
         android:onClick="onClickEventLeaveReview"
         android:text="@string/leave_a_review"
         app:layout_constraintBottom_toBottomOf="parent"

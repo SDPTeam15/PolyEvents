@@ -1,9 +1,12 @@
 package com.github.sdpteam15.polyevents.database.objects
 
 import com.github.sdpteam15.polyevents.database.HelperTestFunction
-import com.github.sdpteam15.polyevents.model.database.remote.*
+import com.github.sdpteam15.polyevents.model.database.remote.Database
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.EVENT_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.RATING_COLLECTION
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
+import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.EventAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.EventEditAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.RatingAdapter
@@ -13,7 +16,6 @@ import com.github.sdpteam15.polyevents.model.database.remote.objects.EventDataba
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Rating
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
-import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import org.junit.Before
@@ -36,8 +38,7 @@ private const val rate = 4.5F
 private const val feedback = "feedback "
 private val startTime = LocalDateTime.of(2021, 3, 7, 12, 15)
 private val endTime = LocalDateTime.of(2021, 3, 7, 12, 45)
-private val tags = mutableSetOf("sushi", "japan", "cooking")
-
+private val tags = mutableListOf("sushi", "japan", "cooking")
 
 @Suppress("UNCHECKED_CAST", "TYPE_INFERENCE_ONLY_INPUT_TYPES_WARNING")
 class EventDatabaseTest {
@@ -64,10 +65,9 @@ class EventDatabaseTest {
             endTime = endTime,
             tags = tags
         )
-        val userAccess = UserProfile()
 
         HelperTestFunction.nextSetEntity { true }
-        mockedEventdatabase.updateEvent(event, userAccess)
+        mockedEventdatabase.updateEvent(event)
             .observeOnce { assert(it.value) }.then.postValue(true)
 
         val set = HelperTestFunction.lastSetEntity()!!
@@ -91,10 +91,9 @@ class EventDatabaseTest {
             endTime = endTime,
             tags = tags
         )
-        val userAccess = UserProfile()
 
         HelperTestFunction.nextAddEntity { true }
-        mockedEventdatabase.createEvent(event, userAccess)
+        mockedEventdatabase.createEvent(event)
             .observeOnce { assert(it.value) }.then.postValue(true)
 
         val set = HelperTestFunction.lastAddEntity()!!
@@ -107,10 +106,9 @@ class EventDatabaseTest {
     @Test
     fun getEventList() {
         val events = ObservableList<Event>()
-        val userAccess = UserProfile("uid")
 
         HelperTestFunction.nextGetListEntity { true }
-        mockedEventdatabase.getEvents(null, null, events, userAccess)
+        mockedEventdatabase.getEvents(null, null, events)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         val getList = HelperTestFunction.lastGetListEntity()!!
@@ -136,10 +134,9 @@ class EventDatabaseTest {
             tags = tags,
             eventEditId = eventId
         )
-        val userAccess = UserProfile()
 
         HelperTestFunction.nextSetEntity { true }
-        mockedEventdatabase.updateEventEdit(event, userAccess)
+        mockedEventdatabase.updateEventEdit(event)
             .observeOnce { assert(it.value) }.then.postValue(true)
 
         val set = HelperTestFunction.lastSetEntity()!!
@@ -163,10 +160,9 @@ class EventDatabaseTest {
             endTime = endTime,
             tags = tags
         )
-        val userAccess = UserProfile()
 
         HelperTestFunction.nextAddEntity { true }
-        mockedEventdatabase.createEventEdit(event, userAccess)
+        mockedEventdatabase.createEventEdit(event)
             .observeOnce { assert(it.value) }.then.postValue(true)
 
         val set = HelperTestFunction.lastAddEntity()!!
@@ -179,10 +175,9 @@ class EventDatabaseTest {
     @Test
     fun getEventEditList() {
         val events = ObservableList<Event>()
-        val userAccess = UserProfile("uid")
 
         HelperTestFunction.nextGetListEntity { true }
-        mockedEventdatabase.getEventEdits(null, events, userAccess)
+        mockedEventdatabase.getEventEdits(null, events)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         val getList = HelperTestFunction.lastGetListEntity()!!
@@ -201,10 +196,9 @@ class EventDatabaseTest {
             rate = rate,
             feedback = feedback
         )
-        val userAccess = UserProfile()
 
         HelperTestFunction.nextSetEntity { true }
-        mockedEventdatabase.updateRating(rating, userAccess)
+        mockedEventdatabase.updateRating(rating)
             .observeOnce { assert(it.value) }.then.postValue(true)
 
         val set = HelperTestFunction.lastSetEntity()!!
@@ -224,10 +218,9 @@ class EventDatabaseTest {
             rate = rate,
             feedback = feedback
         )
-        val userAccess = UserProfile()
 
         HelperTestFunction.nextAddEntity { true }
-        mockedEventdatabase.addRatingToEvent(rating, userAccess)
+        mockedEventdatabase.addRatingToEvent(rating)
             .observeOnce { assert(it.value) }.then.postValue(true)
 
         val set = HelperTestFunction.lastAddEntity()!!
@@ -240,10 +233,9 @@ class EventDatabaseTest {
     @Test
     fun getRatingList() {
         val ratings = ObservableList<Rating>()
-        val userAccess = UserProfile("uid")
 
         HelperTestFunction.nextGetListEntity { true }
-        mockedEventdatabase.getRatingsForEvent(eventId, null, ratings, userAccess)
+        mockedEventdatabase.getRatingsForEvent(eventId, null, ratings)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         val getList = HelperTestFunction.lastGetListEntity()!!
@@ -257,22 +249,24 @@ class EventDatabaseTest {
     @Test
     fun getEventListWithMatcher() {
         val events = ObservableList<Event>()
-        val userAccess = UserProfile("uid")
         val matcher = Matcher { q: Query -> q.limit(1000L) }
 
+        val mockQuery = Mockito.mock(Query::class.java)
+
+        Mockito.`when`(mockQuery.limit(anyOrNull())).then {
+            assertEquals(it.arguments[0] as Long, 1000L)
+            mockQuery
+        }
+
         HelperTestFunction.nextGetListEntity { true }
-        mockedEventdatabase.getEvents(matcher, null, events, userAccess)
+        mockedEventdatabase.getEvents(matcher, null, events)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         val getList = HelperTestFunction.lastGetListEntity()!!
 
         assertEquals(events, getList.element)
         assertNotNull(getList.matcher)
-        val mockQuery = Mockito.mock(Query::class.java)
-        Mockito.`when`(mockQuery.limit(anyOrNull())).then {
-            assertEquals(it.arguments[0] as Long, 1000L)
-            mockQuery
-        }
+
         getList.matcher.match(mockQuery)
         assertEquals(EVENT_COLLECTION, getList.collection)
         assertEquals(EventAdapter, getList.adapter)
@@ -281,22 +275,27 @@ class EventDatabaseTest {
     @Test
     fun getEventListWithMatcherAndLimitNotNull() {
         val events = ObservableList<Event>()
-        val userAccess = UserProfile("uid")
         val matcher = Matcher { q: Query -> q.limit(1000L) }
 
         HelperTestFunction.nextGetListEntity { true }
-        mockedEventdatabase.getEvents(matcher, 20, events, userAccess)
+        mockedEventdatabase.getEvents(matcher, 20, events)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         val getList = HelperTestFunction.lastGetListEntity()!!
 
         val mockQuery = Mockito.mock(Query::class.java)
-        assertNotNull(getList.matcher)
 
         Mockito.`when`(mockQuery.limit(anyOrNull())).then {
             assert(it.arguments[0] as Long in listOf(20L, 1000L))
             mockQuery
         }
+
+        HelperTestFunction.nextGetListEntity { true }
+        mockedEventdatabase.getEvents(matcher, 20, events)
+            .observeOnce { assert(it.value) }.then.postValue(false)
+
+        assertNotNull(getList.matcher)
+
         getList.matcher.match(mockQuery)
         assertEquals(events, getList.element)
         assertEquals(EVENT_COLLECTION, getList.collection)
@@ -312,10 +311,9 @@ class EventDatabaseTest {
             rate = rate,
             feedback = feedback
         )
-        val userAccess = UserProfile("uid")
 
         HelperTestFunction.nextSetEntity { true }
-        mockedEventdatabase.removeRating(rating, userAccess)
+        mockedEventdatabase.removeRating(rating)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
 
@@ -338,10 +336,9 @@ class EventDatabaseTest {
     @Test
     fun getRatingWithoutLimit() {
         val ratings = ObservableList<Rating>()
-        val userAccess = UserProfile("uid")
 
         HelperTestFunction.nextGetEntity { true }
-        mockedEventdatabase.getRatingsForEvent(eventId, null, ratings, userAccess)
+        mockedEventdatabase.getRatingsForEvent(eventId, null, ratings)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
 
@@ -351,7 +348,7 @@ class EventDatabaseTest {
         val mockQuery = Mockito.mock(Query::class.java)
         assertNotNull(getList.matcher)
 
-        Mockito.`when`(mockQuery.whereEqualTo(anyOrNull<String>(), anyOrNull())).then {
+        Mockito.`when`(mockQuery.whereEqualTo(anyOrNull(), anyOrNull())).then {
             mockQuery
         }
         getList.matcher.match(mockQuery)
@@ -363,10 +360,9 @@ class EventDatabaseTest {
     @Test
     fun getRatingWithLimit() {
         val ratings = ObservableList<Rating>()
-        val userAccess = UserProfile("uid")
 
         HelperTestFunction.nextGetListEntity { true }
-        mockedEventdatabase.getRatingsForEvent(eventId, 20L, ratings, userAccess)
+        mockedEventdatabase.getRatingsForEvent(eventId, 20L, ratings)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         val getList = HelperTestFunction.lastGetListEntity()!!
@@ -379,7 +375,7 @@ class EventDatabaseTest {
             assertEquals(it.arguments[0] as Long, 20L)
             mockQuery
         }
-        Mockito.`when`(mockQuery.whereEqualTo(anyOrNull<String>(), anyOrNull())).then {
+        Mockito.`when`(mockQuery.whereEqualTo(anyOrNull(), anyOrNull())).then {
             mockQuery
         }
         getList.matcher.match(mockQuery)
@@ -391,7 +387,6 @@ class EventDatabaseTest {
     @Test
     fun getRatingMean() {
         val mean = Observable<Float>()
-        val userAccess = UserProfile("uid")
 
         HelperTestFunction.nextGetListEntity {
             it.element.add(Rating(rate = 1.0F))
@@ -399,7 +394,7 @@ class EventDatabaseTest {
 
             true
         }
-        mockedEventdatabase.getMeanRatingForEvent(eventId, mean, userAccess)
+        mockedEventdatabase.getMeanRatingForEvent(eventId, mean)
             .observeOnce { assert(it.value) }.then.postValue(true)
 
         val getList = HelperTestFunction.lastGetListEntity()!!
@@ -407,7 +402,7 @@ class EventDatabaseTest {
 
         val mockQuery = Mockito.mock(Query::class.java)
 
-        Mockito.`when`(mockQuery.whereEqualTo(anyOrNull<String>(), anyOrNull())).then {
+        Mockito.`when`(mockQuery.whereEqualTo(anyOrNull(), anyOrNull())).then {
             mockQuery
         }
         getList.matcher.match(mockQuery)
@@ -417,12 +412,11 @@ class EventDatabaseTest {
     @Test
     fun getRatingZeroMean() {
         val mean = Observable<Float>()
-        val userAccess = UserProfile("uid")
 
         HelperTestFunction.nextGetListEntity {
             true
         }
-        mockedEventdatabase.getMeanRatingForEvent(eventId, mean, userAccess)
+        mockedEventdatabase.getMeanRatingForEvent(eventId, mean)
             .observeOnce { assert(it.value) }.then.postValue(true)
 
         val getList = HelperTestFunction.lastGetListEntity()!!
@@ -440,10 +434,9 @@ class EventDatabaseTest {
     @Test
     fun getRatingMeanFailedDoesntChange() {
         val mean = Observable<Float>(-1.0F)
-        val userAccess = UserProfile("uid")
 
         HelperTestFunction.nextGetListEntity { false }
-        mockedEventdatabase.getMeanRatingForEvent(eventId, mean, userAccess)
+        mockedEventdatabase.getMeanRatingForEvent(eventId, mean)
             .observeOnce { assert(!it.value) }.then.postValue(false)
 
         val getList = HelperTestFunction.lastGetListEntity()!!
@@ -461,10 +454,9 @@ class EventDatabaseTest {
     @Test
     fun getUserRatingFromEventFailedDoesntChange() {
         val rat = Observable(Rating("default", 0.0F))
-        val userAccess = UserProfile("uid")
 
         HelperTestFunction.nextGetListEntity { false }
-        mockedEventdatabase.getUserRatingFromEvent(userId, eventId, rat, userAccess)
+        mockedEventdatabase.getUserRatingFromEvent(userId, eventId, rat)
             .observeOnce { assert(!it.value) }.then.postValue(false)
 
         val getList = HelperTestFunction.lastGetListEntity()!!
@@ -486,10 +478,9 @@ class EventDatabaseTest {
     @Test
     fun getUserRatingFromEventFailedToGetAnyEvent() {
         val rat = Observable(Rating("default", 0.0F))
-        val userAccess = UserProfile("uid")
 
         HelperTestFunction.nextGetListEntity { true }
-        mockedEventdatabase.getUserRatingFromEvent(userId, eventId, rat, userAccess)
+        mockedEventdatabase.getUserRatingFromEvent(userId, eventId, rat)
             .observeOnce { assert(!it.value) }.then.postValue(false)
 
         val getList = HelperTestFunction.lastGetListEntity()!!
@@ -511,13 +502,12 @@ class EventDatabaseTest {
     @Test
     fun getUserRatingFromEventRetrieveCorrectRating() {
         val rat = Observable(Rating("default", 0.0F))
-        val userAccess = UserProfile("uid")
 
         HelperTestFunction.nextGetListEntity {
             it.element.add(Rating(ratingId = "default", rate = 3.5F))
             true
         }
-        mockedEventdatabase.getUserRatingFromEvent(userId, eventId, rat, userAccess)
+        mockedEventdatabase.getUserRatingFromEvent(userId, eventId, rat)
             .observeOnce { assert(it.value) }.then.postValue(true)
 
         val getList = HelperTestFunction.lastGetListEntity()!!
@@ -540,10 +530,9 @@ class EventDatabaseTest {
     @Test
     fun getEventFromId() {
         val events = Observable<Event>()
-        val userAccess = UserProfile("uid")
 
         HelperTestFunction.nextGetEntity { true }
-        mockedEventdatabase.getEventFromId(eventId, events, userAccess)
+        mockedEventdatabase.getEventFromId(eventId, events)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         val getEntity = HelperTestFunction.lastGetEntity()!!
@@ -557,10 +546,9 @@ class EventDatabaseTest {
     @Test
     fun getEventEditFromId() {
         val events = Observable<Event>()
-        val userAccess = UserProfile("uid")
 
         HelperTestFunction.nextGetEntity { true }
-        mockedEventdatabase.getEventEditFromId(eventId, events, userAccess)
+        mockedEventdatabase.getEventEditFromId(eventId, events)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         val getEntity = HelperTestFunction.lastGetEntity()!!

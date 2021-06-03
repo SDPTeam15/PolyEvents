@@ -7,7 +7,6 @@ import com.github.sdpteam15.polyevents.model.entity.RouteNode
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.model.observable.ObservableMap
 
 class RouteDatabase(private val db: DatabaseInterface) : RouteDatabaseInterface {
     override fun getRoute(
@@ -73,7 +72,7 @@ class RouteDatabase(private val db: DatabaseInterface) : RouteDatabaseInterface 
             if (it.value.first) {
                 nodes.addAll(listNode, db)
                 for (n in listNode.withIndex())
-                    n.value.id = it.value.second!![n.index]
+                    n.value.id = it.value.second[n.index]
 
                 //add new Edges in db
                 db.addListEntity(
@@ -83,7 +82,7 @@ class RouteDatabase(private val db: DatabaseInterface) : RouteDatabaseInterface 
                     if (it.value.first) {
                         edges.addAll(newEdges, db)
                         for (e in newEdges.withIndex())
-                            e.value.id = it.value.second!![e.index]
+                            e.value.id = it.value.second[e.index]
 
                         //remove Edges no more used in db
                         db.deleteListEntity(

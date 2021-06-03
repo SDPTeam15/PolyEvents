@@ -1,6 +1,5 @@
 package com.github.sdpteam15.polyevents.view.adapter
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.view.LayoutInflater
@@ -14,10 +13,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.entity.Event
-import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
-import java.time.format.DateTimeFormatter
 
 /**
  * Recycler Adapter for the list of event edit request
@@ -78,12 +75,14 @@ class EventEditAdminAdapter(
                 Event.EventStatus.ACCEPTED -> Color.GREEN
                 Event.EventStatus.PENDING -> Color.BLACK
                 Event.EventStatus.REFUSED -> Color.RED
+                else -> Color.BLACK
             })
 
             status.text = event.status.toString()
 
             btnAccept.visibility = if (event.status == Event.EventStatus.PENDING) VISIBLE else INVISIBLE
             btnRefuse.visibility = if (event.status == Event.EventStatus.PENDING) VISIBLE else INVISIBLE
+            btnSee.visibility = if (event.status != Event.EventStatus.CANCELED) VISIBLE else INVISIBLE
 
             btnSee.setOnClickListener{
                 if (event.eventId!=null){

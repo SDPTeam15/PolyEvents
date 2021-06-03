@@ -1,6 +1,5 @@
 package com.github.sdpteam15.polyevents.view.activity.admin
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -216,9 +215,8 @@ class ZoneManagementActivity : AppCompatActivity() {
             etDesc.setText("")
             etName.setText("")
             etLoc.setText("")
-            val int = Intent(this, ZoneManagementListActivity::class.java)
             ZoneAreaMapHelper.removeZone(zoneId)
-            startActivity(int)
+            finish()
         } else {
             //show a toast indicating that there was an error and stay on this activity
             HelperFunctions.showToast(failMess, this)

@@ -10,7 +10,6 @@ import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.sdpteam15.polyevents.HelperTestFunction
 import com.github.sdpteam15.polyevents.R
@@ -20,18 +19,13 @@ import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
-import com.github.sdpteam15.polyevents.model.database.remote.objects.EventDatabaseInterface
-import com.github.sdpteam15.polyevents.model.database.remote.objects.ZoneDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.objects.ZoneDatabaseInterface
-import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
-import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementListActivity.Companion.EXTRA_ID
-import com.github.sdpteam15.polyevents.view.adapter.EventListAdapter
 import com.github.sdpteam15.polyevents.view.adapter.ZoneItemAdapter
 import org.junit.After
 import org.junit.Before
@@ -58,8 +52,6 @@ class ZoneManagementListTest {
     @Before
     fun setup() {
         mockedDatabase = HelperTestFunction.defaultMockDatabase()
-        val mockedUserProfile = UserProfile("TestID", "TestName")
-        When(mockedDatabase.currentProfile).thenReturn(mockedUserProfile)
 
         Database.currentDatabase = mockedDatabase
 
@@ -79,7 +71,7 @@ class ZoneManagementListTest {
             Zone(zoneId = "zid3", zoneName = "zoneName3")
         )
 
-        Mockito.`when`(zoneDatabase.getAllZones(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
+        Mockito.`when`(zoneDatabase.getAllZones(anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
             (it.arguments[2] as ObservableList<Zone>?)?.clear()
             (it.arguments[2] as ObservableList<Zone>?)?.addAll(zones)
             Observable(true)

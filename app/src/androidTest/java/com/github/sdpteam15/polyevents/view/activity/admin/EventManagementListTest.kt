@@ -4,15 +4,11 @@ import android.content.Intent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
-import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.RecyclerViewItemCountAssertion
 import com.github.sdpteam15.polyevents.TestHelper
@@ -23,11 +19,9 @@ import com.github.sdpteam15.polyevents.model.database.remote.objects.EventDataba
 import com.github.sdpteam15.polyevents.model.database.remote.objects.UserDatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.objects.ZoneDatabaseInterface
 import com.github.sdpteam15.polyevents.model.entity.Event
-import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import com.github.sdpteam15.polyevents.view.adapter.EventListAdapter
 import org.junit.After
 import org.junit.Before
@@ -78,7 +72,6 @@ class EventManagementListTest {
 
         Mockito.`when`(
             mockeduserDb.getListAllUsers(
-                anyOrNull(),
                 anyOrNull()
             )
         ).thenAnswer {
@@ -87,7 +80,6 @@ class EventManagementListTest {
 
         Mockito.`when`(
             mockedZoneDB.getAllZones(
-                anyOrNull(),
                 anyOrNull(),
                 anyOrNull(),
                 anyOrNull()
@@ -107,13 +99,13 @@ class EventManagementListTest {
         Mockito.`when`(mockedDatabase.eventDatabase).thenReturn(mockedEventDB)
         Mockito.`when`(mockedDatabase.zoneDatabase).thenReturn(mockedZoneDB)
         Mockito.`when`(mockedDatabase.userDatabase).thenReturn(mockeduserDb)
-        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
+        Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull()))
             .thenAnswer {
                 (it.arguments[2] as ObservableList<Event>).addAll(events)
                 Observable(true, this)
             }
 
-        Mockito.`when`(mockedEventDB.getEventFromId(anyOrNull(), anyOrNull(), anyOrNull()))
+        Mockito.`when`(mockedEventDB.getEventFromId(anyOrNull(), anyOrNull()))
             .thenAnswer {
                 (it.arguments[1] as Observable<Event>).postValue(event1)
                 Observable(true)
