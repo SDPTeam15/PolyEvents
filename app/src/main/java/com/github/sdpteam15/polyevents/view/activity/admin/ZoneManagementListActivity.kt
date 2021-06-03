@@ -11,6 +11,7 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.map.ZoneAreaMapHelper
+import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.adapter.ZoneItemAdapter
 
@@ -40,7 +41,7 @@ class ZoneManagementListActivity : AppCompatActivity() {
         val deleteZone = { zone: Zone ->
             HelperFunctions.showAlertDialog(
                 this, getString(R.string.message_confirm_delete_zone_title, zone.zoneName),
-                getString(R.string.message_confirm_delete_title),
+                getString(R.string.message_confirm_delete_zone),
                 {
                     DatabaseHelper.deleteZone(zone)
                     zones.remove(zone)
@@ -49,15 +50,8 @@ class ZoneManagementListActivity : AppCompatActivity() {
         }
 
         recyclerView.adapter = ZoneItemAdapter(zones, openZone, deleteZone)
-        Database.currentDatabase.zoneDatabase.getAllZones(
-            zones.sortAndLimitFrom(this) { it.zoneName },
-            50
-        ).observe(this) {
-            if (!it.value) {
-                HelperFunctions.showToast(getString(R.string.fail_to_get_list_zones), this)
-                finish()
-            }
-        }
+
+        getAllZones()
 
         // Notify the recycler view when an update is made on the zones
         zones.observe(this) { recyclerView.adapter!!.notifyDataSetChanged() }
@@ -72,6 +66,28 @@ class ZoneManagementListActivity : AppCompatActivity() {
         zones.observeRemove(this) {
             ZoneAreaMapHelper.removeZone(it.value.zoneId!!)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getAllZones()
+    }
+
+    /**
+     * Retrieve all zone from the database
+     */
+    private fun getAllZones() {
+        val infoGotten = Observable<Boolean>()
+        Database.currentDatabase.zoneDatabase.getAllZones(
+            zones.sortAndLimitFrom(this) { it.zoneName }
+        ).observe(this) {
+            if (!it.value) {
+                HelperFunctions.showToast(getString(R.string.fail_to_get_list_zones), this)
+                finish()
+            }
+        }.then.updateOnce(this, infoGotten)
+        // Add a progress dialog to wait for the transaction with the database to be over
+        HelperFunctions.showProgressDialog(this, listOf(infoGotten), supportFragmentManager)
     }
 
     fun startActivityZone(zoneId: String) {
