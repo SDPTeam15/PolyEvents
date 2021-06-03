@@ -51,16 +51,12 @@ class ProfileAdapter(
                     "$moreText ${item.profileName} (${item.userRole})"
                 else "$moreText ${item.profileName}"
 
-            btnRemove.visibility = if (item.defaultProfile && item.userRole!=UserRole.ADMIN) {
-                View.INVISIBLE
+            if (item.defaultProfile && item.userRole != UserRole.ADMIN) {
+                btnRemove.visibility = View.INVISIBLE
+                btnEdit.visibility = View.INVISIBLE
             } else {
-                View.VISIBLE
-            }
-
-            btnEdit.visibility = if (item.defaultProfile && item.userRole!=UserRole.ADMIN) {
-                View.INVISIBLE
-            } else {
-                View.VISIBLE
+                btnRemove.visibility = View.VISIBLE
+                btnEdit.visibility = View.VISIBLE
             }
 
             btnRemove.setOnClickListener {
