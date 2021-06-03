@@ -16,6 +16,7 @@ import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
+import com.github.sdpteam15.polyevents.model.database.remote.objects.RouteDatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.objects.ZoneDatabaseInterface
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.map.GoogleMapHelper
@@ -31,6 +32,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.Mockito.mock
 import org.mockito.kotlin.anyOrNull
 import org.mockito.Mockito.`when` as When
 
@@ -56,7 +58,10 @@ class ZoneManagementTest {
 
         UserLogin.currentUserLogin.signOut()
 
-        val intent = Intent(ApplicationProvider.getApplicationContext(), ZoneManagementListActivity::class.java)
+        val intent = Intent(
+            ApplicationProvider.getApplicationContext(),
+            ZoneManagementListActivity::class.java
+        )
         ActivityScenario.launch<ZoneManagementListActivity>(intent)
         ZoneManagementActivity.inTest = false
 
@@ -116,6 +121,14 @@ class ZoneManagementTest {
     @Test
     fun updateInfoRedirectToCorrectActivityIfCorrect() {
 
+        When(mockedDatabase.routeDatabase).thenAnswer {
+            val mock = mock(RouteDatabaseInterface::class.java)
+            When(mock.removeEdgeConnectedToZone(anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
+                Observable(true)
+            }
+            mock
+        }
+
         val editingZone = "Zone ${GoogleMapHelper.uidZone++}"
         ZoneAreaMapHelper.editingZone = editingZone
         ZoneAreaMapHelper.zonesToArea[editingZone] = Pair(null, mutableListOf())
@@ -135,7 +148,10 @@ class ZoneManagementTest {
         }
 
 
-        val intent = Intent(ApplicationProvider.getApplicationContext(), ZoneManagementListActivity::class.java)
+        val intent = Intent(
+            ApplicationProvider.getApplicationContext(),
+            ZoneManagementListActivity::class.java
+        )
         scenario2 = ActivityScenario.launch(intent)
         onView(withId(R.id.recycler_zones_list)).perform(
             RecyclerViewActions.actionOnItemAtPosition<ZoneItemAdapter.ItemViewHolder>(
