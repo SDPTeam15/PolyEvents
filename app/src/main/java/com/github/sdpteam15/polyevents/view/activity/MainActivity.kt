@@ -87,6 +87,9 @@ class MainActivity : AppCompatActivity() {
 
         localDatabase = (application as PolyEventsApplication).database
 
+        // Start a timed service in the background to send the device location id
+        // to the database, for heatmap functionality. Have to check if the user enabled
+        // sending location first in the User settings
         if (TimerService.instance.value == null) {
             // Get the user settings from local cache and create callback to update the user settings if they changed
             val userSettingsObservable = ObservableList<UserSettings>()
