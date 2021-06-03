@@ -25,6 +25,7 @@ class ZoneManagementActivity : AppCompatActivity() {
         var zoneObservable = Observable<Zone>()
         val zone = Zone(location = "")
         var zoneId = ""
+        var zoneStateLocation = ""
         var inTest = false
     }
 
@@ -88,6 +89,12 @@ class ZoneManagementActivity : AppCompatActivity() {
                 updateZoneInfo()
             }
         }
+
+        zoneObservable.observeOnce(this) {
+            zone.location = it.value.location ?: ""
+            zoneStateLocation = it.value.location ?: ""
+        }
+
         ZoneAreaMapHelper.editingZone = zoneId
         setupListener(mapFragment)
     }
@@ -189,7 +196,10 @@ class ZoneManagementActivity : AppCompatActivity() {
             zone.zoneName = name
             zone.zoneId = zoneId
 
-            currentDatabase.zoneDatabase.updateZoneInformation(zoneId, zone).observe {
+            if (zone.location != zoneStateLocation)
+                currentDatabase.routeDatabase.removeEdgeConnectedToZone(zone)
+
+            currentDatabase.zoneDatabase.updateZoneInformation(zoneId, zone).observe(this) {
                 callbackHandler(
                     it.value,
                     this.getString(R.string.zone_updated_successfully),

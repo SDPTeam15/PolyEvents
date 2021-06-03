@@ -51,4 +51,49 @@ interface RouteDatabaseInterface {
         edges: ObservableList<RouteEdge>,
         nodes: ObservableList<RouteNode>
     ): Observable<Boolean>
+
+    /**
+     * remove all RouteEdge and the RouteNode connected to a specific Zone
+     * @param edge edge to remove
+     * @param edges list of RouteEdge
+     * @param nodes list of RouteNode
+     */
+    fun removeEdgeConnectedToZone(
+        Zone: Zone,
+        edges: ObservableList<RouteEdge>? = null,
+        nodes: ObservableList<RouteNode>? = null
+    ): Observable<Boolean> {
+        val ended = Observable<Boolean>()
+        val trueEdges = edges ?: ObservableList()
+        val trueNodes = nodes ?: ObservableList()
+        (if (edges == null || nodes == null) {
+            getRoute(
+                trueNodes,
+                trueEdges,
+                ObservableList<Zone>()
+            )
+        } else Observable(true))
+            .observeOnce {
+                if (it.value) {
+                    val done = mutableListOf<Boolean>()
+                    for (edge in trueEdges)
+                        if (edge.start?.areaId == (Zone.zoneId ?: "") ||
+                            edge.end?.areaId == (Zone.zoneId ?: "")
+                        ) {
+                            val index = done.size
+                            done.add(false)
+                            removeEdge(edge, trueEdges, trueNodes)
+                                .observeOnce {
+                                    synchronized(this) {
+                                        done[index] = true
+                                        if (done.reduce { a, b -> a && b })
+                                            ended.postValue(true, it.sender)
+                                    }
+                                }
+                        }
+                } else
+                    ended.postValue(false, it.sender)
+            }
+        return ended
+    }
 }
