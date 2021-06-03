@@ -428,7 +428,6 @@ class ProfileLoginFragmentTests {
 
     @Test
     fun ifNotInDbAddIt() {
-        val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
         initDBTests()
         //Mock the in database method, to return false

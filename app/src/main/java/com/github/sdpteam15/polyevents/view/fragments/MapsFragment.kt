@@ -55,6 +55,10 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
     var locationPermissionGranted = false
     private var useUserLocation = false
 
+    // We have to do this since Cirrus doesn't allow us to test load google map
+    private val showMap:Boolean
+        get() = !PolyEventsApplication.inTest
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -82,7 +86,7 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
 
     override fun onPause() {
         super.onPause()
-        if(!PolyEventsApplication.inTest){
+        if(showMap){
             GoogleMapOptions.saveCamera()
             GoogleMapHeatmap.resetHeatmap()
         }
@@ -91,8 +95,7 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // We have to do this since Cirrus doesn't allow us to test load google map
-        if (!PolyEventsApplication.inTest) {
+        if (showMap) {
             val mapFragment =
                 childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
             mapFragment?.getMapAsync(this)
@@ -106,8 +109,7 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
     }
 
     override fun onMapReady(googleMap: GoogleMap?) {
-        // We have to do this since Cirrus doesn't allow us to test load google map
-        if (!PolyEventsApplication.inTest) {
+        if (showMap) {
             GoogleMapHelper.map = GoogleMapAdapter(googleMap)
             RouteMapHelper.getNodesAndEdgesFromDB(context, this)
 
