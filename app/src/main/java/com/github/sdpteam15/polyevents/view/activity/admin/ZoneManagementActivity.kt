@@ -255,10 +255,8 @@ class ZoneManagementActivity : AppCompatActivity() {
         ZoneAreaMapHelper.removeZone(zoneId)
         val obs:Observable<Zone> = Observable()
         obs.observe{
-            if(it.value != null){
-                ZoneAreaMapHelper.waitingZones.add(it.value)
-            }
+            ZoneAreaMapHelper.waitingZones.add(it.value)
         }
-        currentDatabase.zoneDatabase!!.getZoneInformation(zoneId, obs)
+        currentDatabase.zoneDatabase.getZoneInformation(zoneId, obs)
     }
 }

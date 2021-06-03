@@ -105,7 +105,7 @@ class CodeQuery(private val getfun: () -> Observable<Pair<QuerySnapshot?, Except
 
     @Suppress("UNCHECKED_CAST")
     override fun whereArrayContains(key: String, value: Any) =
-        filter { it, _ -> (it.data[key] as? List<out Any>)?.contains(value) ?: false }
+        filter { it, _ -> (it.data[key] as? List<Any>)?.contains(value) ?: false }
 
     override fun whereGreaterThan(key: String, value: Any) =
         filter { it, _ -> it.data[key] > value }
