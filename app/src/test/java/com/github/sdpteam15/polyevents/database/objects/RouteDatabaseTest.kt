@@ -10,6 +10,7 @@ import com.github.sdpteam15.polyevents.model.entity.RouteEdge
 import com.github.sdpteam15.polyevents.model.entity.RouteNode
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -27,6 +28,7 @@ class RouteDatabaseTest {
 
     @Test
     fun getRoute() {
+        PolyEventsApplication.inTest = true
         val nodes = ObservableList<RouteNode>()
         val edges = ObservableList<RouteEdge>()
         val zone = ObservableList<Zone>()

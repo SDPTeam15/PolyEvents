@@ -21,6 +21,8 @@ import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.map.GoogleMapHelper
 import com.github.sdpteam15.polyevents.model.map.ZoneAreaMapHelper
 import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import com.github.sdpteam15.polyevents.view.adapter.ZoneItemAdapter
 import com.google.android.gms.internal.maps.zzt
@@ -51,7 +53,7 @@ class ZoneManagementTest {
     @Before
     fun setup() {
         mockedDatabase = HelperTestFunction.defaultMockDatabase()
-        mockedZoneDatabase = mockedDatabase.zoneDatabase!!
+        mockedZoneDatabase = mockedDatabase.zoneDatabase
 
         Database.currentDatabase = mockedDatabase
 

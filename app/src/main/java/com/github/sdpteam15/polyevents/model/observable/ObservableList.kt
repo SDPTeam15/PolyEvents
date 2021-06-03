@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.model.observable
 
 import androidx.lifecycle.LifecycleOwner
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.apply
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.run
 
 /**
@@ -466,7 +467,7 @@ class ObservableList<T>(
         //Add all missing elements
         for (fromIndex in fromPastIndex.indices) {
             if (fromIndex !in keep) {
-                if(fromPastIndex[fromIndex] != -1)
+                if (fromPastIndex[fromIndex] != -1)
                     add(fromIndex, valuesList[fromPastIndex[fromIndex]], sender, false)
                 else
                     added.add(add(fromIndex, itemsList[fromIndex], sender, false)!!)
@@ -807,8 +808,7 @@ class ObservableList<T>(
         condition: () -> Boolean,
         mapper: (T) -> U
     ): Observable.ThenOrRemove<ObservableList<U>> {
-        observableList.clear()
-        observableList.addAll(listValues.map { mapper(it.value!!) }, this)
+        observableList.updateAll(listValues.map { mapper(it.value!!) }, this)
         val result: (ObserversInfo<T>) -> Boolean =
             {
                 when (it.info) {
@@ -1095,6 +1095,32 @@ class ObservableList<T>(
         observableMap: ObservableMap<U, ObservableList<T>> = ObservableMap(creator = this),
         mapper: (T) -> U
     ) = Observable.observeOnDestroy(lifecycle, group(observableMap, mapper))
+
+    /**
+     * Sorts and limit the ObservableList depending on every update of the returned ObservableList
+     *  @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped if null it will be done once on next update
+     *  @param limit max number of elements
+     *  @param observableList returned ObservableList
+     *  @return the new ObservableList where to do the operation
+     */
+    fun <R : Comparable<R>> sortAndLimitFrom(
+        lifecycle: LifecycleOwner?,
+        limit: Int? = null,
+        observableList: ObservableList<T> = ObservableList(),
+        selector: (T) -> R?
+    ): ObservableList<T> {
+        val sorter: (Observable.UpdateValue<List<T>>) -> Unit = {
+            val sortedList = it.value.toList().sortedBy(selector)
+            this.updateAll(
+                limit.apply(sortedList) { limit -> sortedList.take(limit) },
+                it.sender
+            )
+        }
+        return if (lifecycle != null)
+            observableList.observe(lifecycle, observer = sorter).then
+        else
+            observableList.observeOnce(false, sorter).then
+    }
 
     private fun itemAdded(value: UpdateIndexedValue<T>) {
         run(Runnable {

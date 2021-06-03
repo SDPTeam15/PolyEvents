@@ -1,5 +1,7 @@
 package com.github.sdpteam15.polyevents.model.database.remote.adapter
 
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.apply
+
 /**
  * A interface for converting between user entities in our code and
  * documents in the database. Not unlike the DTO (Data
@@ -11,5 +13,13 @@ interface AdapterToDocumentInterface<T> {
      * @param element the entity we're converting
      * @return a map mapping entity fields to their values
      */
-    fun toDocument(element: T): Map<String, Any?>
+    fun toDocumentWithoutNull(element: T): Map<String, Any?>
+
+    /**
+     * Convert an entity to a map mapping fields keys (always string in the database) to their values that we can use directly in the database
+     * @param element the entity we're converting
+     * @return a map mapping entity fields to their values
+     */
+    fun toDocument(element: T?): Map<String, Any?>?
+        = element.apply { toDocumentWithoutNull(it) }
 }

@@ -3,6 +3,8 @@ package com.github.sdpteam15.polyevents.observable
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
+import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.mock
 import kotlin.test.assertEquals
@@ -11,6 +13,12 @@ import org.mockito.Mockito.`when` as When
 const val sender = "sender"
 
 class ObservableTest {
+
+    @Before
+    fun setup() {
+        PolyEventsApplication.inTest = true
+    }
+
     @Test
     fun constructor() {
         assertEquals(null, Observable<Int>().value)

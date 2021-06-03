@@ -81,9 +81,9 @@ class ItemRequestActivityUpdateTest {
 
         FakeDatabaseItem.items.clear()
         for ((item, count) in availableItems) {
-            Database.currentDatabase.itemDatabase!!.createItem(item, count.first)
+            Database.currentDatabase.itemDatabase.createItem(item, count.first)
         }
-        Database.currentDatabase.itemDatabase!!.getItemsList(availableItemsList)
+        Database.currentDatabase.itemDatabase.getItemsList(availableItemsList)
         FakeDatabaseMaterialRequest.requests.clear()
 
         FakeDatabaseMaterialRequest.requests[requestId] = MaterialRequest(

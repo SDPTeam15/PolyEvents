@@ -24,6 +24,7 @@ import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementListActivity.Companion.EXTRA_ID
 import com.github.sdpteam15.polyevents.view.adapter.ZoneItemAdapter
@@ -72,8 +73,8 @@ class ZoneManagementListTest {
         )
 
         Mockito.`when`(zoneDatabase.getAllZones(anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
-            (it.arguments[2] as ObservableList<Zone>?)?.clear()
-            (it.arguments[2] as ObservableList<Zone>?)?.addAll(zones)
+            (it.arguments[0] as ObservableList<Zone>?)?.clear()
+            (it.arguments[0] as ObservableList<Zone>?)?.addAll(zones)
             Observable(true)
         }
 
