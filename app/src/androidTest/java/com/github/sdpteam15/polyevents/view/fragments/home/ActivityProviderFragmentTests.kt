@@ -35,7 +35,7 @@ import org.mockito.Mockito.mock
 import org.mockito.kotlin.anyOrNull
 import org.mockito.Mockito.`when` as When
 
-class ActivityProvideFragmentTests {
+class ActivityProviderFragmentTests {
     lateinit var mockedDatabase: DatabaseInterface
     val uid = "testUid"
     val username = "JohnDoe"
