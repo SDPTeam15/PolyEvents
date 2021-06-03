@@ -54,6 +54,7 @@ class ZoneManagementActivity : AppCompatActivity() {
         val mapFragment = MapsFragment(MapsFragmentMod.EditZone)
         ZoneAreaMapHelper.zone = zone
         zoneObservable = Observable()
+
         zoneObservable.observe(this) {
             //Reactive the back button and make the map fragment invisible
             supportActionBar!!.setDisplayHomeAsUpEnabled(true)
@@ -216,14 +217,14 @@ class ZoneManagementActivity : AppCompatActivity() {
     /**
      * This method handle the callback from the creation and update method of the database
      * @param it: The return value from the database
-     * @param succMess: the message to display in case of success
-     * @param failMess: The message to display in case of failure
+     * @param successMessage: the message to display in case of success
+     * @param failMessage: The message to display in case of failure
      */
-    private fun callbackHandler(it: Boolean?, succMess: String, failMess: String) {
+    private fun callbackHandler(it: Boolean?, successMessage: String, failMessage: String) {
         if (it!!) {
             //Show a toast indicating that the area was successfully created and redirect to the correct activity
             HelperFunctions.showToast(
-                succMess,
+                successMessage,
                 this
             )
             etDesc.setText("")
@@ -233,7 +234,7 @@ class ZoneManagementActivity : AppCompatActivity() {
             finish()
         } else {
             //show a toast indicating that there was an error and stay on this activity
-            HelperFunctions.showToast(failMess, this)
+            HelperFunctions.showToast(failMessage, this)
         }
     }
 

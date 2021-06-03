@@ -90,7 +90,10 @@ class ZoneManagementListActivity : AppCompatActivity() {
         HelperFunctions.showProgressDialog(this, listOf(infoGotten), supportFragmentManager)
     }
 
-    fun startActivityZone(zoneId: String) {
+    /**
+     * Start the zone management activity with a specific Zone Id
+     */
+    private fun startActivityZone(zoneId: String) {
         val intent = Intent(this, ZoneManagementActivity::class.java)
         ZoneManagementActivity.zone.location = ""
         intent.putExtra(EXTRA_ID, zoneId)
