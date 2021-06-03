@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.entity.Zone
+import com.github.sdpteam15.polyevents.model.map.GoogleMapHelper.dpToPixelsFloat
 import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementActivity
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
@@ -13,6 +14,7 @@ import kotlin.math.pow
 
 object ZoneAreaMapHelper {
     private const val INDEX_ROTATION_MARKER = 3
+    private const val AREA_WIDTH_DP = 4
     var editingZone: String? = null
     var zone: Zone? = null
     var editMode = false
@@ -90,6 +92,8 @@ object ZoneAreaMapHelper {
         if (coords.first.isNotEmpty()) {
             val poly = PolygonOptions()
             poly.addAll(coords.first)
+            if(context != null)
+                poly.strokeWidth(AREA_WIDTH_DP.dpToPixelsFloat(context))
 
             if (coords.second != null)
                 for (hole in coords.second!!)
@@ -259,6 +263,8 @@ object ZoneAreaMapHelper {
         tempPoly = GoogleMapHelper.map!!.addPolygon(
             PolygonOptions().add(pos1).add(pos2).add(pos3).add(pos4).strokeColor(Color.RED)
         )
+        if(context != null)
+            tempPoly!!.strokeWidth = AREA_WIDTH_DP.dpToPixelsFloat(context)
 
         setupModifyMarkers(context)
     }

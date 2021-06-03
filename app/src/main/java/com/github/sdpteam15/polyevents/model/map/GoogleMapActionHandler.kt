@@ -169,7 +169,7 @@ object GoogleMapActionHandler {
                                 )
                                         ?.toMutableList()
                                         ?: mutableListOf()
-                        RouteMapHelper.drawRoute()
+                        RouteMapHelper.drawRoute(activity)
                     }
                 }
         ).show(activity.supportFragmentManager, ZonePreviewBottomSheetDialogFragment.TAG)

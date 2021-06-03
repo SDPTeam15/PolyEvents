@@ -2,12 +2,14 @@ package com.github.sdpteam15.polyevents.model.map
 
 import android.content.Context
 import android.graphics.Color
+import android.util.TypedValue
 import androidx.lifecycle.LifecycleOwner
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.entity.RouteEdge
 import com.github.sdpteam15.polyevents.model.entity.RouteNode
 import com.github.sdpteam15.polyevents.model.entity.Zone
+import com.github.sdpteam15.polyevents.model.map.GoogleMapHelper.dpToPixelsFloat
 import com.github.sdpteam15.polyevents.model.map.GoogleMapHelper.map
 import com.github.sdpteam15.polyevents.model.map.GoogleMapHelperFunctions.newMarker
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.divide
@@ -18,6 +20,7 @@ import com.github.sdpteam15.polyevents.model.map.LatLngOperator.scalar
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.time
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.activity.TimeTableActivity
 import com.github.sdpteam15.polyevents.view.fragments.MapsFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
@@ -25,10 +28,14 @@ import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
 import kotlin.math.pow
 
-const val THRESHOLD = 0.00002
-const val MAGNET_DISTANCE_THRESHOLD = 0.00005
+
+
 
 object RouteMapHelper {
+    const val THRESHOLD = 0.00002
+    const val MAGNET_DISTANCE_THRESHOLD = 0.00005
+    const val LINE_WIDTH_DP = 4
+    const val LINE_ROUTE_WIDTH_DP = 4
 
     val nodes = ObservableList<RouteNode>()
     val edges = ObservableList<RouteEdge>()
@@ -300,23 +307,24 @@ object RouteMapHelper {
     /**
      * Draws a new route from the "chemin" variable, a list of LatLng and converts it into a Polyline
      */
-    fun drawRoute() {
+    fun drawRoute(context: Context) {
         undrawRoute()
         if (chemin.isNotEmpty()) {
             var start = chemin[0]
             currentTarget = chemin[1]
             val cheminTemp = chemin.drop(1)
             for (end in cheminTemp) {
-                route.add(
-                    map!!.addPolyline(
-                        PolylineOptions().add(start).add(end).color(Color.rgb(0, 162, 232))
-                            .width(15f)
-                    )
-                )
+                val option = PolylineOptions().add(start).add(end).color(Color.rgb(0, 162, 232))
+                val r = map!!.addPolyline(option)
+                r.width = LINE_ROUTE_WIDTH_DP.dpToPixelsFloat(context)
+                route.add(r)
                 start = end
             }
         }
     }
+
+
+
 /*
     /**
     TODO consider using this function to update a route while walking
@@ -499,13 +507,14 @@ object RouteMapHelper {
 
         //Remove all creation lines when we get an answer from the database
         removeAllLinesToRemove()
-        val option = PolylineOptions()
+        var option = PolylineOptions()
         option.add(edge.start!!.toLatLng())
         option.add(edge.end!!.toLatLng())
         option.color(Color.argb(50, 0, 0, 0))
         option.clickable(true)
         val route = map!!.addPolyline(option)
-
+        if(context != null)
+            route.width = LINE_WIDTH_DP.dpToPixelsFloat(context!!)
         //tag used to know which polyline has been clicked
         if (context != null) {
             route.tag = edge.id
