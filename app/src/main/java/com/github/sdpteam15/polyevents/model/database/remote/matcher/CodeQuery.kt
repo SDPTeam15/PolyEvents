@@ -118,10 +118,6 @@ class CodeQuery(private val getfun: () -> Observable<Pair<QuerySnapshot?, Except
 
     override fun whereLessThanOrEqualTo(key: String, value: Any) =
         filter { it, _ -> it.data[key] <= value }
-
-    override fun orderBy(key: String): Query {
-        TODO("Not yet implemented")
-    }
 }
 
 private operator fun Any?.compareTo(value: Any): Int =

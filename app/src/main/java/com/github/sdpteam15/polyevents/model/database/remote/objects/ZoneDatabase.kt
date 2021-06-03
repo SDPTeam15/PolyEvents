@@ -23,9 +23,9 @@ class ZoneDatabase(private val db: DatabaseInterface) : ZoneDatabaseInterface {
     ): Observable<Boolean> = db.setEntity(newZone, zoneId, ZONE_COLLECTION)
 
     override fun getAllZones(
-        matcher: Matcher?,
+        zones: ObservableList<Zone>,
         number: Long?,
-        zones: ObservableList<Zone>
+        matcher: Matcher?
     ): Observable<Boolean> =
         db.getListEntity(zones, null, matcher, ZONE_COLLECTION, ZoneAdapter)
 

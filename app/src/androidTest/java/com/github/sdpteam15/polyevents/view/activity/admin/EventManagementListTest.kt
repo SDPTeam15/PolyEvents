@@ -85,7 +85,7 @@ class EventManagementListTest {
                 anyOrNull()
             )
         ).thenAnswer {
-            (it.arguments[2] as ObservableList<Zone>).add(
+            (it.arguments[0] as ObservableList<Zone>).add(
                 Zone(
                     zoneName = "Test zone",
                     zoneId = "zoneId"

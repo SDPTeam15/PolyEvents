@@ -132,18 +132,16 @@ abstract class LocalDatabase : RoomDatabase() {
 
                 currentDatabase.eventDatabase
                     .getEvents(
-                        eventList = eventsLocalObservable,
+                        eventList = eventsLocalObservable.sortAndLimitFrom(null) {
+                            it.startTime
+                        },
                         matcher = {
                             // Get all events to which the current user is registered to
                             // and order them by start date
                             it.whereArrayContains(
                                 DatabaseConstant.EventConstant.EVENT_PARTICIPANTS.value,
                                 currentDatabase.currentUser!!.uid
-                                // TODO: why is orderby not working (need indices?)
-                            )/*.orderBy(
-                                            DatabaseConstant.EventConstant.EVENT_START_TIME.value,
-                                            Query.Direction.ASCENDING
-                                    )*/
+                            )
                         },
                     )
             }
