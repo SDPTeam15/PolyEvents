@@ -4,6 +4,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
+import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 import kotlin.test.assertEquals
@@ -12,6 +14,12 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 class ObservableListTest {
+
+    @Before
+    fun setup() {
+        PolyEventsApplication.inTest = true
+    }
+
     @Test
     fun lambdaIsUpdatedOnAdd() {
         var isUpdateAdd = false
@@ -459,5 +467,51 @@ class ObservableListTest {
             assert(false)
         }
         observable.updateAll(to)
+    }
+
+    @Test
+    fun sortAndLimitFrom() {
+        val observableSorted = ObservableList<String>()
+        var observable = observableSorted.sortAndLimitFrom(
+            null, 4
+        ) { it }
+        observable.addAll(
+            listOf(
+                "B",
+                "A",
+                "G",
+                "C",
+                "F",
+                "H",
+                "B",
+            )
+        )
+        assertEquals(
+            "ObservableList[Observable'A', Observable'B', Observable'B', Observable'C']",
+            observableSorted.toString()
+        )
+
+        val mockedLifecycleOwner = Mockito.mock(LifecycleOwner::class.java)
+        val mockedLifecycle = Mockito.mock(Lifecycle::class.java)
+        Mockito.`when`(mockedLifecycleOwner.lifecycle).thenReturn(mockedLifecycle)
+
+        observable = observableSorted.sortAndLimitFrom(
+            mockedLifecycleOwner, 4
+        ) { it }
+        observable.addAll(
+            listOf(
+                "B",
+                "A",
+                "G",
+                "C",
+                "F",
+                "H",
+                "B",
+            )
+        )
+        assertEquals(
+            "ObservableList[Observable'A', Observable'B', Observable'B', Observable'C']",
+            observableSorted.toString()
+        )
     }
 }

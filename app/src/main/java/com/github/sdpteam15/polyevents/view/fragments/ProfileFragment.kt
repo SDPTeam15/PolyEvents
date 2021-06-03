@@ -74,7 +74,8 @@ class ProfileFragment(private val userId: String? = null) : Fragment(), UserModi
             obsDate.observe(this) {
                 val europeanDateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 
-                viewRoot.findViewById<EditText>(R.id.profileBirthdayET).setText(europeanDateFormatter.format(it.value))
+                viewRoot.findViewById<EditText>(R.id.profileBirthdayET)
+                    .setText(europeanDateFormatter.format(it.value))
             }
 
             if (adminMode) {
@@ -98,7 +99,7 @@ class ProfileFragment(private val userId: String? = null) : Fragment(), UserModi
 
     private fun getUserInformation() {
         //Get user information in the database
-        currentDatabase.userDatabase!!.getUserInformation(
+        currentDatabase.userDatabase.getUserInformation(
             userInfoLiveData,
             currentUID
         )
@@ -150,15 +151,15 @@ class ProfileFragment(private val userId: String? = null) : Fragment(), UserModi
         viewRoot.findViewById<Button>(R.id.btnUpdateInfos).setOnClickListener {
             //Clear the previous map and add every field
             currentUser!!.username = profileUsernameET.text.toString()
-            if(obsDate.value!=null) {
+            if (obsDate.value != null) {
                 currentUser!!.birthDate = obsDate.value
             }
             //Call the DB to update the user information and getUserInformation once it is done
-            currentDatabase.userDatabase!!.updateUserInformation(
+            currentDatabase.userDatabase.updateUserInformation(
                 currentUser!!
             ).observe(this) { newValue ->
                 if (newValue.value) {
-                    currentDatabase.userDatabase!!.getUserInformation(
+                    currentDatabase.userDatabase.getUserInformation(
                         userInfoLiveData,
                         currentUser!!.uid
                     )
@@ -169,11 +170,11 @@ class ProfileFragment(private val userId: String? = null) : Fragment(), UserModi
         }
 
         viewRoot.findViewById<Button>(R.id.btnBirthday).setOnClickListener {
-            val date = obsDate.value?:LocalDate.now()
+            val date = obsDate.value ?: LocalDate.now()
             val dialog = DatePickerDialog(
                 requireContext(),
                 { _: DatePicker, year: Int, month: Int, day: Int ->
-                    obsDate.postValue(LocalDate.of(year,month+1,day))
+                    obsDate.postValue(LocalDate.of(year, month + 1, day))
                 },
                 date.year,
                 date.monthValue - 1,
@@ -192,7 +193,7 @@ class ProfileFragment(private val userId: String? = null) : Fragment(), UserModi
     fun initProfileList(viewRoot: View, user: UserEntity) {
         user.userProfiles.observeRemove(this) {
             if (it.sender != currentDatabase) {
-                currentDatabase.userDatabase!!.removeProfileFromUser(it.value, user)
+                currentDatabase.userDatabase.removeProfileFromUser(it.value, user)
                     .observeOnce(this) {
                         if (!it.value)
                             HelperFunctions.showToast(
@@ -204,7 +205,7 @@ class ProfileFragment(private val userId: String? = null) : Fragment(), UserModi
         }
         user.userProfiles.observeAdd(this) {
             if (it.sender != currentDatabase)
-                currentDatabase.userDatabase!!.addUserProfileAndAddToUser(it.value, user)
+                currentDatabase.userDatabase.addUserProfileAndAddToUser(it.value, user)
                     .observeOnce(this) {
                         if (!it.value)
                             HelperFunctions.showToast(
@@ -291,7 +292,7 @@ class ProfileFragment(private val userId: String? = null) : Fragment(), UserModi
     }
 
     override fun profileHasChanged() {
-        currentDatabase.userDatabase!!.getUserInformation(
+        currentDatabase.userDatabase.getUserInformation(
             userInfoLiveData,
             currentUID
         )

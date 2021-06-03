@@ -71,7 +71,7 @@ class ZoneEventsFragment : Fragment(R.layout.fragment_zone_events_list) {
             eventsRecyclerView.adapter = eventAdapter
             eventsRecyclerView.layoutManager = LinearLayoutManager(context)
 
-            currentDatabase.eventDatabase!!.getEventsByZoneId(
+            currentDatabase.eventDatabase.getEventsByZoneId(
                 zoneId = zoneId!!,
                 events = eventsObservable
             )

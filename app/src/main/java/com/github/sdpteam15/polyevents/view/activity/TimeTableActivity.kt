@@ -289,7 +289,7 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
             }.then
         }
 
-        Database.currentDatabase.eventDatabase!!.getEvents(
+        Database.currentDatabase.eventDatabase.getEvents(
             null,
             null,
             eventList = requestObservable

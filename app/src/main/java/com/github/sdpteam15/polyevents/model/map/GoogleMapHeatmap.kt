@@ -44,7 +44,7 @@ object GoogleMapHeatmap {
             val task = object : TimerTask() {
                 override fun run() {
                     val locations = ObservableList<LatLng>()
-                    Database.currentDatabase.heatmapDatabase!!.getLocations(locations)
+                    Database.currentDatabase.heatmapDatabase.getLocations(locations)
                     locations.observeOnce(false) {
                         addHeatMap(it.value)
                     }

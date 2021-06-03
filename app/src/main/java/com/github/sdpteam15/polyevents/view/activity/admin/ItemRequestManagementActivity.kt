@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.view.activity.admin
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.transition.Slide
@@ -47,12 +48,15 @@ class ItemRequestManagementActivity : AppCompatActivity() {
         requests.group(this) { it.userId }.then.observePut(this) {
             if (!userNames.containsKey(it.key)) {
                 val tempUsers = Observable<UserEntity>()
-                currentDatabase.userDatabase!!.getUserInformation(tempUsers, it.key)
+                currentDatabase.userDatabase.getUserInformation(tempUsers, it.key)
                     .observeOnce(this) { ans ->
                         if (ans.value) {
                             userNames[it.key] = tempUsers.value?.name ?: "ANONYMOUS"
                         } else {
-                            HelperFunctions.showToast(getString(R.string.failed_to_get_username_from_database), this)
+                            HelperFunctions.showToast(
+                                getString(R.string.failed_to_get_username_from_database),
+                                this
+                            )
                         }
                     }
             }
@@ -74,16 +78,13 @@ class ItemRequestManagementActivity : AppCompatActivity() {
             )
 
         //Wait until we have both requests accepted from the database to show the material requests
-        currentDatabase.materialRequestDatabase!!.getMaterialRequestList(
-            requests,
-            { collection ->
-                collection.orderBy(DatabaseConstant.MaterialRequestConstant.MATERIAL_REQUEST_STATUS.value)
-            })
+        currentDatabase.materialRequestDatabase.getMaterialRequestList(
+            requests.sortAndLimitFrom(this) { it.status })
             .observeOnce(this) {
                 if (!it.value) {
                     HelperFunctions.showToast("Failed to get the list of material requests", this)
                 } else {
-                    currentDatabase.itemDatabase!!.getItemsList(items)
+                    currentDatabase.itemDatabase.getItemsList(items)
                         .observeOnce(this) { it2 ->
                             if (!it2.value) {
                                 HelperFunctions.showToast("Failed to get the list of items", this)
@@ -97,7 +98,7 @@ class ItemRequestManagementActivity : AppCompatActivity() {
 
         if (canAccept(request)) {
             request.status = MaterialRequest.Status.ACCEPTED
-            currentDatabase.materialRequestDatabase!!.updateMaterialRequest(
+            currentDatabase.materialRequestDatabase.updateMaterialRequest(
                 request.requestId!!,
                 request
             ).observeOnce(this) {
@@ -113,7 +114,11 @@ class ItemRequestManagementActivity : AppCompatActivity() {
             }
             for (item in request.items) {
                 val oldItem = items.first { it.first.itemId == item.key }
-                currentDatabase.itemDatabase!!.updateItem(oldItem.first, oldItem.second, oldItem.third - item.value)
+                currentDatabase.itemDatabase.updateItem(
+                    oldItem.first,
+                    oldItem.second,
+                    oldItem.third - item.value
+                )
             }
         } else {
             HelperFunctions.showToast("Can not accept this request", this)
@@ -133,6 +138,7 @@ class ItemRequestManagementActivity : AppCompatActivity() {
         createRefusalPopup(request)
     }
 
+    @SuppressLint("InflateParams")
     private fun createRefusalPopup(request: MaterialRequest) {
         // Initialize a new layout inflater instance
         val inflater: LayoutInflater =
@@ -170,7 +176,7 @@ class ItemRequestManagementActivity : AppCompatActivity() {
         confirmButton.setOnClickListener {
             request.status = MaterialRequest.Status.REFUSED
             request.adminMessage = message.text.toString()
-            currentDatabase.materialRequestDatabase!!.updateMaterialRequest(
+            currentDatabase.materialRequestDatabase.updateMaterialRequest(
                 request.requestId!!,
                 request
             ).observeOnce(this) {

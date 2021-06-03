@@ -20,6 +20,7 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.Timestamp
 import java.time.*
 import java.util.*
 
@@ -96,18 +97,18 @@ object HelperFunctions {
          */
 
         if (ContextCompat.checkSelfPermission(
-                        activity,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                )
-                == PackageManager.PERMISSION_GRANTED
+                activity,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+            == PackageManager.PERMISSION_GRANTED
         ) {
             return Observable(true)
         } else if (activity is RequestPermissionsRequestCodeValidator) {
             end = Observable<Boolean>()
             ActivityCompat.requestPermissions(
-                    activity,
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
+                activity,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
             )
             return end!!
         } else
@@ -115,16 +116,16 @@ object HelperFunctions {
     }
 
     fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<String>,
-            grantResults: IntArray
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
     ) {
         when (requestCode) {
             PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION -> {
                 end?.value = isPermissionGranted(
-                        permissions,
-                        grantResults,
-                        Manifest.permission.ACCESS_FINE_LOCATION
+                    permissions,
+                    grantResults,
+                    Manifest.permission.ACCESS_FINE_LOCATION
                 )
                 end = null
             }
@@ -137,7 +138,7 @@ object HelperFunctions {
         LocationServices.getFusedLocationProviderClient(activity).lastLocation.addOnSuccessListener {
             if (it != null)
                 end.postValue(
-                        LatLng(it.latitude, it.longitude)
+                    LatLng(it.latitude, it.longitude)
                 )
             else
                 end.postValue(null)
@@ -194,8 +195,12 @@ object HelperFunctions {
      * @param date the Date instance to convert
      * @return the corresponding LocalDateTime
      */
-    fun dateToLocalDateTime(date: Date?): LocalDateTime? =
-            date?.let { LocalDateTime.ofInstant(it.toInstant(), ZoneId.systemDefault()) }
+    fun dateToLocalDateTime(date: Any?): LocalDateTime? =
+        when(date){
+            is Timestamp -> LocalDateTime.ofInstant(date.toDate().toInstant(), ZoneId.systemDefault())
+            is Date -> LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault())
+            else -> null
+        }
 
     /**
      * Convert
@@ -205,7 +210,7 @@ object HelperFunctions {
      * @return the corresponding Date
      */
     fun localDateTimeToDate(ldt: LocalDateTime?): Date? =
-            ldt?.let { Date.from(it.atZone(ZoneId.systemDefault()).toInstant()) }
+        ldt?.let { Date.from(it.atZone(ZoneId.systemDefault()).toInstant()) }
 
     /**
      * Calculates a person's age based on his birthDate and the current chosen date.
@@ -214,7 +219,7 @@ object HelperFunctions {
      * @return the age of the person
      */
     fun calculateAge(birthDate: LocalDate, currentDate: LocalDate): Int =
-            Period.between(birthDate, currentDate).years
+        Period.between(birthDate, currentDate).years
 
     /**
      * Check if a permission was granted
@@ -225,9 +230,9 @@ object HelperFunctions {
      * @return true if the permission was granted
      */
     fun isPermissionGranted(
-            grantPermissions: Array<String>,
-            grantResults: IntArray,
-            permission: String
+        grantPermissions: Array<String>,
+        grantResults: IntArray,
+        permission: String
     ): Boolean {
         for (a in grantPermissions.indices) {
             if (grantPermissions[a] == permission) {
@@ -267,8 +272,8 @@ object HelperFunctions {
         fun fromLong(value: Long?): LocalDateTime? {
             return value?.let {
                 LocalDateTime.ofInstant(
-                        Instant.ofEpochMilli(it),
-                        TimeZone.getDefault().toZoneId()
+                    Instant.ofEpochMilli(it),
+                    TimeZone.getDefault().toZoneId()
                 )
             }
         }
@@ -284,6 +289,27 @@ object HelperFunctions {
         }
     }
 
+    /**
+     * if this object is not null apply run else return default
+     * @param default default return
+     * @param run the function to execute
+     * @return if this object is not null apply run else return default
+     */
+    fun <S, T> S?.apply(default: T, run: (S) -> T) = if (this != null) run(this) else default
 
-    fun <S, T> S?.thenReturn(run: (S) -> T?) = if (this != null) run(this) else null
+    /**
+     * if this object is not null apply run else return default
+     * @param default default return
+     * @param run the function to execute
+     * @return if this object is not null apply run else return default
+     */
+    fun <S, T> S?.apply(run: (S) -> T, default: Lazy<T>) =
+        if (this != null) run(this) else default.value
+
+    /**
+     * if this object is not null apply run else return null
+     * @param run the function to execute
+     * @return if this object is apply do the run else return null
+     */
+    fun <S, T> S?.apply(run: (S) -> T?) = if (this != null) run(this) else null
 }

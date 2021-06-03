@@ -22,7 +22,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 /**
  * Documentation on: https://developer.android.com/guide/topics/ui/dialogs.html#kotlin
  */
-class ZonePreviewBottomSheetDialogFragment: BottomSheetDialogFragment() {
+class ZonePreviewBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
     companion object {
         const val TAG = "ZonePreviewBottomSheetDialogFragment"
@@ -100,7 +100,7 @@ class ZonePreviewBottomSheetDialogFragment: BottomSheetDialogFragment() {
             }
         }
 
-        currentDatabase.zoneDatabase!!.getZoneInformation(
+        currentDatabase.zoneDatabase.getZoneInformation(
             zoneId = zoneId!!,
             zone = zoneObservable
         )
@@ -109,7 +109,8 @@ class ZonePreviewBottomSheetDialogFragment: BottomSheetDialogFragment() {
         val eventsObservableList = ObservableList<Event>()
         eventsObservableList.observe(this) {
             if (it.value.isEmpty()) {
-                previewUpcomingEventsTextView.text = resources.getString(R.string.no_upcoming_events)
+                previewUpcomingEventsTextView.text =
+                    resources.getString(R.string.no_upcoming_events)
             } else {
                 previewUpcomingEventsTextView.text = resources.getString(R.string.upcoming_events)
                 previewUpComingEventsRecyclerView.adapter!!.notifyDataSetChanged()
@@ -127,7 +128,7 @@ class ZonePreviewBottomSheetDialogFragment: BottomSheetDialogFragment() {
         previewUpComingEventsRecyclerView.adapter = eventPreviewAdapter
 
         // Select the first 3 events happening in the zone for preview
-        currentDatabase.eventDatabase!!.getEventsByZoneId(
+        currentDatabase.eventDatabase.getEventsByZoneId(
             events = eventsObservableList,
             zoneId = zoneId!!,
             limit = 3

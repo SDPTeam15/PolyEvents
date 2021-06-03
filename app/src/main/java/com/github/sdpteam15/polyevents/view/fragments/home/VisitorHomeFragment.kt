@@ -54,7 +54,7 @@ class VisitorHomeFragment : Fragment() {
         recyclerView.adapter = EventItemAdapter(events, openEvent)
         recyclerView.setHasFixedSize(false)
 
-        currentDatabase.eventDatabase!!.getEvents(null, NUMBER_UPCOMING_EVENTS.toLong(), events)
+        currentDatabase.eventDatabase.getEvents(null, NUMBER_UPCOMING_EVENTS.toLong(), events)
             .observe(this) {
                 if (!it.value) {
                     HelperFunctions.showToast("Failed to load events", fragmentView.context)

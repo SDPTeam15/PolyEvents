@@ -11,7 +11,7 @@ import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDat
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.database.remote.objects.UserSettingsDatabaseInterface
-import com.github.sdpteam15.polyevents.model.room.UserSettings
+import com.github.sdpteam15.polyevents.model.database.local.entity.UserSettings
 import com.github.sdpteam15.polyevents.viewmodel.UserSettingsViewModel
 import com.github.sdpteam15.polyevents.viewmodel.UserSettingsViewModelFactory
 import com.schibsted.spain.barista.assertion.BaristaCheckedAssertions.assertChecked
