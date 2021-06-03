@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.database.objects
 
 import com.github.sdpteam15.polyevents.database.HelperTestFunction
+import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.PROFILE_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.USER_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.ProfileAdapter
@@ -13,6 +14,8 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito
+import org.mockito.kotlin.anyOrNull
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -50,7 +53,13 @@ class UserDatabaseTest {
     fun firstConnexion() {
         val user = UserEntity("uid")
 
+        //Mockito.`when`(mockUserDatabase.getUserProfilesList(anyOrNull(), anyOrNull())).thenReturn(Observable(true))
+
         HelperTestFunction.nextSetEntity { true }
+        HelperTestFunction.nextAddEntityAndGetId { "" }
+        HelperTestFunction.nextGetMapEntity { true }
+        HelperTestFunction.nextGetListEntity { true }
+
         mockUserDatabase.firstConnexion(user).observeOnce { assert(it.value) }.then.postValue(false)
 
         val set = HelperTestFunction.lastSetEntity()!!

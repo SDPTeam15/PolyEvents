@@ -7,12 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.NUMBER_UPCOMING_EVENTS
+import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
@@ -43,6 +45,8 @@ class VisitorHomeFragment : Fragment() {
         listUpcomingEventsLayout =
             fragmentView.findViewById<LinearLayout>(R.id.id_upcoming_events_list)
 
+
+
         currentDatabase.eventDatabase.getEvents(null, NUMBER_UPCOMING_EVENTS.toLong(), events)
             .observe(this) {
                 if (!it.value) {
@@ -66,6 +70,21 @@ class VisitorHomeFragment : Fragment() {
         }
 
         return fragmentView
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val bool =
+            UserLogin.currentUserLogin.isConnected() && currentDatabase.currentUser!!.userProfiles.fold(
+                false, { a, c ->
+                    if (a) {
+                        a
+                    } else {
+                        c.userRole.ordinal < 3
+                    }
+                })
+        requireActivity().findViewById<Spinner>(R.id.spinner_visitor).visibility =
+            if (bool) View.VISIBLE else View.INVISIBLE
     }
 
     /**
