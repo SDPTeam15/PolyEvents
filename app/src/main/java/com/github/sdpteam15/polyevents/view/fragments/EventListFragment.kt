@@ -86,18 +86,14 @@ class EventListFragment : Fragment() {
 
         recyclerView.adapter = EventItemAdapter(events, openEvent)
         recyclerView.setHasFixedSize(false)
+
+        updateEventsList()
         // Inflate the layout for this fragment
         return fragmentView
     }
 
     override fun onResume() {
         super.onResume()
-
-        myEventsSwitchCallback(myEventsSwitch.isChecked)
-    }
-
-    override fun onStart() {
-        super.onStart()
 
         myEventsSwitchCallback(myEventsSwitch.isChecked)
     }
@@ -138,14 +134,14 @@ class EventListFragment : Fragment() {
      * For each event in the local cache, check if the remote database's events contain such an events.
      * If an event is no longer on remote (e.g. deleted), delete it from cache as well
      * and update the list.
-     * @param eventsLocal the list of events stored in local cache to synchronize
+     * @param eventsInLocal the list of events stored in local cache to synchronize
      * @return the list of events stored in local cache filtered of obsolete events
      */
-    private fun syncLocalWithFetchedEventsFromRemote(eventsLocal: List<EventLocal>): List<EventLocal> {
-        val eventsLocalCopy = eventsLocal.toMutableList()
+    private fun syncLocalWithFetchedEventsFromRemote(eventsInLocal: List<EventLocal>): List<EventLocal> {
+        val eventsLocalCopy = eventsInLocal.toMutableList()
         var eventsChanged = false
 
-        for (eventLocal in eventsLocal) {
+        for (eventLocal in eventsInLocal) {
             /*
             eventId uniquely identifies an event. If no event exists in the remote with that event
             id, then that event has been deleted, and must be deleted in the local cache as well
@@ -160,7 +156,8 @@ class EventListFragment : Fragment() {
         }
 
         if (eventsChanged) {
-            showToast("Events updated", context)
+            eventsLocal.updateAll(eventsLocalCopy)
+            showToast("Events have been updated", context)
         }
         return eventsLocalCopy
     }
@@ -174,7 +171,6 @@ class EventListFragment : Fragment() {
                 fetchedDataFromRemote = true
             }
         }
-        updateEventsList()
     }
 
     private fun updateEventsList() {
