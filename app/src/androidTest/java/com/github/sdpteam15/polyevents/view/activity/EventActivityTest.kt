@@ -102,9 +102,9 @@ class EventActivityTest {
             tags = mutableListOf("music", "live", "pogo")
         )
         testPublicEvent = testLimitedEvent.copy(
-                eventId = publicEventId,
-                eventName = "public Event only",
-                tags = mutableListOf()
+            eventId = publicEventId,
+            eventName = "public Event only",
+            tags = mutableListOf()
         )
 
         testLimitedEvent.makeLimitedEvent(3)
@@ -124,9 +124,9 @@ class EventActivityTest {
         }
 
         When(
-                mockedEventDatabase.getEventFromId(
-                        id = publicEventId, returnEvent = EventActivity.obsEvent
-                )
+            mockedEventDatabase.getEventFromId(
+                id = publicEventId, returnEvent = EventActivity.obsEvent
+            )
         ).then {
             EventActivity.obsEvent.postValue(testPublicEvent)
             Observable(true)
@@ -138,12 +138,33 @@ class EventActivityTest {
             )
         ).thenReturn(Observable(true))
 
+        When(
+            mockedEventDatabase.getMeanRatingForEvent(
+                eventId = anyOrNull(),
+                mean = anyOrNull()
+            )
+        ).thenReturn(Observable(true))
+
+        When(
+            mockedEventDatabase.getRatingsForEvent(
+                eventId = anyOrNull(),
+                limit = anyOrNull(),
+                ratingList = anyOrNull()
+            )
+        ).thenReturn(
+            Observable(true)
+        )
+
         mockedNotificationsScheduler = mock(NotificationsScheduler::class.java)
         When(mockedNotificationsScheduler.cancelNotification(anyOrNull())).then { }
         When(mockedNotificationsScheduler.generateNewNotificationId()).thenReturn(0)
-        When(mockedNotificationsScheduler.scheduleEventNotification(
-            eventId = anyOrNull(), notificationMessage = anyOrNull(), scheduledTime = anyOrNull()
-        )).thenReturn(0)
+        When(
+            mockedNotificationsScheduler.scheduleEventNotification(
+                eventId = anyOrNull(),
+                notificationMessage = anyOrNull(),
+                scheduledTime = anyOrNull()
+            )
+        ).thenReturn(0)
 
         // Create local db
         val context: Context = ApplicationProvider.getApplicationContext()
@@ -162,6 +183,22 @@ class EventActivityTest {
         // close and remove the mock local database
         localDatabase.close()
         currentDatabase = FirestoreDatabaseProvider
+    }
+
+    @Test
+    fun checkProgressDialogCorrectlyDisplayed() {
+        When(
+            mockedEventDatabase.getEventFromId(
+                id = anyOrNull(),
+                returnEvent = anyOrNull()
+            )
+        ).thenReturn(
+            Observable()
+        )
+
+        goToEventActivityWithIntent(limitedEventId)
+
+        assertDisplayed(R.id.fragment_progress_dialog)
     }
 
     @Test
@@ -211,10 +248,12 @@ class EventActivityTest {
 
     @Test
     fun testEventFetchFailDisablesButtonsAndDoesNotShowActivity() {
-        When(mockedEventDatabase.getEventFromId(
-            id = anyOrNull(),
-            returnEvent = anyOrNull()
-        )).thenReturn(Observable(false))
+        When(
+            mockedEventDatabase.getEventFromId(
+                id = anyOrNull(),
+                returnEvent = anyOrNull()
+            )
+        ).thenReturn(Observable(false))
 
         goToEventActivityWithIntent(limitedEventId)
 
@@ -491,6 +530,7 @@ class EventActivityTest {
         // Click review event
         clickOn(R.id.event_leave_review_button)
         assertDisplayed(R.id.leave_review_dialog_fragment)
+        assertDisplayed(R.id.leave_review_fragment_delete_button)
 
         // Check fetched rating is displayed
         assertDisplayed(R.id.leave_review_fragment_feedback_text, existingRating.feedback!!)
@@ -501,6 +541,121 @@ class EventActivityTest {
 
         assertNotExist(R.id.leave_review_dialog_fragment)
         assertEquals(existingRating.rate, 3.0f)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    @Test
+    fun staysOnFragmentIfNotRated() {
+        goToEventActivityWithIntent(limitedEventId)
+
+        // Click review event
+        clickOn(R.id.event_leave_review_button)
+        assertDisplayed(R.id.leave_review_dialog_fragment)
+        clickOn(R.id.leave_review_fragment_save_button)
+
+        assertDisplayed(R.id.leave_review_dialog_fragment)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    @Test
+    fun stayOnFragmentIfRemoveFails() {
+        val existingRating = Rating(
+            ratingId = "1",
+            userId = testUser.uid,
+            eventId = limitedEventId,
+            rate = 4.0f,
+            feedback = "Noice"
+        )
+        When(
+            mockedEventDatabase.getUserRatingFromEvent(
+                userId = anyOrNull(),
+                eventId = anyOrNull(),
+                returnedRating = anyOrNull()
+            )
+        ).thenAnswer {
+            // Not very robust, need to change if changed method signature
+            (it.arguments[2] as Observable<Rating>).postValue(
+                existingRating
+            )
+            Observable(true)
+        }
+
+        When(
+            mockedEventDatabase.removeRating(
+                rating = anyOrNull()
+            )
+        ).then {
+            Observable(false)
+        }
+
+        goToEventActivityWithIntent(limitedEventId)
+
+        // Click review event
+        clickOn(R.id.event_leave_review_button)
+        assertDisplayed(R.id.leave_review_dialog_fragment)
+        assertDisplayed(R.id.leave_review_fragment_delete_button)
+
+        // Check fetched rating is displayed
+        assertDisplayed(R.id.leave_review_fragment_feedback_text, existingRating.feedback!!)
+        assertProgress(R.id.leave_review_fragment_rating, existingRating.rate!!.toInt())
+
+        onView(withId(R.id.leave_review_fragment_rating)).perform(SetRating(3.0f))
+        clickOn(R.id.leave_review_fragment_delete_button)
+
+        assertDisplayed(R.id.leave_review_dialog_fragment)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    @Test
+    fun canDeleteRatingIfUserRatedAlready() {
+        val existingRating = Rating(
+            ratingId = "1",
+            userId = testUser.uid,
+            eventId = limitedEventId,
+            rate = 4.0f,
+            feedback = "Noice"
+        )
+
+        var deleteRating = Rating()
+        When(
+            mockedEventDatabase.getUserRatingFromEvent(
+                userId = anyOrNull(),
+                eventId = anyOrNull(),
+                returnedRating = anyOrNull()
+            )
+        ).thenAnswer {
+            // Not very robust, need to change if changed method signature
+            (it.arguments[2] as Observable<Rating>).postValue(
+                existingRating
+            )
+            Observable(true)
+        }
+
+        When(
+            mockedEventDatabase.removeRating(
+                rating = anyOrNull()
+            )
+        ).then {
+            deleteRating = it.arguments[0] as Rating
+            Observable(true)
+        }
+
+        goToEventActivityWithIntent(limitedEventId)
+
+        // Click review event
+        clickOn(R.id.event_leave_review_button)
+        assertDisplayed(R.id.leave_review_dialog_fragment)
+        assertDisplayed(R.id.leave_review_fragment_delete_button)
+
+        // Check fetched rating is displayed
+        assertDisplayed(R.id.leave_review_fragment_feedback_text, existingRating.feedback!!)
+        assertProgress(R.id.leave_review_fragment_rating, existingRating.rate!!.toInt())
+
+        onView(withId(R.id.leave_review_fragment_rating)).perform(SetRating(3.0f))
+        clickOn(R.id.leave_review_fragment_delete_button)
+
+        assertNotExist(R.id.leave_review_dialog_fragment)
+        assertEquals(existingRating, deleteRating)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -613,7 +768,6 @@ class EventActivityTest {
         assert(retrievedEventsAfterUnfollow.isEmpty())
     }
 
-
     /**
      * Idea taken from StackOverflow
      * https://stackoverflow.com/questions/25209508/how-to-set-a-specific-rating-on-ratingbar-in-espresso/25226081
@@ -656,7 +810,4 @@ class EventActivityTest {
         )
         assertEquals(eventLocalWithCommonAttributes, EventLocal.fromEvent(event))
     }
-
-
 }
-

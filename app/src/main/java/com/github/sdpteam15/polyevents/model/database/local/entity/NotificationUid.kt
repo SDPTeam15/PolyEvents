@@ -15,13 +15,13 @@ import androidx.room.PrimaryKey
  */
 @Entity(tableName = "notification_uid_table")
 data class NotificationUid(
-        @PrimaryKey
-        @ColumnInfo(name = "id")
-        @NonNull
-        val id: Int = SENTINEL_VALUE,
-        @ColumnInfo(name = "notification_uid")
-        @NonNull
-        val uid: Int = DEFAULT_UID
+    @PrimaryKey
+    @ColumnInfo(name = "id")
+    @NonNull
+    val id: Int = SENTINEL_VALUE,
+    @ColumnInfo(name = "notification_uid")
+    @NonNull
+    val uid: Int = DEFAULT_UID
 ) {
     companion object {
         const val SENTINEL_VALUE = 0

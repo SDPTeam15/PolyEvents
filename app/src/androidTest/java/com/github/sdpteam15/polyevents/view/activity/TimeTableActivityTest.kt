@@ -25,7 +25,7 @@ import org.mockito.kotlin.anyOrNull
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
 
-@Suppress("UNCHECKED_CAST","TYPE_INFERENCE_ONLY_INPUT_TYPES_WARNING")
+@Suppress("UNCHECKED_CAST", "TYPE_INFERENCE_ONLY_INPUT_TYPES_WARNING")
 class TimeTableActivityTest {
     lateinit var mockedDatabase: DatabaseInterface
     lateinit var mockedEventDB: EventDatabaseInterface
@@ -69,7 +69,7 @@ class TimeTableActivityTest {
         )
     private lateinit var events: MutableList<Event>
     private lateinit var zones: MutableList<Zone>
-    private var nbzones: Int=0
+    private var nbzones: Int = 0
 
     private fun setupEventsAndZones() {
         events = mutableListOf(event1, event2, event3, event4)
@@ -124,6 +124,25 @@ class TimeTableActivityTest {
                 Observable(true)
             }
 
+        Mockito.`when`(
+            mockedEventDB.getMeanRatingForEvent(
+                eventId = anyOrNull(),
+                mean = anyOrNull()
+            )
+        ).thenReturn(
+            Observable(true)
+        )
+
+        Mockito.`when`(
+            mockedEventDB.getRatingsForEvent(
+                eventId = anyOrNull(),
+                limit = anyOrNull(),
+                ratingList = anyOrNull()
+            )
+        ).thenReturn(
+            Observable(true)
+        )
+
         Database.currentDatabase = mockedDatabase
         scenario = ActivityScenario.launch(intent)
     }
@@ -136,7 +155,7 @@ class TimeTableActivityTest {
     }
 
     @Test
-    fun goesToActivity(){
+    fun goesToActivity() {
         Thread.sleep(1000)
         assertEquals(1, TimeTableActivity.instance!!.displayedViews.size)
         Espresso.onView(ViewMatchers.withId(R.id.id_change_zone_right))
@@ -165,7 +184,7 @@ class TimeTableActivityTest {
     }
 
     @Test
-    fun generateTimeTest(){
+    fun generateTimeTest() {
         Thread.sleep(1000)
         val v1 = 42
         val v2 = 34
@@ -183,7 +202,7 @@ class TimeTableActivityTest {
 
 
     @Test
-    fun clic(){
+    fun clic() {
         Thread.sleep(1000)
         assertEquals(1, TimeTableActivity.instance!!.displayedViews.size)
         val view = TimeTableActivity.instance!!.displayedViews.first()

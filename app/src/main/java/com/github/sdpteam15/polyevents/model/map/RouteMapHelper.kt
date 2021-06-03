@@ -538,7 +538,7 @@ object RouteMapHelper {
      * @param context the current context
      */
     fun createNewRoute(context: Context?) {
-        if(deleteMode)
+        if (deleteMode)
             removeRoute()
         if (tempPolyline != null) {
             tempPolyline!!.remove()

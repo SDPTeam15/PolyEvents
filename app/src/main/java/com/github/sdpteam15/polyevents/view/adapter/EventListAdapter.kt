@@ -84,12 +84,16 @@ class EventListAdapter(
         override fun bind(value: Event) {
             this.event = value
             view.findViewById<TextView>(R.id.tv_event_title).text = event.eventName
-            view.findViewById<TextView>(R.id.id_tv_event_start_date).text = localDatetimeToString(event.startTime, noHourText)
-            view.findViewById<TextView>(R.id.id_tv_end_date_edit_text).text = localDatetimeToString(event.endTime, noHourText)
-            view.findViewById<ImageButton>(R.id.id_edit_event_button).setOnClickListener { modifyListener(event.eventId!!) }
-            if(isOrganiser){
-                view.findViewById<ImageButton>(R.id.id_delete_event_button).visibility = View.INVISIBLE
-            }else{
+            view.findViewById<TextView>(R.id.id_tv_event_start_date).text =
+                localDatetimeToString(event.startTime, noHourText)
+            view.findViewById<TextView>(R.id.id_tv_end_date_edit_text).text =
+                localDatetimeToString(event.endTime, noHourText)
+            view.findViewById<ImageButton>(R.id.id_edit_event_button)
+                .setOnClickListener { modifyListener(event.eventId!!) }
+            if (isOrganiser) {
+                view.findViewById<ImageButton>(R.id.id_delete_event_button).visibility =
+                    View.INVISIBLE
+            } else {
                 view.findViewById<ImageButton>(R.id.id_delete_event_button).setOnClickListener {
                     deleteListener(event.zoneId!!, event)
                 }

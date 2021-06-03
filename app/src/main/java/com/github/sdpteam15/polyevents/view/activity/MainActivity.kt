@@ -9,11 +9,13 @@ import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import android.widget.Spinner
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.Settings
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.model.database.local.entity.UserSettings
+import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserRole
@@ -27,6 +29,8 @@ import com.github.sdpteam15.polyevents.view.fragments.home.ProviderHomeFragment
 import com.github.sdpteam15.polyevents.view.fragments.home.StaffHomeFragment
 import com.github.sdpteam15.polyevents.view.fragments.home.VisitorHomeFragment
 import com.github.sdpteam15.polyevents.view.service.TimerService
+import com.github.sdpteam15.polyevents.viewmodel.UserSettingsViewModel
+import com.github.sdpteam15.polyevents.viewmodel.UserSettingsViewModelFactory
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -60,6 +64,13 @@ class MainActivity : AppCompatActivity() {
 
         var instance: MainActivity? = null
         var selectedRole: UserRole? = null
+
+        lateinit var localDatabase: LocalDatabase
+    }
+
+    // Lazily initialized view models, instantiated only when accessed for the first time
+    private val userSettingsViewModel: UserSettingsViewModel by viewModels {
+        UserSettingsViewModelFactory(localDatabase.userSettingsDao())
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,18 +89,37 @@ class MainActivity : AppCompatActivity() {
             getString(R.string.notification_channel_name)
         )
 
-        //TODO remove to for local cache
-        Settings.mainActivity = this
-        Settings.isLoaded = Settings.isLoaded
-        val intent = Intent(applicationContext, TimerService::class.java)
-        startService(intent)
-        TimerService.instance.observeOnce {
-            it.value.addTask {
-                if (Settings.IsSendingLocationOn)
-                    HelperFunctions.getLoc(this).observeOnce { LatLng ->
-                        if (LatLng.value != null)
-                            currentDatabase.heatmapDatabase.setLocation(LatLng.value)
+        localDatabase = (application as PolyEventsApplication).localDatabase
+
+        // Start a timed service in the background to send the device location id
+        // to the database, for heatmap functionality. Have to check if the user enabled
+        // sending location first in the User settings
+        if (TimerService.instance.value == null) {
+            // Get the user settings from local cache and create callback to update the user settings if they changed
+            val userSettingsObservable = ObservableList<UserSettings>()
+            userSettingsObservable.observe(this) {
+                if (it.value.isNotEmpty()) {
+                    userSettingsViewModel.updateUserSettings(
+                        it.value[0]
+                    )
+                }
+            }
+
+            val intent = Intent(applicationContext, TimerService::class.java)
+            startService(intent)
+            TimerService.instance.observeOnce {
+                it.value.addTask {
+                    userSettingsViewModel.getUserSettings(userSettingsObservable)
+                    if (userSettingsObservable.isNotEmpty() && userSettingsObservable[0].isSendingLocationOn) {
+                        HelperFunctions.getLoc(this).observeOnce { LatLng ->
+                            if (LatLng.value != null)
+                                currentDatabase.heatmapDatabase.setLocation(
+                                    LatLng.value,
+                                    userSettingsObservable
+                                )
+                        }
                     }
+                }
             }
         }
 
@@ -129,7 +159,10 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     HelperFunctions.changeFragment(this, fragments[R.id.id_fragment_profile])
                 }
-                R.id.ic_settings -> HelperFunctions.changeFragment(this, fragments[R.id.ic_settings])
+                R.id.ic_settings -> HelperFunctions.changeFragment(
+                    this,
+                    fragments[R.id.ic_settings]
+                )
                 else ->
                     redirectHome()
             }
