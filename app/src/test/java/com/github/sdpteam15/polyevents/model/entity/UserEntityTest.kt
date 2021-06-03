@@ -6,7 +6,6 @@ import java.time.LocalDate
 import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 class UserEntityTest {
     lateinit var user: UserEntity

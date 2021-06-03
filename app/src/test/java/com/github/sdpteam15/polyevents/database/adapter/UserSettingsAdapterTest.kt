@@ -1,6 +1,5 @@
 package com.github.sdpteam15.polyevents.database.adapter
 
-import com.github.sdpteam15.polyevents.model.database.local.entity.UserSettings
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.UserSettingsConstant.*
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.UserSettingsAdapter
 import com.github.sdpteam15.polyevents.model.room.UserSettings
