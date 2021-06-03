@@ -12,8 +12,8 @@ import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDat
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.model.callback.UserModifiedInterface
 import com.github.sdpteam15.polyevents.view.adapter.ProfileRankListAdapter
-import com.github.sdpteam15.polyevents.view.fragments.UserModifiedInterface
 import com.google.android.material.textfield.TextInputEditText
 
 class EditProfileActivity : AppCompatActivity() {

@@ -28,11 +28,10 @@ import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.adapter.CommentItemAdapter
 import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
 import com.github.sdpteam15.polyevents.view.fragments.LeaveEventReviewFragment
+import com.github.sdpteam15.polyevents.model.callback.ReviewHasChanged
 import com.github.sdpteam15.polyevents.view.fragments.ProgressDialogFragment
-import com.github.sdpteam15.polyevents.view.service.ReviewHasChanged
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModel
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModelFactory
-
 
 /**
  * An activity containing events description. Note that information about the event could be stored from the local
@@ -50,6 +49,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         val obsRating: Observable<Float> = Observable()
         val obsOrganiser: Observable<UserEntity> = Observable()
         val obsComments: ObservableList<Rating> = ObservableList()
+        val obsNonEmptyComments: ObservableList<Rating> = ObservableList()
         lateinit var event: Event
 
         // Keep an instance for testing purposes
@@ -107,9 +107,10 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         leaveReviewDialogFragment = LeaveEventReviewFragment(eventId, this)
         leaveReviewButton = findViewById(R.id.event_leave_review_button)
 
-        recyclerView.adapter = CommentItemAdapter(obsComments)
+        recyclerView.adapter = CommentItemAdapter(obsNonEmptyComments)
         recyclerView.setHasFixedSize(false)
 
+        setObservers()
         refreshEvent()
     }
 
@@ -134,6 +135,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
      */
     private fun refreshEvent() {
         obsComments.clear()
+        obsNonEmptyComments.clear()
         getEventAndObserve()
         getEventRating()
         getCommentsAndObserve()
@@ -184,6 +186,26 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
     }
 
     /**
+     * Sets the observe add and modify of the observable list of reviews
+     */
+    private fun setObservers(){
+        obsComments.observeAdd(this) {
+            //If the comment doesn't have a review, we don't want to display it
+            if (it.value.feedback != "") {
+                obsNonEmptyComments.add(it.value)
+                recyclerView.adapter!!.notifyDataSetChanged()
+            }
+        }
+        obsComments.observe(this){
+            updateNumberReviews()
+        }
+        obsNonEmptyComments.observe(this){
+            updateNumberComments()
+        }
+    }
+
+
+    /**
      * Get the comments of an event
      */
     private fun getCommentsAndObserve() {
@@ -198,6 +220,28 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
                 obsComments.remove(it.value)
             } else {
                 recyclerView.adapter!!.notifyDataSetChanged()
+            }
+        }
+    }
+
+    /**
+     * Updates the number of reviews on the xml
+     */
+    private fun updateNumberReviews(){
+        if(!PolyEventsApplication.inTest) {
+            PolyEventsApplication.application.applicationScope.launch {
+                findViewById<TextView>(R.id.id_number_reviews).text = obsComments.size.toString()
+            }
+        }
+    }
+
+    /**
+     * Updates the number of comments on the xml
+     */
+    private fun updateNumberComments(){
+        if(!PolyEventsApplication.inTest) {
+            PolyEventsApplication.application.applicationScope.launch {
+                findViewById<TextView>(R.id.id_number_comments).text = obsNonEmptyComments.size.toString()
             }
         }
     }

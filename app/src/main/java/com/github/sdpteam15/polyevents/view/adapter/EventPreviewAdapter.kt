@@ -13,7 +13,8 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableList
  * An adapter for an event preview item in the recycler view. The list of events
  * previews are just for display, they are no listeners attached when clicked upon.
  */
-class EventPreviewAdapter(private val dataSet: ObservableList<Event>) :
+class EventPreviewAdapter(private val dataSet: ObservableList<Event>,
+                          private val listener: (Event) -> Unit) :
     RecyclerView.Adapter<EventPreviewAdapter.ViewHolder>() {
 
     /**
@@ -30,7 +31,6 @@ class EventPreviewAdapter(private val dataSet: ObservableList<Event>) :
         // Create a new view, which defines the UI of the list item
         val view = LayoutInflater.from(viewGroup.context)
             .inflate(R.layout.card_preview_event, viewGroup, false)
-
         return ViewHolder(view)
     }
 
@@ -41,6 +41,9 @@ class EventPreviewAdapter(private val dataSet: ObservableList<Event>) :
         // contents of the view with that element
         viewHolder.eventNameTextView.text = currentEvent.eventName
         viewHolder.eventTimeTextView.text = currentEvent.formattedStartTime()
+        viewHolder.itemView.setOnClickListener {
+            listener(currentEvent)
+        }
     }
 
     // Return the size of your dataset (invoked by the layout manager)

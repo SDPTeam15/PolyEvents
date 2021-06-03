@@ -10,6 +10,7 @@ import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
@@ -19,16 +20,18 @@ import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication.Companion.inTest
+import com.github.sdpteam15.polyevents.view.activity.EventActivity
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import com.github.sdpteam15.polyevents.view.activity.TimeTableActivity
+import com.github.sdpteam15.polyevents.view.adapter.EventItemAdapter
+import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
 
 /**
  * The fragment for the home page.
  */
 class VisitorHomeFragment : Fragment() {
 
-
-    private lateinit var listUpcomingEventsLayout: LinearLayout
+    private lateinit var recyclerView: RecyclerView
     val events = ObservableList<Event>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,8 +45,18 @@ class VisitorHomeFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         val fragmentView = inflater.inflate(R.layout.fragment_home_visitor, container, false)
-        listUpcomingEventsLayout =
-            fragmentView.findViewById<LinearLayout>(R.id.id_upcoming_events_list)
+
+        recyclerView = fragmentView.findViewById(R.id.id_recycler_upcomming_events)
+
+        val openEvent = { event: Event ->
+            val intent = Intent(inflater.context, EventActivity::class.java).apply {
+                putExtra(EXTRA_EVENT_ID, event.eventId)
+            }
+            startActivity(intent)
+        }
+
+        recyclerView.adapter = EventItemAdapter(events, openEvent)
+        recyclerView.setHasFixedSize(false)
 
 
 
@@ -54,7 +67,7 @@ class VisitorHomeFragment : Fragment() {
                 }
             }
         events.observe(this) {
-            updateContent()
+            recyclerView.adapter!!.notifyDataSetChanged()
         }
 
         if (!inTest)
@@ -70,55 +83,6 @@ class VisitorHomeFragment : Fragment() {
         }
 
         return fragmentView
-    }
-
-    override fun onResume() {
-        super.onResume()
-        val bool =
-            UserLogin.currentUserLogin.isConnected() && currentDatabase.currentUser!!.userProfiles.fold(
-                false, { a, c ->
-                    if (a) {
-                        a
-                    } else {
-                        c.userRole.ordinal < 3
-                    }
-                })
-        requireActivity().findViewById<Spinner>(R.id.spinner_visitor).visibility =
-            if (bool) View.VISIBLE else View.INVISIBLE
-    }
-
-    /**
-     * Update the content of the upcoming events
-     */
-    fun updateContent() {
-        // Remove all the content first
-        listUpcomingEventsLayout.removeAllViews()
-
-        for (e in events) {
-            setupEventTab(e)
-        }
-    }
-
-    /**
-     * Setup the layout for an event tab and add it to the layout provided
-     * @param event : the event to add as a tab
-     */
-    private fun setupEventTab(event: Event) {
-        val eventTab = layoutInflater.inflate(R.layout.card_event, null)
-
-        eventTab.findViewById<TextView>(R.id.id_event_name_text).text = event.eventName
-
-        eventTab.findViewById<TextView>(R.id.id_event_schedule_text).text =
-            getString(R.string.at_hour_text, event.formattedStartTime())
-
-        eventTab.findViewById<TextView>(R.id.id_event_zone).text = event.zoneName
-
-        eventTab.findViewById<TextView>(R.id.id_event_description).text = event.description
-
-        // TODO : set the icon of the event
-        //eventTab.findViewById<ImageView>(R.id.id_event_icon).setImageBitmap(event.icon)
-
-        listUpcomingEventsLayout.addView(eventTab)
     }
 
     override fun onRequestPermissionsResult(
