@@ -15,6 +15,7 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.helper.NotificationsHelper
 import com.github.sdpteam15.polyevents.helper.NotificationsScheduler
+import com.github.sdpteam15.polyevents.model.callback.ReviewHasChanged
 import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
@@ -28,7 +29,6 @@ import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.adapter.CommentItemAdapter
 import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
 import com.github.sdpteam15.polyevents.view.fragments.LeaveEventReviewFragment
-import com.github.sdpteam15.polyevents.model.callback.ReviewHasChanged
 import com.github.sdpteam15.polyevents.view.fragments.ProgressDialogFragment
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModel
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModelFactory
@@ -170,7 +170,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
     /**
      * Sets the observe add and modify of the observable list of reviews
      */
-    private fun setObservers(){
+    private fun setObservers() {
         obsComments.observeAdd(this) {
             //If the comment doesn't have a review, we don't want to display it
             if (it.value.feedback != "") {
@@ -178,10 +178,10 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
                 recyclerView.adapter!!.notifyDataSetChanged()
             }
         }
-        obsComments.observe(this){
+        obsComments.observe(this) {
             updateNumberReviews()
         }
-        obsNonEmptyComments.observe(this){
+        obsNonEmptyComments.observe(this) {
             updateNumberComments()
         }
     }
@@ -209,8 +209,8 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
     /**
      * Updates the number of reviews on the xml
      */
-    private fun updateNumberReviews(){
-        if(!PolyEventsApplication.inTest) {
+    private fun updateNumberReviews() {
+        if (!PolyEventsApplication.inTest) {
             PolyEventsApplication.application.applicationScope.launch {
                 findViewById<TextView>(R.id.id_number_reviews).text = obsComments.size.toString()
             }
@@ -220,10 +220,11 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
     /**
      * Updates the number of comments on the xml
      */
-    private fun updateNumberComments(){
-        if(!PolyEventsApplication.inTest) {
+    private fun updateNumberComments() {
+        if (!PolyEventsApplication.inTest) {
             PolyEventsApplication.application.applicationScope.launch {
-                findViewById<TextView>(R.id.id_number_comments).text = obsNonEmptyComments.size.toString()
+                findViewById<TextView>(R.id.id_number_comments).text =
+                    obsNonEmptyComments.size.toString()
             }
         }
     }
