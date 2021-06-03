@@ -50,8 +50,10 @@ object GoogleMapOptions {
 
         //Restoring the map state
         if(mode != MapsFragmentMod.EditZone){
+            //Standard mode -> goes back to the previous camera state
             restoreCameraState()
         }else{
+            //Edit zone mode -> Tries to center the camera on the zone
             if(ZoneAreaMapHelper.zonesToArea.containsKey(ZoneManagementActivity.zoneId)){
                 val pair = ZoneAreaMapHelper.zonesToArea[ZoneManagementActivity.zoneId]
                 val zone = pair!!.first
@@ -59,7 +61,7 @@ object GoogleMapOptions {
                     restoreCameraState()
                     return
                 }
-                val coords = zone!!.getZoneCoordinates()
+                val coords = zone.getZoneCoordinates()
                 val center = LatLngOperator.mean(coords.flatten())
                 GoogleMapHelper.map!!.moveCamera(
                     CameraUpdateFactory.newLatLngZoom(
@@ -67,6 +69,7 @@ object GoogleMapOptions {
                         cameraZoom
                     ))
             }else{
+                //If it is a new zone, goes back to the previous camera state
                 restoreCameraState()
             }
         }
