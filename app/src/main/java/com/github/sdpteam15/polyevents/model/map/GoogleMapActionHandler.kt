@@ -143,35 +143,35 @@ object GoogleMapActionHandler {
          * the events going on in that zone
          */
         ZonePreviewBottomSheetDialogFragment.newInstance(
-            zoneId = zoneId,
-            onShowEventsClickListener = {
-                HelperFunctions.changeFragmentWithBundle(
-                    activity,
-                    ZoneEventsFragment::class.java,
-                    bundle = bundleOf(
-                        // marker tag should hold the zone id
-                        ZonePreviewBottomSheetDialogFragment.EXTRA_ZONE_ID to zoneId,
-                        // marker title should hold the zone name
-                        ZonePreviewBottomSheetDialogFragment.EXTRA_ZONE_NAME to zoneName
-                    ),
-                    // TODO: avoid redrawing the routes in mapfragment
-                    //addToBackStack = true
-                )
-            },
-            onItineraryClickListener = {
-                // The listener invoked when clicked on the show itinerary button
-                HelperFunctions.getLoc(activity).observeOnce(lifecycle) {
-                    RouteMapHelper.chemin =
-                        RouteMapHelper.getShortestPath(
-                            it.value!!,
-                            zoneId,
-                            locationActivated
-                        )
-                            ?.toMutableList()
-                            ?: mutableListOf()
-                    RouteMapHelper.drawRoute()
+                zoneId = zoneId,
+                onShowEventsClickListener = {
+                    HelperFunctions.changeFragmentWithBundle(
+                            activity,
+                            ZoneEventsFragment::class.java,
+                            bundle = bundleOf(
+                                    // marker tag should hold the zone id
+                                    ZonePreviewBottomSheetDialogFragment.EXTRA_ZONE_ID to zoneId,
+                                    // marker title should hold the zone name
+                                    ZonePreviewBottomSheetDialogFragment.EXTRA_ZONE_NAME to zoneName
+                            ),
+                            // TODO: avoid redrawing the routes in mapfragment
+                            //addToBackStack = true
+                    )
+                },
+                onItineraryClickListener = {
+                    // The listener invoked when clicked on the show itinerary button
+                    HelperFunctions.getLoc(activity).observeOnce(lifecycle) {
+                        RouteMapHelper.chemin =
+                                RouteMapHelper.getShortestPath(
+                                        it.value!!,
+                                        zoneId,
+                                        locationActivated
+                                )
+                                        ?.toMutableList()
+                                        ?: mutableListOf()
+                        RouteMapHelper.drawRoute(activity)
+                    }
                 }
-            }
         ).show(activity.supportFragmentManager, ZonePreviewBottomSheetDialogFragment.TAG)
     }
 

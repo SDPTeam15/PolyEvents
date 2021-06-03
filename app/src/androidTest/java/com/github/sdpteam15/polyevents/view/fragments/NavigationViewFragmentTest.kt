@@ -14,12 +14,10 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.database.remote.login.GoogleUserLogin
 import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
-import com.github.sdpteam15.polyevents.model.database.remote.login.UserLoginInterface
 import com.github.sdpteam15.polyevents.model.database.remote.objects.UserDatabaseInterface
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
-import com.google.firebase.auth.AuthResult
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule

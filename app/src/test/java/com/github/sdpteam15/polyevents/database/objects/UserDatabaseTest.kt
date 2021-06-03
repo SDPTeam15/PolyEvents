@@ -1,8 +1,10 @@
 package com.github.sdpteam15.polyevents.database.objects
 
 import com.github.sdpteam15.polyevents.database.HelperTestFunction
+import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.PROFILE_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.USER_COLLECTION
+import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.ProfileAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.UserAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.objects.UserDatabase
@@ -11,8 +13,10 @@ import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -26,7 +30,15 @@ class UserDatabaseTest {
         PolyEventsApplication.inTest = true
         val mockDatabaseInterface = HelperTestFunction.mockDatabaseInterface()
         mockUserDatabase = UserDatabase(mockDatabaseInterface)
+        Database.currentDatabase = mockDatabaseInterface
+        Mockito.`when`(mockDatabaseInterface.userDatabase).thenReturn(mockUserDatabase)
+
         HelperTestFunction.clearQueue()
+    }
+
+    @After
+    fun teardown() {
+        Database.currentDatabase = FirestoreDatabaseProvider
     }
 
     @Test
@@ -51,6 +63,8 @@ class UserDatabaseTest {
         val user = UserEntity("uid")
 
         HelperTestFunction.nextSetEntity { true }
+        HelperTestFunction.nextGetListEntity { true }
+
         mockUserDatabase.firstConnexion(user).observeOnce { assert(it.value) }.then.postValue(false)
 
         val set = HelperTestFunction.lastSetEntity()!!

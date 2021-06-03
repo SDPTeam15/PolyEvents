@@ -188,7 +188,6 @@ class TimeTableActivityTest {
         Thread.sleep(1000)
         val v1 = 42
         val v2 = 34
-        val v3 = 39
         val v4 = 50
         TimeTableActivity.instance!!.selectedItem = v4
         assertEquals(v4, TimeTableActivity.instance!!.selectedItem)
@@ -196,14 +195,8 @@ class TimeTableActivityTest {
         assertEquals(v1, TimeTableActivity.instance!!.nextId)
         TimeTableActivity.instance!!.currentPadding = v2
         assertEquals(v2, TimeTableActivity.instance!!.currentPadding)
-        TimeTableActivity.instance!!.widthDP = v3
-        assertEquals(v3, TimeTableActivity.instance!!.widthDP)
 
-        TimeTableActivity.instance!!.lineHeightDp
-        TimeTableActivity.instance!!.linepaddingLeftDP
-        TimeTableActivity.instance!!.nowLineHeightDP
         TimeTableActivity.instance!!.hourToLine
-
     }
 
 

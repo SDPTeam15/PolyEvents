@@ -10,6 +10,7 @@ import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.map.*
 import com.github.sdpteam15.polyevents.model.map.GoogleMapHelperFunctions.areaToFormattedStringLocation
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.time
+import com.github.sdpteam15.polyevents.model.map.RouteMapHelper.MAGNET_DISTANCE_THRESHOLD
 import com.github.sdpteam15.polyevents.model.map.RouteMapHelper.addLine
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.google.android.gms.internal.maps.zzt
