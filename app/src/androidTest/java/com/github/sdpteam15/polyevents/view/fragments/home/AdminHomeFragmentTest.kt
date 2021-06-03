@@ -56,6 +56,9 @@ class AdminHubFragmentTest {
         mockedDatabase = HelperTestFunction.defaultMockDatabase()
         Database.currentDatabase = mockedDatabase
 
+        MainActivity.instance = null
+        MainActivity.selectedRole = UserRole.ADMIN
+
         Mockito.`when`(mockedDatabase.currentUserObservable).thenReturn(observableUser)
         Mockito.`when`(mockedDatabase.currentUser).thenReturn(testUser)
 
