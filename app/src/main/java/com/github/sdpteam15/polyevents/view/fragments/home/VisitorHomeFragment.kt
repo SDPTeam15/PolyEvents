@@ -6,12 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Spinner
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.NUMBER_UPCOMING_EVENTS
+import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
@@ -35,6 +37,21 @@ class VisitorHomeFragment : Fragment() {
         setHasOptionsMenu(true)
     }
 
+    override fun onResume() {
+        super.onResume()
+        val bool =
+            UserLogin.currentUserLogin.isConnected() && currentDatabase.currentUser!!.userProfiles.fold(
+                false, { a, c ->
+                    if (a) {
+                        a
+                    } else {
+                        c.userRole.ordinal < UserRole.PARTICIPANT.ordinal
+                    }
+                })
+        requireActivity().findViewById<Spinner>(R.id.spinner_visitor).visibility =
+            if (bool) View.VISIBLE else View.INVISIBLE
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -55,11 +72,13 @@ class VisitorHomeFragment : Fragment() {
         recyclerView.setHasFixedSize(false)
 
 
-
         currentDatabase.eventDatabase.getEvents(events, NUMBER_UPCOMING_EVENTS.toLong())
             .observe(this) {
                 if (!it.value) {
-                    HelperFunctions.showToast("Failed to load events", fragmentView.context)
+                    HelperFunctions.showToast(
+                        getString(R.string.failed_to_load_events),
+                        fragmentView.context
+                    )
                 }
             }
         events.observe(this) {
