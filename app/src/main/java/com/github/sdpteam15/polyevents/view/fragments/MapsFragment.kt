@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.map.*
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.*
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -81,32 +82,41 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
 
     override fun onPause() {
         super.onPause()
-        GoogleMapOptions.saveCamera()
-        GoogleMapHeatmap.resetHeatmap()
+        if(!PolyEventsApplication.inTest){
+            GoogleMapOptions.saveCamera()
+            GoogleMapHeatmap.resetHeatmap()
+        }
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val mapFragment =
-            childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
-        mapFragment?.getMapAsync(this)
-        if (!locationPermissionGranted) {
-            HelperFunctions.getLocationPermission(requireActivity()).observeOnce {
-                locationPermissionGranted = it.value
-                activateMyLocation()
+        // We have to do this since Cirrus doesn't allow us to test load google map
+        if (!PolyEventsApplication.inTest) {
+            val mapFragment =
+                childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
+            mapFragment?.getMapAsync(this)
+            if (!locationPermissionGranted) {
+                HelperFunctions.getLocationPermission(requireActivity()).observeOnce {
+                    locationPermissionGranted = it.value
+                    activateMyLocation()
+                }
             }
         }
     }
 
     override fun onMapReady(googleMap: GoogleMap?) {
-        GoogleMapHelper.map = GoogleMapAdapter(googleMap)
-        RouteMapHelper.getNodesAndEdgesFromDB(context, this)
+        // We have to do this since Cirrus doesn't allow us to test load google map
+        if (!PolyEventsApplication.inTest) {
+            GoogleMapHelper.map = GoogleMapAdapter(googleMap)
+            RouteMapHelper.getNodesAndEdgesFromDB(context, this)
 
-        setMapListeners(googleMap!!)
-        GoogleMapOptions.setUpMap(requireContext(), mod != MapsFragmentMod.EditZone)
+            setMapListeners(googleMap!!)
+            GoogleMapOptions.setUpMap(requireContext(), mod != MapsFragmentMod.EditZone)
 
-        if (useUserLocation) {
-            activateMyLocation()
+            if (useUserLocation) {
+                activateMyLocation()
+            }
         }
     }
 
@@ -121,7 +131,7 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
         locationButton = view.findViewById(R.id.id_location_button)
 
         addNewAreaButton = view.findViewById(R.id.addNewArea)
-        deleteAreaButton= view.findViewById(R.id.id_delete_areas)
+        deleteAreaButton = view.findViewById(R.id.id_delete_areas)
         saveNewAreaButton = view.findViewById(R.id.acceptNewArea)
         editAreaButton = view.findViewById(R.id.id_edit_area)
 
@@ -194,7 +204,7 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
         addNewAreaButton.setOnClickListener { ZoneAreaMapHelper.createNewArea(requireContext()) }
         saveNewAreaButton.setOnClickListener { ZoneAreaMapHelper.saveNewArea(requireContext()) }
         editAreaButton.setOnClickListener { ZoneAreaMapHelper.editMode(requireContext()) }
-        deleteAreaButton.setOnClickListener{ZoneAreaMapHelper.deleteMode(requireContext())}
+        deleteAreaButton.setOnClickListener { ZoneAreaMapHelper.deleteMode(requireContext()) }
 
         addNewRouteButton.setOnClickListener { RouteMapHelper.createNewRoute(requireContext()) }
         removeRouteButton.setOnClickListener { RouteMapHelper.removeRoute() }
@@ -239,7 +249,8 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
      * Switches the style of the delete button for routes
      */
     fun switchIconDeleteArea() {
-        val removeRouteButton = requireView().findViewById<FloatingActionButton>(R.id.id_delete_areas)
+        val removeRouteButton =
+            requireView().findViewById<FloatingActionButton>(R.id.id_delete_areas)
         if (ZoneAreaMapHelper.deleteMode) {
             removeRouteButton.supportBackgroundTintList =
                 resources.getColorStateList(R.color.red, null)
