@@ -228,7 +228,11 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
      * Updates the number of comments on the xml
      */
     private fun updateNumberComments(){
-        findViewById<TextView>(R.id.id_number_comments).text = obsNonEmptyComments.size.toString()
+        if(!PolyEventsApplication.inTest) {
+            PolyEventsApplication.application.applicationScope.launch {
+                findViewById<TextView>(R.id.id_number_comments).text = obsNonEmptyComments.size.toString()
+            }
+        }
     }
 
     /**
