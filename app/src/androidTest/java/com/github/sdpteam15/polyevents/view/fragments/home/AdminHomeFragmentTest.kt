@@ -1,10 +1,11 @@
-package com.github.sdpteam15.polyevents.view.activity.admin
+package com.github.sdpteam15.polyevents.view.fragments.home
 
 import android.content.Intent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
@@ -23,6 +24,7 @@ import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
+import com.github.sdpteam15.polyevents.view.activity.admin.*
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -53,6 +55,9 @@ class AdminHubFragmentTest {
 
         mockedDatabase = HelperTestFunction.defaultMockDatabase()
         Database.currentDatabase = mockedDatabase
+
+        MainActivity.instance = null
+        MainActivity.selectedRole = UserRole.ADMIN
 
         Mockito.`when`(mockedDatabase.currentUserObservable).thenReturn(observableUser)
         Mockito.`when`(mockedDatabase.currentUser).thenReturn(testUser)
@@ -100,7 +105,7 @@ class AdminHubFragmentTest {
         ).thenReturn(Observable(true))
 
         Espresso.onView(ViewMatchers.withId(R.id.id_item_request_management_button))
-            .perform(click())
+            .perform(scrollTo(),click())
         Intents.intended(IntentMatchers.hasComponent(ItemRequestManagementActivity::class.java.name))
     }
 
@@ -125,13 +130,13 @@ class AdminHubFragmentTest {
         ).thenReturn(Observable(true))
 
         Espresso.onView(ViewMatchers.withId(R.id.id_items_list_management_button))
-            .perform(click())
+            .perform(scrollTo(),click())
         Intents.intended(IntentMatchers.hasComponent(ItemsAdminActivity::class.java.name))
     }
 
     @Test
     fun clickOnBtnZoneManagementDisplayCorrectActivity() {
-        Espresso.onView(ViewMatchers.withId(R.id.id_zone_management_button)).perform(click())
+        Espresso.onView(ViewMatchers.withId(R.id.id_zone_management_button)).perform(scrollTo(),click())
         Intents.intended(IntentMatchers.hasComponent(ZoneManagementListActivity::class.java.name))
     }
 
@@ -149,7 +154,7 @@ class AdminHubFragmentTest {
         ).thenReturn(
             Observable(true)
         )
-        Espresso.onView(ViewMatchers.withId(R.id.id_event_manager_button)).perform(click())
+        Espresso.onView(ViewMatchers.withId(R.id.id_event_manager_button)).perform(scrollTo(),click())
         Intents.intended(IntentMatchers.hasComponent(EventManagementListActivity::class.java.name))
     }
 
@@ -176,7 +181,7 @@ class AdminHubFragmentTest {
         ).thenReturn(
             Observable(true)
         )
-        Espresso.onView(ViewMatchers.withId(R.id.id_event_edit_button)).perform(click())
+        Espresso.onView(ViewMatchers.withId(R.id.id_event_edit_button)).perform(scrollTo(),click())
         Intents.intended(IntentMatchers.hasComponent(EventEditManagementActivity::class.java.name))
     }
 
@@ -186,7 +191,7 @@ class AdminHubFragmentTest {
         Mockito.`when`(mockedDatabase.userDatabase).thenReturn(mockedUserDatabase)
         When(mockedUserDatabase.getListAllUsers(anyOrNull())).thenReturn(Observable(true))
 
-        Espresso.onView(ViewMatchers.withId(R.id.id_user_management_button)).perform(click())
+        Espresso.onView(ViewMatchers.withId(R.id.id_user_management_button)).perform(scrollTo(),click())
         Intents.intended(IntentMatchers.hasComponent(UserManagementListActivity::class.java.name))
     }
 

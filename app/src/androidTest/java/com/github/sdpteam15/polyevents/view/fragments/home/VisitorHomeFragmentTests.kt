@@ -43,7 +43,7 @@ class VisitorHomeFragmentTests {
             email = email
         )
 
-        testUser.userProfiles.add(UserProfile("testprofile", userRole = UserRole.ADMIN))
+        testUser.userProfiles.add(UserProfile("testprofile", userRole = UserRole.PARTICIPANT))
         val observableUser = Observable(testUser)
 
         mockedDatabase = HelperTestFunction.defaultMockDatabase()
@@ -53,16 +53,11 @@ class VisitorHomeFragmentTests {
         Mockito.`when`(mockedDatabase.currentUser).thenReturn(testUser)
 
         MainActivity.instance = null
-        MainActivity.selectedRole = UserRole.ADMIN
+        MainActivity.selectedRole = UserRole.PARTICIPANT
 
         val intent =
             Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
         ActivityScenario.launch<MainActivity>(intent)
-
-        Espresso.onView(ViewMatchers.withId(R.id.spinner_admin)).perform(click())
-        Espresso.onData(Matchers.anything())
-            .atPosition(3)
-            .perform(click())
 
         Intents.init()
     }
