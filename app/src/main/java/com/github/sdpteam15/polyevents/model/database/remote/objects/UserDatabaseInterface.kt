@@ -7,15 +7,9 @@ import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 
 interface UserDatabaseInterface {
-    /**
-     * Map used in the firstConnection method. It's public to be able to use it in tests
-     */
-    var firstConnectionUser: UserEntity
-
     val currentUser: UserEntity?
         get() = Database.currentDatabase.currentUser
 
-    // TODO: Do we need userAccess for these methods? (Might do these with security rules)
     /**
      * Update the user information in the database
      * @param user the user from which we want to query the information
