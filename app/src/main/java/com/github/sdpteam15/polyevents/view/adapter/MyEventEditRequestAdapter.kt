@@ -57,7 +57,7 @@ class MyEventEditRequestAdapter(
         private val adminMessage = view.findViewById<TextView>(R.id.id_admin_message)
         private val refusalLayout = view.findViewById<LinearLayout>(R.id.id_reason_of_refusal)
         private val btnSee = view.findViewById<ImageButton>(R.id.id_see_event)
-        private val tvMode = view.findViewById<TextView>(R.id.tvMode)
+        private val tvMode = view.findViewById<TextView>(R.id.tv_mode_text)
 
         /**
          * Binds the values of each value of a material request to a view

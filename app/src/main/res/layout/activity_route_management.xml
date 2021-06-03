@@ -7,7 +7,7 @@
     android:id="@+id/route_management_activity">
 
     <FrameLayout
-        android:id="@+id/flMapEditRoute"
+        android:id="@+id/id_fl_map_edit_route"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:visibility="invisible">

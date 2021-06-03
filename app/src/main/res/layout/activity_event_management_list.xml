@@ -8,7 +8,7 @@
     tools:context=".view.activity.admin.EventManagementListActivity">
 
     <TextView
-        android:id="@+id/tvEventListTitle"
+        android:id="@+id/id_tv_event_list_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -21,7 +21,7 @@
 
 
     <ImageButton
-        android:id="@+id/btnNewEvent"
+        android:id="@+id/id_new_event_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/btn_new_event_text"
@@ -29,7 +29,7 @@
         android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.918"
-        app:layout_constraintStart_toEndOf="@+id/tvEventListTitle"
+        app:layout_constraintStart_toEndOf="@+id/id_tv_event_list_title"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_add_36"
         tools:ignore="ContentDescription" />
@@ -41,6 +41,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnNewEvent"
+        app:layout_constraintTop_toBottomOf="@+id/id_new_event_button"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -22,7 +22,7 @@ import com.github.sdpteam15.polyevents.view.activity.admin.EventManagementListAc
 import com.github.sdpteam15.polyevents.view.adapter.MyEventEditRequestAdapter
 import com.github.sdpteam15.polyevents.view.fragments.admin.EventEditDifferenceFragment
 
-class EventManagementActivityProvider : AppCompatActivity(), AdapterView.OnItemSelectedListener {
+class MyEventEditsActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     private var currentStatus: Event.EventStatus = Event.EventStatus.PENDING
 

@@ -134,7 +134,7 @@ class LoginFragment : Fragment() {
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_login, container, false)
         //Attach an event to sign-in button
-        rootView.findViewById<com.google.android.gms.common.SignInButton>(R.id.btnLogin)
+        rootView.findViewById<com.google.android.gms.common.SignInButton>(R.id.id_btn_login_button)
             .setOnClickListener {
                 if (currentUser == null) {
                     UserLogin.currentUserLogin.signIn(activity as Activity, this, SIGN_IN_RC)

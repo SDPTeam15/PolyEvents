@@ -69,7 +69,7 @@
             app:strokeWidth="2dp"
             tools:ignore="ButtonStyle" />
         <Button
-            android:id="@+id/btnRedirectEventManager"
+            android:id="@+id/id_event_manager_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/white"
@@ -99,13 +99,12 @@
             tools:ignore="ButtonStyle" />
 
         <Button
-            android:id="@+id/btnRedirectProviderEditRequests"
+            android:id="@+id/id_provider_edit_requests_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/white"
             android:drawableTop="@drawable/ic_event"
             android:drawableTint="@color/primary_variant"
-
             android:paddingHorizontal="25dp"
             android:text="Edit Req"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"

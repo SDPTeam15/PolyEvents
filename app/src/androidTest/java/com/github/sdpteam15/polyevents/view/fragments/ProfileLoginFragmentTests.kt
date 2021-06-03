@@ -140,7 +140,7 @@ class ProfileLoginFragmentTests {
         onView(withId(R.id.ic_login)).perform(click())
         onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
 
-        onView(withId(R.id.btnLogin)).perform(click())
+        onView(withId(R.id.id_btn_login_button)).perform(click())
 
         assert(GoogleUserLogin.gso != null)
         assert(GoogleUserLogin.signIn != null)
@@ -181,7 +181,7 @@ class ProfileLoginFragmentTests {
         When(mockedUserLogin.signIn(anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
             true.also { set = it }
         }
-        onView(withId(R.id.btnLogin)).perform(click())
+        onView(withId(R.id.id_btn_login_button)).perform(click())
         assert(set)
         UserLogin.currentUserLogin = GoogleUserLogin
     }
@@ -227,9 +227,9 @@ class ProfileLoginFragmentTests {
         onView(withId(R.id.ic_login)).perform(click())
         onView(withId(R.id.id_fragment_profile)).check(matches(isDisplayed()))
 
-        onView(withId(R.id.btnLogout))
+        onView(withId(R.id.id_logout_button))
             .perform(scrollTo())
-        onView(withId(R.id.btnLogout)).perform(click())
+        onView(withId(R.id.id_logout_button)).perform(click())
         onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
     }
 
@@ -283,14 +283,14 @@ class ProfileLoginFragmentTests {
             endingRequest
         }
 
-        loginDirectly(loginFragment, R.id.btnLogin)
+        loginDirectly(loginFragment, R.id.id_btn_login_button)
 
         //answer to getUserInformation
         endingRequest.postValue(true)
         onView(withId(R.id.id_fragment_profile)).check(matches(isDisplayed()))
 
-        onView(withId(R.id.profileName)).check(matches(withText(Matchers.equalTo(displayNameTest))))
-        onView(withId(R.id.profileEmail)).check(matches(withText(Matchers.equalTo(emailTest))))
+        onView(withId(R.id.id_profile_name_edittext)).check(matches(withText(Matchers.equalTo(displayNameTest))))
+        onView(withId(R.id.id_profile_email_edittext)).check(matches(withText(Matchers.equalTo(emailTest))))
     }
 
     @Test
@@ -322,10 +322,10 @@ class ProfileLoginFragmentTests {
             profileFragment.userInfoLiveData.postValue(user2)
             endingRequest
         }
-        onView(withId(R.id.btnUpdateInfos))
+        onView(withId(R.id.id_update_infos_button))
             .perform(scrollTo())
         //Click on the update button
-        onView(withId(R.id.btnUpdateInfos)).perform(click())
+        onView(withId(R.id.id_update_infos_button)).perform(click())
         endingRequestUpdate.postValue(true)
         endingRequest.postValue(true)
 
@@ -333,9 +333,9 @@ class ProfileLoginFragmentTests {
         assert(updated)
 
         //Check if the values are correctly displayed
-        onView(withId(R.id.profileName)).check(matches(withText(Matchers.equalTo(displayNameTest2))))
-        onView(withId(R.id.profileEmail)).check(matches(withText(Matchers.equalTo(emailTest2))))
-        onView(withId(R.id.btnBirthday)).perform(scrollTo(), click())
+        onView(withId(R.id.id_profile_name_edittext)).check(matches(withText(Matchers.equalTo(displayNameTest2))))
+        onView(withId(R.id.id_profile_email_edittext)).check(matches(withText(Matchers.equalTo(emailTest2))))
+        onView(withId(R.id.id_birthday_button)).perform(scrollTo(), click())
         onView(withText("OK")).perform(scrollTo(), click())
 
 
@@ -353,12 +353,12 @@ class ProfileLoginFragmentTests {
 
         //Nothing happens
         endingRequestUpdate = Observable()
-        onView(withId(R.id.btnUpdateInfos)).perform(click())
+        onView(withId(R.id.id_update_infos_button)).perform(click())
         endingRequestUpdate.postValue(false)
 
         //check that the values are still the same
-        onView(withId(R.id.profileName)).check(matches(withText(Matchers.equalTo(displayNameTest2))))
-        onView(withId(R.id.profileEmail)).check(matches(withText(Matchers.equalTo(emailTest2))))
+        onView(withId(R.id.id_profile_name_edittext)).check(matches(withText(Matchers.equalTo(displayNameTest2))))
+        onView(withId(R.id.id_profile_email_edittext)).check(matches(withText(Matchers.equalTo(emailTest2))))
     }
 
     private fun initDBTests() {
@@ -419,7 +419,7 @@ class ProfileLoginFragmentTests {
         }
 
         //Click on login
-        onView(withId(R.id.btnLogin)).perform(click())
+        onView(withId(R.id.id_btn_login_button)).perform(click())
         //Notify that the inDatabase request was successfully performed
         endingRequestInDatabase.postValue(true)
         //Notify that the firstConnection request was successfully performed
@@ -467,7 +467,7 @@ class ProfileLoginFragmentTests {
             endingRequest
         }
 
-        loginDirectly(loginFragment, R.id.btnLogin)
+        loginDirectly(loginFragment, R.id.id_btn_login_button)
         //Notify that the firstConnection request was successfully performed
         endingRequestFirstConnection.postValue(true)
         //Notify that the getUserAInformation request was successfully performed
@@ -503,7 +503,7 @@ class ProfileLoginFragmentTests {
             loginFragment.inDbObservable.postValue(false)
             endingRequest
         }
-        onView(withId(R.id.btnLogin)).perform(click())
+        onView(withId(R.id.id_btn_login_button)).perform(click())
         //Notify that the firstConnection request was successfully performed
         endingRequestFirstConnection.postValue(false)
         //Notify that the getUserAInformation request was successfully performed

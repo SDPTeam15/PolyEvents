@@ -99,10 +99,10 @@ class MyEventEditManagementTest {
         }
         val intent = Intent(
             ApplicationProvider.getApplicationContext(),
-            EventManagementActivityProvider::class.java
+            MyEventEditsActivity::class.java
         )
         Database.currentDatabase = mockedDb
-        ActivityScenario.launch<EventManagementActivityProvider>(intent)
+        ActivityScenario.launch<MyEventEditsActivity>(intent)
     }
 
     @After
