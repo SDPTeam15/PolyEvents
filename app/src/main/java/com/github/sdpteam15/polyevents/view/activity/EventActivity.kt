@@ -217,8 +217,10 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
      * Updates the number of reviews on the xml
      */
     private fun updateNumberReviews(){
-        PolyEventsApplication.application.applicationScope.launch {
-            findViewById<TextView>(R.id.id_number_reviews).text = obsComments.size.toString()
+        if(!PolyEventsApplication.inTest) {
+            PolyEventsApplication.application.applicationScope.launch {
+                findViewById<TextView>(R.id.id_number_reviews).text = obsComments.size.toString()
+            }
         }
     }
 
