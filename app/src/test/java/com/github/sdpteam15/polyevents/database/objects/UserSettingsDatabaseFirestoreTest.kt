@@ -8,8 +8,6 @@ import com.github.sdpteam15.polyevents.model.database.remote.adapter.UserSetting
 import com.github.sdpteam15.polyevents.model.database.remote.objects.UserSettingsDatabase
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.observable.Observable
-import com.github.sdpteam15.polyevents.view.PolyEventsApplication
-import com.github.sdpteam15.polyevents.model.room.UserSettings
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals

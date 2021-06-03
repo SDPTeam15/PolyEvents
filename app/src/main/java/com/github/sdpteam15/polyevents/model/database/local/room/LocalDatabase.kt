@@ -15,19 +15,14 @@ import com.github.sdpteam15.polyevents.model.database.local.dao.NotificationUidD
 import com.github.sdpteam15.polyevents.model.database.local.dao.UserSettingsDao
 import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
 import com.github.sdpteam15.polyevents.model.database.local.entity.GenericEntity
+import com.github.sdpteam15.polyevents.model.database.local.entity.NotificationUid
+import com.github.sdpteam15.polyevents.model.database.local.entity.UserSettings
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
-import com.github.sdpteam15.polyevents.model.database.local.entity.GenericEntity
-import com.github.sdpteam15.polyevents.model.room.NotificationUid
-import com.github.sdpteam15.polyevents.model.room.UserSettings
-import com.github.sdpteam15.polyevents.model.database.local.entity.UserSettings
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 // TODO: consider using repositories
 // TODO: Firebase database objects are technically daos, consider refactoring?

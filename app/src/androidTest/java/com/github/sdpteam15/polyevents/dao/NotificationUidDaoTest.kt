@@ -5,9 +5,9 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.github.sdpteam15.polyevents.model.database.local.dao.NotificationUidDao
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
-import com.github.sdpteam15.polyevents.model.room.NotificationUid
-import com.github.sdpteam15.polyevents.model.room.NotificationUid.Companion.DEFAULT_UID
-import com.github.sdpteam15.polyevents.model.room.NotificationUid.Companion.SENTINEL_VALUE
+import com.github.sdpteam15.polyevents.model.database.local.entity.NotificationUid
+import com.github.sdpteam15.polyevents.model.database.local.entity.NotificationUid.Companion.DEFAULT_UID
+import com.github.sdpteam15.polyevents.model.database.local.entity.NotificationUid.Companion.SENTINEL_VALUE
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
