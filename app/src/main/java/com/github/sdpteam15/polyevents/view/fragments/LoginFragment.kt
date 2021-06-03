@@ -66,7 +66,8 @@ class LoginFragment : Fragment() {
                         application.applicationScope.launch(Dispatchers.IO) {
                             LocalDatabase.populateDatabaseWithUserEvents(
                                 application.database.eventDao(),
-                                application.applicationScope)
+                                application.applicationScope
+                            )
 
                             LocalDatabase.populateDatabaseWithUserSettings(
                                 application.database.userSettingsDao(),
@@ -87,24 +88,20 @@ class LoginFragment : Fragment() {
      */
     private fun addIfNotInDB() {
         currentDatabase.userDatabase!!.inDatabase(inDbObservable, currentUser!!.uid)
-            .observe(this) { success ->
-                if (success.value) {
-                    if (inDbObservable.value!!) {
-                        //If already in database, redirect to the profile fragment
-                        HelperFunctions.changeFragment(
-                            activity,
-                            MainActivity.fragments[R.id.id_fragment_profile]
-                        )
-                    } else {
-                        //If not in DB, i.e. first connection, register it
-                        createAccountAndRedirect()
-                    }
+            .observe(this) {
+                if (it.value) {
+                    //If already in database, redirect to the profile fragment
+                    HelperFunctions.changeFragment(
+                        activity,
+                        MainActivity.fragments[R.id.id_fragment_profile]
+                    )
                 } else {
-                    //if a problem occurs, display an error message
-                    HelperFunctions.showToast(getString(R.string.login_failed_text), activity)
+                    //If not in DB, i.e. first connection, register it
+                    createAccountAndRedirect()
                 }
             }
     }
+
 
     /**
      * This method is called when the user log in for the first item with its account
@@ -113,9 +110,11 @@ class LoginFragment : Fragment() {
     private fun createAccountAndRedirect() {
         currentDatabase
             .userDatabase!!
-            .firstConnexion(currentUser!!)
-            .observe(this) { success ->
-                if (success.value) {
+            .firstConnexion(
+                currentDatabase.currentUser!!
+            )
+            .observe(this) {
+                if (it.value) {
                     //If correctly registered, redirect it
                     HelperFunctions.changeFragment(
                         activity,
