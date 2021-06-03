@@ -11,6 +11,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.helper.NotificationsHelper
 import com.github.sdpteam15.polyevents.helper.NotificationsScheduler
@@ -27,6 +28,7 @@ import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.adapter.CommentItemAdapter
 import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
 import com.github.sdpteam15.polyevents.view.fragments.LeaveEventReviewFragment
+import com.github.sdpteam15.polyevents.view.fragments.ProgressDialogFragment
 import com.github.sdpteam15.polyevents.view.service.ReviewHasChanged
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModel
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModelFactory
@@ -63,12 +65,20 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
     private lateinit var recyclerView: RecyclerView
     private lateinit var leaveReviewDialogFragment: LeaveEventReviewFragment
     private lateinit var leaveReviewButton: Button
-    //private lateinit var progressDialogFragment: ProgressDialogFragment
+    private lateinit var progressDialogFragment: ProgressDialogFragment
 
     // Lazily initialized view models, instantiated only when accessed for the first time
     private val localEventViewModel: EventLocalViewModel by viewModels {
         EventLocalViewModelFactory(database.eventDao())
     }
+
+    var eventFetchDone: Boolean = false
+    var eventCommentsFetchDone: Boolean = false
+    var eventRatingFetchDone: Boolean = false
+
+    var eventFetchDoneObservable: Observable<Boolean> = Observable()
+    var eventRatingFetchDoneObservable: Observable<Boolean> = Observable()
+    var eventCommentsFetchDoneObservable: Observable<Boolean> = Observable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,11 +87,19 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowHomeEnabled(true)
 
-        /*progressDialogFragment = ProgressDialogFragment(
-            HelperFunctions.waitUpdate(this, listOf(obsEvent, obsRating))
+        progressDialogFragment = ProgressDialogFragment(
+            HelperFunctions.waitUpdate(
+                this,
+                listOf(
+                    eventFetchDoneObservable,
+                    eventRatingFetchDoneObservable,
+                    eventCommentsFetchDoneObservable
+                )
+            )
         )
+        //progressDialogFragment = ProgressDialogFragment()
         progressDialogFragment.isCancelable = false
-        progressDialogFragment.show(supportFragmentManager, ProgressDialogFragment.TAG)*/
+        progressDialogFragment.show(supportFragmentManager, ProgressDialogFragment.TAG)
 
         eventId = intent.getStringExtra(EXTRA_EVENT_ID)!!
 
@@ -116,10 +134,23 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         refreshEvent()
     }
 
+    private fun checkFetchDataDone() {
+        if (eventCommentsFetchDone && eventRatingFetchDone && eventFetchDone) {
+            progressDialogFragment.dismiss()
+        }
+    }
+
+    private fun resetFetchedDataDone() {
+        eventFetchDone = false
+        eventCommentsFetchDone = false
+        eventRatingFetchDone = false
+    }
+
     /**
      * Refreshes the activity
      */
     private fun refreshEvent() {
+        //resetFetchedDataDone()
         obsComments.clear()
         getEventAndObserve()
         getEventRating()
@@ -163,10 +194,19 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
      * get the rating of the event
      */
     private fun getEventRating() {
-        currentDatabase.eventDatabase!!.getMeanRatingForEvent(
-            eventId,
-            obsRating
-        )
+        eventRatingFetchDoneObservable.updateOnce(
+            this, currentDatabase.eventDatabase!!.getMeanRatingForEvent(
+                eventId,
+                obsRating
+            )
+        )/*.updateOnce(
+            this,
+            eventRatingFetchDoneObservable
+        )*/
+        /*eventRatingFetchDoneObservable.observe(this) {
+            eventRatingFetchDone = true
+            checkFetchDataDone()
+        }*/
         obsRating.observeOnce(this, updateIfNotNull = false) { updateRating(it.value) }
     }
 
@@ -174,11 +214,17 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
      * Get the comments of an event
      */
     private fun getCommentsAndObserve() {
-        currentDatabase.eventDatabase!!.getRatingsForEvent(
-            eventId,
-            null,
-            obsComments
-        )
+        eventCommentsFetchDoneObservable.updateOnce(
+            this, currentDatabase.eventDatabase!!.getRatingsForEvent(
+                eventId,
+                null,
+                obsComments
+            )
+        )//.updateOnce(this, eventCommentsFetchDoneObservable)
+        /*eventCommentsFetchDoneObservable.observe(this) {
+            eventCommentsFetchDone = true
+            checkFetchDataDone()
+        }*/
         obsComments.observeAdd(this) {
             //If the comment doesn't have a review, we don't want to display it
             if (it.value.feedback == "") {
@@ -193,26 +239,31 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
      * Get all the informations of the event
      */
     private fun getEventAndObserve() {
-        currentDatabase.eventDatabase!!.getEventFromId(
-            eventId,
-            obsEvent
-        )
-            .observe(this) { b ->
-                if (!b.value) {
-                    showToast(getString(R.string.event_info_fail), this)
-                } else {
-                    if (obsEvent.value!!.organizer != null) {
-                        currentDatabase.userDatabase!!.getUserInformation(
-                            obsOrganiser,
-                            obsEvent.value!!.organizer!!
-                        ).observeOnce(this) {
-                            if (!b.value) {
-                                showToast(getString(R.string.event_info_fail), this)
-                            }
+        eventFetchDoneObservable.updateOnce(
+            this, currentDatabase.eventDatabase!!.getEventFromId(
+                eventId,
+                obsEvent
+            )
+        )/*.updateOnce(this, eventCommentsFetchDoneObservable)
+            .then*/
+        eventFetchDoneObservable.observe(this) { b ->
+            /*eventFetchDone = true
+            checkFetchDataDone()*/
+            if (!b.value) {
+                showToast(getString(R.string.event_info_fail), this)
+            } else {
+                if (obsEvent.value!!.organizer != null) {
+                    currentDatabase.userDatabase!!.getUserInformation(
+                        obsOrganiser,
+                        obsEvent.value!!.organizer!!
+                    ).observeOnce(this) {
+                        if (!b.value) {
+                            showToast(getString(R.string.event_info_fail), this)
                         }
                     }
                 }
             }
+        }
         obsEvent.observeOnce(this, updateIfNotNull = false) { updateInfo(it.value) }
     }
 
