@@ -6,7 +6,6 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions.toLocalDateTime
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.LocationConstant
 import com.github.sdpteam15.polyevents.model.entity.DeviceLocation
 import com.google.android.gms.maps.model.LatLng
-import com.google.firebase.Timestamp
 
 /**
  * A class for converting between device location entities in our code and

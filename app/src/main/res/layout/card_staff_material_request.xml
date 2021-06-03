@@ -35,7 +35,8 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/id_modify_request"
                 app:layout_constraintTop_toBottomOf="@+id/id_modify_request"
-                app:srcCompat="@drawable/ic_clear" />
+                app:srcCompat="@drawable/ic_clear"
+                tools:ignore="ContentDescription" />
 
             <TextView
                 android:id="@+id/id_request_organiser"
@@ -96,8 +97,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
 
-                app:srcCompat="@drawable/ic_check_24" />
-
+                app:srcCompat="@drawable/ic_check_24"
+                tools:ignore="ContentDescription" />
 
             <TextView
                 android:id="@+id/id_request_zone"

@@ -87,7 +87,7 @@ object HelperTestFunction {
                 mock
             }
         Mockito.`when`(database.heatmapDatabase).thenAnswer { heatmapDatabase }
-        Mockito.`when`(heatmapDatabase.setLocation(anyOrNull())).thenReturn(Observable(true))
+        Mockito.`when`(heatmapDatabase.setLocation(anyOrNull(), anyOrNull())).thenReturn(Observable(true))
         return database
     }
 }

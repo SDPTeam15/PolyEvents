@@ -9,11 +9,13 @@ import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import android.widget.Spinner
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.Settings
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.model.database.local.entity.UserSettings
+import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserRole
@@ -27,6 +29,8 @@ import com.github.sdpteam15.polyevents.view.fragments.home.ProviderHomeFragment
 import com.github.sdpteam15.polyevents.view.fragments.home.StaffHomeFragment
 import com.github.sdpteam15.polyevents.view.fragments.home.VisitorHomeFragment
 import com.github.sdpteam15.polyevents.view.service.TimerService
+import com.github.sdpteam15.polyevents.viewmodel.UserSettingsViewModel
+import com.github.sdpteam15.polyevents.viewmodel.UserSettingsViewModelFactory
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -53,14 +57,20 @@ class MainActivity : AppCompatActivity() {
             }
 
         //Return CurrentUser if we are not in test, but we can use a fake user in test this way
-        var currentUser: UserEntity? = null
-            get() = field ?: currentDatabase.currentUser
-        var currentUserObservable: Observable<UserEntity>? = null
-            get() = field ?: currentDatabase.currentUserObservable
-
+        val currentUser: UserEntity?
+            get() = currentDatabase.currentUser
+        val currentUserObservable: Observable<UserEntity>
+            get() = currentDatabase.currentUserObservable
 
         var instance: MainActivity? = null
         var selectedRole: UserRole? = null
+
+        lateinit var localDatabase: LocalDatabase
+    }
+
+    // Lazily initialized view models, instantiated only when accessed for the first time
+    private val userSettingsViewModel: UserSettingsViewModel by viewModels {
+        UserSettingsViewModelFactory(localDatabase.userSettingsDao())
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,44 +89,41 @@ class MainActivity : AppCompatActivity() {
             getString(R.string.notification_channel_name)
         )
 
-        //TODO remove to for local cache
-        Settings.mainActivity = this
-        Settings.isLoaded = Settings.isLoaded
-        val intent = Intent(applicationContext, TimerService::class.java)
-        startService(intent)
-        TimerService.instance.observeOnce {
-            it.value.addTask {
-                if (Settings.IsSendingLocationOn)
-                    HelperFunctions.getLoc(this).observeOnce { LatLng ->
-                        if (LatLng.value != null)
-                            currentDatabase.heatmapDatabase.setLocation(LatLng.value)
-                    }
-            }
-        }
+        localDatabase = (application as PolyEventsApplication).localDatabase
 
-        //Set the basic fragment to the home one or to admin hub if it is logged in
-        //TODO Add a condition to see if the user is an admin or not and if so, redirect him to the admin hub
-        redirectHome()
-
-        //Add a listener to the menu to switch between fragments
-        findViewById<BottomNavigationView>(R.id.navigation_bar).setOnNavigationItemSelectedListener {
-            when (it.itemId) {
-                R.id.ic_map -> HelperFunctions.changeFragment(this, fragments[R.id.ic_map])
-                R.id.ic_list -> HelperFunctions.changeFragment(this, fragments[R.id.ic_list])
-                R.id.ic_login -> if (currentUser == null) {
-                    HelperFunctions.changeFragment(this, fragments[R.id.ic_login])
-                } else {
-                    HelperFunctions.changeFragment(this, fragments[R.id.id_fragment_profile])
+        // Start a timed service in the background to send the device location id
+        // to the database, for heatmap functionality. Have to check if the user enabled
+        // sending location first in the User settings
+        if (TimerService.instance.value == null) {
+            // Get the user settings from local cache and create callback to update the user settings if they changed
+            val userSettingsObservable = ObservableList<UserSettings>()
+            userSettingsObservable.observe(this) {
+                if (it.value.isNotEmpty()) {
+                    userSettingsViewModel.updateUserSettings(
+                        it.value[0]
+                    )
                 }
-                R.id.ic_settings -> HelperFunctions.changeFragment(this, fragments[R.id.ic_settings])
-                else ->
-                    //TODO Add a condition to see if the user is an admin or not and if so, redirect him to the admin hub
-                    redirectHome()
             }
-            true
+
+            val intent = Intent(applicationContext, TimerService::class.java)
+            startService(intent)
+            TimerService.instance.observeOnce {
+                it.value.addTask {
+                    userSettingsViewModel.getUserSettings(userSettingsObservable)
+                    if (userSettingsObservable.isNotEmpty() && userSettingsObservable[0].isSendingLocationOn) {
+                        HelperFunctions.getLoc(this).observeOnce { LatLng ->
+                            if (LatLng.value != null)
+                                currentDatabase.heatmapDatabase.setLocation(
+                                    LatLng.value,
+                                    userSettingsObservable
+                                )
+                        }
+                    }
+                }
+            }
         }
 
-        currentUserObservable!!.observe(this) {
+        currentUserObservable.observe(this) {
             it.value.roles.observe(this) {
                 roles.clear()
                 val list = resources.getStringArray(R.array.Ranks).mapIndexed { index, value ->
@@ -139,6 +146,28 @@ class MainActivity : AppCompatActivity() {
                 roles.addAll(list)
             }
         }
+
+        redirectHome()
+
+        //Add a listener to the menu to switch between fragments
+        findViewById<BottomNavigationView>(R.id.navigation_bar).setOnNavigationItemSelectedListener {
+            when (it.itemId) {
+                R.id.ic_map -> HelperFunctions.changeFragment(this, fragments[R.id.ic_map])
+                R.id.ic_list -> HelperFunctions.changeFragment(this, fragments[R.id.ic_list])
+                R.id.ic_login -> if (currentUser == null) {
+                    HelperFunctions.changeFragment(this, fragments[R.id.ic_login])
+                } else {
+                    HelperFunctions.changeFragment(this, fragments[R.id.id_fragment_profile])
+                }
+                R.id.ic_settings -> HelperFunctions.changeFragment(
+                    this,
+                    fragments[R.id.ic_settings]
+                )
+                else ->
+                    redirectHome()
+            }
+            true
+        }
     }
 
     override fun onDestroy() {
@@ -147,6 +176,9 @@ class MainActivity : AppCompatActivity() {
         stopService(intent)
     }
 
+    /**
+     * This function redirect the user to the correct fragment depending on his selected role
+     */
     private fun redirectHome() {
         if (currentUser == null) {
             selectedRole = UserRole.PARTICIPANT
@@ -172,6 +204,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private var roles = ObservableList<Pair<String, UserRole>>()
+
+    /**
+     * Switch the role of the user and the corresponding fragment
+     * @param spinner The spinner to be updated
+     * @param role The new selected role
+     */
     fun switchRoles(spinner: Spinner, role: UserRole) {
         spinner.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {}

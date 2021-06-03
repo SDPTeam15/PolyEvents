@@ -5,10 +5,12 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
+import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.sdpteam15.polyevents.HelperTestFunction
@@ -21,6 +23,8 @@ import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabasePr
 import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
 import com.github.sdpteam15.polyevents.model.database.remote.objects.ZoneDatabaseInterface
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
+import com.github.sdpteam15.polyevents.model.entity.UserProfile
+import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
@@ -46,8 +50,8 @@ class ZoneManagementListTest {
     val email = "John@Doe.com"
     lateinit var mockedDatabase: DatabaseInterface
     lateinit var zoneDatabase: ZoneDatabaseInterface
-    lateinit var zones:MutableList<Zone>
-
+    lateinit var zones: MutableList<Zone>
+    val obsValue = Observable<Boolean>()
 
     @Before
     fun setup() {
@@ -65,6 +69,10 @@ class ZoneManagementListTest {
             email = email
         )
 
+        val obs = Observable(testUser)
+        obs.postValue(testUser)
+        testUser.userProfiles.add(UserProfile("pid",userRole = UserRole.ADMIN))
+
         zones = mutableListOf(
             Zone(zoneId = "zid1", zoneName = "zoneName1"),
             Zone(zoneId = "zid2", zoneName = "zoneName2"),
@@ -74,11 +82,11 @@ class ZoneManagementListTest {
         Mockito.`when`(zoneDatabase.getActiveZones(anyOrNull(), anyOrNull())).thenAnswer {
             (it.arguments[0] as ObservableList<Zone>?)?.clear()
             (it.arguments[0] as ObservableList<Zone>?)?.addAll(zones)
-            Observable(true)
+            obsValue
         }
+        When(mockedDatabase.currentUser).thenReturn(testUser)
+        When(mockedDatabase.currentUserObservable).thenReturn(obs)
 
-        MainActivity.currentUser = testUser
-        MainActivity.currentUserObservable = Observable(MainActivity.currentUser)
 
         val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
         ActivityScenario.launch<MainActivity>(intent)
@@ -86,68 +94,46 @@ class ZoneManagementListTest {
         Espresso.onView(ViewMatchers.withId(R.id.ic_home)).perform(click())
         Espresso.onView(ViewMatchers.withId(R.id.id_fragment_home_admin))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withId(R.id.btnRedirectZoneManagement)).perform(click())
+        Espresso.onView(ViewMatchers.withId(R.id.id_zone_management_button)).perform(scrollTo(),click())
         Intents.init()
     }
 
     @After
     fun teardown() {
-        MainActivity.currentUser = null
         Intents.release()
         Database.currentDatabase = FirestoreDatabaseProvider
     }
 
     @Test
     fun clickOnBtnCreateZoneLaunchCorrectActivityWithEmptyFields() {
-        Espresso.onView(ViewMatchers.withId(R.id.btnNewZone)).perform(click())
+        obsValue.postValue(true)
+        Espresso.onView(ViewMatchers.withId(R.id.id_new_zone_button)).perform(click())
         Intents.intended(IntentMatchers.hasComponent(ZoneManagementActivity::class.java.name))
 
-        Espresso.onView(ViewMatchers.withId(R.id.btnManage))
+        Espresso.onView(ViewMatchers.withId(R.id.id_btn_manage))
             .check(ViewAssertions.matches(ViewMatchers.withText("Create zone")))
-        Espresso.onView(ViewMatchers.withId(R.id.zoneManagementDescription))
+        Espresso.onView(ViewMatchers.withId(R.id.id_zone_management_description_edittext))
             .check(ViewAssertions.matches(ViewMatchers.withText("")))
-        Espresso.onView(ViewMatchers.withId(R.id.zoneManagementName))
+        Espresso.onView(ViewMatchers.withId(R.id.id_zone_management_name_edittext))
             .check(ViewAssertions.matches(ViewMatchers.withText("")))
     }
 
-/*    @Test
+    @Test
     fun failedToLoadZoneRedirect(){
-        When(mockedDatabase.zoneDatabase).thenReturn(zoneDatabase)
+        obsValue.postValue(false)
 
-        val intent = Intent(
-            ApplicationProvider.getApplicationContext(),
-            MainActivity::class.java
-        )
-
-        Mockito.`when`(zoneDatabase.getAllZones(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
-            Observable(false)
-        }
-
-        ActivityScenario.launch<MainActivity>(intent)
         Espresso.onView(ViewMatchers.withId(R.id.id_fragment_home_admin))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withId(R.id.btnRedirectZoneManagement))
-        Espresso.onView(ViewMatchers.withId(R.id.id_fragment_home_admin))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-    }*/
-
-    @Test
-    fun canDeleteZone(){
-        Espresso.onView(ViewMatchers.withId(R.id.recycler_zones_list)).perform(
-            RecyclerViewActions.actionOnItemAtPosition<ZoneItemAdapter.ItemViewHolder>(
-                0, TestHelper.clickChildViewWithId(R.id.id_zone_remove_item)
-            )
-        )
-        Espresso.onView(ViewMatchers.withId(R.id.recycler_zones_list))
-            .check(RecyclerViewItemCountAssertion(zones.size-1))
     }
+
     @Test
-    fun clickOnZoneLaunchCorrectActivity(){
+    fun clickOnZoneLaunchCorrectActivity() {
+        obsValue.postValue(true)
         Espresso.onView(ViewMatchers.withId(R.id.recycler_zones_list)).perform(
             RecyclerViewActions.actionOnItemAtPosition<ZoneItemAdapter.ItemViewHolder>(
                 0, click()
             )
         )
-        Intents.intended(IntentMatchers.hasExtra(EXTRA_ID,"zid1"))
+        Intents.intended(IntentMatchers.hasExtra(EXTRA_ID, "zid1"))
     }
 }

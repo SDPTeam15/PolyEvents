@@ -1,7 +1,7 @@
 package com.github.sdpteam15.polyevents.model.database.remote.objects
 
-import com.github.sdpteam15.polyevents.Settings
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.model.database.local.entity.UserSettings
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.LOCATION_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
@@ -19,20 +19,22 @@ import kotlin.random.Random
 class HeatmapDatabase(private val db: DatabaseInterface) : HeatmapDatabaseInterface {
 
     override fun setLocation(
-        location: LatLng
+        location: LatLng,
+        userSettings: ObservableList<UserSettings>
     ): Observable<Boolean> {
-        val element = DeviceLocation(Settings.LocationId, location, LocalDateTime.now())
-        return if (Settings.LocationId == "")
+        val userSettingsInstance: UserSettings = userSettings[0]
+        val element = DeviceLocation(userSettingsInstance.locationId, location, LocalDateTime.now())
+        return if (userSettingsInstance.locationId == null)
             db.addEntityAndGetId(
                 element,
                 LOCATION_COLLECTION
             ).mapOnce {
-                Settings.LocationId = it
+                userSettings.updateAll(listOf(userSettingsInstance.copy(locationId = it)))
                 it != ""
             }.then
         else db.setEntity(
             element,
-            Settings.LocationId,
+            userSettingsInstance.locationId!!,
             LOCATION_COLLECTION
         )
     }
@@ -68,7 +70,7 @@ class HeatmapDatabase(private val db: DatabaseInterface) : HeatmapDatabaseInterf
             for (e in it.value)
                 list.add(e)
 
-            var dl = 0.0002
+            val dl = 0.0002
             for (i in 1..5) {
                 val latitude = Random.nextDouble(swBound.latitude, neBound.latitude)
                 val longitude = Random.nextDouble(swBound.longitude, neBound.longitude)

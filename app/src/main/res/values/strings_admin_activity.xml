@@ -22,6 +22,8 @@
     <!-- ZoneManagement List activity-->
     <string name="fail_to_get_list_zones">Failed to get the list of zones</string>
     <string name="zone_mangement_list_title">All zones</string>
+    <string name="message_confirm_delete_zone">Are you sure you want to delete this zone ? (The events and material requests related will be deleted)</string>
+    <string name="message_confirm_delete_zone_title">Delete %1$s</string>
 
     <!-- Item management activity-->
     <string name="failed_to_get_item">Failed to get items</string>
@@ -43,6 +45,7 @@
     <string name="event_list_management">All events</string>
     <string name="btn_new_event_text">+</string>
     <string name="message_confirm_delete">Are you sure to want to delete %1$s (this action is not reversible)</string>
+    <string name="message_confirm_delete_title">Event: %1$s</string>
 
     <!-- EventManagementActivity-->
     <string name="failed_get_event_information">Unable to get the information associated to this event</string>

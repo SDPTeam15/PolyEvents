@@ -4,9 +4,9 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.model.database.local.adapter.LocalAdapter
 import com.github.sdpteam15.polyevents.model.database.local.dao.GenericEntityDao
 import com.github.sdpteam15.polyevents.model.database.local.entity.GenericEntity
-import com.github.sdpteam15.polyevents.model.database.local.adapter.LocalAdapter
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import kotlinx.coroutines.runBlocking
 import org.junit.After

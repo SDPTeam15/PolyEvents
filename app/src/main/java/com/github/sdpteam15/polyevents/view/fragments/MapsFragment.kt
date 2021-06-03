@@ -121,7 +121,7 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
         locationButton = view.findViewById(R.id.id_location_button)
 
         addNewAreaButton = view.findViewById(R.id.addNewArea)
-        //deleteAreaButton= view.findViewById(R.id.id_delete_areas)
+        deleteAreaButton = view.findViewById(R.id.id_delete_areas)
         saveNewAreaButton = view.findViewById(R.id.acceptNewArea)
         editAreaButton = view.findViewById(R.id.id_edit_area)
 
@@ -145,7 +145,7 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
                 locationButton.visibility = View.VISIBLE
 
                 addNewAreaButton.visibility = View.INVISIBLE
-                //deleteAreaButton.visibility = View.INVISIBLE
+                deleteAreaButton.visibility = View.INVISIBLE
                 saveNewAreaButton.visibility = View.INVISIBLE
                 editAreaButton.visibility = View.INVISIBLE
                 saveButton.visibility = View.INVISIBLE
@@ -160,7 +160,7 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
                 locationButton.visibility = View.INVISIBLE
 
                 addNewAreaButton.visibility = View.VISIBLE
-                //deleteAreaButton.visibility = View.VISIBLE
+                deleteAreaButton.visibility = View.VISIBLE
                 saveNewAreaButton.visibility = View.VISIBLE
                 editAreaButton.visibility = View.VISIBLE
                 saveButton.visibility = View.VISIBLE
@@ -175,7 +175,7 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
                 locationButton.visibility = View.INVISIBLE
 
                 addNewAreaButton.visibility = View.INVISIBLE
-                //deleteAreaButton.visibility = View.INVISIBLE
+                deleteAreaButton.visibility = View.INVISIBLE
                 saveNewAreaButton.visibility = View.INVISIBLE
                 editAreaButton.visibility = View.INVISIBLE
                 saveButton.visibility = View.INVISIBLE
@@ -194,7 +194,7 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
         addNewAreaButton.setOnClickListener { ZoneAreaMapHelper.createNewArea(requireContext()) }
         saveNewAreaButton.setOnClickListener { ZoneAreaMapHelper.saveNewArea(requireContext()) }
         editAreaButton.setOnClickListener { ZoneAreaMapHelper.editMode(requireContext()) }
-        //deleteAreaButton.setOnClickListener{GoogleMapHelper.deleteMode(requireContext())}
+        deleteAreaButton.setOnClickListener { ZoneAreaMapHelper.deleteMode(requireContext()) }
 
         addNewRouteButton.setOnClickListener { RouteMapHelper.createNewRoute(requireContext()) }
         removeRouteButton.setOnClickListener { RouteMapHelper.removeRoute() }
@@ -227,6 +227,21 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
     fun switchIconDelete() {
         val removeRouteButton = requireView().findViewById<FloatingActionButton>(R.id.removeRoute)
         if (RouteMapHelper.deleteMode) {
+            removeRouteButton.supportBackgroundTintList =
+                resources.getColorStateList(R.color.red, null)
+        } else {
+            removeRouteButton.supportBackgroundTintList =
+                resources.getColorStateList(R.color.teal_200, null)
+        }
+    }
+
+    /**
+     * Switches the style of the delete button for routes
+     */
+    fun switchIconDeleteArea() {
+        val removeRouteButton =
+            requireView().findViewById<FloatingActionButton>(R.id.id_delete_areas)
+        if (ZoneAreaMapHelper.deleteMode) {
             removeRouteButton.supportBackgroundTintList =
                 resources.getColorStateList(R.color.red, null)
         } else {

@@ -8,10 +8,10 @@ import android.widget.Button
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
+import com.github.sdpteam15.polyevents.model.database.local.entity.UserSettings
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.model.database.local.entity.UserSettings
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.viewmodel.UserSettingsViewModel
 import com.github.sdpteam15.polyevents.viewmodel.UserSettingsViewModelFactory
@@ -95,8 +95,12 @@ class SettingsFragment : Fragment() {
 
         if (currentDatabase.currentUser != null) {
             // if user logged in save his settings in remote database
-            currentDatabase.userSettingsDatabase?.updateUserSettings(
-                userSettings.copy(userUid = currentDatabase.currentUser!!.uid)
+            currentDatabase.userSettingsDatabase.updateUserSettings(
+                userSettings.copy(
+                    userUid = currentDatabase.currentUser!!.uid,
+                    // We don't want to share the location of the user in the remote database
+                    locationId = null
+                )
             )
         }
     }
