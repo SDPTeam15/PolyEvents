@@ -5,14 +5,17 @@ import com.github.sdpteam15.polyevents.model.database.remote.objects.UserSetting
 import com.github.sdpteam15.polyevents.model.observable.Observable
 
 object FakeDatabaseUserSettings : UserSettingsDatabaseInterface {
+    val settings = mutableMapOf<String, UserSettings>()
     override fun updateUserSettings(userSettings: UserSettings): Observable<Boolean> {
-        TODO("Not yet implemented")
+        settings[userSettings.userUid] = userSettings
+        return Observable(true, FakeDatabase)
     }
 
     override fun getUserSettings(
         id: String?,
         userSettingsObservable: Observable<UserSettings>
     ): Observable<Boolean> {
-        TODO("Not yet implemented")
+        userSettingsObservable.postValue(settings[id])
+        return Observable(true)
     }
 }
