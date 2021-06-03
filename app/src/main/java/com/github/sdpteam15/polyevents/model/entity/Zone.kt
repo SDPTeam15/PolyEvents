@@ -27,7 +27,8 @@ data class Zone(
     var zoneId: String? = null,
     var zoneName: String? = null,
     var location: String? = null,
-    var description: String? = null
+    var description: String? = null,
+    var status: Status = Status.ACTIVE
 ) : Attachable {
     /**
      * Get the coordinates of all the areas on the current Zone
@@ -208,5 +209,14 @@ data class Zone(
             if (LatLngOperator.pointInsidePolygon(mean, LatLngOperator.Polygon(l)))
                 return true
         return false
+    }
+    enum class Status{
+        ACTIVE,
+        DELETED;
+
+        companion object {
+            private val mapOrdinal = values()
+            fun fromOrdinal(ordinal: Int) = mapOrdinal[ordinal]
+        }
     }
 }

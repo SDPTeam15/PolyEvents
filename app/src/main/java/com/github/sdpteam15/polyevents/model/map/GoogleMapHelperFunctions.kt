@@ -90,7 +90,7 @@ object GoogleMapHelperFunctions {
             ZoneAreaMapHelper.importNewZone(context, it.value, mode != MapsFragmentMod.EditZone)
         }
 
-        Database.currentDatabase.zoneDatabase.getAllZones(
+        Database.currentDatabase.zoneDatabase.getActiveZones(
             ZoneManagementListActivity.zones, 50
         ).observe(lifecycleOwner) {
             if (!it.value) {

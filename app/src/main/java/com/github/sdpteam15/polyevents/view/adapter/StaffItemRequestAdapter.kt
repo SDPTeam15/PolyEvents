@@ -107,10 +107,10 @@ class StaffItemRequestAdapter(
             status.text = request.status.toString()
 
             if (request.staffInChargeId == null) {
+                staffName.visibility = GONE
+            } else {
                 staffName.text = "Staff : ${userNames[request.staffInChargeId]}"
                 staffName.visibility = VISIBLE
-            } else {
-                staffName.visibility = GONE
             }
 
 

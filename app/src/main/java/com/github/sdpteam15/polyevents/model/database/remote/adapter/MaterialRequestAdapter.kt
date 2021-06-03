@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.model.database.remote.adapter
 
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.toInt
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.MaterialRequestConstant.*
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
 
@@ -35,8 +36,8 @@ object MaterialRequestAdapter : AdapterInterface<MaterialRequest> {
             document[MATERIAL_REQUEST_USER_ID.value] as String,
             document[MATERIAL_REQUEST_EVENT_ID.value] as String,
             MaterialRequest.Status.fromOrdinal(
-                ((document[MATERIAL_REQUEST_STATUS.value] ?: 0) as Long).toInt()
-            )!!,
+                (document[MATERIAL_REQUEST_STATUS.value] ?: 0).toInt()!!
+            ),
             document[MATERIAL_REQUEST_ADMIN_MESSAGE.value] as String?,
             document[MATERIAL_REQUEST_STAFF_IN_CHARGE.value] as String?
         )

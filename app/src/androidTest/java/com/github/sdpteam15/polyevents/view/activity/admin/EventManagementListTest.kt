@@ -79,8 +79,7 @@ class EventManagementListTest {
         }
 
         Mockito.`when`(
-            mockedZoneDB.getAllZones(
-                anyOrNull(),
+            mockedZoneDB.getActiveZones(
                 anyOrNull(),
                 anyOrNull()
             )

@@ -78,8 +78,8 @@
     <string name="tags_separate_them_with_a_coma">Tags (separated by a coma)</string>
 
     <!-- Event edit related constant-->
-    <string name="event_edit_request_successfully_sent">Your event edit request has been successfully sent</string>
-    <string name="event_edit_request_error">Error while sending event edit request, please try again</string>
+    <string name="event_edit_request_successfully_sent">Your request has been successfully sent</string>
+    <string name="event_edit_request_error">Error while sending request, please try again</string>
 
     <!-- EventEditManagement Activity-->
     <string name="failed_to_accept_request">Failed to accept the request</string>
@@ -109,4 +109,6 @@
     <string name="quantity_should_be_positive">The quantity must be positive</string>
     <string name="new_total_less_items">The new total is less than attributed items</string>
     <string name="fill_all_fields">Please fill all the fields above</string>
+    <string name="creation">Creation</string>
+    <string name="modification">Modification</string>
 </resources>

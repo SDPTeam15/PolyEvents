@@ -14,10 +14,11 @@ class ZoneAdapterTest {
     val location = "Esplanade"
     val zoneId = "idZone"
     val zoneDescription = "description"
+    val status = Zone.Status.ACTIVE
 
     @Before
     fun setupZone() {
-        zone = Zone(zoneId, zoneName, location, zoneDescription)
+        zone = Zone(zoneId, zoneName, location, zoneDescription,status)
     }
 
     @Test
@@ -28,6 +29,7 @@ class ZoneAdapterTest {
         assertEquals(document[ZONE_LOCATION.value], zone.location)
         assertEquals(document[ZONE_DESCRIPTION.value], zone.description)
         assertEquals(document[ZONE_DOCUMENT_ID.value], zone.zoneId)
+        assertEquals((document[ZONE_STATUS.value]as Long).toInt(), zone.status.ordinal)
     }
 
     @Test
@@ -36,7 +38,8 @@ class ZoneAdapterTest {
             ZONE_NAME.value to zone.zoneName,
             ZONE_LOCATION.value to zone.location,
             ZONE_DESCRIPTION.value to zone.description,
-            ZONE_DOCUMENT_ID.value to zone.zoneId
+            ZONE_DOCUMENT_ID.value to zone.zoneId,
+            ZONE_STATUS.value to zone.status.ordinal.toLong()
         )
         val obtainedZone = ZoneAdapter.fromDocument(zoneDocumentData, zoneId)
         assertEquals(obtainedZone, zone)
@@ -44,13 +47,12 @@ class ZoneAdapterTest {
 
     @Test
     fun conversionOfZoneToDocumentWithoutIDAddNoId() {
-        val document = ZoneAdapter.toDocumentWithoutNull(Zone(null, zoneName, location, zoneDescription))
+        val document = ZoneAdapter.toDocumentWithoutNull(Zone(null, zoneName, location, zoneDescription,status))
         print(document)
         assertEquals(document[ZONE_NAME.value], zone.zoneName)
         assertEquals(document[ZONE_LOCATION.value], zone.location)
         assertEquals(document[ZONE_DESCRIPTION.value], zone.description)
-        println(document.containsKey(ZONE_DOCUMENT_ID.value))
-        println(document[ZONE_DOCUMENT_ID.value])
+        assertEquals(document[ZONE_STATUS.value], zone.status.ordinal.toLong())
         assert(!document.containsKey(ZONE_DOCUMENT_ID.value))
     }
 }

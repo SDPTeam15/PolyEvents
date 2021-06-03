@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.map.ZoneAreaMapHelper
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
@@ -38,7 +37,7 @@ class ZoneManagementListActivity : AppCompatActivity() {
         recyclerView.adapter = ZoneItemAdapter(zones, openZone)
 
         println(Database.currentDatabase)
-        Database.currentDatabase.zoneDatabase.getAllZones(
+        Database.currentDatabase.zoneDatabase.getActiveZones(
             zones.sortAndLimitFrom(this){it.zoneName},
             50
         ).observe(this) {

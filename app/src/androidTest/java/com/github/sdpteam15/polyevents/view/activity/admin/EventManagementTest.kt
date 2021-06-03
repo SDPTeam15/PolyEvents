@@ -20,7 +20,6 @@ import com.github.sdpteam15.polyevents.model.database.remote.objects.ZoneDatabas
 import com.github.sdpteam15.polyevents.model.entity.*
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import com.github.sdpteam15.polyevents.view.adapter.EventListAdapter
 import org.hamcrest.CoreMatchers
@@ -101,8 +100,7 @@ class EventManagementTest {
         When(mockedDatabase.userDatabase).thenReturn(mockedUserDb)
 
         When(
-            mockedZoneDB.getAllZones(
-                anyOrNull(),
+            mockedZoneDB.getActiveZones(
                 anyOrNull(),
                 anyOrNull()
             )
@@ -312,8 +310,7 @@ class EventManagementTest {
 
         val obs = Observable<Boolean>()
         When(
-            mockedZoneDB.getAllZones(
-                anyOrNull(),
+            mockedZoneDB.getActiveZones(
                 anyOrNull(),
                 anyOrNull()
             )
@@ -356,8 +353,7 @@ class EventManagementTest {
 
 
         When(
-            mockedZoneDB.getAllZones(
-                anyOrNull(),
+            mockedZoneDB.getActiveZones(
                 anyOrNull(),
                 anyOrNull()
             )

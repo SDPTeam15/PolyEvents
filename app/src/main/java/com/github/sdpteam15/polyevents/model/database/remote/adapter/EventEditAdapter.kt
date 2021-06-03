@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.model.database.remote.adapter
 
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.toInt
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.EventConstant.EVENT_DOCUMENT_ID
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.EventEditConstant.EVENT_EDIT_ADMIN_MESSAGE
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.EventEditConstant.EVENT_EDIT_STATUS
@@ -19,9 +20,8 @@ object EventEditAdapter : AdapterInterface<Event> {
         event.eventId = document[EVENT_DOCUMENT_ID.value] as String?
         event.eventEditId = id
 
-        event.status = Event.EventStatus.fromOrdinal(
-            ((document[EVENT_EDIT_STATUS.value] ?: 0) as Long).toInt()
-        )!!
+        event.status =
+            Event.EventStatus.fromOrdinal((document[EVENT_EDIT_STATUS.value] ?: 0).toInt()!!)!!
 
         event.adminMessage = (document[EVENT_EDIT_ADMIN_MESSAGE.value] as String?)
         return event
