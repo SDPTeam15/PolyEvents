@@ -102,15 +102,9 @@ class EventTest {
     }
 
     @Test
-    fun formattedStartTimeReturnsCorrectTime() {
-        assertEquals(event.formattedStartTime(), "18:30")
+    fun formattedNullStartTimeReturnsEmptyString() {
         val ret = eventWithNullStartTime.formattedStartTime()
         assertEquals(ret, "")
-    }
-
-    @Test
-    fun checkTimeStampToLocalDateTimeConversion() {
-        // TODO
     }
 
     @Test
@@ -160,5 +154,4 @@ class EventTest {
     fun testMakeLimitedEventWithNegativeNumberThrowsException() {
         event.makeLimitedEvent(-1)
     }
-
 }

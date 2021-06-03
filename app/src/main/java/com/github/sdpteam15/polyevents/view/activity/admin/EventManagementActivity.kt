@@ -229,11 +229,11 @@ class EventManagementActivity : AppCompatActivity() {
         val spinnerZone = findViewById<Spinner>(R.id.id_spinner_zone)
 
         if (isActivityProvider) {
-            spinnerOrg.visibility =View.INVISIBLE
+            spinnerOrg.visibility = View.INVISIBLE
             findViewById<TextView>(R.id.id_tv_spinner_organiser).visibility = View.INVISIBLE
         } else {
             findViewById<TextView>(R.id.id_tv_spinner_organiser).visibility = View.VISIBLE
-            spinnerOrg.visibility =View.VISIBLE
+            spinnerOrg.visibility = View.VISIBLE
         }
 
 

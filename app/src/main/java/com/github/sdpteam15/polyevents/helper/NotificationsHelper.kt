@@ -38,34 +38,36 @@ enum class NotificationType(private val notificationType: String) {
  * with the Alarm manager, as well as Notification manager related methods to send
  * notifications and/or cancel them
  */
-class NotificationsHelper(private val applicationContext: Context): NotificationsScheduler {
+class NotificationsHelper(private val applicationContext: Context) : NotificationsScheduler {
     /**
      * Cancel the notification associated with the id provided as well as the pending intent
      * scheduling the alarm to fire up the notification.
      * @param notificationId the id of the notification to cancel
      */
-    override fun cancelNotification(notificationId: Int) {
-        val app = applicationContext as PolyEventsApplication
+    override fun cancelNotification(notificationId: Int?) {
+        if (notificationId != null) {
+            val app = applicationContext as PolyEventsApplication
 
-        // Get the alarm manager from the system
-        val alarmManager =
-            app.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
-        val pendingIntent =
-            PendingIntent.getBroadcast(
-                app, notificationId, Intent(app, AlarmReceiver::class.java),
-                PendingIntent.FLAG_UPDATE_CURRENT
-            )
-        if (pendingIntent != null && alarmManager != null) {
-            // Cancel the pending intent
-            alarmManager.cancel(pendingIntent)
+            // Get the alarm manager from the system
+            val alarmManager =
+                app.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
+            val pendingIntent =
+                PendingIntent.getBroadcast(
+                    app, notificationId, Intent(app, AlarmReceiver::class.java),
+                    PendingIntent.FLAG_UPDATE_CURRENT
+                )
+            if (pendingIntent != null && alarmManager != null) {
+                // Cancel the pending intent
+                alarmManager.cancel(pendingIntent)
+            }
+
+            val notificationManager = ContextCompat.getSystemService(
+                app,
+                NotificationManager::class.java
+            ) as NotificationManager
+            // Cancel the created intent
+            notificationManager.cancelNotification(notificationId)
         }
-
-        val notificationManager = ContextCompat.getSystemService(
-            app,
-            NotificationManager::class.java
-        ) as NotificationManager
-        // Cancel the created intent
-        notificationManager.cancelNotification(notificationId)
     }
 
     /**

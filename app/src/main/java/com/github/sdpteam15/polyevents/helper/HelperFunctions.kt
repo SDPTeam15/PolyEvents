@@ -23,6 +23,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.Timestamp
 import java.time.*
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 const val PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1
@@ -197,8 +198,11 @@ object HelperFunctions {
      * @return the corresponding LocalDateTime
      */
     fun dateToLocalDateTime(date: Any?): LocalDateTime? =
-        when(date){
-            is Timestamp -> LocalDateTime.ofInstant(date.toDate().toInstant(), ZoneId.systemDefault())
+        when (date) {
+            is Timestamp -> LocalDateTime.ofInstant(
+                date.toDate().toInstant(),
+                ZoneId.systemDefault()
+            )
             is Date -> LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault())
             else -> null
         }
@@ -251,6 +255,40 @@ object HelperFunctions {
     }
 
     /**
+     * Takes date instance with time and another date and returns the format as follows:
+     * - if dateTime occurs the same day we return (e.g. "Today at 07:36")
+     * - if dateTime occurs the day after the other date we return (e.g. "Tomorrow at 8:30"
+     * - else return the date and time (e.g. July 26 at 23:00)
+     * @param dateTime the LocalDateTime instance we're trying to format
+     * @param other the other date, which is just a date without time, so we can compare days
+     * @return the formatted date time with respect to the other date
+     */
+    fun formatDateTimeWithRespectToAnotherDate(dateTime: LocalDateTime?, other: LocalDate): String {
+        var formatted = ""
+
+        if (dateTime != null) {
+            // First format the date time using the time formatter (e.g. 07:36)
+            val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("k:mm")
+            formatted = dateTime.format(timeFormatter)
+
+            val dateTimeToLocalDate = dateTime.toLocalDate()
+
+            if (dateTimeToLocalDate.equals(other)) {
+                // If today
+                formatted = "Today at $formatted"
+            } else if (dateTimeToLocalDate.equals(other.plusDays(1L))) {
+                // If tomorrow
+                formatted = "Tomorrow at $formatted"
+            } else {
+                val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("MMMM dd")
+                // if not on the same day or day after, append the day and month as well
+                formatted = "${dateTime.format(dateFormatter)} at $formatted"
+            }
+        }
+        return formatted
+    }
+
+    /**
      * A class containing type converters for dealing with complex types, when persisting
      * in Room database.
      */
@@ -291,11 +329,11 @@ object HelperFunctions {
     }
 
     /**
-    * if this object is not null apply run else return default
-    * @param default default return
-    * @param run the function to execute
-    * @return if this object is not null apply run else return default
-    */
+     * if this object is not null apply run else return default
+     * @param default default return
+     * @param run the function to execute
+     * @return if this object is not null apply run else return default
+     */
     fun <S, T> S?.apply(default: T, run: (S) -> T) = if (this != null) run(this) else default
 
     /**

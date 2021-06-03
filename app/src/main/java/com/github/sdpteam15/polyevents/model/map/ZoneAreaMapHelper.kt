@@ -2,7 +2,6 @@ package com.github.sdpteam15.polyevents.model.map
 
 import android.content.Context
 import android.graphics.Color
-import android.util.Log
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.map.GoogleMapMode.DEFAULT_ZONE_STROKE_COLOR
@@ -144,10 +143,10 @@ object ZoneAreaMapHelper {
      */
     fun createNewArea(context: Context?) {
         //If in delete mode, deactivate delete mode
-        if(deleteMode)
+        if (deleteMode)
             deleteMode(context)
         //If in edit mode, deactivate edit mode
-        if(editMode)
+        if (editMode)
             editMode(context)
         clearTemp()
         setupEditZone(context, GoogleMapHelper.map!!.cameraPosition!!.target)
@@ -182,14 +181,14 @@ object ZoneAreaMapHelper {
      */
     fun deleteMode(context: Context?) {
         //If in edit mode, deactivate edit mode
-        if(editMode)
+        if (editMode)
             editMode(context)
 
         //If a polygon was being created, then removes it, else changes the deletion mode
-        if(tempPoly != null){
+        if (tempPoly != null) {
             tempPoly!!.remove()
             clearTemp()
-        }else{
+        } else {
             deleteMode = !deleteMode
             MapsFragment.instance?.switchIconDeleteArea()
 
@@ -417,8 +416,10 @@ object ZoneAreaMapHelper {
         val vec = LatLngOperator.minus(pos.position, moveDiagPos!!)
 
         //Projection of the vector on the two axis (in cartesian space)
-        var diffCoord = GoogleMapVectorHelper.projectionVectorThroughCartesian(vec, latlng2, latlng3)
-        var diffCoord1 = GoogleMapVectorHelper.projectionVectorThroughCartesian(vec, latlng1, latlng2)
+        var diffCoord =
+            GoogleMapVectorHelper.projectionVectorThroughCartesian(vec, latlng2, latlng3)
+        var diffCoord1 =
+            GoogleMapVectorHelper.projectionVectorThroughCartesian(vec, latlng1, latlng2)
 
 
         // Move the corresponding corners of the rectangle
@@ -435,7 +436,8 @@ object ZoneAreaMapHelper {
             }
             else -> { //Should only be DIAG
                 tempLatLng[1] = LatLngOperator.plus(latlng1, diffCoord)
-                tempLatLng[2] = LatLngOperator.plus(LatLngOperator.plus(latlng2, diffCoord), diffCoord1)
+                tempLatLng[2] =
+                    LatLngOperator.plus(LatLngOperator.plus(latlng2, diffCoord), diffCoord1)
                 tempLatLng[3] = LatLngOperator.plus(latlng3, diffCoord1)
             }
         }
@@ -617,7 +619,7 @@ object ZoneAreaMapHelper {
      */
     fun editMode(context: Context?) {
         //If in delete mode, deactivate delete mode
-        if(deleteMode)
+        if (deleteMode)
             deleteMode(context)
         editMode = !editMode
 

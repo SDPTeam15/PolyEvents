@@ -102,9 +102,9 @@ class EventActivityTest {
             tags = mutableListOf("music", "live", "pogo")
         )
         testPublicEvent = testLimitedEvent.copy(
-                eventId = publicEventId,
-                eventName = "public Event only",
-                tags = mutableListOf()
+            eventId = publicEventId,
+            eventName = "public Event only",
+            tags = mutableListOf()
         )
 
         testLimitedEvent.makeLimitedEvent(3)
@@ -124,9 +124,9 @@ class EventActivityTest {
         }
 
         When(
-                mockedEventDatabase.getEventFromId(
-                        id = publicEventId, returnEvent = EventActivity.obsEvent
-                )
+            mockedEventDatabase.getEventFromId(
+                id = publicEventId, returnEvent = EventActivity.obsEvent
+            )
         ).then {
             EventActivity.obsEvent.postValue(testPublicEvent)
             Observable(true)
@@ -138,12 +138,33 @@ class EventActivityTest {
             )
         ).thenReturn(Observable(true))
 
+        When(
+            mockedEventDatabase.getMeanRatingForEvent(
+                eventId = anyOrNull(),
+                mean = anyOrNull()
+            )
+        ).thenReturn(Observable(true))
+
+        When(
+            mockedEventDatabase.getRatingsForEvent(
+                eventId = anyOrNull(),
+                limit = anyOrNull(),
+                ratingList = anyOrNull()
+            )
+        ).thenReturn(
+            Observable(true)
+        )
+
         mockedNotificationsScheduler = mock(NotificationsScheduler::class.java)
         When(mockedNotificationsScheduler.cancelNotification(anyOrNull())).then { }
         When(mockedNotificationsScheduler.generateNewNotificationId()).thenReturn(0)
-        When(mockedNotificationsScheduler.scheduleEventNotification(
-            eventId = anyOrNull(), notificationMessage = anyOrNull(), scheduledTime = anyOrNull()
-        )).thenReturn(0)
+        When(
+            mockedNotificationsScheduler.scheduleEventNotification(
+                eventId = anyOrNull(),
+                notificationMessage = anyOrNull(),
+                scheduledTime = anyOrNull()
+            )
+        ).thenReturn(0)
 
         // Create local db
         val context: Context = ApplicationProvider.getApplicationContext()
@@ -162,6 +183,22 @@ class EventActivityTest {
         // close and remove the mock local database
         localDatabase.close()
         currentDatabase = FirestoreDatabaseProvider
+    }
+
+    @Test
+    fun checkProgressDialogCorrectlyDisplayed() {
+        When(
+            mockedEventDatabase.getEventFromId(
+                id = anyOrNull(),
+                returnEvent = anyOrNull()
+            )
+        ).thenReturn(
+            Observable()
+        )
+
+        goToEventActivityWithIntent(limitedEventId)
+
+        assertDisplayed(R.id.fragment_progress_dialog)
     }
 
     @Test
@@ -211,10 +248,12 @@ class EventActivityTest {
 
     @Test
     fun testEventFetchFailDisablesButtonsAndDoesNotShowActivity() {
-        When(mockedEventDatabase.getEventFromId(
-            id = anyOrNull(),
-            returnEvent = anyOrNull()
-        )).thenReturn(Observable(false))
+        When(
+            mockedEventDatabase.getEventFromId(
+                id = anyOrNull(),
+                returnEvent = anyOrNull()
+            )
+        ).thenReturn(Observable(false))
 
         goToEventActivityWithIntent(limitedEventId)
 
