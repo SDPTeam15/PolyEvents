@@ -26,7 +26,6 @@ import com.github.sdpteam15.polyevents.view.activity.activityprovider.ItemReques
 import com.github.sdpteam15.polyevents.view.activity.activityprovider.MyEventEditsActivity
 import com.github.sdpteam15.polyevents.view.activity.activityprovider.MyItemRequestsActivity
 import com.github.sdpteam15.polyevents.view.activity.admin.EventManagementListActivity
-import org.hamcrest.Matchers
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
