@@ -92,7 +92,7 @@
                     android:backgroundTint="@color/white"
                     android:drawableTop="@drawable/ic_event"
                     android:drawableTint="@color/purple_500"
-                    android:paddingHorizontal="25dp"
+                    android:paddingHorizontal="17dp"
                     android:text="@string/my_items_requests_button_text"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     android:textColor="@color/purple_500"

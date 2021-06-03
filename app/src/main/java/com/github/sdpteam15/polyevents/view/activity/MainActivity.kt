@@ -88,7 +88,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        currentUserObservable!!.observe(this) {
+        currentUserObservable.observe(this) {
             it.value.roles.observe(this) {
                 roles.clear()
                 val list = resources.getStringArray(R.array.Ranks).mapIndexed { index, value ->

@@ -6,13 +6,17 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.hasChildCount
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import com.github.sdpteam15.polyevents.HelperTestFunction
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
+import com.github.sdpteam15.polyevents.model.database.remote.NUMBER_UPCOMING_EVENTS
 import com.github.sdpteam15.polyevents.model.database.remote.objects.EventDatabaseInterface
 import com.github.sdpteam15.polyevents.model.entity.Event
+import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
@@ -86,6 +90,7 @@ class UpcomingEventsVisitorHomeFragmentTest {
         )
 
         val mockDatabaseInterface = HelperTestFunction.defaultMockDatabase()
+        When(mockDatabaseInterface.currentUserObservable).thenReturn(Observable(UserEntity("testuid")))
         val mockEventDatabase = mock(EventDatabaseInterface::class.java)
         currentDatabase = mockDatabaseInterface
         When(mockDatabaseInterface.eventDatabase).thenReturn(mockEventDatabase)
@@ -123,12 +128,12 @@ class UpcomingEventsVisitorHomeFragmentTest {
 
     @Test
     fun correctNumberUpcomingActivitiesDisplayed() {
-        /*Espresso.onView(withId(R.id.id_upcoming_events_list)).check(
+        Espresso.onView(withId(R.id.id_upcoming_events_list)).check(
             matches(
                 hasChildCount(
                     NUMBER_UPCOMING_EVENTS
                 )
             )
-        )*/
+        )
     }
 }
