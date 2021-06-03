@@ -81,9 +81,9 @@ class ItemRequestActivityTest {
 
         FakeDatabaseItem.items.clear()
         for ((item, count) in availableItems) {
-            Database.currentDatabase.itemDatabase!!.createItem(item, count.first)
+            Database.currentDatabase.itemDatabase.createItem(item, count.first)
         }
-        Database.currentDatabase.itemDatabase!!.getItemsList(availableItemsList)
+        Database.currentDatabase.itemDatabase.getItemsList(availableItemsList)
 
         val intent =
             Intent(ApplicationProvider.getApplicationContext(), ItemRequestActivity::class.java)

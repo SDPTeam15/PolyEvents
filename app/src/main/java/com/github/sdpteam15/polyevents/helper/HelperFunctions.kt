@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.arch.core.executor.ArchTaskExecutor
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.RequestPermissionsRequestCodeValidator
@@ -14,11 +15,13 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.commit
+import androidx.lifecycle.LifecycleOwner
 import androidx.room.TypeConverter
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.Timestamp
 import java.time.*
 import java.util.*
 
@@ -95,18 +98,18 @@ object HelperFunctions {
          */
 
         if (ContextCompat.checkSelfPermission(
-                        activity,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                )
-                == PackageManager.PERMISSION_GRANTED
+                activity,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+            == PackageManager.PERMISSION_GRANTED
         ) {
             return Observable(true)
         } else if (activity is RequestPermissionsRequestCodeValidator) {
             end = Observable<Boolean>()
             ActivityCompat.requestPermissions(
-                    activity,
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
+                activity,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
             )
             return end!!
         } else
@@ -114,16 +117,16 @@ object HelperFunctions {
     }
 
     fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<String>,
-            grantResults: IntArray
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
     ) {
         when (requestCode) {
             PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION -> {
                 end?.value = isPermissionGranted(
-                        permissions,
-                        grantResults,
-                        Manifest.permission.ACCESS_FINE_LOCATION
+                    permissions,
+                    grantResults,
+                    Manifest.permission.ACCESS_FINE_LOCATION
                 )
                 end = null
             }
@@ -136,7 +139,7 @@ object HelperFunctions {
         LocationServices.getFusedLocationProviderClient(activity).lastLocation.addOnSuccessListener {
             if (it != null)
                 end.postValue(
-                        LatLng(it.latitude, it.longitude)
+                    LatLng(it.latitude, it.longitude)
                 )
             else
                 end.postValue(null)
@@ -151,6 +154,26 @@ object HelperFunctions {
         } catch (e: RuntimeException) {
             runnable.run()
         }
+    }
+
+    /**
+     * wait that all Observable in list are updated
+     * @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
+     * @param list list of observers to check the update
+     * @return an Observable<Boolean> that wil be set to true once all observers in list are Updated
+     */
+    fun waitUpdate(lifecycle: LifecycleOwner, list: List<Observable<*>>): Observable<Boolean> {
+        val ended = Observable<Boolean>()
+        val done = MutableList(list.size) { false }
+        for (index in list.indices)
+            list[index].observeOnce(lifecycle) {
+                synchronized(lifecycle) {
+                    done[index] = true
+                    if (done.reduce { a, b -> a && b })
+                        ended.postValue(true)
+                }
+            }
+        return ended
     }
 
     /**
@@ -173,8 +196,12 @@ object HelperFunctions {
      * @param date the Date instance to convert
      * @return the corresponding LocalDateTime
      */
-    fun dateToLocalDateTime(date: Date?): LocalDateTime? =
-            date?.let { LocalDateTime.ofInstant(it.toInstant(), ZoneId.systemDefault()) }
+    fun dateToLocalDateTime(date: Any?): LocalDateTime? =
+        when(date){
+            is Timestamp -> LocalDateTime.ofInstant(date.toDate().toInstant(), ZoneId.systemDefault())
+            is Date -> LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault())
+            else -> null
+        }
 
     /**
      * Convert
@@ -184,7 +211,7 @@ object HelperFunctions {
      * @return the corresponding Date
      */
     fun localDateTimeToDate(ldt: LocalDateTime?): Date? =
-            ldt?.let { Date.from(it.atZone(ZoneId.systemDefault()).toInstant()) }
+        ldt?.let { Date.from(it.atZone(ZoneId.systemDefault()).toInstant()) }
 
     /**
      * Calculates a person's age based on his birthDate and the current chosen date.
@@ -193,7 +220,7 @@ object HelperFunctions {
      * @return the age of the person
      */
     fun calculateAge(birthDate: LocalDate, currentDate: LocalDate): Int =
-            Period.between(birthDate, currentDate).years
+        Period.between(birthDate, currentDate).years
 
     /**
      * Check if a permission was granted
@@ -204,9 +231,9 @@ object HelperFunctions {
      * @return true if the permission was granted
      */
     fun isPermissionGranted(
-            grantPermissions: Array<String>,
-            grantResults: IntArray,
-            permission: String
+        grantPermissions: Array<String>,
+        grantResults: IntArray,
+        permission: String
     ): Boolean {
         for (a in grantPermissions.indices) {
             if (grantPermissions[a] == permission) {
@@ -246,8 +273,8 @@ object HelperFunctions {
         fun fromLong(value: Long?): LocalDateTime? {
             return value?.let {
                 LocalDateTime.ofInstant(
-                        Instant.ofEpochMilli(it),
-                        TimeZone.getDefault().toZoneId()
+                    Instant.ofEpochMilli(it),
+                    TimeZone.getDefault().toZoneId()
                 )
             }
         }
@@ -263,6 +290,57 @@ object HelperFunctions {
         }
     }
 
+    /**
+    * if this object is not null apply run else return default
+    * @param default default return
+    * @param run the function to execute
+    * @return if this object is not null apply run else return default
+    */
+    fun <S, T> S?.apply(default: T, run: (S) -> T) = if (this != null) run(this) else default
 
-    fun <S, T> S?.thenReturn(run: (S) -> T?) = if (this != null) run(this) else null
+    /**
+     * if this object is not null apply run else return default
+     * @param default default return
+     * @param run the function to execute
+     * @return if this object is not null apply run else return default
+     */
+    fun <S, T> S?.apply(run: (S) -> T, default: Lazy<T>) =
+        if (this != null) run(this) else default.value
+
+    /**
+     * if this object is not null apply run else return null
+     * @param run the function to execute
+     * @return if this object is apply do the run else return null
+     */
+    fun <S, T> S?.apply(run: (S) -> T?) = if (this != null) run(this) else null
+
+    /**
+     * Display an alert dialog with the given parameters
+     * @param context the context of the current activity
+     * @param title The title of the alert dialog
+     * @param content The message of the alert dialog
+     * @param yesContinuation Action that will be done if the yes button is pressed
+     * @param noContinuation Action that will be done if the no button is pressed
+     * @param yesButtonText The text for the "Yes" button (Yes by default)
+     * @param noButtonText The text for the "No" button (No by default)
+     */
+    fun showAlertDialog(
+        context: Context,
+        title: String,
+        content: String,
+        yesContinuation: () -> Unit,
+        noContinuation: () -> Unit = { },
+        yesButtonText: String? = null,
+        noButtonText: String? = null
+    ) {
+        val builder = AlertDialog.Builder(context)
+        builder.setMessage(content)
+            .setTitle(title)
+            .setPositiveButton(yesButtonText ?: "Yes") { _, _ ->
+                yesContinuation()
+            }.setNegativeButton(noButtonText ?: "No") { _, _ ->
+                noContinuation()
+            }
+        builder.show()
+    }
 }

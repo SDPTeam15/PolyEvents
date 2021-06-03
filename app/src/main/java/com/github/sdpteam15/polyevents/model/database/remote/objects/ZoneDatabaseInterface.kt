@@ -3,7 +3,6 @@ package com.github.sdpteam15.polyevents.model.database.remote.objects
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
-import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
@@ -45,15 +44,15 @@ interface ZoneDatabaseInterface {
 
     /**
      * Gets all the zones from the database
-     * @param matcher matcher for the search
-     * @param number maximum of result
      * @param zones live data that will be set with the list of zones from the database
+     * @param number maximum of result
+     * @param matcher matcher for the search
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getAllZones(
-        matcher: Matcher?,
-        number: Long?,
-        zones: ObservableList<Zone>
+        zones: ObservableList<Zone>,
+        number: Long?  = null,
+        matcher: Matcher? = null
     ): Observable<Boolean>
 
     /**

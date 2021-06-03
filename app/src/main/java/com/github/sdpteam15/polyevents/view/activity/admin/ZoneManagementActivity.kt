@@ -1,7 +1,7 @@
 package com.github.sdpteam15.polyevents.view.activity.admin
 
-import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -30,19 +30,19 @@ class ZoneManagementActivity : AppCompatActivity() {
     }
 
     val etName
-        get() = findViewById<EditText>(R.id.zoneManagementName)
+        get() = findViewById<EditText>(R.id.id_zone_management_name_edittext)
     val etDesc
-        get() = findViewById<EditText>(R.id.zoneManagementDescription)
+        get() = findViewById<EditText>(R.id.id_zone_management_description_edittext)
     val etLoc
-        get() = findViewById<EditText>(R.id.zoneManagementCoordinates)
+        get() = findViewById<EditText>(R.id.id_zone_management_coordinates_edittext)
     val btnManage
-        get() = findViewById<Button>(R.id.btnManage)
+        get() = findViewById<Button>(R.id.id_btn_manage)
     val btnManageCoor
-        get() = findViewById<Button>(R.id.btnModifyZoneCoordinates)
+        get() = findViewById<Button>(R.id.id_btn_modify_coordinates)
     val btnDelete
-        get() = findViewById<Button>(R.id.btnDeleteZoneCoordinates)
+        get() = findViewById<Button>(R.id.id_btn_delete_coordinates)
     val tvManage
-        get() = findViewById<TextView>(R.id.tvManage)
+        get() = findViewById<TextView>(R.id.id_tv_manage)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,7 +57,7 @@ class ZoneManagementActivity : AppCompatActivity() {
         zoneObservable.observe(this) {
             //Reactive the back button and make the map fragment invisible
             supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-            findViewById<FrameLayout>(R.id.flMapEditZone).visibility = View.INVISIBLE
+            findViewById<FrameLayout>(R.id.id_framelayout_map_edit_zone).visibility = View.INVISIBLE
             //Set the retrieve texts in the fields
             val zoneInfo = it.value
             etName.setText(zoneInfo.zoneName)
@@ -83,7 +83,7 @@ class ZoneManagementActivity : AppCompatActivity() {
             tvManage.text = this.getString(R.string.tv_update_zone_text)
 
             // Get the zone information in the database
-            currentDatabase.zoneDatabase!!.getZoneInformation(zoneId, zoneObservable)
+            currentDatabase.zoneDatabase.getZoneInformation(zoneId, zoneObservable)
             // Click on manage update the zone
             btnManage.setOnClickListener {
                 updateZoneInfo()
@@ -110,7 +110,7 @@ class ZoneManagementActivity : AppCompatActivity() {
         btnManageCoor.setOnClickListener {
 
             //display the FrameLayout that will contain the map fragment
-            findViewById<FrameLayout>(R.id.flMapEditZone).visibility = View.VISIBLE
+            findViewById<FrameLayout>(R.id.id_framelayout_map_edit_zone).visibility = View.VISIBLE
 
             //Set the currently set information
             zone.description = etDesc.text.toString()
@@ -120,7 +120,7 @@ class ZoneManagementActivity : AppCompatActivity() {
             supportActionBar!!.setDisplayHomeAsUpEnabled(false)
             //Avoid displaying the map in tests, this makes Cirrus crash
             if (!inTest)
-                HelperFunctions.changeFragment(this, mapFragment, R.id.flMapEditZone)
+                HelperFunctions.changeFragment(this, mapFragment, R.id.id_framelayout_map_edit_zone)
         }
     }
 
@@ -166,7 +166,7 @@ class ZoneManagementActivity : AppCompatActivity() {
             zone.zoneName = name
             //zoneId is null to create a new Area
             zone.zoneId = null
-            currentDatabase.zoneDatabase!!.createZone(zone).observe {
+            currentDatabase.zoneDatabase.createZone(zone).observe {
                 callbackHandler(
                     it.value,
                     this.getString(R.string.zone_added_successfully),
@@ -190,7 +190,7 @@ class ZoneManagementActivity : AppCompatActivity() {
             zone.zoneName = name
             zone.zoneId = zoneId
 
-            currentDatabase.zoneDatabase!!.updateZoneInformation(zoneId, zone).observe {
+            currentDatabase.zoneDatabase.updateZoneInformation(zoneId, zone).observe {
                 callbackHandler(
                     it.value,
                     this.getString(R.string.zone_updated_successfully),
@@ -237,5 +237,28 @@ class ZoneManagementActivity : AppCompatActivity() {
             return false
         }
         return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+        //handles the back arrow as the back button of the phone
+        if (id == android.R.id.home) {
+            onBackPressed()
+        }
+        return true
+    }
+
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        //Goes to the database to get the zone as it was before modification
+        ZoneAreaMapHelper.removeZone(zoneId)
+        val obs:Observable<Zone> = Observable()
+        obs.observe{
+            if(it.value != null){
+                ZoneAreaMapHelper.waitingZones.add(it.value)
+            }
+        }
+        currentDatabase.zoneDatabase!!.getZoneInformation(zoneId, obs)
     }
 }

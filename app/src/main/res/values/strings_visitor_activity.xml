@@ -40,9 +40,9 @@
     <string name="go_back_to_map_fragment">go back to map fragment</string>
 
     <!-- Notifications -->
-    <string name="event_notification_channel_id">event_channel</string>
-    <string name="event_notification_channel_name">Event Channel</string>
-    <string name="event_notification_channel_description">Event reminder</string>
+    <string name="notification_channel_id">polyevents_channel</string>
+    <string name="notification_channel_name">PolyEvents Channel</string>
+    <string name="notification_channel_description">PolyEvents notifications channel</string>
     <string name="event_start_soon">Event %s will start soon!</string>
     <string name="event_started">Event %s has started</string>
 
@@ -54,7 +54,9 @@
     <string name="EditProfileActivity_Name">Name</string>
     <string name="EditProfileActivity_ID">ID</string>
     <string name="EditProfileActivity_Rank">Rank</string>
+    <string name="EditProfileActivity_Rank_description">Your rank</string>
     <string name="EditProfileActivity_Save">Save</string>
     <string name="EditProfileActivity_Cancel">Cancel</string>
     <string name="EditProfileActivity_DatabaseError">Impossible to update your profile information, please try again.</string>
+    <string name="EditProfileActivity_NameShouldNotBeEmpty">The name should not be empty</string>
 </resources>

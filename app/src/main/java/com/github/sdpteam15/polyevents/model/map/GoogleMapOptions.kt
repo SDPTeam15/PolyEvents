@@ -80,7 +80,8 @@ object GoogleMapOptions {
             CameraUpdateFactory.newLatLngZoom(
                 cameraPosition,
                 cameraZoom
-            ))
+            )
+        )
     }
 
     /**

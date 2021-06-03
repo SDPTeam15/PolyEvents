@@ -16,14 +16,12 @@ import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.view.activity.admin.EventManagementListActivity
 import org.hamcrest.CoreMatchers
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.anyOrNull
-import java.sql.Time
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
 
@@ -101,7 +99,7 @@ class TimeTableActivityTest {
                 anyOrNull()
             )
         ).thenAnswer {
-            (it.arguments[2] as ObservableList<Zone>).add(
+            (it.arguments[0] as ObservableList<Zone>).add(
                 Zone(
                     zoneName = "Test zone",
                     zoneId = "zoneId"

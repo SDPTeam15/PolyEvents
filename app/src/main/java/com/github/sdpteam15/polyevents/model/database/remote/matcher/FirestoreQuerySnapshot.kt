@@ -9,7 +9,7 @@ class FirestoreQuerySnapshot(private val querySnapshot: com.google.firebase.fire
         object : Iterator<QueryDocumentSnapshot> {
             val it = querySnapshot.iterator()
             override fun hasNext() = it.hasNext()
-            override fun next() : QueryDocumentSnapshot {
+            override fun next(): QueryDocumentSnapshot {
                 val v = it.next()
                 return QueryDocumentSnapshot(v.data, v.id)
             }

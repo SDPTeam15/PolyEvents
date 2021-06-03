@@ -2,14 +2,13 @@ package com.github.sdpteam15.polyevents.view.activity.admin
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.helper.DatabaseHelper
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.map.ZoneAreaMapHelper
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
@@ -32,19 +31,24 @@ class ZoneManagementListActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         recyclerView = findViewById(R.id.recycler_zones_list)
 
+
         val openZone = { zone: Zone ->
             startActivityZone(zone.zoneId!!)
         }
 
-        recyclerView.adapter = ZoneItemAdapter(zones, openZone)
+        // Build an alert dialog to warn the user that the action is not reverseible
+        val deleteZone = { zone: Zone ->
+            HelperFunctions.showAlertDialog(
+                this, getString(R.string.message_confirm_delete_zone_title, zone.zoneName),
+                getString(R.string.message_confirm_delete_title),
+                { DatabaseHelper.deleteZone(zone) }
+            )
+        }
 
-        println(Database.currentDatabase)
-        Database.currentDatabase.zoneDatabase!!.getAllZones(
-            {
-                it.orderBy(DatabaseConstant.ZoneConstant.ZONE_NAME.value)
-            },
-            50,
-            zones
+        recyclerView.adapter = ZoneItemAdapter(zones, openZone, deleteZone)
+        Database.currentDatabase.zoneDatabase.getAllZones(
+            zones.sortAndLimitFrom(this) { it.zoneName },
+            50
         ).observe(this) {
             if (!it.value) {
                 HelperFunctions.showToast(getString(R.string.fail_to_get_list_zones), this)
@@ -52,11 +56,16 @@ class ZoneManagementListActivity : AppCompatActivity() {
             }
         }
 
+        // Notify the recycler view when an update is made on the zones
         zones.observe(this) { recyclerView.adapter!!.notifyDataSetChanged() }
+        //Add zone to google map
         zones.observeAdd(this) { ZoneAreaMapHelper.importNewZone(this, it.value, false) }
-        findViewById<ImageButton>(R.id.btnNewZone).setOnClickListener {
+
+
+        findViewById<ImageButton>(R.id.id_new_zone_button).setOnClickListener {
             startActivityZone(NEW_ZONE)
         }
+        //remove the zone from google map on remove
         zones.observeRemove(this) {
             ZoneAreaMapHelper.removeZone(it.value.zoneId!!)
         }

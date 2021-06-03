@@ -18,11 +18,10 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
-import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import org.junit.After
 import org.junit.Before
-import org.mockito.Mockito
+import org.mockito.Mockito.`when` as When
 
 private const val lat = 42.52010210373032
 private const val lng = 8.566237434744834
@@ -52,21 +51,20 @@ class MyLocationTests {
             username = username,
             email = email
         )
-        MainActivity.currentUser = testUser
+        When(mockedDatabase.currentUser).thenReturn(testUser)
 
         val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
         scenario = ActivityScenario.launch(intent)
         Espresso.onView(ViewMatchers.withId(R.id.ic_home)).perform(click())
         Espresso.onView(ViewMatchers.withId(R.id.id_fragment_home_admin))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withId(R.id.btnRedirectZoneManagement)).perform(click())
+        Espresso.onView(ViewMatchers.withId(R.id.id_zone_management_button)).perform(click())
         Intents.init()
     }
 
 
     @After
     fun teardown() {
-        MainActivity.currentUser = null
         scenario.close()
         Intents.release()
         Database.currentDatabase = FirestoreDatabaseProvider

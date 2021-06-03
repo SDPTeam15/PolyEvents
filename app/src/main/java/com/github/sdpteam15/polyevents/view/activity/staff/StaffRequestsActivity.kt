@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.MaterialRequestConstant.MATERIAL_REQUEST_STATUS
 import com.github.sdpteam15.polyevents.model.entity.*
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest.Status.*
 import com.github.sdpteam15.polyevents.model.observable.Observable
@@ -134,7 +133,7 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
 
         requests.observeUpdate(this) {
             if (it.sender != currentDatabase) {
-                currentDatabase.materialRequestDatabase!!.updateMaterialRequest(
+                currentDatabase.materialRequestDatabase.updateMaterialRequest(
                     it.value.requestId!!,
                     it.value
                 ).observeOnce { it2 ->
@@ -147,7 +146,7 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
 
         items.observeUpdate(this) {
             if (it.sender != currentDatabase) {
-                currentDatabase.itemDatabase!!.updateItem(
+                currentDatabase.itemDatabase.updateItem(
                     it.value.first,
                     it.value.second,
                     it.value.third
@@ -179,9 +178,9 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
      */
     private fun getItemRequestsFromDB() {
         //Gets the item request of the user and then gets the item list
-        currentDatabase.materialRequestDatabase!!.getMaterialRequestList(
-            requests
-        ) { it.orderBy(MATERIAL_REQUEST_STATUS.value) }.observeOnce(this) {
+        currentDatabase.materialRequestDatabase.getMaterialRequestList(
+            requests.sortAndLimitFrom(this) { it.status }
+        ).observeOnce(this) {
             if (!it.value) {
                 showToast(getString(R.string.fail_to_get_list_material_requests), this)
             } else {
@@ -191,10 +190,10 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
                         sentEventIds.add(request.eventId)
                         val event = Observable<Event>()
                         val zone = Observable<Zone>()
-                        currentDatabase.eventDatabase!!.getEventFromId(request.eventId, event)
+                        currentDatabase.eventDatabase.getEventFromId(request.eventId, event)
                             .observeOnce(this) {
                                 if (it.value) {
-                                    currentDatabase.zoneDatabase!!.getZoneInformation(
+                                    currentDatabase.zoneDatabase.getZoneInformation(
                                         event.value!!.zoneId!!,
                                         zone
                                     ).observeOnce(this) {
@@ -211,7 +210,7 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
             }
         }
 
-        currentDatabase.itemDatabase!!.getItemsList(items)
+        currentDatabase.itemDatabase.getItemsList(items)
             .observeOnce(this) {
                 if (!it.value) {
                     showToast(getString(R.string.fail_to_get_list_items_staff), this)
@@ -219,7 +218,7 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
             }
 
 
-        currentDatabase.userDatabase!!.getListAllUsers(users)
+        currentDatabase.userDatabase.getListAllUsers(users)
             .observeOnce(this) {
                 if (!it.value) {
                     showToast(getString(R.string.fail_to_get_list_users_staff), this)

@@ -43,14 +43,12 @@ class EditProfileActivityTest {
     lateinit var mockedUserProfile: UserProfile
     lateinit var mockedUserDatabase: UserDatabaseInterface
 
-    private val id: ViewInteraction get() = Espresso.onView(withId(R.id.EditProfileActivity_ID))
     private val idLayout: ViewInteraction get() = Espresso.onView(withId(R.id.EditProfileActivity_IDLayout))
     private val rank: ViewInteraction get() = Espresso.onView(withId(R.id.EditProfileActivity_Rank))
     private val rankLayout: ViewInteraction get() = Espresso.onView(withId(R.id.EditProfileActivity_RankLayout))
     private val name: ViewInteraction get() = Espresso.onView(withId(R.id.EditProfileActivity_Name))
     private val cancel: ViewInteraction get() = Espresso.onView(withId(R.id.EditProfileActivity_Cancel))
     private val save: ViewInteraction get() = Espresso.onView(withId(R.id.EditProfileActivity_Save))
-
 
     fun setup(rank: UserRole, pid: String) {
         val intent =
@@ -65,9 +63,8 @@ class EditProfileActivityTest {
         mockedUserEntity = UserEntity(
             uid = "UID",
             username = "UName",
-            name = "UName",
-
-            )
+            name = "UName"
+        )
         mockedUserProfile = UserProfile(
             pid = "PID",
             profileName = "PName",
@@ -78,6 +75,7 @@ class EditProfileActivityTest {
 
 
         When(mockedDatabaseInterface.currentUser).thenReturn(mockedUserEntity)
+
         When(mockedUserDatabase.getProfileById(EditProfileActivity.updater, pid)).thenAnswer {
             EditProfileActivity.updater.postValue(mockedUserProfile)
             Observable(true)
@@ -134,7 +132,6 @@ class EditProfileActivityTest {
         name.perform(replaceText("notnull"))
         activity.nameOnFocusChangeListener(false)
         name.check(matches(ViewMatchers.withText("notnull")))
-
         Espresso.closeSoftKeyboard()
 
         save.perform(click())
@@ -157,9 +154,7 @@ class EditProfileActivityTest {
         name.perform(replaceText("notnull"))
         activity.nameOnFocusChangeListener(false)
         name.check(matches(ViewMatchers.withText("notnull")))
-
         Espresso.closeSoftKeyboard()
-
         save.perform(click())
 
         playoff()
@@ -186,6 +181,15 @@ class EditProfileActivityTest {
         setup(UserRole.ORGANIZER, "TestPID")
         idLayout.check(matches(not(isDisplayed())))
         rankLayout.check(matches(not(isDisplayed())))
+        playoff()
+    }
+
+    @Test
+    fun cannotSubmitIfNameEmpty(){
+        setup(UserRole.ORGANIZER, "TestPID")
+        name.perform(replaceText(""))
+        save.perform(click())
+        save.check(matches(isDisplayed()))
         playoff()
     }
 }

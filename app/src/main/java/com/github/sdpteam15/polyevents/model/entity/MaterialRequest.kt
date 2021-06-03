@@ -6,7 +6,7 @@ import java.time.LocalDateTime
  * Represents a material request from an event provider
  * @param requestId material request Id from firebase
  * @param items list of items to request
- * @param date date of the request
+ * @param time time of the request
  * @param userId user who made the id
  * @param status material request status
  */
@@ -19,13 +19,13 @@ data class MaterialRequest(
     var status: Status,
     var adminMessage: String?,
     var staffInChargeId: String?
-){
+) {
     /**
      * Material request status
      * It indicates the status of a material request
      * @param status the status in string format
      */
-    enum class Status (private val status: String) {
+    enum class Status(private val status: String) {
         PENDING("Pending"),
         ACCEPTED("Accepted"),
         REFUSED("Refused"),
@@ -44,7 +44,7 @@ data class MaterialRequest(
 
         companion object {
             private val map = values().associateBy(Status::status)
-            private val mapOrdinal =  map.mapKeys { it.value.ordinal }
+            private val mapOrdinal = map.mapKeys { it.value.ordinal }
             fun fromOrdinal(ordinal: Int) = mapOrdinal[ordinal]
         }
     }

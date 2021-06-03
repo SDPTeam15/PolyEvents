@@ -3,7 +3,6 @@ package com.github.sdpteam15.polyevents.view.adapter
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.INVISIBLE
@@ -15,7 +14,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
-import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
 import java.time.format.DateTimeFormatter
@@ -78,16 +76,20 @@ class ItemRequestAdminAdapter(
                 ).subSequence(0, 5)
             itemList.text = request.items.map { itemNames[it.key] + " : " + it.value }
                 .joinToString(separator = "\n") { it }
-            status.setTextColor(when(request.status){
-                MaterialRequest.Status.ACCEPTED -> Color.GREEN
-                MaterialRequest.Status.PENDING -> Color.BLACK
-                MaterialRequest.Status.REFUSED -> Color.RED
-                else -> Color.BLACK //should never happen
-            })
+            status.setTextColor(
+                when (request.status) {
+                    MaterialRequest.Status.ACCEPTED -> Color.GREEN
+                    MaterialRequest.Status.PENDING -> Color.BLACK
+                    MaterialRequest.Status.REFUSED -> Color.RED
+                    else -> Color.BLACK //should never happen
+                }
+            )
             status.text = request.status.toString()
 
-            btnAccept.visibility = if (request.status == MaterialRequest.Status.PENDING) VISIBLE else INVISIBLE
-            btnRefuse.visibility = if (request.status == MaterialRequest.Status.PENDING) VISIBLE else INVISIBLE
+            btnAccept.visibility =
+                if (request.status == MaterialRequest.Status.PENDING) VISIBLE else INVISIBLE
+            btnRefuse.visibility =
+                if (request.status == MaterialRequest.Status.PENDING) VISIBLE else INVISIBLE
             btnRefuse.setOnClickListener { onRefuseListener(request) }
             btnAccept.setOnClickListener { onAcceptListener(request) }
         }

@@ -7,15 +7,13 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.helper.DatabaseHelper
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementListActivity
-import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementListActivity.Companion.zones
 
 class ZoneItemAdapter(
     private val zones: ObservableList<Zone>,
-    val listener: (Zone) -> Unit
+    val listener: (Zone) -> Unit,
+    val deleteListener: (Zone)->Unit
 ) : RecyclerView.Adapter<ZoneItemAdapter.ItemViewHolder>() {
     /**
      * adapted ViewHolder for each Zone
@@ -34,10 +32,10 @@ class ZoneItemAdapter(
             eventName.text = zone.zoneName
 
             btnRemove.setOnClickListener {
-                DatabaseHelper.deleteZone(zone)
+                deleteListener(zone)
                 zones.remove(zone)
             }
-            btnEdit.setOnClickListener{
+            btnEdit.setOnClickListener {
                 listener(zone)
             }
         }

@@ -10,11 +10,11 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.activity.EventActivity
 import com.github.sdpteam15.polyevents.view.adapter.EventItemAdapter
@@ -62,7 +62,7 @@ class EventListFragment : Fragment() {
     ): View? {
         val fragmentView = inflater.inflate(R.layout.fragment_events, container, false)
 
-        localDatabase = (requireActivity().application as PolyEventsApplication).database
+        localDatabase = (requireActivity().application as PolyEventsApplication).localDatabase
         eventLocalViewModel = EventLocalViewModelFactory(
             localDatabase.eventDao()
         ).create(
@@ -128,7 +128,7 @@ class EventListFragment : Fragment() {
 
     private fun getEventsListAndDisplay(context: Context?) {
         // TODO: set limit or not?
-        currentDatabase.eventDatabase!!.getEvents(null, null, events).observe(this) {
+        currentDatabase.eventDatabase.getEvents(null, null, events).observe(this) {
             if (!it.value) {
                 HelperFunctions.showToast(getString(R.string.fail_to_get_information), context)
             }

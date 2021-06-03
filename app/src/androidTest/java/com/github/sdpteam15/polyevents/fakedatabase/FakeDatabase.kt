@@ -2,12 +2,11 @@ package com.github.sdpteam15.polyevents.fakedatabase
 
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
-import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterToDocumentInterface
+import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.objects.*
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
-import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
@@ -30,29 +29,22 @@ object FakeDatabase : DatabaseInterface {
         }
 
 
-    override var itemDatabase: ItemDatabaseInterface? = null
-        get() = field ?: FakeDatabaseItem
-
-    override var zoneDatabase: ZoneDatabaseInterface? = null
-        get() = field ?: FakeDatabaseZone
-
-    override var userDatabase: UserDatabaseInterface? = null
-        get() = field ?: FakeDatabaseUser
-
-    override var heatmapDatabase: HeatmapDatabaseInterface? = null
-        get() = field ?: FakeDatabaseHeatmap
-
-    override var eventDatabase: EventDatabaseInterface? = null
-        get() = field ?: FakeDatabaseEvent
-
-    override var materialRequestDatabase: MaterialRequestDatabaseInterface? = null
-        get() = field ?: FakeDatabaseMaterialRequest
-
-    override var routeDatabase: RouteDatabaseInterface?=null
-        get() = field ?: FakeDatabaseRoute
-
-    override var userSettingsDatabase: UserSettingsDatabaseInterface? = null
-        get() = field ?: FakeDatabaseUserSettings
+    override var itemDatabase: ItemDatabaseInterface =
+        FakeDatabaseItem
+    override var zoneDatabase: ZoneDatabaseInterface =
+        FakeDatabaseZone
+    override var userDatabase: UserDatabaseInterface =
+        FakeDatabaseUser
+    override var heatmapDatabase: HeatmapDatabaseInterface =
+        FakeDatabaseHeatmap
+    override var eventDatabase: EventDatabaseInterface =
+        FakeDatabaseEvent
+    override var materialRequestDatabase: MaterialRequestDatabaseInterface =
+        FakeDatabaseMaterialRequest
+    override var routeDatabase: RouteDatabaseInterface =
+        FakeDatabaseRoute
+    override var userSettingsDatabase: UserSettingsDatabaseInterface =
+        FakeDatabaseUserSettings
 
     override fun <T : Any> addEntityAndGetId(
         element: T,
@@ -74,7 +66,7 @@ object FakeDatabase : DatabaseInterface {
         elements: List<T>,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterToDocumentInterface<in T>
-    ): Observable<Pair<Boolean, List<String?>>> {
+    ): Observable<Pair<Boolean, List<String>>> {
         TODO("Not yet implemented")
     }
 

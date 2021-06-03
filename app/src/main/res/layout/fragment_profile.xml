@@ -50,7 +50,7 @@
                             app:boxBackgroundColor="@android:color/transparent">
 
                             <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/profileName"
+                                android:id="@+id/id_profile_name_edittext"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
@@ -80,7 +80,7 @@
                             app:boxBackgroundColor="@android:color/transparent">
 
                             <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/profileEmail"
+                                android:id="@+id/id_profile_email_edittext"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
@@ -111,7 +111,7 @@
                             app:boxBackgroundColor="@android:color/transparent">
 
                             <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/profileUsernameET"
+                                android:id="@+id/id_profile_username_edittext"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
@@ -137,7 +137,6 @@
                             android:layout_height="match_parent">
 
                             <com.google.android.material.textfield.TextInputLayout
-                                android:id="@+id/textInputLayout"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:background="@android:color/transparent"
@@ -148,7 +147,7 @@
                                 app:layout_constraintTop_toTopOf="parent">
 
                                 <com.google.android.material.textfield.TextInputEditText
-                                    android:id="@+id/profileBirthdayET"
+                                    android:id="@+id/id_profile_birthday_edittext"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center_vertical"
@@ -162,13 +161,13 @@
                                     android:textStyle="bold" />
 
                                 <Button
-                                    android:id="@+id/btnBirthday"
+                                    android:id="@+id/id_birthday_button"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
                                     android:text="@string/select_birthday"
                                     app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintStart_toStartOf="@+id/profileBirthdayET"
+                                    app:layout_constraintStart_toStartOf="@+id/id_profile_birthday_edittext"
                                     app:layout_constraintTop_toTopOf="parent" />
 
                             </com.google.android.material.textfield.TextInputLayout>
@@ -229,13 +228,13 @@
                     </LinearLayout>
 
                     <Button
-                        android:id="@+id/btnUpdateInfos"
+                        android:id="@+id/id_update_infos_button"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/update_infos" />
 
                     <Button
-                        android:id="@+id/btnLogout"
+                        android:id="@+id/id_logout_button"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/logout_button_text" />
@@ -243,7 +242,7 @@
                 </LinearLayout>
 
                 <TextView
-                    android:id="@+id/textView"
+                    android:id="@+id/id_title_profile_fragment"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/profileFragmentTitle"
