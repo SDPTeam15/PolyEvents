@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
-import com.github.sdpteam15.polyevents.model.database.local.entity.UserSettings
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
@@ -15,6 +14,7 @@ import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.model.room.UserSettings
 import org.junit.After
 import org.junit.Before
 import org.mockito.Mockito.mock
@@ -44,32 +44,32 @@ class LocalDatabaseTest {
         // Using an in-memory database because the information stored here disappears when the
         // process is killed.
         localDatabase = Room.inMemoryDatabaseBuilder(context, LocalDatabase::class.java)
-                // Allowing main thread queries, just for testing.
-                .allowMainThreadQueries()
-                .build()
+            // Allowing main thread queries, just for testing.
+            .allowMainThreadQueries()
+            .build()
 
         eventsLocalObservable = ObservableList()
         eventsObservable = ObservableList()
 
         testEvent1 = Event(
-                eventId = "1",
-                eventName = "event1"
+            eventId = "1",
+            eventName = "event1"
         )
 
         testEvent2 = Event(
-                eventId = "2",
-                eventName = "event2"
+            eventId = "2",
+            eventName = "event2"
         )
         testEvent2.makeLimitedEvent(5)
 
         mockUser = UserEntity(
-                uid = "user1",
-                username = "John"
+            uid = "user1",
+            username = "John"
         )
 
         userSettingsTest = UserSettings(
-                isSendingLocationOn = true,
-                locationId = "here"
+            isSendingLocationOn = true,
+            locationId = "here"
         )
 
         mockedRemoteDatabase = mock(DatabaseInterface::class.java)
@@ -80,19 +80,23 @@ class LocalDatabaseTest {
         When(mockedRemoteDatabase.eventDatabase).thenReturn(mockedEventDatabase)
         When(mockedRemoteDatabase.currentUser).thenReturn(mockUser)
 
-        When(mockedEventDatabase.getEvents(
+        When(
+            mockedEventDatabase.getEvents(
                 eventList = anyOrNull(),
                 matcher = anyOrNull(),
                 limit = anyOrNull()
-        )).thenAnswer {
+            )
+        ).thenAnswer {
             LocalDatabase.eventsLocalObservable.addAll(listOf(testEvent1, testEvent2))
             Observable(true)
         }
 
-        When(mockedUserSettingsDatabase.getUserSettings(
+        When(
+            mockedUserSettingsDatabase.getUserSettings(
                 id = anyOrNull(),
                 userSettingsObservable = anyOrNull()
-        )).then {
+            )
+        ).then {
             LocalDatabase.userSettingsObservable.postValue(userSettingsTest)
             Observable(true)
         }

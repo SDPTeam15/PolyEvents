@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
                     mapFragment!![R.id.ic_map] = MapsFragment(MapsFragmentMod.Visitor)
                     mapFragment!![R.id.ic_list] = EventListFragment()
                     mapFragment!![R.id.ic_login] = LoginFragment()
-                    mapFragment!![R.id.ic_more] = MoreFragment()
+                    mapFragment!![R.id.ic_settings] = SettingsFragment()
                     mapFragment!![R.id.id_fragment_profile] = ProfileFragment()
                 }
                 //return type immutable
@@ -70,8 +70,8 @@ class MainActivity : AppCompatActivity() {
 
         // Create notification channel for the app
         (application as PolyEventsApplication).createChannel(
-            getString(R.string.event_notification_channel_id),
-            getString(R.string.event_notification_channel_name)
+            getString(R.string.notification_channel_id),
+            getString(R.string.notification_channel_name)
         )
 
         //TODO remove to for local cache
@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     HelperFunctions.changeFragment(this, fragments[R.id.id_fragment_profile])
                 }
-                R.id.ic_more -> HelperFunctions.changeFragment(this, fragments[R.id.ic_more])
+                R.id.ic_settings -> HelperFunctions.changeFragment(this, fragments[R.id.ic_settings])
                 else ->
                     //TODO Add a condition to see if the user is an admin or not and if so, redirect him to the admin hub
                     redirectHome()

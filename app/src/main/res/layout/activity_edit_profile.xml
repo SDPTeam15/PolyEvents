@@ -77,7 +77,6 @@
                     android:paddingStart="20dp"
                     android:paddingEnd="0dp"
                     android:textStyle="bold" />
-
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 

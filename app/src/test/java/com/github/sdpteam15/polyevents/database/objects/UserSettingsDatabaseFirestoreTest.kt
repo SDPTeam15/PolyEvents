@@ -8,6 +8,7 @@ import com.github.sdpteam15.polyevents.model.database.remote.adapter.UserSetting
 import com.github.sdpteam15.polyevents.model.database.remote.objects.UserSettingsDatabase
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.model.room.UserSettings
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -38,7 +39,7 @@ class UserSettingsDatabaseFirestoreTest {
         val userSettings = UserSettings()
         HelperTestFunction.nextSetEntity { true }
         mockUserSettingsDatabase.updateUserSettings(userSettings)
-                .observeOnce { assert(it.value) }.then.postValue(false)
+            .observeOnce { assert(it.value) }.then.postValue(false)
 
         val setUserSettings = HelperTestFunction.lastSetEntity()!!
 
@@ -56,8 +57,8 @@ class UserSettingsDatabaseFirestoreTest {
 
         HelperTestFunction.nextGetListEntity { true }
         mockUserSettingsDatabase.getUserSettings(
-                id = mockUserId,
-                userSettingsObservable = userSettingsObservable
+            id = mockUserId,
+            userSettingsObservable = userSettingsObservable
         ).observeOnce {
             assert(it.value)
         }.then.postValue(false)
