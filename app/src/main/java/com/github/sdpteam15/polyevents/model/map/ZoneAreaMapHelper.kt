@@ -143,8 +143,10 @@ object ZoneAreaMapHelper {
      * Clears the temporary variables to have a clean start for editing the area
      */
     fun createNewArea(context: Context?) {
+        //If in delete mode, deactivate delete mode
         if(deleteMode)
             deleteMode(context)
+        //If in edit mode, deactivate edit mode
         if(editMode)
             editMode(context)
         clearTemp()
@@ -176,17 +178,22 @@ object ZoneAreaMapHelper {
     }
 
     /**
-     * Remove an area
+     * Activate/Deactivate the delete mode
      */
     fun deleteMode(context: Context?) {
+        //If in edit mode, deactivate edit mode
         if(editMode)
             editMode(context)
+
+        //If a polygon was being created, then removes it, else changes the deletion mode
         if(tempPoly != null){
             tempPoly!!.remove()
             clearTemp()
         }else{
             deleteMode = !deleteMode
             MapsFragment.instance?.switchIconDeleteArea()
+
+            //If already in delete mode, restores the map else prepare for deletion
             if (deleteMode) {
                 for (a in areasPoints) {
                     tempValues[a.key] = Pair(a.value.second.title, a.value.second.position)
@@ -609,10 +616,12 @@ object ZoneAreaMapHelper {
      * Switches the edit mode, and remove/recreates the markers for edition purpose
      */
     fun editMode(context: Context?) {
+        //If in delete mode, deactivate delete mode
         if(deleteMode)
             deleteMode(context)
         editMode = !editMode
-        deleteMode = false
+
+        //If already in edit mode, restores the map to go outside of edit mode, else prepare for edition
         if (editMode) {
             for (a in areasPoints) {
                 tempValues[a.key] =
