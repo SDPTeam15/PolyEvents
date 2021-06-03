@@ -20,6 +20,5 @@ interface AdapterToDocumentInterface<T> {
      * @param element the entity we're converting
      * @return a map mapping entity fields to their values
      */
-    fun toDocument(element: T?): Map<String, Any?>?
-        = element.apply { toDocumentWithoutNull(it) }
+    fun toDocument(element: T?): Map<String, Any?>? = element.apply { toDocumentWithoutNull(it) }
 }
