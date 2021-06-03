@@ -53,7 +53,7 @@
                 app:layout_constraintTop_toTopOf="@+id/ratingBar_event"
                 app:layout_constraintEnd_toEndOf="@+id/img_event_logo"
                 app:layout_constraintBottom_toBottomOf="@+id/ratingBar_event"
-                android:text="0"
+                android:text="@string/default_number"
                 />
 
             <View
@@ -175,7 +175,7 @@
                 app:layout_constraintBottom_toBottomOf="@+id/event_comments_subsection_text_view"
                 app:layout_constraintStart_toEndOf="@+id/event_comments_subsection_text_view"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                android:text="0"
+                android:text="@string/default_number"
                 android:layout_marginStart="20dp"
                 />
             <RelativeLayout
