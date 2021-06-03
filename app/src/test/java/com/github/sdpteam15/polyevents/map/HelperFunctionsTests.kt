@@ -3,10 +3,12 @@ package com.github.sdpteam15.polyevents.map
 import android.Manifest
 import android.content.pm.PackageManager
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.formatDateTimeWithRespectToAnotherDate
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
 import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import kotlin.test.assertEquals
@@ -134,5 +136,29 @@ class HelperFunctionsTests {
             ), set
         )
         assertNull(HelperFunctions.Converters.fromString(null))
+    }
+
+    @Test
+    fun testFormattedDateTime() {
+        // 2nd of June 2021
+        val currentDateTest = LocalDate.of(2021, 6, 2)
+
+        val sameDayDateTime = LocalDateTime.of(2021, 6, 2, 7, 30, 30)
+        assertEquals(
+            formatDateTimeWithRespectToAnotherDate(sameDayDateTime, currentDateTest),
+            "Today at 7:30"
+        )
+
+        val dayAfterDateTime = LocalDateTime.of(2021, 6, 3, 7, 30, 30)
+        assertEquals(
+            formatDateTimeWithRespectToAnotherDate(dayAfterDateTime, currentDateTest),
+            "Tomorrow at 7:30"
+        )
+
+        val longAfterThatDateTime = LocalDateTime.of(2021, 12, 12, 7, 30, 40)
+        assertEquals(
+            formatDateTimeWithRespectToAnotherDate(longAfterThatDateTime, currentDateTest),
+            "December 12 at 7:30"
+        )
     }
 }

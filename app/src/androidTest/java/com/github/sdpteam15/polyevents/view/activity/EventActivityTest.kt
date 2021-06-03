@@ -138,6 +138,23 @@ class EventActivityTest {
             )
         ).thenReturn(Observable(true))
 
+        When(
+            mockedEventDatabase.getMeanRatingForEvent(
+                eventId = anyOrNull(),
+                mean = anyOrNull()
+            )
+        ).thenReturn(Observable(true))
+
+        When(
+            mockedEventDatabase.getRatingsForEvent(
+                eventId = anyOrNull(),
+                limit = anyOrNull(),
+                ratingList = anyOrNull()
+            )
+        ).thenReturn(
+            Observable(true)
+        )
+
         mockedNotificationsScheduler = mock(NotificationsScheduler::class.java)
         When(mockedNotificationsScheduler.cancelNotification(anyOrNull())).then { }
         When(mockedNotificationsScheduler.generateNewNotificationId()).thenReturn(0)
@@ -166,6 +183,22 @@ class EventActivityTest {
         // close and remove the mock local database
         localDatabase.close()
         currentDatabase = FirestoreDatabaseProvider
+    }
+
+    @Test
+    fun checkProgressDialogCorrectlyDisplayed() {
+        When(
+            mockedEventDatabase.getEventFromId(
+                id = anyOrNull(),
+                returnEvent = anyOrNull()
+            )
+        ).thenReturn(
+            Observable()
+        )
+
+        goToEventActivityWithIntent(limitedEventId)
+
+        assertDisplayed(R.id.fragment_progress_dialog)
     }
 
     @Test

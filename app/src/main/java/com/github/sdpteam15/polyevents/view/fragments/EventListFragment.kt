@@ -9,7 +9,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
+import com.github.sdpteam15.polyevents.helper.NotificationsHelper
+import com.github.sdpteam15.polyevents.helper.NotificationsScheduler
 import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
@@ -43,13 +45,16 @@ class EventListFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var myEventsSwitch: SwitchMaterial
+
     val events = ObservableList<Event>()
+
+    // observable for events stored in local cache
     private val eventsLocal = ObservableList<EventLocal>()
 
-    // Lazily initialized view model, instantiated only when accessed for the first time
-    /*private val localEventViewModel: EventLocalViewModel by viewModels {
-        EventLocalViewModelFactory(localDatabase.eventDao())
-    }*/
+    // Flag to check if we fetched events data successfully from remote
+    private var fetchedDataFromRemote = false
+
+    lateinit var notificationsScheduler: NotificationsScheduler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,6 +74,8 @@ class EventListFragment : Fragment() {
             EventLocalViewModel::class.java
         )
 
+        notificationsScheduler = NotificationsHelper(requireActivity().applicationContext)
+
         recyclerView = fragmentView.findViewById(R.id.recycler_events_list)
 
         myEventsSwitch = fragmentView.findViewById(R.id.event_list_my_events_switch)
@@ -85,18 +92,14 @@ class EventListFragment : Fragment() {
 
         recyclerView.adapter = EventItemAdapter(events, openEvent)
         recyclerView.setHasFixedSize(false)
+
+        updateEventsList()
         // Inflate the layout for this fragment
         return fragmentView
     }
 
     override fun onResume() {
         super.onResume()
-
-        myEventsSwitchCallback(myEventsSwitch.isChecked)
-    }
-
-    override fun onStart() {
-        super.onStart()
 
         myEventsSwitchCallback(myEventsSwitch.isChecked)
     }
@@ -120,25 +123,68 @@ class EventListFragment : Fragment() {
     private fun getUserLocalSubscribedEvents() {
         eventLocalViewModel.getAllEvents(eventsLocal)
 
-        eventsLocal.observe(this) {
-            events.clear()
-            events.addAll(it.value.map { it.toEvent() })
+        eventsLocal.observe(this, update = false) {
+            var retrievedEvents = it.value
+            if (fetchedDataFromRemote) {
+                // Sync with remote events
+                retrievedEvents = syncLocalWithFetchedEventsFromRemote(retrievedEvents)
+                fetchedDataFromRemote = false
+            }
+            // Sync events local with remote
+            events.updateAll(retrievedEvents.map { it.toEvent() })
         }
+    }
+
+    /**
+     * Synchronize the events stored in local cache with those stored in the remote database.
+     * For each event in the local cache, check if the remote database's events contain such an events.
+     * If an event is no longer on remote (e.g. deleted), delete it from cache as well
+     * and update the list.
+     * @param eventsInLocal the list of events stored in local cache to synchronize
+     * @return the list of events stored in local cache filtered of obsolete events
+     */
+    private fun syncLocalWithFetchedEventsFromRemote(eventsInLocal: List<EventLocal>): List<EventLocal> {
+        val eventsLocalCopy = eventsInLocal.toMutableList()
+        var eventsChanged = false
+
+        for (eventLocal in eventsInLocal) {
+            /*
+            eventId uniquely identifies an event. If no event exists in the remote with that event
+            id, then that event has been deleted, and must be deleted in the local cache as well
+             */
+            if (!events.any {
+                    it.eventId == eventLocal.eventId
+                }) {
+                notificationsScheduler.cancelNotification(eventLocal.eventStartNotificationId)
+                notificationsScheduler.cancelNotification(eventLocal.eventBeforeNotificationId)
+                eventLocalViewModel.delete(eventLocal)
+                eventsLocalCopy.remove(eventLocal)
+                eventsChanged = true
+            }
+        }
+
+        if (eventsChanged) {
+            eventsLocal.updateAll(eventsLocalCopy)
+            showToast(getString(R.string.events_local_sync_remote), context)
+        }
+        return eventsLocalCopy
     }
 
     private fun getEventsListAndDisplay(context: Context?) {
         // TODO: set limit or not?
         currentDatabase.eventDatabase.getEvents(null, null, events).observe(this) {
             if (!it.value) {
-                HelperFunctions.showToast(getString(R.string.fail_to_get_information), context)
+                showToast(getString(R.string.fail_to_get_information), context)
+            } else {
+                fetchedDataFromRemote = true
             }
         }
-        updateEventsList()
     }
 
     private fun updateEventsList() {
-        // TODO: get events list from local if switched to user registered
-        events.observe(this) { recyclerView.adapter!!.notifyDataSetChanged() }
+        events.observe(this) {
+            recyclerView.adapter!!.notifyDataSetChanged()
+        }
     }
 
     /**

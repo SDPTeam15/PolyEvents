@@ -297,7 +297,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         val ended = Observable<Boolean>()
         (matcher?.match(FirestoreQuery(fsCollection)) ?: FirestoreQuery(fsCollection))
             .get()
-            .observeOnce() {
+            .observeOnce {
                 it.value.first.apply { qs ->
                     val map = mutableMapOf<String, T>()
                     qs.forEach { e ->

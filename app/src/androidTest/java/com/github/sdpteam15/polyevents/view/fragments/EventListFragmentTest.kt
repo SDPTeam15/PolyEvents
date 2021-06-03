@@ -46,12 +46,11 @@ import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.anyOrNull
 import java.time.LocalDateTime
 
-// TODO: test room with internet off?
 @RunWith(MockitoJUnitRunner::class)
 class EventListFragmentTest {
     lateinit var event1: Event
     lateinit var event2: Event
-    lateinit var event3 : Event
+    lateinit var event3: Event
     lateinit var user: UserEntity
 
     val firstEventName = "Sushi demo"
@@ -61,6 +60,7 @@ class EventListFragmentTest {
     @Before
     fun setup() {
         event1 = Event(
+            eventId = "1",
             eventName = firstEventName,
             description = "Super hungry activity !",
             startTime = LocalDateTime.of(2021, 3, 7, 12, 15),
@@ -70,10 +70,16 @@ class EventListFragmentTest {
             tags = mutableListOf("sushi", "japan", "cooking")
         )
 
-        user = UserEntity(username = "username",uid="uidtest", name="testname",email="emailtest")
+        user = UserEntity(
+            username = "username",
+            uid = "uidtest",
+            name = "testname",
+            email = "emailtest"
+        )
         event1.makeLimitedEvent(25)
 
         event2 = Event(
+            eventId = "2",
             eventName = "Aqua Poney",
             description = "Super cool activity !" +
                     " With a super long description that essentially describes and explains" +
@@ -85,6 +91,7 @@ class EventListFragmentTest {
         event2.makeLimitedEvent(25)
 
         event3 = Event(
+            eventId = "3",
             eventName = "Concert",
             description = "Super noisy activity !",
             startTime = LocalDateTime.of(2021, 3, 7, 21, 15),
@@ -119,7 +126,8 @@ class EventListFragmentTest {
 
         EventListFragment.localDatabase = localDatabase
         EventListFragment.eventLocalViewModel = EventLocalViewModelFactory(
-            localDatabase.eventDao()).create(
+            localDatabase.eventDao()
+        ).create(
             EventLocalViewModel::class.java
         )
     }
@@ -129,6 +137,30 @@ class EventListFragmentTest {
         // close and remove the mock local database
         localDatabase.close()
         currentDatabase = FirestoreDatabaseProvider
+    }
+
+    @Test
+    fun checkObsoleteEventIsRemovedAfterSyncWithDatabase() = runBlocking {
+        val testBogusEventId = "Bla bla this event does not exist anymore in remote database"
+        val testBogusEvent =
+            EventLocal.fromEvent(
+                event1.copy(
+                    eventId = testBogusEventId
+                )
+            )
+
+        localDatabase.eventDao().insert(testBogusEvent)
+
+        clickOn(R.id.event_list_my_events_switch)
+
+        assertChecked(R.id.event_list_my_events_switch)
+
+        // My events updated
+        assertRecyclerViewItemCount(R.id.recycler_events_list, 0)
+
+        // Check deleted in local database
+        val retrievedEvents = localDatabase.eventDao().getEventById(testBogusEventId)
+        assert(retrievedEvents.isEmpty())
     }
 
     @Test
@@ -144,9 +176,11 @@ class EventListFragmentTest {
 
         assertUnchecked(R.id.event_list_my_events_switch)
 
-        // Event id cannot be null if creating eventLocal from event
-        localDatabase.eventDao().insert(EventLocal.fromEvent(event1.copy(eventId = "1")))
-        localDatabase.eventDao().insert(EventLocal.fromEvent(event2.copy(eventId = "2")))
+        val testEvents = FakeDatabaseEvent.events.values.take(2)
+        testEvents.forEach {
+            // Event id cannot be null if creating eventLocal from event
+            localDatabase.eventDao().insert(EventLocal.fromEvent(it))
+        }
 
         clickOn(R.id.event_list_my_events_switch)
 
@@ -158,9 +192,11 @@ class EventListFragmentTest {
 
     @Test
     fun testMyEventsShouldStillBeDisplayedIfNoUserLoggedIn() = runBlocking {
-        // Event id cannot be null if creating eventLocal from event
-        localDatabase.eventDao().insert(EventLocal.fromEvent(event1.copy(eventId = "1")))
-        localDatabase.eventDao().insert(EventLocal.fromEvent(event2.copy(eventId = "2")))
+        val testEvents = FakeDatabaseEvent.events.values.take(2)
+        testEvents.forEach {
+            // Event id cannot be null if creating eventLocal from event
+            localDatabase.eventDao().insert(EventLocal.fromEvent(it))
+        }
 
         val mockedDatabase = mock(DatabaseInterface::class.java)
         Mockito.`when`(mockedDatabase.currentUser).thenReturn(null)

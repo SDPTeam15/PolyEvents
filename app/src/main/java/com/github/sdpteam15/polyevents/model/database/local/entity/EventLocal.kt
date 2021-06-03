@@ -27,58 +27,58 @@ import java.time.LocalDateTime
  */
 @Entity(tableName = "event_table")
 data class EventLocal(
-        // TODO: should we add the user id subscribed to this event?
-        // TODO: add event icon?
-        @PrimaryKey
-        @ColumnInfo(name = "event_id")
-        @NonNull
-        val eventId: String,
-        @ColumnInfo(name = "event_name")
-        val eventName: String? = null,
-        @ColumnInfo(name = "organizer")
-        val organizer: String? = null,
-        @ColumnInfo(name = "zoneId")
-        val zoneId: String? = null,
-        @ColumnInfo(name = "zoneName")
-        val zoneName: String? = null,
-        @ColumnInfo(name = "description")
-        var description: String? = null,
-        @ColumnInfo(name = "start_time")
-        val startTime: LocalDateTime? = null,
-        @ColumnInfo(name = "end_time")
-        val endTime: LocalDateTime? = null,
-        @ColumnInfo(name = "event_start_notification_id")
-        var eventStartNotificationId: Int? = null,
-        @ColumnInfo(name = "event_before_notification_id")
-        var eventBeforeNotificationId: Int? = null,
-        @ColumnInfo(name = "is_limited")
-        val isLimited: Boolean = false
+    // TODO: should we add the user id subscribed to this event?
+    // TODO: add event icon?
+    @PrimaryKey
+    @ColumnInfo(name = "event_id")
+    @NonNull
+    val eventId: String,
+    @ColumnInfo(name = "event_name")
+    val eventName: String? = null,
+    @ColumnInfo(name = "organizer")
+    val organizer: String? = null,
+    @ColumnInfo(name = "zoneId")
+    val zoneId: String? = null,
+    @ColumnInfo(name = "zoneName")
+    val zoneName: String? = null,
+    @ColumnInfo(name = "description")
+    var description: String? = null,
+    @ColumnInfo(name = "start_time")
+    val startTime: LocalDateTime? = null,
+    @ColumnInfo(name = "end_time")
+    val endTime: LocalDateTime? = null,
+    @ColumnInfo(name = "event_start_notification_id")
+    var eventStartNotificationId: Int? = null,
+    @ColumnInfo(name = "event_before_notification_id")
+    var eventBeforeNotificationId: Int? = null,
+    @ColumnInfo(name = "is_limited")
+    val isLimited: Boolean = false
 ) {
     fun toEvent(): Event =
-            Event(
-                    eventId = eventId,
-                    eventName = eventName,
-                    organizer = organizer,
-                    zoneId = zoneId,
-                    zoneName = zoneName,
-                    description = description,
-                    startTime = startTime,
-                    endTime = endTime,
-                    limitedEvent = isLimited
-            )
+        Event(
+            eventId = eventId,
+            eventName = eventName,
+            organizer = organizer,
+            zoneId = zoneId,
+            zoneName = zoneName,
+            description = description,
+            startTime = startTime,
+            endTime = endTime,
+            limitedEvent = isLimited
+        )
 
     companion object {
         fun fromEvent(e: Event) =
-                EventLocal(
-                        eventId = e.eventId!!,
-                        eventName = e.eventName,
-                        organizer = e.organizer,
-                        zoneId = e.zoneId,
-                        zoneName = e.zoneName,
-                        description = e.description,
-                        startTime = e.startTime,
-                        endTime = e.endTime,
-                        isLimited = e.isLimitedEvent()
-                )
+            EventLocal(
+                eventId = e.eventId!!,
+                eventName = e.eventName,
+                organizer = e.organizer,
+                zoneId = e.zoneId,
+                zoneName = e.zoneName,
+                description = e.description,
+                startTime = e.startTime,
+                endTime = e.endTime,
+                isLimited = e.isLimitedEvent()
+            )
     }
 }
