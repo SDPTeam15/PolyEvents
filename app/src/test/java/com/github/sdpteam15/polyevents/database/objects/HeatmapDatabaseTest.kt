@@ -1,12 +1,12 @@
 package com.github.sdpteam15.polyevents.database.objects
 
 import com.github.sdpteam15.polyevents.database.HelperTestFunction
+import com.github.sdpteam15.polyevents.model.database.local.entity.UserSettings
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.DeviceLocationAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.objects.HeatmapDatabase
 import com.github.sdpteam15.polyevents.model.entity.DeviceLocation
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.model.room.UserSettings
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Before
