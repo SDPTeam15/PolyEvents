@@ -32,7 +32,7 @@ object GoogleMapHelper {
         areasPoints.clear()
         for ((k, v) in zoneTemp) {
             editingZone = k
-            zonesToArea[editingZone!!] = Pair(null, mutableListOf())
+            zonesToArea[editingZone!!] = Pair(v.first, mutableListOf())
             for (id in v.second) {
                 addArea(
                     context,

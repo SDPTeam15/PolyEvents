@@ -1,7 +1,9 @@
 package com.github.sdpteam15.polyevents.model.map
 
 import android.content.Context
+import android.util.Log
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementActivity
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
@@ -31,9 +33,9 @@ object GoogleMapOptions {
      * @param context Context of the fragment
      * @param drawingMod if we draw the zone in rectangles or in polygons
      */
-    fun setUpMap(context: Context?, drawingMod: Boolean) {
-        //Restoring the map state
-        restoreCameraState()
+    fun setUpMap(context: Context?, drawingMod: Boolean, mode:MapsFragmentMod) {
+
+
         GoogleMapHelper.restoreMapState(context, drawingMod)
         setMapStyle(context)
         GoogleMapHelper.selectedZone = null
@@ -44,6 +46,32 @@ object GoogleMapOptions {
 
         //To deactivate the 3d buildings
         //map!!.isBuildingsEnabled = false
+
+
+        //Restoring the map state
+        if(mode != MapsFragmentMod.EditZone){
+            restoreCameraState()
+        }else{
+            if(ZoneAreaMapHelper.zonesToArea.containsKey(ZoneManagementActivity.zoneId)){
+                val pair = ZoneAreaMapHelper.zonesToArea[ZoneManagementActivity.zoneId]
+                val zone = pair!!.first
+                if(zone == null){
+                    restoreCameraState()
+                    return
+                }
+                
+                val coords = zone!!.getZoneCoordinates()
+                val center = LatLngOperator.mean(coords.flatten())
+                //val center = LatLngOperator.mean(ZoneAreaMapHelper.zonesToArea[ZoneManagementActivity.zoneId]!!.first!!.getZoneCoordinates().flatten())
+                GoogleMapHelper.map!!.moveCamera(
+                    CameraUpdateFactory.newLatLngZoom(
+                        center,
+                        cameraZoom
+                    ))
+            }else{
+                restoreCameraState()
+            }
+        }
     }
 
     /**
