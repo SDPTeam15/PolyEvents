@@ -59,10 +59,8 @@ object GoogleMapOptions {
                     restoreCameraState()
                     return
                 }
-                
                 val coords = zone!!.getZoneCoordinates()
                 val center = LatLngOperator.mean(coords.flatten())
-                //val center = LatLngOperator.mean(ZoneAreaMapHelper.zonesToArea[ZoneManagementActivity.zoneId]!!.first!!.getZoneCoordinates().flatten())
                 GoogleMapHelper.map!!.moveCamera(
                     CameraUpdateFactory.newLatLngZoom(
                         center,
