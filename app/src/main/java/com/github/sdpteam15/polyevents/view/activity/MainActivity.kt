@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.model.database.local.entity.UserSettings
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
@@ -21,7 +22,6 @@ import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.model.map.MapsFragmentMod
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.model.room.UserSettings
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.fragments.*
 import com.github.sdpteam15.polyevents.view.fragments.home.AdminHomeFragment
@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity() {
             getString(R.string.notification_channel_name)
         )
 
-        localDatabase = (application as PolyEventsApplication).database
+        localDatabase = (application as PolyEventsApplication).localDatabase
 
         // Start a timed service in the background to send the device location id
         // to the database, for heatmap functionality. Have to check if the user enabled
@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity() {
                     if (userSettingsObservable.isNotEmpty() && userSettingsObservable[0].isSendingLocationOn) {
                         HelperFunctions.getLoc(this).observeOnce { LatLng ->
                             if (LatLng.value != null)
-                                currentDatabase.heatmapDatabase!!.setLocation(
+                                currentDatabase.heatmapDatabase.setLocation(
                                     LatLng.value,
                                     userSettingsObservable
                                 )

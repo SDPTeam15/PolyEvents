@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.model.database.remote.objects
 
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.model.database.local.entity.UserSettings
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.LOCATION_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
@@ -11,7 +12,6 @@ import com.github.sdpteam15.polyevents.model.map.GoogleMapOptions.neBound
 import com.github.sdpteam15.polyevents.model.map.GoogleMapOptions.swBound
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.model.room.UserSettings
 import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDateTime
 import kotlin.random.Random
