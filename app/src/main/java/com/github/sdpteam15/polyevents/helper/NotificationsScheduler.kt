@@ -13,9 +13,11 @@ interface NotificationsScheduler {
      * @param notificationMessage the body of the message for the notification
      * @param scheduledTime the time at which the notification is scheduled for
      */
-    fun scheduleEventNotification(eventId: String,
-                                  notificationMessage: String,
-                                  scheduledTime: LocalDateTime): Int
+    fun scheduleEventNotification(
+        eventId: String,
+        notificationMessage: String,
+        scheduledTime: LocalDateTime
+    ): Int
 
     /**
      * Cancel a notification with provided id

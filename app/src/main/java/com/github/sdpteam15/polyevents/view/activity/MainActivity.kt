@@ -159,7 +159,10 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     HelperFunctions.changeFragment(this, fragments[R.id.id_fragment_profile])
                 }
-                R.id.ic_settings -> HelperFunctions.changeFragment(this, fragments[R.id.ic_settings])
+                R.id.ic_settings -> HelperFunctions.changeFragment(
+                    this,
+                    fragments[R.id.ic_settings]
+                )
                 else ->
                     redirectHome()
             }

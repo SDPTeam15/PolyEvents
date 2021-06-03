@@ -198,8 +198,11 @@ object HelperFunctions {
      * @return the corresponding LocalDateTime
      */
     fun dateToLocalDateTime(date: Any?): LocalDateTime? =
-        when(date){
-            is Timestamp -> LocalDateTime.ofInstant(date.toDate().toInstant(), ZoneId.systemDefault())
+        when (date) {
+            is Timestamp -> LocalDateTime.ofInstant(
+                date.toDate().toInstant(),
+                ZoneId.systemDefault()
+            )
             is Date -> LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault())
             else -> null
         }
@@ -326,11 +329,11 @@ object HelperFunctions {
     }
 
     /**
-    * if this object is not null apply run else return default
-    * @param default default return
-    * @param run the function to execute
-    * @return if this object is not null apply run else return default
-    */
+     * if this object is not null apply run else return default
+     * @param default default return
+     * @param run the function to execute
+     * @return if this object is not null apply run else return default
+     */
     fun <S, T> S?.apply(default: T, run: (S) -> T) = if (this != null) run(this) else default
 
     /**

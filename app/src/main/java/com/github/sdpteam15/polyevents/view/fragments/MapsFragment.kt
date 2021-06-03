@@ -121,7 +121,7 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
         locationButton = view.findViewById(R.id.id_location_button)
 
         addNewAreaButton = view.findViewById(R.id.addNewArea)
-        deleteAreaButton= view.findViewById(R.id.id_delete_areas)
+        deleteAreaButton = view.findViewById(R.id.id_delete_areas)
         saveNewAreaButton = view.findViewById(R.id.acceptNewArea)
         editAreaButton = view.findViewById(R.id.id_edit_area)
 
@@ -194,7 +194,7 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
         addNewAreaButton.setOnClickListener { ZoneAreaMapHelper.createNewArea(requireContext()) }
         saveNewAreaButton.setOnClickListener { ZoneAreaMapHelper.saveNewArea(requireContext()) }
         editAreaButton.setOnClickListener { ZoneAreaMapHelper.editMode(requireContext()) }
-        deleteAreaButton.setOnClickListener{ZoneAreaMapHelper.deleteMode(requireContext())}
+        deleteAreaButton.setOnClickListener { ZoneAreaMapHelper.deleteMode(requireContext()) }
 
         addNewRouteButton.setOnClickListener { RouteMapHelper.createNewRoute(requireContext()) }
         removeRouteButton.setOnClickListener { RouteMapHelper.removeRoute() }
@@ -239,7 +239,8 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
      * Switches the style of the delete button for routes
      */
     fun switchIconDeleteArea() {
-        val removeRouteButton = requireView().findViewById<FloatingActionButton>(R.id.id_delete_areas)
+        val removeRouteButton =
+            requireView().findViewById<FloatingActionButton>(R.id.id_delete_areas)
         if (ZoneAreaMapHelper.deleteMode) {
             removeRouteButton.supportBackgroundTintList =
                 resources.getColorStateList(R.color.red, null)

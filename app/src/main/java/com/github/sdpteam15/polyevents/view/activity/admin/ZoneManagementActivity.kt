@@ -253,12 +253,12 @@ class ZoneManagementActivity : AppCompatActivity() {
         super.onBackPressed()
         //Goes to the database to get the zone as it was before modification
         ZoneAreaMapHelper.removeZone(zoneId)
-        val obs:Observable<Zone> = Observable()
-        obs.observe{
-            if(it.value != null){
+        val obs: Observable<Zone> = Observable()
+        obs.observe {
+            if (it.value != null) {
                 ZoneAreaMapHelper.waitingZones.add(it.value)
             }
         }
-        currentDatabase.zoneDatabase!!.getZoneInformation(zoneId, obs)
+        currentDatabase.zoneDatabase.getZoneInformation(zoneId, obs)
     }
 }

@@ -217,7 +217,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
                 showToast(getString(R.string.event_info_fail), this)
             } else {
                 if (obsEvent.value!!.organizer != null) {
-                    currentDatabase.userDatabase!!.getUserInformation(
+                    currentDatabase.userDatabase.getUserInformation(
                         obsOrganiser,
                         obsEvent.value!!.organizer!!
                     ).observeOnce(this) {

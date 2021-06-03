@@ -38,7 +38,7 @@ enum class NotificationType(private val notificationType: String) {
  * with the Alarm manager, as well as Notification manager related methods to send
  * notifications and/or cancel them
  */
-class NotificationsHelper(private val applicationContext: Context): NotificationsScheduler {
+class NotificationsHelper(private val applicationContext: Context) : NotificationsScheduler {
     /**
      * Cancel the notification associated with the id provided as well as the pending intent
      * scheduling the alarm to fire up the notification.
