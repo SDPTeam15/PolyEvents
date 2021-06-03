@@ -86,9 +86,9 @@ object FakeDatabaseEvent : EventDatabaseInterface {
 
 
     override fun getEvents(
-        matcher: Matcher?,
+        eventList: ObservableList<Event>,
         limit: Long?,
-        eventList: ObservableList<Event>
+        matcher: Matcher?
     ): Observable<Boolean> {
         eventList.clear(this)
 
@@ -116,8 +116,8 @@ object FakeDatabaseEvent : EventDatabaseInterface {
     }
 
     override fun getEventEdits(
-        matcher: Matcher?,
-        eventList: ObservableList<Event>
+        eventList: ObservableList<Event>,
+        matcher: Matcher?
     ): Observable<Boolean> {
         TODO("Not yet implemented")
     }

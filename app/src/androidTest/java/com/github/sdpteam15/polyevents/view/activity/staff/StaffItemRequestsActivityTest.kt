@@ -164,7 +164,7 @@ class StaffItemRequestsActivityTest {
         for (event in availableEvents) {
             Database.currentDatabase.eventDatabase.createEvent(event)
         }
-        Database.currentDatabase.eventDatabase.getEvents(null, null, availableEventList)
+        Database.currentDatabase.eventDatabase.getEvents(availableEventList, null,null )
 
         FakeDatabaseUser.allUsers.addAll(availableUsers)
         Database.currentDatabase.userDatabase.getListAllUsers(availableUsersList)

@@ -94,7 +94,7 @@ class MyEventEditManagementTest {
         When(mockedDb.currentUser).thenReturn(UserEntity(uid = "uidtest"))
 
         When(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
-            (it.arguments[2] as ObservableList<Event>).addAll(allEvent)
+            (it.arguments[0] as ObservableList<Event>).addAll(allEvent)
             Observable(true)
         }
         val intent = Intent(

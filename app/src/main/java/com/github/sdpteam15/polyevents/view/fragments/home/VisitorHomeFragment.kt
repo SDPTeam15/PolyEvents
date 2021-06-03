@@ -56,7 +56,7 @@ class VisitorHomeFragment : Fragment() {
 
 
 
-        currentDatabase.eventDatabase.getEvents(null, NUMBER_UPCOMING_EVENTS.toLong(), events)
+        currentDatabase.eventDatabase.getEvents(events, NUMBER_UPCOMING_EVENTS.toLong())
             .observe(this) {
                 if (!it.value) {
                     HelperFunctions.showToast("Failed to load events", fragmentView.context)

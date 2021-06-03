@@ -170,9 +170,12 @@ class EventListFragment : Fragment() {
         return eventsLocalCopy
     }
 
+    /**
+     * Get event list from database and display it on the fragment
+     * @param context The current application context
+     */
     private fun getEventsListAndDisplay(context: Context?) {
-        // TODO: set limit or not?
-        currentDatabase.eventDatabase.getEvents(null, null, events).observe(this) {
+        currentDatabase.eventDatabase.getEvents(events).observe(this) {
             if (!it.value) {
                 showToast(getString(R.string.fail_to_get_information), context)
             } else {
@@ -181,18 +184,12 @@ class EventListFragment : Fragment() {
         }
     }
 
+    /**
+     * Update the event list
+     */
     private fun updateEventsList() {
         events.observe(this) {
             recyclerView.adapter!!.notifyDataSetChanged()
         }
     }
-
-    /**
-     * Update the content of the upcoming events
-     */
-    /*
-    fun updateContent() {
-        // Remove all the content first
-        HelperFunctions.refreshFragment(fragmentManager, this)
-    }*/
 }

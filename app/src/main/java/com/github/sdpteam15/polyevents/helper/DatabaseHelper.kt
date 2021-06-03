@@ -54,12 +54,12 @@ object DatabaseHelper {
         val events = ObservableList<Event>()
         events.observeAdd { deleteEvent(it.value) }
         //TODO REMOVE ROUTENODES ROUTEEDGES
-        currentDatabase.eventDatabase.getEvents({
+        currentDatabase.eventDatabase.getEvents(events, matcher = {
             it.whereEqualTo(
                 DatabaseConstant.EventConstant.EVENT_ZONE_ID.value,
                 zone.zoneId!!
             )
-        }, null, events)
+        })
         currentDatabase.zoneDatabase.deleteZone(zone)
     }
 
@@ -72,12 +72,12 @@ object DatabaseHelper {
         eventEdit.observeAdd {
             currentDatabase.eventDatabase.updateEventEdit(it.value.copy(status = Event.EventStatus.CANCELED))
         }
-        return currentDatabase.eventDatabase.getEventEdits({
+        return currentDatabase.eventDatabase.getEventEdits(eventEdit) {
             it.whereEqualTo(
                 DatabaseConstant.EventConstant.EVENT_DOCUMENT_ID.value,
                 e.eventId!!
             )
-        }, eventEdit)
+        }
     }
 
     /**

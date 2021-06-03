@@ -56,12 +56,12 @@ class ItemRequestActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
                     .map(this) { it2 -> Pair(it2[0].second, it2[0].third) }.then
             }
 
-        currentDatabase.eventDatabase.getEvents({
+        currentDatabase.eventDatabase.getEvents(listEvent, matcher = {
             it.whereEqualTo(
                 DatabaseConstant.EventConstant.EVENT_ORGANIZER.value,
                 currentDatabase.currentUser!!.uid
             )
-        }, null, listEvent).observeOnce(this) {
+        }).observeOnce(this) {
             if (it.value) {
                 if (listEvent.isEmpty()) {
                     showToast(getString(R.string.create_event_before_items), this)

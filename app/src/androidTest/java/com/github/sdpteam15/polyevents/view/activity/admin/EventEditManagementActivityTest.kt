@@ -113,13 +113,13 @@ class EventEditManagementActivityTest {
                 anyOrNull(), anyOrNull(), anyOrNull()
             )
         ).thenAnswer {
-            (it.arguments[2] as ObservableList<Event>).addAll(events)
+            (it.arguments[0] as ObservableList<Event>).addAll(events)
             Observable(true)
         }
 
         Mockito.`when`(mockedDatabaseEvent.getEventEdits(anyOrNull(), anyOrNull()))
             .thenAnswer {
-                (it.arguments[1] as ObservableList<Event>).addAll(eventsEdit)
+                (it.arguments[0] as ObservableList<Event>).addAll(eventsEdit)
                 Observable(true)
             }
 

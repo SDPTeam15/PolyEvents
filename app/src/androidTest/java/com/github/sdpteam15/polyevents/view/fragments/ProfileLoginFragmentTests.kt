@@ -102,18 +102,18 @@ class ProfileLoginFragmentTests {
             MainActivity.fragments[R.id.id_fragment_home_visitor] as VisitorHomeFragment
         When(
             mockedEventDatabase.getEvents(
-                null,
+                homeFragment.events,
                 NUMBER_UPCOMING_EVENTS.toLong(),
-                homeFragment.events
+                null
             )
         ).thenAnswer {
             Observable(true)
         }
         When(
             mockedEventDatabase.getEvents(
-                null,
+                homeFragment.events,
                 NUMBER_UPCOMING_EVENTS.toLong(),
-                homeFragment.events
+                null
             )
         ).thenAnswer {
             Observable(true)

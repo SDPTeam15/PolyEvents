@@ -90,18 +90,18 @@ class EventManagementListActivity : AppCompatActivity() {
     private fun getEventsDatabase(requestObservable: ObservableList<Event>) {
         if (isOrganiser) {
             // If the current user is an event organiser and not admin, we display only the events he is organising
-            currentDatabase.eventDatabase.getEvents({
+            currentDatabase.eventDatabase.getEvents(requestObservable, matcher = {
                 it.whereEqualTo(
                     DatabaseConstant.EventConstant.EVENT_ORGANIZER.value,
                     currentDatabase.currentUser!!.uid
                 )
-            }, null, eventList = requestObservable)
+            })
                 .observe(this) {
                     redirectOnFailure(it.value)
                 }
         } else {
             // Otherwise, we load all the events from the database
-            currentDatabase.eventDatabase.getEvents(null, null, eventList = requestObservable)
+            currentDatabase.eventDatabase.getEvents(requestObservable)
                 .observe(this) {
                     redirectOnFailure(it.value)
                 }

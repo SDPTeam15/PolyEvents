@@ -293,11 +293,8 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         }
 
         Database.currentDatabase.eventDatabase.getEvents(
-            null,
-            null,
-            eventList = requestObservable
-        )
-            .observe(this) {
+           requestObservable
+        ).observe(this) {
                 if (!it.value) {
                     HelperFunctions.showToast(getString(R.string.fail_retrieve_events), this)
                     finish()

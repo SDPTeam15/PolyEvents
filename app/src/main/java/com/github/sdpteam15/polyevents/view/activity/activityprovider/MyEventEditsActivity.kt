@@ -142,14 +142,12 @@ class MyEventEditsActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
             }
         }
         //Gets the item request of the user and then gets the item list
-        currentDatabase.eventDatabase.getEvents(null, null, eventList).observe(this) {
+        currentDatabase.eventDatabase.getEvents(eventList).observe(this) { it ->
             if (it.value) {
-                currentDatabase.eventDatabase.getEventEdits(
-                    {
-                        it.whereEqualTo(DatabaseConstant.EventConstant.EVENT_NAME.value, userId)
-                    },
-                    eventRequests
-                ).observeOnce(this) {
+                currentDatabase.eventDatabase.getEventEdits(eventRequests)
+                {
+                    it.whereEqualTo(DatabaseConstant.EventConstant.EVENT_NAME.value, userId)
+                }.observeOnce(this) {
                     if (!it.value) {
                         HelperFunctions.showToast(
                             getString(R.string.fail_to_get_list_events_edits_eo),

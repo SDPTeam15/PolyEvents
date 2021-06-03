@@ -240,7 +240,7 @@ class EventListFragmentTest {
         }
 
         val events = ObservableList<Event>()
-        currentDatabase.eventDatabase.getEvents(null, 1, events)
+        currentDatabase.eventDatabase.getEvents(events, 1,null )
         currentDatabase.userDatabase = mockedUserDatabase
 
         val eventToTest = events[0]
