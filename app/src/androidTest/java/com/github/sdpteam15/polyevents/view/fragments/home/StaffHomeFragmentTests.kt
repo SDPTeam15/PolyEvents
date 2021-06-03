@@ -46,6 +46,7 @@ class StaffHomeFragmentTests {
             username = username,
             email = email
         )
+
         testUser.userProfiles.add(UserProfile("testprofile", userRole = UserRole.STAFF))
         val observableUser = Observable(testUser)
 
@@ -63,8 +64,6 @@ class StaffHomeFragmentTests {
 
     @After
     fun teardown() {
-        MainActivity.currentUser = null
-        MainActivity.currentUserObservable = null
 
         Intents.release()
         Database.currentDatabase = FirestoreDatabaseProvider

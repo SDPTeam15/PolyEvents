@@ -66,9 +66,6 @@ class ActivityProvideFragmentTests {
 
     @After
     fun teardown() {
-        MainActivity.currentUser = null
-        MainActivity.currentUserObservable = null
-
         Intents.release()
         Database.currentDatabase = FirestoreDatabaseProvider
     }

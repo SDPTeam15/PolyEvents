@@ -60,15 +60,11 @@ class AdminHubFragmentTest {
         val intent =
             Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
         ActivityScenario.launch<MainActivity>(intent)
-
         Intents.init()
     }
 
     @After
     fun teardown() {
-        MainActivity.currentUser = null
-        MainActivity.currentUserObservable = null
-
         Intents.release()
         Database.currentDatabase = FirestoreDatabaseProvider
     }

@@ -72,7 +72,6 @@ class ZoneManagementTest {
 
     @After
     fun teardown() {
-        MainActivity.currentUser = null
         Database.currentDatabase = FirestoreDatabaseProvider
     }
 

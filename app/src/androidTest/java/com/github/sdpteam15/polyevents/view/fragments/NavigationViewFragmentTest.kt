@@ -48,8 +48,6 @@ class NavigationViewFragmentTest {
         Mockito.`when`(mockedDatabase.currentUser).thenReturn(UserEntity("uid"))
         Mockito.`when`(mockedDatabase.currentUserObservable).thenReturn(Observable(UserEntity("uid")))
 
-        MainActivity.currentUser = null
-        Database.currentDatabase.currentUser = null
     }
     @After
     fun teardown(){
@@ -102,12 +100,5 @@ class NavigationViewFragmentTest {
 
         Espresso.onView(withId(R.id.ic_settings)).perform(click())
         Espresso.onView(withId(R.id.id_fragment_settings)).check(matches(isDisplayed()))
-    }
-
-    @Test
-    fun loginFragmentDisplayedIfNoAuth() {
-        UserLogin.currentUserLogin.signOut()
-        Espresso.onView(withId(R.id.ic_login)).perform(click())
-        Espresso.onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
     }
 }

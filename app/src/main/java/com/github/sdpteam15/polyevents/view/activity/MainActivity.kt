@@ -53,10 +53,10 @@ class MainActivity : AppCompatActivity() {
             }
 
         //Return CurrentUser if we are not in test, but we can use a fake user in test this way
-        var currentUser: UserEntity? = null
-            get() = field ?: currentDatabase.currentUser
-        var currentUserObservable: Observable<UserEntity>? = null
-            get() = field ?: currentDatabase.currentUserObservable
+        val currentUser: UserEntity?
+            get() = currentDatabase.currentUser
+        val currentUserObservable: Observable<UserEntity>
+            get() = currentDatabase.currentUserObservable
 
         var instance: MainActivity? = null
         var selectedRole: UserRole? = null
