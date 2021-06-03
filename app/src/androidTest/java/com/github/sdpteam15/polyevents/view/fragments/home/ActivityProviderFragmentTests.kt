@@ -35,7 +35,7 @@ import org.mockito.Mockito.mock
 import org.mockito.kotlin.anyOrNull
 import org.mockito.Mockito.`when` as When
 
-class ActivityProvideFragmentTests {
+class ActivityProviderFragmentTests {
     lateinit var mockedDatabase: DatabaseInterface
     val uid = "testUid"
     val username = "JohnDoe"
@@ -48,7 +48,7 @@ class ActivityProvideFragmentTests {
             username = username,
             email = email
         )
-        testUser.userProfiles.add(UserProfile("testprofile", userRole = UserRole.ADMIN))
+        testUser.userProfiles.add(UserProfile("testprofile", userRole = UserRole.ORGANIZER))
         val observableUser = Observable(testUser)
 
         mockedDatabase = HelperTestFunction.defaultMockDatabase()
@@ -58,16 +58,12 @@ class ActivityProvideFragmentTests {
         Mockito.`when`(mockedDatabase.currentUser).thenReturn(testUser)
 
         MainActivity.instance = null
-        MainActivity.selectedRole = UserRole.ADMIN
+        MainActivity.selectedRole = UserRole.ORGANIZER
 
         val intent =
             Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
         ActivityScenario.launch<MainActivity>(intent)
 
-        Espresso.onView(ViewMatchers.withId(R.id.spinner_admin)).perform(ViewActions.click())
-        Espresso.onData(Matchers.anything())
-            .atPosition(1)
-            .perform(ViewActions.click())
         Intents.init()
     }
 

@@ -51,15 +51,14 @@ class StaffHomeFragmentTests {
             email = email
         )
 
-        testUser.userProfiles.add(UserProfile("testprofile", userRole = UserRole.ADMIN))
+        testUser.userProfiles.add(UserProfile("testprofile", userRole = UserRole.STAFF))
         val observableUser = Observable(testUser)
-
 
         mockedDatabase = HelperTestFunction.defaultMockDatabase()
         Database.currentDatabase = mockedDatabase
 
         MainActivity.instance = null
-        MainActivity.selectedRole = UserRole.ADMIN
+        MainActivity.selectedRole = UserRole.STAFF
 
         When(mockedDatabase.currentUserObservable).thenReturn(observableUser)
         When(mockedDatabase.currentUser).thenReturn(testUser)
@@ -67,10 +66,6 @@ class StaffHomeFragmentTests {
         val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
         ActivityScenario.launch<MainActivity>(intent)
 
-        onView(withId(R.id.spinner_admin)).perform(click())
-        Espresso.onData(Matchers.anything())
-            .atPosition(2)
-            .perform(ViewActions.click())
         Intents.init()
     }
 
