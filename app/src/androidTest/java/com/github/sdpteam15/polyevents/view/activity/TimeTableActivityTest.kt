@@ -188,7 +188,6 @@ class TimeTableActivityTest {
         Thread.sleep(1000)
         val v1 = 42
         val v2 = 34
-        val v3 = 39
         val v4 = 50
         TimeTableActivity.instance!!.selectedItem = v4
         assertEquals(v4, TimeTableActivity.instance!!.selectedItem)

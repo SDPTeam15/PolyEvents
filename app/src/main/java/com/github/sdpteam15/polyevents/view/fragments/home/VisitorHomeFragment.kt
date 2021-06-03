@@ -54,6 +54,8 @@ class VisitorHomeFragment : Fragment() {
         recyclerView.adapter = EventItemAdapter(events, openEvent)
         recyclerView.setHasFixedSize(false)
 
+
+
         currentDatabase.eventDatabase.getEvents(null, NUMBER_UPCOMING_EVENTS.toLong(), events)
             .observe(this) {
                 if (!it.value) {

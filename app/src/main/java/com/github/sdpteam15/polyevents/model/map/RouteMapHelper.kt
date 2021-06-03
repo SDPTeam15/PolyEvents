@@ -506,14 +506,14 @@ object RouteMapHelper {
 
         //Remove all creation lines when we get an answer from the database
         removeAllLinesToRemove()
-        var option = PolylineOptions()
+        val option = PolylineOptions()
         option.add(edge.start!!.toLatLng())
         option.add(edge.end!!.toLatLng())
         option.color(Color.argb(50, 0, 0, 0))
         option.clickable(true)
         val route = map!!.addPolyline(option)
         if(context != null)
-            route.width = LINE_WIDTH_DP.dpToPixelsFloat(context!!)
+            route.width = LINE_WIDTH_DP.dpToPixelsFloat(context)
         //tag used to know which polyline has been clicked
         if (context != null) {
             route.tag = edge.id

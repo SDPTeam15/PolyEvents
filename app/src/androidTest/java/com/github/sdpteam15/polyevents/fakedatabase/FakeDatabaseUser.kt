@@ -9,7 +9,6 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableList
 object FakeDatabaseUser : UserDatabaseInterface {
     lateinit var profiles: MutableList<UserProfile>
     var allUsers = mutableListOf<UserEntity>()
-    override var firstConnectionUser: UserEntity = UserEntity(uid = "DEFAULT")
     override fun updateUserInformation(
         user: UserEntity
     ) = Observable(true, FakeDatabase)
@@ -29,9 +28,9 @@ object FakeDatabaseUser : UserDatabaseInterface {
     override fun getUserInformation(
         user: Observable<UserEntity>,
         uid: String
-    ):Observable<Boolean> {
+    ): Observable<Boolean> {
         user.postValue(FakeDatabase.CURRENT_USER)
-        return Observable(true,FakeDatabase)
+        return Observable(true, FakeDatabase)
     }
 
     override fun getListAllUsers(
@@ -40,7 +39,7 @@ object FakeDatabaseUser : UserDatabaseInterface {
         users.clear(FakeDatabase)
         users.addAll(allUsers, FakeDatabase)
 
-        return Observable(true,FakeDatabase)
+        return Observable(true, FakeDatabase)
     }
 
     override fun addUserProfileAndAddToUser(

@@ -89,7 +89,7 @@ class ProfileLoginFragmentTests {
         mockedDatabaseUser = UserEntity(uid = uidTest, email = emailTest, name = displayNameTest)
 
         //Create Mock database
-        mockedUserDatabase =  mock(UserDatabaseInterface::class.java)
+        mockedUserDatabase = mock(UserDatabaseInterface::class.java)
 
         mockedDatabase = HelperTestFunction.defaultMockDatabase()
         mockedEventDatabase = mock(EventDatabaseInterface::class.java)
@@ -98,7 +98,8 @@ class ProfileLoginFragmentTests {
         When(mockedDatabase.userDatabase).thenReturn(mockedUserDatabase)
 
         When(mockedDatabase.currentUser).thenReturn(null)
-        val homeFragment = MainActivity.fragments[R.id.id_fragment_home_visitor] as VisitorHomeFragment
+        val homeFragment =
+            MainActivity.fragments[R.id.id_fragment_home_visitor] as VisitorHomeFragment
         When(
             mockedEventDatabase.getEvents(
                 null,
@@ -289,8 +290,24 @@ class ProfileLoginFragmentTests {
         endingRequest.postValue(true)
         onView(withId(R.id.id_fragment_profile)).check(matches(isDisplayed()))
 
-        onView(withId(R.id.id_profile_name_edittext)).check(matches(withText(Matchers.equalTo(displayNameTest))))
-        onView(withId(R.id.id_profile_email_edittext)).check(matches(withText(Matchers.equalTo(emailTest))))
+        onView(withId(R.id.id_profile_name_edittext)).check(
+            matches(
+                withText(
+                    Matchers.equalTo(
+                        displayNameTest
+                    )
+                )
+            )
+        )
+        onView(withId(R.id.id_profile_email_edittext)).check(
+            matches(
+                withText(
+                    Matchers.equalTo(
+                        emailTest
+                    )
+                )
+            )
+        )
     }
 
     @Test
@@ -333,8 +350,24 @@ class ProfileLoginFragmentTests {
         assert(updated)
 
         //Check if the values are correctly displayed
-        onView(withId(R.id.id_profile_name_edittext)).check(matches(withText(Matchers.equalTo(displayNameTest2))))
-        onView(withId(R.id.id_profile_email_edittext)).check(matches(withText(Matchers.equalTo(emailTest2))))
+        onView(withId(R.id.id_profile_name_edittext)).check(
+            matches(
+                withText(
+                    Matchers.equalTo(
+                        displayNameTest2
+                    )
+                )
+            )
+        )
+        onView(withId(R.id.id_profile_email_edittext)).check(
+            matches(
+                withText(
+                    Matchers.equalTo(
+                        emailTest2
+                    )
+                )
+            )
+        )
         onView(withId(R.id.id_birthday_button)).perform(scrollTo(), click())
         onView(withText("OK")).perform(scrollTo(), click())
 
@@ -356,8 +389,24 @@ class ProfileLoginFragmentTests {
         endingRequestUpdate.postValue(false)
 
         //check that the values are still the same
-        onView(withId(R.id.id_profile_name_edittext)).check(matches(withText(Matchers.equalTo(displayNameTest2))))
-        onView(withId(R.id.id_profile_email_edittext)).check(matches(withText(Matchers.equalTo(emailTest2))))
+        onView(withId(R.id.id_profile_name_edittext)).check(
+            matches(
+                withText(
+                    Matchers.equalTo(
+                        displayNameTest2
+                    )
+                )
+            )
+        )
+        onView(withId(R.id.id_profile_email_edittext)).check(
+            matches(
+                withText(
+                    Matchers.equalTo(
+                        emailTest2
+                    )
+                )
+            )
+        )
     }
 
     private fun initDBTests() {
@@ -378,30 +427,29 @@ class ProfileLoginFragmentTests {
 
     @Test
     fun ifNotInDbAddIt() {
-        val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
-
         initDBTests()
         //Mock the in database method, to return false
         val endingRequestInDatabase = Observable<Boolean>()
         When(
             mockedUserDatabase.inDatabase(
-                loginFragment.inDbObservable,
-                uidTest
+                anyOrNull(),
+                anyOrNull()
             )
-        ).thenAnswer { _ ->
-            loginFragment.inDbObservable.postValue(false)
-            endingRequestInDatabase
+        ).thenAnswer {
+            Observable(false)
         }
 
-        val endingRequestFirstConnection = Observable<Boolean>()
+        When(mockedDatabase.currentUser).thenReturn(UserEntity("uid"))
         var accountCreated = false
+        val endingRequestFirstConnection = Observable<Boolean>()
+
         //Mock the firstConnexion method so that it sets the boolean to true if called
         When(
             mockedUserDatabase.firstConnexion(
-                loginFragment.currentUser!!
+                anyOrNull()
             )
-        ).thenAnswer { _ ->
+        ).thenAnswer {
             accountCreated = true
             endingRequestFirstConnection
         }
@@ -423,7 +471,7 @@ class ProfileLoginFragmentTests {
         endingRequestInDatabase.postValue(true)
         //Notify that the firstConnection request was successfully performed
         endingRequestFirstConnection.postValue(true)
-        //Notify that the getUserAInformation request was successfully performed
+        //Notify that the getUserInformation request was successfully performed
         endingRequest.postValue(true)
 
         //Wait enough time for the boolean to be set correctly
@@ -431,66 +479,60 @@ class ProfileLoginFragmentTests {
         while (!accountCreated && i++ < 5) {
             Thread.sleep(1000)
         }
+
         assert(accountCreated)
         assert(i < 5)
     }
 
     @Test
     fun ifInDbDoNotAddIt() {
-
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
         initDBTests()
 
-        val endingRequestFirstConnection = Observable<Boolean>()
-        var accountNotCreated = true
+        var accountCreated = false
 
         //Mock the firstConnexion method so that it sets the boolean to false if called
         When(
             mockedUserDatabase.firstConnexion(
-                loginFragment.currentUser!!
+                anyOrNull()
             )
-        ).thenAnswer { _ ->
-            accountNotCreated = false
-            endingRequestFirstConnection
+        ).thenAnswer {
+            accountCreated = true
+            Observable(true)
         }
 
         //Mock the getInformation method to be able to launch the Profile Fragment
         When(
             mockedUserDatabase.getUserInformation(
-                profileFragment.userInfoLiveData,
-                uidTest
+                anyOrNull(),
+                anyOrNull()
             )
-        ).thenAnswer { _ ->
+        ).thenAnswer {
             profileFragment.userInfoLiveData.postValue(user)
-            endingRequest
+            Observable(true)
         }
 
         loginDirectly(loginFragment, R.id.id_btn_login_button)
-        //Notify that the firstConnection request was successfully performed
-        endingRequestFirstConnection.postValue(true)
-        //Notify that the getUserAInformation request was successfully performed
-        endingRequest.postValue(true)
 
-        //Wait enough time
+        // Wait enough time
         Thread.sleep(3000)
-        assert(accountNotCreated)
+        assert(!accountCreated)
     }
 
     @Test
     fun ifIssueWithCommunicationDoesNothing() {
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         initDBTests()
-
-        val endingRequestFirstConnection = Observable<Boolean>()
+        When(mockedDatabase.currentUser).thenReturn(UserEntity("uid"))
 
         //Mock the firstConnexion method so that it sets the boolean to false if called
         When(
             mockedUserDatabase.firstConnexion(
-                loginFragment.currentUser!!
+                anyOrNull()
             )
         ).thenAnswer {
-            endingRequestFirstConnection
+            Observable(false)
         }
 
         When(
@@ -503,8 +545,6 @@ class ProfileLoginFragmentTests {
             endingRequest
         }
         onView(withId(R.id.id_btn_login_button)).perform(click())
-        //Notify that the firstConnection request was successfully performed
-        endingRequestFirstConnection.postValue(false)
         //Notify that the getUserAInformation request was successfully performed
         endingRequest.postValue(false)
         Thread.sleep(2000)
@@ -600,7 +640,7 @@ class ProfileLoginFragmentTests {
 
 
     @Test
-    fun nullUserRedirectToLoginFragment(){
+    fun nullUserRedirectToLoginFragment() {
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         loginFragment.currentUser = null
         When(mockedDatabase.currentUser).thenReturn(null)
