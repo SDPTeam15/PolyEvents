@@ -2,9 +2,13 @@ package com.github.sdpteam15.polyevents.model.map
 
 import android.content.Context
 import android.graphics.Color
+import android.util.Log
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.entity.Zone
+import com.github.sdpteam15.polyevents.model.map.GoogleMapMode.DEFAULT_ZONE_STROKE_COLOR
+import com.github.sdpteam15.polyevents.model.map.GoogleMapMode.colorAreas
 import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementActivity
+import com.github.sdpteam15.polyevents.view.fragments.MapsFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.Polygon
@@ -139,6 +143,12 @@ object ZoneAreaMapHelper {
      * Clears the temporary variables to have a clean start for editing the area
      */
     fun createNewArea(context: Context?) {
+        //If in delete mode, deactivate delete mode
+        if(deleteMode)
+            deleteMode(context)
+        //If in edit mode, deactivate edit mode
+        if(editMode)
+            editMode(context)
         clearTemp()
         setupEditZone(context, GoogleMapHelper.map!!.cameraPosition!!.target)
     }
@@ -159,7 +169,7 @@ object ZoneAreaMapHelper {
 
             }
             addArea(context, id, Pair(tempPoly!!.points, null), name)
-            GoogleMapMode.colorAreas(
+            colorAreas(
                 editingZone!!,
                 GoogleMapMode.EDITED_ZONE_STROKE_COLOR
             )
@@ -167,24 +177,35 @@ object ZoneAreaMapHelper {
         clearTemp()
     }
 
-    /*
-    TODO : Implement the deletion of one area while editing
-    fun deleteMode(context: Context) {
-        Log.d("DELETE AREA", "Area delete mode = $deleteMode")
-        editMode = false
-        deleteMode = !deleteMode
-        if (deleteMode) {
-            for (a in areasPoints) {
-                tempValues[a.key] = Pair(a.value.second.title, a.value.second.position)
-                a.value.second.remove()
+    /**
+     * Activate/Deactivate the delete mode
+     */
+    fun deleteMode(context: Context?) {
+        //If in edit mode, deactivate edit mode
+        if(editMode)
+            editMode(context)
+
+        //If a polygon was being created, then removes it, else changes the deletion mode
+        if(tempPoly != null){
+            tempPoly!!.remove()
+            clearTemp()
+        }else{
+            deleteMode = !deleteMode
+            MapsFragment.instance?.switchIconDeleteArea()
+
+            //If already in delete mode, restores the map else prepare for deletion
+            if (deleteMode) {
+                for (a in areasPoints) {
+                    tempValues[a.key] = Pair(a.value.second.title, a.value.second.position)
+                    a.value.second.remove()
+                }
+                colorAreas(editingZone!!, Color.RED)
+            } else {
+                colorAreas(editingZone!!, DEFAULT_ZONE_STROKE_COLOR)
+                restoreMarkers(context)
             }
-            colorAreas(editingZone!!, Color.RED)
-        } else {
-            colorAreas(editingZone!!, DEFAULT_ZONE_STROKE_COLOR)
-            restoreMarkers(context)
         }
     }
-    */
 
     /**
      * Saves an area
@@ -563,6 +584,7 @@ object ZoneAreaMapHelper {
     fun removeArea(id: Int) {
         areasPoints[id] ?: return
         zonesToArea[areasPoints[id]!!.first]!!.second.remove(id)
+        tempValues.remove(id)
         areasPoints[id]!!.second.remove()
         areasPoints[id]!!.third.remove()
         areasPoints.remove(id)
@@ -594,22 +616,26 @@ object ZoneAreaMapHelper {
      * Switches the edit mode, and remove/recreates the markers for edition purpose
      */
     fun editMode(context: Context?) {
+        //If in delete mode, deactivate delete mode
+        if(deleteMode)
+            deleteMode(context)
         editMode = !editMode
-        deleteMode = false
+
+        //If already in edit mode, restores the map to go outside of edit mode, else prepare for edition
         if (editMode) {
             for (a in areasPoints) {
                 tempValues[a.key] =
                     Pair(a.value.second.title, a.value.second.position)
                 a.value.second.remove()
             }
-            GoogleMapMode.colorAreas(
+            colorAreas(
                 editingZone!!,
                 GoogleMapMode.EDITED_ZONE_STROKE_COLOR
             )
         } else {
-            GoogleMapMode.colorAreas(
+            colorAreas(
                 editingZone!!,
-                GoogleMapMode.DEFAULT_ZONE_STROKE_COLOR
+                DEFAULT_ZONE_STROKE_COLOR
             )
             restoreMarkers(context)
         }
