@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -35,7 +34,8 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/id_modify_request"
                 app:layout_constraintTop_toBottomOf="@+id/id_modify_request"
-                app:srcCompat="@drawable/ic_clear" />
+                app:srcCompat="@drawable/ic_clear"
+                tools:ignore="ContentDescription" />
 
             <TextView
                 android:id="@+id/id_request_organiser"
@@ -97,7 +97,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
 
-                app:srcCompat="@drawable/ic_baseline_check_24" />
+                app:srcCompat="@drawable/ic_baseline_check_24"
+                tools:ignore="ContentDescription" />
 
 
             <TextView

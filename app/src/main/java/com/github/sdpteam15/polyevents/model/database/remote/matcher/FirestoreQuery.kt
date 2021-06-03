@@ -53,8 +53,4 @@ class FirestoreQuery(private val query: com.google.firebase.firestore.Query) : Q
     override fun whereLessThanOrEqualTo(key: String, value: Any) = FirestoreQuery(
         query.whereLessThanOrEqualTo(key, value)
     )
-
-    override fun orderBy(key: String) = FirestoreQuery(
-        query.orderBy(key)
-    )
 }

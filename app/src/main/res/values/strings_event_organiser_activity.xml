@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+
     <!-- MyItemRequestsActivity -->
     <string name="my_item_requests">My item requests</string>
     <string name="pending_requests">Pending requests</string>
@@ -25,5 +27,6 @@
     <!-- MyEventEditRequest -->
     <string name="fail_to_get_list_events_edits_eo">Failed to get the list of event edit requests</string>
     <string name="fail_to_get_list_event_eo">Failed to get the list of events</string>
+
 
 </resources>

@@ -97,13 +97,4 @@ interface Query {
      * @return The created Query.
      */
     fun whereLessThanOrEqualTo(key: String, value: Any): Query
-
-    /**
-     * Creates and returns a new Query that's additionally sorted by the specified field.
-     *
-     * @param key The field to sort by.
-     * @return The created Query.
-     */
-    @Deprecated("To remove because Firestore needs index")
-    fun orderBy(key: String): Query
 }

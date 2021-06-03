@@ -468,4 +468,50 @@ class ObservableListTest {
         }
         observable.updateAll(to)
     }
+
+    @Test
+    fun sortAndLimitFrom() {
+        val observableSorted = ObservableList<String>()
+        var observable = observableSorted.sortAndLimitFrom(
+            null, 4
+        ) { it }
+        observable.addAll(
+            listOf(
+                "B",
+                "A",
+                "G",
+                "C",
+                "F",
+                "H",
+                "B",
+            )
+        )
+        assertEquals(
+            "ObservableList[Observable'A', Observable'B', Observable'B', Observable'C']",
+            observableSorted.toString()
+        )
+
+        val mockedLifecycleOwner = Mockito.mock(LifecycleOwner::class.java)
+        val mockedLifecycle = Mockito.mock(Lifecycle::class.java)
+        Mockito.`when`(mockedLifecycleOwner.lifecycle).thenReturn(mockedLifecycle)
+
+        observable = observableSorted.sortAndLimitFrom(
+            mockedLifecycleOwner, 4
+        ) { it }
+        observable.addAll(
+            listOf(
+                "B",
+                "A",
+                "G",
+                "C",
+                "F",
+                "H",
+                "B",
+            )
+        )
+        assertEquals(
+            "ObservableList[Observable'A', Observable'B', Observable'B', Observable'C']",
+            observableSorted.toString()
+        )
+    }
 }

@@ -146,7 +146,7 @@ class EventManagementActivity : AppCompatActivity() {
         }
 
         // Get all zones from the database or redirect if there is a problem
-        currentDatabase.zoneDatabase.getAllZones(null, null, zoneObserver).observe(this) {
+        currentDatabase.zoneDatabase.getAllZones(zoneObserver).observe(this) {
             if (!it.value) {
                 HelperFunctions.showToast(getString(R.string.failed_get_zones), this)
                 finish()
