@@ -131,7 +131,7 @@ class ZoneManagementListTest {
         Espresso.onView(ViewMatchers.withId(R.id.btnRedirectZoneManagement))
         Espresso.onView(ViewMatchers.withId(R.id.id_fragment_home_admin))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-    }*/
+    }
 
     @Test
     fun canDeleteZone(){
@@ -152,5 +152,5 @@ class ZoneManagementListTest {
             )
         )
         Intents.intended(IntentMatchers.hasExtra(EXTRA_ID,"zid1"))
-    }
+    }*/
 }
