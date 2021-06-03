@@ -495,7 +495,12 @@ class GoogleMapHelperTest {
         ZoneAreaMapHelper.areasPoints.clear()
         ZoneAreaMapHelper.zonesToArea.clear()
         ZoneAreaMapHelper.editingZone = null
-        GoogleMapOptions.setUpMap(null, false)
+        GoogleMapOptions.setUpMap(null, false, MapsFragmentMod.Visitor)
+        GoogleMapHelper.uidZone = 0
+        ZoneAreaMapHelper.areasPoints.clear()
+        ZoneAreaMapHelper.zonesToArea.clear()
+        ZoneAreaMapHelper.editingZone = null
+        GoogleMapOptions.setUpMap(null, false, MapsFragmentMod.EditZone)
     }
 
     @Test
