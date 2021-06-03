@@ -34,7 +34,8 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
                 addUserProfileAndAddToUser(
                     UserProfile(
                         profileName = user.name,
-                        userRole = UserRole.PARTICIPANT
+                        userRole = UserRole.PARTICIPANT,
+                        defaultProfile = true
                     ), user
                 ).observeOnce {
                     user.loadSuccess = false

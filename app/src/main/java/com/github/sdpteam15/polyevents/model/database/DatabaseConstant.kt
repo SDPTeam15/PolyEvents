@@ -83,6 +83,7 @@ object DatabaseConstant {
         PROFILE_ID("pid"),
         PROFILE_NAME("name"),
         PROFILE_RANK("rank"),
+        PROFILE_DEFAULT("default"),
         PROFILE_USERS("users");
 
         override fun toString(): String = value

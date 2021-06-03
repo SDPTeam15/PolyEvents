@@ -17,6 +17,7 @@ object ProfileAdapter : AdapterInterface<UserProfile> {
             PROFILE_ID.value to element.pid,
             PROFILE_NAME.value to element.profileName,
             PROFILE_RANK.value to element.userRole.userRole,
+            PROFILE_DEFAULT.value to element.defaultProfile,
             PROFILE_USERS.value to element.users
         )
 
@@ -26,6 +27,7 @@ object ProfileAdapter : AdapterInterface<UserProfile> {
         userRole = if ((document[PROFILE_RANK.value] as String?) != null)
             UserRole.fromString(document[PROFILE_RANK.value] as String) ?: UserRole.PARTICIPANT
         else UserRole.PARTICIPANT,
+        defaultProfile = (document[PROFILE_DEFAULT.value] as Boolean?)?:false,
         users = (document[PROFILE_USERS.value] as List<String>).toMutableList()
     )
 }
