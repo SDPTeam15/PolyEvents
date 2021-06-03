@@ -133,7 +133,7 @@ class EditProfileActivity : AppCompatActivity() {
             UserRole.STAFF -> resources.getStringArray(R.array.Ranks)[2]
             UserRole.PARTICIPANT -> resources.getStringArray(R.array.Ranks)[3]
         }
-    }
+
 
     private fun stringToRank(rank: String): UserRole {
         when (rank) {
