@@ -12,6 +12,7 @@ import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.map.ZoneAreaMapHelper
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.adapter.ZoneItemAdapter
 
 
 class ZoneManagementListActivity : AppCompatActivity() {
@@ -30,6 +31,7 @@ class ZoneManagementListActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         recyclerView = findViewById(R.id.recycler_zones_list)
 
+
         val openZone = { zone: Zone ->
             startActivityZone(zone.zoneId!!)
         }
@@ -43,7 +45,7 @@ class ZoneManagementListActivity : AppCompatActivity() {
             )
         }
 
-        println(Database.currentDatabase)
+        recyclerView.adapter = ZoneItemAdapter(zones, openZone, deleteZone)
         Database.currentDatabase.zoneDatabase.getAllZones(
             zones.sortAndLimitFrom(this) { it.zoneName },
             50

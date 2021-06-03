@@ -10,10 +10,13 @@ import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
+import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.sdpteam15.polyevents.HelperTestFunction
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.RecyclerViewItemCountAssertion
+import com.github.sdpteam15.polyevents.TestHelper
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
@@ -129,7 +132,7 @@ class ZoneManagementListTest {
         Espresso.onView(ViewMatchers.withId(R.id.id_fragment_home_admin))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
     }*/
-/*
+
     @Test
     fun canDeleteZone(){
         Espresso.onView(ViewMatchers.withId(R.id.recycler_zones_list)).perform(
@@ -137,10 +140,10 @@ class ZoneManagementListTest {
                 0, TestHelper.clickChildViewWithId(R.id.id_zone_remove_item)
             )
         )
-        Espresso.onView(ViewMatchers.withText("YES")).perform(click())
+        Espresso.onView(ViewMatchers.withText("YES")).inRoot(isDialog()).perform(click())
         Espresso.onView(ViewMatchers.withId(R.id.recycler_zones_list))
             .check(RecyclerViewItemCountAssertion(zones.size-1))
-    }*/
+    }
     @Test
     fun clickOnZoneLaunchCorrectActivity(){
         Espresso.onView(ViewMatchers.withId(R.id.recycler_zones_list)).perform(
