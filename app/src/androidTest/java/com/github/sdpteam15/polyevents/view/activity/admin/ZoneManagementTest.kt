@@ -60,7 +60,7 @@ class ZoneManagementTest {
         ActivityScenario.launch<ZoneManagementListActivity>(intent)
         ZoneManagementActivity.inTest = false
 
-        onView(withId(R.id.btnNewZone)).perform(click())
+        onView(withId(R.id.id_new_zone_button)).perform(click())
 
         onView(withId(R.id.id_zone_management_description_edittext))
             .perform(replaceText(""))

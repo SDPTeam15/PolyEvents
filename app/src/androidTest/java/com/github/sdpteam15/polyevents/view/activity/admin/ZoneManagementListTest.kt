@@ -106,7 +106,7 @@ class ZoneManagementListTest {
     @Test
     fun clickOnBtnCreateZoneLaunchCorrectActivityWithEmptyFields() {
         obsValue.postValue(true)
-        Espresso.onView(ViewMatchers.withId(R.id.btnNewZone)).perform(click())
+        Espresso.onView(ViewMatchers.withId(R.id.id_new_zone_button)).perform(click())
         Intents.intended(IntentMatchers.hasComponent(ZoneManagementActivity::class.java.name))
 
         Espresso.onView(ViewMatchers.withId(R.id.id_btn_manage))

@@ -66,7 +66,7 @@ class ZoneManagementListActivity : AppCompatActivity() {
         zones.observeAdd(this) { ZoneAreaMapHelper.importNewZone(this, it.value, false) }
 
 
-        findViewById<ImageButton>(R.id.btnNewZone).setOnClickListener {
+        findViewById<ImageButton>(R.id.id_new_zone_button).setOnClickListener {
             startActivityZone(NEW_ZONE)
         }
         //remove the zone from google map on remove
