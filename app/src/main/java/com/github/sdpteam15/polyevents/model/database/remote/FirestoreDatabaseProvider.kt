@@ -26,21 +26,21 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     val localCache by lazy { LocalCacheAdapter(this) }
 
     override var itemDatabase: ItemDatabaseInterface =
-        ItemDatabase(localCache)
+        ItemDatabase(this)
     override var zoneDatabase: ZoneDatabaseInterface =
-        ZoneDatabase(localCache)
+        ZoneDatabase(this)
     override var userDatabase: UserDatabaseInterface =
-        UserDatabase(localCache)
+        UserDatabase(this)
     override var heatmapDatabase: HeatmapDatabaseInterface =
-        HeatmapDatabase(localCache)
+        HeatmapDatabase(this)
     override var eventDatabase: EventDatabaseInterface =
-        EventDatabase(localCache)
+        EventDatabase(this)
     override var materialRequestDatabase: MaterialRequestDatabaseInterface =
-        MaterialRequestDatabase(localCache)
+        MaterialRequestDatabase(this)
     override var routeDatabase: RouteDatabaseInterface =
         RouteDatabase(localCache)
     override var userSettingsDatabase: UserSettingsDatabaseInterface =
-        UserSettingsDatabase(localCache)
+        UserSettingsDatabase(this)
 
     override val currentUserObservable = Observable<UserEntity>()
     private var loadSuccess: Boolean? = false

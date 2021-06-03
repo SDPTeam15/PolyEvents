@@ -375,7 +375,5 @@ object HelperFunctions {
 
     fun Any?.toLocalDateTime() = dateToLocalDateTime(this)
 
-    override infix fun LatLng.as(that:Class){
 
-    }
 }
