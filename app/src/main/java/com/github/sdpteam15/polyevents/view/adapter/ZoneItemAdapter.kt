@@ -33,7 +33,6 @@ class ZoneItemAdapter(
 
             btnRemove.setOnClickListener {
                 deleteListener(zone)
-                zones.remove(zone)
             }
             btnEdit.setOnClickListener {
                 listener(zone)
