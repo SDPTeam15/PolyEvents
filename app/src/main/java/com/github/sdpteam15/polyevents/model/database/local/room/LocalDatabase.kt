@@ -11,7 +11,10 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.Scope
 import com.github.sdpteam15.polyevents.model.database.local.dao.EventDao
 import com.github.sdpteam15.polyevents.model.database.local.dao.GenericEntityDao
+import com.github.sdpteam15.polyevents.model.database.local.dao.NotificationUidDao
 import com.github.sdpteam15.polyevents.model.database.local.dao.UserSettingsDao
+import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
+import com.github.sdpteam15.polyevents.model.database.local.entity.GenericEntity
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.entity.Event
@@ -19,6 +22,8 @@ import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
 import com.github.sdpteam15.polyevents.model.database.local.entity.GenericEntity
+import com.github.sdpteam15.polyevents.model.room.NotificationUid
+import com.github.sdpteam15.polyevents.model.room.UserSettings
 import com.github.sdpteam15.polyevents.model.database.local.entity.UserSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,9 +33,8 @@ import kotlinx.coroutines.launch
 // TODO: Firebase database objects are technically daos, consider refactoring?
 // TODO: when user logs in, should fetch all info to store in local db
 @Database(
-    entities = [EventLocal::class, UserSettings::class, GenericEntity::class],
-    version = 4,
-    exportSchema = false
+    entities = [EventLocal::class, UserSettings::class, NotificationUid::class, GenericEntity::class],
+    version = 6, exportSchema = false
 )
 @TypeConverters(HelperFunctions.Converters::class)
 abstract class LocalDatabase : RoomDatabase() {
@@ -43,6 +47,11 @@ abstract class LocalDatabase : RoomDatabase() {
      * Get the user settings Dao
      */
     abstract fun userSettingsDao(): UserSettingsDao
+
+    /**
+     * Get the dao for the notification uid.
+     */
+    abstract fun notificationUidDao(): NotificationUidDao
 
     /**
      * Get the GenericEntity Dao

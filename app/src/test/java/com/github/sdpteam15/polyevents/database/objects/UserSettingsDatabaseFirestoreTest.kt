@@ -9,6 +9,7 @@ import com.github.sdpteam15.polyevents.model.database.remote.objects.UserSetting
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication
+import com.github.sdpteam15.polyevents.model.room.UserSettings
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -22,7 +23,6 @@ class UserSettingsDatabaseFirestoreTest {
 
     @Before
     fun setup() {
-        PolyEventsApplication.inTest = true
         mockRemoteDatabase = HelperTestFunction.mockDatabaseInterface()
         mockUserSettingsDatabase = UserSettingsDatabase(mockRemoteDatabase)
 

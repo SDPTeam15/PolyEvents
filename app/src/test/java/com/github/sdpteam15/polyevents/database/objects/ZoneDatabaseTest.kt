@@ -37,7 +37,6 @@ class ZoneDatabaseTest {
 
     @Before
     fun setup() {
-        PolyEventsApplication.inTest = true
         user = UserEntity(
             uid = uidTest,
             name = displayNameTest,

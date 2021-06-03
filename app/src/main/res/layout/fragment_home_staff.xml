@@ -49,13 +49,13 @@
             android:layout_marginEnd="15dp"
             android:backgroundTint="@color/white"
             android:drawableTop="@drawable/ic_requests"
-            android:drawableTint="@color/purple_500"
+            android:drawableTint="@color/primary_variant"
             android:text="@string/items_requests_button_text"
 
             android:paddingHorizontal="25dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/purple_500"
-            app:strokeColor="@color/purple_500"
+            android:textColor="@color/primary_variant"
+            app:strokeColor="@color/primary_variant"
             app:strokeWidth="2dp"
             tools:ignore="ButtonStyle" />
 

@@ -1,7 +1,7 @@
 package com.github.sdpteam15.polyevents.model.database.remote.adapter
 
-import com.github.sdpteam15.polyevents.model.database.local.entity.UserSettings
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.UserSettingsConstant.*
+import com.github.sdpteam15.polyevents.model.room.UserSettings
 
 /**
  * A class for converting between user setting entities in our code and

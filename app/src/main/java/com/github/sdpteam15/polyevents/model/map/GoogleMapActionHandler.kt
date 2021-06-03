@@ -1,7 +1,6 @@
 package com.github.sdpteam15.polyevents.model.map
 
 import android.content.Context
-import android.view.View
 import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner

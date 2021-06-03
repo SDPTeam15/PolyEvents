@@ -68,7 +68,7 @@ class EventEditAdapterTest {
             event.adminMessage
         )
         assertEquals(
-            document[DatabaseConstant.EventConstant.EVENT_DOCUMENT_ID.value],
+            document[EVENT_DOCUMENT_ID.value],
             event.eventId
         )
         assertEquals(
