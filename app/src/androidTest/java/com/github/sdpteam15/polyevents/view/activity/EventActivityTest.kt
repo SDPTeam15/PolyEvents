@@ -673,7 +673,6 @@ class EventActivityTest {
         assert(retrievedEventsAfterUnfollow.isEmpty())
     }
 
-
     /**
      * Idea taken from StackOverflow
      * https://stackoverflow.com/questions/25209508/how-to-set-a-specific-rating-on-ratingbar-in-espresso/25226081
@@ -716,7 +715,4 @@ class EventActivityTest {
         )
         assertEquals(eventLocalWithCommonAttributes, EventLocal.fromEvent(event))
     }
-
-
 }
-
