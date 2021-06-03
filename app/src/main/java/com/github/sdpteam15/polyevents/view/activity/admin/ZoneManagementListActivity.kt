@@ -41,7 +41,10 @@ class ZoneManagementListActivity : AppCompatActivity() {
             HelperFunctions.showAlertDialog(
                 this, getString(R.string.message_confirm_delete_zone_title, zone.zoneName),
                 getString(R.string.message_confirm_delete_title),
-                { DatabaseHelper.deleteZone(zone) }
+                {
+                    DatabaseHelper.deleteZone(zone)
+                    zones.remove(zone)
+                }
             )
         }
 
