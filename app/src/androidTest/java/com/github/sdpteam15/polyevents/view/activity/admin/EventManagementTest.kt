@@ -3,6 +3,7 @@ package com.github.sdpteam15.polyevents.view.activity.admin
 import android.content.Intent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -20,7 +21,6 @@ import com.github.sdpteam15.polyevents.model.database.remote.objects.ZoneDatabas
 import com.github.sdpteam15.polyevents.model.entity.*
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import com.github.sdpteam15.polyevents.view.adapter.EventListAdapter
 import org.hamcrest.CoreMatchers
@@ -169,11 +169,13 @@ class EventManagementTest {
 
     private fun closeKeyboard() {
         closeSoftKeyboard()
+        Espresso.closeSoftKeyboard()
         onView(isRoot()).perform(closeSoftKeyboard())
     }
 
     private fun clickAndCheckNotRedirect() {
         closeKeyboard()
+        Thread.sleep(100)
         onView(withId(R.id.btnManageEvent)).perform(scrollTo(), click())
     }
 
@@ -227,7 +229,10 @@ class EventManagementTest {
         clickAndCheckNotRedirect()
         onView(withId(R.id.eventManagementNameField)).perform(scrollTo(), replaceText(eventName))
         clickAndCheckNotRedirect()
-        onView(withId(R.id.eventManagementDescriptionField)).perform(scrollTo(),replaceText(eventDesc))
+        onView(withId(R.id.eventManagementDescriptionField)).perform(
+            scrollTo(),
+            replaceText(eventDesc)
+        )
         clickAndCheckNotRedirect()
         closeKeyboard()
         onView(withId(R.id.swtLimitedEvent)).perform(click())
@@ -266,7 +271,10 @@ class EventManagementTest {
         clickAndCheckNotRedirect()
         onView(withId(R.id.eventManagementNameField)).perform(scrollTo(), replaceText(eventName))
         clickAndCheckNotRedirect()
-        onView(withId(R.id.eventManagementDescriptionField)).perform(scrollTo(), replaceText(eventDesc))
+        onView(withId(R.id.eventManagementDescriptionField)).perform(
+            scrollTo(),
+            replaceText(eventDesc)
+        )
         clickAndCheckNotRedirect()
         closeKeyboard()
         onView(withId(R.id.swtLimitedEvent)).perform(click())

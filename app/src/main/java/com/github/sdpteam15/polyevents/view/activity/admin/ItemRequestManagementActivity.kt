@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
 import com.github.sdpteam15.polyevents.model.entity.UserEntity

@@ -22,7 +22,7 @@ class StaffHomeFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val viewRoot = inflater.inflate(R.layout.fragment_home_staff, container, false)
         MainActivity.instance!!.switchRoles(
             viewRoot!!.findViewById(R.id.spinner_staff),

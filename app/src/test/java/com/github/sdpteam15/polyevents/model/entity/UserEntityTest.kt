@@ -6,7 +6,6 @@ import java.time.LocalDate
 import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 class UserEntityTest {
     lateinit var user: UserEntity
@@ -22,8 +21,6 @@ class UserEntityTest {
         profileName = "adminProfile",
         userRole = UserRole.ADMIN
     )
-
-    val currentDate = birthDate
 
     // TODO: add more profile related tests
 
@@ -67,10 +64,4 @@ class UserEntityTest {
         assertEquals(birthDate, user.birthDate)
         assertEquals(email, user.email)
     }
-
-    @Test
-    fun testIfUserIsAdmin() {
-        assertTrue(user.isAdmin())
-    }
-
 }

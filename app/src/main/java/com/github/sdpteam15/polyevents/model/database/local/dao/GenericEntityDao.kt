@@ -2,8 +2,8 @@ package com.github.sdpteam15.polyevents.model.database.local.dao
 
 import androidx.room.*
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.apply
-import com.github.sdpteam15.polyevents.model.database.local.entity.GenericEntity
 import com.github.sdpteam15.polyevents.model.database.local.adapter.LocalAdapter
+import com.github.sdpteam15.polyevents.model.database.local.entity.GenericEntity
 
 /**
  * Data access object for the GenericEntity entity on the local room database

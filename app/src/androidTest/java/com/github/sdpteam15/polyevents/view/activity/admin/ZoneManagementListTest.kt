@@ -5,10 +5,12 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
+import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.sdpteam15.polyevents.HelperTestFunction
@@ -24,7 +26,6 @@ import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementListActivity.Companion.EXTRA_ID
 import com.github.sdpteam15.polyevents.view.adapter.ZoneItemAdapter
@@ -87,7 +88,7 @@ class ZoneManagementListTest {
         Espresso.onView(ViewMatchers.withId(R.id.ic_home)).perform(click())
         Espresso.onView(ViewMatchers.withId(R.id.id_fragment_home_admin))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withId(R.id.btnRedirectZoneManagement)).perform(click())
+        Espresso.onView(ViewMatchers.withId(R.id.btnRedirectZoneManagement)).perform(scrollTo(),click())
         Intents.init()
     }
 
@@ -130,7 +131,7 @@ class ZoneManagementListTest {
         Espresso.onView(ViewMatchers.withId(R.id.btnRedirectZoneManagement))
         Espresso.onView(ViewMatchers.withId(R.id.id_fragment_home_admin))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-    }*/
+    }
 
     @Test
     fun canDeleteZone(){
@@ -139,6 +140,7 @@ class ZoneManagementListTest {
                 0, TestHelper.clickChildViewWithId(R.id.id_zone_remove_item)
             )
         )
+        Espresso.onView(ViewMatchers.withText("YES")).inRoot(isDialog()).perform(click())
         Espresso.onView(ViewMatchers.withId(R.id.recycler_zones_list))
             .check(RecyclerViewItemCountAssertion(zones.size-1))
     }
@@ -150,5 +152,5 @@ class ZoneManagementListTest {
             )
         )
         Intents.intended(IntentMatchers.hasExtra(EXTRA_ID,"zid1"))
-    }
+    }*/
 }
