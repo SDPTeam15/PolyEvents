@@ -99,10 +99,10 @@ class MyEventEditManagementTest {
         }
         val intent = Intent(
             ApplicationProvider.getApplicationContext(),
-            EventManagementActivityProvider::class.java
+            MyEventEditsActivity::class.java
         )
         Database.currentDatabase = mockedDb
-        ActivityScenario.launch<EventManagementActivityProvider>(intent)
+        ActivityScenario.launch<MyEventEditsActivity>(intent)
     }
 
     @After
@@ -146,7 +146,7 @@ class MyEventEditManagementTest {
     fun clickOnModifyLaunchCorrectActivity() {
         Thread.sleep(1000)
         When(mockedEventDB.getEventEditFromId(anyOrNull(), anyOrNull())).thenAnswer {
-            (it.arguments[1] as Observable<Event>).postValue(eventEdit1)
+            (it.arguments[1] as? Observable<Event>)?.postValue(eventEdit1)
             Observable(true)
         }
         Intents.init()

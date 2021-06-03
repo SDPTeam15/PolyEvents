@@ -70,7 +70,7 @@ class HeatmapDatabase(private val db: DatabaseInterface) : HeatmapDatabaseInterf
             for (e in it.value)
                 list.add(e)
 
-            var dl = 0.0002
+            val dl = 0.0002
             for (i in 1..5) {
                 val latitude = Random.nextDouble(swBound.latitude, neBound.latitude)
                 val longitude = Random.nextDouble(swBound.longitude, neBound.longitude)

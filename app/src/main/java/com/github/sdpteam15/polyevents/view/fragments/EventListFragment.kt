@@ -67,7 +67,7 @@ class EventListFragment : Fragment() {
     ): View? {
         val fragmentView = inflater.inflate(R.layout.fragment_events, container, false)
 
-        localDatabase = (requireActivity().application as PolyEventsApplication).database
+        localDatabase = (requireActivity().application as PolyEventsApplication).localDatabase
         eventLocalViewModel = EventLocalViewModelFactory(
             localDatabase.eventDao()
         ).create(
@@ -172,7 +172,7 @@ class EventListFragment : Fragment() {
 
     private fun getEventsListAndDisplay(context: Context?) {
         // TODO: set limit or not?
-        currentDatabase.eventDatabase!!.getEvents(null, null, events).observe(this) {
+        currentDatabase.eventDatabase.getEvents(null, null, events).observe(this) {
             if (!it.value) {
                 showToast(getString(R.string.fail_to_get_information), context)
             } else {

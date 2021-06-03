@@ -1,10 +1,9 @@
 package com.github.sdpteam15.polyevents.model.database.local.dao
 
 import androidx.room.*
-import com.github.sdpteam15.polyevents.helper.HelperFunctions.thenReturn
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.apply
+import com.github.sdpteam15.polyevents.model.database.local.adapter.LocalAdapter
 import com.github.sdpteam15.polyevents.model.database.local.entity.GenericEntity
-import com.github.sdpteam15.polyevents.model.database.local.room.LocalAdapter
-import java.util.*
 
 /**
  * Data access object for the GenericEntity entity on the local room database
@@ -24,10 +23,22 @@ interface GenericEntityDao {
      * Get a element
      * @param id id of the element
      * @param collection collection where is the element
-     * @return the generic entity
+     * @return the generic entity in a list
      */
     @Query("SELECT * FROM entity_table WHERE id = :id AND collection = :collection ")
-    suspend fun get(id: String, collection: String): GenericEntity
+    suspend fun getList(id: String, collection: String): List<GenericEntity>
+
+    /**
+     * Get a element
+     * @param id id of the element
+     * @param collection collection where is the element
+     * @return the generic entity
+     */
+    suspend fun get(id: String, collection: String): GenericEntity? {
+        val list = getList(id, collection)
+        return if (list.isEmpty()) null
+        else list[0]
+    }
 
     /**
      * Insert a element
@@ -57,6 +68,13 @@ interface GenericEntityDao {
     suspend fun deleteAll()
 
     /**
+     * Delete all from the local cash in the collection
+     * @param collection collection to clean
+     */
+    @Query("DELETE FROM entity_table WHERE collection = :collection")
+    suspend fun deleteAll(collection: String)
+
+    /**
      * Get the last time the collection has been updated
      * @param collection the collection
      * @return serialized version of the date
@@ -64,15 +82,15 @@ interface GenericEntityDao {
     @Query("SELECT MAX(update_time) FROM entity_table WHERE collection = :collection")
     suspend fun lastUpdate(collection: String): String?
 
-
-    suspend
-            /**
-             * Get the last time the collection has been updated
-             * @param collection the collection
-             * @return the date
-             */
-    fun lastUpdateDate(collection: String): Date? =
-        lastUpdate(collection).thenReturn { LocalAdapter.SimpleDateFormat.parse(it) }
+    /**
+     * Get the last time the collection has been updated
+     * @param collection the collection
+     * @return the date
+     */
+    suspend fun lastUpdateDate(collection: String) =
+        lastUpdate(collection).apply {
+            LocalAdapter.SimpleDateFormat.parse(it)
+        }
 }
 
 

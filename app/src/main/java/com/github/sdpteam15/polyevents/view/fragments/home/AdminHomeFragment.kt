@@ -24,36 +24,39 @@ class AdminHomeFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val viewRoot = inflater.inflate(R.layout.fragment_home_admin, container, false)
-        viewRoot.findViewById<Button>(R.id.btnRedirectEventManager).setOnClickListener {
+        viewRoot.findViewById<Button>(R.id.id_event_manager_button).setOnClickListener {
             val intent = Intent(inflater.context, EventManagementListActivity::class.java)
             startActivity(intent)
         }
-        viewRoot.findViewById<Button>(R.id.btnRedirectUserManagement).setOnClickListener {
+        viewRoot.findViewById<Button>(R.id.id_user_management_button).setOnClickListener {
             val intent = Intent(inflater.context, UserManagementListActivity::class.java)
             startActivity(intent)
         }
-        viewRoot.findViewById<Button>(R.id.btnRedirectItemReqManagement).setOnClickListener {
+        viewRoot.findViewById<Button>(R.id.id_item_request_management_button).setOnClickListener {
             val intent = Intent(inflater.context, ItemRequestManagementActivity::class.java)
             startActivity(intent)
         }
-        viewRoot.findViewById<Button>(R.id.btnRedirectZoneManagement).setOnClickListener {
+        viewRoot.findViewById<Button>(R.id.id_zone_management_button).setOnClickListener {
             val intent = Intent(inflater.context, ZoneManagementListActivity::class.java)
             startActivity(intent)
         }
-        viewRoot.findViewById<Button>(R.id.btnRedirectRouteManager).setOnClickListener {
+        viewRoot.findViewById<Button>(R.id.id_route_manager_button).setOnClickListener {
             val intent = Intent(inflater.context, RouteManagementActivity::class.java)
             startActivity(intent)
         }
-        viewRoot.findViewById<Button>(R.id.btnRedirectItemsListManagement).setOnClickListener {
+        viewRoot.findViewById<Button>(R.id.id_items_list_management_button).setOnClickListener {
             val intent = Intent(inflater.context, ItemsAdminActivity::class.java)
             startActivity(intent)
         }
-        viewRoot.findViewById<Button>(R.id.btnRedirectEventEditManager).setOnClickListener {
+        viewRoot.findViewById<Button>(R.id.id_event_edit_button).setOnClickListener {
             val intent = Intent(inflater.context, EventEditManagementActivity::class.java)
             startActivity(intent)
         }
 
-        MainActivity.instance!!.switchRoles(viewRoot.findViewById(R.id.spinner_admin), UserRole.ADMIN)
+        MainActivity.instance!!.switchRoles(
+            viewRoot.findViewById(R.id.spinner_admin),
+            UserRole.ADMIN
+        )
         return viewRoot
     }
 }

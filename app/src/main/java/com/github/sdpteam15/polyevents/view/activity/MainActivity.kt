@@ -57,11 +57,10 @@ class MainActivity : AppCompatActivity() {
             }
 
         //Return CurrentUser if we are not in test, but we can use a fake user in test this way
-        var currentUser: UserEntity? = null
-            get() = field ?: currentDatabase.currentUser
-        var currentUserObservable: Observable<UserEntity>? = null
-            get() = field ?: currentDatabase.currentUserObservable
-
+        val currentUser: UserEntity?
+            get() = currentDatabase.currentUser
+        val currentUserObservable: Observable<UserEntity>
+            get() = currentDatabase.currentUserObservable
 
         var instance: MainActivity? = null
         var selectedRole: UserRole? = null
@@ -76,6 +75,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        PolyEventsApplication.application.applicationScope.launch {
+            PolyEventsApplication.application.localDatabase.genericEntityDao().deleteAll()
+        }
+
         instance = this
         setContentView(R.layout.activity_main)
 
@@ -119,32 +123,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        //Set the basic fragment to the home one or to admin hub if it is logged in
-        //TODO Add a condition to see if the user is an admin or not and if so, redirect him to the admin hub
-        redirectHome()
-
-        //Add a listener to the menu to switch between fragments
-        findViewById<BottomNavigationView>(R.id.navigation_bar).setOnNavigationItemSelectedListener {
-            when (it.itemId) {
-                R.id.ic_map -> HelperFunctions.changeFragment(this, fragments[R.id.ic_map])
-                R.id.ic_list -> HelperFunctions.changeFragment(this, fragments[R.id.ic_list])
-                R.id.ic_login -> if (currentUser == null) {
-                    HelperFunctions.changeFragment(this, fragments[R.id.ic_login])
-                } else {
-                    HelperFunctions.changeFragment(this, fragments[R.id.id_fragment_profile])
-                }
-                R.id.ic_settings -> HelperFunctions.changeFragment(
-                    this,
-                    fragments[R.id.ic_settings]
-                )
-                else ->
-                    //TODO Add a condition to see if the user is an admin or not and if so, redirect him to the admin hub
-                    redirectHome()
-            }
-            true
-        }
-
-        currentUserObservable!!.observe(this) {
+        currentUserObservable.observe(this) {
             it.value.roles.observe(this) {
                 roles.clear()
                 val list = resources.getStringArray(R.array.Ranks).mapIndexed { index, value ->
@@ -167,6 +146,25 @@ class MainActivity : AppCompatActivity() {
                 roles.addAll(list)
             }
         }
+
+        redirectHome()
+
+        //Add a listener to the menu to switch between fragments
+        findViewById<BottomNavigationView>(R.id.navigation_bar).setOnNavigationItemSelectedListener {
+            when (it.itemId) {
+                R.id.ic_map -> HelperFunctions.changeFragment(this, fragments[R.id.ic_map])
+                R.id.ic_list -> HelperFunctions.changeFragment(this, fragments[R.id.ic_list])
+                R.id.ic_login -> if (currentUser == null) {
+                    HelperFunctions.changeFragment(this, fragments[R.id.ic_login])
+                } else {
+                    HelperFunctions.changeFragment(this, fragments[R.id.id_fragment_profile])
+                }
+                R.id.ic_settings -> HelperFunctions.changeFragment(this, fragments[R.id.ic_settings])
+                else ->
+                    redirectHome()
+            }
+            true
+        }
     }
 
     override fun onDestroy() {
@@ -175,6 +173,9 @@ class MainActivity : AppCompatActivity() {
         stopService(intent)
     }
 
+    /**
+     * This function redirect the user to the correct fragment depending on his selected role
+     */
     private fun redirectHome() {
         if (currentUser == null) {
             selectedRole = UserRole.PARTICIPANT
@@ -200,6 +201,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private var roles = ObservableList<Pair<String, UserRole>>()
+
+    /**
+     * Switch the role of the user and the corresponding fragment
+     * @param spinner The spinner to be updated
+     * @param role The new selected role
+     */
     fun switchRoles(spinner: Spinner, role: UserRole) {
         spinner.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {}

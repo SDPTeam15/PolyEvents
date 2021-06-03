@@ -41,7 +41,7 @@ object HelperTestFunction {
         Mockito.`when`(database.zoneDatabase).thenAnswer { zoneDatabase }
         Mockito.`when`(zoneDatabase.getAllZones(anyOrNull(), anyOrNull(), anyOrNull()))
             .thenAnswer {
-                val res = it!!.arguments[2] as ObservableList<Zone>
+                val res = it!!.arguments[0] as ObservableList<Zone>
                 res.add(
                     Zone(
                         "ID1",

@@ -11,15 +11,16 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
-import com.github.sdpteam15.polyevents.view.activity.activityprovider.EventManagementActivityProvider
+import com.github.sdpteam15.polyevents.view.activity.activityprovider.MyEventEditsActivity
 import com.github.sdpteam15.polyevents.view.activity.activityprovider.ItemRequestActivity
 import com.github.sdpteam15.polyevents.view.activity.activityprovider.MyItemRequestsActivity
 import com.github.sdpteam15.polyevents.view.activity.admin.EventManagementListActivity
 
 class ProviderHomeFragment : Fragment() {
-    companion object{
+    companion object {
         const val ID_USER = "id_user"
     }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -37,19 +38,22 @@ class ProviderHomeFragment : Fragment() {
             startActivity(intent)
         }
 
-        viewRoot.findViewById<Button>(R.id.btnRedirectProviderEditRequests).setOnClickListener {
-            val intent = Intent(activity, EventManagementActivityProvider::class.java)
+        viewRoot.findViewById<Button>(R.id.id_provider_edit_requests_button).setOnClickListener {
+            val intent = Intent(activity, MyEventEditsActivity::class.java)
             startActivity(intent)
         }
 
-        viewRoot.findViewById<Button>(R.id.btnRedirectEventManager).setOnClickListener {
+        viewRoot.findViewById<Button>(R.id.id_event_manager_button).setOnClickListener {
             val intent = Intent(activity, EventManagementListActivity::class.java)
-            intent.putExtra(EventManagementListActivity.ORGANISER_LIST,"organiser")
+            intent.putExtra(EventManagementListActivity.ORGANISER_LIST, "organiser")
             startActivity(intent)
         }
 
 
-        MainActivity.instance!!.switchRoles(viewRoot!!.findViewById(R.id.spinner_provider), UserRole.ORGANIZER)
+        MainActivity.instance!!.switchRoles(
+            viewRoot!!.findViewById(R.id.spinner_provider),
+            UserRole.ORGANIZER
+        )
         return viewRoot
     }
 }

@@ -43,7 +43,7 @@ class UserManagementListActivity : AppCompatActivity() {
      * Set observers and get users from database
      */
     private fun getListUsers() {
-        currentDatabase.userDatabase!!.getListAllUsers(users).observe {
+        currentDatabase.userDatabase.getListAllUsers(users).observe {
             if (it.value) {
                 recyclerView.adapter!!.notifyDataSetChanged()
             } else {

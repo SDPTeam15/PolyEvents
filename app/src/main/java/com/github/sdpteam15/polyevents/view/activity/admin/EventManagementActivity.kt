@@ -135,7 +135,7 @@ class EventManagementActivity : AppCompatActivity() {
         val adapter =
             ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, zoneName)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        findViewById<Spinner>(R.id.spinner_zone).adapter = adapter
+        findViewById<Spinner>(R.id.id_spinner_zone).adapter = adapter
 
         // Add all the zones retrieve from the database to the spinner
         zoneObserver.observeAdd(this) {
@@ -146,7 +146,7 @@ class EventManagementActivity : AppCompatActivity() {
         }
 
         // Get all zones from the database or redirect if there is a problem
-        currentDatabase.zoneDatabase!!.getAllZones(null, null, zoneObserver).observe(this) {
+        currentDatabase.zoneDatabase.getAllZones(zoneObserver).observe(this) {
             if (!it.value) {
                 HelperFunctions.showToast(getString(R.string.failed_get_zones), this)
                 finish()
@@ -162,7 +162,7 @@ class EventManagementActivity : AppCompatActivity() {
             findViewById<Spinner>(R.id.spinner_organiser).adapter = adapter2
 
             // Get all users from the database or redirect if there is a problem
-            currentDatabase.userDatabase!!.getListAllUsers(organiserObserver).observe(this) {
+            currentDatabase.userDatabase.getListAllUsers(organiserObserver).observe(this) {
                 if (!it.value) {
                     HelperFunctions.showToast(getString(R.string.failed_get_zones), this)
                     finish()
@@ -183,8 +183,8 @@ class EventManagementActivity : AppCompatActivity() {
      * Setup the lister on the switch limitedEvent
      */
     private fun setupSwitchListener() {
-        val nbpart = findViewById<EditText>(R.id.etNbPart)
-        findViewById<Switch>(R.id.swtLimitedEvent).setOnCheckedChangeListener { _, isChecked ->
+        val nbpart = findViewById<EditText>(R.id.it_et_nb_part)
+        findViewById<Switch>(R.id.id_swt_limited_event).setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 nbpart.visibility = View.VISIBLE
                 nbpart.setText(defaultPartNb)
@@ -199,16 +199,16 @@ class EventManagementActivity : AppCompatActivity() {
      * Add the listeners to the dialog buttons
      */
     private fun setButtonListener() {
-        findViewById<Button>(R.id.btnStartDate).setOnClickListener {
+        findViewById<Button>(R.id.id_start_date_button).setOnClickListener {
             dialogStartDate.show()
         }
-        findViewById<Button>(R.id.btnEndDate).setOnClickListener {
+        findViewById<Button>(R.id.id_btn_end_date).setOnClickListener {
             dialogEndDate.show()
         }
-        findViewById<Button>(R.id.btnStartTime).setOnClickListener {
+        findViewById<Button>(R.id.id_start_time_button).setOnClickListener {
             dialogStartTime.show()
         }
-        findViewById<Button>(R.id.btnEndTime).setOnClickListener {
+        findViewById<Button>(R.id.id_btn_end_time).setOnClickListener {
             dialogEndTime.show()
         }
     }
@@ -219,20 +219,20 @@ class EventManagementActivity : AppCompatActivity() {
      */
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     private fun setupViewInActivity(onCallback: Boolean) {
-        val btnManage = findViewById<Button>(R.id.btnManageEvent)
-        val switch = findViewById<Switch>(R.id.swtLimitedEvent)
-        val descET = findViewById<EditText>(R.id.eventManagementDescriptionField)
-        val nameET = findViewById<EditText>(R.id.eventManagementNameField)
-        val nbpart = findViewById<EditText>(R.id.etNbPart)
+        val btnManage = findViewById<Button>(R.id.id_manage_event_button)
+        val switch = findViewById<Switch>(R.id.id_swt_limited_event)
+        val descET = findViewById<EditText>(R.id.id_description_event_edittext)
+        val nameET = findViewById<EditText>(R.id.id_event_management_name_et)
+        val nbpart = findViewById<EditText>(R.id.it_et_nb_part)
         val tagsEt = findViewById<EditText>(R.id.event_management_tags_edit)
         val spinnerOrg = findViewById<Spinner>(R.id.spinner_organiser)
-        val spinnerZone = findViewById<Spinner>(R.id.spinner_zone)
+        val spinnerZone = findViewById<Spinner>(R.id.id_spinner_zone)
 
         if (isActivityProvider) {
             spinnerOrg.visibility =View.INVISIBLE
-            findViewById<TextView>(R.id.tvSpinnerOrganiser).visibility = View.INVISIBLE
+            findViewById<TextView>(R.id.id_tv_spinner_organiser).visibility = View.INVISIBLE
         } else {
-            findViewById<TextView>(R.id.tvSpinnerOrganiser).visibility = View.VISIBLE
+            findViewById<TextView>(R.id.id_tv_spinner_organiser).visibility = View.VISIBLE
             spinnerOrg.visibility =View.VISIBLE
         }
 
@@ -303,7 +303,7 @@ class EventManagementActivity : AppCompatActivity() {
      * If in edit mode, also get the event information
      */
     private fun manageButtonSetup() {
-        val btnManage = findViewById<Button>(R.id.btnManageEvent)
+        val btnManage = findViewById<Button>(R.id.id_manage_event_button)
         if (isCreation) {
             btnManage.setOnClickListener {
                 handleCreateClick()
@@ -314,7 +314,7 @@ class EventManagementActivity : AppCompatActivity() {
             }
             // Get the correct information depending on if we edit an event edit request
             if (isModificationActivityProvider) {
-                currentDatabase.eventDatabase!!.getEventEditFromId(curId, observableEvent)
+                currentDatabase.eventDatabase.getEventEditFromId(curId, observableEvent)
                     .observe(this) {
                         if (it.value) {
                             setupViewInActivity(true)
@@ -328,7 +328,7 @@ class EventManagementActivity : AppCompatActivity() {
                     }
             } else {
                 // Or if we edit an existing event
-                currentDatabase.eventDatabase!!.getEventFromId(curId, observableEvent)
+                currentDatabase.eventDatabase.getEventFromId(curId, observableEvent)
                     .observe(this) {
                         if (it.value) {
                             setupViewInActivity(true)
@@ -351,7 +351,7 @@ class EventManagementActivity : AppCompatActivity() {
     private fun handleCreateClick() {
         if (verifyCondition()) {
             if (isActivityProvider) {
-                currentDatabase.eventDatabase!!.createEventEdit(getInformation()).observe(this) {
+                currentDatabase.eventDatabase.createEventEdit(getInformation()).observe(this) {
                     redirectOrDisplayError(
                         getString(R.string.event_edit_request_successfully_sent),
                         getString(R.string.event_edit_request_error),
@@ -359,7 +359,7 @@ class EventManagementActivity : AppCompatActivity() {
                     )
                 }
             } else {
-                currentDatabase.eventDatabase!!.createEvent(getInformation()).observe(this) {
+                currentDatabase.eventDatabase.createEvent(getInformation()).observe(this) {
                     redirectOrDisplayError(
                         getString(R.string.event_creation_success),
                         getString(R.string.event_creation_failed),
@@ -377,7 +377,7 @@ class EventManagementActivity : AppCompatActivity() {
         if (verifyCondition()) {
             if (isActivityProvider) {
                 if (isModificationActivityProvider) {
-                    currentDatabase.eventDatabase!!.updateEventEdit(getInformation())
+                    currentDatabase.eventDatabase.updateEventEdit(getInformation())
                         .observe(this) {
                             redirectOrDisplayError(
                                 getString(R.string.event_edit_request_successfully_sent),
@@ -386,7 +386,7 @@ class EventManagementActivity : AppCompatActivity() {
                             )
                         }
                 } else {
-                    currentDatabase.eventDatabase!!.createEventEdit(getInformation())
+                    currentDatabase.eventDatabase.createEventEdit(getInformation())
                         .observe(this) {
                             redirectOrDisplayError(
                                 getString(R.string.event_edit_request_successfully_sent),
@@ -396,7 +396,7 @@ class EventManagementActivity : AppCompatActivity() {
                         }
                 }
             } else {
-                currentDatabase.eventDatabase!!.updateEvent(getInformation()).observe(this) {
+                currentDatabase.eventDatabase.updateEvent(getInformation()).observe(this) {
                     redirectOrDisplayError(
                         getString(R.string.event_update_success),
                         getString(R.string.failed_to_update_event_info),
@@ -442,12 +442,12 @@ class EventManagementActivity : AppCompatActivity() {
     private fun getInformation(): Event {
         val eventId: String? = if (isCreation) null else curId
 
-        val name = findViewById<EditText>(R.id.eventManagementNameField).text.toString()
-        val desc = findViewById<EditText>(R.id.eventManagementDescriptionField).text.toString()
-        val selectedZone = findViewById<Spinner>(R.id.spinner_zone).selectedItemPosition
+        val name = findViewById<EditText>(R.id.id_event_management_name_et).text.toString()
+        val desc = findViewById<EditText>(R.id.id_description_event_edittext).text.toString()
+        val selectedZone = findViewById<Spinner>(R.id.id_spinner_zone).selectedItemPosition
         val selectedOrganiser = findViewById<Spinner>(R.id.spinner_organiser).selectedItemPosition
-        val limitedEvent = findViewById<Switch>(R.id.swtLimitedEvent).isChecked
-        val nbParticipant = findViewById<EditText>(R.id.etNbPart).text.toString().toInt()
+        val limitedEvent = findViewById<Switch>(R.id.id_swt_limited_event).isChecked
+        val nbParticipant = findViewById<EditText>(R.id.it_et_nb_part).text.toString().toInt()
         val tags =
             if (findViewById<EditText>(R.id.event_management_tags_edit).text.toString() != "") {
                 findViewById<EditText>(R.id.event_management_tags_edit)
@@ -571,11 +571,11 @@ class EventManagementActivity : AppCompatActivity() {
      */
     private fun verifyCondition(): Boolean {
         var good = true
-        if (findViewById<EditText>(R.id.eventManagementNameField).text.toString() == "") {
+        if (findViewById<EditText>(R.id.id_event_management_name_et).text.toString() == "") {
             good = false
             HelperFunctions.showToast(getString(R.string.empty_name_field), this)
         }
-        if (findViewById<EditText>(R.id.eventManagementDescriptionField).text.toString() == "") {
+        if (findViewById<EditText>(R.id.id_description_event_edittext).text.toString() == "") {
             good = false
             HelperFunctions.showToast(getString(R.string.description_not_empty), this)
         }
@@ -585,8 +585,8 @@ class EventManagementActivity : AppCompatActivity() {
             HelperFunctions.showToast(getString(R.string.end_date_before_start_date), this)
         }
 
-        if (findViewById<Switch>(R.id.swtLimitedEvent).isChecked) {
-            if (findViewById<EditText>(R.id.etNbPart).text.toString()
+        if (findViewById<Switch>(R.id.id_swt_limited_event).isChecked) {
+            if (findViewById<EditText>(R.id.it_et_nb_part).text.toString()
                     .toInt() < MIN_PART_NB
             ) {
                 good = false

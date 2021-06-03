@@ -22,7 +22,7 @@ import com.github.sdpteam15.polyevents.view.activity.admin.EventManagementListAc
 import com.github.sdpteam15.polyevents.view.adapter.MyEventEditRequestAdapter
 import com.github.sdpteam15.polyevents.view.fragments.admin.EventEditDifferenceFragment
 
-class EventManagementActivityProvider : AppCompatActivity(), AdapterView.OnItemSelectedListener {
+class MyEventEditsActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     private var currentStatus: Event.EventStatus = Event.EventStatus.PENDING
 
@@ -142,9 +142,9 @@ class EventManagementActivityProvider : AppCompatActivity(), AdapterView.OnItemS
             }
         }
         //Gets the item request of the user and then gets the item list
-        currentDatabase.eventDatabase!!.getEvents(null, null, eventList).observe(this) {
+        currentDatabase.eventDatabase.getEvents(null, null, eventList).observe(this) {
             if (it.value) {
-                currentDatabase.eventDatabase!!.getEventEdits(
+                currentDatabase.eventDatabase.getEventEdits(
                     {
                         it.whereEqualTo(DatabaseConstant.EventConstant.EVENT_NAME.value, userId)
                     },
@@ -190,7 +190,7 @@ class EventManagementActivityProvider : AppCompatActivity(), AdapterView.OnItemS
      */
     private val cancelEventRequest = { event: Event ->
         val l =
-            currentDatabase.eventDatabase!!.removeEventEdit(event.eventEditId!!)
+            currentDatabase.eventDatabase.removeEventEdit(event.eventEditId!!)
         l.observe(this) {
             if (it.value)
                 eventRequests.remove(event)

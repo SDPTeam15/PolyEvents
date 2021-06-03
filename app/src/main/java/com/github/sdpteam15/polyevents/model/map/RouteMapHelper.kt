@@ -92,7 +92,7 @@ object RouteMapHelper {
         for (e in edges) e.splitOnIntersection(newEdges, removeEdges)
         for (e in zones) e.splitOnIntersection(newEdges, removeEdges)
 
-        return Database.currentDatabase.routeDatabase!!.updateEdges(
+        return Database.currentDatabase.routeDatabase.updateEdges(
             newEdges,
             removeEdges,
             edges,
@@ -105,7 +105,7 @@ object RouteMapHelper {
      * @param edge the line to add to the database
      */
     fun removeLine(edge: RouteEdge) =
-        Database.currentDatabase.routeDatabase!!.removeEdge(edge, edges, nodes)
+        Database.currentDatabase.routeDatabase.removeEdge(edge, edges, nodes)
 
     /**
      * Returns the shortest path from a point on the map to the given Zone
@@ -438,7 +438,7 @@ object RouteMapHelper {
         //Add a listener on edges and nodes adds to display
         val edgesToAdd = mutableListOf<RouteEdge>()
 
-        if (edges.isNotEmpty()) {
+        if (edges.isNotEmpty())
             synchronized(this) {
                 edges.toList().forEach {
                     if (it.start != null && it.end != null)
@@ -447,7 +447,6 @@ object RouteMapHelper {
                         edgesToAdd.add(it)
                 }
             }
-        }
 
         edges.observeAdd(lifecycleOwner) {
             synchronized(this) {
@@ -477,7 +476,7 @@ object RouteMapHelper {
                 }
             }
         }
-        return Database.currentDatabase.routeDatabase!!.getRoute(nodes, edges, zones)
+        return Database.currentDatabase.routeDatabase.getRoute(nodes, edges, zones)
     }
 
 

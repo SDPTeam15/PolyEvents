@@ -4,7 +4,7 @@ import com.github.sdpteam15.polyevents.model.database.remote.adapter.*
 
 const val TEST_STR = "STR"
 
-class StringWithID(val id: String, val string: String)
+data class StringWithID(val id: String, val string: String)
 
 /**
  * Constants of collection names and attribute names.
@@ -30,7 +30,7 @@ object DatabaseConstant {
 
 
         TEST_COLLECTION("test", object : AdapterInterface<StringWithID> {
-            override fun toDocument(element: StringWithID): HashMap<String, Any?> =
+            override fun toDocumentWithoutNull(element: StringWithID): HashMap<String, Any?> =
                 hashMapOf(TEST_STR to element.string)
 
             override fun fromDocument(

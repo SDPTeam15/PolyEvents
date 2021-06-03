@@ -22,9 +22,12 @@ class StaffHomeFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val viewRoot = inflater.inflate(R.layout.fragment_home_staff, container, false)
-        MainActivity.instance!!.switchRoles(viewRoot!!.findViewById(R.id.spinner_staff), UserRole.STAFF)
+        MainActivity.instance!!.switchRoles(
+            viewRoot!!.findViewById(R.id.spinner_staff),
+            UserRole.STAFF
+        )
         viewRoot.findViewById<Button>(R.id.id_deliveries_button).setOnClickListener {
             val intent = Intent(activity, StaffRequestsActivity::class.java)
             intent.putExtra(EXTRA_ID_USER_STAFF, Database.currentDatabase.currentUser!!.uid)

@@ -7,153 +7,165 @@
     android:layout_height="match_parent"
     tools:context=".view.fragments.home.AdminHomeFragment">
 
-    <Spinner
-        android:id="@+id/spinner_admin"
-        android:layout_width="120dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:entries="@array/Ranks"
-        app:layout_constraintBottom_toTopOf="@+id/textView3"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <ScrollView
+        android:id="@+id/scrollView2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:gravity="center"
-        android:text="@string/admin_hub_title"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <androidx.gridlayout.widget.GridLayout
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-
-        android:layout_marginTop="16dp"
-        app:alignmentMode="alignBounds"
-
-        app:columnCount="2"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3">
-
-        <Button
-            android:id="@+id/btnRedirectItemsListManagement"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
-            android:drawableTop="@drawable/ic_pencil_menu"
-            android:drawableTint="@color/purple_500"
-            android:gravity="center"
-            android:paddingHorizontal="25dp"
-            android:text="@string/admin_hub_btn_item_list_text"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/purple_500"
-            app:strokeColor="@color/purple_500"
-            app:strokeWidth="2dp" />
+            android:layout_height="wrap_content">
 
-        <Button
-            android:id="@+id/btnRedirectUserManagement"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:backgroundTint="@color/white"
-            android:drawableTop="@drawable/ic_account_circle"
-            android:drawableTint="@color/purple_500"
-            android:gravity="center"
-            android:paddingHorizontal="25dp"
-            android:text="@string/admin_hub_btn_user_text"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/purple_500"
-            app:strokeColor="@color/purple_500"
-            app:strokeWidth="2dp"
-            tools:ignore="ButtonStyle" />
+            <Spinner
+                android:id="@+id/spinner_admin"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:entries="@array/Ranks"
+                app:layout_constraintBottom_toTopOf="@+id/id_tv_fragment_admin_title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
-            android:id="@+id/btnRedirectEventManager"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
-            android:drawableTop="@drawable/ic_event"
-            android:drawableTint="@color/purple_500"
-            android:gravity="center"
-            android:paddingHorizontal="25dp"
-            android:text="@string/admin_hub_btn_event_text"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/purple_500"
-            app:strokeColor="@color/purple_500"
-            app:strokeWidth="2dp"
-            tools:ignore="ButtonStyle" />
 
-        <Button
-            android:id="@+id/btnRedirectEventEditManager"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
-            android:drawableTop="@drawable/ic_event"
-            android:drawableTint="@color/purple_500"
-            android:gravity="center"
-            android:paddingHorizontal="25dp"
-            android:text="@string/event_edit_btn_text"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/purple_500"
-            app:strokeColor="@color/purple_500"
-            app:strokeWidth="2dp"
-            tools:ignore="ButtonStyle" />
+            <TextView
+                android:id="@+id/id_tv_fragment_admin_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:gravity="center"
+                android:text="@string/admin_hub_title"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
-            android:id="@+id/btnRedirectZoneManagement"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
-            android:drawableTop="@drawable/ic_place"
-            android:drawableTint="@color/purple_500"
-            android:gravity="center"
-            android:paddingHorizontal="25dp"
-            android:text="@string/admin_hub_btn_zone_text"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/purple_500"
-            app:strokeColor="@color/purple_500"
-            app:strokeWidth="2dp"
-            tools:ignore="ButtonStyle" />
+            <androidx.gridlayout.widget.GridLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
 
-        <Button
-            android:id="@+id/btnRedirectItemReqManagement"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
-            android:drawableTop="@drawable/ic_pencil_menu"
-            android:drawableTint="@color/purple_500"
-            android:gravity="center"
-            android:paddingHorizontal="25dp"
-            android:text="@string/admin_hub_btn_item_request_text"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/purple_500"
-            app:strokeColor="@color/purple_500"
-            app:strokeWidth="2dp"
-            tools:ignore="ButtonStyle" />
+                android:layout_marginTop="16dp"
+                app:alignmentMode="alignBounds"
 
-        <Button
-            android:id="@+id/btnRedirectRouteManager"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
-            android:drawableTop="@drawable/ic_route"
-            android:drawableTint="@color/purple_500"
-            android:gravity="center"
-            android:paddingHorizontal="25dp"
-            android:text="@string/admin_hub_btn_route_text"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/purple_500"
-            app:strokeColor="@color/purple_500"
-            app:strokeWidth="2dp"
-            tools:ignore="ButtonStyle" />
-    </androidx.gridlayout.widget.GridLayout>
+                app:columnCount="2"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/id_tv_fragment_admin_title">
 
+                <Button
+                    android:id="@+id/id_items_list_management_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white"
+                    android:drawableTop="@drawable/ic_pencil_menu"
+                    android:drawableTint="@color/primary_variant"
+                    android:gravity="center"
+                    android:paddingHorizontal="25dp"
+                    android:text="@string/admin_hub_btn_item_list_text"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/primary_variant"
+                    app:strokeColor="@color/primary_variant"
+                    app:strokeWidth="2dp"
+                    tools:ignore="ButtonStyle" />
+
+                <Button
+                    android:id="@+id/id_user_management_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:backgroundTint="@color/white"
+                    android:drawableTop="@drawable/ic_account_circle"
+                    android:drawableTint="@color/primary_variant"
+                    android:gravity="center"
+                    android:paddingHorizontal="25dp"
+                    android:text="@string/admin_hub_btn_user_text"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/primary_variant"
+                    app:strokeColor="@color/primary_variant"
+                    app:strokeWidth="2dp"
+                    tools:ignore="ButtonStyle" />
+
+                <Button
+                    android:id="@+id/id_event_manager_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white"
+                    android:drawableTop="@drawable/ic_event"
+                    android:drawableTint="@color/primary_variant"
+                    android:gravity="center"
+                    android:paddingHorizontal="25dp"
+                    android:text="@string/admin_hub_btn_event_text"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/primary_variant"
+                    app:strokeColor="@color/primary_variant"
+                    app:strokeWidth="2dp"
+                    tools:ignore="ButtonStyle" />
+
+                <Button
+                    android:id="@+id/id_event_edit_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white"
+                    android:drawableTop="@drawable/ic_event"
+                    android:drawableTint="@color/primary_variant"
+                    android:gravity="center"
+                    android:paddingHorizontal="25dp"
+                    android:text="@string/event_edit_btn_text"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/primary_variant"
+                    app:strokeColor="@color/primary_variant"
+                    app:strokeWidth="2dp"
+                    tools:ignore="ButtonStyle" />
+
+                <Button
+                    android:id="@+id/id_zone_management_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white"
+                    android:drawableTop="@drawable/ic_place"
+                    android:drawableTint="@color/primary_variant"
+                    android:gravity="center"
+                    android:paddingHorizontal="25dp"
+                    android:text="@string/admin_hub_btn_zone_text"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/primary_variant"
+                    app:strokeColor="@color/primary_variant"
+                    app:strokeWidth="2dp"
+                    tools:ignore="ButtonStyle" />
+
+                <Button
+                    android:id="@+id/id_item_request_management_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white"
+                    android:drawableTop="@drawable/ic_pencil_menu"
+                    android:drawableTint="@color/primary_variant"
+                    android:gravity="center"
+                    android:paddingHorizontal="25dp"
+                    android:text="@string/admin_hub_btn_item_request_text"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/primary_variant"
+                    app:strokeColor="@color/primary_variant"
+                    app:strokeWidth="2dp"
+                    tools:ignore="ButtonStyle" />
+
+                <Button
+                    android:id="@+id/id_route_manager_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white"
+                    android:drawableTop="@drawable/ic_route"
+                    android:drawableTint="@color/primary_variant"
+                    android:gravity="center"
+                    android:paddingHorizontal="25dp"
+                    android:text="@string/admin_hub_btn_route_text"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/primary_variant"
+                    app:strokeColor="@color/primary_variant"
+                    app:strokeWidth="2dp"
+                    tools:ignore="ButtonStyle" />
+            </androidx.gridlayout.widget.GridLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

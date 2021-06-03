@@ -9,7 +9,7 @@ import androidx.core.app.AlarmManagerCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.model.room.NotificationUid
+import com.github.sdpteam15.polyevents.model.database.local.entity.NotificationUid
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
 import com.github.sdpteam15.polyevents.view.service.AlarmReceiver
@@ -138,14 +138,14 @@ class NotificationsHelper(private val applicationContext: Context): Notification
      */
     override fun generateNewNotificationId(): Int = runBlocking {
         val app = (applicationContext as PolyEventsApplication)
-        val notificationUid = app.database.notificationUidDao().getNotificationUid()
+        val notificationUid = app.localDatabase.notificationUidDao().getNotificationUid()
         if (notificationUid.isEmpty()) {
             // If no notificationUid instance already created, create one
-            app.database.notificationUidDao().insert(NotificationUid(uid = 1))
+            app.localDatabase.notificationUidDao().insert(NotificationUid(uid = 1))
             0
         } else {
             val currentNotificationUid = notificationUid[0]
-            app.database.notificationUidDao()
+            app.localDatabase.notificationUidDao()
                 .insert(currentNotificationUid.copy(uid = currentNotificationUid.uid + 1))
             currentNotificationUid.uid
         }

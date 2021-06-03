@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.arch.core.executor.ArchTaskExecutor
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.RequestPermissionsRequestCodeValidator
@@ -20,6 +21,7 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.Timestamp
 import java.time.*
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -195,8 +197,12 @@ object HelperFunctions {
      * @param date the Date instance to convert
      * @return the corresponding LocalDateTime
      */
-    fun dateToLocalDateTime(date: Date?): LocalDateTime? =
-        date?.let { LocalDateTime.ofInstant(it.toInstant(), ZoneId.systemDefault()) }
+    fun dateToLocalDateTime(date: Any?): LocalDateTime? =
+        when(date){
+            is Timestamp -> LocalDateTime.ofInstant(date.toDate().toInstant(), ZoneId.systemDefault())
+            is Date -> LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault())
+            else -> null
+        }
 
     /**
      * Convert
@@ -319,6 +325,57 @@ object HelperFunctions {
         }
     }
 
+    /**
+    * if this object is not null apply run else return default
+    * @param default default return
+    * @param run the function to execute
+    * @return if this object is not null apply run else return default
+    */
+    fun <S, T> S?.apply(default: T, run: (S) -> T) = if (this != null) run(this) else default
 
-    fun <S, T> S?.thenReturn(run: (S) -> T?) = if (this != null) run(this) else null
+    /**
+     * if this object is not null apply run else return default
+     * @param default default return
+     * @param run the function to execute
+     * @return if this object is not null apply run else return default
+     */
+    fun <S, T> S?.apply(run: (S) -> T, default: Lazy<T>) =
+        if (this != null) run(this) else default.value
+
+    /**
+     * if this object is not null apply run else return null
+     * @param run the function to execute
+     * @return if this object is apply do the run else return null
+     */
+    fun <S, T> S?.apply(run: (S) -> T?) = if (this != null) run(this) else null
+
+    /**
+     * Display an alert dialog with the given parameters
+     * @param context the context of the current activity
+     * @param title The title of the alert dialog
+     * @param content The message of the alert dialog
+     * @param yesContinuation Action that will be done if the yes button is pressed
+     * @param noContinuation Action that will be done if the no button is pressed
+     * @param yesButtonText The text for the "Yes" button (Yes by default)
+     * @param noButtonText The text for the "No" button (No by default)
+     */
+    fun showAlertDialog(
+        context: Context,
+        title: String,
+        content: String,
+        yesContinuation: () -> Unit,
+        noContinuation: () -> Unit = { },
+        yesButtonText: String? = null,
+        noButtonText: String? = null
+    ) {
+        val builder = AlertDialog.Builder(context)
+        builder.setMessage(content)
+            .setTitle(title)
+            .setPositiveButton(yesButtonText ?: "Yes") { _, _ ->
+                yesContinuation()
+            }.setNegativeButton(noButtonText ?: "No") { _, _ ->
+                noContinuation()
+            }
+        builder.show()
+    }
 }
