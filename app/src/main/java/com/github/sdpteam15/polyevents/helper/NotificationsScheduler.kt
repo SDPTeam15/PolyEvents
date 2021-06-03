@@ -21,7 +21,7 @@ interface NotificationsScheduler {
      * Cancel a notification with provided id
      * @param notificationId the id of the notification to cancel
      */
-    fun cancelNotification(notificationId: Int)
+    fun cancelNotification(notificationId: Int?)
 
     /**
      * Generate a new id for a notification

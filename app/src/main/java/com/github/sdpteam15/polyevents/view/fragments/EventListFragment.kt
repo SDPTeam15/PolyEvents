@@ -10,6 +10,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
+import com.github.sdpteam15.polyevents.helper.NotificationsHelper
+import com.github.sdpteam15.polyevents.helper.NotificationsScheduler
 import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
@@ -52,6 +54,8 @@ class EventListFragment : Fragment() {
     // Flag to check if we fetched events data successfully from remote
     private var fetchedDataFromRemote = false
 
+    lateinit var notificationsScheduler: NotificationsScheduler
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -69,6 +73,8 @@ class EventListFragment : Fragment() {
         ).create(
             EventLocalViewModel::class.java
         )
+
+        notificationsScheduler = NotificationsHelper(requireActivity().applicationContext)
 
         recyclerView = fragmentView.findViewById(R.id.recycler_events_list)
 
@@ -149,6 +155,8 @@ class EventListFragment : Fragment() {
             if (!events.any {
                     it.eventId == eventLocal.eventId
                 }) {
+                notificationsScheduler.cancelNotification(eventLocal.eventStartNotificationId)
+                notificationsScheduler.cancelNotification(eventLocal.eventBeforeNotificationId)
                 eventLocalViewModel.delete(eventLocal)
                 eventsLocalCopy.remove(eventLocal)
                 eventsChanged = true
@@ -157,7 +165,7 @@ class EventListFragment : Fragment() {
 
         if (eventsChanged) {
             eventsLocal.updateAll(eventsLocalCopy)
-            showToast("Events have been updated", context)
+            showToast(getString(R.string.events_local_sync_remote), context)
         }
         return eventsLocalCopy
     }

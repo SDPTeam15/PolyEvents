@@ -69,6 +69,7 @@
     <string name="my_events">My Events</string>
     <string name="my_events_log_in">Log in to show your upcoming events</string>
     <string name="fail_to_get_information">Failed to get events information</string>
+    <string name="events_local_sync_remote">Events have been updated</string>
 
     <!-- SettingsFragment-->
     <string name="settings">Settings</string>
