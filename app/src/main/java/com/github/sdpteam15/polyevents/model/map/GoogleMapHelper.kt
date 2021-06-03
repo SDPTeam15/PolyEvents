@@ -2,6 +2,7 @@ package com.github.sdpteam15.polyevents.model.map
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.TypedValue
 import com.github.sdpteam15.polyevents.model.map.ZoneAreaMapHelper.addArea
 import com.github.sdpteam15.polyevents.model.map.ZoneAreaMapHelper.areasPoints
 import com.github.sdpteam15.polyevents.model.map.ZoneAreaMapHelper.editingZone
@@ -29,7 +30,7 @@ object GoogleMapHelper {
         areasPoints.clear()
         for ((k, v) in zoneTemp) {
             editingZone = k
-            zonesToArea[editingZone!!] = Pair(null, mutableListOf())
+            zonesToArea[editingZone!!] = Pair(v.first, mutableListOf())
             for (id in v.second) {
                 addArea(
                     context,
@@ -47,4 +48,12 @@ object GoogleMapHelper {
 
         editingZone = currentEditZone
     }
+
+    /**
+     * Helper function to have size in pixels from dp
+     * https://android--code.blogspot.com/2020/08/android-kotlin-convert-dp-to-pixels.html
+     */
+    fun Int.dpToPixelsFloat(context: Context): Float = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP, this.toFloat(), context.resources.displayMetrics
+    )
 }

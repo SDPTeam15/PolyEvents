@@ -3,8 +3,8 @@ package com.github.sdpteam15.polyevents.model.entity
 import com.github.sdpteam15.polyevents.model.map.Attachable
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.euclideanDistance
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.getIntersection
+import com.github.sdpteam15.polyevents.model.map.RouteMapHelper.THRESHOLD
 import com.github.sdpteam15.polyevents.model.map.RouteMapHelper.getNearestPoint
-import com.github.sdpteam15.polyevents.model.map.THRESHOLD
 import com.google.android.gms.maps.model.LatLng
 
 /**
