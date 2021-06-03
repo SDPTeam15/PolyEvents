@@ -127,20 +127,6 @@ class ZoneManagementListTest {
     }
 
     @Test
-    fun canDeleteZone() {
-        obsValue.postValue(true)
-        Espresso.onView(ViewMatchers.withId(R.id.recycler_zones_list)).perform(
-            RecyclerViewActions.actionOnItemAtPosition<ZoneItemAdapter.ItemViewHolder>(
-                0, TestHelper.clickChildViewWithId(R.id.id_zone_remove_item)
-            )
-        )
-        Espresso.onView(ViewMatchers.withText("Yes")).inRoot(isDialog()).perform(click())
-        Thread.sleep(500)
-        Espresso.onView(ViewMatchers.withId(R.id.recycler_zones_list))
-            .check(RecyclerViewItemCountAssertion(zones.size - 1))
-    }
-
-    @Test
     fun clickOnZoneLaunchCorrectActivity() {
         obsValue.postValue(true)
         Espresso.onView(ViewMatchers.withId(R.id.recycler_zones_list)).perform(
