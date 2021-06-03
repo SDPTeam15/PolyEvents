@@ -11,7 +11,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.showProgressDialog
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.helper.NotificationsHelper
 import com.github.sdpteam15.polyevents.helper.NotificationsScheduler
@@ -29,7 +29,6 @@ import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.adapter.CommentItemAdapter
 import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
 import com.github.sdpteam15.polyevents.view.fragments.LeaveEventReviewFragment
-import com.github.sdpteam15.polyevents.view.fragments.ProgressDialogFragment
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModel
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModelFactory
 import kotlinx.coroutines.Dispatchers
@@ -66,7 +65,6 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
     private lateinit var recyclerView: RecyclerView
     private lateinit var leaveReviewDialogFragment: LeaveEventReviewFragment
     private lateinit var leaveReviewButton: Button
-    private lateinit var progressDialogFragment: ProgressDialogFragment
 
     // Lazily initialized view models, instantiated only when accessed for the first time
     private val localEventViewModel: EventLocalViewModel by viewModels {
@@ -84,18 +82,14 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowHomeEnabled(true)
 
-        progressDialogFragment = ProgressDialogFragment(
-            HelperFunctions.waitUpdate(
-                this,
-                listOf(
-                    eventFetchDoneObservable,
-                    eventRatingFetchDoneObservable,
-                    eventCommentsFetchDoneObservable
-                )
-            )
+        // Display a loading screen while the queries with the database are not over
+        showProgressDialog(
+            this, listOf(
+                eventFetchDoneObservable,
+                eventRatingFetchDoneObservable,
+                eventCommentsFetchDoneObservable
+            ), supportFragmentManager
         )
-        progressDialogFragment.isCancelable = false
-        progressDialogFragment.show(supportFragmentManager, ProgressDialogFragment.TAG)
 
         eventId = intent.getStringExtra(EXTRA_EVENT_ID)!!
 
@@ -143,7 +137,6 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         getUserAndObserve()
     }
 
-
     private fun getUserAndObserve() {
         obsOrganiser.observe(this) {
             findViewById<TextView>(R.id.txt_event_organizer).apply {
@@ -189,7 +182,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
     /**
      * Sets the observe add and modify of the observable list of reviews
      */
-    private fun setObservers(){
+    private fun setObservers() {
         obsComments.observeAdd(this) {
             //If the comment doesn't have a review, we don't want to display it
             if (it.value.feedback != "") {
@@ -197,14 +190,13 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
                 recyclerView.adapter!!.notifyDataSetChanged()
             }
         }
-        obsComments.observe(this){
+        obsComments.observe(this) {
             updateNumberReviews()
         }
-        obsNonEmptyComments.observe(this){
+        obsNonEmptyComments.observe(this) {
             updateNumberComments()
         }
     }
-
 
     /**
      * Get the comments of an event
@@ -220,8 +212,8 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
     /**
      * Updates the number of reviews on the xml
      */
-    private fun updateNumberReviews(){
-        if(!PolyEventsApplication.inTest) {
+    private fun updateNumberReviews() {
+        if (!PolyEventsApplication.inTest) {
             PolyEventsApplication.application.applicationScope.launch(Dispatchers.Main) {
                 findViewById<TextView>(R.id.id_number_reviews).text = obsComments.size.toString()
             }
@@ -231,10 +223,11 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
     /**
      * Updates the number of comments on the xml
      */
-    private fun updateNumberComments(){
-        if(!PolyEventsApplication.inTest) {
+    private fun updateNumberComments() {
+        if (!PolyEventsApplication.inTest) {
             PolyEventsApplication.application.applicationScope.launch(Dispatchers.Main) {
-                findViewById<TextView>(R.id.id_number_comments).text = obsNonEmptyComments.size.toString()
+                findViewById<TextView>(R.id.id_number_comments).text =
+                    obsNonEmptyComments.size.toString()
             }
         }
     }
