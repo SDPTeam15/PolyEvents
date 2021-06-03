@@ -28,16 +28,10 @@ import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.adapter.CommentItemAdapter
 import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
 import com.github.sdpteam15.polyevents.view.fragments.LeaveEventReviewFragment
-import com.github.sdpteam15.polyevents.view.service.AlarmReceiver
 import com.github.sdpteam15.polyevents.model.callback.ReviewHasChanged
 import com.github.sdpteam15.polyevents.view.fragments.ProgressDialogFragment
-import com.github.sdpteam15.polyevents.view.service.ReviewHasChanged
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModel
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModelFactory
-
-import com.github.sdpteam15.polyevents.viewmodel.NotificationUidViewModel
-import com.github.sdpteam15.polyevents.viewmodel.NotificationUidViewModelFactory
-import kotlinx.coroutines.launch
 
 /**
  * An activity containing events description. Note that information about the event could be stored from the local
