@@ -16,6 +16,7 @@ data class UserProfile(
     var pid: String? = null,
     var profileName: String? = null,
     var userRole: UserRole = UserRole.PARTICIPANT,
+    val defaultProfile: Boolean=false,
     val users: MutableList<String> = mutableListOf()
 ) {
 

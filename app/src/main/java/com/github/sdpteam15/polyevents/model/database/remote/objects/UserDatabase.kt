@@ -5,11 +5,11 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.Co
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
+import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 
 class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
-    override var firstConnectionUser: UserEntity = UserEntity(uid = "DEFAULT")
 
     var profiles: MutableList<UserProfile> = mutableListOf()
 
@@ -25,12 +25,25 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
     override fun firstConnexion(
         user: UserEntity
     ): Observable<Boolean> {
-        firstConnectionUser = user
         return db.setEntity(
             user,
             user.uid,
             USER_COLLECTION
-        )
+        ).observeOnce {
+            if (it.value) {
+                addUserProfileAndAddToUser(
+                    UserProfile(
+                        profileName = user.name,
+                        userRole = UserRole.PARTICIPANT,
+                        defaultProfile = true
+                    ), user
+                ).observeOnce {
+                    user.loadSuccess = false
+                    user.userProfiles
+                    db.currentUser = user
+                }
+            }
+        }.then
     }
 
     override fun inDatabase(

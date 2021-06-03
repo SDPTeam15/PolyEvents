@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.map.*
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.*
 import com.google.android.gms.maps.MapFragment
@@ -55,6 +56,10 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
     var locationPermissionGranted = false
     private var useUserLocation = false
 
+    // We have to do this since Cirrus doesn't allow us to test load google map
+    private val showMap:Boolean
+        get() = !PolyEventsApplication.inTest
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -82,32 +87,39 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
 
     override fun onPause() {
         super.onPause()
-        GoogleMapOptions.saveCamera()
-        GoogleMapHeatmap.resetHeatmap()
+        if(showMap){
+            GoogleMapOptions.saveCamera()
+            GoogleMapHeatmap.resetHeatmap()
+        }
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val mapFragment =
-            childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
-        mapFragment?.getMapAsync(this)
-        if (!locationPermissionGranted) {
-            HelperFunctions.getLocationPermission(requireActivity()).observeOnce {
-                locationPermissionGranted = it.value
-                activateMyLocation()
+        if (showMap) {
+            val mapFragment =
+                childFragmentManager.findFragmentById(R.id.id_fragment_map) as SupportMapFragment?
+            mapFragment?.getMapAsync(this)
+            if (!locationPermissionGranted) {
+                HelperFunctions.getLocationPermission(requireActivity()).observeOnce {
+                    locationPermissionGranted = it.value
+                    activateMyLocation()
+                }
             }
         }
     }
 
     override fun onMapReady(googleMap: GoogleMap?) {
-        GoogleMapHelper.map = GoogleMapAdapter(googleMap)
-        RouteMapHelper.getNodesAndEdgesFromDB(context, this)
+        if (showMap) {
+            GoogleMapHelper.map = GoogleMapAdapter(googleMap)
+            RouteMapHelper.getNodesAndEdgesFromDB(context, this)
 
         setMapListeners(googleMap!!)
         GoogleMapOptions.setUpMap(requireContext(), mod != MapsFragmentMod.EditZone, mod)
 
-        if (useUserLocation) {
-            activateMyLocation()
+            if (useUserLocation) {
+                activateMyLocation()
+            }
         }
     }
 

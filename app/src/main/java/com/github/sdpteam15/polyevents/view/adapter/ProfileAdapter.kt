@@ -39,18 +39,35 @@ class ProfileAdapter(
          * Binds the values of each view of an event to the layout of an profile
          */
         fun bind(item: UserProfile) {
+            val moreText = if (item.defaultProfile) {
+                "(Default)"
+            } else {
+                ""
+            }
 
             R.id.id_edittext_item_name
             itemName.text =
                 if (item.userRole != UserRole.PARTICIPANT)
-                    "${item.profileName} (${item.userRole})"
-                else item.profileName
+                    "$moreText ${item.profileName} (${item.userRole})"
+                else "$moreText ${item.profileName}"
+
+            btnRemove.visibility = if (item.defaultProfile && item.userRole!=UserRole.ADMIN) {
+                View.INVISIBLE
+            } else {
+                View.VISIBLE
+            }
+
+            btnEdit.visibility = if (item.defaultProfile && item.userRole!=UserRole.ADMIN) {
+                View.INVISIBLE
+            } else {
+                View.VISIBLE
+            }
+
             btnRemove.setOnClickListener {
                 items.remove(item)
             }
             btnEdit.setOnClickListener {
                 profileFragment.editProfile(item)
-                //TODO Found where to set it
                 user.loadSuccess = false
             }
         }

@@ -33,6 +33,7 @@ import com.github.sdpteam15.polyevents.view.fragments.ProgressDialogFragment
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModel
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModelFactory
 import java.time.LocalDateTime
+import kotlinx.coroutines.Dispatchers
 
 /**
  * An activity containing events description. Note that information about the event could be stored from the local
@@ -196,22 +197,14 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
             null,
             obsComments
         ).updateOnce(this, eventCommentsFetchDoneObservable)
-        obsComments.observeAdd(this) {
-            //If the comment doesn't have a review, we don't want to display it
-            if (it.value.feedback == "") {
-                obsComments.remove(it.value)
-            } else {
-                recyclerView.adapter!!.notifyDataSetChanged()
-            }
-        }
     }
 
     /**
      * Updates the number of reviews on the xml
      */
-    private fun updateNumberReviews() {
-        if (!PolyEventsApplication.inTest) {
-            PolyEventsApplication.application.applicationScope.launch {
+    private fun updateNumberReviews(){
+        if(!PolyEventsApplication.inTest) {
+            PolyEventsApplication.application.applicationScope.launch(Dispatchers.Main) {
                 findViewById<TextView>(R.id.id_number_reviews).text = obsComments.size.toString()
             }
         }
@@ -220,11 +213,10 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
     /**
      * Updates the number of comments on the xml
      */
-    private fun updateNumberComments() {
-        if (!PolyEventsApplication.inTest) {
-            PolyEventsApplication.application.applicationScope.launch {
-                findViewById<TextView>(R.id.id_number_comments).text =
-                    obsNonEmptyComments.size.toString()
+    private fun updateNumberComments(){
+        if(!PolyEventsApplication.inTest) {
+            PolyEventsApplication.application.applicationScope.launch(Dispatchers.Main) {
+                findViewById<TextView>(R.id.id_number_comments).text = obsNonEmptyComments.size.toString()
             }
         }
     }
