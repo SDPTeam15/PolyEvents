@@ -38,6 +38,7 @@ class MyEventEditsActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
         ObservableMap<Event.EventStatus, ObservableList<Event>>()
     private val observableStatus = Observable(currentStatus)
     private val statusNames = ArrayList<String>()
+    private val infoGotten = Observable<Boolean>()
 
     /**
      * Select next status page
@@ -146,7 +147,7 @@ class MyEventEditsActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
             if (it.value) {
                 currentDatabase.eventDatabase.getEventEdits(eventRequests)
                 {
-                    it.whereEqualTo(DatabaseConstant.EventConstant.EVENT_NAME.value, userId)
+                    it.whereEqualTo(DatabaseConstant.EventConstant.EVENT_ORGANIZER.value, userId)
                 }.observeOnce(this) {
                     if (!it.value) {
                         HelperFunctions.showToast(
