@@ -43,7 +43,7 @@ class EventItemAdapter(
             eventZone.text = event.zoneName
             eventDescription.text = event.description
 
-            if (event.isLimitedEvent()) {
+            if (event.isLimitedEvent() && event.getMaxNumberOfSlots() != null) {
                 attendeesNumberTextView.visibility = View.VISIBLE
                 val maxNumberOfSlots = event.getMaxNumberOfSlots()
                 val numberOfParticipants = event.getParticipants().size

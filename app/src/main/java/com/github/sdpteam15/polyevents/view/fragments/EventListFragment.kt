@@ -137,7 +137,6 @@ class EventListFragment : Fragment() {
     }
 
     private fun updateEventsList() {
-        // TODO: get events list from local if switched to user registered
         events.observe(this) { recyclerView.adapter!!.notifyDataSetChanged() }
     }
 
