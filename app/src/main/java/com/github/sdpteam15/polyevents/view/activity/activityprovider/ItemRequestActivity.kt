@@ -56,7 +56,7 @@ class ItemRequestActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
                     .map(this) { it2 -> Pair(it2[0].second, it2[0].third) }.then
             }
 
-        currentDatabase.eventDatabase!!.getEvents({
+        currentDatabase.eventDatabase.getEvents({
             it.whereEqualTo(
                 DatabaseConstant.EventConstant.EVENT_ORGANIZER.value,
                 currentDatabase.currentUser!!.uid
@@ -75,7 +75,7 @@ class ItemRequestActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
                         ArrayAdapter(
                             this,
                             android.R.layout.simple_spinner_dropdown_item,
-                            listEvent.map (this){ it.eventName }.then
+                            listEvent.map(this) { it.eventName }.then
                         )
 
                     eventSpinner.setSelection(listEvent.indexOfFirst { it.eventId == selectedEvent.value!!.eventId })
@@ -86,16 +86,16 @@ class ItemRequestActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
                 finish()
             }
         }
-        currentDatabase.itemDatabase!!.getAvailableItems(requestObservable).observeOnce(this) {
+        currentDatabase.itemDatabase.getAvailableItems(requestObservable).observeOnce(this) {
             if (it.value) {
                 if (requestId != null) {
                     val request = Observable<MaterialRequest>()
-                    currentDatabase.materialRequestDatabase!!.getMaterialRequestById(
+                    currentDatabase.materialRequestDatabase.getMaterialRequestById(
                         request,
                         requestId!!
                     ).observeOnce(this) { it2 ->
                         if (it2.value) {
-                            currentDatabase.eventDatabase!!.getEventFromId(
+                            currentDatabase.eventDatabase.getEventFromId(
                                 request.value!!.eventId,
                                 selectedEvent
                             )
@@ -140,7 +140,7 @@ class ItemRequestActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
             else -> {
                 if (requestId == null) {
 
-                    currentDatabase.materialRequestDatabase!!.createMaterialRequest(
+                    currentDatabase.materialRequestDatabase.createMaterialRequest(
                         MaterialRequest(
                             null,
                             mapSelectedItems.keys.map { Pair(it.itemId!!, mapSelectedItems[it]!!) }
@@ -153,13 +153,13 @@ class ItemRequestActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
                             null
                         )
                     ).observeOnce {
-                        if(it.value){
+                        if (it.value) {
                             showToast(getString(R.string.item_request_sent_text), this)
                         }
                     }
 
                 } else {
-                    currentDatabase.materialRequestDatabase!!.updateMaterialRequest(
+                    currentDatabase.materialRequestDatabase.updateMaterialRequest(
                         requestId!!,
                         MaterialRequest(
                             requestId,
@@ -173,7 +173,7 @@ class ItemRequestActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
                             null
                         )
                     ).observeOnce {
-                        if(it.value){
+                        if (it.value) {
                             showToast(getString(R.string.item_request_updated), this)
                         }
                     }

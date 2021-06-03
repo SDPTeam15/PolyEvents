@@ -15,7 +15,7 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableList
  * @param events The list of comments to adapt
  */
 class CommentItemAdapter(
-        private val comments: ObservableList<Rating>
+    private val comments: ObservableList<Rating>
 ) : RecyclerView.Adapter<CommentItemAdapter.ItemViewHolder>() {
 
     /**
@@ -38,7 +38,7 @@ class CommentItemAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         val adapterLayout = LayoutInflater.from(parent.context)
-                .inflate(R.layout.card_comment, parent, false)
+            .inflate(R.layout.card_comment, parent, false)
         return ItemViewHolder(adapterLayout)
     }
 

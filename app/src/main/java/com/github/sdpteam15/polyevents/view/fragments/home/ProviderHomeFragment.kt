@@ -17,9 +17,10 @@ import com.github.sdpteam15.polyevents.view.activity.activityprovider.MyItemRequ
 import com.github.sdpteam15.polyevents.view.activity.admin.EventManagementListActivity
 
 class ProviderHomeFragment : Fragment() {
-    companion object{
+    companion object {
         const val ID_USER = "id_user"
     }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -44,12 +45,15 @@ class ProviderHomeFragment : Fragment() {
 
         viewRoot.findViewById<Button>(R.id.btnRedirectEventManager).setOnClickListener {
             val intent = Intent(activity, EventManagementListActivity::class.java)
-            intent.putExtra(EventManagementListActivity.ORGANISER_LIST,"organiser")
+            intent.putExtra(EventManagementListActivity.ORGANISER_LIST, "organiser")
             startActivity(intent)
         }
 
 
-        MainActivity.instance!!.switchRoles(viewRoot!!.findViewById(R.id.spinner_provider), UserRole.ORGANIZER)
+        MainActivity.instance!!.switchRoles(
+            viewRoot!!.findViewById(R.id.spinner_provider),
+            UserRole.ORGANIZER
+        )
         return viewRoot
     }
 }

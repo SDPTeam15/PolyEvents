@@ -54,12 +54,12 @@ class ItemsAdminActivityTest {
 
         FakeDatabaseItem.items.clear()
         for ((item, count) in availableItems) {
-            currentDatabase.itemDatabase!!.createItem(item, count)
+            currentDatabase.itemDatabase.createItem(item, count)
         }
 
         FakeDatabaseItem.itemTypes.clear()
         for (itemType in availableItemTypes) {
-            currentDatabase.itemDatabase!!.createItemType(itemType)
+            currentDatabase.itemDatabase.createItemType(itemType)
         }
 
 

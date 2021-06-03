@@ -6,8 +6,8 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.Ev
 import com.github.sdpteam15.polyevents.model.entity.Event
 
 object EventEditAdapter : AdapterInterface<Event> {
-    override fun toDocument(element: Event): HashMap<String, Any?> {
-        val map = EventAdapter.toDocument(element)
+    override fun toDocumentWithoutNull(element: Event): HashMap<String, Any?> {
+        val map = EventAdapter.toDocumentWithoutNull(element)
         map[EVENT_EDIT_STATUS.value] = element.status!!.ordinal
         map[EVENT_EDIT_ADMIN_MESSAGE.value] = element.adminMessage
         map[EVENT_DOCUMENT_ID.value] = element.eventId

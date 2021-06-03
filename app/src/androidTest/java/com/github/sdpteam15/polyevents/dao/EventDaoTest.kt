@@ -126,5 +126,4 @@ class EventDaoTest {
         //val retrievedEvent = eventDao.getEventById("1")
         //assertEquals(retrievedEvent, null)
     }
-
 }

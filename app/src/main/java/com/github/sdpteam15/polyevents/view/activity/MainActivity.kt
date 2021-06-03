@@ -65,6 +65,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        PolyEventsApplication.application.applicationScope.launch {
+            PolyEventsApplication.application.localDatabase.genericEntityDao().deleteAll()
+        }
+
         instance = this
         setContentView(R.layout.activity_main)
 
@@ -84,7 +89,7 @@ class MainActivity : AppCompatActivity() {
                 if (Settings.IsSendingLocationOn)
                     HelperFunctions.getLoc(this).observeOnce { LatLng ->
                         if (LatLng.value != null)
-                            currentDatabase.heatmapDatabase!!.setLocation(LatLng.value)
+                            currentDatabase.heatmapDatabase.setLocation(LatLng.value)
                     }
             }
         }

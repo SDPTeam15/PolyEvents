@@ -5,4 +5,6 @@ package com.github.sdpteam15.polyevents.model.database.remote.matcher
  * For example keep only the first 5 items from the collection. Presented as
  * a Functional (SAM) interface.
  */
-fun interface Matcher { fun match(collection: Query): Query }
+fun interface Matcher {
+    fun match(collection: Query): Query
+}
