@@ -176,7 +176,7 @@ class EventManagementTest {
     private fun clickAndCheckNotRedirect() {
         closeKeyboard()
         Thread.sleep(100)
-        onView(withId(R.id.btnManageEvent)).perform(scrollTo(), click())
+        onView(withId(R.id.id_manage_event_button)).perform(scrollTo(), click())
     }
 
     private fun addAddListener(): Observable<Boolean> {
