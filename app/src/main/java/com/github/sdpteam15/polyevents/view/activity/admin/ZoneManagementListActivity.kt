@@ -9,11 +9,9 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.DatabaseHelper
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.map.ZoneAreaMapHelper
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.view.adapter.ZoneItemAdapter
 
 
 class ZoneManagementListActivity : AppCompatActivity() {
@@ -47,7 +45,7 @@ class ZoneManagementListActivity : AppCompatActivity() {
 
         println(Database.currentDatabase)
         Database.currentDatabase.zoneDatabase.getAllZones(
-            zones.sortAndLimitFrom(this){it.zoneName},
+            zones.sortAndLimitFrom(this) { it.zoneName },
             50
         ).observe(this) {
             if (!it.value) {
