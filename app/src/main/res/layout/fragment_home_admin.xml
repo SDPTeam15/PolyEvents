@@ -22,13 +22,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:entries="@array/Ranks"
-                app:layout_constraintBottom_toTopOf="@+id/textView3"
+                app:layout_constraintBottom_toTopOf="@+id/id_tv_fragment_admin_title"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
 
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/id_tv_fragment_admin_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="40dp"
@@ -50,10 +50,10 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView3">
+                app:layout_constraintTop_toBottomOf="@+id/id_tv_fragment_admin_title">
 
                 <Button
-                    android:id="@+id/btnRedirectItemsListManagement"
+                    android:id="@+id/id_items_list_management_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/white"
@@ -68,7 +68,7 @@
                     app:strokeWidth="2dp" />
 
                 <Button
-                    android:id="@+id/btnRedirectUserManagement"
+                    android:id="@+id/id_user_management_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
@@ -85,7 +85,7 @@
                     tools:ignore="ButtonStyle" />
 
                 <Button
-                    android:id="@+id/btnRedirectEventManager"
+                    android:id="@+id/id_event_manager_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/white"
@@ -101,7 +101,7 @@
                     tools:ignore="ButtonStyle" />
 
                 <Button
-                    android:id="@+id/btnRedirectEventEditManager"
+                    android:id="@+id/id_event_edit_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/white"
@@ -117,7 +117,7 @@
                     tools:ignore="ButtonStyle" />
 
                 <Button
-                    android:id="@+id/btnRedirectZoneManagement"
+                    android:id="@+id/id_zone_management_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/white"
@@ -133,7 +133,7 @@
                     tools:ignore="ButtonStyle" />
 
                 <Button
-                    android:id="@+id/btnRedirectItemReqManagement"
+                    android:id="@+id/id_item_request_management_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/white"
@@ -149,7 +149,7 @@
                     tools:ignore="ButtonStyle" />
 
                 <Button
-                    android:id="@+id/btnRedirectRouteManager"
+                    android:id="@+id/id_route_manager_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/white"
@@ -166,5 +166,4 @@
             </androidx.gridlayout.widget.GridLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
