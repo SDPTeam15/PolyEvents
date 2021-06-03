@@ -7,6 +7,7 @@ import com.github.sdpteam15.polyevents.model.database.remote.adapter.DeviceLocat
 import com.github.sdpteam15.polyevents.model.database.remote.objects.HeatmapDatabase
 import com.github.sdpteam15.polyevents.model.entity.DeviceLocation
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Before
 import org.junit.Test
@@ -20,6 +21,7 @@ class HeatmapDatabaseTest {
 
     @Before
     fun setup() {
+        PolyEventsApplication.inTest = true
         val mockDatabaseInterface = HelperTestFunction.mockDatabaseInterface()
         mackHeatmapDatabase = HeatmapDatabase(mockDatabaseInterface)
         HelperTestFunction.clearQueue()

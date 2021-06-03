@@ -9,7 +9,6 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.DatabaseHelper
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.map.ZoneAreaMapHelper
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
@@ -32,6 +31,7 @@ class ZoneManagementListActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         recyclerView = findViewById(R.id.recycler_zones_list)
 
+
         val openZone = { zone: Zone ->
             startActivityZone(zone.zoneId!!)
         }
@@ -46,13 +46,9 @@ class ZoneManagementListActivity : AppCompatActivity() {
         }
 
         recyclerView.adapter = ZoneItemAdapter(zones, openZone, deleteZone)
-
-        Database.currentDatabase.zoneDatabase!!.getAllZones(
-            {
-                it.orderBy(DatabaseConstant.ZoneConstant.ZONE_NAME.value)
-            },
-            50,
-            zones
+        Database.currentDatabase.zoneDatabase.getAllZones(
+            zones.sortAndLimitFrom(this) { it.zoneName },
+            50
         ).observe(this) {
             if (!it.value) {
                 HelperFunctions.showToast(getString(R.string.fail_to_get_list_zones), this)

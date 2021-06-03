@@ -31,7 +31,7 @@ class ItemsAdminActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
 
     private fun getItemsFromDB() {
-        currentDatabase.itemDatabase!!.getItemsList(
+        currentDatabase.itemDatabase.getItemsList(
             items,
             //we consider objects with 0
             { it.whereNotEqualTo(DatabaseConstant.ItemConstants.ITEM_TOTAL.value, 0) })
@@ -46,20 +46,20 @@ class ItemsAdminActivity : AppCompatActivity() {
         setContentView(R.layout.activity_items_admin)
 
         getItemsFromDB()
-        currentDatabase.itemDatabase!!.getItemTypes(itemTypes).observe(this) {
+        currentDatabase.itemDatabase.getItemTypes(itemTypes).observe(this) {
             if (!it.value)
                 showToast(getString(R.string.query_not_satisfied), this)
         }
         items.observeRemove(this) {
             if (it.sender != currentDatabase) {
                 if (it.value.first.itemId != null) {
-                    currentDatabase.itemDatabase!!.updateItem(it.value.first, 0, 0)
+                    currentDatabase.itemDatabase.updateItem(it.value.first, 0, 0)
                 }
             }
         }
         items.observeAdd(this) {
             if (it.sender != currentDatabase) {
-                currentDatabase.itemDatabase!!.createItem(it.value.first, it.value.second)
+                currentDatabase.itemDatabase.createItem(it.value.first, it.value.second)
                     .observeOnce { it2 ->
                         if (it2.value != "") {
                             items[it.index].first.itemId = it2.value
@@ -72,7 +72,7 @@ class ItemsAdminActivity : AppCompatActivity() {
 
         itemTypes.observeAdd(this) {
             if (it.sender != currentDatabase) {
-                currentDatabase.itemDatabase!!.createItemType(it.value)
+                currentDatabase.itemDatabase.createItemType(it.value)
             }
         }
 
@@ -83,7 +83,7 @@ class ItemsAdminActivity : AppCompatActivity() {
             //check if there if there is no accepted request with the requested item
             if (item.second != item.third) {
                 showToast(getString(R.string.item_already_in_use), this)
-            }else{
+            } else {
                 items.remove(item)
             }
             Unit
@@ -133,9 +133,9 @@ class ItemsAdminActivity : AppCompatActivity() {
             itemQuantity.setText(item.second.toString())
             itemTypeTextView.setText(item.first.itemType)
             itemUsed = item.second - item.third
-            title.text =getString(R.string.modify_an_item)
-        } else{
-            title.text =getString(R.string.add_a_new_item)
+            title.text = getString(R.string.modify_an_item)
+        } else {
+            title.text = getString(R.string.add_a_new_item)
         }
 
 
@@ -183,7 +183,7 @@ class ItemsAdminActivity : AppCompatActivity() {
                             )
                         } else {
                             //Modify item
-                            currentDatabase.itemDatabase!!.updateItem(
+                            currentDatabase.itemDatabase.updateItem(
                                 Item(
                                     item.first.itemId,
                                     itemName.text.toString(),

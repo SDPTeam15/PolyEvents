@@ -6,12 +6,12 @@ import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.model.database.local.entity.UserSettings
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.database.remote.objects.UserSettingsDatabaseInterface
-import com.github.sdpteam15.polyevents.model.room.UserSettings
 import com.github.sdpteam15.polyevents.viewmodel.UserSettingsViewModel
 import com.github.sdpteam15.polyevents.viewmodel.UserSettingsViewModelFactory
 import com.schibsted.spain.barista.assertion.BaristaCheckedAssertions.assertChecked

@@ -37,7 +37,7 @@ class UserAdapterTest {
 
     @Test
     fun conversionOfUserEntityToDocumentPreservesData() {
-        val document = UserAdapter.toDocument(user)
+        val document = UserAdapter.toDocumentWithoutNull(user)
         assertEquals(document[USER_UID.value], googleId)
         assertEquals(document[USER_USERNAME.value], username)
         assertEquals(
@@ -84,7 +84,7 @@ class UserAdapterTest {
     @Test
     fun testConversionWithNullValues() {
         val userEntityWithNullProperties = UserEntity(uid = googleId)
-        val document = UserAdapter.toDocument(userEntityWithNullProperties)
+        val document = UserAdapter.toDocumentWithoutNull(userEntityWithNullProperties)
         assertEquals(document[USER_UID.value], googleId)
         assertNull(document[USER_NAME.value])
         assertNull(document[USER_AGE.value])

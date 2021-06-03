@@ -3,6 +3,7 @@ package com.github.sdpteam15.polyevents.view.activity.admin
 import android.content.Intent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -106,7 +107,7 @@ class EventManagementTest {
                 anyOrNull()
             )
         ).thenAnswer {
-            (it.arguments[2] as ObservableList<Zone>).addAll(listZone)
+            (it.arguments[0] as ObservableList<Zone>).addAll(listZone)
             Observable(true)
         }
 
@@ -168,12 +169,14 @@ class EventManagementTest {
 
     private fun closeKeyboard() {
         closeSoftKeyboard()
+        Espresso.closeSoftKeyboard()
         onView(isRoot()).perform(closeSoftKeyboard())
     }
 
     private fun clickAndCheckNotRedirect() {
         closeKeyboard()
-        onView(withId(R.id.id_manage_event_button)).perform(scrollTo(), click())
+        Thread.sleep(100)
+        onView(withId(R.id.btnManageEvent)).perform(scrollTo(), click())
     }
 
     private fun addAddListener(): Observable<Boolean> {
@@ -317,7 +320,7 @@ class EventManagementTest {
                 anyOrNull()
             )
         ).thenAnswer {
-            (it.arguments[2] as ObservableList<Zone>).addAll(listZone)
+            (it.arguments[0] as ObservableList<Zone>).addAll(listZone)
             obs
         }
 
@@ -361,7 +364,7 @@ class EventManagementTest {
                 anyOrNull()
             )
         ).thenAnswer {
-            (it.arguments[2] as ObservableList<Zone>).addAll(listZone)
+            (it.arguments[0] as ObservableList<Zone>).addAll(listZone)
             Observable(true)
         }
         Mockito.`when`(mockedUserDb.getUserProfilesList(anyOrNull(), anyOrNull()))

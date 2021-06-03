@@ -144,30 +144,30 @@ class StaffItemRequestsActivityTest {
         FakeDatabaseUser.allUsers.clear()
 
         for ((item, count) in availableItems) {
-            Database.currentDatabase.itemDatabase!!.updateItem(item, count, count)
+            Database.currentDatabase.itemDatabase.updateItem(item, count, count)
         }
-        Database.currentDatabase.itemDatabase!!.getItemsList(availableItemsList)
+        Database.currentDatabase.itemDatabase.getItemsList(availableItemsList)
         for (request in availableRequests) {
-            Database.currentDatabase.materialRequestDatabase!!.updateMaterialRequest(
+            Database.currentDatabase.materialRequestDatabase.updateMaterialRequest(
                 request.requestId!!,
                 request
             )
         }
-        Database.currentDatabase.materialRequestDatabase!!.getMaterialRequestList(
+        Database.currentDatabase.materialRequestDatabase.getMaterialRequestList(
             availableRequestsList
         )
         for (zone in availableZones) {
-            Database.currentDatabase.zoneDatabase!!.createZone(zone)
+            Database.currentDatabase.zoneDatabase.createZone(zone)
         }
-        Database.currentDatabase.zoneDatabase!!.getAllZones(null, null, availableZoneList)
+        Database.currentDatabase.zoneDatabase.getAllZones(availableZoneList)
 
         for (event in availableEvents) {
-            Database.currentDatabase.eventDatabase!!.createEvent(event)
+            Database.currentDatabase.eventDatabase.createEvent(event)
         }
-        Database.currentDatabase.eventDatabase!!.getEvents(null, null, availableEventList)
+        Database.currentDatabase.eventDatabase.getEvents(null, null, availableEventList)
 
         FakeDatabaseUser.allUsers.addAll(availableUsers)
-        Database.currentDatabase.userDatabase!!.getListAllUsers(availableUsersList)
+        Database.currentDatabase.userDatabase.getListAllUsers(availableUsersList)
 
         val intent =
             Intent(
@@ -182,16 +182,28 @@ class StaffItemRequestsActivityTest {
     @Test
     fun acceptedRequestsAreAllDisplayed() {
         onView(withId(R.id.id_recycler_staff_item_requests))
-            .check(RecyclerViewItemCountAssertion(availableRequests.filter { it.status in listOf(ACCEPTED,DELIVERING,DELIVERED) }.size))
+            .check(RecyclerViewItemCountAssertion(availableRequests.filter {
+                it.status in listOf(
+                    ACCEPTED,
+                    DELIVERING,
+                    DELIVERED
+                )
+            }.size))
         onView(withId(R.id.id_change_request_status_right))
             .perform(click())
 
         onView(withId(R.id.id_recycler_staff_item_requests))
-            .check(RecyclerViewItemCountAssertion(availableRequests.filter { it.status in listOf(RETURN_REQUESTED,RETURNING,RETURNED) }.size))
+            .check(RecyclerViewItemCountAssertion(availableRequests.filter {
+                it.status in listOf(
+                    RETURN_REQUESTED,
+                    RETURNING,
+                    RETURNED
+                )
+            }.size))
     }
 
     @Test
-    fun statusIsCorrectlyUpdated(){
+    fun statusIsCorrectlyUpdated() {
         onView(withId(R.id.id_recycler_staff_item_requests)).perform(
             RecyclerViewActions.actionOnItemAtPosition<ItemRequestAdminAdapter.ItemViewHolder>(
                 0,
@@ -200,7 +212,8 @@ class StaffItemRequestsActivityTest {
         )
         Thread.sleep(100)
         assert(FakeDatabaseMaterialRequest.requests.values.any { it.status == DELIVERING })
-        var id = FakeDatabaseMaterialRequest.requests.entries.first{it.value.status == DELIVERING}.key
+        var id =
+            FakeDatabaseMaterialRequest.requests.entries.first { it.value.status == DELIVERING }.key
 
         onView(withId(R.id.id_recycler_staff_item_requests)).perform(
             RecyclerViewActions.actionOnItemAtPosition<ItemRequestAdminAdapter.ItemViewHolder>(
@@ -242,7 +255,7 @@ class StaffItemRequestsActivityTest {
 
         assert(FakeDatabaseMaterialRequest.requests.values.any { it.status == RETURNING })
 
-        id = FakeDatabaseMaterialRequest.requests.entries.first{it.value.status == RETURNING}.key
+        id = FakeDatabaseMaterialRequest.requests.entries.first { it.value.status == RETURNING }.key
 
 
         onView(withId(R.id.id_recycler_staff_item_requests)).perform(
@@ -286,7 +299,7 @@ class StaffItemRequestsActivityTest {
         Thread.sleep(100)
         assert(FakeDatabaseMaterialRequest.requests.values.any { it.status == RETURNING })
 
-        val request = FakeDatabaseMaterialRequest.requests.values.first{it.status == RETURNING}
+        val request = FakeDatabaseMaterialRequest.requests.values.first { it.status == RETURNING }
 
         val oldItems = FakeDatabaseItem.items.toMutableMap()
 
@@ -298,9 +311,9 @@ class StaffItemRequestsActivityTest {
         )
         Thread.sleep(100)
         assert(FakeDatabaseMaterialRequest.requests[request.requestId]!!.status == RETURNED)
-        for (itemId in request.items.entries){
+        for (itemId in request.items.entries) {
             val itemTriple = FakeDatabaseItem.items[itemId.key]
-            assert(oldItems[itemId.key]!!.third + itemId.value == itemTriple!!.third )
+            assert(oldItems[itemId.key]!!.third + itemId.value == itemTriple!!.third)
         }
     }
 

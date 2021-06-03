@@ -15,7 +15,8 @@ class ItemDatabase(private val db: DatabaseInterface) : ItemDatabaseInterface {
     override fun createItem(
         item: Item,
         total: Int
-    ): Observable<String> = db.addEntityAndGetId(Triple(item, total,total), ITEM_COLLECTION, ItemEntityAdapter)
+    ): Observable<String> =
+        db.addEntityAndGetId(Triple(item, total, total), ITEM_COLLECTION, ItemEntityAdapter)
 
     override fun removeItem(itemId: String): Observable<Boolean> =
         db.deleteEntity(itemId, ITEM_COLLECTION)
@@ -25,12 +26,17 @@ class ItemDatabase(private val db: DatabaseInterface) : ItemDatabaseInterface {
         total: Int,
         remaining: Int
     ): Observable<Boolean> =
-        db.setEntity(Triple(item,total,remaining), item.itemId!!, ITEM_COLLECTION, ItemEntityAdapter)
+        db.setEntity(
+            Triple(item, total, remaining),
+            item.itemId!!,
+            ITEM_COLLECTION,
+            ItemEntityAdapter
+        )
 
     override fun getItemsList(
         itemList: ObservableList<Triple<Item, Int, Int>>,
-        matcher : Matcher?,
-        ids : List<String>?
+        matcher: Matcher?,
+        ids: List<String>?
     ): Observable<Boolean> =
         db.getListEntity(itemList, ids, matcher, ITEM_COLLECTION, ItemEntityAdapter)
 

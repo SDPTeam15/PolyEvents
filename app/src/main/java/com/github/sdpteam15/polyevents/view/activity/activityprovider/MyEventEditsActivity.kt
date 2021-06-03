@@ -142,9 +142,9 @@ class MyEventEditsActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
             }
         }
         //Gets the item request of the user and then gets the item list
-        currentDatabase.eventDatabase!!.getEvents(null, null, eventList).observe(this) {
+        currentDatabase.eventDatabase.getEvents(null, null, eventList).observe(this) {
             if (it.value) {
-                currentDatabase.eventDatabase!!.getEventEdits(
+                currentDatabase.eventDatabase.getEventEdits(
                     {
                         it.whereEqualTo(DatabaseConstant.EventConstant.EVENT_NAME.value, userId)
                     },
@@ -190,7 +190,7 @@ class MyEventEditsActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
      */
     private val cancelEventRequest = { event: Event ->
         val l =
-            currentDatabase.eventDatabase!!.removeEventEdit(event.eventEditId!!)
+            currentDatabase.eventDatabase.removeEventEdit(event.eventEditId!!)
         l.observe(this) {
             if (it.value)
                 eventRequests.remove(event)
