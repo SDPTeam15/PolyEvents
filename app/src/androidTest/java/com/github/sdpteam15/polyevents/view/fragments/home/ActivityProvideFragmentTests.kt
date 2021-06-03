@@ -26,6 +26,7 @@ import com.github.sdpteam15.polyevents.view.activity.activityprovider.ItemReques
 import com.github.sdpteam15.polyevents.view.activity.activityprovider.MyEventEditsActivity
 import com.github.sdpteam15.polyevents.view.activity.activityprovider.MyItemRequestsActivity
 import com.github.sdpteam15.polyevents.view.activity.admin.EventManagementListActivity
+import org.hamcrest.Matchers
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -35,7 +36,6 @@ import org.mockito.kotlin.anyOrNull
 import org.mockito.Mockito.`when` as When
 
 class ActivityProvideFragmentTests {
-    lateinit var testUser: UserEntity
     lateinit var mockedDatabase: DatabaseInterface
     val uid = "testUid"
     val username = "JohnDoe"
@@ -43,12 +43,12 @@ class ActivityProvideFragmentTests {
 
     @Before
     fun setup() {
-        testUser = UserEntity(
+        val testUser = UserEntity(
             uid = uid,
             username = username,
             email = email
         )
-        testUser.userProfiles.add(UserProfile("testprofile", userRole = UserRole.ORGANIZER))
+        testUser.userProfiles.add(UserProfile("testprofile", userRole = UserRole.ADMIN))
         val observableUser = Observable(testUser)
 
         mockedDatabase = HelperTestFunction.defaultMockDatabase()
@@ -57,10 +57,17 @@ class ActivityProvideFragmentTests {
         Mockito.`when`(mockedDatabase.currentUserObservable).thenReturn(observableUser)
         Mockito.`when`(mockedDatabase.currentUser).thenReturn(testUser)
 
+        MainActivity.instance = null
+        MainActivity.selectedRole = UserRole.ADMIN
+
         val intent =
             Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
         ActivityScenario.launch<MainActivity>(intent)
 
+        Espresso.onView(ViewMatchers.withId(R.id.spinner_admin)).perform(ViewActions.click())
+        Espresso.onData(Matchers.anything())
+            .atPosition(1)
+            .perform(ViewActions.click())
         Intents.init()
     }
 

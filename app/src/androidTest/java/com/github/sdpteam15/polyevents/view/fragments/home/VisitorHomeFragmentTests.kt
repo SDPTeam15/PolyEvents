@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
+import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions
@@ -21,13 +22,13 @@ import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import com.github.sdpteam15.polyevents.view.activity.TimeTableActivity
+import org.hamcrest.Matchers
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 
 class VisitorHomeFragmentTests {
-
     lateinit var testUser: UserEntity
     lateinit var mockedDatabase: DatabaseInterface
     val uid = "testUid"
@@ -42,7 +43,7 @@ class VisitorHomeFragmentTests {
             email = email
         )
 
-        testUser.userProfiles.add(UserProfile("testprofile", userRole = UserRole.PARTICIPANT))
+        testUser.userProfiles.add(UserProfile("testprofile", userRole = UserRole.ADMIN))
         val observableUser = Observable(testUser)
 
         mockedDatabase = HelperTestFunction.defaultMockDatabase()
@@ -51,9 +52,17 @@ class VisitorHomeFragmentTests {
         Mockito.`when`(mockedDatabase.currentUserObservable).thenReturn(observableUser)
         Mockito.`when`(mockedDatabase.currentUser).thenReturn(testUser)
 
+        MainActivity.instance = null
+        MainActivity.selectedRole = UserRole.ADMIN
+
         val intent =
             Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
         ActivityScenario.launch<MainActivity>(intent)
+
+        Espresso.onView(ViewMatchers.withId(R.id.spinner_admin)).perform(click())
+        Espresso.onData(Matchers.anything())
+            .atPosition(3)
+            .perform(click())
 
         Intents.init()
     }

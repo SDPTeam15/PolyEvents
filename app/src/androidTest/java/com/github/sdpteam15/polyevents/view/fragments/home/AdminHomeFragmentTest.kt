@@ -60,6 +60,8 @@ class AdminHubFragmentTest {
         val intent =
             Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
         ActivityScenario.launch<MainActivity>(intent)
+
+        Thread.sleep(500)
         Intents.init()
     }
 
