@@ -22,7 +22,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/tvEventTitle"
+            android:id="@+id/tv_event_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -31,7 +31,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
         <ImageButton
-            android:id="@+id/idEditEventButton"
+            android:id="@+id/id_edit_event_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
@@ -39,31 +39,31 @@
             app:srcCompat="@drawable/ic_pencil"
             tools:ignore="ContentDescription" />
         <ImageButton
-            android:id="@+id/idDeleteEventButton"
+            android:id="@+id/id_delete_event_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/idEditEventButton"
+            app:layout_constraintTop_toBottomOf="@+id/id_edit_event_button"
             app:layout_constraintVertical_bias="1.0"
             app:srcCompat="@drawable/ic_clear"
             tools:ignore="ContentDescription" />
         <TextView
-            android:id="@+id/tvEventStartDate"
+            android:id="@+id/id_tv_event_start_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvEventTitle" />
+            app:layout_constraintTop_toBottomOf="@+id/tv_event_title" />
         <TextView
-            android:id="@+id/tvEventEndDate"
+            android:id="@+id/id_tv_end_date_edit_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvEventStartDate" />
+            app:layout_constraintTop_toBottomOf="@+id/id_tv_event_start_date" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

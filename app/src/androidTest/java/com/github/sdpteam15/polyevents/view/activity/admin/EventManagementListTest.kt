@@ -196,7 +196,7 @@ class EventManagementListTest {
         )
         Espresso.onView(ViewMatchers.withId(R.id.recycler_events_list_admin)).perform(
             RecyclerViewActions.actionOnItemAtPosition<EventListAdapter.CustomViewHolder<EventListAdapter.EventViewHolder>>(
-                1, TestHelper.clickChildViewWithId(R.id.idEditEventButton)
+                1, TestHelper.clickChildViewWithId(R.id.id_edit_event_button)
             )
         )
 
