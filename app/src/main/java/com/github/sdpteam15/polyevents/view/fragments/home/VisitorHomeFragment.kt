@@ -6,9 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.RelativeLayout
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
@@ -20,7 +17,6 @@ import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication.Companion.inTest
 import com.github.sdpteam15.polyevents.view.activity.EventActivity
-import com.github.sdpteam15.polyevents.view.activity.ItemRequestActivity
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import com.github.sdpteam15.polyevents.view.activity.TimeTableActivity
 import com.github.sdpteam15.polyevents.view.adapter.EventItemAdapter
@@ -68,9 +64,12 @@ class VisitorHomeFragment : Fragment() {
             recyclerView.adapter!!.notifyDataSetChanged()
         }
 
-        if(!inTest)
+        if (!inTest)
             HelperFunctions.getLocationPermission(requireActivity())
-        MainActivity.instance!!.switchRoles(fragmentView!!.findViewById(R.id.spinner_visitor), UserRole.PARTICIPANT)
+        MainActivity.instance!!.switchRoles(
+            fragmentView!!.findViewById(R.id.spinner_visitor),
+            UserRole.PARTICIPANT
+        )
 
         fragmentView.findViewById<Button>(R.id.id_timetable_button).setOnClickListener {
             val intent = Intent(activity, TimeTableActivity::class.java)
