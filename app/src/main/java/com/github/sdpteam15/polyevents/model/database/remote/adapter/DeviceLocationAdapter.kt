@@ -27,8 +27,6 @@ object DeviceLocationAdapter : AdapterInterface<DeviceLocation> {
                 document[LocationConstant.LOCATIONS_POINT_LATITUDE.value] as Double,
                 document[LocationConstant.LOCATIONS_POINT_LONGITUDE.value] as Double,
             ),
-            time = HelperFunctions.dateToLocalDateTime(
-                (document[LocationConstant.LOCATIONS_TIME.value] as Timestamp?)?.toDate()
-            )
+            time = HelperFunctions.dateToLocalDateTime(document[LocationConstant.LOCATIONS_TIME.value])
         )
 }

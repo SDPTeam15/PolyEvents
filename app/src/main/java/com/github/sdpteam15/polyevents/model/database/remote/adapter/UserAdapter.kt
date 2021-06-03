@@ -33,9 +33,7 @@ object UserAdapter : AdapterInterface<UserEntity> {
         uid = id,
         username = document[USER_USERNAME.value] as String?,
         name = document[USER_NAME.value] as String?,
-        birthDate = HelperFunctions.dateToLocalDateTime(
-            (document[USER_BIRTH_DATE.value] as Timestamp?)?.toDate()
-        )?.toLocalDate(),
+        birthDate = HelperFunctions.dateToLocalDateTime(document[USER_BIRTH_DATE.value])?.toLocalDate(),
         email = document[USER_EMAIL.value] as String?,
         telephone = document[USER_PHONE.value] as String?,
         profiles = (document[USER_PROFILES.value] as List<String>).toMutableList()

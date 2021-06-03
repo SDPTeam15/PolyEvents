@@ -20,6 +20,7 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.Timestamp
 import java.time.*
 import java.util.*
 
@@ -194,8 +195,12 @@ object HelperFunctions {
      * @param date the Date instance to convert
      * @return the corresponding LocalDateTime
      */
-    fun dateToLocalDateTime(date: Date?): LocalDateTime? =
-        date?.let { LocalDateTime.ofInstant(it.toInstant(), ZoneId.systemDefault()) }
+    fun dateToLocalDateTime(date: Any?): LocalDateTime? =
+        when(date){
+            is Timestamp -> LocalDateTime.ofInstant(date.toDate().toInstant(), ZoneId.systemDefault())
+            is Date -> LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault())
+            else -> null
+        }
 
     /**
      * Convert
