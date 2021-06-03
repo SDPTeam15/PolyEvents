@@ -47,7 +47,7 @@ data class UserEntity(
             synchronized(this) {
                 if (!loadSuccess && !isLoading) {
                     isLoading = true
-                    Database.currentDatabase.userDatabase!!.getUserProfilesList(field, this)
+                    Database.currentDatabase.userDatabase.getUserProfilesList(field, this)
                         .observeOnce {
                             synchronized(this) {
                                 isLoading = false

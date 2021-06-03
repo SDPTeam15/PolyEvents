@@ -50,7 +50,7 @@ class ZoneManagementTest {
     @Before
     fun setup() {
         mockedDatabase = HelperTestFunction.defaultMockDatabase()
-        mockedZoneDatabase = mockedDatabase.zoneDatabase!!
+        mockedZoneDatabase = mockedDatabase.zoneDatabase
 
         Database.currentDatabase = mockedDatabase
 

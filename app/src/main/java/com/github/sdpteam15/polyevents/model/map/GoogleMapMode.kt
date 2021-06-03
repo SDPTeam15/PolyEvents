@@ -7,6 +7,7 @@ object GoogleMapMode {
     const val DEFAULT_ZONE_STROKE_COLOR = Color.BLACK
     const val SELECTED_ZONE_STROKE_COLOR = Color.BLUE
     const val EDITED_ZONE_STROKE_COLOR = Color.GREEN
+
     /**
      * Color all the areas of a zone to a certain color
      * @param idZone id of the zone to color

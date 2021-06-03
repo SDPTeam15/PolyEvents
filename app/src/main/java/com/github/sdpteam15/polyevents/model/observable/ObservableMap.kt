@@ -27,7 +27,7 @@ class ObservableMap<K, T>(val creator: Any? = null) : MutableMap<K, T> {
         val info: Info,
         val args: Any?,
         sender: Any?
-    ) : Observable.UpdateValue<Map<K, T>>(value, sender){
+    ) : Observable.UpdateValue<Map<K, T>>(value, sender) {
         override fun toString() = "value:'$value', info:$info, args:'$args', sender:'$sender'"
     }
 

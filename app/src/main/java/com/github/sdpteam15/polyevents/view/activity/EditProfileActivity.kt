@@ -75,7 +75,7 @@ class EditProfileActivity : AppCompatActivity() {
             lastName = profile.profileName ?: ""
             name.setText(profile.profileName ?: "")
         }
-        currentDatabase.userDatabase!!.getProfileById(updater, pid)
+        currentDatabase.userDatabase.getProfileById(updater, pid)
 
         cancel.setOnClickListener {
             onBackPressed()
@@ -126,14 +126,14 @@ class EditProfileActivity : AppCompatActivity() {
         }
     }
 
-    fun rankToString(rank: UserRole): String {
-        return when (rank) {
+    fun rankToString(rank: UserRole): String =
+        when (rank) {
             UserRole.ADMIN -> resources.getStringArray(R.array.Ranks)[0]
             UserRole.ORGANIZER -> resources.getStringArray(R.array.Ranks)[1]
             UserRole.STAFF -> resources.getStringArray(R.array.Ranks)[2]
             UserRole.PARTICIPANT -> resources.getStringArray(R.array.Ranks)[3]
         }
-    }
+
 
     private fun stringToRank(rank: String): UserRole {
         when (rank) {

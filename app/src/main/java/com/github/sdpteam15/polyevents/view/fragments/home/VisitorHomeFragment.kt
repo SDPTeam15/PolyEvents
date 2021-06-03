@@ -43,7 +43,7 @@ class VisitorHomeFragment : Fragment() {
         listUpcomingEventsLayout =
             fragmentView.findViewById<LinearLayout>(R.id.id_upcoming_events_list)
 
-        currentDatabase.eventDatabase!!.getEvents(null, NUMBER_UPCOMING_EVENTS.toLong(), events)
+        currentDatabase.eventDatabase.getEvents(null, NUMBER_UPCOMING_EVENTS.toLong(), events)
             .observe(this) {
                 if (!it.value) {
                     HelperFunctions.showToast("Failed to load events", fragmentView.context)
@@ -53,9 +53,12 @@ class VisitorHomeFragment : Fragment() {
             updateContent()
         }
 
-        if(!inTest)
+        if (!inTest)
             HelperFunctions.getLocationPermission(requireActivity())
-        MainActivity.instance!!.switchRoles(fragmentView!!.findViewById(R.id.spinner_visitor), UserRole.PARTICIPANT)
+        MainActivity.instance!!.switchRoles(
+            fragmentView!!.findViewById(R.id.spinner_visitor),
+            UserRole.PARTICIPANT
+        )
 
         fragmentView.findViewById<Button>(R.id.id_timetable_button).setOnClickListener {
             val intent = Intent(activity, TimeTableActivity::class.java)

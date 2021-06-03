@@ -18,7 +18,6 @@ import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 /**
  * [Fragment] subclass representing the login page allowing the user to connect to the application
@@ -65,12 +64,12 @@ class LoginFragment : Fragment() {
                         val application = requireActivity().application as PolyEventsApplication
                         application.applicationScope.launch(Dispatchers.IO) {
                             LocalDatabase.populateDatabaseWithUserEvents(
-                                application.database.eventDao(),
+                                application.localDatabase.eventDao(),
                                 application.applicationScope
                             )
 
                             LocalDatabase.populateDatabaseWithUserSettings(
-                                application.database.userSettingsDao(),
+                                application.localDatabase.userSettingsDao(),
                                 application.applicationScope
                             )
                         }
@@ -109,7 +108,7 @@ class LoginFragment : Fragment() {
      */
     private fun createAccountAndRedirect() {
         currentDatabase
-            .userDatabase!!
+            .userDatabase
             .firstConnexion(
                 currentDatabase.currentUser!!
             )

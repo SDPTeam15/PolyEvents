@@ -24,12 +24,12 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableMap
  * @param deleteListener What to do with the deleted items
  */
 class EventListAdapter(
-        context: Context,
-        lifecycleOwner: LifecycleOwner,
-        private val isOrganiser: Boolean,
-        private val allEvents: ObservableMap<String, Pair<String, ObservableList<Event>>>,
-        private val modifyListener: (String) -> Unit,
-        private val deleteListener: (String, Event) -> Unit
+    context: Context,
+    lifecycleOwner: LifecycleOwner,
+    private val isOrganiser: Boolean,
+    private val allEvents: ObservableMap<String, Pair<String, ObservableList<Event>>>,
+    private val modifyListener: (String) -> Unit,
+    private val deleteListener: (String, Event) -> Unit
 ) : RecyclerView.Adapter<EventListAdapter.CustomViewHolder<*>>() {
     private var isZoneOpen = mutableMapOf<String, Boolean>()
     private val inflater = LayoutInflater.from(context)
@@ -48,7 +48,7 @@ class EventListAdapter(
 
 
     abstract inner class CustomViewHolder<T>(view: View) :
-            RecyclerView.ViewHolder(view) {
+        RecyclerView.ViewHolder(view) {
         abstract fun bind(value: T)
     }
 
@@ -57,7 +57,7 @@ class EventListAdapter(
      * Takes the corresponding item type "tab" view
      */
     inner class ZoneViewHolder(private val view: View) :
-            CustomViewHolder<String>(view) {
+        CustomViewHolder<String>(view) {
         private val zoneName = view.findViewById<TextView>(R.id.id_zone_name_text)
 
         override fun bind(value: String) {
@@ -74,7 +74,7 @@ class EventListAdapter(
      * Takes the corresponding item "tab" view
      */
     inner class EventViewHolder(private val view: View) :
-            CustomViewHolder<Event>(view) {
+        CustomViewHolder<Event>(view) {
 
         private lateinit var event: Event
 

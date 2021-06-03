@@ -29,7 +29,7 @@ data class UserProfile(
     var userEntity: ObservableList<UserEntity> = ObservableList()
         get() {
             if (!loadSuccess)
-                Database.currentDatabase.userDatabase!!.getProfilesUserList(field, this)
+                Database.currentDatabase.userDatabase.getProfilesUserList(field, this)
                     .observeOnce {
                         loadSuccess = it.value
                     }

@@ -15,13 +15,13 @@ data class RouteNode(
     var id: String?,
     val latitude: Double,
     val longitude: Double,
-    var areaId: String ? = null
+    var areaId: String? = null
 ) : Attachable {
     /**
      * Returns the latitude and longitude of the RouteNode
      */
     fun toLatLng(): LatLng {
-        return LatLng(latitude,longitude)
+        return LatLng(latitude, longitude)
     }
 
     companion object {
@@ -32,14 +32,15 @@ data class RouteNode(
          * @return the resulting RouteNode
          */
         fun fromLatLong(latLng: LatLng, areaId: String? = null): RouteNode =
-            RouteNode(null,latLng.latitude,latLng.longitude,areaId)
+            RouteNode(null, latLng.latitude, latLng.longitude, areaId)
     }
 
-    override fun getAttachedNewPoint(position: LatLng, angle: Double?): Pair<RouteNode, Double>
-        = Pair(this, euclideanDistance(position, toLatLng()))
+    override fun getAttachedNewPoint(position: LatLng, angle: Double?): Pair<RouteNode, Double> =
+        Pair(this, euclideanDistance(position, toLatLng()))
 
     override fun splitOnIntersection(
         newEdges: MutableList<RouteEdge>,
         removeEdges: MutableList<RouteEdge>
-    ) { }
+    ) {
+    }
 }

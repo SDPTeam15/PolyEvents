@@ -5,6 +5,7 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.intent.Intents
@@ -79,8 +80,8 @@ class ZoneManagementListTest {
         )
 
         Mockito.`when`(zoneDatabase.getAllZones(anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
-            (it.arguments[2] as ObservableList<Zone>?)?.clear()
-            (it.arguments[2] as ObservableList<Zone>?)?.addAll(zones)
+            (it.arguments[0] as ObservableList<Zone>?)?.clear()
+            (it.arguments[0] as ObservableList<Zone>?)?.addAll(zones)
             obsValue
         }
         When(mockedDatabase.currentUser).thenReturn(testUser)

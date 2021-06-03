@@ -20,6 +20,7 @@ import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.google.firebase.auth.AuthResult
 import org.junit.After
 import org.junit.Before
@@ -163,12 +164,15 @@ class DatabaseHelperTest {
         }
         val mockQuery2 = mock(Query::class.java)
         When(mockQuery2.whereEqualTo(anyOrNull(), anyOrNull())).thenAnswer {
-            assertEquals( DatabaseConstant.EventConstant.EVENT_ZONE_ID.value,it.arguments[0])
+            assertEquals(DatabaseConstant.EventConstant.EVENT_ZONE_ID.value, it.arguments[0])
             mockQuery2
         }
         val mockQuery3 = mock(Query::class.java)
         When(mockQuery3.whereEqualTo(anyOrNull(), anyOrNull())).thenAnswer {
-            assertEquals(DatabaseConstant.MaterialRequestConstant.MATERIAL_REQUEST_EVENT_ID.value, it.arguments[0] )
+            assertEquals(
+                DatabaseConstant.MaterialRequestConstant.MATERIAL_REQUEST_EVENT_ID.value,
+                it.arguments[0]
+            )
             mockQuery3
         }
 
@@ -235,6 +239,7 @@ class DatabaseHelperTest {
     @Before
     @Suppress("UNCHECKED_CAST")
     fun setup() {
+        PolyEventsApplication.inTest = true
 
         UserLogin.currentUserLogin =
             mock(UserLoginInterface::class.java) as UserLoginInterface<AuthResult>
