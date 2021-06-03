@@ -142,7 +142,7 @@ object ZoneAreaMapHelper {
     /**
      * Clears the temporary variables to have a clean start for editing the area
      */
-    fun createNewArea(context: Context) {
+    fun createNewArea(context: Context?) {
         if(deleteMode)
             deleteMode(context)
         if(editMode)
@@ -178,7 +178,7 @@ object ZoneAreaMapHelper {
     /**
      * Remove an area
      */
-    fun deleteMode(context: Context) {
+    fun deleteMode(context: Context?) {
         if(editMode)
             editMode(context)
         if(tempPoly != null){
@@ -608,7 +608,7 @@ object ZoneAreaMapHelper {
     /**
      * Switches the edit mode, and remove/recreates the markers for edition purpose
      */
-    fun editMode(context: Context) {
+    fun editMode(context: Context?) {
         if(deleteMode)
             deleteMode(context)
         editMode = !editMode
@@ -619,14 +619,14 @@ object ZoneAreaMapHelper {
                     Pair(a.value.second.title, a.value.second.position)
                 a.value.second.remove()
             }
-            GoogleMapMode.colorAreas(
+            colorAreas(
                 editingZone!!,
                 GoogleMapMode.EDITED_ZONE_STROKE_COLOR
             )
         } else {
-            GoogleMapMode.colorAreas(
+            colorAreas(
                 editingZone!!,
-                GoogleMapMode.DEFAULT_ZONE_STROKE_COLOR
+                DEFAULT_ZONE_STROKE_COLOR
             )
             restoreMarkers(context)
         }
