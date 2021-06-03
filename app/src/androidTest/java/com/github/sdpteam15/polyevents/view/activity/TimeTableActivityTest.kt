@@ -193,9 +193,11 @@ class TimeTableActivityTest {
         Thread.sleep(1000)
         assertEquals(1, TimeTableActivity.instance!!.displayedViews.size)
         val view = TimeTableActivity.instance!!.displayedViews.first()
-
+        Thread.sleep(100)
         Espresso.onView(ViewMatchers.withId(view.id)).perform(ViewActions.click())
-
+        Thread.sleep(100)
+        Espresso.pressBack()
+        Thread.sleep(100)
     }
 
 }
