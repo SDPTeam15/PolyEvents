@@ -109,11 +109,11 @@ class ZoneManagementListTest {
         Espresso.onView(ViewMatchers.withId(R.id.btnNewZone)).perform(click())
         Intents.intended(IntentMatchers.hasComponent(ZoneManagementActivity::class.java.name))
 
-        Espresso.onView(ViewMatchers.withId(R.id.btnManage))
+        Espresso.onView(ViewMatchers.withId(R.id.id_btn_manage))
             .check(ViewAssertions.matches(ViewMatchers.withText("Create zone")))
-        Espresso.onView(ViewMatchers.withId(R.id.zoneManagementDescription))
+        Espresso.onView(ViewMatchers.withId(R.id.id_zone_management_description_edittext))
             .check(ViewAssertions.matches(ViewMatchers.withText("")))
-        Espresso.onView(ViewMatchers.withId(R.id.zoneManagementName))
+        Espresso.onView(ViewMatchers.withId(R.id.id_zone_management_name_edittext))
             .check(ViewAssertions.matches(ViewMatchers.withText("")))
     }
 
