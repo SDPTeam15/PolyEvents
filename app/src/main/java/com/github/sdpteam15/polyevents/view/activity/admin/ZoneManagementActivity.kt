@@ -2,6 +2,7 @@ package com.github.sdpteam15.polyevents.view.activity.admin
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -237,5 +238,28 @@ class ZoneManagementActivity : AppCompatActivity() {
             return false
         }
         return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+        //handles the back arrow as the back button of the phone
+        if (id == android.R.id.home) {
+            onBackPressed()
+        }
+        return true
+    }
+
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        //Goes to the database to get the zone as it was before modification
+        ZoneAreaMapHelper.removeZone(zoneId)
+        val obs:Observable<Zone> = Observable()
+        obs.observe{
+            if(it.value != null){
+                ZoneAreaMapHelper.waitingZones.add(it.value)
+            }
+        }
+        currentDatabase.zoneDatabase!!.getZoneInformation(zoneId, obs)
     }
 }
