@@ -3,7 +3,6 @@ package com.github.sdpteam15.polyevents.fakedatabase
 import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.objects.ItemDatabaseInterface
 import com.github.sdpteam15.polyevents.model.entity.Item
-import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 

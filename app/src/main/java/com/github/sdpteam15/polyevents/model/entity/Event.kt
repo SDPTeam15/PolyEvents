@@ -1,7 +1,6 @@
 package com.github.sdpteam15.polyevents.model.entity
 
 import android.graphics.Bitmap
-import com.github.sdpteam15.polyevents.helper.HelperFunctions.thenReturn
 import com.github.sdpteam15.polyevents.model.exceptions.MaxAttendeesException
 import com.google.firebase.firestore.IgnoreExtraProperties
 import java.time.LocalDateTime
@@ -33,7 +32,7 @@ data class Event(
     var eventId: String? = null,
     val eventName: String? = null,
     val organizer: String? = null,
-    val zoneId:String?=null,
+    val zoneId:String? = null,
     val zoneName: String? = null,
     var description: String? = null,
     // TODO: handle event icons (probably during event creation)

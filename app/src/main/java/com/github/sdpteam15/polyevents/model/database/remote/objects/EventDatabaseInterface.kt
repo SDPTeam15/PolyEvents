@@ -5,7 +5,6 @@ import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Rating
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
-import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 
@@ -109,7 +108,6 @@ interface EventDatabaseInterface {
     /**
      * Get list of event edits
      * @param matcher Matcher for the search
-     * @param limit Maximum number of results
      * @param eventList The list of event that will be set when the DB returns the information
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */

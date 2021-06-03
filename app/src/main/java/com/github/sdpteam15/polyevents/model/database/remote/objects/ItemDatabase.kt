@@ -4,11 +4,10 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.Co
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.ITEM_TYPE_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ItemConstants.ITEM_REMAINING
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
-import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.ItemEntityAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.ItemTypeAdapter
+import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.entity.Item
-import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 

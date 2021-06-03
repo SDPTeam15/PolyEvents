@@ -12,7 +12,6 @@ import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.matcher.QueryDocumentSnapshot
 import com.github.sdpteam15.polyevents.model.database.remote.objects.*
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
-import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication

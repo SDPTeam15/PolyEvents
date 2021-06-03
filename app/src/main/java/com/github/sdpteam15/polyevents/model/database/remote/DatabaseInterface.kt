@@ -1,12 +1,10 @@
 package com.github.sdpteam15.polyevents.model.database.remote
 
-import com.github.sdpteam15.polyevents.model.*
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterToDocumentInterface
 import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.objects.*
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
-import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
@@ -127,7 +125,7 @@ interface DatabaseInterface {
 
     /**
      * Set a list Entity to the data base
-     * @param element The id and element to set or null to delete the element from the database
+     * @param elements The list of id and element pairs to set or null to delete the element from the database
      * @param collection The collection in which we want to set the given element
      * @param adapter The adapter converting the element into a HashMap recognised by the database
      * @return An observer that will be set to true if the communication with the DB is over and no error

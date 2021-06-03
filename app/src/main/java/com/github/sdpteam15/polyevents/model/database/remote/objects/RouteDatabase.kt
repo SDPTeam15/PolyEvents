@@ -7,7 +7,6 @@ import com.github.sdpteam15.polyevents.model.entity.RouteNode
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.model.observable.ObservableMap
 
 class RouteDatabase(private val db: DatabaseInterface) : RouteDatabaseInterface {
     override fun getRoute(
