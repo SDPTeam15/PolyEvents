@@ -16,10 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
-import com.github.sdpteam15.polyevents.model.entity.Event
-import com.github.sdpteam15.polyevents.model.entity.Item
-import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
-import com.github.sdpteam15.polyevents.model.entity.UserEntity
+import com.github.sdpteam15.polyevents.model.entity.*
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
@@ -34,6 +31,7 @@ class ItemRequestManagementActivity : AppCompatActivity() {
     private val requests = ObservableList<MaterialRequest>()
     private val userNames = ObservableMap<String, String>()
     private val itemNames = ObservableMap<String, String>()
+    private val zoneNameFromEventId = ObservableMap<String,String>()
     private val items = ObservableList<Triple<Item, Int, Int>>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,6 +70,7 @@ class ItemRequestManagementActivity : AppCompatActivity() {
                 requests,
                 userNames,
                 itemNames,
+                zoneNameFromEventId,
                 acceptMaterialRequest,
                 declineMaterialRequest
             )
@@ -89,9 +88,28 @@ class ItemRequestManagementActivity : AppCompatActivity() {
                                 HelperFunctions.showToast("Failed to get the list of items", this)
                             }
                         }
-                    requests.forEach{
-                        val eventObservable = Observable<Event>()
-                        currentDatabase.eventDatabase.getEventFromId(it.eventId,eventObservable).observeOnce {  }
+                    val sentEventIds = mutableListOf<String>()
+                    for (request in requests) {
+                        if (request.eventId !in sentEventIds) {
+                            sentEventIds.add(request.eventId)
+                            val event = Observable<Event>()
+                            val zone = Observable<Zone>()
+                            currentDatabase.eventDatabase.getEventFromId(request.eventId, event)
+                                .observeOnce(this) {
+                                    if (it.value) {
+                                        currentDatabase.zoneDatabase.getZoneInformation(
+                                            event.value!!.zoneId!!,
+                                            zone
+                                        ).observeOnce(this) {
+                                            if (it.value) {
+                                                zoneNameFromEventId[event.value!!.eventId!!] =
+                                                    zone.value!!.zoneName!!
+                                            }
+                                        }
+                                    }
+                                }
+                        }
+
                     }
                 }
             }

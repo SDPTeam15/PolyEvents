@@ -2,18 +2,20 @@ package com.github.sdpteam15.polyevents.view.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
+import android.graphics.Color.*
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.INVISIBLE
-import android.view.View.VISIBLE
+import android.view.View.*
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.ORANGE
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
+import com.github.sdpteam15.polyevents.model.entity.MaterialRequest.Status.*
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
 import java.time.format.DateTimeFormatter
@@ -32,6 +34,7 @@ class ItemRequestAdminAdapter(
     private val requests: ObservableList<MaterialRequest>,
     private val userNames: ObservableMap<String, String>,
     private val itemNames: ObservableMap<String, String>,
+    private val zoneNameFromEventId: ObservableMap<String, String>,
     private val onAcceptListener: (MaterialRequest) -> Unit,
     private val onRefuseListener: (MaterialRequest) -> Unit
 ) : RecyclerView.Adapter<ItemRequestAdminAdapter.ItemViewHolder>() {
@@ -46,6 +49,9 @@ class ItemRequestAdminAdapter(
             notifyDataSetChanged()
         }
         userNames.observe(lifecycleOwner) {
+            notifyDataSetChanged()
+        }
+        zoneNameFromEventId.observe(lifecycleOwner) {
             notifyDataSetChanged()
         }
     }
@@ -63,6 +69,10 @@ class ItemRequestAdminAdapter(
         private val btnAccept = view.findViewById<ImageButton>(R.id.id_request_accept)
         private val btnRefuse = view.findViewById<ImageButton>(R.id.id_request_refuse)
         private val status = view.findViewById<TextView>(R.id.id_request_status)
+        private val zone = view.findViewById<TextView>(R.id.id_request_zone)
+        private val staffInCharge = view.findViewById<TextView>(R.id.id_request_staffName)
+        private val adminMessage = view.findViewById<TextView>(R.id.id_admin_message)
+        private val refusalLayout = view.findViewById<LinearLayout>(R.id.id_reason_of_refusal)
 
         /**
          * Binds the values of each value of a material request to a view
@@ -78,18 +88,31 @@ class ItemRequestAdminAdapter(
                 .joinToString(separator = "\n") { it }
             status.setTextColor(
                 when (request.status) {
-                    MaterialRequest.Status.ACCEPTED -> Color.GREEN
-                    MaterialRequest.Status.PENDING -> Color.BLACK
-                    MaterialRequest.Status.REFUSED -> Color.RED
-                    else -> Color.BLACK //should never happen
+                    ACCEPTED -> GREEN
+                    PENDING -> BLACK
+                    REFUSED -> RED
+                    DELIVERING -> CYAN
+                    DELIVERED -> GREEN
+                    RETURN_REQUESTED -> ORANGE
+                    RETURNING -> CYAN
+                    RETURNED -> GREEN
+                    CANCELED -> BLACK
                 }
             )
             status.text = request.status.toString()
-
+            zone.text = "Zone : ${zoneNameFromEventId[request.eventId]}"
             btnAccept.visibility =
-                if (request.status == MaterialRequest.Status.PENDING) VISIBLE else INVISIBLE
+                if (request.status == PENDING) VISIBLE else INVISIBLE
             btnRefuse.visibility =
-                if (request.status == MaterialRequest.Status.PENDING) VISIBLE else INVISIBLE
+                if (request.status == PENDING) VISIBLE else INVISIBLE
+            if (request.staffInChargeId == null){
+                staffInCharge.visibility = GONE
+            }else{
+                staffInCharge.visibility = VISIBLE
+                staffInCharge.text = "Staff : ${userNames[request.staffInChargeId]}"
+            }
+            refusalLayout.visibility = if (request.adminMessage != null) VISIBLE else GONE
+            adminMessage.text = request.adminMessage
             btnRefuse.setOnClickListener { onRefuseListener(request) }
             btnAccept.setOnClickListener { onAcceptListener(request) }
         }

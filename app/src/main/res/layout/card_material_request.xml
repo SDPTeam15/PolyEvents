@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -24,6 +23,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -55,6 +55,7 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/id_request_organiser" />
+
             <TextView
                 android:id="@+id/id_request_zone"
                 android:layout_width="wrap_content"
@@ -64,6 +65,7 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/id_request_time" />
+
             <TextView
                 android:id="@+id/id_request_status"
                 android:layout_width="wrap_content"
@@ -73,6 +75,7 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/id_request_zone" />
+
             <TextView
                 android:id="@+id/id_request_staffName"
                 android:layout_width="wrap_content"
@@ -92,6 +95,7 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Small"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/id_request_staffName" />
+
             <LinearLayout
                 android:id="@+id/id_reason_of_refusal"
                 android:layout_width="match_parent"
@@ -115,9 +119,9 @@
                     android:id="@+id/id_admin_message"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginStart="4dp" />
             </LinearLayout>
+
             <ImageButton
                 android:id="@+id/id_request_accept"
                 android:layout_width="wrap_content"
