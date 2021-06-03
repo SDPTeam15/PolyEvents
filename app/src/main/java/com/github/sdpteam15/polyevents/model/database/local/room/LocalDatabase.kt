@@ -1,7 +1,6 @@
 package com.github.sdpteam15.polyevents.model.database.local.room
 
 import android.content.Context
-import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -121,7 +120,6 @@ abstract class LocalDatabase : RoomDatabase() {
          * Populate the database in a new coroutine.
          */
         suspend fun populateDatabaseWithUserEvents(eventDao: EventDao, scope: Scope) {
-            Log.d(TAG, "Populating the database with user's events")
 
             // TODO: need to clear notifications for events here or in MainActivity
             eventDao.deleteAll()
@@ -148,7 +146,6 @@ abstract class LocalDatabase : RoomDatabase() {
                                     )*/
                         },
                     )
-                Log.d(TAG, "Finished retrieving from remote")
             }
         }
 

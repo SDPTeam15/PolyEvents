@@ -1,4 +1,6 @@
-// Remove as the don't pass on Cirrus
+// These tests pass locally but on Cirrus.
+// We find pertinent to keep the class as commented so that
+// if at one point in time we get an issue, we have the proof the cache is indeed working properly
 
 /*
 package com.github.sdpteam15.polyevents.database
