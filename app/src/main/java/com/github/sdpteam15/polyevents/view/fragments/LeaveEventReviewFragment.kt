@@ -126,7 +126,7 @@ class LeaveEventReviewFragment(val eventId: String?, val reviewHasChanged: Revie
                     getString(R.string.delete_review_failed),
                     context
                 )
-            }else{
+            } else {
                 HelperFunctions.showToast(getString(R.string.event_review_delete), context)
                 reviewHasChanged.onLeaveReview()
                 dismiss()
