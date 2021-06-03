@@ -57,7 +57,7 @@ class MyLocationTests {
         Espresso.onView(ViewMatchers.withId(R.id.ic_home)).perform(click())
         Espresso.onView(ViewMatchers.withId(R.id.id_fragment_home_admin))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withId(R.id.btnRedirectZoneManagement)).perform(click())
+        Espresso.onView(ViewMatchers.withId(R.id.id_zone_management_button)).perform(click())
         Intents.init()
     }
 

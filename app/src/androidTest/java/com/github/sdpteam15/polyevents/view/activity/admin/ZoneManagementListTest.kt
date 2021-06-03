@@ -9,6 +9,7 @@ import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
+import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.sdpteam15.polyevents.HelperTestFunction
@@ -86,7 +87,7 @@ class ZoneManagementListTest {
         Espresso.onView(ViewMatchers.withId(R.id.ic_home)).perform(click())
         Espresso.onView(ViewMatchers.withId(R.id.id_fragment_home_admin))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withId(R.id.btnRedirectZoneManagement)).perform(click())
+        Espresso.onView(ViewMatchers.withId(R.id.id_zone_management_button)).perform(click())
         Intents.init()
     }
 
@@ -138,7 +139,8 @@ class ZoneManagementListTest {
                 0, TestHelper.clickChildViewWithId(R.id.id_zone_remove_item)
             )
         )
-        Espresso.onView(ViewMatchers.withText("YES")).perform(click())
+        Espresso.onView(ViewMatchers.withText("YES")).inRoot(isDialog()).perform(click())
+        Thread.sleep(500)
         Espresso.onView(ViewMatchers.withId(R.id.recycler_zones_list))
             .check(RecyclerViewItemCountAssertion(zones.size-1))
     }

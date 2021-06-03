@@ -57,7 +57,7 @@ class EventManagementListActivity : AppCompatActivity() {
         recyclerView.setHasFixedSize(false)
 
         // Add the lister on the create button
-        findViewById<ImageButton>(R.id.btnNewEvent).setOnClickListener {
+        findViewById<ImageButton>(R.id.id_new_event_button).setOnClickListener {
             val intent = Intent(this, EventManagementActivity::class.java)
             if (isOrganiser) {
                 intent.putExtra(INTENT_MANAGER, "MANAGER")

@@ -89,28 +89,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        //Set the basic fragment to the home one or to admin hub if it is logged in
-        //TODO Add a condition to see if the user is an admin or not and if so, redirect him to the admin hub
-        redirectHome()
-
-        //Add a listener to the menu to switch between fragments
-        findViewById<BottomNavigationView>(R.id.navigation_bar).setOnNavigationItemSelectedListener {
-            when (it.itemId) {
-                R.id.ic_map -> HelperFunctions.changeFragment(this, fragments[R.id.ic_map])
-                R.id.ic_list -> HelperFunctions.changeFragment(this, fragments[R.id.ic_list])
-                R.id.ic_login -> if (currentUser == null) {
-                    HelperFunctions.changeFragment(this, fragments[R.id.ic_login])
-                } else {
-                    HelperFunctions.changeFragment(this, fragments[R.id.id_fragment_profile])
-                }
-                R.id.ic_settings -> HelperFunctions.changeFragment(this, fragments[R.id.ic_settings])
-                else ->
-                    //TODO Add a condition to see if the user is an admin or not and if so, redirect him to the admin hub
-                    redirectHome()
-            }
-            true
-        }
-
         currentUserObservable!!.observe(this) {
             it.value.roles.observe(this) {
                 roles.clear()
@@ -134,6 +112,31 @@ class MainActivity : AppCompatActivity() {
                 roles.addAll(list)
             }
         }
+
+
+        //Set the basic fragment to the home one or to admin hub if it is logged in
+        //TODO Add a condition to see if the user is an admin or not and if so, redirect him to the admin hub
+        redirectHome()
+
+        //Add a listener to the menu to switch between fragments
+        findViewById<BottomNavigationView>(R.id.navigation_bar).setOnNavigationItemSelectedListener {
+            when (it.itemId) {
+                R.id.ic_map -> HelperFunctions.changeFragment(this, fragments[R.id.ic_map])
+                R.id.ic_list -> HelperFunctions.changeFragment(this, fragments[R.id.ic_list])
+                R.id.ic_login -> if (currentUser == null) {
+                    HelperFunctions.changeFragment(this, fragments[R.id.ic_login])
+                } else {
+                    HelperFunctions.changeFragment(this, fragments[R.id.id_fragment_profile])
+                }
+                R.id.ic_settings -> HelperFunctions.changeFragment(this, fragments[R.id.ic_settings])
+                else ->
+                    //TODO Add a condition to see if the user is an admin or not and if so, redirect him to the admin hub
+                    redirectHome()
+            }
+            true
+        }
+
+
     }
 
     override fun onDestroy() {

@@ -138,7 +138,7 @@ class EventManagementListTest {
     @Test
     fun clickOnBtnCreateZoneLaunchCorrectActivityWithEmptyFields() {
         Intents.init()
-        Espresso.onView(ViewMatchers.withId(R.id.btnNewEvent)).perform(click())
+        Espresso.onView(ViewMatchers.withId(R.id.id_new_event_button)).perform(click())
         Intents.intended(IntentMatchers.hasComponent(EventManagementActivity::class.java.name))
         Intents.release()
     }
