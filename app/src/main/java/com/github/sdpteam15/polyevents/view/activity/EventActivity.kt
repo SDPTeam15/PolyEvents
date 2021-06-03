@@ -198,7 +198,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
                 null,
                 obsComments
             )
-        )*/
+        )**/
         currentDatabase.eventDatabase!!.getRatingsForEvent(
             eventId,
             null,
