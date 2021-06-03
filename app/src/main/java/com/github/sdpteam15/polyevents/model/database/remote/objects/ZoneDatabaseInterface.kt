@@ -51,7 +51,7 @@ interface ZoneDatabaseInterface {
      */
     fun getAllZones(
         zones: ObservableList<Zone>,
-        number: Long?  = null,
+        number: Long? = null,
         matcher: Matcher? = null
     ): Observable<Boolean>
 

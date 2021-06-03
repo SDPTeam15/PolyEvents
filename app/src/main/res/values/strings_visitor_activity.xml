@@ -22,8 +22,13 @@
     <string name="leave_a_review_hint">Leave a review…</string>
     <string name="event_review_warning">"You need to login to leave a review"</string>
     <string name="event_review_leave_rating_warning">Please leave a rating before leaving</string>
+    <string name="delete_review_failed">Could not delete review</string>
     <string name="event_review_saved">Review saved!</string>
+    <string name="event_review_delete">Review delete!</string>
     <string name="event_review_failed">Could not save review</string>
+    <string name="event_review_save">Save</string>
+    <string name="event_review_cancel">Cancel</string>
+    <string name="event_review_delete_button">Delete</string>
 
     <!--DisplayZoneEventsFragment-->
     <string name="see_events">See events</string>
@@ -57,6 +62,7 @@
     <string name="EditProfileActivity_Rank_description">Your rank</string>
     <string name="EditProfileActivity_Save">Save</string>
     <string name="EditProfileActivity_Cancel">Cancel</string>
+    <string name="EditProfileActivity_Delete">Delete</string>
     <string name="EditProfileActivity_DatabaseError">Impossible to update your profile information, please try again.</string>
     <string name="EditProfileActivity_NameShouldNotBeEmpty">The name should not be empty</string>
 </resources>

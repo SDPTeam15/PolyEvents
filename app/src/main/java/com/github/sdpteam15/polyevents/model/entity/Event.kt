@@ -1,11 +1,11 @@
 package com.github.sdpteam15.polyevents.model.entity
 
 import android.graphics.Bitmap
-import com.github.sdpteam15.polyevents.helper.HelperFunctions.apply
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.formatDateTimeWithRespectToAnotherDate
 import com.github.sdpteam15.polyevents.model.exceptions.MaxAttendeesException
 import com.google.firebase.firestore.IgnoreExtraProperties
+import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 /**
  * Entity model for an activity during the event. Renamed Event
@@ -158,12 +158,10 @@ data class Event(
         inventory.contains(item)
 
     /**
-     * Return the hour (and minutes) at which the activity occurs. Uses k:mm pattern, k for
-     * hour going between 0-23h.
-     * @return string HH:MM
+     * Return the formatted start time of the event
      */
     fun formattedStartTime(): String =
-        startTime.apply("") { it.format(DateTimeFormatter.ofPattern("k:mm")) }
+        formatDateTimeWithRespectToAnotherDate(startTime, LocalDate.now())
 
     enum class EventStatus(private val status: String) {
         PENDING("pending"),

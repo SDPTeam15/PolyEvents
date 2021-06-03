@@ -13,7 +13,7 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.entity.Rating
 import com.github.sdpteam15.polyevents.model.observable.Observable
-import com.github.sdpteam15.polyevents.view.service.ReviewHasChanged
+import com.github.sdpteam15.polyevents.model.callback.ReviewHasChanged
 
 /**
  * A Dialog Fragment that is displayed over an EventActivity, to leave a review for the event.
@@ -25,6 +25,7 @@ class LeaveEventReviewFragment(val eventId: String?, val reviewHasChanged: Revie
     private lateinit var userFeedbackDialogEditText: EditText
     private lateinit var leaveReviewDialogRatingBar: RatingBar
     private lateinit var leaveReviewDialogCancelButton: Button
+    private lateinit var leaveReviewDialogDeleteButton: Button
 
     private var rated = false
 
@@ -47,6 +48,10 @@ class LeaveEventReviewFragment(val eventId: String?, val reviewHasChanged: Revie
 
             leaveReviewDialogCancelButton =
                 view.findViewById(R.id.leave_review_fragment_cancel_button)
+            leaveReviewDialogDeleteButton =
+                view.findViewById(R.id.leave_review_fragment_delete_button)
+            leaveReviewDialogDeleteButton.visibility = View.INVISIBLE
+
             leaveReviewDialogCancelButton.setOnClickListener {
                 // Dimiss the dialog if canceled
                 dismiss()
@@ -67,6 +72,11 @@ class LeaveEventReviewFragment(val eventId: String?, val reviewHasChanged: Revie
                 }
                 leaveReviewDialogConfirmButton.setOnClickListener {
                     onClickUpdate(rating)
+                }
+
+                leaveReviewDialogDeleteButton.visibility = View.VISIBLE
+                leaveReviewDialogDeleteButton.setOnClickListener {
+                    onClickDelete(rating)
                 }
             }
 
@@ -101,6 +111,25 @@ class LeaveEventReviewFragment(val eventId: String?, val reviewHasChanged: Revie
                 ratingCopy
             ).observe(this) {
                 showSuccessToastAndDismiss(it.value)
+            }
+        }
+    }
+
+    /**
+     * Remove the given rating from the database
+     * @param rating The rating we want to remove
+     */
+    private fun onClickDelete(rating: Rating) {
+        currentDatabase.eventDatabase!!.removeRating(rating).observeOnce(this) {
+            if (!it.value) {
+                HelperFunctions.showToast(
+                    getString(R.string.delete_review_failed),
+                    context
+                )
+            } else {
+                HelperFunctions.showToast(getString(R.string.event_review_delete), context)
+                reviewHasChanged.onLeaveReview()
+                dismiss()
             }
         }
     }

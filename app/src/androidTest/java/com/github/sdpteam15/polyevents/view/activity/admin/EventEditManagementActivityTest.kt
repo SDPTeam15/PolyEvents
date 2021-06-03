@@ -1,4 +1,4 @@
-package com.github.sdpteam15.polyevents.view.fragments
+package com.github.sdpteam15.polyevents.view.activity.admin
 
 import android.content.Intent
 import androidx.test.core.app.ActivityScenario
@@ -18,7 +18,6 @@ import com.github.sdpteam15.polyevents.model.database.remote.objects.EventDataba
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.view.activity.admin.EventEditManagementActivity
 import com.github.sdpteam15.polyevents.view.adapter.EventEditAdminAdapter
 import org.junit.After
 import org.junit.Before
@@ -29,7 +28,7 @@ import java.time.LocalDateTime
 import kotlin.test.assertEquals
 
 @Suppress("UNCHECKED_CAST")
-class EventEditDifferenceFragmentTest {
+class EventEditManagementActivityTest {
     private val mockedDatabase = HelperTestFunction.defaultMockDatabase()
     private val mockedDatabaseEvent = Mockito.mock(EventDatabaseInterface::class.java)
 
@@ -211,7 +210,7 @@ class EventEditDifferenceFragmentTest {
                 1, TestHelper.clickChildViewWithId(R.id.id_edit_see)
             )
         )
-        Thread.sleep(1000)
+        Thread.sleep(500)
         onView(withId(R.id.fragment_event_edit_diff)).check(matches(isDisplayed()))
         onView(withId(R.id.tvModDesc)).check(matches(withText(eventEdit2.description!!)))
         onView(withId(R.id.tvModEndDate)).check(
@@ -260,6 +259,7 @@ class EventEditDifferenceFragmentTest {
             Observable(true)
         }
 
+        Thread.sleep(500)
         onView(withId(R.id.id_recycler_event_edits)).perform(
             RecyclerViewActions.actionOnItemAtPosition<EventEditAdminAdapter.ItemViewHolder>(
                 0, TestHelper.clickChildViewWithId(R.id.id_edit_accept)
@@ -272,7 +272,7 @@ class EventEditDifferenceFragmentTest {
             )
         )
 
-        Thread.sleep(1000)
+        Thread.sleep(5000)
         onView(withId(R.id.id_recycler_event_edits)).check(matches(isDisplayed()))
     }
 
@@ -293,6 +293,7 @@ class EventEditDifferenceFragmentTest {
         onView(withId(R.id.id_btn_confirm_refuse_request)).perform(
             click()
         )
+        Thread.sleep(500)
         onView(withId(R.id.id_recycler_event_edits)).check(matches(isDisplayed()))
     }
 
@@ -314,6 +315,7 @@ class EventEditDifferenceFragmentTest {
             click()
         )
 
+        Thread.sleep(500)
         onView(withId(R.id.id_recycler_event_edits)).check(matches(isDisplayed()))
     }
     @Test
@@ -330,6 +332,7 @@ class EventEditDifferenceFragmentTest {
             )
         )
 
+        Thread.sleep(500)
         onView(withId(R.id.id_recycler_event_edits)).check(matches(isDisplayed()))
     }
 }

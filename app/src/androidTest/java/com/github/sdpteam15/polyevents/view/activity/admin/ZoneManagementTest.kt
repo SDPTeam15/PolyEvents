@@ -21,7 +21,6 @@ import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.map.GoogleMapHelper
 import com.github.sdpteam15.polyevents.model.map.ZoneAreaMapHelper
 import com.github.sdpteam15.polyevents.model.observable.Observable
-import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import com.github.sdpteam15.polyevents.view.adapter.ZoneItemAdapter
 import com.google.android.gms.internal.maps.zzt
 import com.google.android.gms.internal.maps.zzw
@@ -61,38 +60,37 @@ class ZoneManagementTest {
         ActivityScenario.launch<ZoneManagementListActivity>(intent)
         ZoneManagementActivity.inTest = false
 
-        onView(withId(R.id.btnNewZone)).perform(click())
+        onView(withId(R.id.id_new_zone_button)).perform(click())
 
-        onView(withId(R.id.zoneManagementDescription))
+        onView(withId(R.id.id_zone_management_description_edittext))
             .perform(replaceText(""))
-        onView(withId(R.id.zoneManagementName))
+        onView(withId(R.id.id_zone_management_name_edittext))
             .perform(replaceText(""))
         ZoneManagementActivity.zoneObservable.postValue(Zone(location = "not null"))
     }
 
     @After
     fun teardown() {
-        MainActivity.currentUser = null
         Database.currentDatabase = FirestoreDatabaseProvider
     }
 
     @Test
     fun pressCreateButtonDoesNothingWhenEmptyFields() {
 
-        onView(withId(R.id.zoneManagementDescription))
+        onView(withId(R.id.id_zone_management_description_edittext))
             .check(matches(withText("")))
-        onView(withId(R.id.zoneManagementName))
+        onView(withId(R.id.id_zone_management_name_edittext))
             .check(matches(withText("")))
-        onView(withId(R.id.btnManage)).perform(click())
+        onView(withId(R.id.id_btn_manage)).perform(click())
         onView(withId(R.id.zone_management_activity)).check(
             matches(
                 isDisplayed()
             )
         )
-        onView(withId(R.id.zoneManagementName))
+        onView(withId(R.id.id_zone_management_name_edittext))
             .perform(replaceText(zoneName))
 
-        onView(withId(R.id.btnManage)).perform(click())
+        onView(withId(R.id.id_btn_manage)).perform(click())
         onView(withId(R.id.zone_management_activity))
             .check(matches(isDisplayed()))
     }
@@ -104,11 +102,11 @@ class ZoneManagementTest {
             obs
         }
 
-        onView(withId(R.id.zoneManagementName))
+        onView(withId(R.id.id_zone_management_name_edittext))
             .perform(replaceText(zoneName))
-        onView(withId(R.id.zoneManagementDescription))
+        onView(withId(R.id.id_zone_management_description_edittext))
             .perform(replaceText(zoneDesc))
-        onView(withId(R.id.btnManage)).perform(click())
+        onView(withId(R.id.id_btn_manage)).perform(click())
         obs.postValue(true)
 
         onView(withId(R.id.zone_management_list_activity))
@@ -152,11 +150,11 @@ class ZoneManagementTest {
                 anyOrNull()
             )
         ).thenReturn(obs)
-        onView(withId(R.id.zoneManagementName))
+        onView(withId(R.id.id_zone_management_name_edittext))
             .perform(replaceText(zoneName))
-        onView(withId(R.id.zoneManagementDescription))
+        onView(withId(R.id.id_zone_management_description_edittext))
             .perform(replaceText("$zoneDesc 2"))
-        onView(withId(R.id.btnManage)).perform(click())
+        onView(withId(R.id.id_btn_manage)).perform(click())
         obs.postValue(true)
 
         onView(withId(R.id.zone_management_list_activity))
@@ -201,11 +199,11 @@ class ZoneManagementTest {
 
         obs2.postValue(true)
 
-        onView(withId(R.id.zoneManagementName))
+        onView(withId(R.id.id_zone_management_name_edittext))
             .perform(replaceText(zoneName))
-        onView(withId(R.id.zoneManagementDescription))
+        onView(withId(R.id.id_zone_management_description_edittext))
             .perform(replaceText(""))
-        onView(withId(R.id.btnManage)).perform(click())
+        onView(withId(R.id.id_btn_manage)).perform(click())
         onView(withId(R.id.zone_management_activity))
             .check(matches(isDisplayed()))
     }
@@ -217,11 +215,11 @@ class ZoneManagementTest {
             obs
         }
 
-        onView(withId(R.id.zoneManagementName))
+        onView(withId(R.id.id_zone_management_name_edittext))
             .perform(replaceText("Hello"))
-        onView(withId(R.id.zoneManagementDescription))
+        onView(withId(R.id.id_zone_management_description_edittext))
             .perform(replaceText("Hello"))
-        onView(withId(R.id.btnManage)).perform(click())
+        onView(withId(R.id.id_btn_manage)).perform(click())
         obs.postValue(false)
 
         onView(withId(R.id.zone_management_activity))
@@ -262,11 +260,11 @@ class ZoneManagementTest {
 
         obs2.postValue(true)
 
-        onView(withId(R.id.zoneManagementName))
+        onView(withId(R.id.id_zone_management_name_edittext))
             .perform(replaceText(zoneName))
-        onView(withId(R.id.zoneManagementDescription))
+        onView(withId(R.id.id_zone_management_description_edittext))
             .perform(replaceText(zoneDesc))
-        onView(withId(R.id.btnManage)).perform(click())
+        onView(withId(R.id.id_btn_manage)).perform(click())
         obs.postValue(false)
 
         onView(withId(R.id.zone_management_activity))
@@ -276,10 +274,10 @@ class ZoneManagementTest {
 
     @Test
     fun clickOnDeleteButtonClearLocationAndSetCorrectText() {
-        onView(withId(R.id.btnDeleteZoneCoordinates))
+        onView(withId(R.id.id_btn_delete_coordinates))
             .perform(click())
         assert(ZoneManagementActivity.zone.location == "")
-        onView(withId(R.id.zoneManagementCoordinates))
+        onView(withId(R.id.id_zone_management_coordinates_edittext))
             .check(matches(withText("Not set")))
     }
 
@@ -294,22 +292,22 @@ class ZoneManagementTest {
         val zoneWithNull =
             Zone(zoneId = zoneId, zoneName = zoneName, location = null, description = zoneDesc)
         ZoneManagementActivity.zoneObservable.postValue(zoneWithNull)
-        onView(withId(R.id.zoneManagementCoordinates))
+        onView(withId(R.id.id_zone_management_coordinates_edittext))
             .check(matches(withText("Not set")))
     }
 
     @Test
     fun btnManageCoordsCorrectlyActs() {
         ZoneManagementActivity.inTest = true
-        onView(withId(R.id.zoneManagementDescription))
+        onView(withId(R.id.id_zone_management_description_edittext))
             .perform(replaceText(zoneDesc))
-        onView(withId(R.id.zoneManagementName))
+        onView(withId(R.id.id_zone_management_name_edittext))
             .perform(replaceText(zoneName))
-        onView(withId(R.id.btnModifyZoneCoordinates))
+        onView(withId(R.id.id_btn_modify_coordinates))
             .perform(click())
         assert(ZoneManagementActivity.zone.zoneName == zoneName)
         assert(ZoneManagementActivity.zone.description == zoneDesc)
-        onView(withId(R.id.flMapEditZone))
+        onView(withId(R.id.id_framelayout_map_edit_zone))
             .check(matches(isDisplayed()))
     }
 
@@ -357,7 +355,7 @@ class ZoneManagementTest {
 
         assert(ZoneAreaMapHelper.zonesToArea[editingZone]!!.second.size == nbAreas)
 
-        onView(withId(R.id.btnDeleteZoneCoordinates)).perform(click())
+        onView(withId(R.id.id_btn_delete_coordinates)).perform(click())
         assert(ZoneAreaMapHelper.zonesToArea[editingZone]!!.second.size == 0)
 
         ZoneAreaMapHelper.editingZone = null

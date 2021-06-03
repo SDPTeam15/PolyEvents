@@ -41,7 +41,10 @@ class ZoneManagementListActivity : AppCompatActivity() {
             HelperFunctions.showAlertDialog(
                 this, getString(R.string.message_confirm_delete_zone_title, zone.zoneName),
                 getString(R.string.message_confirm_delete_title),
-                { DatabaseHelper.deleteZone(zone) }
+                {
+                    DatabaseHelper.deleteZone(zone)
+                    zones.remove(zone)
+                }
             )
         }
 
@@ -62,7 +65,7 @@ class ZoneManagementListActivity : AppCompatActivity() {
         zones.observeAdd(this) { ZoneAreaMapHelper.importNewZone(this, it.value, false) }
 
 
-        findViewById<ImageButton>(R.id.btnNewZone).setOnClickListener {
+        findViewById<ImageButton>(R.id.id_new_zone_button).setOnClickListener {
             startActivityZone(NEW_ZONE)
         }
         //remove the zone from google map on remove

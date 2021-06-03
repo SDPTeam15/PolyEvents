@@ -147,7 +147,7 @@ object LocalAdapter {
     }
 
     fun Map<String, String>.toSerString(): String {
-        if(this.isEmpty())
+        if (this.isEmpty())
             return "{}"
         var s = ""
         for (key in this.keys)
@@ -156,10 +156,10 @@ object LocalAdapter {
     }
 
     fun String.toSerMap(): Map<String, String> {
-        if(this.length <= 2 || this[0] != '{' || this[this.length - 1] != '}')
+        if (this.length <= 2 || this[0] != '{' || this[this.length - 1] != '}')
             return mapOf()
         val map = mutableMapOf<String, String>()
-        for (paire in this.substring(2, this.length - 2).split("\", \"")){
+        for (paire in this.substring(2, this.length - 2).split("\", \"")) {
             val splited = paire.split("\":\"")
             map[splited[0].replace("\\\"", "\"")] = splited[1].replace("\\\"", "\"")
         }
