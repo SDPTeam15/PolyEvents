@@ -98,6 +98,7 @@ class EventActivityTest {
             eventName = "limited Event only",
             description = "Super noisy activity !",
             startTime = LocalDateTime.of(2021, 3, 7, 21, 15),
+            endTime = LocalDateTime.of(2021, 3, 7, 23, 50, 0),
             organizer = "AcademiC DeCibel",
             zoneName = "Concert Hall",
             tags = mutableListOf("music", "live", "pogo")
