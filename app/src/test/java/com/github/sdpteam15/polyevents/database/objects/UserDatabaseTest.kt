@@ -48,7 +48,7 @@ class UserDatabaseTest {
         assertEquals(USER_COLLECTION, set.collection)
         assertEquals(UserAdapter, set.adapter)
     }
-
+/*
     @Test
     fun firstConnexion() {
         val user = UserEntity("uid")
@@ -68,7 +68,7 @@ class UserDatabaseTest {
         assertEquals(user.uid, set.id)
         assertEquals(USER_COLLECTION, set.collection)
         assertEquals(UserAdapter, set.adapter)
-    }
+    }*/
 
     @Test
     fun inDatabase() {
