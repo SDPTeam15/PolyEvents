@@ -5,8 +5,6 @@ import com.github.sdpteam15.polyevents.model.map.LatLngOperator.euclideanDistanc
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.getIntersection
 import com.github.sdpteam15.polyevents.model.map.RouteMapHelper.THRESHOLD
 import com.github.sdpteam15.polyevents.model.map.RouteMapHelper.getNearestPoint
-import com.github.sdpteam15.polyevents.model.observable.Observable
-import com.github.sdpteam15.polyevents.model.map.THRESHOLD
 import com.google.android.gms.maps.model.LatLng
 
 /**
