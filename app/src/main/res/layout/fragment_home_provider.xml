@@ -50,13 +50,13 @@
             android:layout_marginEnd="15dp"
             android:backgroundTint="@color/white"
             android:drawableTop="@drawable/ic_requests"
-            android:drawableTint="@color/purple_500"
+            android:drawableTint="@color/primary_variant"
             android:text="@string/items_requests_button_text"
 
             android:paddingHorizontal="25dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/purple_500"
-            app:strokeColor="@color/purple_500"
+            android:textColor="@color/primary_variant"
+            app:strokeColor="@color/primary_variant"
             app:strokeWidth="2dp"
             tools:ignore="ButtonStyle" />
         <Button
@@ -65,13 +65,13 @@
             android:layout_height="wrap_content"
             android:backgroundTint="@color/white"
             android:drawableTop="@drawable/ic_event"
-            android:drawableTint="@color/purple_500"
+            android:drawableTint="@color/primary_variant"
 
             android:paddingHorizontal="25dp"
             android:text="@string/admin_hub_btn_event_text"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/purple_500"
-            app:strokeColor="@color/purple_500"
+            android:textColor="@color/primary_variant"
+            app:strokeColor="@color/primary_variant"
             app:strokeWidth="2dp"
             tools:ignore="ButtonStyle" />
         <Button
@@ -80,12 +80,12 @@
             android:layout_height="wrap_content"
             android:backgroundTint="@color/white"
             android:drawableTop="@drawable/ic_event"
-            android:drawableTint="@color/purple_500"
+            android:drawableTint="@color/primary_variant"
             android:paddingHorizontal="17dp"
             android:text="@string/my_items_requests_button_text"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/purple_500"
-            app:strokeColor="@color/purple_500"
+            android:textColor="@color/primary_variant"
+            app:strokeColor="@color/primary_variant"
             app:strokeWidth="2dp"
             tools:ignore="ButtonStyle" />
 
@@ -95,13 +95,13 @@
             android:layout_height="wrap_content"
             android:backgroundTint="@color/white"
             android:drawableTop="@drawable/ic_event"
-            android:drawableTint="@color/purple_500"
+            android:drawableTint="@color/primary_variant"
 
             android:paddingHorizontal="25dp"
             android:text="Edit Req"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/purple_500"
-            app:strokeColor="@color/purple_500"
+            android:textColor="@color/primary_variant"
+            app:strokeColor="@color/primary_variant"
             app:strokeWidth="2dp"
             tools:ignore="ButtonStyle" />
 

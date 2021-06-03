@@ -1,6 +1,5 @@
 package com.github.sdpteam15.polyevents.view.activity.admin
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -83,7 +82,7 @@ class ZoneManagementActivity : AppCompatActivity() {
             tvManage.text = this.getString(R.string.tv_update_zone_text)
 
             // Get the zone information in the database
-            currentDatabase.zoneDatabase!!.getZoneInformation(zoneId, zoneObservable)
+            currentDatabase.zoneDatabase.getZoneInformation(zoneId, zoneObservable)
             // Click on manage update the zone
             btnManage.setOnClickListener {
                 updateZoneInfo()
@@ -166,7 +165,7 @@ class ZoneManagementActivity : AppCompatActivity() {
             zone.zoneName = name
             //zoneId is null to create a new Area
             zone.zoneId = null
-            currentDatabase.zoneDatabase!!.createZone(zone).observe {
+            currentDatabase.zoneDatabase.createZone(zone).observe {
                 callbackHandler(
                     it.value,
                     this.getString(R.string.zone_added_successfully),
@@ -190,7 +189,7 @@ class ZoneManagementActivity : AppCompatActivity() {
             zone.zoneName = name
             zone.zoneId = zoneId
 
-            currentDatabase.zoneDatabase!!.updateZoneInformation(zoneId, zone).observe {
+            currentDatabase.zoneDatabase.updateZoneInformation(zoneId, zone).observe {
                 callbackHandler(
                     it.value,
                     this.getString(R.string.zone_updated_successfully),

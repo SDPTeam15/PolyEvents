@@ -146,7 +146,7 @@ class EventManagementActivity : AppCompatActivity() {
         }
 
         // Get all zones from the database or redirect if there is a problem
-        currentDatabase.zoneDatabase!!.getAllZones(null, null, zoneObserver).observe(this) {
+        currentDatabase.zoneDatabase.getAllZones(zoneObserver).observe(this) {
             if (!it.value) {
                 HelperFunctions.showToast(getString(R.string.failed_get_zones), this)
                 finish()
@@ -162,7 +162,7 @@ class EventManagementActivity : AppCompatActivity() {
             findViewById<Spinner>(R.id.spinner_organiser).adapter = adapter2
 
             // Get all users from the database or redirect if there is a problem
-            currentDatabase.userDatabase!!.getListAllUsers(organiserObserver).observe(this) {
+            currentDatabase.userDatabase.getListAllUsers(organiserObserver).observe(this) {
                 if (!it.value) {
                     HelperFunctions.showToast(getString(R.string.failed_get_zones), this)
                     finish()
@@ -229,11 +229,11 @@ class EventManagementActivity : AppCompatActivity() {
         val spinnerZone = findViewById<Spinner>(R.id.spinner_zone)
 
         if (isActivityProvider) {
-            spinnerOrg.visibility =View.INVISIBLE
+            spinnerOrg.visibility = View.INVISIBLE
             findViewById<TextView>(R.id.tvSpinnerOrganiser).visibility = View.INVISIBLE
         } else {
             findViewById<TextView>(R.id.tvSpinnerOrganiser).visibility = View.VISIBLE
-            spinnerOrg.visibility =View.VISIBLE
+            spinnerOrg.visibility = View.VISIBLE
         }
 
 
@@ -314,7 +314,7 @@ class EventManagementActivity : AppCompatActivity() {
             }
             // Get the correct information depending on if we edit an event edit request
             if (isModificationActivityProvider) {
-                currentDatabase.eventDatabase!!.getEventEditFromId(curId, observableEvent)
+                currentDatabase.eventDatabase.getEventEditFromId(curId, observableEvent)
                     .observe(this) {
                         if (it.value) {
                             setupViewInActivity(true)
@@ -328,7 +328,7 @@ class EventManagementActivity : AppCompatActivity() {
                     }
             } else {
                 // Or if we edit an existing event
-                currentDatabase.eventDatabase!!.getEventFromId(curId, observableEvent)
+                currentDatabase.eventDatabase.getEventFromId(curId, observableEvent)
                     .observe(this) {
                         if (it.value) {
                             setupViewInActivity(true)
@@ -351,7 +351,7 @@ class EventManagementActivity : AppCompatActivity() {
     private fun handleCreateClick() {
         if (verifyCondition()) {
             if (isActivityProvider) {
-                currentDatabase.eventDatabase!!.createEventEdit(getInformation()).observe(this) {
+                currentDatabase.eventDatabase.createEventEdit(getInformation()).observe(this) {
                     redirectOrDisplayError(
                         getString(R.string.event_edit_request_successfully_sent),
                         getString(R.string.event_edit_request_error),
@@ -359,7 +359,7 @@ class EventManagementActivity : AppCompatActivity() {
                     )
                 }
             } else {
-                currentDatabase.eventDatabase!!.createEvent(getInformation()).observe(this) {
+                currentDatabase.eventDatabase.createEvent(getInformation()).observe(this) {
                     redirectOrDisplayError(
                         getString(R.string.event_creation_success),
                         getString(R.string.event_creation_failed),
@@ -377,7 +377,7 @@ class EventManagementActivity : AppCompatActivity() {
         if (verifyCondition()) {
             if (isActivityProvider) {
                 if (isModificationActivityProvider) {
-                    currentDatabase.eventDatabase!!.updateEventEdit(getInformation())
+                    currentDatabase.eventDatabase.updateEventEdit(getInformation())
                         .observe(this) {
                             redirectOrDisplayError(
                                 getString(R.string.event_edit_request_successfully_sent),
@@ -386,7 +386,7 @@ class EventManagementActivity : AppCompatActivity() {
                             )
                         }
                 } else {
-                    currentDatabase.eventDatabase!!.createEventEdit(getInformation())
+                    currentDatabase.eventDatabase.createEventEdit(getInformation())
                         .observe(this) {
                             redirectOrDisplayError(
                                 getString(R.string.event_edit_request_successfully_sent),
@@ -396,7 +396,7 @@ class EventManagementActivity : AppCompatActivity() {
                         }
                 }
             } else {
-                currentDatabase.eventDatabase!!.updateEvent(getInformation()).observe(this) {
+                currentDatabase.eventDatabase.updateEvent(getInformation()).observe(this) {
                     redirectOrDisplayError(
                         getString(R.string.event_update_success),
                         getString(R.string.failed_to_update_event_info),

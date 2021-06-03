@@ -16,8 +16,11 @@ class UserSettingsAdapterTest {
 
     @Before
     fun setup() {
-        userSettings = UserSettings(isSendingLocationOn = isSendingLocationOn)
-        userSettingsDocument = UserSettingsAdapter.toDocument(userSettings)
+        userSettings = UserSettings(
+            isSendingLocationOn = isSendingLocationOn,
+            locationId = locationId
+        )
+        userSettingsDocument = UserSettingsAdapter.toDocumentWithoutNull(userSettings)
     }
 
     @Test

@@ -20,6 +20,7 @@ import com.github.sdpteam15.polyevents.model.database.remote.objects.ZoneDatabas
 import com.github.sdpteam15.polyevents.model.entity.*
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import com.github.sdpteam15.polyevents.view.adapter.EventListAdapter
 import org.hamcrest.CoreMatchers
@@ -106,7 +107,7 @@ class EventManagementTest {
                 anyOrNull()
             )
         ).thenAnswer {
-            (it.arguments[2] as ObservableList<Zone>).addAll(listZone)
+            (it.arguments[0] as ObservableList<Zone>).addAll(listZone)
             Observable(true)
         }
 
@@ -317,7 +318,7 @@ class EventManagementTest {
                 anyOrNull()
             )
         ).thenAnswer {
-            (it.arguments[2] as ObservableList<Zone>).addAll(listZone)
+            (it.arguments[0] as ObservableList<Zone>).addAll(listZone)
             obs
         }
 
@@ -361,7 +362,7 @@ class EventManagementTest {
                 anyOrNull()
             )
         ).thenAnswer {
-            (it.arguments[2] as ObservableList<Zone>).addAll(listZone)
+            (it.arguments[0] as ObservableList<Zone>).addAll(listZone)
             Observable(true)
         }
         Mockito.`when`(mockedUserDb.getUserProfilesList(anyOrNull(), anyOrNull()))

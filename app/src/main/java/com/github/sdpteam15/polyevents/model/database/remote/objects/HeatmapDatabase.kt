@@ -8,7 +8,6 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.DeviceLocationAdapter
 import com.github.sdpteam15.polyevents.model.entity.DeviceLocation
-import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.map.GoogleMapOptions.neBound
 import com.github.sdpteam15.polyevents.model.map.GoogleMapOptions.swBound
 import com.github.sdpteam15.polyevents.model.observable.Observable
@@ -47,14 +46,14 @@ class HeatmapDatabase(private val db: DatabaseInterface) : HeatmapDatabaseInterf
         db.getListEntity(
             tempUsersLocations,
             null,
-                { collection ->
-                    collection.whereGreaterThan(
-                            DatabaseConstant.LocationConstant.LOCATIONS_TIME.value,
-                            HelperFunctions.localDateTimeToDate(
-                                    LocalDateTime.now().minusMinutes(10)
-                            )!!
-                    )
-                },
+            { collection ->
+                collection.whereGreaterThan(
+                    DatabaseConstant.LocationConstant.LOCATIONS_TIME.value,
+                    HelperFunctions.localDateTimeToDate(
+                        LocalDateTime.now().minusMinutes(10)
+                    )!!
+                )
+            },
             LOCATION_COLLECTION,
             object : AdapterFromDocumentInterface<LatLng> {
                 override fun fromDocument(document: Map<String, Any?>, id: String): LatLng =

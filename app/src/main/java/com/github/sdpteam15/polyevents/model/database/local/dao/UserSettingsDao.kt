@@ -12,5 +12,5 @@ interface UserSettingsDao {
     suspend fun insert(userSettings: UserSettings)
 
     @Query("SELECT * FROM user_settings_table WHERE user_uid = :id")
-    suspend fun get(id: Int = UserSettings.DEFAULT_ID): UserSettings
+    suspend fun get(id: String = UserSettings.DEFAULT_ID): List<UserSettings>
 }

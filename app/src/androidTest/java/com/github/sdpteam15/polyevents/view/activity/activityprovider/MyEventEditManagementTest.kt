@@ -9,7 +9,6 @@ import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import com.github.sdpteam15.polyevents.HelperTestFunction
@@ -147,7 +146,7 @@ class MyEventEditManagementTest {
     fun clickOnModifyLaunchCorrectActivity() {
         Thread.sleep(1000)
         When(mockedEventDB.getEventEditFromId(anyOrNull(), anyOrNull())).thenAnswer {
-            (it.arguments[1] as Observable<Event>).postValue(eventEdit1)
+            (it.arguments[1] as? Observable<Event>)?.postValue(eventEdit1)
             Observable(true)
         }
         Intents.init()

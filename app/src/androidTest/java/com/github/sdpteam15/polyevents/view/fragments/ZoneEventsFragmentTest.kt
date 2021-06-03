@@ -85,7 +85,7 @@ class ZoneEventsFragmentTest {
         )
 
         Mockito.`when`(
-            mockedDatabase.eventDatabase!!.getEventsByZoneId(
+            mockedDatabase.eventDatabase.getEventsByZoneId(
                 zoneId = anyOrNull(),
                 limit = anyOrNull(),
                 events = anyOrNull()

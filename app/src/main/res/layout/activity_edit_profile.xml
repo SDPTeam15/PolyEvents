@@ -75,7 +75,8 @@
                     android:drawablePadding="10dp"
                     android:paddingStart="20dp"
                     android:paddingEnd="0dp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:hint="@string/EditProfileActivity_Rank_description"/>
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 

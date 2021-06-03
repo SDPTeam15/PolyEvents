@@ -4,6 +4,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
+import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 import kotlin.test.assertEquals
@@ -11,6 +13,12 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 class ObservableMapTest {
+
+    @Before
+    fun setup() {
+        PolyEventsApplication.inTest = true
+    }
+
     @Test
     fun lambdaIsUpdatedOnPut() {
         var isUpdateAdd = false

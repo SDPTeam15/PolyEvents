@@ -9,7 +9,6 @@ import android.widget.Button
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.entity.UserRole
-import com.github.sdpteam15.polyevents.view.activity.admin.ItemsAdminActivity
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import com.github.sdpteam15.polyevents.view.activity.admin.*
 
@@ -54,7 +53,10 @@ class AdminHomeFragment : Fragment() {
             startActivity(intent)
         }
 
-        MainActivity.instance!!.switchRoles(viewRoot.findViewById(R.id.spinner_admin), UserRole.ADMIN)
+        MainActivity.instance!!.switchRoles(
+            viewRoot.findViewById(R.id.spinner_admin),
+            UserRole.ADMIN
+        )
         return viewRoot
     }
 }

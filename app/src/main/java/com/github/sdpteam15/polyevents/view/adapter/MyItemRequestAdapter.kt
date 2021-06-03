@@ -82,17 +82,19 @@ class MyItemRequestAdapter(
                 ).subSequence(0, 5)
             itemList.text = request.items.map { itemNames[it.key] + " : " + it.value }
                 .joinToString(separator = "\n") { it }
-            status.setTextColor(when(request.status){
-                ACCEPTED -> Color.GREEN
-                PENDING -> Color.BLACK
-                REFUSED -> Color.RED
-                DELIVERING -> Color.CYAN
-                DELIVERED -> Color.GREEN
-                RETURN_REQUESTED -> Color.CYAN
-                RETURNING -> Color.CYAN
-                RETURNED -> Color.GREEN
-                CANCELED -> Color.LTGRAY
-            })
+            status.setTextColor(
+                when (request.status) {
+                    ACCEPTED -> Color.GREEN
+                    PENDING -> Color.BLACK
+                    REFUSED -> Color.RED
+                    DELIVERING -> Color.CYAN
+                    DELIVERED -> Color.GREEN
+                    RETURN_REQUESTED -> Color.CYAN
+                    RETURNING -> Color.CYAN
+                    RETURNED -> Color.GREEN
+                    CANCELED -> Color.LTGRAY
+                }
+            )
             status.text = request.status.toString()
 
             btnModify.visibility = if (request.status == PENDING) VISIBLE else INVISIBLE
@@ -101,7 +103,7 @@ class MyItemRequestAdapter(
             btnCancel.setOnClickListener { onCancelListener(request) }
             btnModify.setOnClickListener { onModifyListener(request) }
             btnReturn.setOnClickListener { onReturnRequest(request) }
-            refusalLayout.visibility = if(request.adminMessage != null) VISIBLE else GONE
+            refusalLayout.visibility = if (request.adminMessage != null) VISIBLE else GONE
             adminMessage.text = request.adminMessage
         }
     }

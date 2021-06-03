@@ -6,14 +6,14 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ZoneConstant.*
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
-import com.github.sdpteam15.polyevents.model.database.remote.adapter.EventAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.ZoneAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.objects.ZoneDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.objects.ZoneDatabaseInterface
-import com.github.sdpteam15.polyevents.model.entity.*
+import com.github.sdpteam15.polyevents.model.entity.UserEntity
+import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.google.firebase.firestore.FirebaseFirestore
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
@@ -104,7 +104,7 @@ class ZoneDatabaseTest {
         val zones = ObservableList<Zone>()
 
         HelperTestFunction.nextGetListEntity { true }
-        mockedZoneDatabase.getAllZones(null, null, zones)
+        mockedZoneDatabase.getAllZones(zones)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         val getList = HelperTestFunction.lastGetListEntity()!!

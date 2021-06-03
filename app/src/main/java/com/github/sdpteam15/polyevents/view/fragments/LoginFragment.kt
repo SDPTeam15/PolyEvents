@@ -18,7 +18,6 @@ import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 /**
  * [Fragment] subclass representing the login page allowing the user to connect to the application
@@ -65,8 +64,14 @@ class LoginFragment : Fragment() {
                         val application = requireActivity().application as PolyEventsApplication
                         application.applicationScope.launch(Dispatchers.IO) {
                             LocalDatabase.populateDatabaseWithUserEvents(
-                                application.database.eventDao(),
-                                application.applicationScope)
+                                application.localDatabase.eventDao(),
+                                application.applicationScope
+                            )
+
+                            LocalDatabase.populateDatabaseWithUserSettings(
+                                application.localDatabase.userSettingsDao(),
+                                application.applicationScope
+                            )
                         }
 
                         addIfNotInDB()
@@ -81,7 +86,7 @@ class LoginFragment : Fragment() {
      * This method will call the inDatabase method to check whether the users has already been registered to the database or not
      */
     private fun addIfNotInDB() {
-        currentDatabase.userDatabase!!.inDatabase(inDbObservable, currentUser!!.uid)
+        currentDatabase.userDatabase.inDatabase(inDbObservable, currentUser!!.uid)
             .observe(this) { success ->
                 if (success.value) {
                     if (inDbObservable.value!!) {
@@ -107,7 +112,7 @@ class LoginFragment : Fragment() {
      */
     private fun createAccountAndRedirect() {
         currentDatabase
-            .userDatabase!!
+            .userDatabase
             .firstConnexion(currentUser!!)
             .observe(this) { success ->
                 if (success.value) {

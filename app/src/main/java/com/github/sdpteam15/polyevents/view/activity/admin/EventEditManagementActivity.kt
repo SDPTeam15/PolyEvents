@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
-import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
@@ -54,8 +53,8 @@ class EventEditManagementActivity : AppCompatActivity() {
                 origEvents[event.eventId!!] = event
             }
         }
-    //TODO sort event by status ordinal (ascending)
-        Database.currentDatabase.eventDatabase!!.getEvents(null, null, eventList)
+        //TODO sort event by status ordinal (ascending)
+        Database.currentDatabase.eventDatabase.getEvents(null, null, eventList)
             .observeOnce(this) {
                 if (!it.value) {
                     HelperFunctions.showToast(getString(R.string.fail_to_get_list_events), this)
@@ -69,7 +68,7 @@ class EventEditManagementActivity : AppCompatActivity() {
     private fun getEventEdit() {
         //Wait until we have both requests accepted from the database to show the material requests
         //TODO sort event by status ordinal (ascending)
-        Database.currentDatabase.eventDatabase!!.getEventEdits(
+        Database.currentDatabase.eventDatabase.getEventEdits(
             null,
             eventEdits,
         ).observeOnce(this) {
@@ -101,27 +100,30 @@ class EventEditManagementActivity : AppCompatActivity() {
         if (event.status == Event.EventStatus.PENDING) {
             event.status = Event.EventStatus.ACCEPTED
 
-            Database.currentDatabase.eventDatabase!!.updateEventEdit(
+            Database.currentDatabase.eventDatabase.updateEventEdit(
                 event
             ).observeOnce(this) {
                 acceptEventEditCallback(it.value, event)
             }.then.observeOnce(this) {
                 if (it.value) {
                     if (event.eventId == null) {
-                        Database.currentDatabase.eventDatabase!!.createEvent(
+                        Database.currentDatabase.eventDatabase.createEvent(
                             event
                         ).observeOnce(this) {
                             acceptEventEditCallback(it.value, event)
                         }
                     } else {
-                        Database.currentDatabase.eventDatabase!!.updateEvent(
+                        Database.currentDatabase.eventDatabase.updateEvent(
                             event
                         ).observeOnce(this) {
                             acceptEventEditCallback(it.value, event)
                         }
                     }
-                }else{
-                    HelperFunctions.showToast(getString(R.string.activity_edit_cannot_be_requested), this)
+                } else {
+                    HelperFunctions.showToast(
+                        getString(R.string.activity_edit_cannot_be_requested),
+                        this
+                    )
                 }
             }
 
@@ -172,7 +174,7 @@ class EventEditManagementActivity : AppCompatActivity() {
             event.status = Event.EventStatus.REFUSED
             event.adminMessage = message.text.toString()
 
-            Database.currentDatabase.eventDatabase!!.updateEventEdit(
+            Database.currentDatabase.eventDatabase.updateEventEdit(
                 event
             ).observeOnce(this) {
                 if (!it.value) {

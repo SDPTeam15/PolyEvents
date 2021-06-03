@@ -1,7 +1,7 @@
 package com.github.sdpteam15.polyevents.model.entity
 
 import android.graphics.Bitmap
-import com.github.sdpteam15.polyevents.helper.HelperFunctions.thenReturn
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.apply
 import com.github.sdpteam15.polyevents.model.exceptions.MaxAttendeesException
 import com.google.firebase.firestore.IgnoreExtraProperties
 import java.time.LocalDateTime
@@ -33,7 +33,7 @@ data class Event(
     var eventId: String? = null,
     val eventName: String? = null,
     val organizer: String? = null,
-    val zoneId:String?=null,
+    val zoneId: String? = null,
     val zoneName: String? = null,
     var description: String? = null,
     // TODO: handle event icons (probably during event creation)
@@ -44,9 +44,9 @@ data class Event(
     // NOTE: Set is not a supported collection in Firebase Firestore so will be stored as list in the db.
     val tags: MutableList<String> = mutableListOf(),
 
-    var status: EventStatus?=null,
-    var adminMessage: String?=null,
-    var eventEditId:String?=null,
+    var status: EventStatus? = null,
+    var adminMessage: String? = null,
+    var eventEditId: String? = null,
 
     private var limitedEvent: Boolean = false,
     private var maxNumberOfSlots: Int? = null,
@@ -162,17 +162,10 @@ data class Event(
      * hour going between 0-23h.
      * @return string HH:MM
      */
-    fun formattedStartTime(): String {
-        return if (startTime == null) {
-            ""
-        } else {
-            //return SimpleDateFormat("k:mm", Locale.getDefault()).format(startTime)
-            val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("k:mm")
-            startTime.format(formatter)
-        }
-    }
+    fun formattedStartTime(): String =
+        startTime.apply("") { it.format(DateTimeFormatter.ofPattern("k:mm")) }
 
-    enum class EventStatus (private val status: String) {
+    enum class EventStatus(private val status: String) {
         PENDING("pending"),
         ACCEPTED("accepted"),
         REFUSED("refused"),
@@ -184,7 +177,7 @@ data class Event(
 
         companion object {
             private val map = values().associateBy(EventStatus::status)
-            private val mapOrdinal =  map.mapKeys { it.value.ordinal }
+            private val mapOrdinal = map.mapKeys { it.value.ordinal }
             fun fromOrdinal(ordinal: Int) = mapOrdinal[ordinal]
         }
     }

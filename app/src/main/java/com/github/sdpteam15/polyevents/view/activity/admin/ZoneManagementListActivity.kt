@@ -2,7 +2,6 @@ package com.github.sdpteam15.polyevents.view.activity.admin
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
@@ -39,12 +38,9 @@ class ZoneManagementListActivity : AppCompatActivity() {
         recyclerView.adapter = ZoneItemAdapter(zones, openZone)
 
         println(Database.currentDatabase)
-        Database.currentDatabase.zoneDatabase!!.getAllZones(
-            {
-                it.orderBy(DatabaseConstant.ZoneConstant.ZONE_NAME.value)
-            },
-            50,
-            zones
+        Database.currentDatabase.zoneDatabase.getAllZones(
+            zones.sortAndLimitFrom(this){it.zoneName},
+            50
         ).observe(this) {
             if (!it.value) {
                 HelperFunctions.showToast(getString(R.string.fail_to_get_list_zones), this)
