@@ -10,8 +10,8 @@ import com.github.sdpteam15.polyevents.model.map.LatLngOperator.isTooParallel
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.mean
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.plus
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.polygonsUnion
+import com.github.sdpteam15.polyevents.model.map.RouteMapHelper.THRESHOLD
 import com.github.sdpteam15.polyevents.model.map.RouteMapHelper.getNearestPoint
-import com.github.sdpteam15.polyevents.model.map.THRESHOLD
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.IgnoreExtraProperties
 
