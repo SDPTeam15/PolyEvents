@@ -4,6 +4,7 @@ import com.github.sdpteam15.polyevents.database.HelperTestFunction
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.PROFILE_COLLECTION
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.USER_COLLECTION
+import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.ProfileAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.UserAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.objects.UserDatabase
@@ -12,6 +13,7 @@ import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
@@ -29,7 +31,15 @@ class UserDatabaseTest {
         PolyEventsApplication.inTest = true
         val mockDatabaseInterface = HelperTestFunction.mockDatabaseInterface()
         mockUserDatabase = UserDatabase(mockDatabaseInterface)
+        Database.currentDatabase = mockDatabaseInterface
+        Mockito.`when`(mockDatabaseInterface.userDatabase).thenReturn(mockUserDatabase)
+
         HelperTestFunction.clearQueue()
+    }
+
+    @After
+    fun teardown() {
+        Database.currentDatabase = FirestoreDatabaseProvider
     }
 
     @Test
@@ -48,16 +58,12 @@ class UserDatabaseTest {
         assertEquals(USER_COLLECTION, set.collection)
         assertEquals(UserAdapter, set.adapter)
     }
-/*
+
     @Test
     fun firstConnexion() {
         val user = UserEntity("uid")
 
-        //Mockito.`when`(mockUserDatabase.getUserProfilesList(anyOrNull(), anyOrNull())).thenReturn(Observable(true))
-
         HelperTestFunction.nextSetEntity { true }
-        HelperTestFunction.nextAddEntityAndGetId { "" }
-        HelperTestFunction.nextGetMapEntity { true }
         HelperTestFunction.nextGetListEntity { true }
 
         mockUserDatabase.firstConnexion(user).observeOnce { assert(it.value) }.then.postValue(false)
@@ -68,7 +74,7 @@ class UserDatabaseTest {
         assertEquals(user.uid, set.id)
         assertEquals(USER_COLLECTION, set.collection)
         assertEquals(UserAdapter, set.adapter)
-    }*/
+    }
 
     @Test
     fun inDatabase() {

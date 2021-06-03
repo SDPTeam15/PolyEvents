@@ -86,7 +86,7 @@ class LoginFragment : Fragment() {
      * This method will call the inDatabase method to check whether the users has already been registered to the database or not
      */
     private fun addIfNotInDB() {
-        currentDatabase.userDatabase!!.inDatabase(inDbObservable, currentUser!!.uid)
+        currentDatabase.userDatabase.inDatabase(inDbObservable, currentUser!!.uid)
             .observe(this) {
                 if (it.value) {
                     //If already in database, redirect to the profile fragment

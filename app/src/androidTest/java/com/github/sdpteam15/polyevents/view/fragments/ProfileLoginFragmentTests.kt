@@ -37,6 +37,7 @@ import com.github.sdpteam15.polyevents.view.fragments.home.VisitorHomeFragment
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.auth.User
 import org.hamcrest.Matchers
 import org.junit.After
 import org.junit.Before
@@ -429,28 +430,28 @@ class ProfileLoginFragmentTests {
     fun ifNotInDbAddIt() {
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
-
         initDBTests()
         //Mock the in database method, to return false
         val endingRequestInDatabase = Observable<Boolean>()
         When(
             mockedUserDatabase.inDatabase(
-                loginFragment.inDbObservable,
-                uidTest
+                anyOrNull(),
+                anyOrNull()
             )
-        ).thenAnswer { _ ->
-            loginFragment.inDbObservable.postValue(false)
-            endingRequestInDatabase
+        ).thenAnswer {
+            Observable(false)
         }
 
-        val endingRequestFirstConnection = Observable<Boolean>()
+        When(mockedDatabase.currentUser).thenReturn(UserEntity("uid"))
         var accountCreated = false
+        val endingRequestFirstConnection = Observable<Boolean>()
+
         //Mock the firstConnexion method so that it sets the boolean to true if called
         When(
             mockedUserDatabase.firstConnexion(
-                loginFragment.currentUser!!
+                anyOrNull()
             )
-        ).thenAnswer { _ ->
+        ).thenAnswer {
             accountCreated = true
             endingRequestFirstConnection
         }
@@ -472,7 +473,7 @@ class ProfileLoginFragmentTests {
         endingRequestInDatabase.postValue(true)
         //Notify that the firstConnection request was successfully performed
         endingRequestFirstConnection.postValue(true)
-        //Notify that the getUserAInformation request was successfully performed
+        //Notify that the getUserInformation request was successfully performed
         endingRequest.postValue(true)
 
         //Wait enough time for the boolean to be set correctly
@@ -480,66 +481,60 @@ class ProfileLoginFragmentTests {
         while (!accountCreated && i++ < 5) {
             Thread.sleep(1000)
         }
+
         assert(accountCreated)
         assert(i < 5)
     }
 
     @Test
     fun ifInDbDoNotAddIt() {
-
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
         initDBTests()
 
-        val endingRequestFirstConnection = Observable<Boolean>()
-        var accountNotCreated = true
+        var accountCreated = false
 
         //Mock the firstConnexion method so that it sets the boolean to false if called
         When(
             mockedUserDatabase.firstConnexion(
-                loginFragment.currentUser!!
+                anyOrNull()
             )
-        ).thenAnswer { _ ->
-            accountNotCreated = false
-            endingRequestFirstConnection
+        ).thenAnswer {
+            accountCreated = true
+            Observable(true)
         }
 
         //Mock the getInformation method to be able to launch the Profile Fragment
         When(
             mockedUserDatabase.getUserInformation(
-                profileFragment.userInfoLiveData,
-                uidTest
+                anyOrNull(),
+                anyOrNull()
             )
-        ).thenAnswer { _ ->
+        ).thenAnswer {
             profileFragment.userInfoLiveData.postValue(user)
-            endingRequest
+            Observable(true)
         }
 
         loginDirectly(loginFragment, R.id.id_btn_login_button)
-        //Notify that the firstConnection request was successfully performed
-        endingRequestFirstConnection.postValue(true)
-        //Notify that the getUserAInformation request was successfully performed
-        endingRequest.postValue(true)
 
-        //Wait enough time
+        // Wait enough time
         Thread.sleep(3000)
-        assert(accountNotCreated)
+        assert(!accountCreated)
     }
 
     @Test
     fun ifIssueWithCommunicationDoesNothing() {
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         initDBTests()
-
-        val endingRequestFirstConnection = Observable<Boolean>()
+        When(mockedDatabase.currentUser).thenReturn(UserEntity("uid"))
 
         //Mock the firstConnexion method so that it sets the boolean to false if called
         When(
             mockedUserDatabase.firstConnexion(
-                loginFragment.currentUser!!
+                anyOrNull()
             )
         ).thenAnswer {
-            endingRequestFirstConnection
+            Observable(false)
         }
 
         When(
@@ -552,8 +547,6 @@ class ProfileLoginFragmentTests {
             endingRequest
         }
         onView(withId(R.id.id_btn_login_button)).perform(click())
-        //Notify that the firstConnection request was successfully performed
-        endingRequestFirstConnection.postValue(false)
         //Notify that the getUserAInformation request was successfully performed
         endingRequest.postValue(false)
         Thread.sleep(2000)
