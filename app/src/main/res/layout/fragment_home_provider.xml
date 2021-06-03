@@ -52,69 +52,66 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView4">
 
-                <Button
-                    android:id="@+id/id_request_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="15dp"
-                    android:backgroundTint="@color/white"
-                    android:drawableTop="@drawable/ic_requests"
-                    android:drawableTint="@color/purple_500"
-                    android:paddingHorizontal="25dp"
+        <Button
+            android:id="@+id/id_request_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="15dp"
+            android:backgroundTint="@color/white"
+            android:drawableTop="@drawable/ic_requests"
+            android:drawableTint="@color/primary_variant"
+            android:text="@string/items_requests_button_text"
 
-                    android:text="@string/items_requests_button_text"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    android:textColor="@color/purple_500"
-                    app:strokeColor="@color/purple_500"
-                    app:strokeWidth="2dp"
-                    tools:ignore="ButtonStyle" />
+            android:paddingHorizontal="25dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="@color/primary_variant"
+            app:strokeColor="@color/primary_variant"
+            app:strokeWidth="2dp"
+            tools:ignore="ButtonStyle" />
+        <Button
+            android:id="@+id/id_event_manager_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
+            android:drawableTop="@drawable/ic_event"
+            android:drawableTint="@color/primary_variant"
 
-                <Button
-                    android:id="@+id/id_event_manager_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="@color/white"
-                    android:drawableTop="@drawable/ic_event"
-                    android:drawableTint="@color/purple_500"
+            android:paddingHorizontal="25dp"
+            android:text="@string/admin_hub_btn_event_text"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="@color/primary_variant"
+            app:strokeColor="@color/primary_variant"
+            app:strokeWidth="2dp"
+            tools:ignore="ButtonStyle" />
+        <Button
+            android:id="@+id/id_my_items_request_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
+            android:drawableTop="@drawable/ic_event"
+            android:drawableTint="@color/primary_variant"
+            android:paddingHorizontal="17dp"
+            android:text="@string/my_items_requests_button_text"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="@color/primary_variant"
+            app:strokeColor="@color/primary_variant"
+            app:strokeWidth="2dp"
+            tools:ignore="ButtonStyle" />
 
-                    android:paddingHorizontal="25dp"
-                    android:text="@string/admin_hub_btn_event_text"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    android:textColor="@color/purple_500"
-                    app:strokeColor="@color/purple_500"
-                    app:strokeWidth="2dp"
-                    tools:ignore="ButtonStyle" />
-
-                <Button
-                    android:id="@+id/id_my_items_request_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="@color/white"
-                    android:drawableTop="@drawable/ic_event"
-                    android:drawableTint="@color/purple_500"
-                    android:paddingHorizontal="17dp"
-                    android:text="@string/my_items_requests_button_text"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    android:textColor="@color/purple_500"
-                    app:strokeColor="@color/purple_500"
-                    app:strokeWidth="2dp"
-                    tools:ignore="ButtonStyle" />
-
-                <Button
-                    android:id="@+id/id_provider_edit_requests_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="@color/white"
-                    android:drawableTop="@drawable/ic_event"
-                    android:drawableTint="@color/purple_500"
-
-                    android:paddingHorizontal="25dp"
-                    android:text="@string/edit_req_btn_text"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    android:textColor="@color/purple_500"
-                    app:strokeColor="@color/purple_500"
-                    app:strokeWidth="2dp"
-                    tools:ignore="ButtonStyle" />
+        <Button
+            android:id="@+id/id_provider_edit_requests_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
+            android:drawableTop="@drawable/ic_event"
+            android:drawableTint="@color/primary_variant"
+            android:paddingHorizontal="25dp"
+            android:text="Edit Req"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="@color/primary_variant"
+            app:strokeColor="@color/primary_variant"
+            app:strokeWidth="2dp"
+            tools:ignore="ButtonStyle" />
 
             </androidx.gridlayout.widget.GridLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,10 +8,10 @@ import android.widget.Button
 import androidx.fragment.app.Fragment
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
+import com.github.sdpteam15.polyevents.model.database.local.entity.UserSettings
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.model.room.UserSettings
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.viewmodel.UserSettingsViewModel
 import com.github.sdpteam15.polyevents.viewmodel.UserSettingsViewModelFactory
@@ -47,7 +47,7 @@ class SettingsFragment : Fragment() {
     ): View? {
         val fragmentView = inflater.inflate(R.layout.fragment_settings, container, false)
 
-        localDatabase = (requireActivity().application as PolyEventsApplication).database
+        localDatabase = (requireActivity().application as PolyEventsApplication).localDatabase
         localSettingsViewModel = UserSettingsViewModelFactory(
             localDatabase.userSettingsDao()
         ).create(UserSettingsViewModel::class.java)

@@ -56,7 +56,7 @@ class EventEditAdapterTest {
 
     @Test
     fun conversionOfEventToDocumentPreservesData() {
-        val document = EventEditAdapter.toDocument(event)
+        val document = EventEditAdapter.toDocumentWithoutNull(event)
 
         assertEquals(document[EVENT_NAME.value], event.eventName)
         assertEquals(document[EVENT_ZONE_ID.value], event.zoneId)

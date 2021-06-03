@@ -14,7 +14,7 @@ object Settings {
     private var name: String? = null
         get() {
             if (field == null && mainActivity != null)
-                field = mainActivity!!.getApplicationInfo().dataDir + "/Settings"
+                field = mainActivity!!.applicationInfo.dataDir + "/Settings"
             return field
         }
     var isLoaded = false

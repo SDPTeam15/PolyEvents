@@ -5,7 +5,7 @@ package com.github.sdpteam15.polyevents.model.database.remote.matcher
  * @property data the data of the document
  * @property id the id of the document
  */
-data class QueryDocumentSnapshot (
-    val data : Map<String, Any?>,
-    val id : String
+data class QueryDocumentSnapshot(
+    val data: Map<String, Any?>,
+    val id: String
 )

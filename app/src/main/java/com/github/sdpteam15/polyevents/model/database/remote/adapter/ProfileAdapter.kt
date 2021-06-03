@@ -12,7 +12,7 @@ import com.github.sdpteam15.polyevents.model.entity.UserRole
 @Suppress("UNCHECKED_CAST")
 object ProfileAdapter : AdapterInterface<UserProfile> {
 
-    override fun toDocument(element: UserProfile): HashMap<String, Any?> =
+    override fun toDocumentWithoutNull(element: UserProfile): HashMap<String, Any?> =
         hashMapOf(
             PROFILE_ID.value to element.pid,
             PROFILE_NAME.value to element.profileName,

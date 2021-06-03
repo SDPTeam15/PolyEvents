@@ -80,7 +80,7 @@ class LeaveEventReviewFragment(val eventId: String?, val reviewHasChanged: Revie
                 }
             }
 
-            currentDatabase.eventDatabase!!.getUserRatingFromEvent(
+            currentDatabase.eventDatabase.getUserRatingFromEvent(
                 userId = currentDatabase.currentUser!!.uid,
                 eventId = eventId!!,
                 returnedRating = ratingObservable
@@ -88,14 +88,6 @@ class LeaveEventReviewFragment(val eventId: String?, val reviewHasChanged: Revie
         }
 
         return view
-    }
-
-    override fun onResume() {
-        super.onResume()
-        // Uncomment the following lines to manually set the height and the width of the DialogFragment
-        /*val width = ConstraintLayout.LayoutParams.MATCH_PARENT
-        val height = ConstraintLayout.LayoutParams.MATCH_PARENT
-        dialog!!.window!!.setLayout(width, height)*/
     }
 
     /**
@@ -115,7 +107,7 @@ class LeaveEventReviewFragment(val eventId: String?, val reviewHasChanged: Revie
                 feedback = userFeedbackDialogEditText.text.toString()
             )
 
-            currentDatabase.eventDatabase!!.updateRating(
+            currentDatabase.eventDatabase.updateRating(
                 ratingCopy
             ).observe(this) {
                 showSuccessToastAndDismiss(it.value)
@@ -159,7 +151,7 @@ class LeaveEventReviewFragment(val eventId: String?, val reviewHasChanged: Revie
                 eventId = eventId,
                 userId = currentDatabase.currentUser!!.uid
             )
-            currentDatabase.eventDatabase!!.addRatingToEvent(
+            currentDatabase.eventDatabase.addRatingToEvent(
                 rating
             ).observe(this) {
                 showSuccessToastAndDismiss(it.value)

@@ -36,9 +36,8 @@ interface EventDatabaseInterface {
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun removeEvent(
-        eventId:String
+        eventId: String
     ): Observable<Boolean>
-
 
 
     /**
@@ -90,7 +89,7 @@ interface EventDatabaseInterface {
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun removeEventEdit(
-        eventId:String
+        eventId: String
     ): Observable<Boolean>
 
 

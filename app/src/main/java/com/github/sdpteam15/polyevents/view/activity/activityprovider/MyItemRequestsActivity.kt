@@ -147,17 +147,23 @@ class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLi
      */
     private fun getItemRequestsFromDB() {
         //Gets the item request of the user and then gets the item list
-        Database.currentDatabase.materialRequestDatabase!!.getMaterialRequestListByUser(
+        Database.currentDatabase.materialRequestDatabase.getMaterialRequestListByUser(
             requests,
             userId
         ).observeOnce(this) {
             if (!it.value) {
-                HelperFunctions.showToast(getString(R.string.fail_to_get_list_material_requests_eo), this)
+                HelperFunctions.showToast(
+                    getString(R.string.fail_to_get_list_material_requests_eo),
+                    this
+                )
             } else {
-                Database.currentDatabase.itemDatabase!!.getItemsList(items)
+                Database.currentDatabase.itemDatabase.getItemsList(items)
                     .observeOnce(this) { it2 ->
                         if (!it2.value) {
-                            HelperFunctions.showToast(getString(R.string.fail_to_get_list_items), this)
+                            HelperFunctions.showToast(
+                                getString(R.string.fail_to_get_list_items),
+                                this
+                            )
                         }
                     }
             }
@@ -180,7 +186,7 @@ class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLi
      */
     private val cancelMaterialRequest = { request: MaterialRequest ->
         val l =
-            Database.currentDatabase.materialRequestDatabase!!.deleteMaterialRequest(request.requestId!!)
+            Database.currentDatabase.materialRequestDatabase.deleteMaterialRequest(request.requestId!!)
         l.observe(this) {
             if (it.value)
                 requests.remove(request)
@@ -193,7 +199,7 @@ class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLi
      */
     private val returnMaterialRequest = { request: MaterialRequest ->
         val newRequest = request.copy(status = RETURN_REQUESTED, staffInChargeId = null)
-        Database.currentDatabase.materialRequestDatabase!!.updateMaterialRequest(
+        Database.currentDatabase.materialRequestDatabase.updateMaterialRequest(
             request.requestId!!,
             newRequest
         ).observeOnce(this) {
