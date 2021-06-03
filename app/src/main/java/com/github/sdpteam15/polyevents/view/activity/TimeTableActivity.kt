@@ -111,7 +111,7 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
      */
     private fun setupDate() {
         val date =
-            selectedDate.format(DateTimeFormatter.ofPattern("EEEE, dd.MM.yyyy", Locale.FRENCH))
+            selectedDate.format(DateTimeFormatter.ofPattern("EEEE, dd.MM.yyyy", Locale.ENGLISH))
         findViewById<TextView>(R.id.id_date_timetable).text = date
     }
 
@@ -434,7 +434,8 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         val nowH = now.hour
         val nowM = now.minute
         val idLine = hourToLine[nowH] ?: return
-
+        if (getDateFormat(now) != getDateFormat(selectedDate))
+            return
         val currentId = nextId++
         val constraintLayout = findViewById<ConstraintLayout>(R.id.id_timetable_constraintlayout)
 
@@ -494,7 +495,6 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
      * Refreshes the display of the bar that indicates the current time
      */
     private fun refreshNowBar() {
-        nowBar ?: return
         val constraintLayout = findViewById<ConstraintLayout>(R.id.id_timetable_constraintlayout)
         constraintLayout.removeView(nowBar)
         nowBar = null

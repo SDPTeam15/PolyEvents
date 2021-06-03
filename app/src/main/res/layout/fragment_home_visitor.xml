@@ -39,25 +39,30 @@
                 app:layout_constraintStart_toStartOf="@+id/id_upcoming_events_list"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <LinearLayout
-                android:id="@+id/id_upcoming_events_list"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_below="@id/id_title_upcoming_events"
-                android:orientation="vertical"
-                app:layout_constraintTop_toBottomOf="@+id/id_title_upcoming_events">
-
-            </LinearLayout>
-
-            <Button
-                android:id="@+id/id_timetable_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/planning_btn"
-                app:layout_constraintTop_toBottomOf="@id/id_upcoming_events_list"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent" />
+    <RelativeLayout
+        android:id="@+id/id_upcoming_events_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_below="@id/id_title_upcoming_events"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@+id/id_title_upcoming_events">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/id_recycler_upcomming_events"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            app:layoutManager="LinearLayoutManager" />
+    </RelativeLayout>
+    <Button
+        android:id="@+id/id_timetable_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/planning_btn"
+        app:layout_constraintTop_toBottomOf="@id/id_upcoming_events_list"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
