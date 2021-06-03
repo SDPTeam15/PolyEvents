@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.view.activity.admin
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.transition.Slide
@@ -137,13 +138,14 @@ class ItemRequestManagementActivity : AppCompatActivity() {
         createRefusalPopup(request)
     }
 
+    @SuppressLint("InflateParams")
     private fun createRefusalPopup(request: MaterialRequest) {
         // Initialize a new layout inflater instance
         val inflater: LayoutInflater =
             getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
         // Inflate a custom view using layout inflater
-        val view = inflater.inflate(R.layout.popup_refuse_request)
+        val view = inflater.inflate(R.layout.popup_refuse_request, null)
 
         // Initialize a new instance of popup window
         val popupWindow = PopupWindow(
