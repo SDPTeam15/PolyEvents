@@ -26,6 +26,7 @@ import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Rating
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
 import com.schibsted.spain.barista.assertion.BaristaEnabledAssertions.assertDisabled
 import com.schibsted.spain.barista.assertion.BaristaEnabledAssertions.assertEnabled
@@ -83,6 +84,7 @@ class EventActivityTest {
             name = "Test name"
         )
 
+        PolyEventsApplication.inTest = true
         mockedDatabase = mock(DatabaseInterface::class.java)
         mockedEventDatabase = mock(EventDatabaseInterface::class.java)
         mockedUserDatabase = mock(UserDatabaseInterface::class.java)
@@ -180,6 +182,7 @@ class EventActivityTest {
     fun teardown() {
         Thread.sleep(1000)
         scenario.close()
+        PolyEventsApplication.inTest = false
         // close and remove the mock local database
         localDatabase.close()
         currentDatabase = FirestoreDatabaseProvider
@@ -204,16 +207,17 @@ class EventActivityTest {
     @Test
     fun newCommentAdded() {
         goToEventActivityWithIntent(limitedEventId)
-
-        assertEquals(0, EventActivity.obsComments.size)
+        assertEquals(0, EventActivity.obsNonEmptyComments.size)
         val comment = Rating("Rating 1", 5f, "TROP COOL yes")
         EventActivity.obsComments.add(comment, this)
-        assertEquals(1, EventActivity.obsComments.size)
+        Thread.sleep(1000)
+        assertEquals(1, EventActivity.obsNonEmptyComments.size)
         EventActivity.obsComments.clear()
+        EventActivity.obsNonEmptyComments.clear()
         val comment2 = Rating("Rating 2", 5f, "")
         EventActivity.obsComments.add(comment2, this)
         Thread.sleep(1000)
-        assertEquals(0, EventActivity.obsComments.size)
+        assertEquals(0, EventActivity.obsNonEmptyComments.size)
     }
 
     @Test
