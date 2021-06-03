@@ -32,7 +32,7 @@ import kotlin.collections.ArrayList
  */
 class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
-    companion object{
+    companion object {
         var instance: TimeTableActivity? = null
     }
 
@@ -72,10 +72,10 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         leftButton = findViewById(R.id.id_change_zone_left)
         rightButton = findViewById(R.id.id_change_zone_right)
 
-        obsDate.observe(this){
+        obsDate.observe(this) {
             selectedDate = it.value
             setupDate()
-            if(selectedZone != null)
+            if (selectedZone != null)
                 drawZoneEvents(selectedZone!!)
         }
 
@@ -218,12 +218,12 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
      * Draws half hours between the hour in argument and the last hour, only draws if there is a last hour
      * @param hour next hour to draw between
      */
-    fun addHalfHour(hour: Int){
-        if(hourToLine.size < 2)
+    fun addHalfHour(hour: Int) {
+        if (hourToLine.size < 2)
             return
         val currentIdLineHalfHour = nextId++
         val idNextHour = hourToLine[hour]!!
-        val idPreviousHour = hourToLine[hour-1]!!
+        val idPreviousHour = hourToLine[hour - 1]!!
         //Create a line
         val lineHalfHour = View(this)
         lineHalfHour.backgroundTintList = resources.getColorStateList(R.color.semi_black, null)
@@ -260,7 +260,7 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
             ConstraintSet.LEFT,
             idNextHour,
             ConstraintSet.LEFT,
-            8*linepaddingLeftDP.dpToPixelsInt(this)
+            8 * linepaddingLeftDP.dpToPixelsInt(this)
         )
         constraintSet.connect(
             currentIdLineHalfHour,
@@ -289,23 +289,23 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
             }.then
         }
 
-        Database.currentDatabase.eventDatabase!!.getEvents(
+        Database.currentDatabase.eventDatabase.getEvents(
             null,
             null,
             eventList = requestObservable
         )
-        .observe(this) {
-            if (!it.value) {
-                HelperFunctions.showToast(getString(R.string.fail_retrieve_events), this)
-                finish()
-            } else {
-                setupSpinner()
-                if (!obsZoneNames.isEmpty()) {
-                    selectedZone = obsZoneNames.keys.toList()[0]
-                    drawZoneEvents(selectedZone!!)
+            .observe(this) {
+                if (!it.value) {
+                    HelperFunctions.showToast(getString(R.string.fail_retrieve_events), this)
+                    finish()
+                } else {
+                    setupSpinner()
+                    if (!obsZoneNames.isEmpty()) {
+                        selectedZone = obsZoneNames.keys.toList()[0]
+                        drawZoneEvents(selectedZone!!)
+                    }
                 }
             }
-        }
     }
 
     /**

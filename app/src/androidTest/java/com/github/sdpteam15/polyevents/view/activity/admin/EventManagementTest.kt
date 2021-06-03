@@ -20,6 +20,7 @@ import com.github.sdpteam15.polyevents.model.database.remote.objects.ZoneDatabas
 import com.github.sdpteam15.polyevents.model.entity.*
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import com.github.sdpteam15.polyevents.view.adapter.EventListAdapter
 import org.hamcrest.CoreMatchers

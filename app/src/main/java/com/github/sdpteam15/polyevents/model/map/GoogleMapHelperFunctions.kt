@@ -90,7 +90,7 @@ object GoogleMapHelperFunctions {
             ZoneAreaMapHelper.importNewZone(context, it.value, mode != MapsFragmentMod.EditZone)
         }
 
-        Database.currentDatabase.zoneDatabase!!.getAllZones(
+        Database.currentDatabase.zoneDatabase.getAllZones(
             null, 50,
             ZoneManagementListActivity.zones
         ).observe(lifecycleOwner) {
@@ -108,7 +108,11 @@ object GoogleMapHelperFunctions {
         var temp = ZoneAreaMapHelper.zonesToArea[idZone]!!.second.toMutableList()
         var s = ""
         for (uid in temp) {
-            s += areaToFormattedStringLocation(ZoneAreaMapHelper.areasPoints[uid]!!.third.points.dropLast(1))
+            s += areaToFormattedStringLocation(
+                ZoneAreaMapHelper.areasPoints[uid]!!.third.points.dropLast(
+                    1
+                )
+            )
             s += DatabaseConstant.ZoneConstant.AREAS_SEP
         }
         if (s != "") {

@@ -46,7 +46,7 @@ class Observable<T>(value: T? = null, val creator: Any? = null) {
      * @property value the value
      * @property  sender object that modified the data
      */
-    open class UpdateValue<T>(val value: T, val sender: Any?){
+    open class UpdateValue<T>(val value: T, val sender: Any?) {
         override fun toString() = "value:'$value', sender:'$sender'"
     }
 
@@ -357,8 +357,10 @@ class Observable<T>(value: T? = null, val creator: Any? = null) {
      * @param sender The source of the event.
      */
     fun postValue(newValue: T?, sender: Any? = null): ThenOrRemove<Observable<T>> {
-        synchronized(this) { updateArgs = if(newValue == null) null else UpdateValue(newValue, sender); }
-        if(updateArgs != null)
+        synchronized(this) {
+            updateArgs = if (newValue == null) null else UpdateValue(newValue, sender)
+        }
+        if (updateArgs != null)
             run(Runnable {
                 for (obs in observers.toList())
                     if (!obs(updateArgs!!))

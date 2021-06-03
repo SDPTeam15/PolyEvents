@@ -99,7 +99,7 @@ class ZonePreviewBottomSheetDialogFragmentTest {
             mockedZoneDatabase
         )
 
-        When(mockedDatabase.eventDatabase!!.getEventsByZoneId(
+        When(mockedDatabase.eventDatabase.getEventsByZoneId(
             zoneId = anyOrNull(),
             limit = anyOrNull(),
             events = anyOrNull()

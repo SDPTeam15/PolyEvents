@@ -26,47 +26,51 @@ interface DatabaseInterface {
      * The current user of the database
      */
     var currentUser: UserEntity?
+        get() = currentUserObservable.value
+        set(value) {
+            currentUserObservable.value = value
+        }
 
 
     /**
      * The database used to handle query about items
      */
-    var itemDatabase: ItemDatabaseInterface?
+    var itemDatabase: ItemDatabaseInterface
 
     /**
      * The database used to handle query about zones
      */
-    var zoneDatabase: ZoneDatabaseInterface?
+    var zoneDatabase: ZoneDatabaseInterface
 
     /**
      * The database used to handle query about users
      */
-    var userDatabase: UserDatabaseInterface?
+    var userDatabase: UserDatabaseInterface
 
     /**
      * The database used to handle query about heatmap
      */
-    var heatmapDatabase: HeatmapDatabaseInterface?
+    var heatmapDatabase: HeatmapDatabaseInterface
 
     /**
      * The database used to handle query about events
      */
-    var eventDatabase: EventDatabaseInterface?
+    var eventDatabase: EventDatabaseInterface
 
     /**
      * The database used to handle query about material request
      */
-    var materialRequestDatabase: MaterialRequestDatabaseInterface?
+    var materialRequestDatabase: MaterialRequestDatabaseInterface
 
     /**
      * The database used to handle queries about the current user's settings
      */
-    var userSettingsDatabase: UserSettingsDatabaseInterface?
+    var userSettingsDatabase: UserSettingsDatabaseInterface
 
     /**
      * The database used to handle query about to route
      */
-    var routeDatabase: RouteDatabaseInterface?
+    var routeDatabase: RouteDatabaseInterface
 
     /**
      * Add an Entity to the data base
@@ -106,7 +110,7 @@ interface DatabaseInterface {
         elements: List<T>,
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterToDocumentInterface<in T> = collection.adapter as AdapterToDocumentInterface<T>
-    ): Observable<Pair<Boolean, List<String?>>>
+    ): Observable<Pair<Boolean, List<String>>>
 
     /**
      * Set an Entity to the data base

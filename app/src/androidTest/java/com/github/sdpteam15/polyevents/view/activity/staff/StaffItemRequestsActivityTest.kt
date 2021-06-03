@@ -144,30 +144,30 @@ class StaffItemRequestsActivityTest {
         FakeDatabaseUser.allUsers.clear()
 
         for ((item, count) in availableItems) {
-            Database.currentDatabase.itemDatabase!!.updateItem(item, count, count)
+            Database.currentDatabase.itemDatabase.updateItem(item, count, count)
         }
-        Database.currentDatabase.itemDatabase!!.getItemsList(availableItemsList)
+        Database.currentDatabase.itemDatabase.getItemsList(availableItemsList)
         for (request in availableRequests) {
-            Database.currentDatabase.materialRequestDatabase!!.updateMaterialRequest(
+            Database.currentDatabase.materialRequestDatabase.updateMaterialRequest(
                 request.requestId!!,
                 request
             )
         }
-        Database.currentDatabase.materialRequestDatabase!!.getMaterialRequestList(
+        Database.currentDatabase.materialRequestDatabase.getMaterialRequestList(
             availableRequestsList
         )
         for (zone in availableZones) {
-            Database.currentDatabase.zoneDatabase!!.createZone(zone)
+            Database.currentDatabase.zoneDatabase.createZone(zone)
         }
-        Database.currentDatabase.zoneDatabase!!.getAllZones(null, null, availableZoneList)
+        Database.currentDatabase.zoneDatabase.getAllZones(null, null, availableZoneList)
 
         for (event in availableEvents) {
-            Database.currentDatabase.eventDatabase!!.createEvent(event)
+            Database.currentDatabase.eventDatabase.createEvent(event)
         }
-        Database.currentDatabase.eventDatabase!!.getEvents(null, null, availableEventList)
+        Database.currentDatabase.eventDatabase.getEvents(null, null, availableEventList)
 
         FakeDatabaseUser.allUsers.addAll(availableUsers)
-        Database.currentDatabase.userDatabase!!.getListAllUsers(availableUsersList)
+        Database.currentDatabase.userDatabase.getListAllUsers(availableUsersList)
 
         val intent =
             Intent(

@@ -12,7 +12,7 @@ import com.google.firebase.Timestamp
  * DTO (Data transfer object) concept.
  */
 object DeviceLocationAdapter : AdapterInterface<DeviceLocation> {
-    override fun toDocument(element: DeviceLocation): HashMap<String, Any?> =
+    override fun toDocumentWithoutNull(element: DeviceLocation): HashMap<String, Any?> =
         hashMapOf(
             LocationConstant.LOCATIONS_DEVICE.value to element.device,
             LocationConstant.LOCATIONS_POINT_LATITUDE.value to element.location.latitude,
@@ -27,8 +27,6 @@ object DeviceLocationAdapter : AdapterInterface<DeviceLocation> {
                 document[LocationConstant.LOCATIONS_POINT_LATITUDE.value] as Double,
                 document[LocationConstant.LOCATIONS_POINT_LONGITUDE.value] as Double,
             ),
-            time = HelperFunctions.dateToLocalDateTime(
-                (document[LocationConstant.LOCATIONS_TIME.value] as Timestamp?)?.toDate()
-            )
+            time = HelperFunctions.dateToLocalDateTime(document[LocationConstant.LOCATIONS_TIME.value])
         )
 }

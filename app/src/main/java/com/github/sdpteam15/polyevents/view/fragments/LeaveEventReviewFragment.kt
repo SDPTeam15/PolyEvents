@@ -18,7 +18,7 @@ import com.github.sdpteam15.polyevents.view.service.ReviewHasChanged
 /**
  * A Dialog Fragment that is displayed over an EventActivity, to leave a review for the event.
  */
-class LeaveEventReviewFragment(val eventId: String?, val reviewHasChanged: ReviewHasChanged):
+class LeaveEventReviewFragment(val eventId: String?, val reviewHasChanged: ReviewHasChanged) :
     DialogFragment(R.layout.fragment_leave_review) {
 
     private lateinit var leaveReviewDialogConfirmButton: Button
@@ -35,7 +35,8 @@ class LeaveEventReviewFragment(val eventId: String?, val reviewHasChanged: Revie
     ): View? {
         val view = super.onCreateView(inflater, container, savedInstanceState)
         if (view != null) {
-            leaveReviewDialogConfirmButton = view.findViewById(R.id.leave_review_fragment_save_button)
+            leaveReviewDialogConfirmButton =
+                view.findViewById(R.id.leave_review_fragment_save_button)
 
             userFeedbackDialogEditText = view.findViewById(R.id.leave_review_fragment_feedback_text)
 
@@ -44,7 +45,8 @@ class LeaveEventReviewFragment(val eventId: String?, val reviewHasChanged: Revie
                 rated = true
             }
 
-            leaveReviewDialogCancelButton = view.findViewById(R.id.leave_review_fragment_cancel_button)
+            leaveReviewDialogCancelButton =
+                view.findViewById(R.id.leave_review_fragment_cancel_button)
             leaveReviewDialogCancelButton.setOnClickListener {
                 // Dimiss the dialog if canceled
                 dismiss()
@@ -68,7 +70,7 @@ class LeaveEventReviewFragment(val eventId: String?, val reviewHasChanged: Revie
                 }
             }
 
-            currentDatabase.eventDatabase!!.getUserRatingFromEvent(
+            currentDatabase.eventDatabase.getUserRatingFromEvent(
                 userId = currentDatabase.currentUser!!.uid,
                 eventId = eventId!!,
                 returnedRating = ratingObservable
@@ -78,14 +80,6 @@ class LeaveEventReviewFragment(val eventId: String?, val reviewHasChanged: Revie
         return view
     }
 
-    override fun onResume() {
-        super.onResume()
-        // Uncomment the following lines to manually set the height and the width of the DialogFragment
-        /*val width = ConstraintLayout.LayoutParams.MATCH_PARENT
-        val height = ConstraintLayout.LayoutParams.MATCH_PARENT
-        dialog!!.window!!.setLayout(width, height)*/
-    }
-
     /**
      * A listener to update a rating in the database. Used when we have an already found
      * rating for the current user.
@@ -93,7 +87,8 @@ class LeaveEventReviewFragment(val eventId: String?, val reviewHasChanged: Revie
     private fun onClickUpdate(rating: Rating) {
         if (!rated) {
             // Check if user has rated, to avoid storing a rating with zero stars.
-            HelperFunctions.showToast(getString(R.string.event_review_leave_rating_warning),
+            HelperFunctions.showToast(
+                getString(R.string.event_review_leave_rating_warning),
                 context
             )
         } else {
@@ -102,10 +97,10 @@ class LeaveEventReviewFragment(val eventId: String?, val reviewHasChanged: Revie
                 feedback = userFeedbackDialogEditText.text.toString()
             )
 
-            currentDatabase.eventDatabase!!.updateRating(
+            currentDatabase.eventDatabase.updateRating(
                 ratingCopy
             ).observe(this) {
-               showSuccessToastAndDismiss(it.value)
+                showSuccessToastAndDismiss(it.value)
             }
         }
     }
@@ -116,7 +111,8 @@ class LeaveEventReviewFragment(val eventId: String?, val reviewHasChanged: Revie
     private fun onClickAdd() {
         if (!rated) {
             // Check if user has rated, to avoid storing a rating with zero stars.
-            HelperFunctions.showToast(getString(R.string.event_review_leave_rating_warning),
+            HelperFunctions.showToast(
+                getString(R.string.event_review_leave_rating_warning),
                 context
             )
         } else {
@@ -126,7 +122,7 @@ class LeaveEventReviewFragment(val eventId: String?, val reviewHasChanged: Revie
                 eventId = eventId,
                 userId = currentDatabase.currentUser!!.uid
             )
-            currentDatabase.eventDatabase!!.addRatingToEvent(
+            currentDatabase.eventDatabase.addRatingToEvent(
                 rating
             ).observe(this) {
                 showSuccessToastAndDismiss(it.value)

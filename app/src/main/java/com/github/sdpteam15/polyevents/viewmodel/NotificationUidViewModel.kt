@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.github.sdpteam15.polyevents.model.database.local.dao.NotificationUidDao
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.model.room.NotificationUid
-import com.github.sdpteam15.polyevents.model.room.NotificationUid.Companion.SENTINEL_VALUE
+import com.github.sdpteam15.polyevents.model.database.local.entity.NotificationUid
+import com.github.sdpteam15.polyevents.model.database.local.entity.NotificationUid.Companion.SENTINEL_VALUE
 import kotlinx.coroutines.launch
 
 class NotificationUidViewModel(private val notificationUidDao: NotificationUidDao) : ViewModel() {
