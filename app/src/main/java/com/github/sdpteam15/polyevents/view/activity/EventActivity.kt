@@ -32,8 +32,8 @@ import com.github.sdpteam15.polyevents.view.fragments.LeaveEventReviewFragment
 import com.github.sdpteam15.polyevents.view.fragments.ProgressDialogFragment
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModel
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModelFactory
-import java.time.LocalDateTime
 import kotlinx.coroutines.Dispatchers
+import java.time.LocalDateTime
 
 /**
  * An activity containing events description. Note that information about the event could be stored from the local
@@ -202,8 +202,8 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
     /**
      * Updates the number of reviews on the xml
      */
-    private fun updateNumberReviews(){
-        if(!PolyEventsApplication.inTest) {
+    private fun updateNumberReviews() {
+        if (!PolyEventsApplication.inTest) {
             PolyEventsApplication.application.applicationScope.launch(Dispatchers.Main) {
                 findViewById<TextView>(R.id.id_number_reviews).text = obsComments.size.toString()
             }
@@ -213,10 +213,11 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
     /**
      * Updates the number of comments on the xml
      */
-    private fun updateNumberComments(){
-        if(!PolyEventsApplication.inTest) {
+    private fun updateNumberComments() {
+        if (!PolyEventsApplication.inTest) {
             PolyEventsApplication.application.applicationScope.launch(Dispatchers.Main) {
-                findViewById<TextView>(R.id.id_number_comments).text = obsNonEmptyComments.size.toString()
+                findViewById<TextView>(R.id.id_number_comments).text =
+                    obsNonEmptyComments.size.toString()
             }
         }
     }

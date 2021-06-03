@@ -777,49 +777,6 @@ class EventActivityTest {
         assert(retrievedEventsAfterUnfollow.isEmpty())
     }
 
-    /**
-     * Idea taken from StackOverflow
-     * https://stackoverflow.com/questions/25209508/how-to-set-a-specific-rating-on-ratingbar-in-espresso/25226081
-     */
-    class SetRating(val newRating: Float) : ViewAction {
-        override fun getConstraints(): Matcher<View> {
-            return isAssignableFrom(RatingBar::class.java)
-        }
-
-        override fun getDescription(): String {
-            return "Custom view action to set rating."
-        }
-
-        override fun perform(uiController: UiController?, view: View) {
-            val ratingBar = view as RatingBar
-            ratingBar.rating = newRating
-        }
-    }
-
-    private fun goToEventActivityWithIntent(eventId: String) {
-        val intent = Intent(
-            ApplicationProvider.getApplicationContext(),
-            EventActivity::class.java
-        ).apply {
-            putExtra(EXTRA_EVENT_ID, eventId)
-        }
-
-        scenario = ActivityScenario.launch(intent)
-
-        EventActivity.database = localDatabase
-        EventActivity.notificationsScheduler = mockedNotificationsScheduler
-
-        Thread.sleep(1000)
-    }
-
-    private fun testEventLocalEqualsEventEntity(eventLocal: EventLocal, event: Event) {
-        val eventLocalWithCommonAttributes = eventLocal.copy(
-            eventStartNotificationId = null,
-            eventBeforeNotificationId = null
-        )
-        assertEquals(eventLocalWithCommonAttributes, EventLocal.fromEvent(event))
-    }
-
     @Test
     fun testNotificationsNotScheduledIfEventAlreadyEnded() {
         goToEventActivityWithIntent(publicEventId)
@@ -893,5 +850,48 @@ class EventActivityTest {
 
         assertNotNull(notificationBeforeId)
         assertNotNull(notificationStartId)
+    }
+
+    /**
+     * Idea taken from StackOverflow
+     * https://stackoverflow.com/questions/25209508/how-to-set-a-specific-rating-on-ratingbar-in-espresso/25226081
+     */
+    class SetRating(val newRating: Float) : ViewAction {
+        override fun getConstraints(): Matcher<View> {
+            return isAssignableFrom(RatingBar::class.java)
+        }
+
+        override fun getDescription(): String {
+            return "Custom view action to set rating."
+        }
+
+        override fun perform(uiController: UiController?, view: View) {
+            val ratingBar = view as RatingBar
+            ratingBar.rating = newRating
+        }
+    }
+
+    private fun goToEventActivityWithIntent(eventId: String) {
+        val intent = Intent(
+            ApplicationProvider.getApplicationContext(),
+            EventActivity::class.java
+        ).apply {
+            putExtra(EXTRA_EVENT_ID, eventId)
+        }
+
+        scenario = ActivityScenario.launch(intent)
+
+        EventActivity.database = localDatabase
+        EventActivity.notificationsScheduler = mockedNotificationsScheduler
+
+        Thread.sleep(1000)
+    }
+
+    private fun testEventLocalEqualsEventEntity(eventLocal: EventLocal, event: Event) {
+        val eventLocalWithCommonAttributes = eventLocal.copy(
+            eventStartNotificationId = null,
+            eventBeforeNotificationId = null
+        )
+        assertEquals(eventLocalWithCommonAttributes, EventLocal.fromEvent(event))
     }
 }
