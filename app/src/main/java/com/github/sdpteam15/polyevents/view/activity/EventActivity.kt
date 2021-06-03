@@ -32,6 +32,7 @@ import com.github.sdpteam15.polyevents.view.fragments.ProgressDialogFragment
 import com.github.sdpteam15.polyevents.view.service.ReviewHasChanged
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModel
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModelFactory
+import java.time.LocalDateTime
 
 
 /**
@@ -406,26 +407,38 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
      * at the start of the event.
      */
     private fun scheduleNotificationsAndSaveEvent() {
-        val event15MinBeforeNotificationMessage =
-            getString(R.string.event_start_soon, event.eventName)
-        val event15MinBeforeNotificationId = notificationsScheduler.scheduleEventNotification(
-            eventId = eventId,
-            notificationMessage = event15MinBeforeNotificationMessage,
-            scheduledTime = event.startTime!!.minusMinutes(15L)
-        )
-        val eventStartNotificationMessage = getString(R.string.event_started, event.eventName)
-        val eventStartNotificationId = notificationsScheduler.scheduleEventNotification(
-            eventId = eventId,
-            notificationMessage = eventStartNotificationMessage,
-            scheduledTime = event.startTime!!
-        )
+        val eventLocalInstance = EventLocal.fromEvent(event)
+        // Check first if event has already ended, thus don't send notifications
+        if (!LocalDateTime.now().isAfter(event.endTime)) {
+            val event15MinBeforeNotificationId: Int?
+            val eventStartNotificationId: Int?
 
-        // Save the event in local cache, as well as its associated notifications ids, to easily
-        // retrieve these notifications later (to cancel for example)
-        val eventLocalInstance = EventLocal.fromEvent(event).also {
-            it.eventStartNotificationId = eventStartNotificationId
-            it.eventBeforeNotificationId = event15MinBeforeNotificationId
+            // Check if event hasn't already started, schedule a notification 15 min before the start of the event
+            if (LocalDateTime.now().isBefore(event.startTime)) {
+                val event15MinBeforeNotificationMessage =
+                    getString(R.string.event_start_soon, event.eventName)
+                event15MinBeforeNotificationId = notificationsScheduler.scheduleEventNotification(
+                    eventId = eventId,
+                    notificationMessage = event15MinBeforeNotificationMessage,
+                    scheduledTime = event.startTime!!.minusMinutes(15L)
+                )
+                // Save the event associated notifications ids, to easily
+                // retrieve these notifications later (to cancel for example)
+                eventLocalInstance.eventBeforeNotificationId = event15MinBeforeNotificationId
+            }
+
+            // Schedule a notification at the start of the event
+            val eventStartNotificationMessage =
+                getString(R.string.event_started, event.eventName)
+            eventStartNotificationId = notificationsScheduler.scheduleEventNotification(
+                eventId = eventId,
+                notificationMessage = eventStartNotificationMessage,
+                scheduledTime = event.startTime!!
+            )
+
+            eventLocalInstance.eventStartNotificationId = eventStartNotificationId
         }
+        // Save the event in local cache
         localEventViewModel.insert(eventLocalInstance)
     }
 
