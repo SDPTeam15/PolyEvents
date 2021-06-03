@@ -338,7 +338,6 @@ class ProfileLoginFragmentTests {
         onView(withId(R.id.id_birthday_button)).perform(scrollTo(), click())
         onView(withText("OK")).perform(scrollTo(), click())
 
-
         //Mock the getUserInformation method to post a user with other values than previously
         //So that we can see if the getUserInformation() has been called (it shouldn't)
         When(
@@ -353,7 +352,7 @@ class ProfileLoginFragmentTests {
 
         //Nothing happens
         endingRequestUpdate = Observable()
-        onView(withId(R.id.id_update_infos_button)).perform(click())
+        onView(withId(R.id.id_update_infos_button)).perform(scrollTo(), click())
         endingRequestUpdate.postValue(false)
 
         //check that the values are still the same
@@ -653,6 +652,7 @@ class ProfileLoginFragmentTests {
         userObservable.postValue(user)
 
         onView(withId(R.id.id_recycler_profile_list)).perform(
+            scrollTo(),
             RecyclerViewActions.actionOnItemAtPosition<EventItemAdapter.ItemViewHolder>(
                 0, TestHelper.clickChildViewWithId(R.id.id_profile_remove_item)
             )
@@ -695,6 +695,7 @@ class ProfileLoginFragmentTests {
         userObservable.postValue(user)
         Intents.init()
         onView(withId(R.id.id_recycler_profile_list)).perform(
+            scrollTo(),
             RecyclerViewActions.actionOnItemAtPosition<EventItemAdapter.ItemViewHolder>(
                 0, TestHelper.clickChildViewWithId(R.id.id_profile_edit_item)
             )
