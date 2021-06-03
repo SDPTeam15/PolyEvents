@@ -135,7 +135,7 @@ class ZoneManagementListTest {
             )
         )
         Espresso.onView(ViewMatchers.withText("YES")).inRoot(isDialog()).perform(click())
-        Thread.sleep(500)
+        Thread.sleep(1000)
         Espresso.onView(ViewMatchers.withId(R.id.recycler_zones_list))
             .check(RecyclerViewItemCountAssertion(zones.size - 1))
     }
