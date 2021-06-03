@@ -3,7 +3,6 @@ package com.github.sdpteam15.polyevents.view.activity.admin
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageButton
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
@@ -133,16 +132,14 @@ class EventManagementListActivity : AppCompatActivity() {
             intent.putExtra(EVENT_ID_INTENT, s)
             startActivity(intent)
         }
-
-        // build an alert dialog so that a confirmation of deletion is displayed before actually delete the message
+        //Display alert dialog to warn the user that the action is not reversible
         deleteListener = { zoneId: String, event: Event ->
-            val builder = AlertDialog.Builder(this)
-            builder.setMessage(getString(R.string.message_confirm_delete, event.eventName))
-                .setPositiveButton(getString(R.string.event_deletion_yes_button_text)) { _, _ ->
-                    eventDeletion(event, zoneId)
-                }.setNegativeButton(getString(R.string.event_deletion_no_button_text)) { _, _ -> }
-            builder.show()
-            Unit
+            HelperFunctions.showAlertDialog(
+                this,
+                getString(R.string.message_confirm_delete_title, event.eventName),
+                getString(R.string.message_confirm_delete, event.eventName),
+                { eventDeletion(event, zoneId) }
+            )
         }
     }
 

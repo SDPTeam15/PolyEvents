@@ -58,4 +58,5 @@
     <string name="EditProfileActivity_Save">Save</string>
     <string name="EditProfileActivity_Cancel">Cancel</string>
     <string name="EditProfileActivity_DatabaseError">Impossible to update your profile information, please try again.</string>
+    <string name="EditProfileActivity_NameShouldNotBeEmpty">The name should not be empty</string>
 </resources>
