@@ -27,6 +27,13 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.collections.ArrayList
 
+
+const val HOUR_SIZE_DP = 100
+const val LINE_HEIGHT_DP = 2
+const val LINE_PADDING_LEFT_DP = 2
+const val NOW_LINE_HEIGHT_DP = 2
+const val EVENT_WIDTH_DP = 250
+
 /**
  * Activity displaying the timetable of the event
  */
@@ -34,6 +41,7 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
 
     companion object {
         var instance: TimeTableActivity? = null
+
     }
 
     private lateinit var leftButton: ImageButton
@@ -48,14 +56,9 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
     private val idViewToIdEvent = mutableMapOf<Int, String>()
 
     var nextId = 156
-    val hourSizeDp = 100
-    val lineHeightDp = 2
     var currentPadding = 30
-    val linepaddingLeftDP = 2
-    val nowLineHeightDP = 2
 
     //Event params
-    var widthDP = 250
 
     private var nowBar: View? = null
     private var obsDate = Observable<LocalDateTime>()
@@ -151,7 +154,7 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         line.id = currentIdLine
 
         //Create new parameters for the line
-        val params = ViewGroup.LayoutParams(0, lineHeightDp.dpToPixelsInt(this))
+        val params = ViewGroup.LayoutParams(0, LINE_HEIGHT_DP.dpToPixelsInt(this))
         line.layoutParams = params
         line.setBackgroundColor(Color.BLUE)
 
@@ -198,7 +201,7 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
             ConstraintSet.LEFT,
             currentIdText,
             ConstraintSet.RIGHT,
-            linepaddingLeftDP.dpToPixelsInt(this)
+            LINE_PADDING_LEFT_DP.dpToPixelsInt(this)
         )
         constraintSet.connect(
             currentIdLine,
@@ -210,7 +213,7 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
 
         //Apply all the constraints
         constraintSet.applyTo(constraintLayout)
-        currentPadding += hourSizeDp
+        currentPadding += HOUR_SIZE_DP
         addHalfHour(hour)
     }
 
@@ -230,7 +233,7 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         lineHalfHour.id = currentIdLineHalfHour
 
         //Create new parameters for the line
-        val paramsHalfHour = ViewGroup.LayoutParams(0, lineHeightDp.dpToPixelsInt(this))
+        val paramsHalfHour = ViewGroup.LayoutParams(0, LINE_HEIGHT_DP.dpToPixelsInt(this))
         lineHalfHour.layoutParams = paramsHalfHour
         lineHalfHour.setBackgroundColor(Color.BLUE)
 
@@ -260,7 +263,7 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
             ConstraintSet.LEFT,
             idNextHour,
             ConstraintSet.LEFT,
-            8 * linepaddingLeftDP.dpToPixelsInt(this)
+            8*LINE_PADDING_LEFT_DP.dpToPixelsInt(this)
         )
         constraintSet.connect(
             currentIdLineHalfHour,
@@ -365,7 +368,7 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         start ?: return
         val idLine = hourToLine[start.hour] ?: return
         val duration = Duration.between(start, end)
-        val height = ((duration.toMinutes() / 60.0) * hourSizeDp).toInt()
+        val height = ((duration.toMinutes() / 60.0) * HOUR_SIZE_DP).toInt()
         val currentId = nextId++
 
         val constraintLayout = findViewById<ConstraintLayout>(R.id.id_timetable_constraintlayout)
@@ -378,7 +381,7 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         eventView2.findViewById<CardView>(R.id.id_event_card).backgroundTintList =
             resources.getColorStateList(R.color.teal_200, null)
 
-        val params = ViewGroup.LayoutParams(widthDP.dpToPixelsInt(this), height.dpToPixelsInt(this))
+        val params = ViewGroup.LayoutParams(EVENT_WIDTH_DP.dpToPixelsInt(this), height.dpToPixelsInt(this))
         eventView2.layoutParams = params
         constraintLayout.addView(eventView2)
         displayedViews.add(eventView2)
@@ -396,7 +399,7 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         constraintSet.clone(constraintLayout)
 
         //Compute the margin top to have the view start at the right position to indicate start time
-        val marginTop = ((start.minute / 60.0) * hourSizeDp).toInt()
+        val marginTop = ((start.minute / 60.0) * HOUR_SIZE_DP).toInt()
 
         //Constraints for the time
         constraintSet.connect(
@@ -442,7 +445,7 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         line.id = currentId
 
         //Create new parameters for the line (the line)
-        val params = ViewGroup.LayoutParams(0, nowLineHeightDP.dpToPixelsInt(this))
+        val params = ViewGroup.LayoutParams(0, NOW_LINE_HEIGHT_DP.dpToPixelsInt(this))
         line.layoutParams = params
         line.setBackgroundColor(Color.BLUE)
 
@@ -452,7 +455,7 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
 
         val constraintSet = ConstraintSet()
         constraintSet.clone(constraintLayout)
-        val marginTop = ((nowM / 60.0) * hourSizeDp).toInt()
+        val marginTop = ((nowM / 60.0) * HOUR_SIZE_DP).toInt()
         //Constraints for the line
         constraintSet.connect(
             currentId,
@@ -466,7 +469,7 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
             ConstraintSet.LEFT,
             idLine,
             ConstraintSet.LEFT,
-            linepaddingLeftDP.dpToPixelsInt(this)
+            LINE_PADDING_LEFT_DP.dpToPixelsInt(this)
         )
         constraintSet.connect(
             currentId,

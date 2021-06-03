@@ -15,6 +15,7 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.map.*
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.*
+import com.google.android.gms.maps.MapFragment
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
@@ -103,7 +104,7 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
         RouteMapHelper.getNodesAndEdgesFromDB(context, this)
 
         setMapListeners(googleMap!!)
-        GoogleMapOptions.setUpMap(requireContext(), mod != MapsFragmentMod.EditZone)
+        GoogleMapOptions.setUpMap(requireContext(), mod != MapsFragmentMod.EditZone, mod)
 
         if (useUserLocation) {
             activateMyLocation()
