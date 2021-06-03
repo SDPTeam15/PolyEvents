@@ -74,7 +74,8 @@ class ProfileFragment(private val userId: String? = null) : Fragment(), UserModi
             obsDate.observe(this) {
                 val europeanDateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 
-                viewRoot.findViewById<EditText>(R.id.id_profile_birthday_edittext).setText(europeanDateFormatter.format(it.value))
+                viewRoot.findViewById<EditText>(R.id.id_profile_birthday_edittext)
+                    .setText(europeanDateFormatter.format(it.value))
             }
 
             if (adminMode) {
@@ -169,7 +170,7 @@ class ProfileFragment(private val userId: String? = null) : Fragment(), UserModi
         }
 
         viewRoot.findViewById<Button>(R.id.id_birthday_button).setOnClickListener {
-            val date = obsDate.value?:LocalDate.now()
+            val date = obsDate.value ?: LocalDate.now()
             val dialog = DatePickerDialog(
                 requireContext(),
                 { _: DatePicker, year: Int, month: Int, day: Int ->

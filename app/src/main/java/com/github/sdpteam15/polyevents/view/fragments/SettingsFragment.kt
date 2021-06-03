@@ -95,8 +95,12 @@ class SettingsFragment : Fragment() {
 
         if (currentDatabase.currentUser != null) {
             // if user logged in save his settings in remote database
-            currentDatabase.userSettingsDatabase?.updateUserSettings(
-                userSettings.copy(userUid = currentDatabase.currentUser!!.uid)
+            currentDatabase.userSettingsDatabase.updateUserSettings(
+                userSettings.copy(
+                    userUid = currentDatabase.currentUser!!.uid,
+                    // We don't want to share the location of the user in the remote database
+                    locationId = null
+                )
             )
         }
     }

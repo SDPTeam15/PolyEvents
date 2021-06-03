@@ -43,6 +43,7 @@ class PolyEventsApplication : Application() {
     // rather than when the application starts
     val defaultLocalDatabase by lazy { LocalDatabase.getDatabase(this, applicationScope) }
     private var tempLocalDatabase: LocalDatabase? = null
+
     /**
      * localDatabase
      */

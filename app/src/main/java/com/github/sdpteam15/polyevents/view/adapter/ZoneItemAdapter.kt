@@ -13,7 +13,7 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableList
 class ZoneItemAdapter(
     private val zones: ObservableList<Zone>,
     val listener: (Zone) -> Unit,
-    val deleteListener: (Zone)->Unit
+    val deleteListener: (Zone) -> Unit
 ) : RecyclerView.Adapter<ZoneItemAdapter.ItemViewHolder>() {
     /**
      * adapted ViewHolder for each Zone
@@ -33,7 +33,6 @@ class ZoneItemAdapter(
 
             btnRemove.setOnClickListener {
                 deleteListener(zone)
-                zones.remove(zone)
             }
             btnEdit.setOnClickListener {
                 listener(zone)

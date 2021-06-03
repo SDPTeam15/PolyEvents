@@ -1,7 +1,7 @@
 package com.github.sdpteam15.polyevents.database.objects
 
-import com.github.sdpteam15.polyevents.Settings
 import com.github.sdpteam15.polyevents.database.HelperTestFunction
+import com.github.sdpteam15.polyevents.model.database.local.entity.UserSettings
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.DeviceLocationAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.objects.HeatmapDatabase
@@ -29,11 +29,13 @@ class HeatmapDatabaseTest {
 
     @Test
     fun setLocation() {
-        Settings.LocationId = ""
+        val userSettingsObservable = ObservableList<UserSettings>()
+        userSettingsObservable.add(UserSettings())
         val latLng = LatLng(1.0, 1.0)
 
         HelperTestFunction.nextAddEntityAndGetId { "ici" }
-        mackHeatmapDatabase.setLocation(latLng).observeOnce { assert(it.value) }
+        mackHeatmapDatabase.setLocation(latLng, userSettingsObservable)
+            .observeOnce { assert(it.value) }
 
         val add = HelperTestFunction.lastAddEntityAndGetId()!!
 
@@ -41,9 +43,11 @@ class HeatmapDatabaseTest {
         assertEquals(DatabaseConstant.CollectionConstant.LOCATION_COLLECTION, add.collection)
         assertEquals(DeviceLocationAdapter, add.adapter)
 
-        Settings.LocationId = "id"
+        userSettingsObservable.clear()
+        userSettingsObservable.add(UserSettings(locationId = "id"))
         HelperTestFunction.nextSetEntity { true }
-        mackHeatmapDatabase.setLocation(latLng).observeOnce { assert(it.value) }
+        mackHeatmapDatabase.setLocation(latLng, userSettingsObservable)
+            .observeOnce { assert(it.value) }
 
         val set = HelperTestFunction.lastSetEntity()!!
 
