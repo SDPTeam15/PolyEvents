@@ -107,7 +107,7 @@ class EventManagementTest {
                 anyOrNull()
             )
         ).thenAnswer {
-            (it.arguments[2] as ObservableList<Zone>).addAll(listZone)
+            (it.arguments[0] as ObservableList<Zone>).addAll(listZone)
             Observable(true)
         }
 
@@ -318,7 +318,7 @@ class EventManagementTest {
                 anyOrNull()
             )
         ).thenAnswer {
-            (it.arguments[2] as ObservableList<Zone>).addAll(listZone)
+            (it.arguments[0] as ObservableList<Zone>).addAll(listZone)
             obs
         }
 
@@ -362,7 +362,7 @@ class EventManagementTest {
                 anyOrNull()
             )
         ).thenAnswer {
-            (it.arguments[2] as ObservableList<Zone>).addAll(listZone)
+            (it.arguments[0] as ObservableList<Zone>).addAll(listZone)
             Observable(true)
         }
         Mockito.`when`(mockedUserDb.getUserProfilesList(anyOrNull(), anyOrNull()))

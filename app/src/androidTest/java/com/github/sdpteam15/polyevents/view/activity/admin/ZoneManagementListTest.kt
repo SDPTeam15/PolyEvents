@@ -73,8 +73,8 @@ class ZoneManagementListTest {
         )
 
         Mockito.`when`(zoneDatabase.getAllZones(anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
-            (it.arguments[2] as ObservableList<Zone>?)?.clear()
-            (it.arguments[2] as ObservableList<Zone>?)?.addAll(zones)
+            (it.arguments[0] as ObservableList<Zone>?)?.clear()
+            (it.arguments[0] as ObservableList<Zone>?)?.addAll(zones)
             Observable(true)
         }
 
