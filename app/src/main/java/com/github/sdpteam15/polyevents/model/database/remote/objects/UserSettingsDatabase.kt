@@ -3,7 +3,6 @@ package com.github.sdpteam15.polyevents.model.database.remote.objects
 import android.annotation.SuppressLint
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
-import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.database.local.entity.UserSettings
 import com.google.firebase.firestore.FirebaseFirestore

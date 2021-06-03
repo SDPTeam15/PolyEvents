@@ -5,7 +5,6 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.EventConstant.*
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Item
-import com.google.firebase.Timestamp
 
 // TODO: Save icon bitmap in Google cloud storage
 /**
@@ -44,13 +43,8 @@ object EventAdapter : AdapterInterface<Event> {
             zoneName = document[EVENT_ZONE_NAME.value] as String?,
             zoneId = document[EVENT_ZONE_ID.value] as String?,
             description = document[EVENT_DESCRIPTION.value] as String?,
-            startTime = HelperFunctions.dateToLocalDateTime(
-                (document[EVENT_START_TIME.value] as Timestamp?)?.toDate()
-            ),
-            endTime = HelperFunctions.dateToLocalDateTime(
-                // TODO: test if start time is null (remove ? from Timestamp)
-                (document[EVENT_END_TIME.value] as Timestamp?)?.toDate()
-            ),
+            startTime = HelperFunctions.dateToLocalDateTime(document[EVENT_START_TIME.value]),
+            endTime = HelperFunctions.dateToLocalDateTime(document[EVENT_END_TIME.value]),
             // TODO: Check how item is stored in Firestore, and check if conversion worked
             inventory = (document[EVENT_INVENTORY.value] as List<Item>).toMutableList(),
             tags = (document[EVENT_TAGS.value] as List<String>).toMutableList(),

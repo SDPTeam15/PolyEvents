@@ -3,7 +3,6 @@ package com.github.sdpteam15.polyevents.model.database.remote.adapter
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.MaterialRequestConstant.*
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
-import com.google.firebase.Timestamp
 
 /**
  * A class for converting between material request entities in our code and
@@ -32,7 +31,7 @@ object MaterialRequestAdapter : AdapterInterface<MaterialRequest> {
         return MaterialRequest(
             id,
             (document[MATERIAL_REQUEST_LIST.value] as Map<String, Long>).mapValues { it.value.toInt() },
-            HelperFunctions.dateToLocalDateTime((document[MATERIAL_REQUEST_TIME.value] as Timestamp?)?.toDate()),
+            HelperFunctions.dateToLocalDateTime(document[MATERIAL_REQUEST_TIME.value]),
             document[MATERIAL_REQUEST_USER_ID.value] as String,
             document[MATERIAL_REQUEST_EVENT_ID.value] as String,
             MaterialRequest.Status.fromOrdinal(

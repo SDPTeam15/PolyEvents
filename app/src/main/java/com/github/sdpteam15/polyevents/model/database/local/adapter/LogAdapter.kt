@@ -4,7 +4,6 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterToDocumentInterface
 import java.time.LocalDateTime
-import java.util.*
 
 object LogAdapter {
     const val LAST_UPDATE = "LAST_UPDATE"
@@ -25,7 +24,10 @@ class LogAdapterToDocument<T>(private val adapter: AdapterToDocumentInterface<T>
     override fun toDocument(element: T?): Map<String, Any?> =
         toDocumentWithDate(element)
 
-    fun toDocumentWithDate(element: T?, date: LocalDateTime? = LocalDateTime.now()): Map<String, Any?> {
+    fun toDocumentWithDate(
+        element: T?,
+        date: LocalDateTime? = LocalDateTime.now()
+    ): Map<String, Any?> {
         val result = mutableMapOf<String, Any?>(
             LogAdapter.LAST_UPDATE to HelperFunctions.localDateTimeToDate(
                 date ?: LocalDateTime.now()
@@ -60,7 +62,7 @@ class LogAdapterFromDocument<T>(private val adapter: AdapterFromDocumentInterfac
         return if (document[LogAdapter.IS_VALID] as? Boolean != false)
             Pair(
                 adapter.fromDocument(document, id),
-                HelperFunctions.dateToLocalDateTime(document[LogAdapter.LAST_UPDATE] as? Date)
+                HelperFunctions.dateToLocalDateTime(document[LogAdapter.LAST_UPDATE])
             )
         else Pair(null, null)
     }

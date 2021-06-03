@@ -11,7 +11,6 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
-import com.github.sdpteam15.polyevents.view.activity.activityprovider.MyItemRequestsActivity
 import com.github.sdpteam15.polyevents.view.activity.staff.EXTRA_ID_USER_STAFF
 import com.github.sdpteam15.polyevents.view.activity.staff.StaffRequestsActivity
 

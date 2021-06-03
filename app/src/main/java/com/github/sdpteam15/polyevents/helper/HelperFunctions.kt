@@ -14,11 +14,13 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.commit
+import androidx.lifecycle.LifecycleOwner
 import androidx.room.TypeConverter
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.Timestamp
 import java.time.*
 import java.util.*
 
@@ -154,6 +156,26 @@ object HelperFunctions {
     }
 
     /**
+     * wait that all Observable in list are updated
+     * @param lifecycle lifecycle of the observer to automatically remove it from the observers when stopped
+     * @param list list of observers to check the update
+     * @return an Observable<Boolean> that wil be set to true once all observers in list are Updated
+     */
+    fun waitUpdate(lifecycle: LifecycleOwner, list: List<Observable<*>>): Observable<Boolean> {
+        val ended = Observable<Boolean>()
+        val done = MutableList(list.size) { false }
+        for (index in list.indices)
+            list[index].observeOnce(lifecycle) {
+                synchronized(lifecycle) {
+                    done[index] = true
+                    if (done.reduce { a, b -> a && b })
+                        ended.postValue(true)
+                }
+            }
+        return ended
+    }
+
+    /**
      * Method that display a message as a Toast
      * @param message : the message to display
      * @param context : the context in which to show the toast
@@ -173,8 +195,12 @@ object HelperFunctions {
      * @param date the Date instance to convert
      * @return the corresponding LocalDateTime
      */
-    fun dateToLocalDateTime(date: Date?): LocalDateTime? =
-        date?.let { LocalDateTime.ofInstant(it.toInstant(), ZoneId.systemDefault()) }
+    fun dateToLocalDateTime(date: Any?): LocalDateTime? =
+        when(date){
+            is Timestamp -> LocalDateTime.ofInstant(date.toDate().toInstant(), ZoneId.systemDefault())
+            is Date -> LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault())
+            else -> null
+        }
 
     /**
      * Convert

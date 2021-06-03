@@ -24,7 +24,7 @@ class DeviceLocationAdapterTest {
         deviceLocation = DeviceLocation(
             device = device,
             location = LatLng(latitude, longitude),
-            time = HelperFunctions.dateToLocalDateTime(timestamp.toDate())
+            time = HelperFunctions.dateToLocalDateTime(timestamp)
         )
 
         document = DeviceLocationAdapter.toDocumentWithoutNull(deviceLocation)

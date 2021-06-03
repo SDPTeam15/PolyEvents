@@ -1,7 +1,6 @@
 package com.github.sdpteam15.polyevents.model.database.local.room
 
 import android.content.Context
-import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -11,26 +10,25 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.Scope
 import com.github.sdpteam15.polyevents.model.database.local.dao.EventDao
 import com.github.sdpteam15.polyevents.model.database.local.dao.GenericEntityDao
+import com.github.sdpteam15.polyevents.model.database.local.dao.NotificationUidDao
 import com.github.sdpteam15.polyevents.model.database.local.dao.UserSettingsDao
+import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
+import com.github.sdpteam15.polyevents.model.database.local.entity.GenericEntity
+import com.github.sdpteam15.polyevents.model.database.local.entity.NotificationUid
+import com.github.sdpteam15.polyevents.model.database.local.entity.UserSettings
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
-import com.github.sdpteam15.polyevents.model.database.local.entity.GenericEntity
-import com.github.sdpteam15.polyevents.model.database.local.entity.UserSettings
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 // TODO: consider using repositories
 // TODO: Firebase database objects are technically daos, consider refactoring?
 // TODO: when user logs in, should fetch all info to store in local db
 @Database(
-    entities = [EventLocal::class, UserSettings::class, GenericEntity::class],
-    version = 4,
-    exportSchema = false
+    entities = [EventLocal::class, UserSettings::class, NotificationUid::class, GenericEntity::class],
+    version = 6, exportSchema = false
 )
 @TypeConverters(HelperFunctions.Converters::class)
 abstract class LocalDatabase : RoomDatabase() {
@@ -43,6 +41,11 @@ abstract class LocalDatabase : RoomDatabase() {
      * Get the user settings Dao
      */
     abstract fun userSettingsDao(): UserSettingsDao
+
+    /**
+     * Get the dao for the notification uid.
+     */
+    abstract fun notificationUidDao(): NotificationUidDao
 
     /**
      * Get the GenericEntity Dao
@@ -117,7 +120,6 @@ abstract class LocalDatabase : RoomDatabase() {
          * Populate the database in a new coroutine.
          */
         suspend fun populateDatabaseWithUserEvents(eventDao: EventDao, scope: Scope) {
-            Log.d(TAG, "Populating the database with user's events")
 
             // TODO: need to clear notifications for events here or in MainActivity
             eventDao.deleteAll()
@@ -142,7 +144,6 @@ abstract class LocalDatabase : RoomDatabase() {
                             )
                         },
                     )
-                Log.d(TAG, "Finished retrieving from remote")
             }
         }
 

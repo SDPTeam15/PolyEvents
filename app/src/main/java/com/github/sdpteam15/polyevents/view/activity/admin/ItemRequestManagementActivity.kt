@@ -14,8 +14,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
-import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
@@ -47,7 +47,7 @@ class ItemRequestManagementActivity : AppCompatActivity() {
         requests.group(this) { it.userId }.then.observePut(this) {
             if (!userNames.containsKey(it.key)) {
                 val tempUsers = Observable<UserEntity>()
-                Database.currentDatabase.userDatabase.getUserInformation(tempUsers, it.key)
+                currentDatabase.userDatabase.getUserInformation(tempUsers, it.key)
                     .observeOnce(this) { ans ->
                         if (ans.value) {
                             userNames[it.key] = tempUsers.value?.name ?: "ANONYMOUS"
@@ -143,7 +143,7 @@ class ItemRequestManagementActivity : AppCompatActivity() {
             getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
         // Inflate a custom view using layout inflater
-        val view = inflater.inflate(R.layout.popup_refuse_request, null)
+        val view = inflater.inflate(R.layout.popup_refuse_request)
 
         // Initialize a new instance of popup window
         val popupWindow = PopupWindow(
@@ -174,7 +174,7 @@ class ItemRequestManagementActivity : AppCompatActivity() {
         confirmButton.setOnClickListener {
             request.status = MaterialRequest.Status.REFUSED
             request.adminMessage = message.text.toString()
-            Database.currentDatabase.materialRequestDatabase.updateMaterialRequest(
+            currentDatabase.materialRequestDatabase.updateMaterialRequest(
                 request.requestId!!,
                 request
             ).observeOnce(this) {

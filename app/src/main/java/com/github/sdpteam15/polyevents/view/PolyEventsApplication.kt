@@ -75,8 +75,7 @@ class PolyEventsApplication : Application() {
             notificationChannel.enableLights(true)
             notificationChannel.lightColor = Color.BLUE
             notificationChannel.enableVibration(true)
-            notificationChannel.description =
-                getString(R.string.event_notification_channel_description)
+            notificationChannel.description = getString(R.string.notification_channel_description)
 
             // Register the channel with the system
             val notificationManager: NotificationManager =
