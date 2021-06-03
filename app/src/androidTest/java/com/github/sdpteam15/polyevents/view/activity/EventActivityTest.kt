@@ -168,15 +168,16 @@ class EventActivityTest {
     fun newCommentAdded() {
         goToEventActivityWithIntent(limitedEventId)
 
-        assertEquals(0, EventActivity.obsComments.size)
+        assertEquals(0, EventActivity.obsNonEmptyComments.size)
         val comment = Rating("Rating 1", 5f, "TROP COOL yes")
         EventActivity.obsComments.add(comment, this)
-        assertEquals(1, EventActivity.obsComments.size)
+        assertEquals(1, EventActivity.obsNonEmptyComments.size)
         EventActivity.obsComments.clear()
+        EventActivity.obsNonEmptyComments.clear()
         val comment2 = Rating("Rating 2", 5f, "")
         EventActivity.obsComments.add(comment2, this)
         Thread.sleep(1000)
-        assertEquals(0, EventActivity.obsComments.size)
+        assertEquals(0, EventActivity.obsNonEmptyComments.size)
     }
 
     @Test

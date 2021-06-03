@@ -33,6 +33,7 @@ import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModel
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModelFactory
 import com.github.sdpteam15.polyevents.viewmodel.NotificationUidViewModel
 import com.github.sdpteam15.polyevents.viewmodel.NotificationUidViewModelFactory
+import kotlinx.coroutines.launch
 
 /**
  * An activity containing events description. Note that information about the event could be stored from the local
@@ -216,8 +217,8 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
      * Updates the number of reviews on the xml
      */
     private fun updateNumberReviews(){
-        findViewById<TextView>(R.id.id_number_reviews).apply {
-            setText(obsComments.size.toString())
+        PolyEventsApplication.application.applicationScope.launch {
+            findViewById<TextView>(R.id.id_number_reviews).text = obsComments.size.toString()
         }
     }
 
@@ -225,9 +226,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
      * Updates the number of comments on the xml
      */
     private fun updateNumberComments(){
-        findViewById<TextView>(R.id.id_number_comments).apply {
-            setText(obsNonEmptyComments.size.toString())
-        }
+        findViewById<TextView>(R.id.id_number_comments).text = obsNonEmptyComments.size.toString()
     }
 
     /**
