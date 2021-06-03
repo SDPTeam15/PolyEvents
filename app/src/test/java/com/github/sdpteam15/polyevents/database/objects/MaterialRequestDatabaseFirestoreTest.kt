@@ -5,17 +5,11 @@ import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
-import com.github.sdpteam15.polyevents.model.database.remote.adapter.ItemEntityAdapter
-import com.github.sdpteam15.polyevents.model.database.remote.adapter.ItemTypeAdapter
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.MaterialRequestAdapter
-import com.github.sdpteam15.polyevents.model.database.remote.objects.ItemDatabase
-import com.github.sdpteam15.polyevents.model.database.remote.objects.ItemDatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.objects.MaterialRequestDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.objects.MaterialRequestDatabaseInterface
-import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
-import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import org.junit.Before

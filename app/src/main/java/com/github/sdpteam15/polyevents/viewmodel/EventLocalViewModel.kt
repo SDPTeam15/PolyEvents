@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.github.sdpteam15.polyevents.model.database.local.dao.EventDao
-import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import kotlinx.coroutines.launch
 
 class EventLocalViewModel(private val eventDao: EventDao) : ViewModel() {

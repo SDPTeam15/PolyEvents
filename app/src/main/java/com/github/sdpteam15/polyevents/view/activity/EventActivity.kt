@@ -1,10 +1,5 @@
 package com.github.sdpteam15.polyevents.view.activity
 
-import android.app.AlarmManager
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -14,15 +9,11 @@ import android.widget.RatingBar
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.AlarmManagerCompat
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.helper.EXTRA_NOTIFICATION_ID
-import com.github.sdpteam15.polyevents.helper.EXTRA_NOTIFICATION_MESSAGE
-import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
-import com.github.sdpteam15.polyevents.helper.cancelNotification
+import com.github.sdpteam15.polyevents.helper.NotificationsHelper
+import com.github.sdpteam15.polyevents.helper.NotificationsScheduler
 import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
@@ -36,11 +27,11 @@ import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.adapter.CommentItemAdapter
 import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
 import com.github.sdpteam15.polyevents.view.fragments.LeaveEventReviewFragment
-import com.github.sdpteam15.polyevents.view.service.AlarmReceiver
 import com.github.sdpteam15.polyevents.view.service.ReviewHasChanged
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModel
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModelFactory
-import kotlinx.coroutines.runBlocking
+import com.github.sdpteam15.polyevents.viewmodel.NotificationUidViewModel
+import com.github.sdpteam15.polyevents.viewmodel.NotificationUidViewModelFactory
 
 
 /**
@@ -61,8 +52,11 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         val obsComments: ObservableList<Rating> = ObservableList()
         lateinit var event: Event
 
-        // for testing purposes
+        // Keep an instance for testing purposes
         lateinit var database: LocalDatabase
+
+        // Keep an instance for testing purposes
+        lateinit var notificationsScheduler: NotificationsScheduler
     }
 
     private lateinit var eventId: String
@@ -70,10 +64,16 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
     private lateinit var subscribeButton: Button
     private lateinit var recyclerView: RecyclerView
     private lateinit var leaveReviewDialogFragment: LeaveEventReviewFragment
+    private lateinit var leaveReviewButton: Button
+    //private lateinit var progressDialogFragment: ProgressDialogFragment
 
-    // Lazily initialized view model, instantiated only when accessed for the first time
+    // Lazily initialized view models, instantiated only when accessed for the first time
     private val localEventViewModel: EventLocalViewModel by viewModels {
         EventLocalViewModelFactory(database.eventDao())
+    }
+
+    private val notificationUidViewModel: NotificationUidViewModel by viewModels {
+        NotificationUidViewModelFactory(database.notificationUidDao())
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,13 +83,22 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowHomeEnabled(true)
 
+        /*progressDialogFragment = ProgressDialogFragment(
+            HelperFunctions.waitUpdate(this, listOf(obsEvent, obsRating))
+        )
+        progressDialogFragment.isCancelable = false
+        progressDialogFragment.show(supportFragmentManager, ProgressDialogFragment.TAG)*/
+
         eventId = intent.getStringExtra(EXTRA_EVENT_ID)!!
 
         database = (application as PolyEventsApplication).database
 
-        subscribeButton = findViewById(R.id.button_subscribe_event)
+        notificationsScheduler = NotificationsHelper(applicationContext)
+
+        subscribeButton = findViewById(R.id.button_subscribe_follow_event)
         recyclerView = findViewById(R.id.id_recycler_comment_list)
         leaveReviewDialogFragment = LeaveEventReviewFragment(eventId, this)
+        leaveReviewButton = findViewById(R.id.event_leave_review_button)
 
         recyclerView.adapter = CommentItemAdapter(obsComments)
         recyclerView.setHasFixedSize(false)
@@ -144,14 +153,13 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
                 subscribeButton.setOnClickListener {
                     followEvent()
                 }
-                subscribeButton.visibility = View.VISIBLE
+                subscribeButton.isEnabled = true
             } else {
                 subscribeButton.setText(R.string.event_unfollow)
-                subscribeButton.visibility = View.VISIBLE
                 subscribeButton.setOnClickListener {
                     unFollowEvent()
                 }
-                subscribeButton.visibility = View.VISIBLE
+                subscribeButton.isEnabled = true
             }
         }
         localEventViewModel.getEventById(eventId, localEventObservable)
@@ -250,13 +258,17 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
             //TODO : change image
         }
 
+        leaveReviewButton.isEnabled = true
+
         if (event.isLimitedEvent()) {
-            subscribeButton.visibility = View.VISIBLE
             if (currentDatabase.currentUser != null
                 && event.getParticipants().contains(currentDatabase.currentUser!!.uid)
             ) {
                 subscribeButton.text = resources.getString(R.string.event_unsubscribe)
+            } else {
+                subscribeButton.text = resources.getString(R.string.event_subscribe)
             }
+            subscribeButton.isEnabled = true
         } else {
             // Check if we're following the event
             fetchEventFromLocalDatabase()
@@ -286,7 +298,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
 
         currentDatabase.eventDatabase!!.updateEvent(event).observeOnce(this) {
             if (it.value) {
-                cancelNotification(eventId)
+                cancelNotifications()
                 showToast(resources.getString(R.string.event_successfully_unsubscribed), this)
 
                 subscribeButton.text = resources.getString(R.string.event_subscribe)
@@ -307,12 +319,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
 
             currentDatabase.eventDatabase!!.updateEvent(event).observeOnce(this) {
                 if (it.value) {
-                    // Now store the event in local cache and set a notification for it
-                    val newNotificationId = generateNewNotificationId()
-                    localEventViewModel.insert(EventLocal.fromEvent(event).also {
-                        it.notificationId = newNotificationId
-                    })
-                    sendNotification(newNotificationId)
+                    scheduleNotificationsAndSaveEvent()
                     showToast(resources.getString(R.string.event_successfully_subscribed), this)
                     subscribeButton.text = resources.getString(R.string.event_unsubscribe)
                 } else {
@@ -330,11 +337,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
      * at the start of the event.
      */
     private fun followEvent() {
-        val newNotificationId = generateNewNotificationId()
-        localEventViewModel.insert(EventLocal.fromEvent(event).also {
-            it.notificationId = newNotificationId
-        })
-        sendNotification(newNotificationId)
+        scheduleNotificationsAndSaveEvent()
         subscribeButton.setText(R.string.event_unfollow)
         subscribeButton.setOnClickListener {
             unFollowEvent()
@@ -348,7 +351,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
      */
     private fun unFollowEvent() {
         // First remove the notifications set to trigger for this event when we follow it
-        cancelNotification(eventId)
+        cancelNotifications()
         showToast(resources.getString(R.string.event_successfully_unfollowed), this)
         subscribeButton.setText(R.string.event_follow)
         subscribeButton.setOnClickListener {
@@ -357,97 +360,64 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
     }
 
     /**
-     * Cancel all notifications associated to this event
+     * Cancel all notifications associated to this event. First we retrieve the event from
+     * the local cache to retrieve the notifications ids associated to this event, if any, and use
+     * them to cancel the notifications scheduled for this event
      */
-    private fun cancelNotification(eventId: String) {
-        val notificationManager = ContextCompat.getSystemService(
-            application as PolyEventsApplication,
-            NotificationManager::class.java
-        ) as NotificationManager
+    private fun cancelNotifications() {
         val localEventObservable = ObservableList<EventLocal>()
         localEventObservable.observe(this) {
             if (it.value.isNotEmpty()) {
-                val eventRetrievedNotificationId = it.value[0].notificationId
-                if (eventRetrievedNotificationId != null) {
-                    notificationManager.cancelNotification(eventRetrievedNotificationId)
-                    notificationManager.cancelNotification(eventRetrievedNotificationId + 1)
+                val eventRetrieved = it.value[0]
+                val eventBeforeNotificationId = eventRetrieved.eventBeforeNotificationId
+                // Cancel the notification set before the event
+                if (eventBeforeNotificationId != null) {
+                    notificationsScheduler.cancelNotification(
+                        eventBeforeNotificationId
+                    )
                 }
+
+                val eventStartNotificationId = eventRetrieved.eventStartNotificationId
+                // Cancel the notification set at the start of the event
+                if (eventStartNotificationId != null) {
+                    notificationsScheduler.cancelNotification(
+                        eventStartNotificationId
+                    )
+                }
+                // Now remove event from local cache since we're not following it anymore
+                localEventViewModel.delete(EventLocal.fromEvent(event))
             }
-            localEventViewModel.delete(EventLocal.fromEvent(event))
         }
         localEventViewModel.getEventById(eventId, localEventObservable)
     }
 
     /**
-     * Set the alarm at the event start time using the Alarm manager. The alarm manager will notify
-     * the alarm receiver which is a broadcast receiver from inside and outside the app, and will
-     * trigger a notification.
+     * Schedule notifications for this event
      * Note that we're setting two notifications one 15 min before the event starts and one
      * at the start of the event.
      */
-    private fun sendNotification(notificationId: Int) {
-        val app = (application as PolyEventsApplication)
+    private fun scheduleNotificationsAndSaveEvent() {
+        val event15MinBeforeNotificationMessage =
+            getString(R.string.event_start_soon, event.eventName)
+        val event15MinBeforeNotificationId = notificationsScheduler.scheduleEventNotification(
+            eventId = eventId,
+            notificationMessage = event15MinBeforeNotificationMessage,
+            scheduledTime = event.startTime!!.minusMinutes(15L)
+        )
+        val eventStartNotificationMessage = getString(R.string.event_started, event.eventName)
+        val eventStartNotificationId = notificationsScheduler.scheduleEventNotification(
+            eventId = eventId,
+            notificationMessage = eventStartNotificationMessage,
+            scheduledTime = event.startTime!!
+        )
 
-        // Get the alarm manager from the system
-        val alarmManager = app.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
-        // Set the alarm before the event start by 15 min
-        val notifyIntent15MinBefore = Intent(app, AlarmReceiver::class.java).apply {
-            putExtra(EXTRA_EVENT_ID, eventId)
-            // We put the negative notification id for the 15 min notification
-            putExtra(EXTRA_NOTIFICATION_ID, notificationId + 1)
-            val notificationMessage = getString(R.string.event_start_soon, event.eventName)
-            putExtra(EXTRA_NOTIFICATION_MESSAGE, notificationMessage)
+        // Save the event in local cache, as well as its associated notifications ids, to easily
+        // retrieve these notifications later (to cancel for example)
+        val eventLocalInstance = EventLocal.fromEvent(event).also {
+            it.eventStartNotificationId = eventStartNotificationId
+            it.eventBeforeNotificationId = event15MinBeforeNotificationId
         }
-        val notifyPendingIntent15MinBefore = PendingIntent.getBroadcast(
-            app,
-            notificationId + 1,
-            notifyIntent15MinBefore,
-            PendingIntent.FLAG_UPDATE_CURRENT
-        )
-
-        AlarmManagerCompat.setExactAndAllowWhileIdle(
-            alarmManager,
-            AlarmManager.RTC_WAKEUP,
-            HelperFunctions.Converters.fromLocalDateTime(event.startTime!!.minusMinutes(15L))!!,
-            notifyPendingIntent15MinBefore
-        )
-
-        // Set the second alarm at the event start time
-        val notifyIntent = Intent(app, AlarmReceiver::class.java).apply {
-            putExtra(EXTRA_EVENT_ID, eventId)
-            putExtra(EXTRA_NOTIFICATION_ID, notificationId)
-            val notificationMessage = getString(R.string.event_started, event.eventName)
-            putExtra(EXTRA_NOTIFICATION_MESSAGE, notificationMessage)
-        }
-        val notifyPendingIntent = PendingIntent.getBroadcast(
-            app,
-            notificationId,
-            notifyIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT
-        )
-
-        AlarmManagerCompat.setExactAndAllowWhileIdle(
-            alarmManager,
-            AlarmManager.RTC_WAKEUP,
-            HelperFunctions.Converters.fromLocalDateTime(event.startTime)!!,
-            notifyPendingIntent
-        )
-    }
-
-    /**
-     * Generate a new notification id, by getting the max out of all the current notifications ids
-     * and incrementing it.
-     */
-    private fun generateNewNotificationId(): Int = runBlocking {
-        // TODO: maybe try with an observable instead of run blocking, but this will do for now
-        val eventNotificationsIds = database.eventDao().getAll().map { it.notificationId }
-        val max = eventNotificationsIds.maxByOrNull {
-            it ?: -1
-        } ?: -1
-        // Increment by two since with each event, we associate 2 notifications, one before and one
-        // when it starts.
-        max + 2
+        localEventViewModel.insert(eventLocalInstance)
     }
 
     /**
