@@ -63,9 +63,9 @@ class ProfileFragment(private val userId: String? = null) : Fragment(), UserModi
         if (currentUser == null) {
             changeFragment(activity, MainActivity.fragments[R.id.ic_login])
         } else {
-            profileNameET = viewRoot.findViewById(R.id.profileName)
-            profileEmailET = viewRoot.findViewById(R.id.profileEmail)
-            profileUsernameET = viewRoot.findViewById(R.id.profileUsernameET)
+            profileNameET = viewRoot.findViewById(R.id.id_profile_name_edittext)
+            profileEmailET = viewRoot.findViewById(R.id.id_profile_email_edittext)
+            profileUsernameET = viewRoot.findViewById(R.id.id_profile_username_edittext)
 
             //call method to bind the listerner and observer to the correct fields
             addListener(viewRoot)
@@ -74,8 +74,7 @@ class ProfileFragment(private val userId: String? = null) : Fragment(), UserModi
             obsDate.observe(this) {
                 val europeanDateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 
-                viewRoot.findViewById<EditText>(R.id.profileBirthdayET)
-                    .setText(europeanDateFormatter.format(it.value))
+                viewRoot.findViewById<EditText>(R.id.id_profile_birthday_edittext).setText(europeanDateFormatter.format(it.value))
             }
 
             if (adminMode) {
@@ -110,11 +109,11 @@ class ProfileFragment(private val userId: String? = null) : Fragment(), UserModi
      * @param viewRoot the current view of the fragment
      */
     private fun setupAdminMode(viewRoot: View) {
-        viewRoot.findViewById<Button>(R.id.btnUpdateInfos).visibility = View.INVISIBLE
-        viewRoot.findViewById<Button>(R.id.btnLogout).visibility = View.INVISIBLE
-        viewRoot.findViewById<Button>(R.id.btnBirthday).visibility = View.INVISIBLE
-        viewRoot.findViewById<EditText>(R.id.profileBirthdayET).isEnabled = false
-        viewRoot.findViewById<EditText>(R.id.profileUsernameET).isEnabled = false
+        viewRoot.findViewById<Button>(R.id.id_update_infos_button).visibility = View.INVISIBLE
+        viewRoot.findViewById<Button>(R.id.id_logout_button).visibility = View.INVISIBLE
+        viewRoot.findViewById<Button>(R.id.id_birthday_button).visibility = View.INVISIBLE
+        viewRoot.findViewById<EditText>(R.id.id_profile_birthday_edittext).isEnabled = false
+        viewRoot.findViewById<EditText>(R.id.id_profile_username_edittext).isEnabled = false
     }
 
     /**
@@ -122,11 +121,11 @@ class ProfileFragment(private val userId: String? = null) : Fragment(), UserModi
      * @param viewRoot the current view of the fragment
      */
     private fun setupUserMode(viewRoot: View) {
-        viewRoot.findViewById<Button>(R.id.btnUpdateInfos).visibility = View.VISIBLE
-        viewRoot.findViewById<Button>(R.id.btnLogout).visibility = View.VISIBLE
-        viewRoot.findViewById<Button>(R.id.btnBirthday).visibility = View.VISIBLE
-        viewRoot.findViewById<EditText>(R.id.profileBirthdayET).isEnabled = true
-        viewRoot.findViewById<EditText>(R.id.profileUsernameET).isEnabled = true
+        viewRoot.findViewById<Button>(R.id.id_update_infos_button).visibility = View.VISIBLE
+        viewRoot.findViewById<Button>(R.id.id_logout_button).visibility = View.VISIBLE
+        viewRoot.findViewById<Button>(R.id.id_birthday_button).visibility = View.VISIBLE
+        viewRoot.findViewById<EditText>(R.id.id_profile_birthday_edittext).isEnabled = true
+        viewRoot.findViewById<EditText>(R.id.id_profile_username_edittext).isEnabled = true
     }
 
     /**
@@ -148,7 +147,7 @@ class ProfileFragment(private val userId: String? = null) : Fragment(), UserModi
      * @param viewRoot the current view of the fragment
      */
     private fun addListener(viewRoot: View) {
-        viewRoot.findViewById<Button>(R.id.btnUpdateInfos).setOnClickListener {
+        viewRoot.findViewById<Button>(R.id.id_update_infos_button).setOnClickListener {
             //Clear the previous map and add every field
             currentUser!!.username = profileUsernameET.text.toString()
             if (obsDate.value != null) {
@@ -169,8 +168,8 @@ class ProfileFragment(private val userId: String? = null) : Fragment(), UserModi
             }
         }
 
-        viewRoot.findViewById<Button>(R.id.btnBirthday).setOnClickListener {
-            val date = obsDate.value ?: LocalDate.now()
+        viewRoot.findViewById<Button>(R.id.id_birthday_button).setOnClickListener {
+            val date = obsDate.value?:LocalDate.now()
             val dialog = DatePickerDialog(
                 requireContext(),
                 { _: DatePicker, year: Int, month: Int, day: Int ->
@@ -184,7 +183,7 @@ class ProfileFragment(private val userId: String? = null) : Fragment(), UserModi
         }
 
         //Logout button handler
-        viewRoot.findViewById<Button>(R.id.btnLogout).setOnClickListener { _ ->
+        viewRoot.findViewById<Button>(R.id.id_logout_button).setOnClickListener { _ ->
             UserLogin.currentUserLogin.signOut()
             changeFragment(activity, MainActivity.fragments[R.id.ic_login])
         }

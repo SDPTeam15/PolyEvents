@@ -176,7 +176,7 @@ class EventManagementTest {
     private fun clickAndCheckNotRedirect() {
         closeKeyboard()
         Thread.sleep(100)
-        onView(withId(R.id.btnManageEvent)).perform(scrollTo(), click())
+        onView(withId(R.id.id_manage_event_button)).perform(scrollTo(), click())
     }
 
     private fun addAddListener(): Observable<Boolean> {
@@ -218,25 +218,22 @@ class EventManagementTest {
             )
 
         scenario = ActivityScenario.launch(intent)
-        onView(withId(R.id.btnNewEvent)).perform(click())
+        onView(withId(R.id.id_new_event_button)).perform(click())
 
         EventManagementActivity.dateEnd.postValue(
             EventManagementActivity.dateStart.value!!.minusDays(
                 1
             )
         )
-        onView(withId(R.id.eventManagementNameField)).check(matches(isDisplayed()))
+        onView(withId(R.id.id_event_management_name_et)).check(matches(isDisplayed()))
         clickAndCheckNotRedirect()
-        onView(withId(R.id.eventManagementNameField)).perform(scrollTo(), replaceText(eventName))
+        onView(withId(R.id.id_event_management_name_et)).perform(scrollTo(), replaceText(eventName))
         clickAndCheckNotRedirect()
-        onView(withId(R.id.eventManagementDescriptionField)).perform(
-            scrollTo(),
-            replaceText(eventDesc)
-        )
+        onView(withId(R.id.id_description_event_edittext)).perform(scrollTo(),replaceText(eventDesc))
         clickAndCheckNotRedirect()
         closeKeyboard()
-        onView(withId(R.id.swtLimitedEvent)).perform(click())
-        onView(withId(R.id.swtLimitedEvent)).perform(click())
+        onView(withId(R.id.id_swt_limited_event)).perform(click())
+        onView(withId(R.id.id_swt_limited_event)).perform(click())
 
         EventManagementActivity.dateEnd.postValue(
             EventManagementActivity.dateStart.value!!.plusDays(
@@ -245,7 +242,7 @@ class EventManagementTest {
         )
         val obs = addAddListener()
         closeSoftKeyboard()
-        onView(withId(R.id.btnManageEvent)).perform(scrollTo(), click())
+        onView(withId(R.id.id_manage_event_button)).perform(scrollTo(), click())
         obs.postValue(true)
 
         onView(withId(R.id.event_management_list_id)).check(matches(isDisplayed()))
@@ -261,7 +258,7 @@ class EventManagementTest {
 
         scenario = ActivityScenario.launch(intent)
 
-        onView(withId(R.id.btnNewEvent)).perform(click())
+        onView(withId(R.id.id_new_event_button)).perform(click())
 
         EventManagementActivity.dateEnd.postValue(
             EventManagementActivity.dateStart.value!!.minusDays(
@@ -269,18 +266,15 @@ class EventManagementTest {
             )
         )
         clickAndCheckNotRedirect()
-        onView(withId(R.id.eventManagementNameField)).perform(scrollTo(), replaceText(eventName))
+        onView(withId(R.id.id_event_management_name_et)).perform(scrollTo(), replaceText(eventName))
         clickAndCheckNotRedirect()
-        onView(withId(R.id.eventManagementDescriptionField)).perform(
-            scrollTo(),
-            replaceText(eventDesc)
-        )
+        onView(withId(R.id.id_description_event_edittext)).perform(scrollTo(), replaceText(eventDesc))
         clickAndCheckNotRedirect()
         closeKeyboard()
-        onView(withId(R.id.swtLimitedEvent)).perform(click())
-        onView(withId(R.id.etNbPart)).perform(replaceText(EventManagementActivity.EMPTY_PART_NB))
+        onView(withId(R.id.id_swt_limited_event)).perform(click())
+        onView(withId(R.id.it_et_nb_part)).perform(replaceText(EventManagementActivity.EMPTY_PART_NB))
         clickAndCheckNotRedirect()
-        onView(withId(R.id.etNbPart)).perform(replaceText(EventManagementActivity.MIN_PART_NB.toString()))
+        onView(withId(R.id.it_et_nb_part)).perform(replaceText(EventManagementActivity.MIN_PART_NB.toString()))
         clickAndCheckNotRedirect()
 
         EventManagementActivity.dateEnd.postValue(
@@ -290,7 +284,7 @@ class EventManagementTest {
         )
         val obs = addAddListener()
         closeSoftKeyboard()
-        onView(withId(R.id.btnManageEvent)).perform(scrollTo(), click())
+        onView(withId(R.id.id_manage_event_button)).perform(scrollTo(), click())
         obs.postValue(true)
 
     }
@@ -339,7 +333,7 @@ class EventManagementTest {
             )
 
         ActivityScenario.launch<EventManagementListActivity>(intent)
-        onView(withId(R.id.btnNewEvent)).perform(click())
+        onView(withId(R.id.id_new_event_button)).perform(click())
 
         obs.postValue(false)
         Thread.sleep(10)
@@ -402,7 +396,7 @@ class EventManagementTest {
             )
 
         ActivityScenario.launch<EventManagementListActivity>(intent)
-        onView(withId(R.id.btnNewEvent)).perform(click())
+        onView(withId(R.id.id_new_event_button)).perform(click())
 
         obs.postValue(false)
         Thread.sleep(10)
@@ -441,7 +435,7 @@ class EventManagementTest {
         )
         onView(withId(R.id.recycler_events_list_admin)).perform(
             RecyclerViewActions.actionOnItemAtPosition<EventListAdapter.CustomViewHolder<EventListAdapter.EventViewHolder>>(
-                1, TestHelper.clickChildViewWithId(R.id.idEditEventButton)
+                1, TestHelper.clickChildViewWithId(R.id.id_edit_event_button)
             )
         )
 
@@ -490,8 +484,8 @@ class EventManagementTest {
                 )
             )
         )
-        onView(withId(R.id.etNbPart)).check(matches(withText(CoreMatchers.containsString(eventNb))))
-        onView(withId(R.id.eventManagementNameField)).check(
+        onView(withId(R.id.it_et_nb_part)).check(matches(withText(CoreMatchers.containsString(eventNb))))
+        onView(withId(R.id.id_event_management_name_et)).check(
             matches(
                 withText(
                     CoreMatchers.containsString(
@@ -500,7 +494,7 @@ class EventManagementTest {
                 )
             )
         )
-        onView(withId(R.id.eventManagementDescriptionField)).check(
+        onView(withId(R.id.id_description_event_edittext)).check(
             matches(
                 withText(
                     CoreMatchers.containsString(
@@ -519,7 +513,7 @@ class EventManagementTest {
                 )
             )
         )
-        onView(withId(R.id.swtLimitedEvent)).check(matches(isChecked()))
+        onView(withId(R.id.id_swt_limited_event)).check(matches(isChecked()))
 
     }
 
@@ -527,11 +521,11 @@ class EventManagementTest {
     fun addReturnTheCorrectlySetField() {
         val startDate = EventManagementActivity.dateStart.value!!
         val endDate = EventManagementActivity.dateEnd.value!!
-        onView(withId(R.id.eventManagementNameField)).perform(typeText(eventName))
-        onView(withId(R.id.eventManagementDescriptionField)).perform(replaceText(eventDesc))
-        onView(withId(R.id.btnManageEvent)).perform(scrollTo())
+        onView(withId(R.id.id_event_management_name_et)).perform(typeText(eventName))
+        onView(withId(R.id.id_description_event_edittext)).perform(replaceText(eventDesc))
+        onView(withId(R.id.id_manage_event_button)).perform(scrollTo())
         val obs = addAddListener()
-        onView(withId(R.id.btnManageEvent)).perform(scrollTo(), click())
+        onView(withId(R.id.id_manage_event_button)).perform(scrollTo(), click())
         obs.postValue(true)
 
         assertEquals(event!!.endTime, endDate)
@@ -553,10 +547,10 @@ class EventManagementTest {
 
         val startDate = EventManagementActivity.dateStart.value!!
         val endDate = EventManagementActivity.dateEnd.value!!
-        onView(withId(R.id.eventManagementNameField)).perform(typeText(eventName))
-        onView(withId(R.id.eventManagementDescriptionField)).perform(replaceText(eventDesc))
+        onView(withId(R.id.id_event_management_name_et)).perform(typeText(eventName))
+        onView(withId(R.id.id_description_event_edittext)).perform(replaceText(eventDesc))
         val obs = addAddListener()
-        onView(withId(R.id.btnManageEvent)).perform(scrollTo(), click())
+        onView(withId(R.id.id_manage_event_button)).perform(scrollTo(), click())
         obs.postValue(true)
 
         assertEquals(event!!.endTime, endDate)
@@ -588,11 +582,11 @@ class EventManagementTest {
         scenario = ActivityScenario.launch(intent)
         obs.postValue(true)
 
-        onView(withId(R.id.btnManageEvent)).perform(scrollTo(), click())
+        onView(withId(R.id.id_manage_event_button)).perform(scrollTo(), click())
         obs2.postValue(false)
 
-        onView(withId(R.id.btnManageEvent)).perform(scrollTo())
-        onView(withId(R.id.btnManageEvent)).check(matches(isDisplayed()))
+        onView(withId(R.id.id_manage_event_button)).perform(scrollTo())
+        onView(withId(R.id.id_manage_event_button)).check(matches(isDisplayed()))
     }
 
     @Test
@@ -633,10 +627,10 @@ class EventManagementTest {
         scenario = ActivityScenario.launch(intent)
         obs.postValue(true)
         closeKeyboard()
-        onView(withId(R.id.swtLimitedEvent)).perform(click())
-        onView(withId(R.id.etNbPart)).perform(replaceText(eventNb))
+        onView(withId(R.id.id_swt_limited_event)).perform(click())
+        onView(withId(R.id.it_et_nb_part)).perform(replaceText(eventNb))
 
-        onView(withId(R.id.btnManageEvent)).perform(scrollTo(), click())
+        onView(withId(R.id.id_manage_event_button)).perform(scrollTo(), click())
 
         obs2.postValue(true)
 
@@ -691,10 +685,10 @@ class EventManagementTest {
         scenario = ActivityScenario.launch(intent)
         obs.postValue(true)
         closeKeyboard()
-        onView(withId(R.id.swtLimitedEvent)).perform(click())
-        onView(withId(R.id.etNbPart)).perform(replaceText(eventNb))
+        onView(withId(R.id.id_swt_limited_event)).perform(click())
+        onView(withId(R.id.it_et_nb_part)).perform(replaceText(eventNb))
 
-        onView(withId(R.id.btnManageEvent)).perform(scrollTo(), click())
+        onView(withId(R.id.id_manage_event_button)).perform(scrollTo(), click())
 
         obs2.postValue(true)
 
@@ -744,10 +738,10 @@ class EventManagementTest {
         scenario = ActivityScenario.launch(intent)
         obs.postValue(true)
         closeKeyboard()
-        onView(withId(R.id.swtLimitedEvent)).perform(click())
-        onView(withId(R.id.etNbPart)).perform(replaceText(eventNb))
+        onView(withId(R.id.id_swt_limited_event)).perform(click())
+        onView(withId(R.id.it_et_nb_part)).perform(replaceText(eventNb))
 
-        onView(withId(R.id.btnManageEvent)).perform(scrollTo(), click())
+        onView(withId(R.id.id_manage_event_button)).perform(scrollTo(), click())
 
         obs2.postValue(true)
 
@@ -765,13 +759,13 @@ class EventManagementTest {
         val startDate = EventManagementActivity.dateStart.value!!
         val endDate = EventManagementActivity.dateEnd.value!!
 
-        onView(withId(R.id.btnStartDate)).perform(scrollTo(), click())
+        onView(withId(R.id.id_start_date_button)).perform(scrollTo(), click())
         onView(withText("OK")).perform(click())
-        onView(withId(R.id.btnEndDate)).perform(scrollTo(), click())
+        onView(withId(R.id.id_btn_end_date)).perform(scrollTo(), click())
         onView(withText("OK")).perform(click())
-        onView(withId(R.id.btnStartTime)).perform(scrollTo(), click())
+        onView(withId(R.id.id_start_time_button)).perform(scrollTo(), click())
         onView(withText("OK")).perform(click())
-        onView(withId(R.id.btnEndTime)).perform(scrollTo(), click())
+        onView(withId(R.id.id_btn_end_time)).perform(scrollTo(), click())
         onView(withText("OK")).perform(click())
 
         onView(withId(R.id.et_end_date)).check(
