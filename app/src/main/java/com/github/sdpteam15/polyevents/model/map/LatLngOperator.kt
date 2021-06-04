@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.model.map
 
+import com.github.sdpteam15.polyevents.model.entity.RouteNode
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.Polygon.Vertex
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.PolygonOperationType.*
 import com.google.android.gms.maps.model.LatLng
@@ -203,7 +204,7 @@ object LatLngOperator {
         val a = minus(point, start)
         val b = minus(end, start)
         //if projection on the segment is (almost) the same, return checks if the point lies inside the boundaries formed by the two points
-        return if (euclideanDistance(minus(point, start), project(a, b)) > epsilon) {
+        return if (euclideanDistance(minus(point, start), project(a, b)) > epsilon*10000) {
             false
         } else {
 
@@ -251,6 +252,29 @@ object LatLngOperator {
 
 
     /**
+     *
+     */
+    fun closestPolygonArea(node: RouteNode, areas:List<List<LatLng>>): List<LatLng> {
+        var closest: List<LatLng>? = null
+        var mindist = Double.MAX_VALUE
+        for (polygon in areas) {
+            for (i in polygon.indices) {
+                val nearestPoint = RouteMapHelper.getNearestPoint(
+                    RouteNode.fromLatLong(polygon[i]),
+                    RouteNode.fromLatLong(polygon[(i + 1) % polygon.size]),
+                    node.toLatLng()
+                ).toLatLng()
+                val dist = squaredEuclideanDistance(node.toLatLng(), nearestPoint)
+                if (dist < mindist) {
+                    closest = polygon
+                    mindist = dist
+                }
+            }
+        }
+        return closest!!
+    }
+
+    /**
      * Represents a polygon by a linked list of vertices.
      * @param points initial list of points
      */
@@ -286,19 +310,6 @@ object LatLngOperator {
                 function(v)
                 v = v.next!!
             } while (v != start)
-        }
-
-        /**
-         * Checks if any edge of the polygon matches the given predicate
-         * @param predicate the predicate to check
-         * @return true if the predicate is satisfied by any edge, else false
-         */
-        fun anyEdge(predicate: (Vertex,Vertex) -> Boolean):Boolean{
-            var b = false
-            foreach {
-                if (predicate(it,it.next!!)) b = true
-            }
-            return b
         }
 
         /**
