@@ -10,6 +10,7 @@ import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.helper.DatabaseHelper.addToUsersFromDB
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.entity.*
@@ -132,10 +133,10 @@ class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLi
 
         requests.observeAdd(this) {
             if (it.value.staffInChargeId != null && !userNames.containsKey(it.value.staffInChargeId!!)) {
-                addToUsersFromDB(it.value.staffInChargeId!!)
+                addToUsersFromDB(it.value.staffInChargeId!!, userNames, this, this)
             }
             if (!userNames.containsKey(it.value.userId)) {
-                addToUsersFromDB(it.value.userId)
+                addToUsersFromDB(it.value.userId, userNames, this, this)
             }
         }
 
@@ -204,24 +205,6 @@ class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLi
                 }
             }
         }
-    }
-
-    /**
-     * Gets the username of the given userId from the database and adds it to the userNames map
-     */
-    private fun addToUsersFromDB(userId: String) {
-        val tempUsers = Observable<UserEntity>()
-        Database.currentDatabase.userDatabase.getUserInformation(tempUsers, userId)
-            .observeOnce(this) { ans ->
-                if (ans.value) {
-                    userNames[userId] = tempUsers.value?.name ?: "ANONYMOUS"
-                } else {
-                    HelperFunctions.showToast(
-                        getString(R.string.failed_to_get_username_from_database),
-                        this
-                    )
-                }
-            }
     }
 
     /**
