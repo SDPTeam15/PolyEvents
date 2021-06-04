@@ -6,9 +6,6 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.google.firebase.firestore.IgnoreExtraProperties
 import java.time.LocalDate
 
-// TODO: builder pattern maybe?
-// TODO: Make username unique, and use googleId to avoid duplicate keys
-
 /**
  * Entity model for application user
  *
@@ -29,7 +26,6 @@ data class UserEntity(
     var email: String? = null,
     val profiles: MutableList<String> = mutableListOf()
 ) {
-
     val age: Int?
         get() =
             birthDate?.let { HelperFunctions.calculateAge(it, LocalDate.now()) }

@@ -19,7 +19,10 @@ import com.google.firebase.firestore.IgnoreExtraProperties
  * Entity model for a zone. Events occur inside a zone.
  *
  * @property zoneName the name of the zone
+ * @property zoneId the id of the zone
  * @property location the location of the zone
+ * @property description the description of the zone
+ * @property status the status of the zone
  *
  */
 @IgnoreExtraProperties
@@ -216,6 +219,10 @@ data class Zone(
 
         companion object {
             private val mapOrdinal = values()
+            /**
+             * Return the Zone status corresponding to the given ordinal
+             * @param ordinal The index of the Zone status we want to retrieve
+             */
             fun fromOrdinal(ordinal: Int) = mapOrdinal[ordinal]
         }
     }
