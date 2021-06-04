@@ -9,6 +9,10 @@ import com.google.android.gms.maps.CameraUpdate
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
 
+/**
+ * Adapter for the map
+ * @param map map
+ */
 open class GoogleMapAdapter(var map: GoogleMap?) : MapsInterface {
 
     override var cameraPosition: CameraPosition? = null

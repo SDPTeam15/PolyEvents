@@ -20,7 +20,6 @@ import com.github.sdpteam15.polyevents.model.map.LatLngOperator.scalar
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.time
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.view.activity.TimeTableActivity
 import com.github.sdpteam15.polyevents.view.fragments.MapsFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
@@ -28,9 +27,9 @@ import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
 import kotlin.math.pow
 
-
-
-
+/**
+ * Helper object that handles the routes
+ */
 object RouteMapHelper {
     const val THRESHOLD = 0.00002
     const val MAGNET_DISTANCE_THRESHOLD = 0.00005
