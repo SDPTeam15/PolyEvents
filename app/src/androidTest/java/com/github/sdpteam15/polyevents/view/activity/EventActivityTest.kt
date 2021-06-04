@@ -726,6 +726,7 @@ class EventActivityTest {
     @Test
     fun testFollowEventButtonIsDisplayed() {
         goToEventActivityWithIntent(publicEventId)
+        Thread.sleep(500)
         assertDisplayed(R.id.button_subscribe_follow_event, R.string.event_follow)
     }
 
@@ -753,6 +754,8 @@ class EventActivityTest {
         assertDisplayed(R.id.button_subscribe_follow_event, R.string.event_follow)
         // Click on follow event
         clickOn(R.id.button_subscribe_follow_event)
+
+        Thread.sleep(500)
 
         val retrievedEvents = localDatabase.eventDao().getEventById(publicEventId)
         assertFalse(retrievedEvents.isEmpty())
