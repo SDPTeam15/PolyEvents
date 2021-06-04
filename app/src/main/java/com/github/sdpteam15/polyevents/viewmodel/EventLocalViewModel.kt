@@ -9,25 +9,40 @@ import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import kotlinx.coroutines.launch
 
+/**
+ * A subclass of ViewModel responsible for managing events
+ * @property eventDao the data access object the view model uses to communicate with the local
+ * database
+ */
 class EventLocalViewModel(private val eventDao: EventDao) : ViewModel() {
 
     companion object {
         private const val TAG = "EventLocalViewModel"
     }
 
-    // TODO: will need to update if user subscribes/unsubscribes from event (or if event is removed)
+    /**
+     * Fetches all the events stored in the local database in a view model scope
+     * @param obs the observable to be updated with the list of events stored in the local
+     * cache
+     */
     fun getAllEvents(obs: ObservableList<EventLocal>) = viewModelScope.launch {
         val events = eventDao.getAll()
         obs.updateAll(events)
     }
 
+    /**
+     * Get an event by its id in the local database in a view model scope.
+     * @param eventId the id of the event we want to fetch
+     * @param obs the observable to be updated with the event fetched from the local database.
+     * Note that this is of type observable list, to handle the case where there multiple events
+     * with the same id (which should never happen since eventId is primary key) or that there are none
+     * (in which case the observable list will have an empty list)
+     */
     fun getEventById(eventId: String, obs: ObservableList<EventLocal>) = viewModelScope.launch {
         val eventLocal = eventDao.getEventById(eventId)
         if (eventLocal.isEmpty()) {
-            Log.d(TAG, "EventLocal Not found!")
             obs.addAll(eventLocal)
         } else {
-            Log.d(TAG, "EventLocal found!: ${eventLocal[0]}")
             obs.addAll(eventLocal)
         }
     }
@@ -46,6 +61,24 @@ class EventLocalViewModel(private val eventDao: EventDao) : ViewModel() {
      */
     fun insert(event: EventLocal) = viewModelScope.launch {
         eventDao.insert(event)
+    }
+
+    /**
+     * Launch a coroutine on the viewmodel scope to get all user subscribed events. Events
+     * to which you are subscribed are by definition limited.
+     * @param obs the observable list to be updated with the events when they are
+     * fetched from the local database
+     */
+    fun getAllSubscribedEvents(obs: ObservableList<EventLocal>) = viewModelScope.launch {
+        val limitedEvents = eventDao.getEventsWhereLimited(true)
+        obs.updateAll(limitedEvents)
+    }
+
+    /**
+     * Launch a coroutine on the viewmodel scope to delete all user subscribed events.
+     */
+    fun deleteAllSubscribedEvents() = viewModelScope.launch {
+        eventDao.deletedEventsWhereLimited(true)
     }
 }
 

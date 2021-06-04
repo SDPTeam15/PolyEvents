@@ -80,8 +80,8 @@ class SettingsFragment : Fragment() {
      * Method to reset the user settings to defaults.
      */
     private fun resetToDefault() {
-        trackLocationSwitchButton.isChecked = false
-        sendLocationSwitchButton.isChecked = false
+        trackLocationSwitchButton.isChecked = true
+        sendLocationSwitchButton.isChecked = true
     }
 
     /**

@@ -32,8 +32,8 @@ class UserSettingsTest {
     @Test
     fun testDefaultUserSettingsInstance() {
         val userSettingsDefault = UserSettings()
-        assertFalse(userSettingsDefault.trackLocation)
-        assertFalse(userSettingsDefault.isSendingLocationOn)
+        assertTrue(userSettingsDefault.trackLocation)
+        assertTrue(userSettingsDefault.isSendingLocationOn)
         assertNull(userSettingsDefault.locationId)
     }
 }

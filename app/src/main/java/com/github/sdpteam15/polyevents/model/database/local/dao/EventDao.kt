@@ -21,6 +21,12 @@ interface EventDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(events: List<EventLocal>)
 
+    @Query("DELETE FROM event_table WHERE is_limited = :limitedEvent")
+    suspend fun deletedEventsWhereLimited(limitedEvent: Boolean)
+
+    @Query("SELECT * FROM event_table WHERE is_limited = :limitedEvent")
+    suspend fun getEventsWhereLimited(limitedEvent: Boolean): List<EventLocal>
+
     @Delete
     suspend fun delete(event: EventLocal)
 

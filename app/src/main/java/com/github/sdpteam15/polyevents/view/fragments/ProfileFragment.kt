@@ -17,16 +17,24 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.changeFragment
+import com.github.sdpteam15.polyevents.helper.NotificationsHelper
+import com.github.sdpteam15.polyevents.helper.NotificationsScheduler
 import com.github.sdpteam15.polyevents.model.callback.UserModifiedInterface
+import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
+import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.activity.EditProfileActivity
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import com.github.sdpteam15.polyevents.view.adapter.ProfileAdapter
+import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModel
+import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModelFactory
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -35,6 +43,14 @@ import java.time.format.DateTimeFormatter
  *  @param userId the id of the user we display the information or null if it is the current user of the application
  */
 class ProfileFragment(private val userId: String? = null) : Fragment(), UserModifiedInterface {
+
+    companion object {
+        // for testing purposes
+        lateinit var localDatabase: LocalDatabase
+        lateinit var eventLocalViewModel: EventLocalViewModel
+        lateinit var notificationsScheduler: NotificationsScheduler
+    }
+
     //Return currentUser if we are not in test, but we can use a fake user in test this way
     var currentUser: UserEntity? = null
         get() = field ?: currentDatabase.currentUser
@@ -63,6 +79,14 @@ class ProfileFragment(private val userId: String? = null) : Fragment(), UserModi
         if (currentUser == null) {
             changeFragment(activity, MainActivity.fragments[R.id.ic_login])
         } else {
+            localDatabase = (requireActivity().application as PolyEventsApplication).localDatabase
+            eventLocalViewModel = EventLocalViewModelFactory(
+                localDatabase.eventDao()
+            ).create(
+                EventLocalViewModel::class.java
+            )
+            notificationsScheduler = NotificationsHelper(requireActivity().applicationContext)
+
             profileNameET = viewRoot.findViewById(R.id.id_profile_name_edittext)
             profileEmailET = viewRoot.findViewById(R.id.id_profile_email_edittext)
             profileUsernameET = viewRoot.findViewById(R.id.id_profile_username_edittext)
@@ -201,6 +225,17 @@ class ProfileFragment(private val userId: String? = null) : Fragment(), UserModi
         //Logout button handler
         viewRoot.findViewById<Button>(R.id.id_logout_button).setOnClickListener { _ ->
             UserLogin.currentUserLogin.signOut()
+            // On logout delete all user subscribed and followed events from local cache
+            val eventsLocalObservable = ObservableList<EventLocal>()
+            eventsLocalObservable.observe(requireActivity()) {
+                it.value.forEach {
+                    notificationsScheduler.cancelNotification(it.eventBeforeNotificationId)
+                    notificationsScheduler.cancelNotification(it.eventStartNotificationId)
+                    eventLocalViewModel.delete(it)
+                }
+            }
+            eventLocalViewModel.getAllEvents(eventsLocalObservable)
+
             changeFragment(activity, MainActivity.fragments[R.id.ic_login])
         }
     }
