@@ -40,7 +40,7 @@ object GoogleMapActionHandler {
             } else if (ZoneAreaMapHelper.deleteMode && ZoneAreaMapHelper.canEdit(polygon.tag.toString())) {
                 ZoneAreaMapHelper.removeArea(polygon.tag.toString().toInt())
             }
-        } else {
+        } else if(mode == MapsFragmentMod.Visitor){
             setSelectedZoneFromArea(polygon.tag.toString())
             // Get the marker associated to the selected zone
             val zoneMarker = ZoneAreaMapHelper.areasPoints.get(polygon.tag)!!.second
@@ -71,19 +71,22 @@ object GoogleMapActionHandler {
      */
     fun onMarkerClickHandler(
         marker: Marker,
+        mode: MapsFragmentMod,
         activity: FragmentActivity,
         lifecycle: LifecycleOwner,
         locationActivated: Boolean
     ) {
         if (canClickMarker(marker)) {
-            if (!ZoneAreaMapHelper.editMode) {
-                displayZoneDetailsBottomDialog(
-                    zoneId = marker.tag.toString(),
-                    zoneName = marker.title,
-                    activity = activity,
-                    lifecycle = lifecycle,
-                    locationActivated = locationActivated
-                )
+            if(mode == MapsFragmentMod.Visitor) {
+                if (!ZoneAreaMapHelper.editMode) {
+                    displayZoneDetailsBottomDialog(
+                        zoneId = marker.tag.toString(),
+                        zoneName = marker.title,
+                        activity = activity,
+                        lifecycle = lifecycle,
+                        locationActivated = locationActivated
+                    )
+                }
             }
             val tag = marker.tag
             if (tag != null) {
