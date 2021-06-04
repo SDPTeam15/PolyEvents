@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.helper.NotificationsHelper
 import com.github.sdpteam15.polyevents.helper.NotificationsScheduler
@@ -16,6 +17,7 @@ import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.entity.Event
+import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.activity.EventActivity
@@ -175,13 +177,19 @@ class EventListFragment : Fragment() {
      * @param context The current application context
      */
     private fun getEventsListAndDisplay(context: Context?) {
+        val observableDBAnswer = Observable<Boolean>()
         currentDatabase.eventDatabase.getEvents(events).observe(this) {
             if (!it.value) {
                 showToast(getString(R.string.fail_to_get_information), context)
             } else {
                 fetchedDataFromRemote = true
             }
-        }
+        }.then.updateOnce(this, observableDBAnswer)
+        HelperFunctions.showProgressDialog(
+            this, listOf(
+                observableDBAnswer
+            ), requireActivity().supportFragmentManager
+        )
     }
 
     /**
