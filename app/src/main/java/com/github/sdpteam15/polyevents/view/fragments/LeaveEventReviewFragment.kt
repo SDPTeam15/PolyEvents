@@ -10,10 +10,10 @@ import android.widget.RatingBar
 import androidx.fragment.app.DialogFragment
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.model.callback.ReviewHasChanged
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.entity.Rating
 import com.github.sdpteam15.polyevents.model.observable.Observable
-import com.github.sdpteam15.polyevents.view.service.ReviewHasChanged
 
 /**
  * A Dialog Fragment that is displayed over an EventActivity, to leave a review for the event.

@@ -26,6 +26,7 @@ import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Rating
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
 import com.schibsted.spain.barista.assertion.BaristaEnabledAssertions.assertDisabled
 import com.schibsted.spain.barista.assertion.BaristaEnabledAssertions.assertEnabled
@@ -44,10 +45,7 @@ import org.mockito.Mockito.mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.anyOrNull
 import java.time.LocalDateTime
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNotEquals
-import kotlin.test.assertNull
+import kotlin.test.*
 import org.mockito.Mockito.`when` as When
 
 
@@ -73,6 +71,8 @@ class EventActivityTest {
     private lateinit var localDatabase: LocalDatabase
     private lateinit var mockedNotificationsScheduler: NotificationsScheduler
 
+    private var notificationId: Int = 0
+
     @Before
     @Suppress("UNCHECKED_CAST")
     fun setup() {
@@ -83,6 +83,7 @@ class EventActivityTest {
             name = "Test name"
         )
 
+        PolyEventsApplication.inTest = true
         mockedDatabase = mock(DatabaseInterface::class.java)
         mockedEventDatabase = mock(EventDatabaseInterface::class.java)
         mockedUserDatabase = mock(UserDatabaseInterface::class.java)
@@ -97,6 +98,7 @@ class EventActivityTest {
             eventName = "limited Event only",
             description = "Super noisy activity !",
             startTime = LocalDateTime.of(2021, 3, 7, 21, 15),
+            endTime = LocalDateTime.of(2021, 3, 7, 23, 50, 0),
             organizer = "AcademiC DeCibel",
             zoneName = "Concert Hall",
             tags = mutableListOf("music", "live", "pogo")
@@ -158,13 +160,19 @@ class EventActivityTest {
         mockedNotificationsScheduler = mock(NotificationsScheduler::class.java)
         When(mockedNotificationsScheduler.cancelNotification(anyOrNull())).then { }
         When(mockedNotificationsScheduler.generateNewNotificationId()).thenReturn(0)
+
+        notificationId = 0
         When(
             mockedNotificationsScheduler.scheduleEventNotification(
                 eventId = anyOrNull(),
                 notificationMessage = anyOrNull(),
                 scheduledTime = anyOrNull()
             )
-        ).thenReturn(0)
+        ).then {
+            val temp = notificationId
+            notificationId += 1
+            temp
+        }
 
         // Create local db
         val context: Context = ApplicationProvider.getApplicationContext()
@@ -180,6 +188,7 @@ class EventActivityTest {
     fun teardown() {
         Thread.sleep(1000)
         scenario.close()
+        PolyEventsApplication.inTest = false
         // close and remove the mock local database
         localDatabase.close()
         currentDatabase = FirestoreDatabaseProvider
@@ -204,16 +213,17 @@ class EventActivityTest {
     @Test
     fun newCommentAdded() {
         goToEventActivityWithIntent(limitedEventId)
-
-        assertEquals(0, EventActivity.obsComments.size)
+        assertEquals(0, EventActivity.obsNonEmptyComments.size)
         val comment = Rating("Rating 1", 5f, "TROP COOL yes")
         EventActivity.obsComments.add(comment, this)
-        assertEquals(1, EventActivity.obsComments.size)
+        Thread.sleep(1000)
+        assertEquals(1, EventActivity.obsNonEmptyComments.size)
         EventActivity.obsComments.clear()
+        EventActivity.obsNonEmptyComments.clear()
         val comment2 = Rating("Rating 2", 5f, "")
         EventActivity.obsComments.add(comment2, this)
         Thread.sleep(1000)
-        assertEquals(0, EventActivity.obsComments.size)
+        assertEquals(0, EventActivity.obsNonEmptyComments.size)
     }
 
     @Test
@@ -766,6 +776,81 @@ class EventActivityTest {
         clickOn(R.id.button_subscribe_follow_event)
         val retrievedEventsAfterUnfollow = localDatabase.eventDao().getEventById(publicEventId)
         assert(retrievedEventsAfterUnfollow.isEmpty())
+    }
+
+    @Test
+    fun testNotificationsNotScheduledIfEventAlreadyEnded() {
+        goToEventActivityWithIntent(publicEventId)
+
+        val currentTime = LocalDateTime.of(2021, 6, 3, 22, 30, 0)
+        val eventStartTime = LocalDateTime.of(2021, 6, 3, 18, 0, 0)
+        val eventEndTime = LocalDateTime.of(2021, 6, 3, 20, 0, 0)
+
+        val testEvent = testPublicEvent.copy(
+            startTime = eventStartTime,
+            endTime = eventEndTime
+        )
+
+        val (notificationBeforeId, notificationStartId) =
+            EventActivity.scheduleNotificationWithRespectToCurrentTime(
+                event = testEvent,
+                currentTime = currentTime,
+                startTimeNotificationMessage = "",
+                beforeEventNotificationMessage = ""
+            )
+
+        assertNull(notificationBeforeId)
+        assertNull(notificationStartId)
+    }
+
+    @Test
+    fun testOnlyOneNotificationAtEventStartIfAlreadyStarted() {
+        goToEventActivityWithIntent(publicEventId)
+
+        val currentTime = LocalDateTime.of(2021, 6, 3, 22, 30, 0)
+        val eventStartTime = LocalDateTime.of(2021, 6, 3, 18, 0, 0)
+        val eventEndTime = LocalDateTime.of(2021, 6, 3, 23, 0, 0)
+
+        val testEvent = testPublicEvent.copy(
+            startTime = eventStartTime,
+            endTime = eventEndTime
+        )
+
+        val (notificationBeforeId, notificationStartId) =
+            EventActivity.scheduleNotificationWithRespectToCurrentTime(
+                event = testEvent,
+                currentTime = currentTime,
+                startTimeNotificationMessage = "",
+                beforeEventNotificationMessage = ""
+            )
+
+        assertNull(notificationBeforeId)
+        assertNotNull(notificationStartId)
+    }
+
+    @Test
+    fun testNotificationsScheduledIfEventHasNotStarted() {
+        goToEventActivityWithIntent(publicEventId)
+
+        val currentTime = LocalDateTime.of(2021, 6, 3, 6, 30, 0)
+        val eventStartTime = LocalDateTime.of(2021, 6, 3, 18, 0, 0)
+        val eventEndTime = LocalDateTime.of(2021, 6, 3, 20, 0, 0)
+
+        val testEvent = testPublicEvent.copy(
+            startTime = eventStartTime,
+            endTime = eventEndTime
+        )
+
+        val (notificationBeforeId, notificationStartId) =
+            EventActivity.scheduleNotificationWithRespectToCurrentTime(
+                event = testEvent,
+                currentTime = currentTime,
+                startTimeNotificationMessage = "",
+                beforeEventNotificationMessage = ""
+            )
+
+        assertNotNull(notificationBeforeId)
+        assertNotNull(notificationStartId)
     }
 
     /**

@@ -9,7 +9,6 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableList
 object FakeDatabaseUser : UserDatabaseInterface {
     lateinit var profiles: MutableList<UserProfile>
     var allUsers = mutableListOf<UserEntity>()
-    override var firstConnectionUser: UserEntity = UserEntity(uid = "DEFAULT")
     override fun updateUserInformation(
         user: UserEntity
     ): Observable<Boolean> {

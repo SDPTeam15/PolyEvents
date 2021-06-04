@@ -9,12 +9,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.helper.NotificationsHelper
 import com.github.sdpteam15.polyevents.helper.NotificationsScheduler
 import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication
@@ -23,6 +25,7 @@ import com.github.sdpteam15.polyevents.view.adapter.EventItemAdapter
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModel
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModelFactory
 import com.google.android.material.switchmaterial.SwitchMaterial
+import java.time.LocalDateTime
 
 /**
  * Extra containing the event ID to show on the launched event page
@@ -47,6 +50,11 @@ class EventListFragment : Fragment() {
     private lateinit var myEventsSwitch: SwitchMaterial
 
     val events = ObservableList<Event>()
+
+    // events observable will be sorted on start time
+    val eventsDB = events.sortAndLimitFrom(this) {
+        it.startTime
+    }
 
     // observable for events stored in local cache
     private val eventsLocal = ObservableList<EventLocal>()
@@ -131,7 +139,7 @@ class EventListFragment : Fragment() {
                 fetchedDataFromRemote = false
             }
             // Sync events local with remote
-            events.updateAll(retrievedEvents.map { it.toEvent() })
+            eventsDB.updateAll(retrievedEvents.map { it.toEvent() })
         }
     }
 
@@ -171,8 +179,13 @@ class EventListFragment : Fragment() {
     }
 
     private fun getEventsListAndDisplay(context: Context?) {
-        // TODO: set limit or not?
-        currentDatabase.eventDatabase.getEvents(null, null, events).observe(this) {
+        currentDatabase.eventDatabase.getEvents(matcher = { collection ->
+            // Get only events that are not finished yet...
+            collection.whereGreaterThanOrEqualTo(
+                DatabaseConstant.EventConstant.EVENT_END_TIME.value,
+                HelperFunctions.localDateTimeToDate(LocalDateTime.now())!!
+            )
+        }, null, eventsDB).observe(this) {
             if (!it.value) {
                 showToast(getString(R.string.fail_to_get_information), context)
             } else {

@@ -21,7 +21,7 @@
 
     <!-- ZoneManagement List activity-->
     <string name="fail_to_get_list_zones">Failed to get the list of zones</string>
-    <string name="zone_mangement_list_title">All zones</string>
+    <string name="zone_management_list_title">All zones</string>
     <string name="message_confirm_delete_zone">Are you sure you want to delete this zone ? (The events and material requests related will be deleted)</string>
     <string name="message_confirm_delete_zone_title">Delete %1$s</string>
 
