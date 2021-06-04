@@ -397,7 +397,8 @@ object HelperFunctions {
      * @param supportFragmentManager The support fragment manager to display the dialog
      */
     fun showProgressDialog(
-        lifecycle: LifecycleOwner, listObservable: List<Observable<*>>,
+        lifecycle: LifecycleOwner,
+        listObservable: List<Observable<*>>,
         supportFragmentManager: FragmentManager
     ) {
         val progressDialogFragment = ProgressDialogFragment(
