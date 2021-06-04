@@ -105,7 +105,6 @@ class ZonePreviewBottomSheetDialogFragment : BottomSheetDialogFragment() {
             zone = zoneObservable
         )
 
-        // TODO: progress dialogs!
         val eventsObservableList = ObservableList<Event>()
         eventsObservableList.observe(this) {
             if (it.value.isEmpty()) {

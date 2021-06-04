@@ -32,7 +32,7 @@ data class Event(
     val zoneId: String? = null,
     val zoneName: String? = null,
     var description: String? = null,
-    // TODO: handle event icons (probably during event creation)
+    // Not used currently
     var icon: Bitmap? = null,
     val startTime: LocalDateTime? = null,
     val endTime: LocalDateTime? = null,
@@ -93,7 +93,6 @@ data class Event(
         this.maxNumberOfSlots = maxNumberOfSlots
     }
 
-    // TODO: Subscribe to event using profile or user id??
     /**
      * Add a participant to this event if it's a limited event
      * @param userUid the id of the new participant user

@@ -22,8 +22,6 @@ class UserEntityTest {
         userRole = UserRole.ADMIN
     )
 
-    // TODO: add more profile related tests
-
     @BeforeTest
     fun setupUserEntity() {
         user = UserEntity(

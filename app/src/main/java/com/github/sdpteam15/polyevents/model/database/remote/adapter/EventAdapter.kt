@@ -8,11 +8,13 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.Ev
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Item
 
-// TODO: Save icon bitmap in Google cloud storage
 /**
  * A class for converting between event entities in our code and
  * documents in the Firebase database. Not unlike the conversion to
  * DTO (Data transfer object) concept.
+ *
+ * Note: The event icon should probably be stored in Google cloud storage, but this has not yet been
+ * done.
  *
  * IMPORTANT: This should be updated whenever we add, remove or update fields of Event.
  */
@@ -47,7 +49,6 @@ object EventAdapter : AdapterInterface<Event> {
             description = document[EVENT_DESCRIPTION.value] as String?,
             startTime = document[EVENT_START_TIME.value].toLocalDateTime(),
             endTime = document[EVENT_END_TIME.value].toLocalDateTime(),
-            // TODO: Check how item is stored in Firestore, and check if conversion worked
             inventory = (document[EVENT_INVENTORY.value] as List<Item>).toMutableList(),
             tags = (document[EVENT_TAGS.value] as List<String>).toMutableList(),
             limitedEvent = document[EVENT_LIMITED.value] as Boolean,
