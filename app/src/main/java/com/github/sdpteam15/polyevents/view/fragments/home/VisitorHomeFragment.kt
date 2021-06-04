@@ -85,7 +85,7 @@ class VisitorHomeFragment : Fragment() {
 
 
         HelperFunctions.showProgressDialog(
-            this, listOf(
+            requireActivity(), listOf(
                 observableDBAnswer
             ), requireActivity().supportFragmentManager
         )
