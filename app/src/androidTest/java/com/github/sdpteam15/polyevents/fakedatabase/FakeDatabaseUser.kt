@@ -11,11 +11,17 @@ object FakeDatabaseUser : UserDatabaseInterface {
     var allUsers = mutableListOf<UserEntity>()
     override fun updateUserInformation(
         user: UserEntity
-    ) = Observable(true, FakeDatabase)
+    ): Observable<Boolean> {
+        allUsers.add(user)
+        return Observable(true, FakeDatabase)
+    }
 
     override fun firstConnexion(
         user: UserEntity
-    ) = Observable(true, FakeDatabase)
+    ): Observable<Boolean> {
+        allUsers.add(user)
+        return Observable(true, FakeDatabase)
+    }
 
     override fun inDatabase(
         isInDb: Observable<Boolean>,
@@ -48,39 +54,43 @@ object FakeDatabaseUser : UserDatabaseInterface {
     ): Observable<Boolean> {
         profile.pid = FakeDatabase.generateRandomKey()
         user.profiles.add(profile.pid!!)
-        return Observable(profile.pid != null)
+        return Observable(profile.pid != null, FakeDatabase)
     }
 
     override fun removeProfileFromUser(
         profile: UserProfile,
         user: UserEntity
     ): Observable<Boolean> {
-        TODO("Not yet implemented")
+        profiles.remove(profile)
+        return Observable(true, FakeDatabase)
     }
 
     override fun updateProfile(profile: UserProfile): Observable<Boolean> {
-        TODO("Not yet implemented")
+        profiles[profiles.indexOfFirst { it.pid == profile.pid }] = profile
+        return Observable(true, FakeDatabase)
     }
 
     override fun getUserProfilesList(
         profiles: ObservableList<UserProfile>,
         user: UserEntity
     ): Observable<Boolean> {
-
-        TODO("Not yet implemented")
+        profiles.addAll(this.allUsers.first { it.uid == user.uid }.userProfiles)
+        return Observable(true, FakeDatabase)
     }
 
     override fun getProfilesUserList(
         users: ObservableList<UserEntity>,
         profile: UserProfile
     ): Observable<Boolean> {
-        TODO("Not yet implemented")
+        users.addAll(profiles.first { it.pid == profile.pid }.userEntity)
+        return Observable(true, FakeDatabase)
     }
 
     override fun getProfileById(
         profile: Observable<UserProfile>,
         pid: String
     ): Observable<Boolean> {
-        TODO("Not yet implemented")
+        profile.postValue(profiles.first { it.pid == pid })
+        return Observable(true,FakeDatabase)
     }
 }

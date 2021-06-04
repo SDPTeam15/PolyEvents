@@ -1,6 +1,8 @@
 package com.github.sdpteam15.polyevents.model.database.remote.adapter
 
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.groupToLatLng
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.toLocalDateTime
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.LocationConstant
 import com.github.sdpteam15.polyevents.model.entity.DeviceLocation
 import com.google.android.gms.maps.model.LatLng
@@ -22,10 +24,8 @@ object DeviceLocationAdapter : AdapterInterface<DeviceLocation> {
     override fun fromDocument(document: Map<String, Any?>, id: String): DeviceLocation =
         DeviceLocation(
             device = document[LocationConstant.LOCATIONS_DEVICE.value] as String?,
-            location = LatLng(
-                document[LocationConstant.LOCATIONS_POINT_LATITUDE.value] as Double,
-                document[LocationConstant.LOCATIONS_POINT_LONGITUDE.value] as Double,
-            ),
-            time = HelperFunctions.dateToLocalDateTime(document[LocationConstant.LOCATIONS_TIME.value])
+            location =
+            (document[LocationConstant.LOCATIONS_POINT_LATITUDE.value] groupToLatLng document[LocationConstant.LOCATIONS_POINT_LONGITUDE.value])!! ,
+            time = document[LocationConstant.LOCATIONS_TIME.value].toLocalDateTime()
         )
 }

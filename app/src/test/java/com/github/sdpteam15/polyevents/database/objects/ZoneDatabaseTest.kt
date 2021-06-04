@@ -103,7 +103,7 @@ class ZoneDatabaseTest {
         val zones = ObservableList<Zone>()
 
         HelperTestFunction.nextGetListEntity { true }
-        mockedZoneDatabase.getAllZones(zones)
+        mockedZoneDatabase.getActiveZones(zones)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         val getList = HelperTestFunction.lastGetListEntity()!!

@@ -37,7 +37,7 @@ class UserListAdapter(
         viewType: Int
     ): UserViewHolder {
         val adapterLayout = LayoutInflater.from(parent.context)
-            .inflate(R.layout.tab_users_list, parent, false)
+            .inflate(R.layout.card_users_list, parent, false)
         return UserViewHolder(adapterLayout)
     }
 

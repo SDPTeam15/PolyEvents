@@ -2,6 +2,8 @@ package com.github.sdpteam15.polyevents.model.database.remote.adapter
 
 
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.toInt
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.toLocalDateTime
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.EventConstant.*
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Item
@@ -43,13 +45,13 @@ object EventAdapter : AdapterInterface<Event> {
             zoneName = document[EVENT_ZONE_NAME.value] as String?,
             zoneId = document[EVENT_ZONE_ID.value] as String?,
             description = document[EVENT_DESCRIPTION.value] as String?,
-            startTime = HelperFunctions.dateToLocalDateTime(document[EVENT_START_TIME.value]),
-            endTime = HelperFunctions.dateToLocalDateTime(document[EVENT_END_TIME.value]),
+            startTime = document[EVENT_START_TIME.value].toLocalDateTime(),
+            endTime = document[EVENT_END_TIME.value].toLocalDateTime(),
             // TODO: Check how item is stored in Firestore, and check if conversion worked
             inventory = (document[EVENT_INVENTORY.value] as List<Item>).toMutableList(),
             tags = (document[EVENT_TAGS.value] as List<String>).toMutableList(),
             limitedEvent = document[EVENT_LIMITED.value] as Boolean,
-            maxNumberOfSlots = (document[EVENT_MAX_SLOTS.value] as Long?)?.toInt(),
+            maxNumberOfSlots = document[EVENT_MAX_SLOTS.value].toInt(),
             participants = (document[EVENT_PARTICIPANTS.value] as List<String>).toMutableSet()
         )
     }

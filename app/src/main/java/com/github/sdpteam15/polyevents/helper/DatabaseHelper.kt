@@ -1,14 +1,17 @@
 package com.github.sdpteam15.polyevents.helper
 
+import android.content.Context
+import android.provider.Settings.Global.getString
+import androidx.lifecycle.LifecycleOwner
+import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
-import com.github.sdpteam15.polyevents.model.entity.Event
-import com.github.sdpteam15.polyevents.model.entity.Item
-import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
+import com.github.sdpteam15.polyevents.model.entity.*
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest.Status.*
-import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.model.observable.ObservableMap
 
 /**
  * The goal of this objects is to create function to nested relation from the database
@@ -42,6 +45,7 @@ object DatabaseHelper {
         }.observeOnce {
             if (it.value) {
                 deleteEventEdit(e).observeOnce { currentDatabase.eventDatabase.removeEvent(e.eventId!!) }
+
             }
         }
     }
@@ -60,7 +64,7 @@ object DatabaseHelper {
                 zone.zoneId!!
             )
         }, null, events)
-        currentDatabase.zoneDatabase.deleteZone(zone)
+        currentDatabase.zoneDatabase.updateZoneInformation(zone.zoneId!!,zone.copy(status = Zone.Status.DELETED))
     }
 
     /**
@@ -120,5 +124,27 @@ object DatabaseHelper {
                 }
             )
         )
+    }
+
+    /**
+     * Gets the username of the given userId from the database and adds it to the userNames map
+     * @param userId user Id to retrieve
+     * @param users the map from userId to user name
+     * @param lifecycleOwner the lifecycleOwner for the observable
+     * @param context the current context
+     */
+    fun addToUsersFromDB(userId: String, users : ObservableMap<String, String>, lifecycleOwner: LifecycleOwner, context: Context) {
+        val tempUsers = Observable<UserEntity>()
+        currentDatabase.userDatabase.getUserInformation(tempUsers, userId)
+            .observeOnce(lifecycleOwner) { ans ->
+                if (ans.value) {
+                    users[userId] = tempUsers.value?.name ?: "UNKNOWN"
+                } else {
+                    HelperFunctions.showToast(
+                        context.getString(R.string.failed_to_get_username_from_database),
+                        context
+                    )
+                }
+            }
     }
 }

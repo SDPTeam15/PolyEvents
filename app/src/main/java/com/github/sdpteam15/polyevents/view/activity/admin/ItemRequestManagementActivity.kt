@@ -14,11 +14,13 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.helper.DatabaseHelper.addToUsersFromDB
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
+import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
-import com.github.sdpteam15.polyevents.model.entity.UserEntity
+import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
@@ -26,7 +28,6 @@ import com.github.sdpteam15.polyevents.view.adapter.ItemRequestAdminAdapter
 
 /**
  * Activity to display item requests to Admins
- * TODO define what happens when an admin answers an item request
  */
 class ItemRequestManagementActivity : AppCompatActivity() {
 
@@ -34,6 +35,7 @@ class ItemRequestManagementActivity : AppCompatActivity() {
     private val requests = ObservableList<MaterialRequest>()
     private val userNames = ObservableMap<String, String>()
     private val itemNames = ObservableMap<String, String>()
+    private val zoneNameFromEventId = ObservableMap<String, String>()
     private val items = ObservableList<Triple<Item, Int, Int>>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,21 +45,12 @@ class ItemRequestManagementActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.id_recycler_item_requests)
 
-
-        requests.group(this) { it.userId }.then.observePut(this) {
-            if (!userNames.containsKey(it.key)) {
-                val tempUsers = Observable<UserEntity>()
-                currentDatabase.userDatabase.getUserInformation(tempUsers, it.key)
-                    .observeOnce(this) { ans ->
-                        if (ans.value) {
-                            userNames[it.key] = tempUsers.value?.name ?: "ANONYMOUS"
-                        } else {
-                            HelperFunctions.showToast(
-                                getString(R.string.failed_to_get_username_from_database),
-                                this
-                            )
-                        }
-                    }
+        requests.observeAdd(this) {
+            if (!userNames.containsKey(it.value.userId)) {
+                addToUsersFromDB(it.value.userId, userNames, this, this)
+            }
+            if (it.value.staffInChargeId != null && !userNames.containsKey(it.value.staffInChargeId!!)) {
+                addToUsersFromDB(it.value.staffInChargeId!!, userNames, this, this)
             }
         }
 
@@ -72,6 +65,7 @@ class ItemRequestManagementActivity : AppCompatActivity() {
                 requests,
                 userNames,
                 itemNames,
+                zoneNameFromEventId,
                 acceptMaterialRequest,
                 declineMaterialRequest
             )
@@ -79,7 +73,7 @@ class ItemRequestManagementActivity : AppCompatActivity() {
         //Wait until we have both requests accepted from the database to show the material requests
         currentDatabase.materialRequestDatabase.getMaterialRequestList(
             requests.sortAndLimitFrom(this) { it.status })
-            .observeOnce(this) {
+            .observeOnce(this) { it ->
                 if (!it.value) {
                     HelperFunctions.showToast("Failed to get the list of material requests", this)
                 } else {
@@ -89,6 +83,29 @@ class ItemRequestManagementActivity : AppCompatActivity() {
                                 HelperFunctions.showToast("Failed to get the list of items", this)
                             }
                         }
+                    val sentEventIds = mutableListOf<String>()
+                    for (request in requests) {
+                        if (request.eventId !in sentEventIds) {
+                            sentEventIds.add(request.eventId)
+                            val event = Observable<Event>()
+                            val zone = Observable<Zone>()
+                            currentDatabase.eventDatabase.getEventFromId(request.eventId, event)
+                                .observeOnce(this) {
+                                    if (it.value) {
+                                        currentDatabase.zoneDatabase.getZoneInformation(
+                                            event.value!!.zoneId!!,
+                                            zone
+                                        ).observeOnce(this) {
+                                            if (it.value) {
+                                                zoneNameFromEventId[event.value!!.eventId!!] =
+                                                    zone.value!!.zoneName!!
+                                            }
+                                        }
+                                    }
+                                }
+                        }
+
+                    }
                 }
             }
     }
@@ -123,6 +140,7 @@ class ItemRequestManagementActivity : AppCompatActivity() {
             HelperFunctions.showToast("Can not accept this request", this)
         }
     }
+
 
     /**
      * Checks if the material request can be accepted
