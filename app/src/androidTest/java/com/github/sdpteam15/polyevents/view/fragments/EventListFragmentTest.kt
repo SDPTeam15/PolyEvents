@@ -63,8 +63,8 @@ class EventListFragmentTest {
             eventId = "1",
             eventName = firstEventName,
             description = "Super hungry activity !",
-            startTime = LocalDateTime.of(2021, 3, 7, 12, 15),
-            endTime = LocalDateTime.of(2021, 3, 7, 13, 0, 0),
+            startTime = LocalDateTime.of(2022, 3, 7, 12, 15),
+            endTime = LocalDateTime.of(2022, 3, 7, 13, 0, 0),
             organizer = "The fish band",
             zoneName = "Kitchen",
             tags = mutableListOf("sushi", "japan", "cooking")
@@ -84,7 +84,8 @@ class EventListFragmentTest {
             description = "Super cool activity !" +
                     " With a super long description that essentially describes and explains" +
                     " the content of the activity we are speaking of.",
-            startTime = LocalDateTime.of(2021, 3, 7, 14, 15),
+            startTime = LocalDateTime.of(2022, 3, 7, 14, 15),
+            endTime = LocalDateTime.of(2022, 3, 8, 13, 0, 0),
             organizer = "The Aqua Poney team",
             zoneName = "Swimming pool"
         )
@@ -94,7 +95,8 @@ class EventListFragmentTest {
             eventId = "3",
             eventName = "Concert",
             description = "Super noisy activity !",
-            startTime = LocalDateTime.of(2021, 3, 7, 21, 15),
+            startTime = LocalDateTime.of(2022, 3, 7, 21, 15),
+            endTime = LocalDateTime.of(2022, 3, 8, 23, 0, 0),
             organizer = "AcademiC DeCibel",
             zoneName = "Concert Hall",
             tags = mutableListOf("music", "live", "pogo")
@@ -187,6 +189,7 @@ class EventListFragmentTest {
         assertChecked(R.id.event_list_my_events_switch)
 
         // My events updated
+        Thread.sleep(2000)
         assertRecyclerViewItemCount(R.id.recycler_events_list, 2)
     }
 

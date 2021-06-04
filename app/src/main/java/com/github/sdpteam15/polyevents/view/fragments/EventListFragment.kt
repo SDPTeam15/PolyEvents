@@ -16,6 +16,7 @@ import com.github.sdpteam15.polyevents.helper.NotificationsScheduler
 import com.github.sdpteam15.polyevents.model.database.local.entity.EventLocal
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
@@ -25,6 +26,7 @@ import com.github.sdpteam15.polyevents.view.adapter.EventItemAdapter
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModel
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModelFactory
 import com.google.android.material.switchmaterial.SwitchMaterial
+import java.time.LocalDateTime
 
 /**
  * Extra containing the event ID to show on the launched event page
@@ -49,6 +51,11 @@ class EventListFragment : Fragment() {
     private lateinit var myEventsSwitch: SwitchMaterial
 
     val events = ObservableList<Event>()
+
+    // events observable will be sorted on start time
+    val eventsDB = events.sortAndLimitFrom(this) {
+        it.startTime
+    }
 
     // observable for events stored in local cache
     private val eventsLocal = ObservableList<EventLocal>()
@@ -133,7 +140,7 @@ class EventListFragment : Fragment() {
                 fetchedDataFromRemote = false
             }
             // Sync events local with remote
-            events.updateAll(retrievedEvents.map { it.toEvent() })
+            eventsDB.updateAll(retrievedEvents.map { it.toEvent() })
         }
     }
 
@@ -177,8 +184,13 @@ class EventListFragment : Fragment() {
      * @param context The current application context
      */
     private fun getEventsListAndDisplay(context: Context?) {
-        val observableDBAnswer = Observable<Boolean>()
-        currentDatabase.eventDatabase.getEvents(events).observe(this) {
+        currentDatabase.eventDatabase.getEvents(matcher = { collection ->
+            // Get only events that are not finished yet...
+            collection.whereGreaterThanOrEqualTo(
+                DatabaseConstant.EventConstant.EVENT_END_TIME.value,
+                HelperFunctions.localDateTimeToDate(LocalDateTime.now())!!
+            )
+        }, null, eventsDB).observe(this) {
             if (!it.value) {
                 showToast(getString(R.string.fail_to_get_information), context)
             } else {
