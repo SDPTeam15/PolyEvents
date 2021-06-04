@@ -189,7 +189,6 @@ class EventListFragmentTest {
         assertChecked(R.id.event_list_my_events_switch)
 
         // My events updated
-        Thread.sleep(2000)
         assertRecyclerViewItemCount(R.id.recycler_events_list, 2)
     }
 

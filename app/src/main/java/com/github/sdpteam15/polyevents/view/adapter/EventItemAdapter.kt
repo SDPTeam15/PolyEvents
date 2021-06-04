@@ -56,7 +56,6 @@ class EventItemAdapter(
                 attendeesNumberTextView.visibility = View.GONE
             }
 
-            // TODO : set the icon of the event
             //eventIcon.setImageBitmap(event.icon)
         }
     }

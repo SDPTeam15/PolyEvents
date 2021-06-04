@@ -15,7 +15,6 @@ class EventLocalViewModel(private val eventDao: EventDao) : ViewModel() {
         private const val TAG = "EventLocalViewModel"
     }
 
-    // TODO: will need to update if user subscribes/unsubscribes from event (or if event is removed)
     fun getAllEvents(obs: ObservableList<EventLocal>) = viewModelScope.launch {
         val events = eventDao.getAll()
         obs.updateAll(events)
@@ -24,10 +23,8 @@ class EventLocalViewModel(private val eventDao: EventDao) : ViewModel() {
     fun getEventById(eventId: String, obs: ObservableList<EventLocal>) = viewModelScope.launch {
         val eventLocal = eventDao.getEventById(eventId)
         if (eventLocal.isEmpty()) {
-            Log.d(TAG, "EventLocal Not found!")
             obs.addAll(eventLocal)
         } else {
-            Log.d(TAG, "EventLocal found!: ${eventLocal[0]}")
             obs.addAll(eventLocal)
         }
     }
