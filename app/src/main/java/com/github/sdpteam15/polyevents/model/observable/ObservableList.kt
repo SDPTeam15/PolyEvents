@@ -66,6 +66,9 @@ class ObservableList<T>(
         override fun toString() = "value:'$value', index:$index, sender:'$sender'"
     }
 
+    /**
+     * Use an ObserversInfo object each time we want notify an update of the map
+     */
     class ObserversInfo<T>(
         value: List<T>,
         val info: Info,
@@ -75,6 +78,9 @@ class ObservableList<T>(
         override fun toString() = "value:'$value', info:$info, args:'$args', sender:'$sender'"
     }
 
+    /**
+     * Update type
+     */
     enum class Info {
         add,
         addIndex,

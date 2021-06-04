@@ -12,7 +12,6 @@ import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 
-// TODO: consider instantiating Firebase database here
 class PolyEventsApplication : Application() {
     companion object {
         var inTest = false
@@ -38,6 +37,9 @@ class PolyEventsApplication : Application() {
 
     // Using by lazy so the database and the repository are only created when they're needed
     // rather than when the application starts
+    /**
+     * the default local database
+     */
     val defaultLocalDatabase by lazy { LocalDatabase.getDatabase(this, applicationScope) }
     private var tempLocalDatabase: LocalDatabase? = null
 

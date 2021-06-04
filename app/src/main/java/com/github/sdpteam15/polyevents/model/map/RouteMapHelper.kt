@@ -55,6 +55,7 @@ object RouteMapHelper {
      * Add a line to dataBase
      * @param start pair containing the Position of the first point and eventually an attached object
      * @param end pair containing the Position of the second point and eventually an attached object
+     * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun addLine(
         start: Pair<LatLng, Attachable?>,
@@ -91,6 +92,7 @@ object RouteMapHelper {
     /**
      * Removes a line from the dataBase
      * @param edge the line to add to the database
+     * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun removeLine(edge: RouteEdge) =
         Database.currentDatabase.routeDatabase.removeEdge(edge, edges, nodes)
@@ -426,6 +428,7 @@ object RouteMapHelper {
 
     /**
      * Function that handles the addition of a route from the database
+     * @param context context of the fragment there the edges are display
      * @param edge new edge
      */
     fun edgeAddedNotification(context: Context?, edge: RouteEdge) {
@@ -514,7 +517,6 @@ object RouteMapHelper {
         attachables = Pair(null, null)
     }
 
-    //TODO move variables
     var startMarker: Marker? = null
     var endMarker: Marker? = null
 

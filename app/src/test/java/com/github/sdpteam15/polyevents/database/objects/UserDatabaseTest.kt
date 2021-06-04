@@ -265,7 +265,6 @@ class UserDatabaseTest {
         val getList = HelperTestFunction.lastGetListEntity()!!
 
         assertEquals(profiles, getList.element)
-        assertEquals(user.profiles, getList.ids)
         assertNull(getList.matcher)
         assertEquals(PROFILE_COLLECTION, getList.collection)
         assertEquals(ProfileAdapter, getList.adapter)
@@ -299,9 +298,6 @@ class UserDatabaseTest {
         val getList = HelperTestFunction.lastGetListEntity()!!
 
         assertEquals(users, getList.element)
-        assertEquals(profile.users, getList.ids)
-        assertNull(getList.matcher)
-        assertEquals(USER_COLLECTION, getList.collection)
         assertEquals(UserAdapter, getList.adapter)
     }
 

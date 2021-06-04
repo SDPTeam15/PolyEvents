@@ -65,6 +65,7 @@ class ItemRequestAdapter(
     /**
      * Adapted ViewHolder for each item type
      * Takes the corresponding item type "tab" view
+     * @param view the corresponding view
      */
     inner class ItemTypeViewHolder(private val view: View) :
         CustomViewHolder<String>(view) {
@@ -171,6 +172,7 @@ class ItemRequestAdapter(
         }
 
         override fun unbind() {
+            // as the viewHolders are recycled, they may keep the listeners of previously used ones
             itemQuantity.removeTextChangedListener(quantityTextWatcher)
         }
     }
@@ -194,7 +196,7 @@ class ItemRequestAdapter(
                 val view = inflater.inflate(R.layout.card_item, parent, false)
                 ItemViewHolder(view)
             }
-            else -> throw IllegalArgumentException("wrong itemType $viewType")
+            else -> throw IllegalArgumentException("wrong itemType $viewType") //should never happen
         }
     }
 
@@ -236,7 +238,7 @@ class ItemRequestAdapter(
                     }
                 }
             }
-            else -> throw java.lang.IllegalArgumentException("invalid position")
+            else -> throw java.lang.IllegalArgumentException("invalid position") // should never happen
 
         }
     }

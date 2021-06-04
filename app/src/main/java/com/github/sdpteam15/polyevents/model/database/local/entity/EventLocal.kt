@@ -27,8 +27,6 @@ import java.time.LocalDateTime
  */
 @Entity(tableName = "event_table")
 data class EventLocal(
-    // TODO: should we add the user id subscribed to this event?
-    // TODO: add event icon?
     @PrimaryKey
     @ColumnInfo(name = "event_id")
     @NonNull
