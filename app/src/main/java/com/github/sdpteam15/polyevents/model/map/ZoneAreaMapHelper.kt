@@ -15,6 +15,9 @@ import com.google.android.gms.maps.model.Polygon
 import com.google.android.gms.maps.model.PolygonOptions
 import kotlin.math.pow
 
+/**
+ * Helper object that handles the areas
+ */
 object ZoneAreaMapHelper {
     private const val INDEX_ROTATION_MARKER = 3
     private const val AREA_WIDTH_DP = 4
@@ -301,9 +304,15 @@ object ZoneAreaMapHelper {
         val posMidDown = LatLngOperator.mean(listOf(pos3, pos2))
         val posCenter = LatLngOperator.mean(listOf(pos4, pos2))
 
+        var dim_dp = 35
+        if(context != null){
+            dim_dp = dim_dp.dpToPixelsFloat(context).toInt()
+        }
+
         val anchor = IconAnchor(0.5f, 0.5f)
-        val bound = IconBound(0, 0, 100, 100)
-        val dimension = IconDimension(100, 100)
+        if(context != null){}
+        val bound = IconBound(0, 0, dim_dp, dim_dp)
+        val dimension = IconDimension(dim_dp, dim_dp)
 
         moveDiagMarker = GoogleMapHelper.map!!.addMarker(
             GoogleMapHelperFunctions.newMarker(

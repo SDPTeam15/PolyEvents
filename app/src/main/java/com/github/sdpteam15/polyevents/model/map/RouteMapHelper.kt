@@ -20,7 +20,6 @@ import com.github.sdpteam15.polyevents.model.map.LatLngOperator.scalar
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.time
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.view.activity.TimeTableActivity
 import com.github.sdpteam15.polyevents.view.fragments.MapsFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
@@ -28,9 +27,9 @@ import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
 import kotlin.math.pow
 
-
-
-
+/**
+ * Helper object that handles the routes
+ */
 object RouteMapHelper {
     const val THRESHOLD = 0.00002
     const val MAGNET_DISTANCE_THRESHOLD = 0.00005
@@ -568,6 +567,8 @@ object RouteMapHelper {
         val pos2 = LatLng(pos.latitude, pos.longitude + longDiff)
         val option = PolylineOptions().add(pos1).add(pos2).color(Color.RED)
         tempPolyline = map!!.addPolyline(option)
+        if(context != null)
+            tempPolyline!!.width = LINE_WIDTH_DP.dpToPixelsFloat(context)
         tempLatLng.clear()
         tempLatLng.add(pos1)
         tempLatLng.add(pos2)
@@ -584,9 +585,14 @@ object RouteMapHelper {
         val startPos = points[0]
         val endPos = points[1]
 
+        var dim_dp = 35
+        if(context != null){
+            dim_dp = dim_dp.dpToPixelsFloat(context).toInt()
+        }
+
         val anchor = IconAnchor(0.5f, 0.5f)
-        val bound = IconBound(0, 0, 100, 100)
-        val dimension = IconDimension(100, 100)
+        val bound = IconBound(0, 0, dim_dp, dim_dp)
+        val dimension = IconDimension(dim_dp, dim_dp)
 
         startMarker = map!!.addMarker(
             newMarker(

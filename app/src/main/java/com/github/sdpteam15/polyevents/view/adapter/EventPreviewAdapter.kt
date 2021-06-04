@@ -12,6 +12,8 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableList
 /**
  * An adapter for an event preview item in the recycler view. The list of events
  * previews are just for display, they are no listeners attached when clicked upon.
+ * @param dataSet The list of all events
+ * @param listener Handler on event click
  */
 class EventPreviewAdapter(private val dataSet: ObservableList<Event>,
                           private val listener: (Event) -> Unit) :
@@ -48,5 +50,4 @@ class EventPreviewAdapter(private val dataSet: ObservableList<Event>,
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = dataSet.size
-
 }

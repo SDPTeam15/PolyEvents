@@ -9,6 +9,8 @@ import java.time.LocalDateTime
  * @param time time of the request
  * @param userId user who made the id
  * @param status material request status
+ * @param adminMessage The admin message for this material request
+ * @param staffInChargeId The staff id that is currently processing the material request
  */
 data class MaterialRequest(
     val requestId: String?,
@@ -44,6 +46,11 @@ data class MaterialRequest(
 
         companion object {
             private val map = values()
+
+            /**
+             * Return the MaterialRequest status corresponding to the given ordinal
+             * @param ordinal The index of the MaterialRequest status we want to retrieve
+             */
             fun fromOrdinal(ordinal: Int) = map[ordinal]
         }
     }

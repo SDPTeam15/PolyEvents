@@ -66,8 +66,6 @@ class ItemRequestAdminAdapter(
      * @param view the corresponding view
      */
     inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-
-
         private val organizer = view.findViewById<TextView>(R.id.id_request_organiser)
         private val time = view.findViewById<TextView>(R.id.id_request_time)
         private val itemList = view.findViewById<TextView>(R.id.id_request_item_list)

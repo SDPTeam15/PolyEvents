@@ -9,6 +9,11 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 
+/**
+ * Create an adapter that will contain the list of all the users
+ * @param users The list of all users
+ * @param listener Listener for the click on user
+ */
 class UserListAdapter(
     private val users: ObservableList<UserEntity>,
     private val listener: (UserEntity) -> Unit

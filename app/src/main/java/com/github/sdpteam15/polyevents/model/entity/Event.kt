@@ -176,11 +176,11 @@ data class Event(
         companion object {
             private val map = values().associateBy(EventStatus::status)
             private val mapOrdinal = map.mapKeys { it.value.ordinal }
+            /**
+             * Return the EventStatus status corresponding to the given ordinal
+             * @param ordinal The index of the EventStatus we want to retrieve
+             */
             fun fromOrdinal(ordinal: Int) = mapOrdinal[ordinal]
         }
-    }
-
-    companion object {
-        const val DEFAULT_DURATION = 1F
     }
 }

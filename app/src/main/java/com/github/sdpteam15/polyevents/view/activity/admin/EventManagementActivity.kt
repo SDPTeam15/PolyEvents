@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.localDatetimeToString
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.showProgressDialog
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
@@ -146,12 +147,12 @@ class EventManagementActivity : AppCompatActivity() {
         }
 
         // Get all zones from the database or redirect if there is a problem
-        currentDatabase.zoneDatabase.getActiveZones(zoneObserver).observe(this) {
+        val obsZoneEnded = currentDatabase.zoneDatabase.getActiveZones(zoneObserver).observe(this) {
             if (!it.value) {
                 HelperFunctions.showToast(getString(R.string.failed_get_zones), this)
                 finish()
             }
-        }
+        }.then
 
         // We only allow to choose the user if the current user is an admin
         // if the current user is an activity provider which will propose a event edit request, we will simply put its user id.
@@ -162,12 +163,20 @@ class EventManagementActivity : AppCompatActivity() {
             findViewById<Spinner>(R.id.spinner_organiser).adapter = adapter2
 
             // Get all users from the database or redirect if there is a problem
-            currentDatabase.userDatabase.getListAllUsers(organiserObserver).observe(this) {
-                if (!it.value) {
-                    HelperFunctions.showToast(getString(R.string.failed_get_zones), this)
-                    finish()
-                }
-            }
+            val obsUserEnded =
+                currentDatabase.userDatabase.getListAllUsers(organiserObserver).observe(this) {
+                    if (!it.value) {
+                        HelperFunctions.showToast(getString(R.string.failed_get_zones), this)
+                        finish()
+                    }
+                }.then
+
+            // Display a loading screen while the queries with the database are not over
+            showProgressDialog(
+                this, listOf(
+                    obsUserEnded, obsZoneEnded
+                ), supportFragmentManager
+            )
 
             // Add all the zones retrieve from the database to the spinner
             organiserObserver.observeAdd(this) {
@@ -176,6 +185,13 @@ class EventManagementActivity : AppCompatActivity() {
                 mapIndexToOrganiserId[organiserName.indexOf(name)] = it.value.uid
                 adapter2.notifyDataSetChanged()
             }
+        } else {
+            // Display a loading screen while the queries with the database are not over
+            showProgressDialog(
+                this, listOf(
+                    obsZoneEnded
+                ), supportFragmentManager
+            )
         }
     }
 
@@ -235,7 +251,6 @@ class EventManagementActivity : AppCompatActivity() {
             findViewById<TextView>(R.id.id_tv_spinner_organiser).visibility = View.VISIBLE
             spinnerOrg.visibility = View.VISIBLE
         }
-
 
         if (!onCallback) {
             btnManage.text = getString(R.string.create_event_btn_text)
@@ -312,6 +327,9 @@ class EventManagementActivity : AppCompatActivity() {
             btnManage.setOnClickListener {
                 handleUpdateClick()
             }
+
+            val infoGotten = Observable<Boolean>()
+
             // Get the correct information depending on if we edit an event edit request
             if (isModificationActivityProvider) {
                 currentDatabase.eventDatabase.getEventEditFromId(curId, observableEvent)
@@ -325,9 +343,9 @@ class EventManagementActivity : AppCompatActivity() {
                             )
                             finish()
                         }
-                    }
+                    }.then.updateOnce(this, infoGotten)
             } else {
-                // Or if we edit an existing event
+                // Or if we edit an event
                 currentDatabase.eventDatabase.getEventFromId(curId, observableEvent)
                     .observe(this) {
                         if (it.value) {
@@ -339,10 +357,11 @@ class EventManagementActivity : AppCompatActivity() {
                             )
                             finish()
                         }
-                    }
+                    }.then.updateOnce(this, infoGotten)
             }
+            // Show a waiting screen until all the information from the database are retrieved
+            showProgressDialog(this, listOf(infoGotten), supportFragmentManager)
         }
-
     }
 
     /**
@@ -350,6 +369,7 @@ class EventManagementActivity : AppCompatActivity() {
      */
     private fun handleCreateClick() {
         if (verifyCondition()) {
+            val createEnded = Observable<Boolean>()
             if (isActivityProvider) {
                 currentDatabase.eventDatabase.createEventEdit(getInformation()).observe(this) {
                     redirectOrDisplayError(
@@ -357,7 +377,7 @@ class EventManagementActivity : AppCompatActivity() {
                         getString(R.string.event_edit_request_error),
                         it.value
                     )
-                }
+                }.then.updateOnce(this, createEnded)
             } else {
                 currentDatabase.eventDatabase.createEvent(getInformation()).observe(this) {
                     redirectOrDisplayError(
@@ -365,8 +385,10 @@ class EventManagementActivity : AppCompatActivity() {
                         getString(R.string.event_creation_failed),
                         it.value
                     )
-                }
+                }.then.updateOnce(this, createEnded)
             }
+            // Show a waiting screen until the creation is done for the database
+            showProgressDialog(this, listOf(createEnded), supportFragmentManager)
         }
     }
 
@@ -375,6 +397,7 @@ class EventManagementActivity : AppCompatActivity() {
      */
     private fun handleUpdateClick() {
         if (verifyCondition()) {
+            val updateEnded = Observable<Boolean>()
             if (isActivityProvider) {
                 if (isModificationActivityProvider) {
                     currentDatabase.eventDatabase.updateEventEdit(getInformation())
@@ -384,7 +407,7 @@ class EventManagementActivity : AppCompatActivity() {
                                 getString(R.string.event_edit_request_error),
                                 it.value
                             )
-                        }
+                        }.then.updateOnce(this, updateEnded)
                 } else {
                     currentDatabase.eventDatabase.createEventEdit(getInformation())
                         .observe(this) {
@@ -402,8 +425,10 @@ class EventManagementActivity : AppCompatActivity() {
                         getString(R.string.failed_to_update_event_info),
                         it.value
                     )
-                }
+                }.then.updateOnce(this, updateEnded)
             }
+            // Show a waiting screen until the update is done for the database
+            showProgressDialog(this, listOf(updateEnded), supportFragmentManager)
         }
     }
 

@@ -26,7 +26,7 @@ class ZoneManagementActivity : AppCompatActivity() {
         var zoneObservable = Observable<Zone>()
         val zone = Zone(location = "")
         var zoneId = ""
-        var zoneStateLocation : String? = null
+        var zoneStateLocation: String? = null
         var inTest = false
     }
 
@@ -55,6 +55,7 @@ class ZoneManagementActivity : AppCompatActivity() {
         val mapFragment = MapsFragment(MapsFragmentMod.EditZone)
         ZoneAreaMapHelper.zone = zone
         zoneObservable = Observable()
+
         zoneObservable.observe(this) {
             //Reactive the back button and make the map fragment invisible
             supportActionBar!!.setDisplayHomeAsUpEnabled(true)
@@ -87,8 +88,15 @@ class ZoneManagementActivity : AppCompatActivity() {
             btnManage.text = this.getString(R.string.btn_update_zone_button_text)
             tvManage.text = this.getString(R.string.tv_update_zone_text)
 
+            val infoGotten = Observable<Boolean>()
             // Get the zone information in the database
-            currentDatabase.zoneDatabase.getZoneInformation(zoneId, zoneObservable)
+            currentDatabase.zoneDatabase.getZoneInformation(zoneId, zoneObservable).updateOnce(
+                this,
+                infoGotten
+            )
+            // Add a progress dialog to wait for the transaction with the database to be over
+            HelperFunctions.showProgressDialog(this, listOf(infoGotten), supportFragmentManager)
+
             // Click on manage update the zone
             btnManage.setOnClickListener {
                 updateZoneInfo()
@@ -172,13 +180,16 @@ class ZoneManagementActivity : AppCompatActivity() {
             zone.zoneName = name
             //zoneId is null to create a new Area
             zone.zoneId = null
-            currentDatabase.zoneDatabase.createZone(zone).observe {
+            val createOver = Observable<Boolean>()
+            currentDatabase.zoneDatabase.createZone(zone).observe(this) {
                 callbackHandler(
                     it.value,
                     this.getString(R.string.zone_added_successfully),
                     this.getString(R.string.zone_add_fail)
                 )
-            }
+            }.then.updateOnce(this, createOver)
+            // Add a progress dialog to wait for the transaction with the database to be over
+            HelperFunctions.showProgressDialog(this, listOf(createOver), supportFragmentManager)
         }
     }
 
@@ -199,27 +210,31 @@ class ZoneManagementActivity : AppCompatActivity() {
             if (zone.location != zoneStateLocation)
                 currentDatabase.routeDatabase.removeEdgeConnectedToZone(zone)
 
-            currentDatabase.zoneDatabase.updateZoneInformation(zoneId, zone).observe(this) {
+
+            val updateOver = Observable<Boolean>()
+            currentDatabase.zoneDatabase.updateZoneInformation(zoneId, zone).observe {
                 callbackHandler(
                     it.value,
                     this.getString(R.string.zone_updated_successfully),
                     this.getString(R.string.zone_update_fail)
                 )
-            }
+            }.then.updateOnce(this, updateOver)
+            // Add a progress dialog to wait for the transaction with the database to be over
+            HelperFunctions.showProgressDialog(this, listOf(updateOver), supportFragmentManager)
         }
     }
 
     /**
      * This method handle the callback from the creation and update method of the database
      * @param it: The return value from the database
-     * @param succMess: the message to display in case of success
-     * @param failMess: The message to display in case of failure
+     * @param successMessage: the message to display in case of success
+     * @param failMessage: The message to display in case of failure
      */
-    private fun callbackHandler(it: Boolean?, succMess: String, failMess: String) {
+    private fun callbackHandler(it: Boolean?, successMessage: String, failMessage: String) {
         if (it!!) {
             //Show a toast indicating that the area was successfully created and redirect to the correct activity
             HelperFunctions.showToast(
-                succMess,
+                successMessage,
                 this
             )
             etDesc.setText("")
@@ -229,7 +244,7 @@ class ZoneManagementActivity : AppCompatActivity() {
             finish()
         } else {
             //show a toast indicating that there was an error and stay on this activity
-            HelperFunctions.showToast(failMess, this)
+            HelperFunctions.showToast(failMessage, this)
         }
     }
 
@@ -262,10 +277,12 @@ class ZoneManagementActivity : AppCompatActivity() {
         super.onBackPressed()
         //Goes to the database to get the zone as it was before modification
         ZoneAreaMapHelper.removeZone(zoneId)
-        val obs:Observable<Zone> = Observable()
-        obs.observe{
+        val obs: Observable<Zone> = Observable()
+        obs.observe {
             ZoneAreaMapHelper.waitingZones.add(it.value)
         }
+
+        // To refresh the local cache
         currentDatabase.zoneDatabase.getZoneInformation(zoneId, obs)
     }
 }

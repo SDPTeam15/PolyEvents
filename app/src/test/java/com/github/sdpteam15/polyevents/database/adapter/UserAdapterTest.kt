@@ -30,7 +30,6 @@ class UserAdapterTest {
             birthDate = birthDate,
             name = name,
             email = email,
-            telephone = telephone,
             profiles = listProfile
         )
     }
@@ -46,7 +45,6 @@ class UserAdapterTest {
         )
         assertEquals(document[USER_NAME.value], name)
         assertEquals(document[USER_EMAIL.value], email)
-        assertEquals(document[USER_PHONE.value], telephone)
     }
 
     @Test
@@ -59,7 +57,6 @@ class UserAdapterTest {
             USER_EMAIL.value to email,
             USER_BIRTH_DATE.value to birthDateTimeStamp,
             USER_USERNAME.value to username,
-            USER_PHONE.value to telephone,
             USER_PROFILES.value to listProfile
         )
 
@@ -74,7 +71,6 @@ class UserAdapterTest {
             USER_EMAIL.value to email,
             USER_BIRTH_DATE.value to null,
             USER_USERNAME.value to username,
-            USER_PHONE.value to telephone,
             USER_PROFILES.value to listProfile
         )
 

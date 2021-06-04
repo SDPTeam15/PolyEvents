@@ -8,6 +8,9 @@ import com.google.android.gms.maps.model.TileOverlayOptions
 import com.google.maps.android.heatmaps.HeatmapTileProvider
 import java.util.*
 
+/**
+ * Helper object that handles the heatmap
+ */
 object GoogleMapHeatmap {
     var HEATMAP_PERIOD = 15L
 

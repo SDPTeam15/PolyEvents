@@ -9,6 +9,9 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MapStyleOptions
 
+/**
+ * Object that handles the options of google map
+ */
 object GoogleMapOptions {
     var swBound = LatLng(46.519941764550545, 6.564997248351575)  // SW bounds
     var neBound = LatLng(46.5213428130699, 6.566603220999241)    // NE bounds
@@ -32,6 +35,7 @@ object GoogleMapOptions {
      * Setup the map to the desired look
      * @param context Context of the fragment
      * @param drawingMod if we draw the zone in rectangles or in polygons
+     * @param mode Mode to load the map to (EditZone, EditRoute, Visitor)
      */
     fun setUpMap(context: Context?, drawingMod: Boolean, mode:MapsFragmentMod) {
 
@@ -89,6 +93,7 @@ object GoogleMapOptions {
 
     /**
      * Changes the style of the map
+     * @param context context
      */
     fun setMapStyle(context: Context?) {
         if (context != null) {

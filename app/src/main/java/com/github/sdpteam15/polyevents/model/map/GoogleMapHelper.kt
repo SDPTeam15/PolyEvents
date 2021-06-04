@@ -11,6 +11,9 @@ import com.github.sdpteam15.polyevents.model.map.ZoneAreaMapHelper.waitingZones
 import com.github.sdpteam15.polyevents.model.map.ZoneAreaMapHelper.zonesToArea
 
 @SuppressLint("StaticFieldLeak")
+/**
+ * Helper object for google map
+ */
 object GoogleMapHelper {
     var map: MapsInterface? = null
     var uidArea = 0
