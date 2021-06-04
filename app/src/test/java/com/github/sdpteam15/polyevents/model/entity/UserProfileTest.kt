@@ -4,7 +4,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
-// TODO: to continue
 class UserProfileTest {
     lateinit var userProfile: UserProfile
 
