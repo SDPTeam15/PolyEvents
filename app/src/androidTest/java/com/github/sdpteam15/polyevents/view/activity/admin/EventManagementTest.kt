@@ -523,6 +523,7 @@ class EventManagementTest {
         onView(withId(R.id.id_manage_event_button)).perform(scrollTo())
         val obs = addAddListener()
         obs.postValue(true)
+        Thread.sleep(500)
         onView(withId(R.id.id_manage_event_button)).perform(scrollTo(), click())
 
         assertEquals(event!!.endTime, endDate)
