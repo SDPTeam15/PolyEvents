@@ -24,6 +24,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
+import org.mockito.Mockito.any
 import org.mockito.Mockito.mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.anyOrNull
@@ -45,7 +46,6 @@ class NavigationViewFragmentTest {
         Database.currentDatabase = mockedDatabase
         Mockito.`when`(mockedDatabase.currentUser).thenReturn(UserEntity("uid"))
         Mockito.`when`(mockedDatabase.currentUserObservable).thenReturn(Observable(UserEntity("uid")))
-
     }
     @After
     fun teardown(){
@@ -66,29 +66,6 @@ class NavigationViewFragmentTest {
 
         Espresso.onView(withId(R.id.ic_login)).perform(click())
         Espresso.onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
-
-        Espresso.onView(withId(R.id.ic_settings)).perform(click())
-        Espresso.onView(withId(R.id.id_fragment_settings)).check(matches(isDisplayed()))
-    }
-
-    @Test
-    fun NavigationBarDisplaysCorrectFragmentIfConnected() {
-        val mockedUserDatabase = mock(UserDatabaseInterface::class.java)
-        When(mockedDatabase.userDatabase).thenReturn(mockedUserDatabase)
-        When(mockedUserDatabase.addUserProfileAndAddToUser(anyOrNull(), anyOrNull())).thenReturn(
-            Observable(true)
-        )
-        When(mockedUserDatabase.getUserProfilesList(anyOrNull(), anyOrNull())).thenReturn(Observable(true))
-
-        //Initial state
-        Espresso.onView(withId(R.id.ic_home)).perform(click())
-        Espresso.onView(withId(R.id.id_fragment_home_visitor)).check(matches(isDisplayed()))
-
-        Espresso.onView(withId(R.id.ic_list)).perform(click())
-        Espresso.onView(withId(R.id.id_fragment_event_list)).check(matches(isDisplayed()))
-
-        Espresso.onView(withId(R.id.ic_login)).perform(click())
-        Espresso.onView(withId(R.id.id_fragment_profile)).check(matches(isDisplayed()))
 
         Espresso.onView(withId(R.id.ic_settings)).perform(click())
         Espresso.onView(withId(R.id.id_fragment_settings)).check(matches(isDisplayed()))

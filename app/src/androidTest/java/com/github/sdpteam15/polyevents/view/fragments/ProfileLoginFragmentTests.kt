@@ -221,6 +221,15 @@ class ProfileLoginFragmentTests {
     fun signOutButtonRedirectToLoginFragment() {
         UserLogin.currentUserLogin.signOut()
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
+        When(
+            mockedUserDatabase.getUserInformation(
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenAnswer {
+            Observable(true)
+        }
+
         loginFragment.currentUser = user
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
 
@@ -239,6 +248,15 @@ class ProfileLoginFragmentTests {
         UserLogin.currentUserLogin.signOut()
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
         profileFragment.currentUser = user
+
+        When(
+            mockedUserDatabase.getUserInformation(
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenAnswer {
+            Observable(true)
+        }
 
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         loginFragment.currentUser = null
@@ -314,6 +332,15 @@ class ProfileLoginFragmentTests {
     fun updateAreCorrectlyRefreshedAndDisplayed() {
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         loginFragment.currentUser = user
+
+        When(
+            mockedUserDatabase.getUserInformation(
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenAnswer {
+            Observable(true)
+        }
 
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
         profileFragment.currentUser = user
@@ -557,6 +584,15 @@ class ProfileLoginFragmentTests {
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         loginFragment.currentUser = user
 
+        When(
+            mockedUserDatabase.getUserInformation(
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenAnswer {
+            Observable(true)
+        }
+
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
         profileFragment.currentUser = user
         loginDirectly(loginFragment, R.id.ic_login)
@@ -602,9 +638,20 @@ class ProfileLoginFragmentTests {
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         loginFragment.currentUser = user
 
+        When(
+            mockedUserDatabase.getUserInformation(
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenAnswer {
+            Observable(true)
+        }
+
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
         profileFragment.currentUser = user
         loginDirectly(loginFragment, R.id.ic_login)
+
+
 
         //Mock the profile
         When(
@@ -657,6 +704,15 @@ class ProfileLoginFragmentTests {
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         loginFragment.currentUser = user
 
+        When(
+            mockedUserDatabase.getUserInformation(
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenAnswer {
+            Observable(true)
+        }
+
         val profileFragment =
             MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
         profileFragment.currentUser = user
@@ -705,6 +761,23 @@ class ProfileLoginFragmentTests {
     fun editButtonStartProfileEdition() {
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         loginFragment.currentUser = user
+
+        When(
+            mockedUserDatabase.getUserInformation(
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenAnswer {
+            Observable(true)
+        }
+        When(
+            mockedUserDatabase.getProfileById(
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenAnswer {
+            Observable(true)
+        }
 
         val profileFragment =
             MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
