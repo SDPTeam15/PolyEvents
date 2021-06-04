@@ -154,7 +154,7 @@ class ProfileLoginFragmentTests {
      */
     private fun loginDirectly(loginFragment: LoginFragment, id: Int) {
         //Mock the inDatabase method so that it returns true directly
-        val endingRequest2 = Observable<Boolean>()
+
         When(
             mockedUserDatabase.inDatabase(loginFragment.inDbObservable, uidTest)
         ).thenAnswer { _ ->
@@ -302,9 +302,10 @@ class ProfileLoginFragmentTests {
             )
         ).thenAnswer { _ ->
             profileFragment.userInfoLiveData.postValue(user)
-            endingRequest.postValue(true)
+            Observable(true)
         }
 
+        Thread.sleep(500)
         loginDirectly(loginFragment, R.id.id_btn_login_button)
 
         onView(withId(R.id.id_fragment_profile)).check(matches(isDisplayed()))
