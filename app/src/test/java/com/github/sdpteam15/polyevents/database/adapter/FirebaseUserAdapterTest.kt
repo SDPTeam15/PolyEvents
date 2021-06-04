@@ -31,6 +31,5 @@ class FirebaseUserAdapterTest {
         assertEquals(userEntity.name, displayName)
         assertEquals(userEntity.uid, uid)
         assertEquals(userEntity.email, email)
-        assertNull(userEntity.telephone)
     }
 }
