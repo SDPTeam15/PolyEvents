@@ -38,6 +38,7 @@ class MyEventEditsActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
         ObservableMap<Event.EventStatus, ObservableList<Event>>()
     private val observableStatus = Observable(currentStatus)
     private val statusNames = ArrayList<String>()
+    private val infoGotten = Observable<Boolean>()
 
     /**
      * Select next status page
@@ -141,15 +142,15 @@ class MyEventEditsActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
                 origEvent[it.value.eventId!!] = it.value
             }
         }
+        val observableDBAnswer = Observable<Boolean>()
         //Gets the item request of the user and then gets the item list
-        currentDatabase.eventDatabase.getEvents(null, null, eventList).observe(this) {
+        currentDatabase.eventDatabase.getEvents(eventList).observe(this) { it ->
+
             if (it.value) {
-                currentDatabase.eventDatabase.getEventEdits(
-                    {
-                        it.whereEqualTo(DatabaseConstant.EventConstant.EVENT_NAME.value, userId)
-                    },
-                    eventRequests
-                ).observeOnce(this) {
+                currentDatabase.eventDatabase.getEventEdits(eventRequests)
+                {
+                    it.whereEqualTo(DatabaseConstant.EventConstant.EVENT_ORGANIZER.value, userId)
+                }.observeOnce(this) {
                     if (!it.value) {
                         HelperFunctions.showToast(
                             getString(R.string.fail_to_get_list_events_edits_eo),
@@ -157,12 +158,20 @@ class MyEventEditsActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
                         )
                         finish()
                     }
-                }
+                }.then.updateOnce(this, observableDBAnswer)
             } else {
+                observableDBAnswer.postValue(false)
                 HelperFunctions.showToast(getString(R.string.fail_to_get_list_event_eo), this)
                 finish()
             }
         }
+
+        HelperFunctions.showProgressDialog(
+            this, listOf(
+                observableDBAnswer,
+                observableStatus
+            ), supportFragmentManager
+        )
     }
 
     /**

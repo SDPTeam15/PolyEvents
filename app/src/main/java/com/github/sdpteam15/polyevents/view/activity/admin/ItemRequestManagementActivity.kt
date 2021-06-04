@@ -71,27 +71,39 @@ class ItemRequestManagementActivity : AppCompatActivity() {
             )
 
         //Wait until we have both requests accepted from the database to show the material requests
-        currentDatabase.materialRequestDatabase.getMaterialRequestList(
+        val matListTransactionOver = currentDatabase.materialRequestDatabase.getMaterialRequestList(
             requests.sortAndLimitFrom(this) { it.status })
             .observeOnce(this) { it ->
                 if (!it.value) {
                     HelperFunctions.showToast("Failed to get the list of material requests", this)
                 } else {
-                    currentDatabase.itemDatabase.getItemsList(items)
+                    // List that will contain all the observable that need a value for the loading screen to dismiss
+                    val allLoading = ArrayList<Observable<*>>()
+
+                    val itemListTransactionOver = currentDatabase.itemDatabase.getItemsList(items)
                         .observeOnce(this) { it2 ->
                             if (!it2.value) {
                                 HelperFunctions.showToast("Failed to get the list of items", this)
                             }
-                        }
+                        }.then
+                    allLoading.add(itemListTransactionOver)
+
                     val sentEventIds = mutableListOf<String>()
+                    // For all the requests, we get the event information as well as zone information so that we can display them
                     for (request in requests) {
                         if (request.eventId !in sentEventIds) {
                             sentEventIds.add(request.eventId)
                             val event = Observable<Event>()
                             val zone = Observable<Zone>()
+
+                            // Create observables to be added in the list of all observable
+                            val eventTransactionOver = Observable<Boolean>()
+                            val zoneTransactionOver = Observable<Boolean>()
+
                             currentDatabase.eventDatabase.getEventFromId(request.eventId, event)
                                 .observeOnce(this) {
                                     if (it.value) {
+                                        // Get zone information
                                         currentDatabase.zoneDatabase.getZoneInformation(
                                             event.value!!.zoneId!!,
                                             zone
@@ -100,47 +112,68 @@ class ItemRequestManagementActivity : AppCompatActivity() {
                                                 zoneNameFromEventId[event.value!!.eventId!!] =
                                                     zone.value!!.zoneName!!
                                             }
-                                        }
+                                        }.then.updateOnce(this, zoneTransactionOver)
+                                    } else {
+                                        zoneTransactionOver.postValue(true, this)
                                     }
-                                }
-                        }
+                                }.then.updateOnce(this, eventTransactionOver)
 
+                            allLoading.addAll(listOf(eventTransactionOver, zoneTransactionOver))
+                        }
                     }
+                    // Display a loading screen while the queries with the database are not over
+                    HelperFunctions.showProgressDialog(this, allLoading, supportFragmentManager)
                 }
-            }
+            }.then
+
+        // Display a loading screen while the queries with the database are not over
+        HelperFunctions.showProgressDialog(
+            this,
+            listOf(matListTransactionOver),
+            supportFragmentManager
+        )
     }
 
     private val acceptMaterialRequest = { request: MaterialRequest ->
 
         if (canAccept(request)) {
             request.status = MaterialRequest.Status.ACCEPTED
-            currentDatabase.materialRequestDatabase.updateMaterialRequest(
-                request.requestId!!,
-                request
-            ).observeOnce(this) {
-                if (!it.value) {
-                    HelperFunctions.showToast("Failed to accept the request", this)
-                } else {
-                    requests.set(
-                        requests.indexOfFirst { it2 -> it2.requestId == request.requestId },
-                        request,
-                        this
-                    )
-                }
-            }
+            val obs = ArrayList<Observable<Boolean>>()
+            obs.add(
+                currentDatabase.materialRequestDatabase.updateMaterialRequest(
+                    request.requestId!!,
+                    request
+                ).observeOnce(this) {
+                    if (!it.value) {
+                        HelperFunctions.showToast("Failed to accept the request", this)
+                    } else {
+                        requests.set(
+                            requests.indexOfFirst { it2 -> it2.requestId == request.requestId },
+                            request,
+                            this
+                        )
+                    }
+                }.then
+            )
+
             for (item in request.items) {
                 val oldItem = items.first { it.first.itemId == item.key }
-                currentDatabase.itemDatabase.updateItem(
-                    oldItem.first,
-                    oldItem.second,
-                    oldItem.third - item.value
+                obs.add(
+                    currentDatabase.itemDatabase.updateItem(
+                        oldItem.first,
+                        oldItem.second,
+                        oldItem.third - item.value
+                    )
                 )
             }
+            // Display a loading screen while the queries with the database are not over
+            HelperFunctions.showProgressDialog(
+                this, obs, supportFragmentManager
+            )
         } else {
             HelperFunctions.showToast("Can not accept this request", this)
         }
     }
-
 
     /**
      * Checks if the material request can be accepted
@@ -180,7 +213,6 @@ class ItemRequestManagementActivity : AppCompatActivity() {
         slideOut.slideEdge = Gravity.END
         popupWindow.exitTransition = slideOut
 
-
         // Get the widgets reference from custom view
         val confirmButton = view.findViewById<Button>(R.id.id_btn_confirm_refuse_request)
         val message = view.findViewById<TextView>(R.id.id_txt_refusal_explanation)
@@ -193,6 +225,9 @@ class ItemRequestManagementActivity : AppCompatActivity() {
         confirmButton.setOnClickListener {
             request.status = MaterialRequest.Status.REFUSED
             request.adminMessage = message.text.toString()
+
+            val updateEnded = Observable<Boolean>()
+
             currentDatabase.materialRequestDatabase.updateMaterialRequest(
                 request.requestId!!,
                 request
@@ -206,7 +241,15 @@ class ItemRequestManagementActivity : AppCompatActivity() {
                         this
                     )
                 }
-            }
+            }.then.updateOnce(this, updateEnded)
+
+            // Display a loading screen while the queries with the database are not over
+            HelperFunctions.showProgressDialog(
+                this, listOf(
+                    updateEnded
+                ), supportFragmentManager
+            )
+
             // Dismiss the popup window
             popupWindow.dismiss()
         }

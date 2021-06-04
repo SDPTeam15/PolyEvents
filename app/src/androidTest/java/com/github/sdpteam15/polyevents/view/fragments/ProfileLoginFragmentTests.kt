@@ -84,7 +84,8 @@ class ProfileLoginFragmentTests {
         user2 = UserEntity(uid = uidTest2, email = emailTest2, name = displayNameTest2)
         profile = UserProfile()
 
-        testRule = ActivityScenarioRule<MainActivity>(MainActivity::class.java)
+
+        testRule = ActivityScenarioRule(MainActivity::class.java)
         endingRequest = Observable()
         mockedDatabaseUser = UserEntity(uid = uidTest, email = emailTest, name = displayNameTest)
 
@@ -102,18 +103,18 @@ class ProfileLoginFragmentTests {
             MainActivity.fragments[R.id.id_fragment_home_visitor] as VisitorHomeFragment
         When(
             mockedEventDatabase.getEvents(
-                null,
+                homeFragment.events,
                 NUMBER_UPCOMING_EVENTS.toLong(),
-                homeFragment.events
+                null
             )
         ).thenAnswer {
             Observable(true)
         }
         When(
             mockedEventDatabase.getEvents(
-                null,
+                homeFragment.events,
                 NUMBER_UPCOMING_EVENTS.toLong(),
-                homeFragment.events
+                null
             )
         ).thenAnswer {
             Observable(true)
@@ -157,12 +158,11 @@ class ProfileLoginFragmentTests {
             mockedUserDatabase.inDatabase(loginFragment.inDbObservable, uidTest)
         ).thenAnswer { _ ->
             loginFragment.inDbObservable.postValue(true)
-            endingRequest2
+            Observable(true)
         }
+        Thread.sleep(300)
         //click on the given button to go further in the appliction
         onView(withId(id)).perform(click())
-        //Notify that the in Database
-        endingRequest2.postValue(true)
     }
 
     @Test
@@ -220,10 +220,20 @@ class ProfileLoginFragmentTests {
     fun signOutButtonRedirectToLoginFragment() {
         UserLogin.currentUserLogin.signOut()
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
+        When(
+            mockedUserDatabase.getUserInformation(
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenAnswer {
+            Observable(true)
+        }
+
         loginFragment.currentUser = user
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
 
         profileFragment.currentUser = user
+        Thread.sleep(500)
         onView(withId(R.id.ic_login)).perform(click())
         onView(withId(R.id.id_fragment_profile)).check(matches(isDisplayed()))
 
@@ -239,9 +249,19 @@ class ProfileLoginFragmentTests {
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
         profileFragment.currentUser = user
 
+        When(
+            mockedUserDatabase.getUserInformation(
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenAnswer {
+            Observable(true)
+        }
+
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         loginFragment.currentUser = null
 
+        Thread.sleep(500)
 
         onView(withId(R.id.ic_login)).perform(click())
         onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
@@ -314,8 +334,18 @@ class ProfileLoginFragmentTests {
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         loginFragment.currentUser = user
 
+        When(
+            mockedUserDatabase.getUserInformation(
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenAnswer {
+            Observable(true)
+        }
+
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
         profileFragment.currentUser = user
+        Thread.sleep(200)
         loginDirectly(loginFragment, R.id.ic_login)
 
         //Mock the update UserInformation method
@@ -511,11 +541,11 @@ class ProfileLoginFragmentTests {
             profileFragment.userInfoLiveData.postValue(user)
             Observable(true)
         }
-
+        Thread.sleep(200)
         loginDirectly(loginFragment, R.id.id_btn_login_button)
 
         // Wait enough time
-        Thread.sleep(3000)
+        Thread.sleep(1500)
         assert(!accountCreated)
     }
 
@@ -546,7 +576,7 @@ class ProfileLoginFragmentTests {
         onView(withId(R.id.id_btn_login_button)).perform(click())
         //Notify that the getUserAInformation request was successfully performed
         endingRequest.postValue(false)
-        Thread.sleep(2000)
+        Thread.sleep(1500)
         onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
 
     }
@@ -556,8 +586,18 @@ class ProfileLoginFragmentTests {
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         loginFragment.currentUser = user
 
+        When(
+            mockedUserDatabase.getUserInformation(
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenAnswer {
+            Observable(true)
+        }
+
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
         profileFragment.currentUser = user
+        Thread.sleep(200)
         loginDirectly(loginFragment, R.id.ic_login)
 
         //Mock the profile
@@ -601,9 +641,20 @@ class ProfileLoginFragmentTests {
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         loginFragment.currentUser = user
 
+        When(
+            mockedUserDatabase.getUserInformation(
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenAnswer {
+            Observable(true)
+        }
+
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
         profileFragment.currentUser = user
+        Thread.sleep(1000)
         loginDirectly(loginFragment, R.id.ic_login)
+
 
         //Mock the profile
         When(
@@ -656,9 +707,19 @@ class ProfileLoginFragmentTests {
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         loginFragment.currentUser = user
 
+        When(
+            mockedUserDatabase.getUserInformation(
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenAnswer {
+            Observable(true)
+        }
+
         val profileFragment =
             MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
         profileFragment.currentUser = user
+        Thread.sleep(200)
         loginDirectly(loginFragment, R.id.ic_login)
 
         //Mock the profile
@@ -705,9 +766,27 @@ class ProfileLoginFragmentTests {
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         loginFragment.currentUser = user
 
+        When(
+            mockedUserDatabase.getUserInformation(
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenAnswer {
+            Observable(true)
+        }
+        When(
+            mockedUserDatabase.getProfileById(
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenAnswer {
+            Observable(true)
+        }
+
         val profileFragment =
             MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
         profileFragment.currentUser = user
+        Thread.sleep(200)
         loginDirectly(loginFragment, R.id.ic_login)
 
         //Mock the profile

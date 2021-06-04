@@ -58,12 +58,12 @@ object DatabaseHelper {
         val events = ObservableList<Event>()
         events.observeAdd { deleteEvent(it.value) }
         currentDatabase.routeDatabase.removeEdgeConnectedToZone(zone)
-        currentDatabase.eventDatabase.getEvents({
+        currentDatabase.eventDatabase.getEvents(events,matcher={
             it.whereEqualTo(
                 DatabaseConstant.EventConstant.EVENT_ZONE_ID.value,
                 zone.zoneId!!
             )
-        }, null, events)
+        })
         currentDatabase.zoneDatabase.updateZoneInformation(zone.zoneId!!,zone.copy(status = Zone.Status.DELETED))
     }
 
@@ -76,12 +76,12 @@ object DatabaseHelper {
         eventEdit.observeAdd {
             currentDatabase.eventDatabase.updateEventEdit(it.value.copy(status = Event.EventStatus.CANCELED))
         }
-        return currentDatabase.eventDatabase.getEventEdits({
+        return currentDatabase.eventDatabase.getEventEdits(eventEdit) {
             it.whereEqualTo(
                 DatabaseConstant.EventConstant.EVENT_DOCUMENT_ID.value,
                 e.eventId!!
             )
-        }, eventEdit)
+        }
     }
 
     /**

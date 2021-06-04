@@ -10,10 +10,12 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.entity.Item
+import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.adapter.ItemAdapter
 
@@ -30,7 +32,11 @@ class ItemsAdminActivity : AppCompatActivity() {
      */
     private lateinit var recyclerView: RecyclerView
 
+    /**
+     * Get all the items from the database
+     */
     private fun getItemsFromDB() {
+        val infoGotten = Observable<Boolean>()
         currentDatabase.itemDatabase.getItemsList(
             items,
             //we consider objects with 0
@@ -38,7 +44,21 @@ class ItemsAdminActivity : AppCompatActivity() {
             .observe(this) {
                 if (!it.value)
                     showToast(getString(R.string.failed_to_get_item), this)
-            }
+            }.then.updateOnce(this, infoGotten)
+        showDialog(infoGotten)
+    }
+
+    /**
+     * Display a progress dialog until the database transaction is over
+     * @param obs The observable returned by the database
+     */
+    private fun showDialog(obs: Observable<*>) {
+        // Add a progress dialog to wait for the transaction with the database to be over
+        HelperFunctions.showProgressDialog(
+            this,
+            listOf(obs),
+            supportFragmentManager
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,12 +73,16 @@ class ItemsAdminActivity : AppCompatActivity() {
         items.observeRemove(this) {
             if (it.sender != currentDatabase) {
                 if (it.value.first.itemId != null) {
+                    val updateEnded = Observable<Boolean>()
                     currentDatabase.itemDatabase.updateItem(it.value.first, 0, 0)
+                        .updateOnce(this, updateEnded)
+                    showDialog(updateEnded)
                 }
             }
         }
         items.observeAdd(this) {
             if (it.sender != currentDatabase) {
+                val creationEnd = Observable<String>()
                 currentDatabase.itemDatabase.createItem(it.value.first, it.value.second)
                     .observeOnce { it2 ->
                         if (it2.value != "") {
@@ -66,13 +90,16 @@ class ItemsAdminActivity : AppCompatActivity() {
                         } else {
                             showToast(getString(R.string.fail_to_add_items), this)
                         }
-                    }
+                    }.then.updateOnce(this, creationEnd)
+                showDialog(creationEnd)
             }
         }
 
         itemTypes.observeAdd(this) {
             if (it.sender != currentDatabase) {
-                currentDatabase.itemDatabase.createItemType(it.value)
+                val creationEnd = Observable<Boolean>()
+                currentDatabase.itemDatabase.createItemType(it.value).updateOnce(this, creationEnd)
+                showDialog(creationEnd)
             }
         }
 
@@ -182,6 +209,7 @@ class ItemsAdminActivity : AppCompatActivity() {
                                 ), this
                             )
                         } else {
+                            val updateEnd = Observable<Boolean>()
                             //Modify item
                             currentDatabase.itemDatabase.updateItem(
                                 Item(
@@ -194,7 +222,8 @@ class ItemsAdminActivity : AppCompatActivity() {
                                 if (it1.value) {
                                     getItemsFromDB()
                                 }
-                            }
+                            }.then.updateOnce(this, updateEnd)
+                            showDialog(updateEnd)
                         }
                         // Dismiss the popup window
                         popupWindow.dismiss()

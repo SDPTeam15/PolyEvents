@@ -59,9 +59,9 @@ interface EventDatabaseInterface {
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getEvents(
-        matcher: Matcher? = null,
-        limit: Long? = null,
-        eventList: ObservableList<Event>
+        eventList: ObservableList<Event>,
+        limit: Long?=null,
+        matcher: Matcher?=null
     ): Observable<Boolean>
 
 
@@ -111,8 +111,8 @@ interface EventDatabaseInterface {
      * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun getEventEdits(
-        matcher: Matcher? = null,
-        eventList: ObservableList<Event>
+        eventList: ObservableList<Event>,
+        matcher: Matcher? = null
     ): Observable<Boolean>
 
 

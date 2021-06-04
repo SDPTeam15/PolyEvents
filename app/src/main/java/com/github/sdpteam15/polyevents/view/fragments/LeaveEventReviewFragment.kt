@@ -120,7 +120,7 @@ class LeaveEventReviewFragment(val eventId: String?, val reviewHasChanged: Revie
      * @param rating The rating we want to remove
      */
     private fun onClickDelete(rating: Rating) {
-        currentDatabase.eventDatabase!!.removeRating(rating).observeOnce(this) {
+        currentDatabase.eventDatabase.removeRating(rating).observeOnce(this) {
             if (!it.value) {
                 HelperFunctions.showToast(
                     getString(R.string.delete_review_failed),

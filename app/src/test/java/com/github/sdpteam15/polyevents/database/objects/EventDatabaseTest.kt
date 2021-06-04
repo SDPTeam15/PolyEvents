@@ -109,7 +109,7 @@ class EventDatabaseTest {
         val events = ObservableList<Event>()
 
         HelperTestFunction.nextGetListEntity { true }
-        mockedEventdatabase.getEvents(null, null, events)
+        mockedEventdatabase.getEvents(events, null, null)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         val getList = HelperTestFunction.lastGetListEntity()!!
@@ -178,7 +178,7 @@ class EventDatabaseTest {
         val events = ObservableList<Event>()
 
         HelperTestFunction.nextGetListEntity { true }
-        mockedEventdatabase.getEventEdits(null, events)
+        mockedEventdatabase.getEventEdits(events, null)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         val getList = HelperTestFunction.lastGetListEntity()!!
@@ -260,7 +260,7 @@ class EventDatabaseTest {
         }
 
         HelperTestFunction.nextGetListEntity { true }
-        mockedEventdatabase.getEvents(matcher, null, events)
+        mockedEventdatabase.getEvents(events, null, matcher)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         val getList = HelperTestFunction.lastGetListEntity()!!
@@ -279,7 +279,7 @@ class EventDatabaseTest {
         val matcher = Matcher { q: Query -> q.limit(1000L) }
 
         HelperTestFunction.nextGetListEntity { true }
-        mockedEventdatabase.getEvents(matcher, 20, events)
+        mockedEventdatabase.getEvents(events, 20, matcher)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         val getList = HelperTestFunction.lastGetListEntity()!!
@@ -292,7 +292,7 @@ class EventDatabaseTest {
         }
 
         HelperTestFunction.nextGetListEntity { true }
-        mockedEventdatabase.getEvents(matcher, 20, events)
+        mockedEventdatabase.getEvents(events, 20, matcher)
             .observeOnce { assert(it.value) }.then.postValue(false)
 
         assertNotNull(getList.matcher)

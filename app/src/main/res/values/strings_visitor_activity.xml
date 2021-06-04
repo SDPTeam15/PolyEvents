@@ -65,4 +65,7 @@
     <string name="EditProfileActivity_Delete">Delete</string>
     <string name="EditProfileActivity_DatabaseError">Impossible to update your profile information, please try again.</string>
     <string name="EditProfileActivity_NameShouldNotBeEmpty">The name should not be empty</string>
+
+
+    <string name="failed_to_load_events">Failed to load events</string>
 </resources>

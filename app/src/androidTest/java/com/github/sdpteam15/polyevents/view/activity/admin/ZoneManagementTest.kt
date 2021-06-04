@@ -119,6 +119,7 @@ class ZoneManagementTest {
     }
 
     @Test
+    @Suppress("UNCHECKED_CAST")
     fun updateInfoRedirectToCorrectActivityIfCorrect() {
 
         When(mockedDatabase.routeDatabase).thenAnswer {
@@ -136,17 +137,15 @@ class ZoneManagementTest {
         val zoneInfo = Zone(editingZone, zoneName, zoneLoc, zoneDesc)
 
         val obs = Observable<Boolean>()
-        val obs2 = Observable<Boolean>()
         When(
             mockedZoneDatabase.getZoneInformation(
-                ZoneManagementActivity.zoneId,
-                ZoneManagementActivity.zoneObservable
+                anyOrNull(),
+                anyOrNull()
             )
         ).thenAnswer {
-            ZoneManagementActivity.zoneObservable.postValue(zoneInfo)
-            obs2
+           (it.arguments[1] as Observable<Zone>).postValue(zoneInfo)
+            Observable(true)
         }
-
 
         val intent = Intent(
             ApplicationProvider.getApplicationContext(),
@@ -159,7 +158,7 @@ class ZoneManagementTest {
             )
         )
 
-        obs2.postValue(true)
+
         When(
             mockedZoneDatabase.updateZoneInformation(
                 anyOrNull(),
@@ -170,9 +169,12 @@ class ZoneManagementTest {
             .perform(replaceText(zoneName))
         onView(withId(R.id.id_zone_management_description_edittext))
             .perform(replaceText("$zoneDesc 2"))
+        onView(withId(R.id.id_zone_management_coordinates_edittext))
+            .perform(replaceText("Set"))
         onView(withId(R.id.id_btn_manage)).perform(click())
         obs.postValue(true)
 
+        Thread.sleep(500)
         onView(withId(R.id.zone_management_list_activity))
             .check(matches(isDisplayed()))
         scenario2.close()
@@ -187,22 +189,20 @@ class ZoneManagementTest {
         val zoneInfo = Zone(zoneId, zoneName, zoneLoc, zoneDesc)
 
         val obs = Observable<Boolean>()
-        val obs2 = Observable<Boolean>()
         When(
             mockedZoneDatabase.getZoneInformation(
-                ZoneManagementActivity.zoneId,
-                ZoneManagementActivity.zoneObservable
+                anyOrNull(),
+                anyOrNull()
             )
         ).thenAnswer {
             ZoneManagementActivity.zoneObservable.postValue(zoneInfo)
-            obs2
+            Observable(true)
         }
 
         val intent =
             Intent(ApplicationProvider.getApplicationContext(), ZoneManagementActivity::class.java)
         intent.putExtra(ZoneManagementListActivity.EXTRA_ID, zoneId)
         scenario2 = ActivityScenario.launch(intent)
-
 
         When(
             mockedZoneDatabase.updateZoneInformation(
@@ -213,7 +213,6 @@ class ZoneManagementTest {
             obs
         }
 
-        obs2.postValue(true)
 
         onView(withId(R.id.id_zone_management_name_edittext))
             .perform(replaceText(zoneName))
@@ -248,15 +247,14 @@ class ZoneManagementTest {
         val zoneInfo = Zone(zoneId, zoneName, zoneLoc, zoneDesc)
 
         val obs = Observable<Boolean>()
-        val obs2 = Observable<Boolean>()
         When(
             mockedZoneDatabase.getZoneInformation(
-                ZoneManagementActivity.zoneId,
-                ZoneManagementActivity.zoneObservable
+                anyOrNull(),
+                anyOrNull()
             )
         ).thenAnswer {
             ZoneManagementActivity.zoneObservable.postValue(zoneInfo)
-            obs2
+            Observable(true)
         }
 
         val intent =
@@ -274,7 +272,6 @@ class ZoneManagementTest {
             obs
         }
 
-        obs2.postValue(true)
 
         onView(withId(R.id.id_zone_management_name_edittext))
             .perform(replaceText(zoneName))

@@ -93,12 +93,10 @@ object DatabaseConstant {
         USER_UID("uid"),
         USER_USERNAME("username"),
         USER_NAME("name"),
-        USER_DISPLAY_NAME("displayName"),
         USER_EMAIL("email"),
         USER_AGE("age"),
         USER_TYPE("userType"),
         USER_BIRTH_DATE("birthDate"),
-        USER_PHONE("telephone"),
         USER_PROFILES("profiles");
 
         override fun toString(): String = value

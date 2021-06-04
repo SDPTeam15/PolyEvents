@@ -6,8 +6,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.showProgressDialog
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
+import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.adapter.UserListAdapter
 
@@ -43,13 +45,16 @@ class UserManagementListActivity : AppCompatActivity() {
      * Set observers and get users from database
      */
     private fun getListUsers() {
+        val infoGotten = Observable<Boolean>()
         currentDatabase.userDatabase.getListAllUsers(users).observe {
             if (it.value) {
                 recyclerView.adapter!!.notifyDataSetChanged()
             } else {
                 HelperFunctions.showToast(getString(R.string.failed_to_get_list_users), this)
             }
-        }
+        }.then.updateOnce(this, infoGotten)
+        // Add a progress dialog to wait for the transaction with the database to be over
+        showProgressDialog(this, listOf(infoGotten), supportFragmentManager)
 
         users.observe(this) {
             recyclerView.adapter!!.notifyDataSetChanged()

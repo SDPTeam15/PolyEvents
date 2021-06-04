@@ -36,6 +36,10 @@ class LoginFragment : Fragment() {
         const val TAG = "LoginFragment"
     }
 
+    private var obsInDatabaseEnd = Observable<Boolean>()
+    private var obsFirstConnectionEnd = Observable<Boolean>()
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //If the user is already logged in, we redirect him directly to the Profile fragment
@@ -86,9 +90,22 @@ class LoginFragment : Fragment() {
      * This method will call the inDatabase method to check whether the users has already been registered to the database or not
      */
     private fun addIfNotInDB() {
+        obsInDatabaseEnd = Observable()
+        obsFirstConnectionEnd = Observable()
+
+        //Display a loading screen while the queries with the database are not over
+        HelperFunctions.showProgressDialog(
+            requireActivity(),
+            listOf(obsInDatabaseEnd, obsFirstConnectionEnd),
+            requireActivity().supportFragmentManager
+        )
+
         currentDatabase.userDatabase.inDatabase(inDbObservable, currentUser!!.uid)
             .observe(this) {
                 if (it.value) {
+                    // Post the value true otherwise we will fall into an infinite waiting loop
+                    obsFirstConnectionEnd.postValue(true, this)
+
                     //If already in database, redirect to the profile fragment
                     HelperFunctions.changeFragment(
                         activity,
@@ -98,7 +115,7 @@ class LoginFragment : Fragment() {
                     //If not in DB, i.e. first connection, register it
                     createAccountAndRedirect()
                 }
-            }
+            }.then.updateOnce(requireActivity(), obsInDatabaseEnd)
     }
 
 
@@ -111,8 +128,7 @@ class LoginFragment : Fragment() {
             .userDatabase
             .firstConnexion(
                 currentDatabase.currentUser!!
-            )
-            .observe(this) {
+            ).observe(this) {
                 if (it.value) {
                     //If correctly registered, redirect it
                     HelperFunctions.changeFragment(
@@ -123,7 +139,7 @@ class LoginFragment : Fragment() {
                     //Display error message
                     HelperFunctions.showToast(getString(R.string.login_failed_text), activity)
                 }
-            }
+            }.then.updateOnce(requireActivity(), obsFirstConnectionEnd)
     }
 
     override fun onCreateView(

@@ -11,7 +11,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
-import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.showProgressDialog
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.helper.NotificationsHelper
 import com.github.sdpteam15.polyevents.helper.NotificationsScheduler
@@ -29,7 +29,6 @@ import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.adapter.CommentItemAdapter
 import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
 import com.github.sdpteam15.polyevents.view.fragments.LeaveEventReviewFragment
-import com.github.sdpteam15.polyevents.view.fragments.ProgressDialogFragment
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModel
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModelFactory
 import kotlinx.coroutines.Dispatchers
@@ -48,7 +47,6 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
     private lateinit var recyclerView: RecyclerView
     private lateinit var leaveReviewDialogFragment: LeaveEventReviewFragment
     private lateinit var leaveReviewButton: Button
-    private lateinit var progressDialogFragment: ProgressDialogFragment
 
     // Lazily initialized view models, instantiated only when accessed for the first time
     private val localEventViewModel: EventLocalViewModel by viewModels {
@@ -66,18 +64,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowHomeEnabled(true)
 
-        progressDialogFragment = ProgressDialogFragment(
-            HelperFunctions.waitUpdate(
-                this,
-                listOf(
-                    eventFetchDoneObservable,
-                    eventRatingFetchDoneObservable,
-                    eventCommentsFetchDoneObservable
-                )
-            )
-        )
-        progressDialogFragment.isCancelable = false
-        progressDialogFragment.show(supportFragmentManager, ProgressDialogFragment.TAG)
+
 
         eventId = intent.getStringExtra(EXTRA_EVENT_ID)!!
 
@@ -119,12 +106,23 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
     private fun refreshEvent() {
         obsComments.clear()
         obsNonEmptyComments.clear()
+        eventFetchDoneObservable= Observable()
+        eventRatingFetchDoneObservable= Observable()
+        eventCommentsFetchDoneObservable= Observable()
+        // Display a loading screen while the queries with the database are not over
+        showProgressDialog(
+            this, listOf(
+                eventFetchDoneObservable,
+                eventRatingFetchDoneObservable,
+                eventCommentsFetchDoneObservable
+            ), supportFragmentManager
+        )
+
         getEventAndObserve()
         getEventRating()
         getCommentsAndObserve()
         getUserAndObserve()
     }
-
 
     private fun getUserAndObserve() {
         obsOrganiser.observe(this) {
@@ -186,7 +184,6 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
             updateNumberComments()
         }
     }
-
 
     /**
      * Get the comments of an event

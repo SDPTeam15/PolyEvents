@@ -6,14 +6,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Spinner
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.NUMBER_UPCOMING_EVENTS
+import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.UserRole
+import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication.Companion.inTest
 import com.github.sdpteam15.polyevents.view.activity.EventActivity
@@ -35,13 +38,30 @@ class VisitorHomeFragment : Fragment() {
         setHasOptionsMenu(true)
     }
 
+    override fun onResume() {
+        super.onResume()
+        // Check if the user is connected and with a rank which is not participant.
+        // If so, display a spinner to change its current role
+        // Otherwise, hide the spinner
+        val bool =
+            UserLogin.currentUserLogin.isConnected() && currentDatabase.currentUser!!.userProfiles.fold(
+                false, { a, c ->
+                    if (a) {
+                        a
+                    } else {
+                        c.userRole.ordinal < UserRole.PARTICIPANT.ordinal
+                    }
+                })
+        requireActivity().findViewById<Spinner>(R.id.spinner_visitor).visibility =
+            if (bool) View.VISIBLE else View.INVISIBLE
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
         val fragmentView = inflater.inflate(R.layout.fragment_home_visitor, container, false)
-
         recyclerView = fragmentView.findViewById(R.id.id_recycler_upcomming_events)
 
         val openEvent = { event: Event ->
@@ -54,14 +74,25 @@ class VisitorHomeFragment : Fragment() {
         recyclerView.adapter = EventItemAdapter(events, openEvent)
         recyclerView.setHasFixedSize(false)
 
-
-
-        currentDatabase.eventDatabase.getEvents(null, NUMBER_UPCOMING_EVENTS.toLong(), events)
+        val observableDBAnswer = Observable<Boolean>()
+        // Get all events from database
+        currentDatabase.eventDatabase.getEvents(events, NUMBER_UPCOMING_EVENTS.toLong())
             .observe(this) {
                 if (!it.value) {
-                    HelperFunctions.showToast("Failed to load events", fragmentView.context)
+                    HelperFunctions.showToast(
+                        getString(R.string.failed_to_load_events),
+                        fragmentView.context
+                    )
                 }
-            }
+            }.then.updateOnce(this, observableDBAnswer)
+
+
+        HelperFunctions.showProgressDialog(
+            requireActivity(),
+            listOf(observableDBAnswer),
+            requireActivity().supportFragmentManager
+        )
+
         events.observe(this) {
             recyclerView.adapter!!.notifyDataSetChanged()
         }

@@ -19,6 +19,7 @@ import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.entity.Event
+import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.activity.EventActivity
@@ -184,22 +185,37 @@ class EventListFragment : Fragment() {
         return eventsLocalCopy
     }
 
+    /**
+     * Get event list from database and display it on the fragment
+     * @param context The current application context
+     */
     private fun getEventsListAndDisplay(context: Context?) {
-        currentDatabase.eventDatabase.getEvents(matcher = { collection ->
+        val observableDBAnswer = Observable<Boolean>()
+
+        currentDatabase.eventDatabase.getEvents(eventsDB, matcher = { collection ->
             // Get only events that are not finished yet...
             collection.whereGreaterThanOrEqualTo(
                 DatabaseConstant.EventConstant.EVENT_END_TIME.value,
                 HelperFunctions.localDateTimeToDate(LocalDateTime.now())!!
             )
-        }, null, eventsDB).observe(this) {
+        }).observe(this) {
             if (!it.value) {
                 showToast(getString(R.string.fail_to_get_information), context)
             } else {
                 fetchedDataFromRemote = true
             }
-        }
+        }.then.updateOnce(this, observableDBAnswer)
+
+        HelperFunctions.showProgressDialog(
+            requireActivity(), listOf(
+                observableDBAnswer
+            ), requireActivity().supportFragmentManager
+        )
     }
 
+    /**
+     * Update the event list
+     */
     private fun updateEventsList() {
         events.observe(this) {
             recyclerView.adapter!!.notifyDataSetChanged()
@@ -210,13 +226,4 @@ class EventListFragment : Fragment() {
             }
         }
     }
-
-    /**
-     * Update the content of the upcoming events
-     */
-    /*
-    fun updateContent() {
-        // Remove all the content first
-        HelperFunctions.refreshFragment(fragmentManager, this)
-    }*/
 }
