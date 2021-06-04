@@ -77,9 +77,8 @@ class EventEditManagementActivity : AppCompatActivity() {
 
     private fun getEventEdit() {
         //Wait until we have both requests accepted from the database to show the event edits
-        //TODO sort event by status ordinal (ascending)
         Database.currentDatabase.eventDatabase.getEventEdits(
-            eventEdits
+            eventEdits.sortAndLimitFrom(this) { it.status }
         ).observeOnce(this) {
             if (!it.value) {
                 HelperFunctions.showToast(getString(R.string.fail_to_get_list_events_edits), this)
