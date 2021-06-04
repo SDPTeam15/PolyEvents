@@ -9,6 +9,7 @@ import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
@@ -56,6 +57,7 @@ class ItemRequestActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
                     .map(this) { it2 -> Pair(it2[0].second, it2[0].third) }.then
             }
 
+        val observableDBAnswer = Observable<Boolean>()
         currentDatabase.eventDatabase.getEvents(listEvent, matcher = {
             it.whereEqualTo(
                 DatabaseConstant.EventConstant.EVENT_ORGANIZER.value,
@@ -82,10 +84,12 @@ class ItemRequestActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
                     eventSpinner.onItemSelectedListener = this
                 }
             } else {
+                observableDBAnswer.postValue(false)
                 showToast(getString(R.string.fail_to_get_event_list), this)
                 finish()
             }
-        }
+        }.then.updateOnce(this, observableDBAnswer)
+
         currentDatabase.itemDatabase.getAvailableItems(requestObservable).observeOnce(this) {
             if (it.value) {
                 if (requestId != null) {
@@ -121,6 +125,12 @@ class ItemRequestActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
                 recyclerView.setHasFixedSize(false)
             }
         }
+        HelperFunctions.showProgressDialog(
+            this, listOf(
+                observableDBAnswer,
+                selectedEvent
+            ), supportFragmentManager
+        )
     }
 
     /**

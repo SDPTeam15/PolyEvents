@@ -292,6 +292,7 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
             }.then
         }
 
+        val observableDBAnswer = Observable<Boolean>()
         Database.currentDatabase.eventDatabase.getEvents(
            requestObservable
         ).observe(this) {
@@ -305,7 +306,13 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
                         drawZoneEvents(selectedZone!!)
                     }
                 }
-            }
+            }.then.updateOnce(this, observableDBAnswer)
+
+        HelperFunctions.showProgressDialog(
+            this, listOf(
+                observableDBAnswer,
+            ), supportFragmentManager
+        )
     }
 
     /**

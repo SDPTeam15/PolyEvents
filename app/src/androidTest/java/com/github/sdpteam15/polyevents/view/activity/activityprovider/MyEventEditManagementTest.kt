@@ -88,7 +88,7 @@ class MyEventEditManagementTest {
         When(mockedDb.eventDatabase).thenReturn(mockedEventDB)
 
         When(mockedEventDB.getEventEdits(anyOrNull(), anyOrNull())).thenAnswer {
-            (it.arguments[1] as ObservableList<Event>).addAll(allEvent)
+            (it.arguments[0] as ObservableList<Event>).addAll(allEvent)
             Observable(true)
         }
         When(mockedDb.currentUser).thenReturn(UserEntity(uid = "uidtest"))
