@@ -168,12 +168,7 @@ class EventActivityTest {
                 notificationMessage = anyOrNull(),
                 scheduledTime = anyOrNull()
             )
-        ).then {
-            val temp = notificationId
-            notificationId += 1
-            temp
-        }
-
+        ).thenReturn(notificationId)
         // Create local db
         val context: Context = ApplicationProvider.getApplicationContext()
         // Using an in-memory database because the information stored here disappears when the
@@ -747,12 +742,16 @@ class EventActivityTest {
         // Click on follow event
         clickOn(R.id.button_subscribe_follow_event)
 
+        Thread.sleep(1000)
+
         val retrievedEvents = localDatabase.eventDao().getEventById(publicEventId)
         assertFalse(retrievedEvents.isEmpty())
         assertEquals(retrievedEvents[0].toEvent(), testPublicEvent)
 
         // Now unfollow
         clickOn(R.id.button_subscribe_follow_event)
+
+        Thread.sleep(1000)
         val retrievedEventsAfterUnfollow = localDatabase.eventDao().getEventById(publicEventId)
         assert(retrievedEventsAfterUnfollow.isEmpty())
     }

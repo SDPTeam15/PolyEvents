@@ -128,7 +128,8 @@ class EventListFragmentTest {
             .allowMainThreadQueries()
             .build()
 
-        fragmentScenario = launchFragmentInContainer<EventListFragment>(themeResId = R.style.Theme_PolyEvents)
+        fragmentScenario =
+            launchFragmentInContainer<EventListFragment>(themeResId = R.style.Theme_PolyEvents)
 
         EventListFragment.localDatabase = localDatabase
         EventListFragment.eventLocalViewModel = EventLocalViewModelFactory(
@@ -154,7 +155,10 @@ class EventListFragmentTest {
 
         fragmentScenario.recreate()
 
-        assertDisplayed(R.id.fragment_events_no_upcoming_events_text_view, R.string.no_upcoming_events)
+        assertDisplayed(
+            R.id.fragment_events_no_upcoming_events_text_view,
+            R.string.no_upcoming_events
+        )
     }
 
     @Test
