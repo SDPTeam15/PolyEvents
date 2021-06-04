@@ -19,6 +19,9 @@ import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import java.time.LocalDateTime
 
+/**
+ * Activity to display the list of all events and shows them to the admins
+ */
 class EventManagementActivity : AppCompatActivity() {
     companion object {
         /**

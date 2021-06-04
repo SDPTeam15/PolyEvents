@@ -29,6 +29,10 @@ import com.github.sdpteam15.polyevents.view.fragments.home.ProviderHomeFragment
  */
 const val EXTRA_ITEM_REQUEST_ID = "com.github.sdpteam15.polyevents.requests.ITEM_REQUEST_ID"
 
+/**
+ * Activity to display an event provider's item requests.
+ * He can modify pending requests and return the ones that are accepted
+ */
 class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private var currentStatus: MaterialRequest.Status = PENDING
 

@@ -4,6 +4,7 @@ import com.github.sdpteam15.polyevents.model.map.LatLngOperator.Polygon.Vertex
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.PolygonOperationType.*
 import com.google.android.gms.maps.model.LatLng
 import java.util.*
+import java.util.function.BiPredicate
 import kotlin.math.abs
 import kotlin.math.atan
 import kotlin.math.sqrt
@@ -285,6 +286,19 @@ object LatLngOperator {
                 function(v)
                 v = v.next!!
             } while (v != start)
+        }
+
+        /**
+         * Checks if any edge of the polygon matches the given predicate
+         * @param predicate the predicate to check
+         * @return true if the predicate is satisfied by any edge, else false
+         */
+        fun anyEdge(predicate: (Vertex,Vertex) -> Boolean):Boolean{
+            var b = false
+            foreach {
+                if (predicate(it,it.next!!)) b = true
+            }
+            return b
         }
 
         /**

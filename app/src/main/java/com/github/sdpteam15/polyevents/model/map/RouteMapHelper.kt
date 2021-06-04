@@ -2,7 +2,6 @@ package com.github.sdpteam15.polyevents.model.map
 
 import android.content.Context
 import android.graphics.Color
-import android.util.TypedValue
 import androidx.lifecycle.LifecycleOwner
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.database.remote.Database
@@ -13,6 +12,7 @@ import com.github.sdpteam15.polyevents.model.map.GoogleMapHelper.dpToPixelsFloat
 import com.github.sdpteam15.polyevents.model.map.GoogleMapHelper.map
 import com.github.sdpteam15.polyevents.model.map.GoogleMapHelperFunctions.newMarker
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.divide
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.isOnSegment
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.minus
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.norm
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.plus
@@ -181,7 +181,19 @@ object RouteMapHelper {
 
             //consider zones as fully connected graphs, so that the person can go from one entrance to all the other
             val areasnodes = nodesForShortestPath.groupBy { it.areaId }
-            for (nodesByArea in areasnodes.filter { it.key != targetZoneId && it.key != null }.values) {
+            for (nodesByArea in areasnodes.filter {
+                it.key != targetZoneId && it.key != null
+            }.map {
+                //take the corresponding zone multiple areas
+                val areas = zones.first { it2 -> it2.zoneId == it.key!! }.getDrawingPolygons()
+                    .map { poly -> LatLngOperator.Polygon(poly.first) }
+                // the goal is to group the nodes by area
+                (it.value.groupBy { it4 ->
+                    areas.first { polygon ->
+                        polygon.anyEdge { v1, v2 -> isOnSegment(v1.xy, v2.xy, it4.toLatLng()) }
+                    }
+                }).flatMap { it.value }
+            })  {
                 for (node in nodesByArea) {
                     for (node2 in nodesByArea) {
                         val edge = RouteEdge.fromRouteNode(node, node2)
@@ -472,7 +484,7 @@ object RouteMapHelper {
         option.color(Color.argb(50, 0, 0, 0))
         option.clickable(true)
         val route = map!!.addPolyline(option)
-        if(context != null)
+        if (context != null)
             route.width = LINE_WIDTH_DP.dpToPixelsFloat(context)
         //tag used to know which polyline has been clicked
         if (context != null) {
@@ -567,7 +579,7 @@ object RouteMapHelper {
         val pos2 = LatLng(pos.latitude, pos.longitude + longDiff)
         val option = PolylineOptions().add(pos1).add(pos2).color(Color.RED)
         tempPolyline = map!!.addPolyline(option)
-        if(context != null)
+        if (context != null)
             tempPolyline!!.width = LINE_WIDTH_DP.dpToPixelsFloat(context)
         tempLatLng.clear()
         tempLatLng.add(pos1)
@@ -586,7 +598,7 @@ object RouteMapHelper {
         val endPos = points[1]
 
         var dim_dp = 35
-        if(context != null){
+        if (context != null) {
             dim_dp = dim_dp.dpToPixelsFloat(context).toInt()
         }
 

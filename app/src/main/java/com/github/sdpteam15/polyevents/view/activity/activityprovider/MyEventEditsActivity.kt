@@ -22,6 +22,10 @@ import com.github.sdpteam15.polyevents.view.activity.admin.EventManagementListAc
 import com.github.sdpteam15.polyevents.view.adapter.MyEventEditRequestAdapter
 import com.github.sdpteam15.polyevents.view.fragments.admin.EventEditDifferenceFragment
 
+/**
+ * Activity to display an event provider's events.
+ * He can modify pending requests and sent the modification request to be examined by the admins.
+ */
 class MyEventEditsActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     private var currentStatus: Event.EventStatus = Event.EventStatus.PENDING
@@ -38,7 +42,6 @@ class MyEventEditsActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
         ObservableMap<Event.EventStatus, ObservableList<Event>>()
     private val observableStatus = Observable(currentStatus)
     private val statusNames = ArrayList<String>()
-    private val infoGotten = Observable<Boolean>()
 
     /**
      * Select next status page

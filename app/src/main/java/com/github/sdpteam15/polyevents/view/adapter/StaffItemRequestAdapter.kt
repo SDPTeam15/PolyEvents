@@ -28,8 +28,8 @@ import java.time.format.DateTimeFormatter
  * @param context context of parent view used to inflate new views
  * @param lifecycleOwner parent to enable observables to stop observing when the lifecycle is closed
  * @param requests List of all item requests
- * @param itemNames map from item id to item name
  * @param typeToDisplay the item request category to display
+ * @param itemNames map from item id to item name
  * @param userNames Username map to retrieve usernames given their userid
  * @param zoneNameFromEventId map from event id to zone names
  * @param staffId id of the current staff user
@@ -74,6 +74,7 @@ class StaffItemRequestAdapter(
     /**
      * adapted ViewHolder for each item
      * Takes the corresponding material request view
+     * @param view the view
      */
     inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
@@ -89,6 +90,7 @@ class StaffItemRequestAdapter(
 
         /**
          * Binds the values of each value of a material request to a view
+         * @param request material request to bind
          */
         @SuppressLint("SetTextI18n")
         fun bind(request: MaterialRequest) {
