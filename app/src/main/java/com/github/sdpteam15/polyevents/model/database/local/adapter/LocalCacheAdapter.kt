@@ -260,10 +260,10 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
                                         }
                                     }
                                 }
-                                elements.updateAll(map, this)
+                                elements.updateAll(map, it.sender)
                                 ended.postValue(
                                     mutableList.fold(true) { a, p -> a && p?.second != null },
-                                    this
+                                    it.sender
                                 )
                             }
                         }
@@ -308,7 +308,7 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
                                             .apply { value -> map[e.id] = value }
                                     }
                                     elements.updateAll(map, db)
-                                    ended.postValue(true, db)
+                                    ended.postValue(true, it.sender)
                                 }
                             }
                     }
