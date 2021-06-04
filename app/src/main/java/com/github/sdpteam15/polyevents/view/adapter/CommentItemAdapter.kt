@@ -12,7 +12,7 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableList
 
 /**
  * Adapts events to RecyclerView's CommentItemAdapter
- * @param events The list of comments to adapt
+ * @param comments The list of comments to adapt
  */
 class CommentItemAdapter(
     private val comments: ObservableList<Rating>

@@ -24,6 +24,11 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableMap
  * @param context context of parent view used to inflate new views
  * @param lifecycleOwner parent to enable observables to stop observing when the lifecycle is closed
  * @param requests List of all item requests
+ * @param typeToDisplay List of all item requests
+ * @param events List of all item requests
+ * @param onModifyListener List of all item requests
+ * @param onCancelListener List of all item requests
+ * @param seeListener List of all item requests
  */
 class MyEventEditRequestAdapter(
     context: Context,
