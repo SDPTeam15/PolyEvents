@@ -189,7 +189,7 @@ object GoogleMapActionHandler {
                                         ?.toMutableList()
                                         ?: mutableListOf()
                         if(RouteMapHelper.chemin.isEmpty()){
-                            showToast(context.getString(R.string.can_not_find_the_path), activity)
+                            showToast(activity.applicationContext.getString(R.string.can_not_find_the_path), activity)
                         }
                         RouteMapHelper.drawRoute(activity)
                     }
