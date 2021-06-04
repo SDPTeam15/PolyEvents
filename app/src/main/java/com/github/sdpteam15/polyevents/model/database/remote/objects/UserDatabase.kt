@@ -98,11 +98,11 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
                     user.uid,
                     USER_COLLECTION
                 ).observeOnce {
-                    if(it.value) {
+                    if (it.value) {
+                        user.loadSuccess = true
                         user.userProfiles.add(profile, it.sender)
                         ended.postValue(true, it.sender)
-                    }
-                    else{
+                    } else {
                         user.profiles.remove(profile.pid!!)
                         ended.postValue(true, it.sender)
                     }
