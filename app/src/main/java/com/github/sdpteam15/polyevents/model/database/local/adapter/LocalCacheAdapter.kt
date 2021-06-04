@@ -186,6 +186,7 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
         val ended = Observable<Boolean>()
         updateLocal(collection, adapter).observeOnce {
             if (it.value) {
+                // retrieve the data from local cash
                 PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
                     PolyEventsApplication.application.localDatabase.genericEntityDao()
                         .get(id, collection.value).apply({ ge ->
@@ -303,7 +304,11 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
         return ended
     }
 
-
+    /**
+     * update the local cache by taking the new value on the remote one
+     * @param collection collection
+     * @param adapter adapter for the collection
+     */
     private fun <T : Any> updateLocal(
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterFromDocumentInterface<out T>
