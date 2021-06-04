@@ -47,7 +47,6 @@ object EventAdapter : AdapterInterface<Event> {
             description = document[EVENT_DESCRIPTION.value] as String?,
             startTime = document[EVENT_START_TIME.value].toLocalDateTime(),
             endTime = document[EVENT_END_TIME.value].toLocalDateTime(),
-            // TODO: Check how item is stored in Firestore, and check if conversion worked
             inventory = (document[EVENT_INVENTORY.value] as List<Item>).toMutableList(),
             tags = (document[EVENT_TAGS.value] as List<String>).toMutableList(),
             limitedEvent = document[EVENT_LIMITED.value] as Boolean,
