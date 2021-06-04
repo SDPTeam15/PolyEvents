@@ -215,7 +215,7 @@ interface DatabaseInterface {
             val list = mutableListOf<T>()
             for (key in it.value.keys)
                 list.add(it.value[key]!!)
-            elements.updateAll(list, this)
+            elements.updateAll(list, it.sender)
         }.then,
         ids,
         matcher,
