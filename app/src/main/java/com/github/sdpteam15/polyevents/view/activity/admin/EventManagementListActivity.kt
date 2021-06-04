@@ -11,6 +11,7 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.entity.Event
+import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
 import com.github.sdpteam15.polyevents.view.adapter.EventListAdapter
@@ -38,6 +39,7 @@ class EventManagementListActivity : AppCompatActivity() {
     private lateinit var modifyListener: (String) -> Unit
     private lateinit var deleteListener: (String, Event) -> Unit
     private var isOrganiser = false
+    private val eventGotten = Observable<Boolean>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +57,13 @@ class EventManagementListActivity : AppCompatActivity() {
         recyclerView.adapter =
             EventListAdapter(this, this, isOrganiser, obsEventsMap, modifyListener, deleteListener)
         recyclerView.setHasFixedSize(false)
+
+        // Display a loading screen while the queries with the database are not over
+        HelperFunctions.showProgressDialog(
+            this, listOf(
+                eventGotten
+            ), supportFragmentManager
+        )
 
         // Add the lister on the create button
         findViewById<ImageButton>(R.id.id_new_event_button).setOnClickListener {
@@ -95,16 +104,15 @@ class EventManagementListActivity : AppCompatActivity() {
                     DatabaseConstant.EventConstant.EVENT_ORGANIZER.value,
                     currentDatabase.currentUser!!.uid
                 )
-            })
-                .observe(this) {
-                    redirectOnFailure(it.value)
-                }
+            }).observe(this) {
+                redirectOnFailure(it.value)
+            }.then.updateOnce(this, eventGotten)
         } else {
             // Otherwise, we load all the events from the database
             currentDatabase.eventDatabase.getEvents(requestObservable)
                 .observe(this) {
                     redirectOnFailure(it.value)
-                }
+                }.then.updateOnce(this, eventGotten)
         }
     }
 

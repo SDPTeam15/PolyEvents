@@ -16,6 +16,7 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.entity.Event
+import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
 import com.github.sdpteam15.polyevents.view.adapter.EventEditAdminAdapter
@@ -25,6 +26,8 @@ class EventEditManagementActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private val eventEdits = ObservableList<Event>()
     private val origEvents = ObservableMap<String, Event>()
+    private val eventGotten = Observable<Boolean>()
+    private val eventEditGotten = Observable<Boolean>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,19 +57,27 @@ class EventEditManagementActivity : AppCompatActivity() {
             }
         }
         //TODO sort event by status ordinal (ascending)
+
         Database.currentDatabase.eventDatabase.getEvents(eventList)
             .observeOnce(this) {
                 if (!it.value) {
                     HelperFunctions.showToast(getString(R.string.fail_to_get_list_events), this)
                     finish()
+                    eventEditGotten.postValue(false)
                 } else {
                     getEventEdit()
                 }
-            }
+            }.then.updateOnce(this, eventGotten)
+
+        HelperFunctions.showProgressDialog(
+            this,
+            listOf(eventGotten, eventEditGotten),
+            supportFragmentManager
+        )
     }
 
     private fun getEventEdit() {
-        //Wait until we have both requests accepted from the database to show the material requests
+        //Wait until we have both requests accepted from the database to show the event edits
         //TODO sort event by status ordinal (ascending)
         Database.currentDatabase.eventDatabase.getEventEdits(
             eventEdits
@@ -75,7 +86,7 @@ class EventEditManagementActivity : AppCompatActivity() {
                 HelperFunctions.showToast(getString(R.string.fail_to_get_list_events_edits), this)
                 finish()
             }
-        }
+        }.then.updateOnce(this, eventEditGotten)
     }
 
     private val seeEventEdit = { event: Event, creation: Boolean, eventOrig: Event? ->
@@ -99,6 +110,9 @@ class EventEditManagementActivity : AppCompatActivity() {
         if (event.status == Event.EventStatus.PENDING) {
             event.status = Event.EventStatus.ACCEPTED
 
+            val updateEditOver = Observable<Boolean>()
+            val eventMod = Observable<Boolean>()
+            // Accept the event edit and update/create the event consequently in the database
             Database.currentDatabase.eventDatabase.updateEventEdit(
                 event
             ).observeOnce(this) {
@@ -106,27 +120,34 @@ class EventEditManagementActivity : AppCompatActivity() {
             }.then.observeOnce(this) {
                 if (it.value) {
                     if (event.eventId == null) {
+                        // Create event in the database
                         Database.currentDatabase.eventDatabase.createEvent(
                             event
                         ).observeOnce(this) {
                             acceptEventEditCallback(it.value, event)
-                        }
+                        }.then.updateOnce(this, eventMod)
                     } else {
+                        // Update the event in the database
                         Database.currentDatabase.eventDatabase.updateEvent(
                             event
                         ).observeOnce(this) {
                             acceptEventEditCallback(it.value, event)
-                        }
+                        }.then.updateOnce(this, eventMod)
                     }
                 } else {
+                    eventMod.postValue(false, this)
                     HelperFunctions.showToast(
                         getString(R.string.activity_edit_cannot_be_requested),
                         this
                     )
                 }
-            }
-
-            Unit
+            }.then.updateOnce(this, updateEditOver)
+            
+            HelperFunctions.showProgressDialog(
+                this,
+                listOf(updateEditOver, eventMod),
+                supportFragmentManager
+            )
         } else {
             HelperFunctions.showToast(getString(R.string.cannot_accept_edit_requests), this)
         }
@@ -173,6 +194,8 @@ class EventEditManagementActivity : AppCompatActivity() {
             event.status = Event.EventStatus.REFUSED
             event.adminMessage = message.text.toString()
 
+            val deleteEnd = Observable<Boolean>()
+
             Database.currentDatabase.eventDatabase.updateEventEdit(
                 event
             ).observeOnce(this) {
@@ -185,7 +208,9 @@ class EventEditManagementActivity : AppCompatActivity() {
                         this
                     )
                 }
-            }
+            }.then.updateOnce(this, deleteEnd)
+            HelperFunctions.showProgressDialog(this, listOf(deleteEnd), supportFragmentManager)
+
             // Dismiss the popup window
             popupWindow.dismiss()
         }

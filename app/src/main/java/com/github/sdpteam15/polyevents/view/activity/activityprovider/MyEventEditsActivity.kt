@@ -38,6 +38,7 @@ class MyEventEditsActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
         ObservableMap<Event.EventStatus, ObservableList<Event>>()
     private val observableStatus = Observable(currentStatus)
     private val statusNames = ArrayList<String>()
+    private val infoGotten = Observable<Boolean>()
 
     /**
      * Select next status page
