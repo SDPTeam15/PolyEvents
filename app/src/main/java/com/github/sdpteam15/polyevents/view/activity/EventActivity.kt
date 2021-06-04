@@ -33,6 +33,7 @@ import com.github.sdpteam15.polyevents.view.fragments.ProgressDialogFragment
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModel
 import com.github.sdpteam15.polyevents.viewmodel.EventLocalViewModelFactory
 import kotlinx.coroutines.Dispatchers
+import java.time.LocalDateTime
 
 /**
  * An activity containing events description. Note that information about the event could be stored from the local
@@ -41,25 +42,6 @@ import kotlinx.coroutines.Dispatchers
  */
 class EventActivity : AppCompatActivity(), ReviewHasChanged {
     // TODO: view on map functionality?
-
-    companion object {
-        const val TAG = "EventActivity"
-
-        // Refactored here for tests
-        val obsEvent: Observable<Event> = Observable()
-        val obsRating: Observable<Float> = Observable()
-        val obsOrganiser: Observable<UserEntity> = Observable()
-        val obsComments: ObservableList<Rating> = ObservableList()
-        val obsNonEmptyComments: ObservableList<Rating> = ObservableList()
-        lateinit var event: Event
-
-        // Keep an instance for testing purposes
-        lateinit var database: LocalDatabase
-
-        // Keep an instance for testing purposes
-        lateinit var notificationsScheduler: NotificationsScheduler
-    }
-
     private lateinit var eventId: String
 
     private lateinit var subscribeButton: Button
@@ -189,7 +171,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
     /**
      * Sets the observe add and modify of the observable list of reviews
      */
-    private fun setObservers(){
+    private fun setObservers() {
         obsComments.observeAdd(this) {
             //If the comment doesn't have a review, we don't want to display it
             if (it.value.feedback != "") {
@@ -197,10 +179,10 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
                 recyclerView.adapter!!.notifyDataSetChanged()
             }
         }
-        obsComments.observe(this){
+        obsComments.observe(this) {
             updateNumberReviews()
         }
-        obsNonEmptyComments.observe(this){
+        obsNonEmptyComments.observe(this) {
             updateNumberComments()
         }
     }
@@ -220,8 +202,8 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
     /**
      * Updates the number of reviews on the xml
      */
-    private fun updateNumberReviews(){
-        if(!PolyEventsApplication.inTest) {
+    private fun updateNumberReviews() {
+        if (!PolyEventsApplication.inTest) {
             PolyEventsApplication.application.applicationScope.launch(Dispatchers.Main) {
                 findViewById<TextView>(R.id.id_number_reviews).text = obsComments.size.toString()
             }
@@ -231,10 +213,11 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
     /**
      * Updates the number of comments on the xml
      */
-    private fun updateNumberComments(){
-        if(!PolyEventsApplication.inTest) {
+    private fun updateNumberComments() {
+        if (!PolyEventsApplication.inTest) {
             PolyEventsApplication.application.applicationScope.launch(Dispatchers.Main) {
-                findViewById<TextView>(R.id.id_number_comments).text = obsNonEmptyComments.size.toString()
+                findViewById<TextView>(R.id.id_number_comments).text =
+                    obsNonEmptyComments.size.toString()
             }
         }
     }
@@ -443,26 +426,21 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
      * at the start of the event.
      */
     private fun scheduleNotificationsAndSaveEvent() {
-        val event15MinBeforeNotificationMessage =
-            getString(R.string.event_start_soon, event.eventName)
-        val event15MinBeforeNotificationId = notificationsScheduler.scheduleEventNotification(
-            eventId = eventId,
-            notificationMessage = event15MinBeforeNotificationMessage,
-            scheduledTime = event.startTime!!.minusMinutes(15L)
-        )
-        val eventStartNotificationMessage = getString(R.string.event_started, event.eventName)
-        val eventStartNotificationId = notificationsScheduler.scheduleEventNotification(
-            eventId = eventId,
-            notificationMessage = eventStartNotificationMessage,
-            scheduledTime = event.startTime!!
-        )
-
-        // Save the event in local cache, as well as its associated notifications ids, to easily
+        val eventLocalInstance = EventLocal.fromEvent(event)
+        val (eventBeforeNotificationId, eventStartNotificationId) =
+            scheduleNotificationWithRespectToCurrentTime(
+                event = event,
+                currentTime = LocalDateTime.now(),
+                beforeEventNotificationMessage = getString(
+                    R.string.event_start_soon,
+                    event.eventName
+                ),
+                startTimeNotificationMessage = getString(R.string.event_started, event.eventName)
+            )
+        // Save the event in the local cache, along its associated notifications ids, to easily
         // retrieve these notifications later (to cancel for example)
-        val eventLocalInstance = EventLocal.fromEvent(event).also {
-            it.eventStartNotificationId = eventStartNotificationId
-            it.eventBeforeNotificationId = event15MinBeforeNotificationId
-        }
+        eventLocalInstance.eventBeforeNotificationId = eventBeforeNotificationId
+        eventLocalInstance.eventStartNotificationId = eventStartNotificationId
         localEventViewModel.insert(eventLocalInstance)
     }
 
@@ -482,6 +460,75 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
 
     override fun onLeaveReview() {
         refreshEvent()
+    }
+
+
+    companion object {
+        const val TAG = "EventActivity"
+
+        // Refactored here for tests
+        val obsEvent: Observable<Event> = Observable()
+        val obsRating: Observable<Float> = Observable()
+        val obsOrganiser: Observable<UserEntity> = Observable()
+        val obsComments: ObservableList<Rating> = ObservableList()
+        val obsNonEmptyComments: ObservableList<Rating> = ObservableList()
+        lateinit var event: Event
+
+        // Keep an instance for testing purposes
+        lateinit var database: LocalDatabase
+
+        // Keep an instance for testing purposes
+        lateinit var notificationsScheduler: NotificationsScheduler
+
+        /**
+         * Helper function to schedule notifications for an event at a certain time based on the current time
+         * If the event end time has already passed, no notifications are scheduled. Otherwise if
+         * the event has already started, schedule one notification. Otherwise two notifications, one
+         * before and another after the event.
+         * @param event the event we're scheduling notifications for
+         * @param currentTime the current time from which we're scheduling notifications for this event
+         * @param beforeEventNotificationMessage the message to be displayed in the notification popped
+         * shortly before the start of the event
+         * @param startTimeNotificationMessage the message to be displayed in the notification popped
+         * at the start of the event
+         * @return Pair with first the notification id (if not null) set before the start of the event
+         * and the other (if not null) at the start of the event
+         */
+        fun scheduleNotificationWithRespectToCurrentTime(
+            event: Event,
+            currentTime: LocalDateTime,
+            beforeEventNotificationMessage: String,
+            startTimeNotificationMessage: String
+        ): Pair<Int?, Int?> {
+            var event15MinBeforeNotificationId: Int? = null
+            var eventStartNotificationId: Int? = null
+            // Check first if event has already ended, thus don't send notifications
+            if (!currentTime.isAfter(event.endTime)) {
+
+                // Check if event hasn't already started, schedule a notification 15 min before the start of the event
+                if (currentTime.isBefore(event.startTime)) {
+                    val event15MinBeforeNotificationMessage =
+                        beforeEventNotificationMessage
+                    event15MinBeforeNotificationId =
+                        notificationsScheduler.scheduleEventNotification(
+                            eventId = event.eventId!!,
+                            notificationMessage = event15MinBeforeNotificationMessage,
+                            scheduledTime = event.startTime!!.minusMinutes(15L)
+                        )
+                }
+
+                // Schedule a notification at the start of the event
+                val eventStartNotificationMessage =
+                    startTimeNotificationMessage
+                eventStartNotificationId = notificationsScheduler.scheduleEventNotification(
+                    eventId = event.eventId!!,
+                    notificationMessage = eventStartNotificationMessage,
+                    scheduledTime = event.startTime!!
+                )
+            }
+            return Pair(event15MinBeforeNotificationId, eventStartNotificationId)
+        }
+
     }
 
 }

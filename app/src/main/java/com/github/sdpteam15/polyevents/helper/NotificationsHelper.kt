@@ -189,7 +189,7 @@ fun NotificationManager.sendEventNotification(
     val builder = NotificationCompat.Builder(
         applicationContext,
         applicationContext.getString(R.string.notification_channel_id)
-    ).setSmallIcon(R.drawable.ic_event)        // TODO: replace with application icon
+    ).setSmallIcon(R.drawable.ic_ico)
         .setContentTitle(applicationContext.getString(R.string.app_name))
         .setContentText(messageBody)
         .setContentIntent(contentPendingIntent)
