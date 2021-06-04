@@ -56,7 +56,6 @@ class EventEditManagementActivity : AppCompatActivity() {
                 origEvents[event.eventId!!] = event
             }
         }
-        //TODO sort event by status ordinal (ascending)
 
         Database.currentDatabase.eventDatabase.getEvents(eventList)
             .observeOnce(this) {
