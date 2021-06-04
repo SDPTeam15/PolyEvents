@@ -142,7 +142,7 @@ class EventEditManagementActivity : AppCompatActivity() {
                     )
                 }
             }.then.updateOnce(this, updateEditOver)
-            
+
             HelperFunctions.showProgressDialog(
                 this,
                 listOf(updateEditOver, eventMod),

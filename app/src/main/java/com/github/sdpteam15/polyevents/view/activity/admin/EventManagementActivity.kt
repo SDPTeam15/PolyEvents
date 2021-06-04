@@ -147,12 +147,12 @@ class EventManagementActivity : AppCompatActivity() {
         }
 
         // Get all zones from the database or redirect if there is a problem
-        currentDatabase.zoneDatabase.getAllZones(zoneObserver).observe(this) {
+        val obsZoneEnded = currentDatabase.zoneDatabase.getAllZones(zoneObserver).observe(this) {
             if (!it.value) {
                 HelperFunctions.showToast(getString(R.string.failed_get_zones), this)
                 finish()
             }
-        }
+        }.then
 
         // We only allow to choose the user if the current user is an admin
         // if the current user is an activity provider which will propose a event edit request, we will simply put its user id.
@@ -163,12 +163,20 @@ class EventManagementActivity : AppCompatActivity() {
             findViewById<Spinner>(R.id.spinner_organiser).adapter = adapter2
 
             // Get all users from the database or redirect if there is a problem
-            currentDatabase.userDatabase.getListAllUsers(organiserObserver).observe(this) {
-                if (!it.value) {
-                    HelperFunctions.showToast(getString(R.string.failed_get_zones), this)
-                    finish()
-                }
-            }
+            val obsUserEnded =
+                currentDatabase.userDatabase.getListAllUsers(organiserObserver).observe(this) {
+                    if (!it.value) {
+                        HelperFunctions.showToast(getString(R.string.failed_get_zones), this)
+                        finish()
+                    }
+                }.then
+
+            // Display a loading screen while the queries with the database are not over
+            showProgressDialog(
+                this, listOf(
+                    obsUserEnded, obsZoneEnded
+                ), supportFragmentManager
+            )
 
             // Add all the zones retrieve from the database to the spinner
             organiserObserver.observeAdd(this) {
@@ -177,6 +185,13 @@ class EventManagementActivity : AppCompatActivity() {
                 mapIndexToOrganiserId[organiserName.indexOf(name)] = it.value.uid
                 adapter2.notifyDataSetChanged()
             }
+        } else {
+            // Display a loading screen while the queries with the database are not over
+            showProgressDialog(
+                this, listOf(
+                    obsZoneEnded
+                ), supportFragmentManager
+            )
         }
     }
 

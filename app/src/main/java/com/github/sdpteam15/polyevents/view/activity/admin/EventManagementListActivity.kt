@@ -39,7 +39,7 @@ class EventManagementListActivity : AppCompatActivity() {
     private lateinit var modifyListener: (String) -> Unit
     private lateinit var deleteListener: (String, Event) -> Unit
     private var isOrganiser = false
-    private val eventGotten = Observable<Boolean>()
+    private var eventGotten = Observable<Boolean>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,13 +57,6 @@ class EventManagementListActivity : AppCompatActivity() {
         recyclerView.adapter =
             EventListAdapter(this, this, isOrganiser, obsEventsMap, modifyListener, deleteListener)
         recyclerView.setHasFixedSize(false)
-
-        // Display a loading screen while the queries with the database are not over
-        HelperFunctions.showProgressDialog(
-            this, listOf(
-                eventGotten
-            ), supportFragmentManager
-        )
 
         // Add the lister on the create button
         findViewById<ImageButton>(R.id.id_new_event_button).setOnClickListener {
@@ -88,6 +81,16 @@ class EventManagementListActivity : AppCompatActivity() {
                 obsEventsMap[i.key!!] = Pair(i.value[0].zoneName!!, i.value)
             }
         }
+
+        eventGotten = Observable()
+
+        // Display a loading screen while the queries with the database are not over
+        HelperFunctions.showProgressDialog(
+            this, listOf(
+                eventGotten
+            ), supportFragmentManager
+        )
+
         getEventsDatabase(requestObservable)
     }
 
