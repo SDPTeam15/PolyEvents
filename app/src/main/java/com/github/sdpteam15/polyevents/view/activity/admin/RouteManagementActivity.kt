@@ -9,6 +9,9 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.map.MapsFragmentMod
 import com.github.sdpteam15.polyevents.view.fragments.MapsFragment
 
+/**
+ * Activity to create and remove routes
+ */
 class RouteManagementActivity : AppCompatActivity() {
     companion object {
         var inTest = false

@@ -34,6 +34,9 @@ import com.github.sdpteam15.polyevents.viewmodel.UserSettingsViewModelFactory
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.Dispatchers
 
+/**
+ * Main activity that chooses the correct fragment to display
+ */
 class MainActivity : AppCompatActivity() {
     companion object {
         private var mapFragment: MutableMap<Int, Fragment>? = null

@@ -12,6 +12,9 @@ import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 
+/**
+ * Applications informations
+ */
 class PolyEventsApplication : Application() {
     companion object {
         var inTest = false

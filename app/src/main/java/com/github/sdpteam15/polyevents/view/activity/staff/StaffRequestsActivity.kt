@@ -31,7 +31,6 @@ const val EXTRA_ID_USER_STAFF = "com.github.sdpteam15.polyevents.requests.STAFF_
  */
 class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
-
     private lateinit var recyclerView: RecyclerView
     private lateinit var leftButton: ImageButton
     private lateinit var rightButton: ImageButton
@@ -39,11 +38,10 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
     private lateinit var staffUserId: String
 
     private val requests = ObservableList<MaterialRequest>()
-    private val materialRequest =
+    private val materialRequests =
         ObservableMap<StaffRequestStatus, ObservableList<MaterialRequest>>()
     private val currentStatus = Observable(DELIVERY)
     private val staffId = currentDatabase.currentUser!!.uid
-    private val users = ObservableList<UserEntity>()
     private val userNames = ObservableMap<String, String>()
     private val itemNames = ObservableMap<String, String>()
     private val zoneNameFromEventId = ObservableMap<String, String>()
@@ -117,7 +115,7 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
             StaffItemRequestAdapter(
                 this,
                 this,
-                materialRequest,
+                materialRequests,
                 currentStatus,
                 itemNames,
                 userNames,
@@ -159,7 +157,7 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
             it[0].first.itemName!!
         }
 
-        requests.group(this, materialRequest) {
+        requests.group(this, materialRequests) {
             staffRequestStatusFromMaterialStatus(it.status)
         }
         requests.observeAdd(this) {

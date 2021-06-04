@@ -16,6 +16,9 @@ import com.github.sdpteam15.polyevents.view.activity.activityprovider.MyEventEdi
 import com.github.sdpteam15.polyevents.view.activity.activityprovider.MyItemRequestsActivity
 import com.github.sdpteam15.polyevents.view.activity.admin.EventManagementListActivity
 
+/**
+ * Activity provider fragment: the fragment containing all shortcuts for the activity provider's management options
+ */
 class ProviderHomeFragment : Fragment() {
     companion object {
         const val ID_USER = "id_user"

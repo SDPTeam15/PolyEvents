@@ -5,6 +5,9 @@ import androidx.fragment.app.DialogFragment
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.observable.Observable
 
+/**
+ * Fragment of the progress dialog
+ */
 class ProgressDialogFragment(val observable: Observable<Boolean>? = null) :
     DialogFragment(R.layout.fragment_progress_dialog) {
 

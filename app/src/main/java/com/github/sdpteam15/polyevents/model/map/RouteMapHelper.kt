@@ -11,11 +11,13 @@ import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.map.GoogleMapHelper.dpToPixelsFloat
 import com.github.sdpteam15.polyevents.model.map.GoogleMapHelper.map
 import com.github.sdpteam15.polyevents.model.map.GoogleMapHelperFunctions.newMarker
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.closestPolygonArea
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.divide
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.minus
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.norm
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.plus
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.scalar
+import com.github.sdpteam15.polyevents.model.map.LatLngOperator.squaredEuclideanDistance
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.time
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
@@ -179,7 +181,17 @@ object RouteMapHelper {
 
             //consider zones as fully connected graphs, so that the person can go from one entrance to all the other
             val areasnodes = nodesForShortestPath.groupBy { it.areaId }
-            for (nodesByArea in areasnodes.filter { it.key != targetZoneId && it.key != null }.values) {
+            for (nodesByArea in areasnodes.filter {
+                it.key != targetZoneId && it.key != null
+            }.flatMap {
+                //take the multiple outside polygonal areas of the corresponding zone
+                val areas = zones.first { it2 -> it2.zoneId == it.key!! }.getDrawingPolygons()
+                    .map { poly -> poly.first }
+                // the goal is to group the nodes by area
+                (it.value.groupBy { it4 ->
+                    closestPolygonArea(it4, areas)
+                }).map { it.value }
+            }) {
                 for (node in nodesByArea) {
                     for (node2 in nodesByArea) {
                         val edge = RouteEdge.fromRouteNode(node, node2)
@@ -199,6 +211,8 @@ object RouteMapHelper {
             }
 
         }
+
+
 
         /**
          * Applies Dijkstra algorithm on the given graph to find the shortest path from the starting

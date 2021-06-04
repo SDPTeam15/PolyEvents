@@ -23,7 +23,7 @@ import com.github.sdpteam15.polyevents.view.adapter.ItemRequestAdapter
 import java.time.LocalDateTime
 
 /**
- * An activity containing items available for request
+ * An activity to create item requests and send them to the admins
  */
 class ItemRequestActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
