@@ -27,6 +27,10 @@ import java.time.format.DateTimeFormatter
  * @param lifecycleOwner parent to enable observables to stop observing when the lifecycle is closed
  * @param requests List of all item requests
  * @param userNames Username map to retrieve usernames given their userid
+ * @param itemNames Map from itemId to itemName
+ * @param zoneNameFromEventId Map from an event id to the corresponding zone name
+ * @param onAcceptListener listener when we accept a material request
+ * @param onRefuseListener listener when we refuse a material request
  */
 class ItemRequestAdminAdapter(
     context: Context,
@@ -59,6 +63,7 @@ class ItemRequestAdminAdapter(
     /**
      * adapted ViewHolder for each item
      * Takes the corresponding material request view
+     * @param view the corresponding view
      */
     inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val organizer = view.findViewById<TextView>(R.id.id_request_organiser)
@@ -74,6 +79,7 @@ class ItemRequestAdminAdapter(
 
         /**
          * Binds the values of each value of a material request to a view
+         * @param request the material request to bind
          */
         @SuppressLint("SetTextI18n")
         fun bind(request: MaterialRequest) {

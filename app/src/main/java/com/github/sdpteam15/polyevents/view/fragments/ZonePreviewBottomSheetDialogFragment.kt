@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Zone
@@ -56,6 +57,8 @@ class ZonePreviewBottomSheetDialogFragment : BottomSheetDialogFragment() {
     private lateinit var onItineraryClickListener: View.OnClickListener
     private lateinit var onShowEventsClickListener: View.OnClickListener
 
+    private val getZoneInformationCallbacks = Observable<Boolean>()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -100,12 +103,17 @@ class ZonePreviewBottomSheetDialogFragment : BottomSheetDialogFragment() {
             }
         }
 
+        HelperFunctions.showProgressDialog(
+            requireActivity(),
+            listOf(getZoneInformationCallbacks),
+            requireActivity().supportFragmentManager
+        )
+
         currentDatabase.zoneDatabase.getZoneInformation(
             zoneId = zoneId!!,
             zone = zoneObservable
-        )
+        ).update(requireActivity(), getZoneInformationCallbacks)
 
-        // TODO: progress dialogs!
         val eventsObservableList = ObservableList<Event>()
         eventsObservableList.observe(this) {
             if (it.value.isEmpty()) {

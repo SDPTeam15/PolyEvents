@@ -33,6 +33,9 @@ data class Zone(
     var description: String? = null,
     var status: Status = Status.ACTIVE
 ) : Attachable {
+    private var lastLocation: String? = null
+    private lateinit var polygons: List<Pair<List<LatLng>, List<List<LatLng>>?>>
+
     /**
      * Get the coordinates of all the areas on the current Zone
      * @return A list of list of LatLng points composing an area
@@ -63,7 +66,11 @@ data class Zone(
      * @return A list of list of LatLng points composing an area
      */
     fun getDrawingPolygons(): List<Pair<List<LatLng>, List<List<LatLng>>?>> {
-        return polygonsUnion(getZoneCoordinates())
+        if (location == null || lastLocation != location) {
+            lastLocation = location
+            polygons = polygonsUnion(getZoneCoordinates())
+        }
+        return polygons
     }
 
     /**
@@ -213,12 +220,14 @@ data class Zone(
                 return true
         return false
     }
-    enum class Status{
+
+    enum class Status {
         ACTIVE,
         DELETED;
 
         companion object {
             private val mapOrdinal = values()
+
             /**
              * Return the Zone status corresponding to the given ordinal
              * @param ordinal The index of the Zone status we want to retrieve

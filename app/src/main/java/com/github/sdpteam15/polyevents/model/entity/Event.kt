@@ -14,15 +14,16 @@ import java.time.LocalDateTime
  * @property eventId the uid of the event document in the database.
  * @property eventName the name of the event.
  * @property organizer the username of the organizer of the event
+ * @property zoneId the id of the zone where the event is happening
  * @property zoneName the name of the zone where the event is happening
  * @property description a description of the event
- * @property icon a bitmap picture of the icon associated to the event
  * @property inventory the list of items in the event's inventory
  * @property tags additional set of tags to describe the event
  * @property startTime the time at which the event begins
  * @property endTime the time at which the event ends
  * @property limitedEvent specifies whether the event has a maximum number of attendees
  * @property maxNumberOfSlots the maximum amount of attendees to this event
+ * @property icon a bitmap picture of the icon associated to the event
  */
 @IgnoreExtraProperties
 data class Event(
@@ -32,8 +33,6 @@ data class Event(
     val zoneId: String? = null,
     val zoneName: String? = null,
     var description: String? = null,
-    // TODO: handle event icons (probably during event creation)
-    var icon: Bitmap? = null,
     val startTime: LocalDateTime? = null,
     val endTime: LocalDateTime? = null,
     val inventory: MutableList<Item> = mutableListOf(),
@@ -43,6 +42,7 @@ data class Event(
     var status: EventStatus? = null,
     var adminMessage: String? = null,
     var eventEditId: String? = null,
+    var icon: Bitmap? = null,
 
     private var limitedEvent: Boolean = false,
     private var maxNumberOfSlots: Int? = null,
@@ -93,7 +93,6 @@ data class Event(
         this.maxNumberOfSlots = maxNumberOfSlots
     }
 
-    // TODO: Subscribe to event using profile or user id??
     /**
      * Add a participant to this event if it's a limited event
      * @param userUid the id of the new participant user

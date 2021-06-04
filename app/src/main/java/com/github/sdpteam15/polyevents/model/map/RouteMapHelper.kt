@@ -2,7 +2,6 @@ package com.github.sdpteam15.polyevents.model.map
 
 import android.content.Context
 import android.graphics.Color
-import android.util.TypedValue
 import androidx.lifecycle.LifecycleOwner
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.database.remote.Database
@@ -31,8 +30,8 @@ import kotlin.math.pow
  * Helper object that handles the routes
  */
 object RouteMapHelper {
-    const val THRESHOLD = 0.00002
-    const val MAGNET_DISTANCE_THRESHOLD = 0.00005
+    const val THRESHOLD = 2e-6
+    const val MAGNET_DISTANCE_THRESHOLD = 5e-6
     const val LINE_WIDTH_DP = 4
     const val LINE_ROUTE_WIDTH_DP = 4
 
@@ -48,31 +47,15 @@ object RouteMapHelper {
 
     var deleteMode = false
 
-    //var routing = false
     var currentTarget: LatLng? = null
     var chemin: MutableList<LatLng> = mutableListOf()
     var route: MutableList<Polyline> = mutableListOf()
 
     /**
-     * Clear all route variables (Does not work yet!)
-     */
-    /*fun resetAll() {
-        nodes.clear()
-        edges.clear()
-        zones.clear()
-
-        for ((key, value) in lineToEdge) {
-            value.remove()
-        }
-
-        lineToEdge.clear()
-        idToEdge.clear()
-    }*/
-
-    /**
      * Add a line to dataBase
      * @param start pair containing the Position of the first point and eventually an attached object
      * @param end pair containing the Position of the second point and eventually an attached object
+     * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun addLine(
         start: Pair<LatLng, Attachable?>,
@@ -109,6 +92,7 @@ object RouteMapHelper {
     /**
      * Removes a line from the dataBase
      * @param edge the line to add to the database
+     * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun removeLine(edge: RouteEdge) =
         Database.currentDatabase.routeDatabase.removeEdge(edge, edges, nodes)
@@ -322,32 +306,6 @@ object RouteMapHelper {
         }
     }
 
-
-
-/*
-    /**
-    TODO consider using this function to update a route while walking
-    */
-    fun updateRoute() {
-        if (route.isNotEmpty()) {
-            val position = minus(LatLng(0.0, 0.0), currentTarget!!)
-            val position2 = minus(chemin[1], currentTarget!!)
-            if (norm(minus(position, position2)) < LatLngOperator.epsilon) {
-                route.first().remove()
-                route = route.drop(1).toMutableList()
-                chemin = chemin.drop(1).toMutableList()
-                if (chemin.size > 1) {
-                    currentTarget = chemin[1]
-                } else {
-                    chemin.clear()
-                    currentTarget = null
-                }
-            } else {
-                //DO Projection and redraw the line with route[0].points = listOf(...)
-            }
-        }
-    }
-*/
     /**
      * Undraws the route
      */
@@ -443,45 +401,16 @@ object RouteMapHelper {
         lifecycleOwner: LifecycleOwner
     ): Observable<Boolean> {
         //Add a listener on edges and nodes adds to display
-        val edgesToAdd = mutableListOf<RouteEdge>()
-
         if (edges.isNotEmpty())
-            synchronized(this) {
-                edges.toList().forEach {
-                    if (it.start != null && it.end != null)
-                        edgeAddedNotification(context, it)
-                    else
-                        edgesToAdd.add(it)
-                }
+            edges.toList().forEach {
+                if (it.start != null && it.end != null)
+                    edgeAddedNotification(context, it)
             }
 
         edges.observeAdd(lifecycleOwner) {
-            synchronized(this) {
-                edgesToAdd.add(it.value)
-                it.value.start = nodes.firstOrNull { n -> n.id == it.value.startId }
-                it.value.end = nodes.firstOrNull { n -> n.id == it.value.endId }
-                for (e in edgesToAdd.toList())
-                    if (e.start != null && e.end != null) {
-                        edgeAddedNotification(context, e)
-                        edgesToAdd.remove(e)
-                    }
-            }
+            edgeAddedNotification(context, it.value)
         }.then.observeRemove(lifecycleOwner) {
             edgeRemovedNotification(it.value)
-        }
-        nodes.observeAdd(lifecycleOwner) {
-            synchronized(this) {
-                for (e in edgesToAdd.toList()) {
-                    if (e.startId == it.value.id)
-                        e.start = it.value
-                    if (e.endId == it.value.id)
-                        e.end = it.value
-                    if (e.start != null && e.end != null) {
-                        edgeAddedNotification(context, e)
-                        edgesToAdd.remove(e)
-                    }
-                }
-            }
         }
         return Database.currentDatabase.routeDatabase.getRoute(nodes, edges, zones)
     }
@@ -499,6 +428,7 @@ object RouteMapHelper {
 
     /**
      * Function that handles the addition of a route from the database
+     * @param context context of the fragment there the edges are display
      * @param edge new edge
      */
     fun edgeAddedNotification(context: Context?, edge: RouteEdge) {
@@ -511,7 +441,7 @@ object RouteMapHelper {
         option.color(Color.argb(50, 0, 0, 0))
         option.clickable(true)
         val route = map!!.addPolyline(option)
-        if(context != null)
+        if (context != null)
             route.width = LINE_WIDTH_DP.dpToPixelsFloat(context)
         //tag used to know which polyline has been clicked
         if (context != null) {
@@ -587,7 +517,6 @@ object RouteMapHelper {
         attachables = Pair(null, null)
     }
 
-    //TODO move variables
     var startMarker: Marker? = null
     var endMarker: Marker? = null
 
@@ -607,7 +536,7 @@ object RouteMapHelper {
         val pos2 = LatLng(pos.latitude, pos.longitude + longDiff)
         val option = PolylineOptions().add(pos1).add(pos2).color(Color.RED)
         tempPolyline = map!!.addPolyline(option)
-        if(context != null)
+        if (context != null)
             tempPolyline!!.width = LINE_WIDTH_DP.dpToPixelsFloat(context)
         tempLatLng.clear()
         tempLatLng.add(pos1)
@@ -626,7 +555,7 @@ object RouteMapHelper {
         val endPos = points[1]
 
         var dim_dp = 35
-        if(context != null){
+        if (context != null) {
             dim_dp = dim_dp.dpToPixelsFloat(context).toInt()
         }
 

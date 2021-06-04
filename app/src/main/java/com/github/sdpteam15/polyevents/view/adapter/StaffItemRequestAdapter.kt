@@ -23,12 +23,19 @@ import com.github.sdpteam15.polyevents.view.activity.staff.StaffRequestsActivity
 import java.time.format.DateTimeFormatter
 
 /**
- * Recycler Adapter for the list of items
- * Shows each item with its available quantity
+ * Recycler Adapter for the list of material requests for staff
+ * Shows each material request information and buttons to update the material request status
  * @param context context of parent view used to inflate new views
  * @param lifecycleOwner parent to enable observables to stop observing when the lifecycle is closed
  * @param requests List of all item requests
+ * @param itemNames map from item id to item name
+ * @param typeToDisplay the item request category to display
  * @param userNames Username map to retrieve usernames given their userid
+ * @param zoneNameFromEventId map from event id to zone names
+ * @param staffId id of the current staff user
+ * @param onAcceptListener listener to accept a material request assignment
+ * @param onCancelListener listener to cancel an accepted material request assignment
+ * @param onDeliveredListener listener to confirm the item delivery
  */
 class StaffItemRequestAdapter(
     context: Context,

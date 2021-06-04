@@ -23,24 +23,25 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     @SuppressLint("StaticFieldLeak")
     var firestore: FirebaseFirestore? = null
         get() = field ?: Firebase.firestore
-    val localCache by lazy { LocalCacheAdapter(this) }
+
+    private val localCache by lazy { LocalCacheAdapter(this) }
 
     override var itemDatabase: ItemDatabaseInterface =
-        ItemDatabase(this)
+        ItemDatabase(localCache)
     override var zoneDatabase: ZoneDatabaseInterface =
-        ZoneDatabase(this)
+        ZoneDatabase(localCache)
     override var userDatabase: UserDatabaseInterface =
-        UserDatabase(this)
+        UserDatabase(localCache)
     override var heatmapDatabase: HeatmapDatabaseInterface =
         HeatmapDatabase(this)
     override var eventDatabase: EventDatabaseInterface =
-        EventDatabase(this)
+        EventDatabase(localCache)
     override var materialRequestDatabase: MaterialRequestDatabaseInterface =
-        MaterialRequestDatabase(this)
+        MaterialRequestDatabase(localCache)
     override var routeDatabase: RouteDatabaseInterface =
         RouteDatabase(localCache)
     override var userSettingsDatabase: UserSettingsDatabaseInterface =
-        UserSettingsDatabase(this)
+        UserSettingsDatabase(localCache)
 
     override val currentUserObservable = Observable<UserEntity>()
     private var loadSuccess: Boolean? = false
@@ -148,6 +149,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         val document = firestore!!
             .collection(collection.value)
             .document(id)
+
         adapter.toDocument(element).apply({
             document.set(it)
         }, lazy { document.delete() })
@@ -184,8 +186,8 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             val document = firestore!!
                 .collection(collection.value)
                 .document(elementWithIndex.value.first)
-            elementWithIndex.value.second
-                .apply(document.delete()) { document.set(adapter.toDocumentWithoutNull(it)) }
+            adapter.toDocument(elementWithIndex.value.second)
+                .apply(document.delete()) { document.set(it) }
                 .addOnSuccessListener {
                     checkIfDone(elementWithIndex.index, true)
                 }
@@ -276,6 +278,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             }
         }
 
+        // for each ids start to retrieve the data from database
         for (idWithIndex in ids.withIndex()) {
             fsCollection.document(idWithIndex.value)
                 .get()
@@ -296,11 +299,14 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         adapter: AdapterFromDocumentInterface<out T>
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
+
+        // apply the matcher
         (matcher?.match(FirestoreQuery(fsCollection)) ?: FirestoreQuery(fsCollection))
             .get()
             .observeOnce {
                 it.value.first.apply { qs ->
                     val map = mutableMapOf<String, T>()
+                    // add all elements that satisfies the matcher to the ObservableMap
                     qs.forEach { e ->
                         adapter.fromDocument(e.data, e.id)
                             .apply { value -> map[e.id] = value }

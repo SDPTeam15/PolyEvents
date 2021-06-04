@@ -8,13 +8,10 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.DeviceLocationAdapter
 import com.github.sdpteam15.polyevents.model.entity.DeviceLocation
-import com.github.sdpteam15.polyevents.model.map.GoogleMapOptions.neBound
-import com.github.sdpteam15.polyevents.model.map.GoogleMapOptions.swBound
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDateTime
-import kotlin.random.Random
 
 class HeatmapDatabase(private val db: DatabaseInterface) : HeatmapDatabaseInterface {
 
@@ -39,14 +36,11 @@ class HeatmapDatabase(private val db: DatabaseInterface) : HeatmapDatabaseInterf
         )
     }
 
-    //TODO : remove the added points for the final
     override fun getLocations(
         usersLocations: ObservableList<LatLng>
-    ): Observable<Boolean> {
-        val tempUsersLocations = ObservableList<LatLng>()
-        val end = Observable<Boolean>()
+    ): Observable<Boolean> =
         db.getListEntity(
-            tempUsersLocations,
+            usersLocations,
             null,
             { collection ->
                 collection.whereGreaterThan(
@@ -61,32 +55,5 @@ class HeatmapDatabase(private val db: DatabaseInterface) : HeatmapDatabaseInterf
                 override fun fromDocument(document: Map<String, Any?>, id: String): LatLng =
                     DeviceLocationAdapter.fromDocument(document, id).location
             }
-        ).observeOnce {
-            if (!it.value)
-                end.postValue(it.value, it.sender)
-        }
-        tempUsersLocations.observeOnce(false) {
-            val list = mutableListOf<LatLng>()
-            for (e in it.value)
-                list.add(e)
-
-            val dl = 0.0002
-            for (i in 1..5) {
-                val latitude = Random.nextDouble(swBound.latitude, neBound.latitude)
-                val longitude = Random.nextDouble(swBound.longitude, neBound.longitude)
-                for (j in 0..Random.nextInt(5, 75)) {
-                    list.add(
-                        LatLng(
-                            latitude + Random.nextDouble(-dl, dl),
-                            longitude + Random.nextDouble(-dl, dl)
-                        )
-                    )
-                }
-            }
-
-            usersLocations.addAll(list, it.sender)
-            end.postValue(true, it.sender)
-        }
-        return end
-    }
+        )
 }

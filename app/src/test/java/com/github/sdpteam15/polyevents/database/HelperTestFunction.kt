@@ -122,7 +122,7 @@ object HelperTestFunction {
 
     class GetListEntityArgs(
         val element: ObservableList<in Any>,
-        val ids: MutableList<String>?,
+        val ids: List<String>?,
         val matcher: Matcher?,
         val collection: DatabaseConstant.CollectionConstant,
         val adapter: AdapterFromDocumentInterface<in Any>? //'in E' is '? super E' in java
@@ -338,7 +338,7 @@ object HelperTestFunction {
             lastGetListEntityQueue.add(
                 GetListEntityArgs(
                     iterator.next() as ObservableList<Any>,
-                    iterator.next() as MutableList<String>?,
+                    iterator.next() as List<String>?,
                     iterator.next() as Matcher?,
                     iterator.next() as DatabaseConstant.CollectionConstant,
                     iterator.next() as AdapterFromDocumentInterface<Any>?,

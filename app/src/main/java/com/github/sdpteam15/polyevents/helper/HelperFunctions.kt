@@ -3,6 +3,7 @@ package com.github.sdpteam15.polyevents.helper
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -23,9 +24,12 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.toInt
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.view.fragments.ProgressDialogFragment
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.Timestamp
+import com.squareup.okhttp.Dispatcher
+import kotlinx.coroutines.Dispatchers
 import java.time.*
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -393,7 +397,8 @@ object HelperFunctions {
      * @param supportFragmentManager The support fragment manager to display the dialog
      */
     fun showProgressDialog(
-        lifecycle: LifecycleOwner, listObservable: List<Observable<*>>,
+        lifecycle: LifecycleOwner,
+        listObservable: List<Observable<*>>,
         supportFragmentManager: FragmentManager
     ) {
         val progressDialogFragment = ProgressDialogFragment(
