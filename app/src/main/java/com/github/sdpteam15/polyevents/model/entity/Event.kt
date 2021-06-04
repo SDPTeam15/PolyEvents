@@ -42,6 +42,7 @@ data class Event(
     var status: EventStatus? = null,
     var adminMessage: String? = null,
     var eventEditId: String? = null,
+    // Not used currently
     var icon: Bitmap? = null,
 
     private var limitedEvent: Boolean = false,
