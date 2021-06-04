@@ -14,10 +14,13 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.helper.DatabaseHelper.addToUsersFromDB
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
-import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
-import com.github.sdpteam15.polyevents.model.entity.*
+import com.github.sdpteam15.polyevents.model.entity.Event
+import com.github.sdpteam15.polyevents.model.entity.Item
+import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
+import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
@@ -44,10 +47,10 @@ class ItemRequestManagementActivity : AppCompatActivity() {
 
         requests.observeAdd(this) {
             if (!userNames.containsKey(it.value.userId)) {
-                addToUsersFromDB(it.value.userId)
+                addToUsersFromDB(it.value.userId, userNames, this, this)
             }
             if (it.value.staffInChargeId != null && !userNames.containsKey(it.value.staffInChargeId!!)) {
-                addToUsersFromDB(it.value.staffInChargeId!!)
+                addToUsersFromDB(it.value.staffInChargeId!!, userNames, this, this)
             }
         }
 
@@ -138,23 +141,6 @@ class ItemRequestManagementActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Gets the username of the given userId from the database and adds it to the userNames map
-     */
-    private fun addToUsersFromDB(userId: String) {
-        val tempUsers = Observable<UserEntity>()
-        Database.currentDatabase.userDatabase.getUserInformation(tempUsers, userId)
-            .observeOnce(this) { ans ->
-                if (ans.value) {
-                    userNames[userId] = tempUsers.value?.name ?: "ANONYMOUS"
-                } else {
-                    HelperFunctions.showToast(
-                        getString(R.string.failed_to_get_username_from_database),
-                        this
-                    )
-                }
-            }
-    }
 
     /**
      * Checks if the material request can be accepted

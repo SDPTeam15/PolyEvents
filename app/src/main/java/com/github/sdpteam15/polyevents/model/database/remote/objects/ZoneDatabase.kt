@@ -30,7 +30,14 @@ class ZoneDatabase(private val db: DatabaseInterface) : ZoneDatabaseInterface {
         db.getListEntity(
             zones,
             null,
-            { it.whereNotEqualTo(ZONE_STATUS.value, DELETED.ordinal.toLong()) },
+            {
+                val query = it.whereNotEqualTo(ZONE_STATUS.value, DELETED.ordinal.toLong())
+                if(number == null) {
+                    query
+                }else{
+                    query.limit(number)
+                }
+            },
             ZONE_COLLECTION,
             ZoneAdapter
         )
