@@ -168,12 +168,7 @@ class EventActivityTest {
                 notificationMessage = anyOrNull(),
                 scheduledTime = anyOrNull()
             )
-        ).then {
-            val temp = notificationId
-            notificationId += 1
-            temp
-        }
-
+        ).thenReturn(notificationId)
         // Create local db
         val context: Context = ApplicationProvider.getApplicationContext()
         // Using an in-memory database because the information stored here disappears when the
@@ -207,6 +202,8 @@ class EventActivityTest {
 
         goToEventActivityWithIntent(limitedEventId)
 
+        Thread.sleep(1000)
+
         assertDisplayed(R.id.fragment_progress_dialog)
     }
 
@@ -229,6 +226,8 @@ class EventActivityTest {
     @Test
     fun eventActivityCorrectlyShowsEvent() {
         goToEventActivityWithIntent(limitedEventId)
+
+        Thread.sleep(1000)
 
         onView(withId(R.id.txt_event_Name))
             .check(matches(withText(containsString(testLimitedEvent.eventName))))
@@ -253,7 +252,6 @@ class EventActivityTest {
         assertEnabled(R.id.button_subscribe_follow_event)
         assertDisplayed(R.id.event_leave_review_button)
         assertEnabled(R.id.event_leave_review_button)
-        //TODO check image is correct
     }
 
     @Test
@@ -267,6 +265,8 @@ class EventActivityTest {
 
         goToEventActivityWithIntent(limitedEventId)
 
+        Thread.sleep(1000)
+
         // Event name displayed is empty in that case
         assertDisplayed(R.id.txt_event_Name, "")
         assertDisabled(R.id.button_subscribe_follow_event)
@@ -276,6 +276,8 @@ class EventActivityTest {
     @Test
     fun testEventSubscription() {
         goToEventActivityWithIntent(limitedEventId)
+
+        Thread.sleep(1000)
 
         clickOn(R.id.button_subscribe_follow_event)
 
@@ -297,6 +299,8 @@ class EventActivityTest {
     @Test
     fun testEventSubscriptionUpdatesLocalDatabase() = runBlocking {
         goToEventActivityWithIntent(limitedEventId)
+
+        Thread.sleep(1000)
 
         // Subscribe to event
         clickOn(R.id.button_subscribe_follow_event)
@@ -325,6 +329,8 @@ class EventActivityTest {
 
         goToEventActivityWithIntent(limitedEventId)
 
+        Thread.sleep(1000)
+
         assertDisplayed(R.id.button_subscribe_follow_event, R.string.event_subscribe)
 
         clickOn(R.id.button_subscribe_follow_event)
@@ -339,6 +345,8 @@ class EventActivityTest {
 
         goToEventActivityWithIntent(limitedEventId)
 
+        Thread.sleep(1000)
+
         assertDisplayed(R.id.button_subscribe_follow_event, R.string.event_subscribe)
 
         clickOn(R.id.button_subscribe_follow_event)
@@ -352,6 +360,7 @@ class EventActivityTest {
         testLimitedEvent.addParticipant(uid)
 
         goToEventActivityWithIntent(limitedEventId)
+        Thread.sleep(1000)
         assert(EventActivity.obsEvent.value!!.getParticipants().contains(uid))
 
         assertDisplayed(R.id.button_subscribe_follow_event, R.string.event_unsubscribe)
@@ -375,6 +384,8 @@ class EventActivityTest {
 
         goToEventActivityWithIntent(limitedEventId)
 
+        Thread.sleep(1000)
+
         // Nothing displayed
         onView(withId(R.id.txt_event_Name))
             .check(matches(withText(containsString(""))))
@@ -397,6 +408,8 @@ class EventActivityTest {
 
         goToEventActivityWithIntent(limitedEventId)
 
+        Thread.sleep(1000)
+
         assertDisplayed(R.id.button_subscribe_follow_event, R.string.event_follow)
     }
 
@@ -404,6 +417,7 @@ class EventActivityTest {
     fun testLeaveReviewIsCorrectlyDisplayed() {
         goToEventActivityWithIntent(limitedEventId)
         assertDisplayed(R.id.event_leave_review_button)
+        Thread.sleep(1000)
 
         // Click review event
         clickOn(R.id.event_leave_review_button)
@@ -428,6 +442,8 @@ class EventActivityTest {
         When(mockedDatabase.currentUser).thenReturn(null)
         goToEventActivityWithIntent(limitedEventId)
 
+        Thread.sleep(1000)
+
         assertNotExist(R.id.leave_review_fragment_save_button)
         assertNotExist(R.id.leave_review_fragment_title)
         assertNotExist(R.id.leave_review_fragment_rating)
@@ -438,6 +454,7 @@ class EventActivityTest {
     @Test
     fun testUserShouldNotBeAbleToStoreRatingIfHasNotRatedYet() {
         goToEventActivityWithIntent(limitedEventId)
+        Thread.sleep(1000)
         assertDisplayed(R.id.event_leave_review_button)
 
         // Click review event
@@ -463,6 +480,8 @@ class EventActivityTest {
         }
 
         goToEventActivityWithIntent(limitedEventId)
+
+        Thread.sleep(1000)
 
         // Click review event
         clickOn(R.id.event_leave_review_button)
@@ -490,6 +509,8 @@ class EventActivityTest {
         }
 
         goToEventActivityWithIntent(limitedEventId)
+
+        Thread.sleep(1000)
 
         // Click review event
         clickOn(R.id.event_leave_review_button)
@@ -537,6 +558,8 @@ class EventActivityTest {
 
         goToEventActivityWithIntent(limitedEventId)
 
+        Thread.sleep(1000)
+
         // Click review event
         clickOn(R.id.event_leave_review_button)
         assertDisplayed(R.id.leave_review_dialog_fragment)
@@ -557,6 +580,8 @@ class EventActivityTest {
     @Test
     fun staysOnFragmentIfNotRated() {
         goToEventActivityWithIntent(limitedEventId)
+
+        Thread.sleep(1000)
 
         // Click review event
         clickOn(R.id.event_leave_review_button)
@@ -599,6 +624,8 @@ class EventActivityTest {
         }
 
         goToEventActivityWithIntent(limitedEventId)
+
+        Thread.sleep(1000)
 
         // Click review event
         clickOn(R.id.event_leave_review_button)
@@ -652,6 +679,8 @@ class EventActivityTest {
 
         goToEventActivityWithIntent(limitedEventId)
 
+        Thread.sleep(1000)
+
         // Click review event
         clickOn(R.id.event_leave_review_button)
         assertDisplayed(R.id.leave_review_dialog_fragment)
@@ -703,6 +732,8 @@ class EventActivityTest {
 
         goToEventActivityWithIntent(limitedEventId)
 
+        Thread.sleep(1000)
+
         // Click review event
         clickOn(R.id.event_leave_review_button)
         assertDisplayed(R.id.leave_review_dialog_fragment)
@@ -721,7 +752,7 @@ class EventActivityTest {
     @Test
     fun testFollowEventButtonIsDisplayed() {
         goToEventActivityWithIntent(publicEventId)
-
+        Thread.sleep(1000)
         assertDisplayed(R.id.button_subscribe_follow_event, R.string.event_follow)
     }
 
@@ -730,6 +761,8 @@ class EventActivityTest {
         When(mockedEventDatabase.currentUser).thenReturn(null)
 
         goToEventActivityWithIntent(publicEventId)
+        Thread.sleep(1000)
+
         assertDisplayed(R.id.button_subscribe_follow_event, R.string.event_follow)
         // Click on follow event
         clickOn(R.id.button_subscribe_follow_event)
@@ -744,6 +777,8 @@ class EventActivityTest {
         When(mockedEventDatabase.currentUser).thenReturn(null)
 
         goToEventActivityWithIntent(publicEventId)
+        Thread.sleep(1000)
+
         assertDisplayed(R.id.button_subscribe_follow_event, R.string.event_follow)
         // Click on follow event
         clickOn(R.id.button_subscribe_follow_event)
@@ -754,6 +789,8 @@ class EventActivityTest {
 
         // Now unfollow
         clickOn(R.id.button_subscribe_follow_event)
+
+        Thread.sleep(1000)
         val retrievedEventsAfterUnfollow = localDatabase.eventDao().getEventById(publicEventId)
         assert(retrievedEventsAfterUnfollow.isEmpty())
     }
@@ -764,7 +801,7 @@ class EventActivityTest {
         localDatabase.eventDao().insert(EventLocal.fromEvent(testPublicEvent))
 
         goToEventActivityWithIntent(publicEventId)
-        Thread.sleep(100)
+        Thread.sleep(1000)
         assertDisplayed(R.id.button_subscribe_follow_event, R.string.event_unfollow)
 
         val retrievedEvents = localDatabase.eventDao().getEventById(publicEventId)
@@ -781,6 +818,8 @@ class EventActivityTest {
     @Test
     fun testNotificationsNotScheduledIfEventAlreadyEnded() {
         goToEventActivityWithIntent(publicEventId)
+
+        Thread.sleep(1000)
 
         val currentTime = LocalDateTime.of(2021, 6, 3, 22, 30, 0)
         val eventStartTime = LocalDateTime.of(2021, 6, 3, 18, 0, 0)
@@ -807,6 +846,8 @@ class EventActivityTest {
     fun testOnlyOneNotificationAtEventStartIfAlreadyStarted() {
         goToEventActivityWithIntent(publicEventId)
 
+        Thread.sleep(1000)
+
         val currentTime = LocalDateTime.of(2021, 6, 3, 22, 30, 0)
         val eventStartTime = LocalDateTime.of(2021, 6, 3, 18, 0, 0)
         val eventEndTime = LocalDateTime.of(2021, 6, 3, 23, 0, 0)
@@ -831,6 +872,8 @@ class EventActivityTest {
     @Test
     fun testNotificationsScheduledIfEventHasNotStarted() {
         goToEventActivityWithIntent(publicEventId)
+
+        Thread.sleep(1000)
 
         val currentTime = LocalDateTime.of(2021, 6, 3, 6, 30, 0)
         val eventStartTime = LocalDateTime.of(2021, 6, 3, 18, 0, 0)

@@ -288,7 +288,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
             text = event.tags.joinToString { s -> s }
         }
         findViewById<ImageView>(R.id.img_event_logo).apply {
-            //TODO : change image
+            // change image
         }
 
         leaveReviewButton.isEnabled = true

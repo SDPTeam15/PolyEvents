@@ -36,7 +36,6 @@ import com.github.sdpteam15.polyevents.view.adapter.EventItemAdapter
 import com.github.sdpteam15.polyevents.view.fragments.home.VisitorHomeFragment
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
-import com.google.firebase.auth.FirebaseAuth
 import org.hamcrest.Matchers
 import org.junit.After
 import org.junit.Before
@@ -130,8 +129,7 @@ class ProfileLoginFragmentTests {
         currentDatabase = FirestoreDatabaseProvider
     }
 
-/*
-Test that works perfectly locally and unfortunately failed 5 times out of 6 on the beautiful Cirrus-Ci ..........................
+/* Test that works perfectly locally and unfortunately failed 5 times out of 6 on the beautiful Cirrus-Ci ..........................
     @Test
     fun signInCalledTheCorrectMethod() {
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
@@ -149,7 +147,7 @@ Test that works perfectly locally and unfortunately failed 5 times out of 6 on t
         assert(GoogleUserLogin.signIn != null)
         GoogleUserLogin.firebaseAuth = null
     }
-      @Test
+    @Test
     fun clickOnSignInLaunchTheCorrectIntent() {
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         loginFragment.currentUser = null
@@ -169,8 +167,8 @@ Test that works perfectly locally and unfortunately failed 5 times out of 6 on t
         assert(set)
         UserLogin.currentUserLogin = GoogleUserLogin
     }
-
 */
+
     /**
      * Helper method that bypass the check if the user is in database and directly return true
      */
@@ -187,8 +185,6 @@ Test that works perfectly locally and unfortunately failed 5 times out of 6 on t
         //click on the given button to go further in the appliction
         onView(withId(id)).perform(click())
     }
-
-
 
     @Test
     fun receveivedInfoTriggerTheLogin() {
@@ -448,7 +444,6 @@ Test that works perfectly locally and unfortunately failed 5 times out of 6 on t
         //remove current user so that we stay on login fragment
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         loginFragment.currentUser = null
-        Thread.sleep(1000)
         onView(withId(R.id.ic_login)).perform(click())
         //make sure we are on login fragment
         onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))

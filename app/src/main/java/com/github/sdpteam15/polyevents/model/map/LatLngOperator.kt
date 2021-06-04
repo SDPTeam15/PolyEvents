@@ -289,6 +289,7 @@ object LatLngOperator {
 
         /**
          * Gets the list of LatLng from the polygon
+         * @return the list of LatLng points
          */
         fun toLatLongList(): MutableList<LatLng> {
             val list = mutableListOf<LatLng>()
@@ -443,12 +444,15 @@ object LatLngOperator {
 
         val finalShape =
             mutableListOf<Pair<MutableList<LatLng>, MutableList<MutableList<LatLng>>?>>()
+        // at each iteration we merge rectangles that overlap together and add them to the finalShape
         while (remainingRectangles.isNotEmpty()) {
+            // the external border of the current "rectangle merging" and its eventual holes
             var outerShape = remainingRectangles.removeFirst().toMutableList()
-
             var holes = mutableListOf<MutableList<LatLng>>()
-
+            // we form a queue to take first the rectangles that have not been looked at before
+            // checking with rectangles that are verified outside the zone
             val queuedRectangles = ArrayDeque(remainingRectangles)
+            // rectangles that do not intersect with the current rectangle merging
             val notIntersecting = mutableListOf<List<LatLng>>()
             while (queuedRectangles.isNotEmpty()) {
                 val rectangle = queuedRectangles.pollFirst()!!
@@ -457,7 +461,7 @@ object LatLngOperator {
                     Polygon(rectangle),
                     UNION
                 )
-                // if union is disjoint
+                // if union is disjoint, there will be 2 shapes in unionShape
                 if (unionShape.size > 1) {
                     notIntersecting.add(rectangle)
                     continue
@@ -467,6 +471,7 @@ object LatLngOperator {
                     queuedRectangles.addLast(notIntersecting.removeFirst())
                 }
                 remainingRectangles.remove(rectangle)
+                // the new hole is the difference between the old holes and the new added rectangle
                 val newHoles = unionShape[0].second ?: mutableListOf()
                 for (hole in holes.toMutableList()) {
                     for (newHole in polygonOperation(
@@ -477,7 +482,7 @@ object LatLngOperator {
                     }
                 }
                 holes = newHoles
-
+                // the outerShape is the union between the old polygon and the new added rectangle
                 outerShape = unionShape[0].first
             }
 
@@ -667,7 +672,6 @@ object LatLngOperator {
      * @return
      *
      */
-
     private fun checkForTrivialCases(
         subject: Polygon,
         clip: Polygon,
@@ -689,6 +693,7 @@ object LatLngOperator {
         }
 
         if (subjectInClip && clipInSubject) {
+            //polygons are the same
             return when (polygonOperationType) {
                 UNION, INTERSECTION -> mutableListOf(
                     Pair(
@@ -699,6 +704,8 @@ object LatLngOperator {
             }
         }
 
+        // check for each operation if the subject is totally included in clip without intersecting edges
+        // same with clip in subject and check for disjoint polygons too
         if (!existingIntersections) {
             when (polygonOperationType) {
                 UNION -> {
@@ -748,6 +755,15 @@ object LatLngOperator {
         return null
     }
 
+    /**
+     * Used in phase2 of polygonOperation
+     * Sets the entry/exit markers at each intersection of polygon1.
+     * We walk on polygon1 and at each intersection with polygon2, we set the entry/exit alternatively
+     * Also adds the intersection points to the subjectIntersection list
+     * @param polygon1 the subject polygon
+     * @param polygon2 the clip polygon
+     * @param subjectIntersections the list of intersections
+     */
     private fun setEntriesExits(
         polygon1: Polygon,
         polygon2: Polygon,

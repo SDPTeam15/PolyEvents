@@ -14,11 +14,15 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableList
 
 /**
  * Adapts items to RecyclerView ItemsViews
+ * @param lifecycleOwner the lifecycleOwner for the observers
+ * @param items the list of items with their total quantities and their remaining quantities
+ * @param addItemListener the listener to notify when we want to add an item to the DB
+ * @param removeItemListener the listener to notify when we want to remove an item to the DB
  */
 class ItemAdapter(
     lifecycleOwner: LifecycleOwner,
     private val items: ObservableList<Triple<Item, Int, Int>>,
-    private val addItemlistener: (Triple<Item, Int, Int>) -> Unit,
+    private val addItemListener: (Triple<Item, Int, Int>) -> Unit,
     private val removeItemListener: (Triple<Item, Int, Int>) -> Unit
 ) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
@@ -49,7 +53,7 @@ class ItemAdapter(
                 removeItemListener(item)
             }
             btnModify.setOnClickListener {
-                addItemlistener(item)
+                addItemListener(item)
             }
 
             itemName.text = item.first.itemName
@@ -68,7 +72,7 @@ class ItemAdapter(
         val item = items[position]
         holder.bind(item)
         holder.itemView.setOnClickListener {
-            addItemlistener(item)
+            addItemListener(item)
         }
     }
 

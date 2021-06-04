@@ -80,8 +80,9 @@ class SettingsFragmentTest {
 
         clickOn(R.id.fragment_settings_button_reset_settings)
 
-        assertUnchecked(R.id.fragment_settings_track_location_switch)
-        assertUnchecked(R.id.fragment_settings_is_sending_location_switch)
+        // By default track location and send location are on
+        assertChecked(R.id.fragment_settings_track_location_switch)
+        assertChecked(R.id.fragment_settings_is_sending_location_switch)
 
         val retrieved = localTestDatabase.userSettingsDao().get()
         assert(retrieved.isNotEmpty())
@@ -96,20 +97,20 @@ class SettingsFragmentTest {
         // reset user settings to default first
         clickOn(R.id.fragment_settings_button_reset_settings)
         assertDisplayed(R.id.fragment_settings_is_sending_location_switch)
-        assertUnchecked(R.id.fragment_settings_is_sending_location_switch)
+        assertChecked(R.id.fragment_settings_is_sending_location_switch)
 
         assertDisplayed(R.id.fragment_settings_track_location_switch)
-        assertUnchecked(R.id.fragment_settings_track_location_switch)
+        assertChecked(R.id.fragment_settings_track_location_switch)
 
-        // Set track location on
+        // Set track location off
         clickOn(R.id.fragment_settings_track_location_switch)
         clickOn(R.id.fragment_settings_button_save)
 
-        assertChecked(R.id.fragment_settings_track_location_switch)
+        assertUnchecked(R.id.fragment_settings_track_location_switch)
 
         // Check if correctly updated in local database
         val retrievedUserSettings = localTestDatabase.userSettingsDao().get()
         assert(retrievedUserSettings.isNotEmpty())
-        assertEquals(retrievedUserSettings[0].trackLocation, true)
+        assertEquals(retrievedUserSettings[0].trackLocation, false)
     }
 }

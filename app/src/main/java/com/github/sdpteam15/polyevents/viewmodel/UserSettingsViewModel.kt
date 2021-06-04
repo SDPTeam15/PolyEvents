@@ -14,10 +14,19 @@ import kotlinx.coroutines.launch
  */
 class UserSettingsViewModel(private val userSettingsDao: UserSettingsDao) : ViewModel() {
 
+    /**
+     * Get the user settings stored in local cache
+     * @param obs the observable to be updated with the user settings once they're fetched from
+     * the local database
+     */
     fun getUserSettings(obs: ObservableList<UserSettings>) = viewModelScope.launch {
         obs.updateAll(userSettingsDao.get())
     }
 
+    /**
+     * Update the user settings in the local cache
+     * @param userSettings the new settings to store in the local cache
+     */
     fun updateUserSettings(userSettings: UserSettings) = viewModelScope.launch {
         userSettingsDao.insert(userSettings)
     }

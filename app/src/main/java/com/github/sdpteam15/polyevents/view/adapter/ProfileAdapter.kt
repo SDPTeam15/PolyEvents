@@ -15,6 +15,12 @@ import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.fragments.ProfileFragment
 import kotlinx.coroutines.Dispatchers
 
+/**
+ * Adapter for the RecyclerView on ProfileFragment
+ * @param profileFragment the related ProfileFragment
+ * @param user User related to the profiles
+ * @param items Profile to display
+ */
 class ProfileAdapter(
     private val profileFragment: ProfileFragment,
     private val user: UserEntity,
@@ -44,7 +50,7 @@ class ProfileAdapter(
          */
         fun bind(item: UserProfile) {
             val moreText = if (item.defaultProfile) {
-                "(Default)"
+                profileFragment.getString(R.string.DefaultProfile)
             } else {
                 ""
             }

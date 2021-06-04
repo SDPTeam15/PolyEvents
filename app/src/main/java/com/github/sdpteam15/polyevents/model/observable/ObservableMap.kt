@@ -17,11 +17,21 @@ class ObservableMap<K, T>(val creator: Any? = null) : MutableMap<K, T> {
     private val mapValues: MutableMap<K, Observable<T>> = mutableMapOf()
     private val removeItemObserver: MutableMap<Observable<T>, () -> Boolean> = mutableMapOf()
 
+    /**
+     * Use an UpdateKeyedValue object each time we want to set a new value for the data.
+     * It contains the new value and eventually the object that set the new value.
+     * @property value the value
+     * @property key the key
+     * @property sender object that modified the data
+     */
     open class UpdateKeyedValue<K, T>(value: T, val key: K, sender: Any?) :
         Observable.UpdateValue<T>(value, sender) {
         override fun toString() = "value:'$value', key:'$key', sender:'$sender'"
     }
 
+    /**
+     * Use an ObserversInfo object each time we want notify an update of the map
+     */
     class ObserversInfo<K, T>(
         value: Map<K, T>,
         val info: Info,
@@ -31,6 +41,9 @@ class ObservableMap<K, T>(val creator: Any? = null) : MutableMap<K, T> {
         override fun toString() = "value:'$value', info:$info, args:'$args', sender:'$sender'"
     }
 
+    /**
+     * Update type
+     */
     enum class Info {
         put,
         putAll,
@@ -688,10 +701,7 @@ class ObservableMap<K, T>(val creator: Any? = null) : MutableMap<K, T> {
                     Info.clear -> {
                         observableList.clear(it.sender)
                     }
-                    Info.itemUpdated -> {
-                        val value = it.args as UpdateKeyedValue<K, T>
-                        //TODO IF NEEDED
-                    }
+                    Info.itemUpdated -> { }
                 }
                 condition()
             }
