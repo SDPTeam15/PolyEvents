@@ -9,10 +9,7 @@ import android.os.Build
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.Scope
 import com.github.sdpteam15.polyevents.model.database.local.room.LocalDatabase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 
 // TODO: consider instantiating Firebase database here

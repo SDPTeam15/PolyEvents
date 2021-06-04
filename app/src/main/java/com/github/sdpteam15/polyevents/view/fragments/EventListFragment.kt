@@ -192,13 +192,13 @@ class EventListFragment : Fragment() {
                 DatabaseConstant.EventConstant.EVENT_END_TIME.value,
                 HelperFunctions.localDateTimeToDate(LocalDateTime.now())!!
             )
-        }).observe(this) {
+        }).observe(requireActivity()) {
             if (!it.value) {
                 showToast(getString(R.string.fail_to_get_information), context)
             } else {
                 fetchedDataFromRemote = true
             }
-        }.then.updateOnce(this, observableDBAnswer)
+        }.then.updateOnce(requireActivity(), observableDBAnswer)
 
         HelperFunctions.showProgressDialog(
             requireActivity(), listOf(

@@ -149,7 +149,7 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
     ): Observable<Boolean> =
         db.getListEntity(
             profiles,
-            user.profiles,
+            user.profiles.toList(),
             null,
             PROFILE_COLLECTION
         )
@@ -160,7 +160,7 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
     ): Observable<Boolean> =
         db.getListEntity(
             users,
-            profile.users,
+            profile.users.toList(),
             null,
             USER_COLLECTION
         )

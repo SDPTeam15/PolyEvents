@@ -17,6 +17,8 @@ import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
+import kotlinx.coroutines.Dispatchers
 import java.time.LocalDateTime
 
 class EventManagementActivity : AppCompatActivity() {
@@ -288,7 +290,7 @@ class EventManagementActivity : AppCompatActivity() {
             updateTextDate(TYPE_START)
 
             // Select the correct organiser
-            organiserObserver.observeOnce(this) {
+            organiserObserver.observe(this) {
                 var idx = 0
                 for (u in it.value.withIndex()) {
                     if (u.value.uid == event.organizer) {
@@ -296,11 +298,13 @@ class EventManagementActivity : AppCompatActivity() {
                         break
                     }
                 }
-                spinnerOrg.setSelection(idx)
+                PolyEventsApplication.application.applicationScope.launch(Dispatchers.Main) {
+                    spinnerOrg.setSelection(idx)
+                }
             }
 
             // Select the correct zone
-            zoneObserver.observeOnce(this) {
+            zoneObserver.observe(this) {
                 var idx = 0
                 for (u in it.value.withIndex()) {
                     if (u.value.zoneId == event.zoneId) {
@@ -308,7 +312,9 @@ class EventManagementActivity : AppCompatActivity() {
                         break
                     }
                 }
-                spinnerZone.setSelection(idx)
+                PolyEventsApplication.application.applicationScope.launch(Dispatchers.Main) {
+                    spinnerZone.setSelection(idx)
+                }
             }
         }
     }

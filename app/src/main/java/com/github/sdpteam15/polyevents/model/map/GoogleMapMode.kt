@@ -2,6 +2,9 @@ package com.github.sdpteam15.polyevents.model.map
 
 import android.graphics.Color
 
+/**
+ * Helper object that handles the color of the areas
+ */
 object GoogleMapMode {
 
     const val DEFAULT_ZONE_STROKE_COLOR = Color.BLACK
