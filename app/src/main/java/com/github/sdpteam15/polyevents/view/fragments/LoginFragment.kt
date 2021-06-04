@@ -101,7 +101,7 @@ class LoginFragment : Fragment() {
         )
 
         currentDatabase.userDatabase.inDatabase(inDbObservable, currentUser!!.uid)
-            .observe(this) {
+            .observe(requireActivity()) {
                 if (it.value) {
                     // Post the value true otherwise we will fall into an infinite waiting loop
                     obsFirstConnectionEnd.postValue(true, this)

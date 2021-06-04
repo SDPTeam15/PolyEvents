@@ -3,6 +3,9 @@ package com.github.sdpteam15.polyevents.model.map
 import com.google.android.gms.maps.model.LatLng
 import kotlin.math.*
 
+/**
+ * Helper object that handles operations on the Latlng
+ */
 object GoogleMapVectorHelper {
 
     const val EARTH_RADIUS = 6371000

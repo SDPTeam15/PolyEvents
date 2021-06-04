@@ -15,6 +15,9 @@ import com.google.android.gms.maps.model.Polygon
 import com.google.android.gms.maps.model.PolygonOptions
 import kotlin.math.pow
 
+/**
+ * Helper object that handles the areas
+ */
 object ZoneAreaMapHelper {
     private const val INDEX_ROTATION_MARKER = 3
     private const val AREA_WIDTH_DP = 4

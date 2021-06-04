@@ -37,11 +37,14 @@ class EventListAdapter(
     private val noHourText = "No hours defined"
 
     init {
-        allEvents.observe(lifecycleOwner) {
-            for (k in it.value.keys) {
-                if (k !in isZoneOpen) {
-                    isZoneOpen[k] = false
-                }
+        allEvents.observeRemove(lifecycleOwner) {
+            isZoneOpen.remove(it.key)
+            notifyDataSetChanged()
+        }
+
+        allEvents.observePut(lifecycleOwner) {
+            if (it.key !in isZoneOpen) {
+                isZoneOpen[it.key] = false
             }
             notifyDataSetChanged()
         }
@@ -99,7 +102,6 @@ class EventListAdapter(
                     deleteListener(event.zoneId!!, event)
                 }
             }
-
         }
     }
 
