@@ -27,7 +27,6 @@ class ProfileAdapterTest {
     fun conversionOfProfileoDocumentPreservesData() {
         val document = ProfileAdapter.toDocumentWithoutNull(profile)
 
-        Assert.assertEquals(document[DatabaseConstant.ProfileConstants.PROFILE_ID.value], profileId)
         Assert.assertEquals(
             document[DatabaseConstant.ProfileConstants.PROFILE_NAME.value],
             profileName

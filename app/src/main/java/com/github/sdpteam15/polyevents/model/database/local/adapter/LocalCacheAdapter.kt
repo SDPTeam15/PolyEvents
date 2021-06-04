@@ -149,6 +149,11 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
                                 collection.value
                             )
                         )
+                    else
+                        PolyEventsApplication.application.localDatabase.genericEntityDao().delete(
+                            id,
+                            collection.value
+                        )
                 }
             }
         }.then
@@ -165,15 +170,25 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
         ).observeOnce {
             //If set on remote db add it to the cache
             PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
-                for (value in it.value.second.zip(elements))
-                    if (value.first && value.second.second != null)
-                        PolyEventsApplication.application.localDatabase.genericEntityDao().insert(
-                            LocalAdapter.toDocument(
-                                adapter.toDocumentWithoutNull(value.second.second!!),
-                                value.second.first,
-                                collection.value
-                            )
-                        )
+                for (value in it.value.second.zip(elements)) {
+                    if (value.first) {
+                        if (value.second.second != null)
+                            PolyEventsApplication.application.localDatabase.genericEntityDao()
+                                .insert(
+                                    LocalAdapter.toDocument(
+                                        adapter.toDocumentWithoutNull(value.second.second!!),
+                                        value.second.first,
+                                        collection.value
+                                    )
+                                )
+                        else
+                            PolyEventsApplication.application.localDatabase.genericEntityDao()
+                                .delete(
+                                    value.second.first,
+                                    collection.value
+                                )
+                    }
+                }
             }
         }.then
 
@@ -327,23 +342,21 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
             ).observeOnce {
                 if (it.value) {
                     PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
-                        try
-                        {
-                                temp.forEach { element ->
-                                    PolyEventsApplication.application.localDatabase.genericEntityDao()
-                                        .insert(
-                                            LocalAdapter.toDocument(
-                                                (collection.adapter as AdapterToDocumentInterface<T>).toDocumentWithoutNull(
-                                                    element.value
-                                                ),
-                                                element.key,
-                                                collection.value
-                                            )
+                        try {
+                            temp.forEach { element ->
+                                PolyEventsApplication.application.localDatabase.genericEntityDao()
+                                    .insert(
+                                        LocalAdapter.toDocument(
+                                            (collection.adapter as AdapterToDocumentInterface<T>).toDocumentWithoutNull(
+                                                element.value
+                                            ),
+                                            element.key,
+                                            collection.value
                                         )
-                                }
-                                ended.postValue(true, it.sender)
-                        }
-                        catch (e : ClassCastException){
+                                    )
+                            }
+                            ended.postValue(true, it.sender)
+                        } catch (e: ClassCastException) {
                             ended.postValue(true, it.sender)
                         }
                     }
