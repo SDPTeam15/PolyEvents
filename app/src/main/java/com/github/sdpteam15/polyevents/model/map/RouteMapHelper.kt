@@ -28,8 +28,8 @@ import kotlin.math.pow
 
 
 object RouteMapHelper {
-    const val THRESHOLD = 0.00002
-    const val MAGNET_DISTANCE_THRESHOLD = 0.00005
+    const val THRESHOLD = 2e-6
+    const val MAGNET_DISTANCE_THRESHOLD = 5e-6
     const val LINE_WIDTH_DP = 4
     const val LINE_ROUTE_WIDTH_DP = 4
 
