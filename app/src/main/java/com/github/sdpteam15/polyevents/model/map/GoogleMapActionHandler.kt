@@ -25,6 +25,9 @@ object GoogleMapActionHandler {
      * @param mode mode of the map
      * @param context context
      * @param polygon polygon clicked
+     * @param activity activity
+     * @param lifecycle LifecycleOwner
+     * @param locationActivated True if location is activated
      */
     fun onPolygonClickHandler(
         mode: MapsFragmentMod,
@@ -68,6 +71,9 @@ object GoogleMapActionHandler {
     /**
      * Handles the marker click
      * @param marker marker clicked
+     * @param activity activity
+     * @param lifecycle LifecycleOwner
+     * @param locationActivated True if location is activated
      */
     fun onMarkerClickHandler(
         marker: Marker,
@@ -92,6 +98,10 @@ object GoogleMapActionHandler {
         }
     }
 
+    /**
+     * Returns true if the marker is clickable
+     * @param marker marker that has been clicked
+     */
     fun canClickMarker(marker: Marker): Boolean {
         if (marker.equals(RouteMapHelper.startMarker)
             || marker.equals(RouteMapHelper.endMarker)
@@ -129,6 +139,11 @@ object GoogleMapActionHandler {
 
     /**
      * Display Zone Details Bottom Dialog Fragment
+     * @param zoneId zone id
+     * @param zoneName zone name
+     * @param lifecycle lifecycleOwner
+     * @param marker marker that ownes the info window
+     * @param locationActivated is location of the visitor activated
      */
     private fun displayZoneDetailsBottomDialog(
         zoneId: String,

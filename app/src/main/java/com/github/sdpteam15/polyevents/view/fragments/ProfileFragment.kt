@@ -103,7 +103,7 @@ class ProfileFragment(private val userId: String? = null) : Fragment(), UserModi
         currentDatabase.userDatabase.getUserInformation(
             userInfoLiveData,
             currentUID
-        ).updateOnce(this, observableDBAnswer)
+        ).updateOnce(requireActivity(), observableDBAnswer)
 
         HelperFunctions.showProgressDialog(
             requireActivity(), listOf(
@@ -164,20 +164,19 @@ class ProfileFragment(private val userId: String? = null) : Fragment(), UserModi
             //Call the DB to update the user information and getUserInformation once it is done
             currentDatabase.userDatabase.updateUserInformation(
                 currentUser!!
-            ).observe(this) { newValue ->
+            ).observe(requireActivity()) { newValue ->
                 if (newValue.value) {
                     val observableDBAnswer = Observable<Boolean>()
                     currentDatabase.userDatabase.getUserInformation(
                         userInfoLiveData,
                         currentUser!!.uid
-                    ).updateOnce(this, observableDBAnswer)
+                    ).updateOnce(requireActivity(), observableDBAnswer)
 
                     HelperFunctions.showProgressDialog(
                         requireActivity(), listOf(
                             observableDBAnswer
                         ), requireActivity().supportFragmentManager
                     )
-
                 } else {
                     HelperFunctions.showToast(getString(R.string.fail_to_update), activity)
                 }

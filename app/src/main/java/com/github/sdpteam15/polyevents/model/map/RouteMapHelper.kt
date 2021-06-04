@@ -26,7 +26,9 @@ import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
 import kotlin.math.pow
 
-
+/**
+ * Helper object that handles the routes
+ */
 object RouteMapHelper {
     const val THRESHOLD = 2e-6
     const val MAGNET_DISTANCE_THRESHOLD = 5e-6
