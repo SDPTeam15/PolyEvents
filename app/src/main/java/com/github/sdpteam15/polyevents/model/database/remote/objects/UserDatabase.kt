@@ -38,8 +38,6 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
                         defaultProfile = true
                     ), user
                 ).observeOnce {
-                    user.loadSuccess = false
-                    user.userProfiles
                     db.currentUser = user
                 }
             }
@@ -99,7 +97,16 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
                     user,
                     user.uid,
                     USER_COLLECTION
-                ).updateOnce(ended)
+                ).observeOnce {
+                    if(it.value) {
+                        user.userProfiles.add(profile)
+                        ended.postValue(true, it.sender)
+                    }
+                    else{
+                        user.profiles.remove(profile.pid!!)
+                        ended.postValue(true, it.sender)
+                    }
+                }
             } else
                 ended.postValue(false, it.sender)
         }
