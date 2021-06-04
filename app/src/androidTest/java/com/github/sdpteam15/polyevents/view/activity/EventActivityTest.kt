@@ -48,7 +48,8 @@ import java.time.LocalDateTime
 import kotlin.test.*
 import org.mockito.Mockito.`when` as When
 
-
+// DISCLAIMER: These tests might fail due to a process crash on Cirrus. Consider thread sleeps in the
+// tests
 @RunWith(MockitoJUnitRunner::class)
 class EventActivityTest {
 
