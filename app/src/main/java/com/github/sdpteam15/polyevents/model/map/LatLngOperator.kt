@@ -252,7 +252,10 @@ object LatLngOperator {
 
 
     /**
-     *
+     * Finds the closest polygonal area to the given node
+     * @param node the node
+     * @param areas the polygonal areas
+     * @return The closest polygonal area
      */
     fun closestPolygonArea(node: RouteNode, areas:List<List<LatLng>>): List<LatLng> {
         var closest: List<LatLng>? = null
