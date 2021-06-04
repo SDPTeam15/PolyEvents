@@ -98,7 +98,6 @@ object DatabaseConstant {
         USER_AGE("age"),
         USER_TYPE("userType"),
         USER_BIRTH_DATE("birthDate"),
-        USER_PHONE("telephone"),
         USER_PROFILES("profiles");
 
         override fun toString(): String = value
