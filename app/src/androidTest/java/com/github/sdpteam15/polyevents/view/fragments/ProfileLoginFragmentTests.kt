@@ -129,7 +129,6 @@ class ProfileLoginFragmentTests {
         currentDatabase = FirestoreDatabaseProvider
     }
 
-
     @Test
     fun signInCalledTheCorrectMethod() {
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
