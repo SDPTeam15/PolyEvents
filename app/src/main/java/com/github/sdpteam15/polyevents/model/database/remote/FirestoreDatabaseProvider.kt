@@ -147,6 +147,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         val document = firestore!!
             .collection(collection.value)
             .document(id)
+
         adapter.toDocument(element).apply({
             document.set(it)
         }, lazy { document.delete() })
@@ -275,6 +276,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             }
         }
 
+        // for each ids start to retrieve the data from database
         for (idWithIndex in ids.withIndex()) {
             fsCollection.document(idWithIndex.value)
                 .get()
@@ -295,11 +297,14 @@ object FirestoreDatabaseProvider : DatabaseInterface {
         adapter: AdapterFromDocumentInterface<out T>
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
+
+        // apply the matcher
         (matcher?.match(FirestoreQuery(fsCollection)) ?: FirestoreQuery(fsCollection))
             .get()
             .observeOnce {
                 it.value.first.apply { qs ->
                     val map = mutableMapOf<String, T>()
+                    // add all elements that satisfies the matcher to the ObservableMap
                     qs.forEach { e ->
                         adapter.fromDocument(e.data, e.id)
                             .apply { value -> map[e.id] = value }
