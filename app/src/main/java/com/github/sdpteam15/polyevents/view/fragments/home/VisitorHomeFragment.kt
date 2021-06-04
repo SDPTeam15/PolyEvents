@@ -77,14 +77,14 @@ class VisitorHomeFragment : Fragment() {
         val observableDBAnswer = Observable<Boolean>()
         // Get all events from database
         currentDatabase.eventDatabase.getEvents(events, NUMBER_UPCOMING_EVENTS.toLong())
-            .observe(this) {
+            .observe(requireActivity()) {
                 if (!it.value) {
                     HelperFunctions.showToast(
                         getString(R.string.failed_to_load_events),
                         fragmentView.context
                     )
                 }
-            }.then.updateOnce(this, observableDBAnswer)
+            }.then.updateOnce(requireActivity(), observableDBAnswer)
 
 
         HelperFunctions.showProgressDialog(

@@ -119,9 +119,10 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        val observableDBAnswer = Observable<List<UserRole>>()
         currentUserObservable.observe(this) {
+            val obs = Observable<Boolean>()
             it.value.roles.observe(this) {
+                obs.postValue(true, this)
                 roles.clear()
                 val list = resources.getStringArray(R.array.Ranks).mapIndexed { index, value ->
                     Pair(
@@ -142,6 +143,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 roles.addAll(list)
             }
+            HelperFunctions.showProgressDialog(this, listOf(obs),supportFragmentManager)
         }
 
         redirectHome()
