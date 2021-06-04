@@ -2,7 +2,6 @@ package com.github.sdpteam15.polyevents.model.map
 
 import android.content.Context
 import android.graphics.Color
-import android.util.TypedValue
 import androidx.lifecycle.LifecycleOwner
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.database.remote.Database
@@ -20,15 +19,12 @@ import com.github.sdpteam15.polyevents.model.map.LatLngOperator.scalar
 import com.github.sdpteam15.polyevents.model.map.LatLngOperator.time
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
-import com.github.sdpteam15.polyevents.view.activity.TimeTableActivity
 import com.github.sdpteam15.polyevents.view.fragments.MapsFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
 import kotlin.math.pow
-
-
 
 
 object RouteMapHelper {
@@ -402,45 +398,16 @@ object RouteMapHelper {
         lifecycleOwner: LifecycleOwner
     ): Observable<Boolean> {
         //Add a listener on edges and nodes adds to display
-        val edgesToAdd = mutableListOf<RouteEdge>()
-
         if (edges.isNotEmpty())
-            synchronized(this) {
-                edges.toList().forEach {
-                    if (it.start != null && it.end != null)
-                        edgeAddedNotification(context, it)
-                    else
-                        edgesToAdd.add(it)
-                }
+            edges.toList().forEach {
+                if (it.start != null && it.end != null)
+                    edgeAddedNotification(context, it)
             }
 
         edges.observeAdd(lifecycleOwner) {
-            synchronized(this) {
-                edgesToAdd.add(it.value)
-                it.value.start = nodes.firstOrNull { n -> n.id == it.value.startId }
-                it.value.end = nodes.firstOrNull { n -> n.id == it.value.endId }
-                for (e in edgesToAdd.toList())
-                    if (e.start != null && e.end != null) {
-                        edgeAddedNotification(context, e)
-                        edgesToAdd.remove(e)
-                    }
-            }
+            edgeAddedNotification(context, it.value)
         }.then.observeRemove(lifecycleOwner) {
             edgeRemovedNotification(it.value)
-        }
-        nodes.observeAdd(lifecycleOwner) {
-            synchronized(this) {
-                for (e in edgesToAdd.toList()) {
-                    if (e.startId == it.value.id)
-                        e.start = it.value
-                    if (e.endId == it.value.id)
-                        e.end = it.value
-                    if (e.start != null && e.end != null) {
-                        edgeAddedNotification(context, e)
-                        edgesToAdd.remove(e)
-                    }
-                }
-            }
         }
         return Database.currentDatabase.routeDatabase.getRoute(nodes, edges, zones)
     }
@@ -470,7 +437,7 @@ object RouteMapHelper {
         option.color(Color.argb(50, 0, 0, 0))
         option.clickable(true)
         val route = map!!.addPolyline(option)
-        if(context != null)
+        if (context != null)
             route.width = LINE_WIDTH_DP.dpToPixelsFloat(context)
         //tag used to know which polyline has been clicked
         if (context != null) {
@@ -566,7 +533,7 @@ object RouteMapHelper {
         val pos2 = LatLng(pos.latitude, pos.longitude + longDiff)
         val option = PolylineOptions().add(pos1).add(pos2).color(Color.RED)
         tempPolyline = map!!.addPolyline(option)
-        if(context != null)
+        if (context != null)
             tempPolyline!!.width = LINE_WIDTH_DP.dpToPixelsFloat(context)
         tempLatLng.clear()
         tempLatLng.add(pos1)
@@ -585,7 +552,7 @@ object RouteMapHelper {
         val endPos = points[1]
 
         var dim_dp = 35
-        if(context != null){
+        if (context != null) {
             dim_dp = dim_dp.dpToPixelsFloat(context).toInt()
         }
 

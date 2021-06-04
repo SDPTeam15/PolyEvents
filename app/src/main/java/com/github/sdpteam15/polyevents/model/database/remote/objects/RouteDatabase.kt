@@ -47,9 +47,9 @@ class RouteDatabase(private val db: DatabaseInterface) : RouteDatabaseInterface 
                                 val tempNodes = nodes.toList()
                                 tempEdges.toList().forEach { e ->
                                     e.start =
-                                        tempNodes.firstOrNull { it.id != null && it.id != e.startId }
+                                        tempNodes.firstOrNull { it.id != null && it.id == e.startId }
                                     e.end =
-                                        tempNodes.firstOrNull { it.id != null && it.id != e.endId }
+                                        tempNodes.firstOrNull { it.id != null && it.id == e.endId }
                                     if (e.start != null && e.end != null)
                                         list.add(e)
                                 }
