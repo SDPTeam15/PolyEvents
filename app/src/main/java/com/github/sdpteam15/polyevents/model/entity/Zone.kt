@@ -220,12 +220,14 @@ data class Zone(
                 return true
         return false
     }
-    enum class Status{
+
+    enum class Status {
         ACTIVE,
         DELETED;
 
         companion object {
             private val mapOrdinal = values()
+
             /**
              * Return the Zone status corresponding to the given ordinal
              * @param ordinal The index of the Zone status we want to retrieve

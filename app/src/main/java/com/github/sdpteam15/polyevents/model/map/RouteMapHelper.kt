@@ -31,8 +31,8 @@ import kotlin.math.pow
  * Helper object that handles the routes
  */
 object RouteMapHelper {
-    const val THRESHOLD = 0.00002
-    const val MAGNET_DISTANCE_THRESHOLD = 0.00005
+    const val THRESHOLD = 2e-6
+    const val MAGNET_DISTANCE_THRESHOLD = 5e-6
     const val LINE_WIDTH_DP = 4
     const val LINE_ROUTE_WIDTH_DP = 4
 
@@ -48,7 +48,6 @@ object RouteMapHelper {
 
     var deleteMode = false
 
-    //var routing = false
     var currentTarget: LatLng? = null
     var chemin: MutableList<LatLng> = mutableListOf()
     var route: MutableList<Polyline> = mutableListOf()
@@ -415,45 +414,16 @@ object RouteMapHelper {
         lifecycleOwner: LifecycleOwner
     ): Observable<Boolean> {
         //Add a listener on edges and nodes adds to display
-        val edgesToAdd = mutableListOf<RouteEdge>()
-
         if (edges.isNotEmpty())
-            synchronized(this) {
-                edges.toList().forEach {
-                    if (it.start != null && it.end != null)
-                        edgeAddedNotification(context, it)
-                    else
-                        edgesToAdd.add(it)
-                }
+            edges.toList().forEach {
+                if (it.start != null && it.end != null)
+                    edgeAddedNotification(context, it)
             }
 
         edges.observeAdd(lifecycleOwner) {
-            synchronized(this) {
-                edgesToAdd.add(it.value)
-                it.value.start = nodes.firstOrNull { n -> n.id == it.value.startId }
-                it.value.end = nodes.firstOrNull { n -> n.id == it.value.endId }
-                for (e in edgesToAdd.toList())
-                    if (e.start != null && e.end != null) {
-                        edgeAddedNotification(context, e)
-                        edgesToAdd.remove(e)
-                    }
-            }
+            edgeAddedNotification(context, it.value)
         }.then.observeRemove(lifecycleOwner) {
             edgeRemovedNotification(it.value)
-        }
-        nodes.observeAdd(lifecycleOwner) {
-            synchronized(this) {
-                for (e in edgesToAdd.toList()) {
-                    if (e.startId == it.value.id)
-                        e.start = it.value
-                    if (e.endId == it.value.id)
-                        e.end = it.value
-                    if (e.start != null && e.end != null) {
-                        edgeAddedNotification(context, e)
-                        edgesToAdd.remove(e)
-                    }
-                }
-            }
         }
         return Database.currentDatabase.routeDatabase.getRoute(nodes, edges, zones)
     }

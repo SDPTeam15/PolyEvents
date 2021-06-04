@@ -37,14 +37,14 @@ object GoogleMapActionHandler {
         lifecycle: LifecycleOwner,
         locationActivated: Boolean
     ) {
+        setSelectedZoneFromArea(polygon.tag.toString())
         if (mode == MapsFragmentMod.EditZone) {
             if (ZoneAreaMapHelper.editMode && ZoneAreaMapHelper.canEdit(polygon.tag.toString())) {
                 ZoneAreaMapHelper.editArea(context, polygon.tag.toString())
             } else if (ZoneAreaMapHelper.deleteMode && ZoneAreaMapHelper.canEdit(polygon.tag.toString())) {
                 ZoneAreaMapHelper.removeArea(polygon.tag.toString().toInt())
             }
-        } else {
-            setSelectedZoneFromArea(polygon.tag.toString())
+        } else if(mode == MapsFragmentMod.Visitor){
             // Get the marker associated to the selected zone
             val zoneMarker = ZoneAreaMapHelper.areasPoints.get(polygon.tag)!!.second
             // Display the bottom dialog previewing the selected zone
@@ -77,19 +77,22 @@ object GoogleMapActionHandler {
      */
     fun onMarkerClickHandler(
         marker: Marker,
+        mode: MapsFragmentMod,
         activity: FragmentActivity,
         lifecycle: LifecycleOwner,
         locationActivated: Boolean
     ) {
         if (canClickMarker(marker)) {
-            if (!ZoneAreaMapHelper.editMode) {
-                displayZoneDetailsBottomDialog(
-                    zoneId = marker.tag.toString(),
-                    zoneName = marker.title,
-                    activity = activity,
-                    lifecycle = lifecycle,
-                    locationActivated = locationActivated
-                )
+            if(mode == MapsFragmentMod.Visitor) {
+                if (!ZoneAreaMapHelper.editMode) {
+                    displayZoneDetailsBottomDialog(
+                        zoneId = marker.tag.toString(),
+                        zoneName = marker.title,
+                        activity = activity,
+                        lifecycle = lifecycle,
+                        locationActivated = locationActivated
+                    )
+                }
             }
             val tag = marker.tag
             if (tag != null) {
@@ -103,13 +106,13 @@ object GoogleMapActionHandler {
      * @param marker marker that has been clicked
      */
     fun canClickMarker(marker: Marker): Boolean {
-        if (marker.equals(RouteMapHelper.startMarker)
-            || marker.equals(RouteMapHelper.endMarker)
-            || marker.equals(ZoneAreaMapHelper.moveDiagMarker)
-            || marker.equals(ZoneAreaMapHelper.moveDownMarker)
-            || marker.equals(ZoneAreaMapHelper.moveMarker)
-            || marker.equals(ZoneAreaMapHelper.moveRightMarker)
-            || marker.equals(ZoneAreaMapHelper.rotationMarker)
+        if (marker == RouteMapHelper.startMarker
+            || marker == RouteMapHelper.endMarker
+            || marker == ZoneAreaMapHelper.moveDiagMarker
+            || marker == ZoneAreaMapHelper.moveDownMarker
+            || marker == ZoneAreaMapHelper.moveMarker
+            || marker == ZoneAreaMapHelper.moveRightMarker
+            || marker == ZoneAreaMapHelper.rotationMarker
         )
             return false
         return true

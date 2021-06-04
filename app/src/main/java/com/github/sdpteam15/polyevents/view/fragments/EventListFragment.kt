@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
@@ -49,13 +50,12 @@ class EventListFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var myEventsSwitch: SwitchMaterial
+    private lateinit var noUpcomingEventsTextView: TextView
 
     val events = ObservableList<Event>()
 
     // events observable will be sorted on start time
-    val eventsDB = events.sortAndLimitFrom(this) {
-        it.startTime
-    }
+    private lateinit var eventsDB: ObservableList<Event>
 
     // observable for events stored in local cache
     private val eventsLocal = ObservableList<EventLocal>()
@@ -85,7 +85,13 @@ class EventListFragment : Fragment() {
 
         notificationsScheduler = NotificationsHelper(requireActivity().applicationContext)
 
+        eventsDB = events.sortAndLimitFrom(requireActivity()) {
+            it.startTime
+        }
+
         recyclerView = fragmentView.findViewById(R.id.recycler_events_list)
+        noUpcomingEventsTextView =
+            fragmentView.findViewById(R.id.fragment_events_no_upcoming_events_text_view)
 
         myEventsSwitch = fragmentView.findViewById(R.id.event_list_my_events_switch)
         myEventsSwitch.setOnCheckedChangeListener { _, isChecked ->
@@ -192,13 +198,13 @@ class EventListFragment : Fragment() {
                 DatabaseConstant.EventConstant.EVENT_END_TIME.value,
                 HelperFunctions.localDateTimeToDate(LocalDateTime.now())!!
             )
-        }).observe(this) {
+        }).observe(requireActivity()) {
             if (!it.value) {
                 showToast(getString(R.string.fail_to_get_information), context)
             } else {
                 fetchedDataFromRemote = true
             }
-        }.then.updateOnce(this, observableDBAnswer)
+        }.then.updateOnce(requireActivity(), observableDBAnswer)
 
         HelperFunctions.showProgressDialog(
             requireActivity(), listOf(
@@ -213,6 +219,11 @@ class EventListFragment : Fragment() {
     private fun updateEventsList() {
         events.observe(this) {
             recyclerView.adapter!!.notifyDataSetChanged()
+            if (it.value.isEmpty()) {
+                noUpcomingEventsTextView.visibility = View.VISIBLE
+            } else {
+                noUpcomingEventsTextView.visibility = View.INVISIBLE
+            }
         }
     }
 }

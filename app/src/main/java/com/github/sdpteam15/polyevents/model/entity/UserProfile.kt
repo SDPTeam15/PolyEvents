@@ -18,7 +18,7 @@ data class UserProfile(
     var profileName: String? = null,
     var userRole: UserRole = UserRole.PARTICIPANT,
     val defaultProfile: Boolean=false,
-    val users: MutableList<String> = mutableListOf()
+    val users: MutableSet<String> = mutableSetOf()
 ) {
 
     var loadSuccess = false

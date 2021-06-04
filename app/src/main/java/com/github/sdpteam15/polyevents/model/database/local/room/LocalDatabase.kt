@@ -23,9 +23,13 @@ import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import kotlinx.coroutines.Dispatchers
 
-// TODO: consider using repositories
-// TODO: Firebase database objects are technically daos, consider refactoring?
-// TODO: when user logs in, should fetch all info to store in local db
+/**
+ * Local Database for the application. Uses Room persistence library running sqlite queries
+ * on the device. We must specify the entities this local database manages as well as the version
+ * number each time the data schema is modified. Must have methods to return dao (data access
+ * objects) for each of the corresponding entities).
+ * Consider using repositories in the future.
+ */
 @Database(
     entities = [EventLocal::class, UserSettings::class, NotificationUid::class, GenericEntity::class],
     version = 6, exportSchema = false
@@ -61,6 +65,11 @@ abstract class LocalDatabase : RoomDatabase() {
         var eventsLocalObservable = ObservableList<Event>()
         var userSettingsObservable = Observable<UserSettings>()
 
+        /**
+         * Get the local database
+         * @param context the context where we're getting the database from
+         * @param scope the coroutine scope in which we launch the database callback on app creation
+         */
         fun getDatabase(
             context: Context,
             scope: Scope
@@ -122,7 +131,7 @@ abstract class LocalDatabase : RoomDatabase() {
         suspend fun populateDatabaseWithUserEvents(eventDao: EventDao, scope: Scope) {
 
             // TODO: need to clear notifications for events here or in MainActivity
-            eventDao.deleteAll()
+            eventDao.deletedEventsWhereLimited(true)
             if (currentDatabase.currentUser != null) {
                 eventsLocalObservable.observe {
                     scope.launch(Dispatchers.IO) {

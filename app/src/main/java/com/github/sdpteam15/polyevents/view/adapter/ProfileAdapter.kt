@@ -11,7 +11,9 @@ import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.fragments.ProfileFragment
+import kotlinx.coroutines.Dispatchers
 
 /**
  * Adapter for the RecyclerView on ProfileFragment
@@ -27,7 +29,9 @@ class ProfileAdapter(
 
     init {
         items.observe(profileFragment) {
-            notifyDataSetChanged()
+            PolyEventsApplication.application.applicationScope.launch(Dispatchers.Main) {
+                notifyDataSetChanged()
+            }
         }
     }
 

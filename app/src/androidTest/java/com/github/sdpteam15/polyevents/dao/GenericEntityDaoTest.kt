@@ -51,7 +51,7 @@ class GenericEntityDaoTest {
         genericEntityDao.insertAll(listOf(GenericEntity("id2")))
         assertEquals("id2", genericEntityDao.get("id2", "")?.id)
 
-        genericEntityDao.delete(GenericEntity("id2"))
+        genericEntityDao.delete("id2", "")
         assertNull(genericEntityDao.get("id2", ""))
 
         genericEntityDao.deleteAll("")

@@ -24,7 +24,7 @@ data class UserEntity(
     var name: String? = null,
     var birthDate: LocalDate? = null,
     var email: String? = null,
-    val profiles: MutableList<String> = mutableListOf()
+    val profiles: MutableSet<String> = mutableSetOf()
 ) {
     val age: Int?
         get() =

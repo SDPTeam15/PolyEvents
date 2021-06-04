@@ -25,7 +25,7 @@ interface GenericEntityDao {
      * @param collection collection where is the element
      * @return the generic entity in a list
      */
-    @Query("SELECT * FROM entity_table WHERE id = :id AND collection = :collection ")
+    @Query("SELECT * FROM entity_table WHERE id = :id AND collection = :collection")
     suspend fun getList(id: String, collection: String): List<GenericEntity>
 
     /**
@@ -55,11 +55,11 @@ interface GenericEntityDao {
     suspend fun insertAll(elements: List<GenericEntity>)
 
     /**
-     * Delete a element from the local cash
-     * @param element the element
+     * Delete all from the local cash in the collection
+     * @param collection collection to clean
      */
-    @Delete
-    suspend fun delete(element: GenericEntity)
+    @Query("DELETE FROM entity_table WHERE id = :id AND collection = :collection")
+    suspend fun delete(id: String, collection: String)
 
     /**
      * Delete all from the local cash

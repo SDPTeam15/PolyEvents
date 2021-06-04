@@ -14,20 +14,19 @@ object ProfileAdapter : AdapterInterface<UserProfile> {
 
     override fun toDocumentWithoutNull(element: UserProfile): HashMap<String, Any?> =
         hashMapOf(
-            PROFILE_ID.value to element.pid,
             PROFILE_NAME.value to element.profileName,
             PROFILE_RANK.value to element.userRole.userRole,
             PROFILE_DEFAULT.value to element.defaultProfile,
-            PROFILE_USERS.value to element.users
+            PROFILE_USERS.value to element.users.toList()
         )
 
     override fun fromDocument(document: Map<String, Any?>, id: String) = UserProfile(
-        pid = id as String?,
+        pid = id,
         profileName = document[PROFILE_NAME.value] as String?,
         userRole = if ((document[PROFILE_RANK.value] as String?) != null)
             UserRole.fromString(document[PROFILE_RANK.value] as String) ?: UserRole.PARTICIPANT
         else UserRole.PARTICIPANT,
-        defaultProfile = (document[PROFILE_DEFAULT.value] as Boolean?)?:false,
-        users = (document[PROFILE_USERS.value] as List<String>).toMutableList()
+        defaultProfile = (document[PROFILE_DEFAULT.value] as Boolean?) ?: false,
+        users = (document[PROFILE_USERS.value] as List<String>).toMutableSet()
     )
 }
