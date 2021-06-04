@@ -184,21 +184,24 @@ class EventListFragment : Fragment() {
      * @param context The current application context
      */
     private fun getEventsListAndDisplay(context: Context?) {
-        currentDatabase.eventDatabase.getEvents(matcher = { collection ->
+        val observableDBAnswer = Observable<Boolean>()
+
+        currentDatabase.eventDatabase.getEvents(eventsDB, matcher = { collection ->
             // Get only events that are not finished yet...
             collection.whereGreaterThanOrEqualTo(
                 DatabaseConstant.EventConstant.EVENT_END_TIME.value,
                 HelperFunctions.localDateTimeToDate(LocalDateTime.now())!!
             )
-        }, null, eventsDB).observe(this) {
+        }).observe(this) {
             if (!it.value) {
                 showToast(getString(R.string.fail_to_get_information), context)
             } else {
                 fetchedDataFromRemote = true
             }
         }.then.updateOnce(this, observableDBAnswer)
+
         HelperFunctions.showProgressDialog(
-            this, listOf(
+            requireActivity(), listOf(
                 observableDBAnswer
             ), requireActivity().supportFragmentManager
         )
