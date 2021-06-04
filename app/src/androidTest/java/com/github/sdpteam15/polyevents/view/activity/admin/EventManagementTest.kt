@@ -513,7 +513,7 @@ class EventManagementTest {
         onView(withId(R.id.id_swt_limited_event)).check(matches(isChecked()))
 
     }
-
+/*
     @Test
     fun addReturnTheCorrectlySetField() {
         val startDate = EventManagementActivity.dateStart.value!!
@@ -530,7 +530,7 @@ class EventManagementTest {
         assertEquals(event!!.startTime, startDate)
         assertEquals(event!!.eventName, eventName)
         assertEquals(event!!.description, eventDesc)
-    }
+    }*/
 
     @Test
     fun addReturnTheCorrectlySetFieldEdit() {

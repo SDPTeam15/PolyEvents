@@ -70,9 +70,6 @@ class ItemRequestManagementActivity : AppCompatActivity() {
                 declineMaterialRequest
             )
 
-        // List that will contain all the observable that need a value for the loading screen to dismiss
-        val allLoading = ArrayList<Observable<*>>()
-
         //Wait until we have both requests accepted from the database to show the material requests
         val matListTransactionOver = currentDatabase.materialRequestDatabase.getMaterialRequestList(
             requests.sortAndLimitFrom(this) { it.status })
@@ -80,6 +77,9 @@ class ItemRequestManagementActivity : AppCompatActivity() {
                 if (!it.value) {
                     HelperFunctions.showToast("Failed to get the list of material requests", this)
                 } else {
+                    // List that will contain all the observable that need a value for the loading screen to dismiss
+                    val allLoading = ArrayList<Observable<*>>()
+
                     val itemListTransactionOver = currentDatabase.itemDatabase.getItemsList(items)
                         .observeOnce(this) { it2 ->
                             if (!it2.value) {
@@ -103,6 +103,7 @@ class ItemRequestManagementActivity : AppCompatActivity() {
                             currentDatabase.eventDatabase.getEventFromId(request.eventId, event)
                                 .observeOnce(this) {
                                     if (it.value) {
+                                        // Get zone information
                                         currentDatabase.zoneDatabase.getZoneInformation(
                                             event.value!!.zoneId!!,
                                             zone
@@ -116,16 +117,20 @@ class ItemRequestManagementActivity : AppCompatActivity() {
                                         zoneTransactionOver.postValue(true, this)
                                     }
                                 }.then.updateOnce(this, eventTransactionOver)
+
                             allLoading.addAll(listOf(eventTransactionOver, zoneTransactionOver))
                         }
                     }
+                    // Display a loading screen while the queries with the database are not over
+                    HelperFunctions.showProgressDialog(this, allLoading, supportFragmentManager)
                 }
             }.then
-        allLoading.add(matListTransactionOver)
 
         // Display a loading screen while the queries with the database are not over
         HelperFunctions.showProgressDialog(
-            this, allLoading, supportFragmentManager
+            this,
+            listOf(matListTransactionOver),
+            supportFragmentManager
         )
     }
 
@@ -207,7 +212,6 @@ class ItemRequestManagementActivity : AppCompatActivity() {
         val slideOut = Slide()
         slideOut.slideEdge = Gravity.END
         popupWindow.exitTransition = slideOut
-
 
         // Get the widgets reference from custom view
         val confirmButton = view.findViewById<Button>(R.id.id_btn_confirm_refuse_request)
