@@ -146,12 +146,14 @@ class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLi
      * Gets the item request of the user and then gets the item list
      */
     private fun getItemRequestsFromDB() {
+        val observableDBAnswer = Observable<Boolean>()
         //Gets the item request of the user and then gets the item list
         Database.currentDatabase.materialRequestDatabase.getMaterialRequestListByUser(
             requests,
             userId
         ).observeOnce(this) {
             if (!it.value) {
+                observableDBAnswer.postValue(false)
                 HelperFunctions.showToast(
                     getString(R.string.fail_to_get_list_material_requests_eo),
                     this
@@ -165,9 +167,16 @@ class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLi
                                 this
                             )
                         }
-                    }
+                    }.then.updateOnce(this, observableDBAnswer)
             }
         }
+
+        HelperFunctions.showProgressDialog(
+            this, listOf(
+                observableDBAnswer,
+                observableStatus
+            ), supportFragmentManager
+        )
     }
 
     /**

@@ -142,8 +142,10 @@ class MyEventEditsActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
                 origEvent[it.value.eventId!!] = it.value
             }
         }
+        val observableDBAnswer = Observable<Boolean>()
         //Gets the item request of the user and then gets the item list
         currentDatabase.eventDatabase.getEvents(eventList).observe(this) { it ->
+
             if (it.value) {
                 currentDatabase.eventDatabase.getEventEdits(eventRequests)
                 {
@@ -156,12 +158,20 @@ class MyEventEditsActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
                         )
                         finish()
                     }
-                }
+                }.then.updateOnce(this, observableDBAnswer)
             } else {
+                observableDBAnswer.postValue(false)
                 HelperFunctions.showToast(getString(R.string.fail_to_get_list_event_eo), this)
                 finish()
             }
         }
+
+        HelperFunctions.showProgressDialog(
+            this, listOf(
+                observableDBAnswer,
+                observableStatus
+            ), supportFragmentManager
+        )
     }
 
     /**

@@ -122,7 +122,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
+        val observableDBAnswer = Observable<List<UserRole>>()
         currentUserObservable.observe(this) {
             it.value.roles.observe(this) {
                 roles.clear()

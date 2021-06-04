@@ -82,14 +82,7 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowHomeEnabled(true)
 
-        // Display a loading screen while the queries with the database are not over
-        showProgressDialog(
-            this, listOf(
-                eventFetchDoneObservable,
-                eventRatingFetchDoneObservable,
-                eventCommentsFetchDoneObservable
-            ), supportFragmentManager
-        )
+
 
         eventId = intent.getStringExtra(EXTRA_EVENT_ID)!!
 
@@ -131,6 +124,18 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
     private fun refreshEvent() {
         obsComments.clear()
         obsNonEmptyComments.clear()
+        eventFetchDoneObservable= Observable()
+        eventRatingFetchDoneObservable= Observable()
+        eventCommentsFetchDoneObservable= Observable()
+        // Display a loading screen while the queries with the database are not over
+        showProgressDialog(
+            this, listOf(
+                eventFetchDoneObservable,
+                eventRatingFetchDoneObservable,
+                eventCommentsFetchDoneObservable
+            ), supportFragmentManager
+        )
+
         getEventAndObserve()
         getEventRating()
         getCommentsAndObserve()
