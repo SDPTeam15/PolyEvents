@@ -290,6 +290,7 @@ class EventEditManagementActivityTest {
                 0, TestHelper.clickChildViewWithId(R.id.id_edit_refuse)
             )
         )
+        Thread.sleep(500)
         onView(withId(R.id.id_btn_confirm_refuse_request)).perform(
             click()
         )
@@ -311,10 +312,10 @@ class EventEditManagementActivityTest {
                 0, TestHelper.clickChildViewWithId(R.id.id_edit_refuse)
             )
         )
+        Thread.sleep(500)
         onView(withId(R.id.id_btn_confirm_refuse_request)).perform(
             click()
         )
-
         Thread.sleep(500)
         onView(withId(R.id.id_recycler_event_edits)).check(matches(isDisplayed()))
     }

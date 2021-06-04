@@ -26,6 +26,7 @@ class ZoneManagementActivity : AppCompatActivity() {
         var zoneObservable = Observable<Zone>()
         val zone = Zone(location = "")
         var zoneId = ""
+        var zoneStateLocation : String? = null
         var inTest = false
     }
 
@@ -65,6 +66,10 @@ class ZoneManagementActivity : AppCompatActivity() {
             etDesc.setText(zoneInfo.description)
             changeCoordinatesText(etLoc, btnManageCoor, btnDelete, zoneInfo.location)
         }
+        zoneObservable.observeOnce(this) {
+            zone.location = it.value.location
+            zoneStateLocation = it.value.location
+        }
 
         if (zoneId == NEW_ZONE) {
             zoneId = "Zone ${GoogleMapHelper.uidZone++}"
@@ -97,6 +102,7 @@ class ZoneManagementActivity : AppCompatActivity() {
                 updateZoneInfo()
             }
         }
+
         ZoneAreaMapHelper.editingZone = zoneId
         setupListener(mapFragment)
     }
@@ -200,6 +206,10 @@ class ZoneManagementActivity : AppCompatActivity() {
             zone.description = desc
             zone.zoneName = name
             zone.zoneId = zoneId
+
+            if (zone.location != zoneStateLocation)
+                currentDatabase.routeDatabase.removeEdgeConnectedToZone(zone)
+
 
             val updateOver = Observable<Boolean>()
             currentDatabase.zoneDatabase.updateZoneInformation(zoneId, zone).observe {

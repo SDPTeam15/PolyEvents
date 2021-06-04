@@ -10,10 +10,7 @@ import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
 import com.github.sdpteam15.polyevents.model.database.remote.login.UserLoginInterface
 import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.database.remote.matcher.Query
-import com.github.sdpteam15.polyevents.model.database.remote.objects.EventDatabaseInterface
-import com.github.sdpteam15.polyevents.model.database.remote.objects.ItemDatabaseInterface
-import com.github.sdpteam15.polyevents.model.database.remote.objects.MaterialRequestDatabaseInterface
-import com.github.sdpteam15.polyevents.model.database.remote.objects.ZoneDatabaseInterface
+import com.github.sdpteam15.polyevents.model.database.remote.objects.*
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
@@ -40,6 +37,7 @@ class DatabaseHelperTest {
     lateinit var mockedEventDb: EventDatabaseInterface
     lateinit var mockedZoneDb: ZoneDatabaseInterface
     lateinit var mockedItemDb: ItemDatabaseInterface
+    lateinit var mockedRouteDb : RouteDatabaseInterface
     lateinit var mockedMaterialRequestDb: MaterialRequestDatabaseInterface
 
     lateinit var cancelMaterialRequest: MutableList<MaterialRequest>
@@ -248,11 +246,13 @@ class DatabaseHelperTest {
         mockedEventDb = mock(EventDatabaseInterface::class.java)
         mockedZoneDb = mock(ZoneDatabaseInterface::class.java)
         mockedItemDb = mock(ItemDatabaseInterface::class.java)
+        mockedRouteDb = mock(RouteDatabaseInterface::class.java)
         mockedMaterialRequestDb = mock(MaterialRequestDatabaseInterface::class.java)
         When(mockedDatabase.zoneDatabase).thenReturn(mockedZoneDb)
         When(mockedDatabase.itemDatabase).thenReturn(mockedItemDb)
         When(mockedDatabase.materialRequestDatabase).thenReturn(mockedMaterialRequestDb)
         When(mockedDatabase.eventDatabase).thenReturn(mockedEventDb)
+        When(mockedDatabase.routeDatabase).thenReturn(mockedRouteDb)
         Database.currentDatabase = mockedDatabase
         mockMethods()
 
