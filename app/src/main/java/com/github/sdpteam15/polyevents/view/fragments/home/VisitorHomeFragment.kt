@@ -40,6 +40,9 @@ class VisitorHomeFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        // Check if the user is connected and with a rank which is not participant.
+        // If so, display a spinner to change its current role
+        // Otherwise, hide the spinner
         val bool =
             UserLogin.currentUserLogin.isConnected() && currentDatabase.currentUser!!.userProfiles.fold(
                 false, { a, c ->
@@ -59,7 +62,6 @@ class VisitorHomeFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         val fragmentView = inflater.inflate(R.layout.fragment_home_visitor, container, false)
-
         recyclerView = fragmentView.findViewById(R.id.id_recycler_upcomming_events)
 
         val openEvent = { event: Event ->
@@ -73,6 +75,7 @@ class VisitorHomeFragment : Fragment() {
         recyclerView.setHasFixedSize(false)
 
         val observableDBAnswer = Observable<Boolean>()
+        // Get all events from database
         currentDatabase.eventDatabase.getEvents(events, NUMBER_UPCOMING_EVENTS.toLong())
             .observe(this) {
                 if (!it.value) {
