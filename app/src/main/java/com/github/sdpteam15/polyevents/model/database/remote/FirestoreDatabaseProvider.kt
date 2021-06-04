@@ -186,8 +186,8 @@ object FirestoreDatabaseProvider : DatabaseInterface {
             val document = firestore!!
                 .collection(collection.value)
                 .document(elementWithIndex.value.first)
-            elementWithIndex.value.second
-                .apply(document.delete()) { document.set(adapter.toDocumentWithoutNull(it)) }
+            adapter.toDocument(elementWithIndex.value.second)
+                .apply(document.delete()) { document.set(it) }
                 .addOnSuccessListener {
                     checkIfDone(elementWithIndex.index, true)
                 }
