@@ -55,25 +55,10 @@ object RouteMapHelper {
     var route: MutableList<Polyline> = mutableListOf()
 
     /**
-     * Clear all route variables (Does not work yet!)
-     */
-    /*fun resetAll() {
-        nodes.clear()
-        edges.clear()
-        zones.clear()
-
-        for ((key, value) in lineToEdge) {
-            value.remove()
-        }
-
-        lineToEdge.clear()
-        idToEdge.clear()
-    }*/
-
-    /**
      * Add a line to dataBase
      * @param start pair containing the Position of the first point and eventually an attached object
      * @param end pair containing the Position of the second point and eventually an attached object
+     * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun addLine(
         start: Pair<LatLng, Attachable?>,
@@ -110,6 +95,7 @@ object RouteMapHelper {
     /**
      * Removes a line from the dataBase
      * @param edge the line to add to the database
+     * @return An observer that will be set to true if the communication with the DB is over and no error
      */
     fun removeLine(edge: RouteEdge) =
         Database.currentDatabase.routeDatabase.removeEdge(edge, edges, nodes)
@@ -323,32 +309,6 @@ object RouteMapHelper {
         }
     }
 
-
-
-/*
-    /**
-    TODO consider using this function to update a route while walking
-    */
-    fun updateRoute() {
-        if (route.isNotEmpty()) {
-            val position = minus(LatLng(0.0, 0.0), currentTarget!!)
-            val position2 = minus(chemin[1], currentTarget!!)
-            if (norm(minus(position, position2)) < LatLngOperator.epsilon) {
-                route.first().remove()
-                route = route.drop(1).toMutableList()
-                chemin = chemin.drop(1).toMutableList()
-                if (chemin.size > 1) {
-                    currentTarget = chemin[1]
-                } else {
-                    chemin.clear()
-                    currentTarget = null
-                }
-            } else {
-                //DO Projection and redraw the line with route[0].points = listOf(...)
-            }
-        }
-    }
-*/
     /**
      * Undraws the route
      */
@@ -500,6 +460,7 @@ object RouteMapHelper {
 
     /**
      * Function that handles the addition of a route from the database
+     * @param context context of the fragment there the edges are display
      * @param edge new edge
      */
     fun edgeAddedNotification(context: Context?, edge: RouteEdge) {
@@ -588,7 +549,6 @@ object RouteMapHelper {
         attachables = Pair(null, null)
     }
 
-    //TODO move variables
     var startMarker: Marker? = null
     var endMarker: Marker? = null
 
