@@ -288,7 +288,7 @@ class EventManagementActivity : AppCompatActivity() {
             updateTextDate(TYPE_START)
 
             // Select the correct organiser
-            organiserObserver.observeOnce(this) {
+            organiserObserver.observe(this) {
                 var idx = 0
                 for (u in it.value.withIndex()) {
                     if (u.value.uid == event.organizer) {
@@ -300,7 +300,7 @@ class EventManagementActivity : AppCompatActivity() {
             }
 
             // Select the correct zone
-            zoneObserver.observeOnce(this) {
+            zoneObserver.observe(this) {
                 var idx = 0
                 for (u in it.value.withIndex()) {
                     if (u.value.zoneId == event.zoneId) {

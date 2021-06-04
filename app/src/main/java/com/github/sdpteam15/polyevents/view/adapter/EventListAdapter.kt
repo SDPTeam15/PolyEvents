@@ -99,7 +99,6 @@ class EventListAdapter(
                     deleteListener(event.zoneId!!, event)
                 }
             }
-
         }
     }
 
