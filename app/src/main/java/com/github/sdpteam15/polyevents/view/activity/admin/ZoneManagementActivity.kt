@@ -26,7 +26,7 @@ class ZoneManagementActivity : AppCompatActivity() {
         var zoneObservable = Observable<Zone>()
         val zone = Zone(location = "")
         var zoneId = ""
-        var zoneStateLocation : String? = null
+        var zoneStateLocation: String? = null
         var inTest = false
     }
 
