@@ -283,6 +283,7 @@ class ProfileLoginFragmentTests {
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         loginFragment.currentUser = null
 
+        Thread.sleep(1000)
         //Go on login page
         onView(withId(R.id.ic_login)).perform(click())
 
@@ -301,13 +302,11 @@ class ProfileLoginFragmentTests {
             )
         ).thenAnswer { _ ->
             profileFragment.userInfoLiveData.postValue(user)
-            endingRequest
+            endingRequest.postValue(true)
         }
 
         loginDirectly(loginFragment, R.id.id_btn_login_button)
 
-        //answer to getUserInformation
-        endingRequest.postValue(true)
         onView(withId(R.id.id_fragment_profile)).check(matches(isDisplayed()))
 
         onView(withId(R.id.id_profile_name_edittext)).check(
@@ -694,7 +693,7 @@ class ProfileLoginFragmentTests {
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         loginFragment.currentUser = null
         When(mockedDatabase.currentUser).thenReturn(null)
-
+        Thread.sleep(1000)
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
         profileFragment.currentUser = null
         onView(withId(R.id.ic_login)).perform(click())
