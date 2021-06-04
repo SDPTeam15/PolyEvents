@@ -65,6 +65,11 @@ abstract class LocalDatabase : RoomDatabase() {
         var eventsLocalObservable = ObservableList<Event>()
         var userSettingsObservable = Observable<UserSettings>()
 
+        /**
+         * Get the local database
+         * @param context the context where we're getting the database from
+         * @param scope the coroutine scope in which we launch the database callback on app creation
+         */
         fun getDatabase(
             context: Context,
             scope: Scope

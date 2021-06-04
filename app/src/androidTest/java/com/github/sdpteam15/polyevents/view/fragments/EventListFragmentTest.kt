@@ -2,6 +2,7 @@ package com.github.sdpteam15.polyevents.view.fragments
 
 import android.content.Context
 import android.content.Intent
+import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.room.Room
 import androidx.test.core.app.ActivityScenario
@@ -32,6 +33,7 @@ import com.schibsted.spain.barista.assertion.BaristaCheckedAssertions.assertUnch
 import com.schibsted.spain.barista.assertion.BaristaListAssertions.assertDisplayedAtPosition
 import com.schibsted.spain.barista.assertion.BaristaRecyclerViewAssertions.assertRecyclerViewItemCount
 import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertDisplayed
+import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertNotDisplayed
 import com.schibsted.spain.barista.interaction.BaristaClickInteractions.clickOn
 import com.schibsted.spain.barista.interaction.BaristaListInteractions.clickListItem
 import kotlinx.coroutines.runBlocking
@@ -56,6 +58,8 @@ class EventListFragmentTest {
     val firstEventName = "Sushi demo"
 
     private lateinit var localDatabase: LocalDatabase
+
+    private lateinit var fragmentScenario: FragmentScenario<EventListFragment>
 
     @Before
     fun setup() {
@@ -124,7 +128,7 @@ class EventListFragmentTest {
             .allowMainThreadQueries()
             .build()
 
-        launchFragmentInContainer<EventListFragment>(themeResId = R.style.Theme_PolyEvents)
+        fragmentScenario = launchFragmentInContainer<EventListFragment>(themeResId = R.style.Theme_PolyEvents)
 
         EventListFragment.localDatabase = localDatabase
         EventListFragment.eventLocalViewModel = EventLocalViewModelFactory(
@@ -139,6 +143,18 @@ class EventListFragmentTest {
         // close and remove the mock local database
         localDatabase.close()
         currentDatabase = FirestoreDatabaseProvider
+    }
+
+    @Test
+    fun testNoUpComingEventsDisplayed() {
+        assertNotDisplayed(R.id.fragment_events_no_upcoming_events_text_view)
+
+        // clear events
+        FakeDatabaseEvent.events.clear()
+
+        fragmentScenario.recreate()
+
+        assertDisplayed(R.id.fragment_events_no_upcoming_events_text_view, R.string.no_upcoming_events)
     }
 
     @Test
