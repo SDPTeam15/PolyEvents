@@ -37,6 +37,7 @@ object GoogleMapActionHandler {
         lifecycle: LifecycleOwner,
         locationActivated: Boolean
     ) {
+        setSelectedZoneFromArea(polygon.tag.toString())
         if (mode == MapsFragmentMod.EditZone) {
             if (ZoneAreaMapHelper.editMode && ZoneAreaMapHelper.canEdit(polygon.tag.toString())) {
                 ZoneAreaMapHelper.editArea(context, polygon.tag.toString())
@@ -44,7 +45,6 @@ object GoogleMapActionHandler {
                 ZoneAreaMapHelper.removeArea(polygon.tag.toString().toInt())
             }
         } else if(mode == MapsFragmentMod.Visitor){
-            setSelectedZoneFromArea(polygon.tag.toString())
             // Get the marker associated to the selected zone
             val zoneMarker = ZoneAreaMapHelper.areasPoints.get(polygon.tag)!!.second
             // Display the bottom dialog previewing the selected zone
