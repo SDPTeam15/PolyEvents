@@ -347,6 +347,7 @@ class ProfileLoginFragmentTests {
 
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
         profileFragment.currentUser = user
+        Thread.sleep(200)
         loginDirectly(loginFragment, R.id.ic_login)
 
         //Mock the update UserInformation method
@@ -542,11 +543,11 @@ class ProfileLoginFragmentTests {
             profileFragment.userInfoLiveData.postValue(user)
             Observable(true)
         }
-
+        Thread.sleep(200)
         loginDirectly(loginFragment, R.id.id_btn_login_button)
 
         // Wait enough time
-        Thread.sleep(3000)
+        Thread.sleep(1500)
         assert(!accountCreated)
     }
 
@@ -577,7 +578,7 @@ class ProfileLoginFragmentTests {
         onView(withId(R.id.id_btn_login_button)).perform(click())
         //Notify that the getUserAInformation request was successfully performed
         endingRequest.postValue(false)
-        Thread.sleep(2000)
+        Thread.sleep(1500)
         onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
 
     }
@@ -598,6 +599,7 @@ class ProfileLoginFragmentTests {
 
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
         profileFragment.currentUser = user
+        Thread.sleep(200)
         loginDirectly(loginFragment, R.id.ic_login)
 
         //Mock the profile
@@ -652,8 +654,8 @@ class ProfileLoginFragmentTests {
 
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
         profileFragment.currentUser = user
+        Thread.sleep(500)
         loginDirectly(loginFragment, R.id.ic_login)
-
 
 
         //Mock the profile
@@ -719,6 +721,7 @@ class ProfileLoginFragmentTests {
         val profileFragment =
             MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
         profileFragment.currentUser = user
+        Thread.sleep(200)
         loginDirectly(loginFragment, R.id.ic_login)
 
         //Mock the profile
@@ -785,6 +788,7 @@ class ProfileLoginFragmentTests {
         val profileFragment =
             MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
         profileFragment.currentUser = user
+        Thread.sleep(200)
         loginDirectly(loginFragment, R.id.ic_login)
 
         //Mock the profile

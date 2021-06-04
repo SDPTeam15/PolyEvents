@@ -443,7 +443,7 @@ class EventManagementTest {
 
 
     @Test
-    fun gettedInformationCorrectlySet() {
+    fun gottenInformationCorrectlySet() {
         val obs = Observable<Boolean>()
         When(
             mockedEventDB.getEventFromId(
@@ -522,8 +522,8 @@ class EventManagementTest {
         onView(withId(R.id.id_description_event_edittext)).perform(replaceText(eventDesc))
         onView(withId(R.id.id_manage_event_button)).perform(scrollTo())
         val obs = addAddListener()
-        onView(withId(R.id.id_manage_event_button)).perform(scrollTo(), click())
         obs.postValue(true)
+        onView(withId(R.id.id_manage_event_button)).perform(scrollTo(), click())
 
         assertEquals(event!!.endTime, endDate)
         assertEquals(event!!.startTime, startDate)
