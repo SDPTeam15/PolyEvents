@@ -14,7 +14,6 @@ object ProfileAdapter : AdapterInterface<UserProfile> {
 
     override fun toDocumentWithoutNull(element: UserProfile): HashMap<String, Any?> =
         hashMapOf(
-            PROFILE_ID.value to element.pid,
             PROFILE_NAME.value to element.profileName,
             PROFILE_RANK.value to element.userRole.userRole,
             PROFILE_DEFAULT.value to element.defaultProfile,
@@ -22,7 +21,7 @@ object ProfileAdapter : AdapterInterface<UserProfile> {
         )
 
     override fun fromDocument(document: Map<String, Any?>, id: String) = UserProfile(
-        pid = id as String?,
+        pid = id,
         profileName = document[PROFILE_NAME.value] as String?,
         userRole = if ((document[PROFILE_RANK.value] as String?) != null)
             UserRole.fromString(document[PROFILE_RANK.value] as String) ?: UserRole.PARTICIPANT

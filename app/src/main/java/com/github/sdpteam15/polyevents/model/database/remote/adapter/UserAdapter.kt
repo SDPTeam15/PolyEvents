@@ -14,7 +14,6 @@ import com.github.sdpteam15.polyevents.model.entity.UserEntity
 object UserAdapter : AdapterInterface<UserEntity> {
     override fun toDocumentWithoutNull(element: UserEntity): HashMap<String, Any?> =
         hashMapOf(
-            USER_UID.value to element.uid,
             USER_USERNAME.value to element.username,
             USER_NAME.value to element.name,
             // convert the localdate to LocalDateTime compatible to store in Firestore

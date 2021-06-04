@@ -12,7 +12,6 @@ import com.github.sdpteam15.polyevents.model.entity.RouteNode
 object RouteNodeAdapter : AdapterInterface<RouteNode> {
     override fun toDocumentWithoutNull(element: RouteNode): HashMap<String, Any?> =
         hashMapOf(
-            NODE_ID.value to element.id,
             LATITUDE.value to element.latitude,
             LONGITUDE.value to element.longitude,
             AREA_ID.value to element.areaId
