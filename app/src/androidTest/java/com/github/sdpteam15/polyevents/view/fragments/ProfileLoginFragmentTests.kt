@@ -159,12 +159,11 @@ class ProfileLoginFragmentTests {
             mockedUserDatabase.inDatabase(loginFragment.inDbObservable, uidTest)
         ).thenAnswer { _ ->
             loginFragment.inDbObservable.postValue(true)
-            endingRequest2
+            Observable(true)
         }
+        Thread.sleep(300)
         //click on the given button to go further in the appliction
         onView(withId(id)).perform(click())
-        //Notify that the in Database
-        endingRequest2.postValue(true)
     }
 
     @Test
@@ -654,7 +653,7 @@ class ProfileLoginFragmentTests {
 
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
         profileFragment.currentUser = user
-        Thread.sleep(500)
+        Thread.sleep(1000)
         loginDirectly(loginFragment, R.id.ic_login)
 
 
