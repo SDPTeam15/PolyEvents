@@ -40,7 +40,6 @@ import java.time.LocalDateTime
  * event), but we choose to fetch them remotely to reflect any changes that might be done on the event.
  */
 class EventActivity : AppCompatActivity(), ReviewHasChanged {
-    // TODO: view on map functionality?
     private lateinit var eventId: String
 
     private lateinit var subscribeButton: Button

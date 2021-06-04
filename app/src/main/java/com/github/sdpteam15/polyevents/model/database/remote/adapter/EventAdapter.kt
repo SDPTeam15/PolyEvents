@@ -8,11 +8,13 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.Ev
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Item
 
-// TODO: Save icon bitmap in Google cloud storage
 /**
  * A class for converting between event entities in our code and
  * documents in the Firebase database. Not unlike the conversion to
  * DTO (Data transfer object) concept.
+ *
+ * Note: The event icon should probably be stored in Google cloud storage, but this has not yet been
+ * done.
  *
  * IMPORTANT: This should be updated whenever we add, remove or update fields of Event.
  */
