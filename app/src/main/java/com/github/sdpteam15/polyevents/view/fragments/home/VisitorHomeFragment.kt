@@ -16,6 +16,7 @@ import com.github.sdpteam15.polyevents.model.database.remote.NUMBER_UPCOMING_EVE
 import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
 import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.UserRole
+import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication.Companion.inTest
 import com.github.sdpteam15.polyevents.view.activity.EventActivity
@@ -71,7 +72,7 @@ class VisitorHomeFragment : Fragment() {
         recyclerView.adapter = EventItemAdapter(events, openEvent)
         recyclerView.setHasFixedSize(false)
 
-
+        val observableDBAnswer = Observable<Boolean>()
         currentDatabase.eventDatabase.getEvents(events, NUMBER_UPCOMING_EVENTS.toLong())
             .observe(this) {
                 if (!it.value) {
@@ -80,7 +81,15 @@ class VisitorHomeFragment : Fragment() {
                         fragmentView.context
                     )
                 }
-            }
+            }.then.updateOnce(this, observableDBAnswer)
+
+
+        HelperFunctions.showProgressDialog(
+            this, listOf(
+                observableDBAnswer
+            ), requireActivity().supportFragmentManager
+        )
+
         events.observe(this) {
             recyclerView.adapter!!.notifyDataSetChanged()
         }

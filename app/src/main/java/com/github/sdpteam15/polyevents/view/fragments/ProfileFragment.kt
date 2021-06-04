@@ -98,10 +98,17 @@ class ProfileFragment(private val userId: String? = null) : Fragment(), UserModi
     }
 
     private fun getUserInformation() {
+        val observableDBAnswer = Observable<Boolean>()
         //Get user information in the database
         currentDatabase.userDatabase.getUserInformation(
             userInfoLiveData,
             currentUID
+        ).updateOnce(this, observableDBAnswer)
+
+        HelperFunctions.showProgressDialog(
+            this, listOf(
+                observableDBAnswer
+            ), requireActivity().supportFragmentManager
         )
     }
 
