@@ -43,7 +43,6 @@ class ItemRequestManagementActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.id_recycler_item_requests)
 
-
         requests.group(this) { it.userId }.then.observePut(this) {
             if (!userNames.containsKey(it.key)) {
                 val tempUsers = Observable<UserEntity>()
