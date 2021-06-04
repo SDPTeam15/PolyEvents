@@ -106,13 +106,13 @@ object GoogleMapActionHandler {
      * @param marker marker that has been clicked
      */
     fun canClickMarker(marker: Marker): Boolean {
-        if (marker.equals(RouteMapHelper.startMarker)
-            || marker.equals(RouteMapHelper.endMarker)
-            || marker.equals(ZoneAreaMapHelper.moveDiagMarker)
-            || marker.equals(ZoneAreaMapHelper.moveDownMarker)
-            || marker.equals(ZoneAreaMapHelper.moveMarker)
-            || marker.equals(ZoneAreaMapHelper.moveRightMarker)
-            || marker.equals(ZoneAreaMapHelper.rotationMarker)
+        if (marker == RouteMapHelper.startMarker
+            || marker == RouteMapHelper.endMarker
+            || marker == ZoneAreaMapHelper.moveDiagMarker
+            || marker == ZoneAreaMapHelper.moveDownMarker
+            || marker == ZoneAreaMapHelper.moveMarker
+            || marker == ZoneAreaMapHelper.moveRightMarker
+            || marker == ZoneAreaMapHelper.rotationMarker
         )
             return false
         return true
