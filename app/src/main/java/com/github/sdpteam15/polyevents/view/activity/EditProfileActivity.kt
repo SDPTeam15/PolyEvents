@@ -75,8 +75,13 @@ class EditProfileActivity : AppCompatActivity() {
             lastName = profile.profileName ?: ""
             name.setText(profile.profileName ?: "")
         }
-        currentDatabase.userDatabase.getProfileById(updater, pid)
-
+        val observableDBAnswer = Observable<Boolean>()
+        currentDatabase.userDatabase.getProfileById(updater, pid).updateOnce(this, observableDBAnswer)
+        HelperFunctions.showProgressDialog(
+            this, listOf(
+                observableDBAnswer
+            ), supportFragmentManager
+        )
         cancel.setOnClickListener {
             onBackPressed()
         }

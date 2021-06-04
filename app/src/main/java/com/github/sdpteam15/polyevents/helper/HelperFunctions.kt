@@ -16,12 +16,14 @@ import androidx.core.app.ActivityCompat.RequestPermissionsRequestCodeValidator
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
 import androidx.lifecycle.LifecycleOwner
 import androidx.room.TypeConverter
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.toInt
 import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.view.fragments.ProgressDialogFragment
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
@@ -386,6 +388,26 @@ object HelperFunctions {
                 noContinuation()
             }
         builder.show()
+    }
+
+    /**
+     * Display a progress dialog that is not cancelable until all the observable have a value
+     * @param lifecycle The lifecycle in which the dialog will be displayed
+     * @param listObservable The list of all observable that will get a value
+     * @param supportFragmentManager The support fragment manager to display the dialog
+     */
+    fun showProgressDialog(
+        lifecycle: LifecycleOwner, listObservable: List<Observable<*>>,
+        supportFragmentManager: FragmentManager
+    ) {
+        val progressDialogFragment = ProgressDialogFragment(
+            waitUpdate(
+                lifecycle,
+                listObservable
+            )
+        )
+        progressDialogFragment.isCancelable = false
+        progressDialogFragment.show(supportFragmentManager, ProgressDialogFragment.TAG)
     }
 
     /**

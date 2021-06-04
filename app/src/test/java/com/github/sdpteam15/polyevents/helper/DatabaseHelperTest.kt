@@ -187,16 +187,16 @@ class DatabaseHelperTest {
         }
 
         When(mockedEventDb.getEvents(anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
-            (it.arguments[2] as ObservableList<Event>).addAll(allEvents)
-            (it.arguments[0] as Matcher).match(mockQuery2)
+            (it.arguments[0] as ObservableList<Event>).addAll(allEvents)
+            (it.arguments[2] as Matcher).match(mockQuery2)
             assertNotNull(it.arguments[0])
             Observable(true)
         }
 
         When(mockedEventDb.getEventEdits(anyOrNull(), anyOrNull())).thenAnswer {
-            (it.arguments[1] as ObservableList<Event>).addAll(allEventEdits)
+            (it.arguments[0] as ObservableList<Event>).addAll(allEventEdits)
 
-            (it.arguments[0] as Matcher).match(mockQuery1)
+            (it.arguments[1] as Matcher).match(mockQuery1)
             assertNotNull(it.arguments[0])
             Observable(true)
         }

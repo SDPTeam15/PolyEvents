@@ -30,9 +30,9 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
         db.getEntity(returnEvent, id, EVENT_COLLECTION, EventAdapter)
 
     override fun getEvents(
-        matcher: Matcher?,
+        eventList: ObservableList<Event>,
         limit: Long?,
-        eventList: ObservableList<Event>
+        matcher: Matcher?
     ): Observable<Boolean> =
         db.getListEntity(
             eventList,
@@ -61,8 +61,8 @@ class EventDatabase(private val db: DatabaseInterface) : EventDatabaseInterface 
     ): Observable<Boolean> = db.getEntity(returnEvent, id, EVENT_EDIT_COLLECTION)
 
     override fun getEventEdits(
-        matcher: Matcher?,
-        eventList: ObservableList<Event>
+        eventList: ObservableList<Event>,
+        matcher: Matcher?
     ): Observable<Boolean> =
         db.getListEntity(
             eventList,

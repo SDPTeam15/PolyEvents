@@ -105,7 +105,7 @@ class EventManagementListTest {
         Mockito.`when`(mockedDatabase.userDatabase).thenReturn(mockeduserDb)
         Mockito.`when`(mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull()))
             .thenAnswer {
-                (it.arguments[2] as ObservableList<Event>).addAll(events)
+                (it.arguments[0] as ObservableList<Event>).addAll(events)
                 Observable(true, this)
             }
 

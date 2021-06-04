@@ -30,7 +30,6 @@ class EventItemAdapter(
         private val eventSchedule = view.findViewById<TextView>(R.id.id_event_schedule_text)
         private val eventZone = view.findViewById<TextView>(R.id.id_event_zone)
         private val eventDescription = view.findViewById<TextView>(R.id.id_event_description)
-        private val eventIcon = view.findViewById<ImageView>(R.id.id_event_icon)
         private val attendeesNumberTextView =
             view.findViewById<TextView>(R.id.event_card_attendees_number)
 
@@ -55,9 +54,6 @@ class EventItemAdapter(
             } else {
                 attendeesNumberTextView.visibility = View.GONE
             }
-
-            // TODO : set the icon of the event
-            //eventIcon.setImageBitmap(event.icon)
         }
     }
 

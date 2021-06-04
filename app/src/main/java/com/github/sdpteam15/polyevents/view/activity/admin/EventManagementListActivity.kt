@@ -11,6 +11,7 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.entity.Event
+import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
 import com.github.sdpteam15.polyevents.view.adapter.EventListAdapter
@@ -38,6 +39,7 @@ class EventManagementListActivity : AppCompatActivity() {
     private lateinit var modifyListener: (String) -> Unit
     private lateinit var deleteListener: (String, Event) -> Unit
     private var isOrganiser = false
+    private var eventGotten = Observable<Boolean>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,6 +81,16 @@ class EventManagementListActivity : AppCompatActivity() {
                 obsEventsMap[i.key!!] = Pair(i.value[0].zoneName!!, i.value)
             }
         }
+
+        eventGotten = Observable()
+
+        // Display a loading screen while the queries with the database are not over
+        HelperFunctions.showProgressDialog(
+            this, listOf(
+                eventGotten
+            ), supportFragmentManager
+        )
+
         getEventsDatabase(requestObservable)
     }
 
@@ -90,21 +102,20 @@ class EventManagementListActivity : AppCompatActivity() {
     private fun getEventsDatabase(requestObservable: ObservableList<Event>) {
         if (isOrganiser) {
             // If the current user is an event organiser and not admin, we display only the events he is organising
-            currentDatabase.eventDatabase.getEvents({
+            currentDatabase.eventDatabase.getEvents(requestObservable, matcher = {
                 it.whereEqualTo(
                     DatabaseConstant.EventConstant.EVENT_ORGANIZER.value,
                     currentDatabase.currentUser!!.uid
                 )
-            }, null, eventList = requestObservable)
-                .observe(this) {
-                    redirectOnFailure(it.value)
-                }
+            }).observe(this) {
+                redirectOnFailure(it.value)
+            }.then.updateOnce(this, eventGotten)
         } else {
             // Otherwise, we load all the events from the database
-            currentDatabase.eventDatabase.getEvents(null, null, eventList = requestObservable)
+            currentDatabase.eventDatabase.getEvents(requestObservable)
                 .observe(this) {
                     redirectOnFailure(it.value)
-                }
+                }.then.updateOnce(this, eventGotten)
         }
     }
 

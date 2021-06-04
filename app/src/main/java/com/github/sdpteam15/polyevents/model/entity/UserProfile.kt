@@ -9,6 +9,7 @@ import com.google.firebase.firestore.IgnoreExtraProperties
  * @property pid id of the Profile
  * @property profileName the name of the profile
  * @property userRole the role associated with this user profile. Can be one of admin, staff, event organizer or simply participant.
+ * @property defaultProfile if the profile is the default profile or not
  * @property users  the list of users the profile has
  */
 @IgnoreExtraProperties

@@ -13,6 +13,7 @@ import com.google.firebase.firestore.IgnoreExtraProperties
  *
  * @property itemId the uid of the item, generally given by the admin
  * @property itemType the type of the item
+ * @property itemName The name of the item
  */
 @IgnoreExtraProperties
 data class Item(
