@@ -26,9 +26,9 @@ data class UserSettings(
     // Ideally should have its setter private but Room needs it to reconstruct objects
     val userUid: String = DEFAULT_ID,
     @ColumnInfo(name = "track_location")
-    var trackLocation: Boolean = false,
+    var trackLocation: Boolean = true,
     @ColumnInfo(name = "is_sending_location_on")
-    var isSendingLocationOn: Boolean = false,
+    var isSendingLocationOn: Boolean = true,
     @ColumnInfo(name = "location_id")
     var locationId: String? = null
 ) {
