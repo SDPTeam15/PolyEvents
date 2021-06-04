@@ -44,6 +44,24 @@ class EventLocalViewModel(private val eventDao: EventDao) : ViewModel() {
     fun insert(event: EventLocal) = viewModelScope.launch {
         eventDao.insert(event)
     }
+
+    /**
+     * Launch a coroutine on the viewmodel scope to get all user subscribed events. Events
+     * to which you are subscribed are by definition limited.
+     * @param obs the observable list to be updated with the events when they are
+     * fetched from the local database
+     */
+    fun getAllSubscribedEvents(obs: ObservableList<EventLocal>) = viewModelScope.launch {
+        val limitedEvents = eventDao.getEventsWhereLimited(true)
+        obs.updateAll(limitedEvents)
+    }
+
+    /**
+     * Launch a coroutine on the viewmodel scope to delete all user subscribed events.
+     */
+    fun deleteAllSubscribedEvents() = viewModelScope.launch {
+        eventDao.deletedEventsWhereLimited(true)
+    }
 }
 
 /**

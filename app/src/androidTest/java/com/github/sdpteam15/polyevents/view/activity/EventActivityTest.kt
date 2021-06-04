@@ -253,7 +253,6 @@ class EventActivityTest {
         assertEnabled(R.id.button_subscribe_follow_event)
         assertDisplayed(R.id.event_leave_review_button)
         assertEnabled(R.id.event_leave_review_button)
-        //TODO check image is correct
     }
 
     @Test

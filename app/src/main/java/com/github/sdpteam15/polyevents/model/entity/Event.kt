@@ -24,10 +24,6 @@ import java.time.LocalDateTime
  * @property limitedEvent specifies whether the event has a maximum number of attendees
  * @property maxNumberOfSlots the maximum amount of attendees to this event
  */
-// TODO: look into storing instances of LocalDateTime, or Long (for startTime and endTime)
-// TODO: Should the eventName be unique? (Important when writing security rules)
-// TODO: keep track of items, or just required items?
-// TODO: add location (Zone or zoneId)
 @IgnoreExtraProperties
 data class Event(
     var eventId: String? = null,

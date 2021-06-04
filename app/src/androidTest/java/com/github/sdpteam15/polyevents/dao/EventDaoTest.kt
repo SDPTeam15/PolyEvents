@@ -21,11 +21,12 @@ class EventDaoTest {
 
     private val event_uid = "1"
     private val testEventLocal = EventLocal(
-            eventId = event_uid,
-            eventName = "testEvent",
-            description = "this is a test event",
-            organizer = "some organizer",
-            startTime = LocalDateTime.now()
+        eventId = event_uid,
+        eventName = "testEvent",
+        description = "this is a test event",
+        organizer = "some organizer",
+        startTime = LocalDateTime.now(),
+        isLimited = false
     )
 
     @Before
@@ -34,9 +35,9 @@ class EventDaoTest {
         // Using an in-memory database because the information stored here disappears when the
         // process is killed.
         localDatabase = Room.inMemoryDatabaseBuilder(context, LocalDatabase::class.java)
-                // Allowing main thread queries, just for testing.
-                .allowMainThreadQueries()
-                .build()
+            // Allowing main thread queries, just for testing.
+            .allowMainThreadQueries()
+            .build()
         eventDao = localDatabase.eventDao()
     }
 
@@ -62,8 +63,8 @@ class EventDaoTest {
         val retrievedEvent = eventDao.getEventById(testEventLocal.eventId)
         assertFalse(retrievedEvent.isEmpty())
         assertEquals(
-                retrievedEvent[0],
-                testEventLocal
+            retrievedEvent[0],
+            testEventLocal
         )
     }
 
@@ -104,8 +105,9 @@ class EventDaoTest {
         val otherEventName = "another event"
         val newUid = event_uid + "1"
         val testEventLocal2 = testEventLocal.copy(
-                eventId = newUid,
-                eventName = otherEventName)
+            eventId = newUid,
+            eventName = otherEventName
+        )
 
         eventDao.insertAll(listOf(testEventLocal, testEventLocal2))
 
@@ -121,9 +123,30 @@ class EventDaoTest {
 
     @Test
     @Throws(Exception::class)
-    fun testGettingNonExistentEvent() = runBlocking {
-        // TODO: recheck (getEventById) returns list or single element?
-        //val retrievedEvent = eventDao.getEventById("1")
-        //assertEquals(retrievedEvent, null)
+    fun testGettingAndDeletingSubscribedEvents() = runBlocking {
+        val otherEventName = "another event"
+        val newUid = event_uid + "1"
+        val testEventLimited = testEventLocal.copy(
+            eventId = newUid,
+            eventName = otherEventName,
+            isLimited = true
+        )
+
+        eventDao.insertAll(listOf(testEventLocal, testEventLimited))
+
+        val retrievedEvents = eventDao.getAll()
+        assertEquals(retrievedEvents.size, 2)
+
+        val limitedEvents = eventDao.getEventsWhereLimited(true)
+
+        assertEquals(limitedEvents.size, 1)
+        assertEquals(limitedEvents[0], testEventLimited)
+
+        // delete all limited events
+        eventDao.deletedEventsWhereLimited(true)
+
+        val retrievedEventsAfterDelete = eventDao.getAll()
+        assertEquals(retrievedEventsAfterDelete.size, 1)
+        assertEquals(retrievedEventsAfterDelete[0], testEventLocal)
     }
 }
