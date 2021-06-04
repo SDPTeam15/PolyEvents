@@ -14,11 +14,13 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.helper.DatabaseHelper.addToUsersFromDB
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
+import com.github.sdpteam15.polyevents.model.entity.Event
 import com.github.sdpteam15.polyevents.model.entity.Item
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
-import com.github.sdpteam15.polyevents.model.entity.UserEntity
+import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
@@ -26,7 +28,6 @@ import com.github.sdpteam15.polyevents.view.adapter.ItemRequestAdminAdapter
 
 /**
  * Activity to display item requests to Admins
- * TODO define what happens when an admin answers an item request
  */
 class ItemRequestManagementActivity : AppCompatActivity() {
 
@@ -34,6 +35,7 @@ class ItemRequestManagementActivity : AppCompatActivity() {
     private val requests = ObservableList<MaterialRequest>()
     private val userNames = ObservableMap<String, String>()
     private val itemNames = ObservableMap<String, String>()
+    private val zoneNameFromEventId = ObservableMap<String, String>()
     private val items = ObservableList<Triple<Item, Int, Int>>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,21 +45,12 @@ class ItemRequestManagementActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.id_recycler_item_requests)
 
-        // TODO add the observable as needed
-        requests.group(this) { it.userId }.then.observePut(this) {
-            if (!userNames.containsKey(it.key)) {
-                val tempUsers = Observable<UserEntity>()
-                currentDatabase.userDatabase.getUserInformation(tempUsers, it.key)
-                    .observeOnce(this) { ans ->
-                        if (ans.value) {
-                            userNames[it.key] = tempUsers.value?.name ?: "ANONYMOUS"
-                        } else {
-                            HelperFunctions.showToast(
-                                getString(R.string.failed_to_get_username_from_database),
-                                this
-                            )
-                        }
-                    }
+        requests.observeAdd(this) {
+            if (!userNames.containsKey(it.value.userId)) {
+                addToUsersFromDB(it.value.userId, userNames, this, this)
+            }
+            if (it.value.staffInChargeId != null && !userNames.containsKey(it.value.staffInChargeId!!)) {
+                addToUsersFromDB(it.value.staffInChargeId!!, userNames, this, this)
             }
         }
 
@@ -72,19 +65,16 @@ class ItemRequestManagementActivity : AppCompatActivity() {
                 requests,
                 userNames,
                 itemNames,
+                zoneNameFromEventId,
                 acceptMaterialRequest,
                 declineMaterialRequest
             )
 
-        val obsGetMatEnded = Observable<Boolean>()
-        val obsGetItemsEnded = Observable<Boolean>()
-
         //Wait until we have both requests accepted from the database to show the material requests
         currentDatabase.materialRequestDatabase.getMaterialRequestList(
             requests.sortAndLimitFrom(this) { it.status })
-            .observeOnce(this) {
+            .observeOnce(this) { it ->
                 if (!it.value) {
-                    obsGetItemsEnded.postValue(false, this)
                     HelperFunctions.showToast("Failed to get the list of material requests", this)
                 } else {
                     currentDatabase.itemDatabase.getItemsList(items)
@@ -92,14 +82,32 @@ class ItemRequestManagementActivity : AppCompatActivity() {
                             if (!it2.value) {
                                 HelperFunctions.showToast("Failed to get the list of items", this)
                             }
-                        }.then.updateOnce(this, obsGetItemsEnded)
-                }
-            }.then.updateOnce(this, obsGetMatEnded)
+                        }
+                    val sentEventIds = mutableListOf<String>()
+                    for (request in requests) {
+                        if (request.eventId !in sentEventIds) {
+                            sentEventIds.add(request.eventId)
+                            val event = Observable<Event>()
+                            val zone = Observable<Zone>()
+                            currentDatabase.eventDatabase.getEventFromId(request.eventId, event)
+                                .observeOnce(this) {
+                                    if (it.value) {
+                                        currentDatabase.zoneDatabase.getZoneInformation(
+                                            event.value!!.zoneId!!,
+                                            zone
+                                        ).observeOnce(this) {
+                                            if (it.value) {
+                                                zoneNameFromEventId[event.value!!.eventId!!] =
+                                                    zone.value!!.zoneName!!
+                                            }
+                                        }
+                                    }
+                                }
+                        }
 
-        // Display a loading screen while the queries with the database are not over
-        HelperFunctions.showProgressDialog(
-            this, listOf(obsGetItemsEnded, obsGetMatEnded), supportFragmentManager
-        )
+                    }
+                }
+            }
     }
 
     private val acceptMaterialRequest = { request: MaterialRequest ->

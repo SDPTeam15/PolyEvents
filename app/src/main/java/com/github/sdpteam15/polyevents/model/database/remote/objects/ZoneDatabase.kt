@@ -1,10 +1,11 @@
 package com.github.sdpteam15.polyevents.model.database.remote.objects
 
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.CollectionConstant.ZONE_COLLECTION
+import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ZoneConstant.ZONE_STATUS
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.ZoneAdapter
-import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
 import com.github.sdpteam15.polyevents.model.entity.Zone
+import com.github.sdpteam15.polyevents.model.entity.Zone.Status.DELETED
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 
@@ -22,12 +23,24 @@ class ZoneDatabase(private val db: DatabaseInterface) : ZoneDatabaseInterface {
         newZone: Zone
     ): Observable<Boolean> = db.setEntity(newZone, zoneId, ZONE_COLLECTION)
 
-    override fun getAllZones(
+    override fun getActiveZones(
         zones: ObservableList<Zone>,
-        number: Long?,
-        matcher: Matcher?
+        number: Long?
     ): Observable<Boolean> =
-        db.getListEntity(zones, null, matcher, ZONE_COLLECTION, ZoneAdapter)
+        db.getListEntity(
+            zones,
+            null,
+            {
+                val query = it.whereNotEqualTo(ZONE_STATUS.value, DELETED.ordinal.toLong())
+                if(number == null) {
+                    query
+                }else{
+                    query.limit(number)
+                }
+            },
+            ZONE_COLLECTION,
+            ZoneAdapter
+        )
 
     override fun deleteZone(zone: Zone): Observable<Boolean> =
         db.deleteEntity(zone.zoneId!!, ZONE_COLLECTION)

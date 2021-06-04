@@ -78,7 +78,7 @@ class ZoneManagementListActivity : AppCompatActivity() {
      */
     private fun getAllZones() {
         val infoGotten = Observable<Boolean>()
-        Database.currentDatabase.zoneDatabase.getAllZones(
+        Database.currentDatabase.zoneDatabase.getActiveZones(
             zones.sortAndLimitFrom(this) { it.zoneName }
         ).observe(this) {
             if (!it.value) {

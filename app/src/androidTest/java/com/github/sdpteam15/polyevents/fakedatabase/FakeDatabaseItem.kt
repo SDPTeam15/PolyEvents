@@ -54,8 +54,6 @@ object FakeDatabaseItem : ItemDatabaseInterface {
         total: Int,
         remaining: Int
     ): Observable<Boolean> {
-        // TODO should update add item if non existent in database ?
-        // if (item.itemId == null) return createItem(item, count, profile)
         items[item.itemId!!] = Triple(item, total,remaining)
         return Observable(true, FakeDatabase)
     }

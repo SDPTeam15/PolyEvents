@@ -93,8 +93,7 @@ class TimeTableActivityTest {
         val mockedZoneDB = Mockito.mock(ZoneDatabaseInterface::class.java)
 
         Mockito.`when`(
-            mockedZoneDB.getAllZones(
-                anyOrNull(),
+            mockedZoneDB.getActiveZones(
                 anyOrNull(),
                 anyOrNull()
             )

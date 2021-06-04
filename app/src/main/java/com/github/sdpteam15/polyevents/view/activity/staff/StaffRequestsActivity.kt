@@ -9,6 +9,7 @@ import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.helper.DatabaseHelper
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.model.database.remote.Database.currentDatabase
 import com.github.sdpteam15.polyevents.model.entity.*
@@ -161,11 +162,11 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
         requests.group(this, materialRequest) {
             staffRequestStatusFromMaterialStatus(it.status)
         }
-
-
-        users.group(this) { it.uid }.then.map(this, userNames) { it[0].name ?: "UNKNOWN" }
-
-
+        requests.observeAdd(this) {
+            if (!userNames.containsKey(it.value.userId)) {
+                DatabaseHelper.addToUsersFromDB(it.value.userId, userNames, this, this)
+            }
+        }
     }
 
     override fun onResume() {
@@ -216,15 +217,6 @@ class StaffRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
                     showToast(getString(R.string.fail_to_get_list_items_staff), this)
                 }
             }
-
-
-        currentDatabase.userDatabase.getListAllUsers(users)
-            .observeOnce(this) {
-                if (!it.value) {
-                    showToast(getString(R.string.fail_to_get_list_users_staff), this)
-                }
-            }
-
 
     }
 

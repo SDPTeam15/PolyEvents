@@ -27,7 +27,7 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableMap
  * @param onSeeListener Listener for the click on the "see" button
  */
 class EventEditAdminAdapter(
-    context: Context,
+    val context: Context,
     lifecycleOwner: LifecycleOwner,
     private val events: ObservableList<Event>,
     private val origEvent: ObservableMap<String, Event>,
@@ -66,8 +66,8 @@ class EventEditAdminAdapter(
          */
         fun bind(event: Event) {
             title.text = when (event.eventId) {
-                null -> "Creation"
-                else -> "Modification"
+                null -> context.getString(R.string.creation)
+                else -> context.getString(R.string.modification)
             }
 
             eventName.text = event.eventName

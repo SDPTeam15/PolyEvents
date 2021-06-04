@@ -1,6 +1,7 @@
 package com.github.sdpteam15.polyevents.model.database.remote.adapter
 
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.toLocalDateTime
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.UserConstants.*
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
 
@@ -32,8 +33,7 @@ object UserAdapter : AdapterInterface<UserEntity> {
         uid = id,
         username = document[USER_USERNAME.value] as String?,
         name = document[USER_NAME.value] as String?,
-        birthDate = HelperFunctions.dateToLocalDateTime(document[USER_BIRTH_DATE.value])
-            ?.toLocalDate(),
+        birthDate = document[USER_BIRTH_DATE.value].toLocalDateTime()?.toLocalDate(),
         email = document[USER_EMAIL.value] as String?,
         telephone = document[USER_PHONE.value] as String?,
         profiles = (document[USER_PROFILES.value] as List<String>).toMutableList()

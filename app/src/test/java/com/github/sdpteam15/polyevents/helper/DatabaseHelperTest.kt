@@ -44,7 +44,7 @@ class DatabaseHelperTest {
     lateinit var updatedItems: MutableList<Triple<Item, Int, Int>>
     lateinit var cancelEventEdits: MutableList<Event>
     lateinit var cancelEvents: MutableList<Event>
-    lateinit var removedZone: MutableList<Zone>
+    lateinit var updatedZone: MutableList<Zone>
 
     lateinit var allMaterialRequest: MutableList<MaterialRequest>
     lateinit var allItems: MutableList<Triple<Item, Int, Int>>
@@ -56,7 +56,7 @@ class DatabaseHelperTest {
         updatedItems = mutableListOf()
         cancelEventEdits = mutableListOf()
         cancelEvents = mutableListOf()
-        removedZone = mutableListOf()
+        updatedZone = mutableListOf()
 
         event = Event(
             eventName = "Test 1",
@@ -222,8 +222,8 @@ class DatabaseHelperTest {
             Observable(true)
         }
 
-        When(mockedZoneDb.deleteZone(anyOrNull())).thenAnswer {
-            removedZone.add(it.arguments[0] as Zone)
+        When(mockedZoneDb.updateZoneInformation(anyOrNull(),anyOrNull())).thenAnswer {
+            updatedZone.add(it.arguments[1] as Zone)
             Observable(true)
         }
 
@@ -296,7 +296,7 @@ class DatabaseHelperTest {
         assertEquals(allEventEdits.size, cancelEventEdits.size)
         assertEquals(allEvents.size, cancelEvents.size)
 
-        assertEquals(removedZone[0], zone)
+        assertEquals(updatedZone[0].status, Zone.Status.DELETED)
         assertEquals(cancelMaterialRequest[0].status, MaterialRequest.Status.CANCELED)
         assertEquals(cancelMaterialRequest[1].status, MaterialRequest.Status.CANCELED)
         assertEquals(cancelMaterialRequest[2].status, MaterialRequest.Status.RETURN_REQUESTED)

@@ -14,6 +14,9 @@ object FakeDatabaseEvent : EventDatabaseInterface {
     }
 
     lateinit var events: MutableMap<String, Event>
+    lateinit var eventEdits: MutableMap<String, Event>
+    lateinit var ratings: MutableMap<String, Rating>
+
     private fun initEvents() {
         events = mutableMapOf()
         events["event1"] =
@@ -51,7 +54,8 @@ object FakeDatabaseEvent : EventDatabaseInterface {
                 zoneName = "Swimming pool",
             )
         events["event3"]!!.makeLimitedEvent(3)
-
+        eventEdits = mutableMapOf()
+        ratings = mutableMapOf("TEST" to Rating("TEST", 2f, "TEXT"))
     }
 
     override fun createEvent(event: Event): Observable<Boolean> {
@@ -60,18 +64,16 @@ object FakeDatabaseEvent : EventDatabaseInterface {
             eventId,
             event.copy(eventId = eventId)
         ) == null
-        return Observable(b, this)
+        return Observable(b, FakeDatabase)
     }
 
     override fun updateEvent(event: Event): Observable<Boolean> {
-        // TODO should update add item if non existent in database ?
-        // if (event.eventId == null) return createEvent(event, profile)
         events[event.eventId!!] = event
-        return Observable(true, this)
+        return Observable(true, FakeDatabase)
     }
 
     override fun removeEvent(eventId: String): Observable<Boolean> {
-        TODO("Not yet implemented")
+        return Observable(events.remove(eventId) != null, FakeDatabase)
     }
 
     override fun getEventFromId(
@@ -81,7 +83,7 @@ object FakeDatabaseEvent : EventDatabaseInterface {
         val event = events[id]
         if (event != null)
             returnEvent.postValue(event, this)
-        return Observable(event != null, this)
+        return Observable(event != null, FakeDatabase)
     }
 
 
@@ -90,36 +92,41 @@ object FakeDatabaseEvent : EventDatabaseInterface {
         limit: Long?,
         matcher: Matcher?
     ): Observable<Boolean> {
-        eventList.clear(this)
+        eventList.clear(FakeDatabase)
 
-        eventList.addAll(events.values, this)
-        return Observable(true, this)
+        eventList.addAll(events.values, FakeDatabase)
+        return Observable(true, FakeDatabase)
     }
 
     override fun createEventEdit(event: Event): Observable<Boolean> {
-        TODO("Not yet implemented")
+        eventEdits[FakeDatabase.generateRandomKey()] = event
+        return Observable(true, FakeDatabase)
     }
 
     override fun updateEventEdit(event: Event): Observable<Boolean> {
-        TODO("Not yet implemented")
+        eventEdits[event.eventId!!] = event
+        return Observable(true, FakeDatabase)
     }
 
     override fun removeEventEdit(eventId: String): Observable<Boolean> {
-        TODO("Not yet implemented")
+        return Observable(eventEdits.remove(eventId) != null, FakeDatabase)
     }
 
     override fun getEventEditFromId(
         id: String,
         returnEvent: Observable<Event>
     ): Observable<Boolean> {
-        TODO("Not yet implemented")
+        returnEvent.postValue(eventEdits[id]?.copy(eventId = id), FakeDatabase)
+        return Observable(true, FakeDatabase)
     }
 
     override fun getEventEdits(
         eventList: ObservableList<Event>,
         matcher: Matcher?
     ): Observable<Boolean> {
-        TODO("Not yet implemented")
+
+        eventList.addAll(eventEdits.entries.map { it.value.copy(eventId = it.key) })
+        return Observable(true, FakeDatabase)
     }
 
     override fun getRatingsForEvent(
@@ -127,28 +134,44 @@ object FakeDatabaseEvent : EventDatabaseInterface {
         limit: Long?,
         ratingList: ObservableList<Rating>
     ): Observable<Boolean> {
-        ratingList.add(Rating("TEST", 2f, "TEXT"))
-        return Observable(true)
+        ratingList.addAll(ratings.filter { it.value.eventId == eventId }.entries.map {
+            it.value.copy(
+                ratingId = it.key
+            )
+        })
+        return Observable(true, FakeDatabase)
     }
 
     override fun addRatingToEvent(rating: Rating): Observable<Boolean> {
-        return Observable(true)
+        ratings[FakeDatabase.generateRandomKey()] = rating
+        return Observable(true, FakeDatabase)
     }
 
     override fun removeRating(rating: Rating): Observable<Boolean> {
-        return Observable(true)
+        ratings.remove(rating.ratingId)
+        return Observable(true, FakeDatabase)
     }
 
     override fun updateRating(rating: Rating): Observable<Boolean> {
-        return Observable(true)
+        ratings[rating.ratingId!!] = rating
+        return Observable(true, FakeDatabase)
     }
 
     override fun getMeanRatingForEvent(
         eventId: String,
         mean: Observable<Float>
     ): Observable<Boolean> {
-        mean.postValue(4f, this)
-        return Observable(true)
+        mean.postValue(
+            ratings.values.filter { it.eventId == eventId }.fold(
+                Pair(0.0F, 0),
+                { a, b ->
+                    Pair(
+                        (a.first * a.second + b.rate!!) / (a.second + 1),
+                        a.second + 1
+                    )
+                }).first, FakeDatabase
+        )
+        return Observable(true, FakeDatabase)
     }
 
     override fun getUserRatingFromEvent(
@@ -156,7 +179,9 @@ object FakeDatabaseEvent : EventDatabaseInterface {
         eventId: String,
         returnedRating: Observable<Rating>
     ): Observable<Boolean> {
-        return Observable(true)
+        returnedRating.postValue(ratings.entries.first { it.value.eventId == eventId && it.value.userId == userId }
+            .let { it.value.copy(ratingId = it.key) }, FakeDatabase)
+        return Observable(true, FakeDatabase)
     }
 
     override fun getEventsByZoneId(
@@ -164,6 +189,8 @@ object FakeDatabaseEvent : EventDatabaseInterface {
         limit: Long?,
         events: ObservableList<Event>
     ): Observable<Boolean> {
-        return Observable(true)
+        events.addAll(this.events.entries.filter { it.value.zoneId == zoneId }
+            .map { it.value.copy(eventId = it.key) })
+        return Observable(true, FakeDatabase)
     }
 }

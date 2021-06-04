@@ -159,7 +159,7 @@ class StaffItemRequestsActivityTest {
         for (zone in availableZones) {
             Database.currentDatabase.zoneDatabase.createZone(zone)
         }
-        Database.currentDatabase.zoneDatabase.getAllZones(availableZoneList)
+        Database.currentDatabase.zoneDatabase.getActiveZones(availableZoneList)
 
         for (event in availableEvents) {
             Database.currentDatabase.eventDatabase.createEvent(event)

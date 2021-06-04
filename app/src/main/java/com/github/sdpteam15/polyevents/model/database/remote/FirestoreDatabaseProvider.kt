@@ -23,6 +23,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     @SuppressLint("StaticFieldLeak")
     var firestore: FirebaseFirestore? = null
         get() = field ?: Firebase.firestore
+    val localCache by lazy { LocalCacheAdapter(this) }
 
     override var itemDatabase: ItemDatabaseInterface =
         ItemDatabase(this)
@@ -37,7 +38,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     override var materialRequestDatabase: MaterialRequestDatabaseInterface =
         MaterialRequestDatabase(this)
     override var routeDatabase: RouteDatabaseInterface =
-        RouteDatabase(LocalCacheAdapter(this))
+        RouteDatabase(localCache)
     override var userSettingsDatabase: UserSettingsDatabaseInterface =
         UserSettingsDatabase(this)
 

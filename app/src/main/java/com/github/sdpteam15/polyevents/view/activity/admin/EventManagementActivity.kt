@@ -147,7 +147,7 @@ class EventManagementActivity : AppCompatActivity() {
         }
 
         // Get all zones from the database or redirect if there is a problem
-        val obsZoneEnded = currentDatabase.zoneDatabase.getAllZones(zoneObserver).observe(this) {
+        currentDatabase.zoneDatabase.getActiveZones(zoneObserver).observe(this) {
             if (!it.value) {
                 HelperFunctions.showToast(getString(R.string.failed_get_zones), this)
                 finish()
@@ -416,7 +416,7 @@ class EventManagementActivity : AppCompatActivity() {
                                 getString(R.string.event_edit_request_error),
                                 it.value
                             )
-                        }.then.updateOnce(this, updateEnded)
+                        }
                 }
             } else {
                 currentDatabase.eventDatabase.updateEvent(getInformation()).observe(this) {

@@ -1,5 +1,7 @@
 package com.github.sdpteam15.polyevents.model.database.remote.adapter
 
+import androidx.navigation.ActivityNavigatorExtras
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.toInt
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ZoneConstant.*
 import com.github.sdpteam15.polyevents.model.entity.Zone
 
@@ -16,7 +18,9 @@ object ZoneAdapter : AdapterInterface<Zone> {
         val map = hashMapOf(
             ZONE_NAME.value to element.zoneName,
             ZONE_LOCATION.value to element.location,
-            ZONE_DESCRIPTION.value to element.description
+            ZONE_DESCRIPTION.value to element.description,
+            //Firestore doesn't store integers
+            ZONE_STATUS.value to element.status.ordinal.toLong()
         ) as HashMap<String, Any?>
         if (element.zoneId != null) {
             map[ZONE_DOCUMENT_ID.value] = element.zoneId!!
@@ -28,6 +32,7 @@ object ZoneAdapter : AdapterInterface<Zone> {
         zoneId = id,
         zoneName = document[ZONE_NAME.value] as String?,
         location = document[ZONE_LOCATION.value] as String?,
-        description = document[ZONE_DESCRIPTION.value] as String?
+        description = document[ZONE_DESCRIPTION.value] as String?,
+        status = Zone.Status.fromOrdinal(document[ZONE_STATUS.value].toInt()!!)
     )
 }

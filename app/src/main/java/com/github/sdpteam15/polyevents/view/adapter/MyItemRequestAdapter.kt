@@ -34,8 +34,9 @@ class MyItemRequestAdapter(
     lifecycleOwner: LifecycleOwner,
     private val requests: ObservableMap<MaterialRequest.Status, ObservableList<MaterialRequest>>,
     private val typeToDisplay: Observable<MaterialRequest.Status>,
-    private val userNames: String?,
+    private val userNames: ObservableMap<String,String>,
     private val itemNames: ObservableMap<String, String>,
+    private val zoneNameFromEventId: ObservableMap<String,String>,
     private val onModifyListener: (MaterialRequest) -> Unit,
     private val onCancelListener: (MaterialRequest) -> Unit,
     private val onReturnRequest: (MaterialRequest) -> Unit
@@ -47,8 +48,13 @@ class MyItemRequestAdapter(
         requests.observe(lifecycleOwner) {
             notifyDataSetChanged()
         }
-
         itemNames.observe(lifecycleOwner) {
+            notifyDataSetChanged()
+        }
+        userNames.observe(lifecycleOwner) {
+            notifyDataSetChanged()
+        }
+        zoneNameFromEventId.observe(lifecycleOwner) {
             notifyDataSetChanged()
         }
     }
@@ -67,6 +73,8 @@ class MyItemRequestAdapter(
         private val btnCancel = view.findViewById<ImageButton>(R.id.id_delete_request)
         private val btnReturn = view.findViewById<ImageButton>(R.id.id_return_request)
         private val status = view.findViewById<TextView>(R.id.id_request_status)
+        private val zone = view.findViewById<TextView>(R.id.id_request_zone)
+        private val staffInCharge = view.findViewById<TextView>(R.id.id_request_staffName)
         private val adminMessage = view.findViewById<TextView>(R.id.id_admin_message)
         private val refusalLayout = view.findViewById<LinearLayout>(R.id.id_reason_of_refusal)
 
@@ -75,7 +83,7 @@ class MyItemRequestAdapter(
          */
         @SuppressLint("SetTextI18n")
         fun bind(request: MaterialRequest) {
-            organizer.text = userNames
+            organizer.text = userNames[request.userId]
             time.text =
                 request.time!!.format(DateTimeFormatter.ISO_LOCAL_DATE) + " " + request.time.format(
                     DateTimeFormatter.ISO_LOCAL_TIME
@@ -103,6 +111,13 @@ class MyItemRequestAdapter(
             btnCancel.setOnClickListener { onCancelListener(request) }
             btnModify.setOnClickListener { onModifyListener(request) }
             btnReturn.setOnClickListener { onReturnRequest(request) }
+            zone.text = zoneNameFromEventId[request.eventId]
+            if (request.staffInChargeId == null){
+                staffInCharge.visibility = GONE
+            }else{
+                staffInCharge.visibility = VISIBLE
+                staffInCharge.text = "Staff : ${userNames[request.staffInChargeId]}"
+            }
             refusalLayout.visibility = if (request.adminMessage != null) VISIBLE else GONE
             adminMessage.text = request.adminMessage
         }
