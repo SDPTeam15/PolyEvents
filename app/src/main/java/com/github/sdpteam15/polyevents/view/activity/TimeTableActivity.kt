@@ -41,7 +41,6 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
 
     companion object {
         var instance: TimeTableActivity? = null
-
     }
 
     private lateinit var leftButton: ImageButton

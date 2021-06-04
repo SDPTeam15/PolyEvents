@@ -22,6 +22,9 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableMap
 import com.github.sdpteam15.polyevents.view.adapter.EventEditAdminAdapter
 import com.github.sdpteam15.polyevents.view.fragments.admin.EventEditDifferenceFragment
 
+/**
+ * Activity to edit an event
+ */
 class EventEditManagementActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private val eventEdits = ObservableList<Event>()

@@ -22,7 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import java.time.LocalDateTime
 
 /**
- * Activity to display the list of all events and shows them to the admins
+ * Activity to manage the event
  */
 class EventManagementActivity : AppCompatActivity() {
     companion object {

@@ -16,6 +16,9 @@ import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.view.adapter.ProfileRankListAdapter
 import com.google.android.material.textfield.TextInputEditText
 
+/**
+ * Activity to edit the profile
+ */
 class EditProfileActivity : AppCompatActivity() {
     companion object {
         val updater = Observable<UserProfile>()

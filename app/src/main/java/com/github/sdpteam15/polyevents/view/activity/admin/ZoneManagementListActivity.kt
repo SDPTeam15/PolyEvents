@@ -15,7 +15,9 @@ import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.adapter.ZoneItemAdapter
 
-
+/**
+ * Activity to display the list of all zones and create a new one
+ */
 class ZoneManagementListActivity : AppCompatActivity() {
     companion object {
         val EXTRA_ID = "ZONEID"

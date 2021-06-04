@@ -20,7 +20,9 @@ import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementListAct
 import com.github.sdpteam15.polyevents.view.activity.admin.ZoneManagementListActivity.Companion.NEW_ZONE
 import com.github.sdpteam15.polyevents.view.fragments.MapsFragment
 
-
+/**
+ * Activity to manage a zone
+ */
 class ZoneManagementActivity : AppCompatActivity() {
     companion object {
         var zoneObservable = Observable<Zone>()
