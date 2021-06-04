@@ -16,6 +16,9 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
 import com.github.sdpteam15.polyevents.view.adapter.EventListAdapter
 
+/**
+ * Activity to display the list of all events and shows them to the admins
+ */
 class EventManagementListActivity : AppCompatActivity() {
     companion object {
         // The constant used to show that we want to create a new event
