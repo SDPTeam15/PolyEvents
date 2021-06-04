@@ -259,12 +259,17 @@ class MyItemRequestsActivityTest {
                 )
                 Observable(true, this)
             }
+        Mockito.`when`(mockedEventDB.getEventFromId(anyOrNull(), anyOrNull())).thenAnswer {
+            (it.arguments[1] as Observable<Event>).postValue(events.first{it2->it2.eventId == it.arguments[0]})
+            Observable(true,this)
+        }
         Mockito.`when`(mockedItemDB.getAvailableItems(anyOrNull())).thenAnswer {
             (it.arguments[0] as ObservableList<Triple<Item, Int, Int>>).addAll(availableItemsList)
             Observable(true, this)
         }
         Mockito.`when`(mockedZoneDB.getZoneInformation(anyOrNull(), anyOrNull())).thenAnswer{
             (it.arguments[1] as Observable<Zone>).postValue(zones.first{it2->it2.zoneId == it.arguments[0]})
+            Observable(true,this)
         }
 
         itemsAdminActivity = ActivityScenario.launch(intent)
