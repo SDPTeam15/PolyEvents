@@ -25,6 +25,9 @@ import com.google.android.gms.maps.model.Polygon
 import com.google.android.gms.maps.model.Polyline
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
+/**
+ * Fragment that displays the map
+ */
 class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
     OnMapReadyCallback,
     OnPolylineClickListener,

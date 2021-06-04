@@ -13,6 +13,9 @@ import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.adapter.UserListAdapter
 
+/**
+ * Activity that displays the list of all users
+ */
 class UserManagementListActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private val users = ObservableList<UserEntity>()

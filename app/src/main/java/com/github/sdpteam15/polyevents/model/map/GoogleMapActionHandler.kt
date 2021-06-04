@@ -4,7 +4,9 @@ import android.content.Context
 import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
+import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.showToast
 import com.github.sdpteam15.polyevents.model.map.GoogleMapMode.clearSelectedZone
 import com.github.sdpteam15.polyevents.model.map.GoogleMapMode.setSelectedZoneFromArea
 import com.github.sdpteam15.polyevents.model.map.GoogleMapMode.setSelectedZones
@@ -172,7 +174,6 @@ object GoogleMapActionHandler {
                                     // marker title should hold the zone name
                                     ZonePreviewBottomSheetDialogFragment.EXTRA_ZONE_NAME to zoneName
                             ),
-                            // TODO: avoid redrawing the routes in mapfragment
                             //addToBackStack = true
                     )
                 },
@@ -187,6 +188,9 @@ object GoogleMapActionHandler {
                                 )
                                         ?.toMutableList()
                                         ?: mutableListOf()
+                        if(RouteMapHelper.chemin.isEmpty()){
+                            showToast(activity.applicationContext.getString(R.string.can_not_find_the_path), activity)
+                        }
                         RouteMapHelper.drawRoute(activity)
                     }
                 }

@@ -87,6 +87,7 @@
     <string name="settings_saved">"Your settings have been saved"</string>
     <string name="settings_reset_to_default">"Your settings have been reset to default"</string>
     <string name="DefaultProfile">(Default)</string>
+    <string name="can_not_find_the_path">Unable to find the path to this zone</string>
 
 
 </resources>

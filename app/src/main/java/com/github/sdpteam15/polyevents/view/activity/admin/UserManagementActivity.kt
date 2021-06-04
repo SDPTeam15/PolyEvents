@@ -7,6 +7,9 @@ import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.view.activity.admin.UserManagementListActivity.Companion.EXTRA_USER_ID
 import com.github.sdpteam15.polyevents.view.fragments.ProfileFragment
 
+/**
+ * Activity to manage users to give them permissions
+ */
 class UserManagementActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -21,6 +21,9 @@ import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import kotlinx.coroutines.Dispatchers
 import java.time.LocalDateTime
 
+/**
+ * Activity to manage the event
+ */
 class EventManagementActivity : AppCompatActivity() {
     companion object {
         /**
