@@ -10,6 +10,12 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 
+/**
+ * Adapts zones to RecyclerView zones
+ * @param zones The list of all zones
+ * @param listener Handle click on zone
+ * @param deleteListener Handle delete zone
+ */
 class ZoneItemAdapter(
     private val zones: ObservableList<Zone>,
     val listener: (Zone) -> Unit,
@@ -20,7 +26,6 @@ class ZoneItemAdapter(
      * Takes the corresponding event view
      */
     inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-
         private val eventName = view.findViewById<TextView>(R.id.id_zone_name_text)
         private val btnRemove = view.findViewById<ImageButton>(R.id.id_zone_remove_item)
         private val btnEdit = view.findViewById<ImageButton>(R.id.id_zone_modify_item)

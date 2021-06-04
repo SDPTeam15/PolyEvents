@@ -9,7 +9,6 @@ import java.util.*
 
 /**
  * A class for converting between user entities in our code and GenericEntity in the database.
- *
  */
 @Suppress("UNCHECKED_CAST")
 object LocalAdapter {
@@ -20,6 +19,7 @@ object LocalAdapter {
      * Convert an entity to a GenericEntity
      * @param element the document we're converting
      * @param id id in remote database
+     * @param collection collection of the element
      * @param date from last update
      * @return a GenericEntity fields to their values
      */
@@ -146,6 +146,10 @@ object LocalAdapter {
         return setResult
     }
 
+    /**
+     * serialize a Map<String, String> to a String
+     * @param this the Map to serialize
+     */
     fun Map<String, String>.toSerString(): String {
         if (this.isEmpty())
             return "{}"
@@ -155,6 +159,10 @@ object LocalAdapter {
         return "{" + s.substring(2) + "}"
     }
 
+    /**
+     * deserialize a String to a Map<String, String>
+     * @param this the String to deserialize
+     */
     fun String.toSerMap(): Map<String, String> {
         if (this.length <= 2 || this[0] != '{' || this[this.length - 1] != '}')
             return mapOf()

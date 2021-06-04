@@ -214,7 +214,7 @@ class UserDatabaseTest {
 
     @Test
     fun removeProfileFromUserWithoutDelete() {
-        val profile = UserProfile("pid", users = mutableListOf("not uid"))
+        val profile = UserProfile("pid", users = mutableSetOf("not uid"))
         val user = UserEntity("uid")
 
         HelperTestFunction.nextSetEntity { true }
@@ -256,7 +256,7 @@ class UserDatabaseTest {
     @Test
     fun getUserProfilesList() {
         val profiles = ObservableList<UserProfile>()
-        val user = UserEntity("uid", profiles = mutableListOf("pid"))
+        val user = UserEntity("uid", profiles = mutableSetOf("pid"))
 
         HelperTestFunction.nextGetListEntity { true }
         mockUserDatabase.getUserProfilesList(profiles, user)
@@ -265,7 +265,6 @@ class UserDatabaseTest {
         val getList = HelperTestFunction.lastGetListEntity()!!
 
         assertEquals(profiles, getList.element)
-        assertEquals(user.profiles, getList.ids)
         assertNull(getList.matcher)
         assertEquals(PROFILE_COLLECTION, getList.collection)
         assertEquals(ProfileAdapter, getList.adapter)
@@ -290,7 +289,7 @@ class UserDatabaseTest {
     @Test
     fun getProfilesUserList() {
         val users = ObservableList<UserEntity>()
-        val profile = UserProfile("pid", users = mutableListOf("uid"))
+        val profile = UserProfile("pid", users = mutableSetOf("uid"))
 
         HelperTestFunction.nextGetListEntity { true }
         mockUserDatabase.getProfilesUserList(users, profile)
@@ -299,9 +298,6 @@ class UserDatabaseTest {
         val getList = HelperTestFunction.lastGetListEntity()!!
 
         assertEquals(users, getList.element)
-        assertEquals(profile.users, getList.ids)
-        assertNull(getList.matcher)
-        assertEquals(USER_COLLECTION, getList.collection)
         assertEquals(UserAdapter, getList.adapter)
     }
 

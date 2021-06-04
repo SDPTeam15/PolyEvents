@@ -17,6 +17,8 @@ import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
+import kotlinx.coroutines.Dispatchers
 import java.time.LocalDateTime
 
 class EventManagementActivity : AppCompatActivity() {
@@ -80,7 +82,7 @@ class EventManagementActivity : AppCompatActivity() {
     private var curId = ""
     private val observableEvent = Observable<Event>()
 
-    // True if the current user is not an admin
+    // True if the current user is not an admin and it is not modifying a currently existing event edit request
     private var isActivityProvider = false
 
     // True if the current user is not an admin and he is currently editing an event edit request.
@@ -93,8 +95,10 @@ class EventManagementActivity : AppCompatActivity() {
 
         // Get intent value (if not NEW_EVENT_ID we know that we are in edition mode)
         val id = intent.getStringExtra(EventManagementListActivity.EVENT_ID_INTENT)!!
+
         // See if there are intents related to managers so that we can display everything accordingly.
         isActivityProvider = intent.hasExtra(EventManagementListActivity.INTENT_MANAGER)
+
         isModificationActivityProvider =
             intent.hasExtra(EventManagementListActivity.INTENT_MANAGER_EDIT)
 
@@ -230,6 +234,23 @@ class EventManagementActivity : AppCompatActivity() {
     }
 
     /**
+     * Return a formatted string with all the tags
+     * @param tag All the tags in the event
+     * @return the format string
+     */
+    private fun formatTagText(tag: MutableList<String>): String {
+        if (tag.size != 0) {
+            val txt = tag.map {
+                "$it, "
+            }.reduce { v, v2 ->
+                v + v2
+            }
+            return txt.substring(0, txt.length - 2)
+        }
+        return ""
+    }
+
+    /**
      * Setup all the views in activity, i.e. set default values in field and which field is displayed
      * @param onCallback if the call to this method result from a callback or not (information from database or not)
      */
@@ -239,14 +260,14 @@ class EventManagementActivity : AppCompatActivity() {
         val switch = findViewById<Switch>(R.id.id_swt_limited_event)
         val descET = findViewById<EditText>(R.id.id_description_event_edittext)
         val nameET = findViewById<EditText>(R.id.id_event_management_name_et)
-        val nbpart = findViewById<EditText>(R.id.it_et_nb_part)
+        val nbPart = findViewById<EditText>(R.id.it_et_nb_part)
         val tagsEt = findViewById<EditText>(R.id.event_management_tags_edit)
         val spinnerOrg = findViewById<Spinner>(R.id.spinner_organiser)
         val spinnerZone = findViewById<Spinner>(R.id.id_spinner_zone)
 
         if (isActivityProvider) {
-            spinnerOrg.visibility = View.INVISIBLE
-            findViewById<TextView>(R.id.id_tv_spinner_organiser).visibility = View.INVISIBLE
+            spinnerOrg.visibility = View.GONE
+            findViewById<TextView>(R.id.id_tv_spinner_organiser).visibility = View.GONE
         } else {
             findViewById<TextView>(R.id.id_tv_spinner_organiser).visibility = View.VISIBLE
             spinnerOrg.visibility = View.VISIBLE
@@ -257,38 +278,32 @@ class EventManagementActivity : AppCompatActivity() {
             nameET.setText("")
             descET.setText("")
             switch.isChecked = false
-            nbpart.visibility = View.INVISIBLE
-            nbpart.setText(EMPTY_PART_NB)
+            nbPart.visibility = View.INVISIBLE
+            nbPart.setText(EMPTY_PART_NB)
         } else {
             val event = observableEvent.value!!
+            // Set all the texts in the view
             btnManage.text = getString(R.string.update_event_btn_text)
+            tagsEt.setText(formatTagText(event.tags))
+            nbPart.setText(EMPTY_PART_NB)
             nameET.setText(event.eventName)
             descET.setText(event.description)
-            var tagTxt = ""
-            if (event.tags.size != 0) {
-                val txt = event.tags.map {
-                    "$it, "
-                }.reduce { v, v2 ->
-                    v + v2
-                }
-                tagTxt = txt.substring(0, txt.length - 2)
-            }
-            tagsEt.setText(tagTxt)
-            nbpart.setText(EMPTY_PART_NB)
-            nbpart.visibility = View.INVISIBLE
+            nbPart.visibility = View.INVISIBLE
+            switch.isChecked = event.isLimitedEvent()
 
             if (event.isLimitedEvent()) {
-                nbpart.setText(event.getMaxNumberOfSlots()!!.toString())
-                nbpart.visibility = View.VISIBLE
+                nbPart.setText(event.getMaxNumberOfSlots().toString())
+                nbPart.visibility = View.VISIBLE
             }
-            switch.isChecked = event.isLimitedEvent()
+
+            // Update the date and the corresponding date fields
             dateStart.postValue(event.startTime!!)
             dateEnd.postValue(event.endTime!!)
             updateTextDate(TYPE_END)
             updateTextDate(TYPE_START)
 
-            // Select the correct organiser
-            organiserObserver.observeOnce(this) {
+            // Observe the list to select the correct organiser
+            organiserObserver.observe(this) {
                 var idx = 0
                 for (u in it.value.withIndex()) {
                     if (u.value.uid == event.organizer) {
@@ -296,11 +311,14 @@ class EventManagementActivity : AppCompatActivity() {
                         break
                     }
                 }
-                spinnerOrg.setSelection(idx)
+                // Run on main thread to be able to make a selection
+                PolyEventsApplication.application.applicationScope.launch(Dispatchers.Main) {
+                    spinnerOrg.setSelection(idx)
+                }
             }
 
-            // Select the correct zone
-            zoneObserver.observeOnce(this) {
+            // Observe the list to select the correct zone
+            zoneObserver.observe(this) {
                 var idx = 0
                 for (u in it.value.withIndex()) {
                     if (u.value.zoneId == event.zoneId) {
@@ -308,7 +326,10 @@ class EventManagementActivity : AppCompatActivity() {
                         break
                     }
                 }
-                spinnerZone.setSelection(idx)
+                // Run on main thread to be able to make a selection
+                PolyEventsApplication.application.applicationScope.launch(Dispatchers.Main) {
+                    spinnerZone.setSelection(idx)
+                }
             }
         }
     }
@@ -332,6 +353,10 @@ class EventManagementActivity : AppCompatActivity() {
 
             // Get the correct information depending on if we edit an event edit request
             if (isModificationActivityProvider) {
+                HelperFunctions.showToast(
+                    "ça passe ",
+                    this
+                )
                 currentDatabase.eventDatabase.getEventEditFromId(curId, observableEvent)
                     .observe(this) {
                         if (it.value) {
@@ -465,7 +490,15 @@ class EventManagementActivity : AppCompatActivity() {
      * @return An event created from all the information
      */
     private fun getInformation(): Event {
-        val eventId: String? = if (isCreation) null else curId
+        val eventId: String? = if (isCreation) {
+            null
+        } else {
+            if (isModificationActivityProvider) {
+                observableEvent.value!!.eventId
+            } else {
+                curId
+            }
+        }
 
         val name = findViewById<EditText>(R.id.id_event_management_name_et).text.toString()
         val desc = findViewById<EditText>(R.id.id_description_event_edittext).text.toString()
@@ -473,6 +506,7 @@ class EventManagementActivity : AppCompatActivity() {
         val selectedOrganiser = findViewById<Spinner>(R.id.spinner_organiser).selectedItemPosition
         val limitedEvent = findViewById<Switch>(R.id.id_swt_limited_event).isChecked
         val nbParticipant = findViewById<EditText>(R.id.it_et_nb_part).text.toString().toInt()
+
         val tags =
             if (findViewById<EditText>(R.id.event_management_tags_edit).text.toString() != "") {
                 findViewById<EditText>(R.id.event_management_tags_edit)
@@ -501,9 +535,14 @@ class EventManagementActivity : AppCompatActivity() {
             organiserId = currentDatabase.currentUser!!.uid
             status = Event.EventStatus.PENDING
         }
+        var eventEditId: String? = null
+        if (isModificationActivityProvider) {
+            eventEditId = curId
+        }
 
         return Event(
             eventId = eventId,
+            eventEditId = eventEditId,
             zoneId = zoneId,
             zoneName = zoneNa,
             startTime = dateStart.value,
@@ -621,7 +660,6 @@ class EventManagementActivity : AppCompatActivity() {
                 )
             }
         }
-
         return good
     }
 }

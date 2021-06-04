@@ -289,7 +289,7 @@ class MapsFragment(private val mod: MapsFragmentMod) : Fragment(),
 
     override fun onMarkerClick(marker: Marker): Boolean {
         GoogleMapActionHandler.onMarkerClickHandler(
-            marker,
+            marker, mod,
             activity = requireActivity(), lifecycle = this, locationActivated = useUserLocation
         )
 

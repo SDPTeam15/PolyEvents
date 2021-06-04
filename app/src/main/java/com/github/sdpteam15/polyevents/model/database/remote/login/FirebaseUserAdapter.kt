@@ -12,7 +12,7 @@ object FirebaseUserAdapter {
             uid = firebaseUser.uid,
             name = firebaseUser.displayName,
             email = firebaseUser.email,
-            profiles = ArrayList()
+            profiles = hashSetOf()
         )
     }
 }

@@ -176,6 +176,13 @@ class EventActivity : AppCompatActivity(), ReviewHasChanged {
                 recyclerView.adapter!!.notifyDataSetChanged()
             }
         }
+        obsComments.observeRemove(this) {
+            //If the comment doesn't have a review, he isn't displayed so no need to remove it and refresh
+            if (it.value.feedback != "") {
+                obsNonEmptyComments.remove(it.value)
+                recyclerView.adapter!!.notifyDataSetChanged()
+            }
+        }
         obsComments.observe(this) {
             updateNumberReviews()
         }

@@ -40,17 +40,12 @@ class DeviceLocationAdapterTest {
         )
         val obtainedLocation = DeviceLocationAdapter.fromDocument(deviceLocationDocument, "id")
 
-        Assert.assertEquals(obtainedLocation.device, deviceLocation.device)
         Assert.assertEquals(obtainedLocation.location, deviceLocation.location)
         Assert.assertEquals(obtainedLocation.time.toString(), deviceLocation.time.toString())
     }
 
     @Test
     fun conversionOfItemEntityToDocumentPreservesData() {
-        Assert.assertEquals(
-            document[DatabaseConstant.LocationConstant.LOCATIONS_DEVICE.value],
-            device
-        )
         Assert.assertEquals(
             document[DatabaseConstant.LocationConstant.LOCATIONS_POINT_LATITUDE.value],
             latitude
