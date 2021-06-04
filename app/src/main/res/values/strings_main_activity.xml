@@ -25,10 +25,10 @@
     <!-- Fragment Admin Home-->
     <string name="admin_hub_btn_item_list_text">Item List</string>
     <string name="admin_hub_btn_item_request_text">Item Req</string>
-    <string name="admin_hub_btn_route_text">Route</string>
-    <string name="admin_hub_btn_zone_text">Zone</string>
-    <string name="admin_hub_btn_event_text">Event</string>
-    <string name="admin_hub_btn_user_text">User</string>
+    <string name="admin_hub_btn_route_text">Routes</string>
+    <string name="admin_hub_btn_zone_text">Zones</string>
+    <string name="admin_hub_btn_event_text">Events</string>
+    <string name="admin_hub_btn_user_text">Users</string>
     <string name="admin_hub_title">Admin management options</string>
     <string name="event_edit_btn_text">Event edit</string>
 
