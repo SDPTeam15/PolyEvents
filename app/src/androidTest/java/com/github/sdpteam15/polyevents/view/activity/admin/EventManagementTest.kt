@@ -530,7 +530,7 @@ class EventManagementTest {
         assertEquals(event!!.startTime, startDate)
         assertEquals(event!!.eventName, eventName)
         assertEquals(event!!.description, eventDesc)
-    }*/
+    }
 
     @Test
     fun addReturnTheCorrectlySetFieldEdit() {
@@ -555,7 +555,7 @@ class EventManagementTest {
         assertEquals(event!!.startTime, startDate)
         assertEquals(event!!.eventName, eventName)
         assertEquals(event!!.description, eventDesc)
-    }
+    }*/
 
     @Test
     fun failToUpdateStaysOnActivity() {
