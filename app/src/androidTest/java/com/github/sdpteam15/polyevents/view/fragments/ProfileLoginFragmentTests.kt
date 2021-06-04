@@ -167,6 +167,132 @@ class ProfileLoginFragmentTests {
         assert(set)
         UserLogin.currentUserLogin = GoogleUserLogin
     }
+
+    @Test
+    fun ifNotInDbAddIt() {
+        val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
+        initDBTests()
+        //Mock the in database method, to return false
+        val endingRequestInDatabase = Observable<Boolean>()
+        When(
+            mockedUserDatabase.inDatabase(
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenAnswer {
+            Observable(false)
+        }
+
+        When(mockedDatabase.currentUser).thenReturn(UserEntity("uid"))
+        var accountCreated = false
+        val endingRequestFirstConnection = Observable<Boolean>()
+
+        //Mock the firstConnexion method so that it sets the boolean to true if called
+        When(
+            mockedUserDatabase.firstConnexion(
+                anyOrNull()
+            )
+        ).thenAnswer {
+            accountCreated = true
+            endingRequestFirstConnection
+        }
+
+        //Mock the getInformation method to be able to launch the Profile Fragment
+        When(
+            mockedUserDatabase.getUserInformation(
+                profileFragment.userInfoLiveData,
+                uidTest
+            )
+        ).thenAnswer { _ ->
+            profileFragment.userInfoLiveData.postValue(user)
+            endingRequest
+        }
+
+        //Click on login
+        onView(withId(R.id.id_btn_login_button)).perform(click())
+        //Notify that the inDatabase request was successfully performed
+        endingRequestInDatabase.postValue(true)
+        //Notify that the firstConnection request was successfully performed
+        endingRequestFirstConnection.postValue(true)
+        //Notify that the getUserInformation request was successfully performed
+        endingRequest.postValue(true)
+
+        //Wait enough time for the boolean to be set correctly
+        var i = 0
+        while (!accountCreated && i++ < 5) {
+            Thread.sleep(1000)
+        }
+
+        assert(accountCreated)
+        assert(i < 5)
+    }
+
+    @Test
+    fun ifInDbDoNotAddIt() {
+        val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
+        val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
+        initDBTests()
+
+        var accountCreated = false
+
+        //Mock the firstConnexion method so that it sets the boolean to false if called
+        When(
+            mockedUserDatabase.firstConnexion(
+                anyOrNull()
+            )
+        ).thenAnswer {
+            accountCreated = true
+            Observable(true)
+        }
+
+        //Mock the getInformation method to be able to launch the Profile Fragment
+        When(
+            mockedUserDatabase.getUserInformation(
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenAnswer {
+            profileFragment.userInfoLiveData.postValue(user)
+            Observable(true)
+        }
+        Thread.sleep(200)
+        loginDirectly(loginFragment, R.id.id_btn_login_button)
+
+        // Wait enough time
+        Thread.sleep(1500)
+        assert(!accountCreated)
+    }
+
+       @Test
+    fun ifIssueWithCommunicationDoesNothing() {
+        val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
+        initDBTests()
+        When(mockedDatabase.currentUser).thenReturn(UserEntity("uid"))
+
+        //Mock the firstConnexion method so that it sets the boolean to false if called
+        When(
+            mockedUserDatabase.firstConnexion(
+                anyOrNull()
+            )
+        ).thenAnswer {
+            Observable(false)
+        }
+
+        When(
+            mockedUserDatabase.inDatabase(
+                anyOrNull(),
+                anyOrNull()
+            )
+        ).thenAnswer { _ ->
+            loginFragment.inDbObservable.postValue(false)
+            Observable(false)
+        }
+        onView(withId(R.id.id_btn_login_button)).perform(click())
+        Thread.sleep(1500)
+        onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
+
+    }
+
 */
 
     /**
@@ -454,130 +580,8 @@ class ProfileLoginFragmentTests {
         loginFragment.currentUser = user
     }
 
-    @Test
-    fun ifNotInDbAddIt() {
-        val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
-        initDBTests()
-        //Mock the in database method, to return false
-        val endingRequestInDatabase = Observable<Boolean>()
-        When(
-            mockedUserDatabase.inDatabase(
-                anyOrNull(),
-                anyOrNull()
-            )
-        ).thenAnswer {
-            Observable(false)
-        }
 
-        When(mockedDatabase.currentUser).thenReturn(UserEntity("uid"))
-        var accountCreated = false
-        val endingRequestFirstConnection = Observable<Boolean>()
 
-        //Mock the firstConnexion method so that it sets the boolean to true if called
-        When(
-            mockedUserDatabase.firstConnexion(
-                anyOrNull()
-            )
-        ).thenAnswer {
-            accountCreated = true
-            endingRequestFirstConnection
-        }
-
-        //Mock the getInformation method to be able to launch the Profile Fragment
-        When(
-            mockedUserDatabase.getUserInformation(
-                profileFragment.userInfoLiveData,
-                uidTest
-            )
-        ).thenAnswer { _ ->
-            profileFragment.userInfoLiveData.postValue(user)
-            endingRequest
-        }
-
-        //Click on login
-        onView(withId(R.id.id_btn_login_button)).perform(click())
-        //Notify that the inDatabase request was successfully performed
-        endingRequestInDatabase.postValue(true)
-        //Notify that the firstConnection request was successfully performed
-        endingRequestFirstConnection.postValue(true)
-        //Notify that the getUserInformation request was successfully performed
-        endingRequest.postValue(true)
-
-        //Wait enough time for the boolean to be set correctly
-        var i = 0
-        while (!accountCreated && i++ < 5) {
-            Thread.sleep(1000)
-        }
-
-        assert(accountCreated)
-        assert(i < 5)
-    }
-
-    @Test
-    fun ifInDbDoNotAddIt() {
-        val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
-        val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
-        initDBTests()
-
-        var accountCreated = false
-
-        //Mock the firstConnexion method so that it sets the boolean to false if called
-        When(
-            mockedUserDatabase.firstConnexion(
-                anyOrNull()
-            )
-        ).thenAnswer {
-            accountCreated = true
-            Observable(true)
-        }
-
-        //Mock the getInformation method to be able to launch the Profile Fragment
-        When(
-            mockedUserDatabase.getUserInformation(
-                anyOrNull(),
-                anyOrNull()
-            )
-        ).thenAnswer {
-            profileFragment.userInfoLiveData.postValue(user)
-            Observable(true)
-        }
-        Thread.sleep(200)
-        loginDirectly(loginFragment, R.id.id_btn_login_button)
-
-        // Wait enough time
-        Thread.sleep(1500)
-        assert(!accountCreated)
-    }
-
-    @Test
-    fun ifIssueWithCommunicationDoesNothing() {
-        val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
-        initDBTests()
-        When(mockedDatabase.currentUser).thenReturn(UserEntity("uid"))
-
-        //Mock the firstConnexion method so that it sets the boolean to false if called
-        When(
-            mockedUserDatabase.firstConnexion(
-                anyOrNull()
-            )
-        ).thenAnswer {
-            Observable(false)
-        }
-
-        When(
-            mockedUserDatabase.inDatabase(
-                anyOrNull(),
-                anyOrNull()
-            )
-        ).thenAnswer { _ ->
-            loginFragment.inDbObservable.postValue(false)
-            Observable(false)
-        }
-        onView(withId(R.id.id_btn_login_button)).perform(click())
-        Thread.sleep(1500)
-        onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
-
-    }
 
     @Test
     fun profilesAreDisplayed() {

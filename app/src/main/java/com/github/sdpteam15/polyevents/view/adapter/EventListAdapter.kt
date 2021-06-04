@@ -48,6 +48,10 @@ class EventListAdapter(
             }
             notifyDataSetChanged()
         }
+
+        allEvents.observe(lifecycleOwner) {
+            notifyDataSetChanged()
+        }
     }
 
 
