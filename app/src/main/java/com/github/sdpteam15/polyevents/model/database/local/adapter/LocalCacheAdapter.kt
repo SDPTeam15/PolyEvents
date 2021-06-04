@@ -1,11 +1,9 @@
 package com.github.sdpteam15.polyevents.model.database.local.adapter
 
-import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.helper.HelperFunctions.apply
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterFromDocumentInterface
-import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterInterface
 import com.github.sdpteam15.polyevents.model.database.remote.adapter.AdapterToDocumentInterface
 import com.github.sdpteam15.polyevents.model.database.remote.matcher.CodeQuery
 import com.github.sdpteam15.polyevents.model.database.remote.matcher.Matcher
@@ -186,30 +184,26 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
         adapter: AdapterFromDocumentInterface<out T>
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
-        HelperFunctions.run(Runnable {
-            //Get from local cache
-            PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
-                PolyEventsApplication.application.localDatabase.genericEntityDao()
-                    .get(id, collection.value).apply {
-                        val pair = LocalAdapter.fromDocument(it)
-                        val result = adapter.fromDocument(pair.first, pair.second)
-                        element.postValue(result, db)
-                        if (result != null)
-                            ended.postValue(true, db)
-                    }
-
-                //Update local cache and modify the result if necessary
+        updateLocal(collection, adapter).observeOnce {
+            if (it.value) {
+                // retrieve the data from local cash
                 PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
-                    update(
-                        collection,
-                        adapter,
-                        ended,
-                        element = element,
-                        id = id
-                    )
+                    PolyEventsApplication.application.localDatabase.genericEntityDao()
+                        .get(id, collection.value).apply({ ge ->
+                            adapter.fromDocument(LocalAdapter.fromDocument(ge).first, ge.id)
+                                .apply({ e ->
+                                    element.postValue(e, it.value)
+                                    ended.postValue(true, it.value)
+                                }, lazy {
+                                    ended.postValue(false, it.value)
+                                })
+                        }, lazy {
+                            ended.postValue(false, it.value)
+                        })
                 }
-            }
-        })
+            } else
+                ended.postValue(false, it.value)
+        }
         return ended
     }
 
@@ -221,179 +215,142 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
         adapter: AdapterFromDocumentInterface<out T>
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
+        updateLocal(collection, adapter).observeOnce {
+            if (it.value) {
+                ids.apply({ ids ->
+                    val mutableList = MutableList<Pair<String?, T?>?>(ids.size) { null }
 
-        HelperFunctions.run(Runnable {
-            //Get from local cache
-            ids.apply({ ids ->
-                PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
-                    val map = mutableMapOf<String, T>()
-                    for (id in ids) {
-                        PolyEventsApplication.application.localDatabase.genericEntityDao()
-                            .get(id, collection.value)
-                            .apply {
-                                val pair = LocalAdapter.fromDocument(it)
-                                adapter.fromDocument(pair.first, pair.second).apply { map[id] = it }
-                            }
-                    }
-                    elements.updateAll(map, db)
-                    ended.postValue(true, db)
-                }
-            }, lazy {
-                PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
-                    val query = CodeQuery.CodeQueryFromIterator(
-                        PolyEventsApplication.application.localDatabase.genericEntityDao()
-                            .getAll(collection.value).iterator()
-                    ) {
-                        QueryDocumentSnapshot(
-                            LocalAdapter.fromDocument(it).first,
-                            it.id
-                        )
-                    }
-                    (matcher?.match(query) ?: query).get()
-                        .observeOnce {
-                            it.value.first.apply { qs ->
+                    //The check to notify the end of all the process
+                    val checkIfDone = { index: Int, data: Map<String, Any?>?, id: String? ->
+                        synchronized(this) {
+                            mutableList[index] = Pair(
+                                id,
+                                id.apply { id ->
+                                    data.apply { data ->
+                                        adapter.fromDocument(
+                                            data,
+                                            id
+                                        )
+                                    }
+                                })
+                            //Check that all ids are initialized
+                            if (mutableList.fold(true) { a, p -> a && p != null }) {
                                 val map = mutableMapOf<String, T>()
-                                qs.forEach { e ->
-                                    adapter.fromDocument(e.data, e.id)
-                                        .apply { value -> map[e.id] = value }
+                                mutableList.forEach { p ->
+                                    p.apply { pair ->
+                                        pair.first.apply { id ->
+                                            pair.second.apply { element ->
+                                                map[id] = element
+                                            }
+                                        }
+                                    }
                                 }
-                                elements.updateAll(map, db)
-                                ended.postValue(true, db)
+                                elements.updateAll(map, this)
+                                ended.postValue(
+                                    mutableList.fold(true) { a, p -> a && p?.second != null },
+                                    this
+                                )
                             }
                         }
-                }
-            })
+                    }
 
-            //Update local cache and modify the result if necessary
-            PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
-                //Update local cache and modify the result if necessary
-                update(
-                    collection,
-                    adapter,
-                    ended,
-                    elements = elements,
-                    ids = ids,
-                    matcher = matcher
-                )
-            }
-        })
+                    // get all elements from local cache
+                    for (idWithIndex in ids.withIndex()) {
+                        PolyEventsApplication.application.applicationScope.launch(
+                            Dispatchers.IO
+                        ) {
+                            PolyEventsApplication.application.localDatabase.genericEntityDao()
+                                .get(idWithIndex.value, collection.value).apply({ ge ->
+                                    val pair = LocalAdapter.fromDocument(ge)
+                                    checkIfDone(idWithIndex.index, pair.first, pair.second)
+                                }, lazy {
+                                    checkIfDone(idWithIndex.index, null, null)
+                                })
+                        }
+                    }
+                }, lazy {
+                    PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
+                        // get all elements from local cache and transform it from GenericEntity
+                        val query = CodeQuery.CodeQueryFromIterator(
+                            PolyEventsApplication.application.localDatabase.genericEntityDao()
+                                .getAll(collection.value)
+                                .iterator()
+                        ) { ge ->
+                            QueryDocumentSnapshot(
+                                LocalAdapter.fromDocument(ge).first,
+                                ge.id
+                            )
+                        }
+
+                        // apply the matcher
+                        matcher.apply(query) { matcher -> matcher.match(query) }.get()
+                            .observeOnce { oqs ->
+                                oqs.value.first.apply { qs ->
+                                    // add all elements that satisfies the matcher to the ObservableMap
+                                    val map = mutableMapOf<String, T>()
+                                    qs.forEach { e ->
+                                        adapter.fromDocument(e.data, e.id)
+                                            .apply { value -> map[e.id] = value }
+                                    }
+                                    elements.updateAll(map, db)
+                                    ended.postValue(true, db)
+                                }
+                            }
+                    }
+                })
+            } else
+                ended.postValue(it.value, it.sender)
+        }
         return ended
     }
 
     /**
-     * update a collection in local db from the remote db
+     * update the local cache by taking the new value on the remote one
+     * @param collection collection
+     * @param adapter adapter for the collection
      */
-    suspend fun <T : Any> update(
+    private fun <T : Any> updateLocal(
         collection: DatabaseConstant.CollectionConstant,
-        adapter: AdapterInterface<T>
+        adapter: AdapterFromDocumentInterface<out T>
     ): Observable<Boolean> {
         val ended = Observable<Boolean>()
-        HelperFunctions.run(Runnable {
-            PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
-                update(collection, adapter, ended, adapterToDocument = adapter)
-            }
-        })
-        return ended
-    }
-
-    private suspend fun <T : Any> update(
-        collection: DatabaseConstant.CollectionConstant,
-        adapterFromDocument: AdapterFromDocumentInterface<out T>,
-        ended: Observable<Boolean>,
-        adapterToDocument: AdapterToDocumentInterface<in T>? = null,
-        element: Observable<T>? = null,
-        id: String? = null,
-        elements: ObservableMap<String, T>? = null,
-        ids: List<String>? = null,
-        matcher: Matcher? = null,
-    ) {
-        //Get all elements outdated in the cache
-        val date = PolyEventsApplication.application.localDatabase.genericEntityDao()
-            .lastUpdateDate(collection.value)
-        db.getMapEntity(
-            ObservableMap<String, T>().observeOnce {
-                //Update local cache
-                PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
-                    for (key in it.value.keys) {
-                        PolyEventsApplication.application.localDatabase.genericEntityDao()
-                            .insert(
-                                LocalAdapter.toDocument(
-                                    ((adapterToDocument ?: collection.adapter)
-                                            as AdapterToDocumentInterface<in T>)
-                                        .toDocumentWithoutNull(it.value[key]!!),
-                                    key,
-                                    collection.value
-                                )
-                            )
-                    }
-                }
-
-                //If from getEntity
-                if (element != null && id != null) {
-                    if (element.value != it.value[id]) {
-                        element.postValue(it.value[id], it.sender)
-                        if (element.value != null)
-                            ended.postValue(true, it.sender)
-                    }
-                    if (element.value == null)
-                        ended.postValue(false, it.sender)
-                }
-
-                //If from getMapEntity
-                if (elements != null) {
-                    ids.apply({ ids ->
-                        val map = mutableMapOf<String, T>()
-                        ids.forEach { eid ->
-                            it.value[eid].apply { value ->
-                                if (elements[eid] != value)
-                                    map[eid] = value
-                            }
-                        }
-                        if (map.isNotEmpty()) {
-                            elements.putAll(map, it.sender)
-                            ended.postValue(true, it.sender)
-                        }
-                    }, lazy {
-                        //Create the query form the iterator of the db
-                        val query =
-                            CodeQuery.CodeQueryFromIterator(it.value.entries.iterator()) { entrie ->
-                                ((adapterToDocument ?: collection.adapter)
-                                        as AdapterToDocumentInterface<in T>)
-                                    .toDocumentWithoutNull(entrie.value).apply { data ->
-                                        QueryDocumentSnapshot(
-                                            data,
-                                            entrie.key
+        PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
+            val date = PolyEventsApplication.application.localDatabase.genericEntityDao()
+                .lastUpdateDate(collection.value)
+            val temp = ObservableMap<String, T>()
+            db.getMapEntity(
+                temp,
+                null,
+                date.apply { date -> { it.whereGreaterThan(LogAdapter.LAST_UPDATE, date) } },
+                collection,
+                adapter
+            ).observeOnce {
+                if (it.value) {
+                        try
+                        {
+                            PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
+                                temp.forEach { element ->
+                                    PolyEventsApplication.application.localDatabase.genericEntityDao()
+                                        .insert(
+                                            LocalAdapter.toDocument(
+                                                (collection.adapter as AdapterToDocumentInterface<T>).toDocumentWithoutNull(
+                                                    element.value
+                                                ),
+                                                element.key,
+                                                collection.value
+                                            )
                                         )
-                                    }
-                            }
-
-                        //Apply the matcher and add all new elements to the result
-                        (matcher?.match(query) ?: query).get()
-                            .observeOnce { p ->
-                                p.value.first.apply { qs ->
-                                    val map = mutableMapOf<String, T>()
-                                    qs.forEach { value ->
-                                        adapterFromDocument.fromDocument(value.data, value.id)
-                                            .apply { entity -> map[value.id] = entity }
-                                    }
-                                    if (map.isNotEmpty()) {
-                                        elements.putAll(map, it.sender)
-                                        ended.postValue(true, it.sender)
-                                    }
                                 }
+                                ended.postValue(true, it.sender)
                             }
-                    })
-                }
-            }.then,
-            null,
-            {
-                date.apply(it) { date -> it.whereGreaterThan(LogAdapter.LAST_UPDATE, date) }
-            },
-            collection,
-            adapterFromDocument
-        ).observeOnce {
-            if (ended.value == null)
-                ended.postValue(it.value, it.sender)
+                        }
+                        catch (e : Exception){
+                            ended.postValue(true, it.sender)
+                        }
+                } else
+                    ended.postValue(false, it.sender)
+            }
         }
+        return ended
     }
 }

@@ -32,6 +32,7 @@ import com.github.sdpteam15.polyevents.view.service.TimerService
 import com.github.sdpteam15.polyevents.viewmodel.UserSettingsViewModel
 import com.github.sdpteam15.polyevents.viewmodel.UserSettingsViewModelFactory
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.Dispatchers
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -75,10 +76,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        PolyEventsApplication.application.applicationScope.launch {
-            PolyEventsApplication.application.localDatabase.genericEntityDao().deleteAll()
-        }
 
         instance = this
         setContentView(R.layout.activity_main)
@@ -232,17 +229,20 @@ class MainActivity : AppCompatActivity() {
         }
         roles.observe(this) {
             if (it.value.size > 1) {
-                spinner.visibility = VISIBLE
-                if (selectedRole == null) {
-                    selectedRole = roles.first().second
-                    redirectHome()
-                }
-                spinner.adapter = ArrayAdapter(
+                val adapter = ArrayAdapter(
                     this,
                     android.R.layout.simple_spinner_dropdown_item,
                     roles.toList().map { it.first }
                 )
-                spinner.setSelection(it.value.indexOf(it.value.find { it.second == role }))
+                PolyEventsApplication.application.applicationScope.launch(Dispatchers.Main) {
+                    spinner.visibility = VISIBLE
+                    if (selectedRole == null) {
+                        selectedRole = roles.first().second
+                        redirectHome()
+                    }
+                    spinner.adapter = adapter
+                    spinner.setSelection(it.value.indexOf(it.value.find { it.second == role }))
+                }
             } else
                 spinner.visibility = INVISIBLE
         }
