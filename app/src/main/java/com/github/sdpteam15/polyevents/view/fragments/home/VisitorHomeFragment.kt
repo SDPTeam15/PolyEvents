@@ -31,7 +31,7 @@ import com.github.sdpteam15.polyevents.view.fragments.EXTRA_EVENT_ID
 class VisitorHomeFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
-    private val events = ObservableList<Event>()
+    val events = ObservableList<Event>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
