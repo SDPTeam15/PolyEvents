@@ -3,6 +3,7 @@ package com.github.sdpteam15.polyevents.helper
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -19,9 +20,12 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.room.TypeConverter
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.model.observable.Observable
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.Timestamp
+import com.squareup.okhttp.Dispatcher
+import kotlinx.coroutines.Dispatchers
 import java.time.*
 import java.time.format.DateTimeFormatter
 import java.util.*

@@ -11,7 +11,9 @@ import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.UserProfile
 import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.github.sdpteam15.polyevents.view.fragments.ProfileFragment
+import kotlinx.coroutines.Dispatchers
 
 class ProfileAdapter(
     private val profileFragment: ProfileFragment,
@@ -21,7 +23,9 @@ class ProfileAdapter(
 
     init {
         items.observe(profileFragment) {
-            notifyDataSetChanged()
+            PolyEventsApplication.application.applicationScope.launch(Dispatchers.Main) {
+                notifyDataSetChanged()
+            }
         }
     }
 
@@ -51,13 +55,13 @@ class ProfileAdapter(
                     "$moreText ${item.profileName} (${item.userRole})"
                 else "$moreText ${item.profileName}"
 
-            btnRemove.visibility = if (item.defaultProfile && item.userRole!=UserRole.ADMIN) {
+            btnRemove.visibility = if (item.defaultProfile && item.userRole != UserRole.ADMIN) {
                 View.INVISIBLE
             } else {
                 View.VISIBLE
             }
 
-            btnEdit.visibility = if (item.defaultProfile && item.userRole!=UserRole.ADMIN) {
+            btnEdit.visibility = if (item.defaultProfile && item.userRole != UserRole.ADMIN) {
                 View.INVISIBLE
             } else {
                 View.VISIBLE

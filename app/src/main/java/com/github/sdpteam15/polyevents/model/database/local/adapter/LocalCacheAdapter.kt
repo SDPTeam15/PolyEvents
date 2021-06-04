@@ -187,12 +187,18 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
         updateLocal(collection, adapter).observeOnce {
             if (it.value) {
                 PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
-                    PolyEventsApplication.application.localDatabase.genericEntityDao().get(id, collection.value).apply({ ge ->
-                        adapter.fromDocument(LocalAdapter.fromDocument(ge).first, ge.id).apply({ e ->
-                            element.postValue(e, it.value)
-                            ended.postValue(true, it.value)
-                        },lazy { ended.postValue(false, it.value) })
-                    }, lazy { ended.postValue(false, it.value) })
+                    PolyEventsApplication.application.localDatabase.genericEntityDao()
+                        .get(id, collection.value).apply({ ge ->
+                            adapter.fromDocument(LocalAdapter.fromDocument(ge).first, ge.id)
+                                .apply({ e ->
+                                    element.postValue(e, it.value)
+                                    ended.postValue(true, it.value)
+                                }, lazy {
+                                    ended.postValue(false, it.value)
+                                })
+                        }, lazy {
+                            ended.postValue(false, it.value)
+                        })
                 }
             } else
                 ended.postValue(false, it.value)
@@ -266,7 +272,8 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
                         // get all elements from local cache and transform it from GenericEntity
                         val query = CodeQuery.CodeQueryFromIterator(
                             PolyEventsApplication.application.localDatabase.genericEntityDao()
-                                .getAll(collection.value).iterator()
+                                .getAll(collection.value)
+                                .iterator()
                         ) { ge ->
                             QueryDocumentSnapshot(
                                 LocalAdapter.fromDocument(ge).first,
@@ -309,31 +316,34 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
             db.getMapEntity(
                 temp,
                 null,
-                { date.apply(it) { date -> it.whereGreaterThan(LogAdapter.LAST_UPDATE, date) } },
+                date.apply { date -> { it.whereGreaterThan(LogAdapter.LAST_UPDATE, date) } },
                 collection,
                 adapter
             ).observeOnce {
                 if (it.value) {
-                    (collection.adapter as? AdapterToDocumentInterface<T>).apply { adapter ->
-                        temp.observeOnce { temp ->
-                            temp.value.forEach { element ->
-                                PolyEventsApplication.application.applicationScope
-                                    .launch(Dispatchers.IO) {
-                                        PolyEventsApplication.application.localDatabase.genericEntityDao()
-                                            .insert(
-                                                LocalAdapter.toDocument(
-                                                    adapter.toDocumentWithoutNull(element.value),
-                                                    element.key,
-                                                    collection.value
-                                                )
+                        try
+                        {
+                            PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
+                                temp.forEach { element ->
+                                    PolyEventsApplication.application.localDatabase.genericEntityDao()
+                                        .insert(
+                                            LocalAdapter.toDocument(
+                                                (collection.adapter as AdapterToDocumentInterface<T>).toDocumentWithoutNull(
+                                                    element.value
+                                                ),
+                                                element.key,
+                                                collection.value
                                             )
-                                    }
+                                        )
+                                }
+                                ended.postValue(true, it.sender)
                             }
                         }
-                    }
-                    ended.postValue(true, it.sender)
-                }
-                ended.postValue(false, it.sender)
+                        catch (e : Exception){
+                            ended.postValue(true, it.sender)
+                        }
+                } else
+                    ended.postValue(false, it.sender)
             }
         }
         return ended
