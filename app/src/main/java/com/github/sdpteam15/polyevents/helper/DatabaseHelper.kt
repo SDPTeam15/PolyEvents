@@ -54,7 +54,7 @@ object DatabaseHelper {
     fun deleteZone(zone: Zone) {
         val events = ObservableList<Event>()
         events.observeAdd { deleteEvent(it.value) }
-        //TODO REMOVE ROUTENODES ROUTEEDGES
+        currentDatabase.routeDatabase.removeEdgeConnectedToZone(zone)
         currentDatabase.eventDatabase.getEvents({
             it.whereEqualTo(
                 DatabaseConstant.EventConstant.EVENT_ZONE_ID.value,
