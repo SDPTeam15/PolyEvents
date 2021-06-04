@@ -445,6 +445,7 @@ class ProfileLoginFragmentTests {
         //remove current user so that we stay on login fragment
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         loginFragment.currentUser = null
+        Thread.sleep(1000)
         onView(withId(R.id.ic_login)).perform(click())
         //make sure we are on login fragment
         onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
@@ -567,16 +568,14 @@ class ProfileLoginFragmentTests {
 
         When(
             mockedUserDatabase.inDatabase(
-                loginFragment.inDbObservable,
-                uidTest
+                anyOrNull(),
+                anyOrNull()
             )
         ).thenAnswer { _ ->
             loginFragment.inDbObservable.postValue(false)
-            endingRequest
+            Observable(false)
         }
         onView(withId(R.id.id_btn_login_button)).perform(click())
-        //Notify that the getUserAInformation request was successfully performed
-        endingRequest.postValue(false)
         Thread.sleep(1500)
         onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
 
