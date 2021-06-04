@@ -99,7 +99,7 @@ class UserDatabase(private val db: DatabaseInterface) : UserDatabaseInterface {
                     USER_COLLECTION
                 ).observeOnce {
                     if(it.value) {
-                        user.userProfiles.add(profile)
+                        user.userProfiles.add(profile, it.sender)
                         ended.postValue(true, it.sender)
                     }
                     else{
