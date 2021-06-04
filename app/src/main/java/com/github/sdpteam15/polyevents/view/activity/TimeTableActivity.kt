@@ -292,12 +292,10 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
             }.then
         }
 
+        val observableDBAnswer = Observable<Boolean>()
         Database.currentDatabase.eventDatabase.getEvents(
-            null,
-            null,
-            eventList = requestObservable
-        )
-            .observe(this) {
+           requestObservable
+        ).observe(this) {
                 if (!it.value) {
                     HelperFunctions.showToast(getString(R.string.fail_retrieve_events), this)
                     finish()
@@ -308,7 +306,13 @@ class TimeTableActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
                         drawZoneEvents(selectedZone!!)
                     }
                 }
-            }
+            }.then.updateOnce(this, observableDBAnswer)
+
+        HelperFunctions.showProgressDialog(
+            this, listOf(
+                observableDBAnswer,
+            ), supportFragmentManager
+        )
     }
 
     /**

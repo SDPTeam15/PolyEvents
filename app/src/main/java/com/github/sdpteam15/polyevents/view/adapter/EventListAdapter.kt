@@ -18,6 +18,7 @@ import com.github.sdpteam15.polyevents.model.observable.ObservableMap
  * Recycler Adapter for the list of items
  * Shows each item with its available quantity
  * @param context context of parent view used to inflate new views
+ * @param isOrganiser if the current user is event organiser or not
  * @param lifecycleOwner parent to enable observables to stop observing when the lifecycle is closed
  * @param allEvents Map of all the available events group by zones
  * @param modifyListener What to do with modify items
@@ -101,7 +102,6 @@ class EventListAdapter(
 
         }
     }
-
 
     override fun getItemCount(): Int {
         var count = 0

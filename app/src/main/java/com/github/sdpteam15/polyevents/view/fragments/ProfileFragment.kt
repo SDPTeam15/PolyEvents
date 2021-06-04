@@ -98,10 +98,17 @@ class ProfileFragment(private val userId: String? = null) : Fragment(), UserModi
     }
 
     private fun getUserInformation() {
+        val observableDBAnswer = Observable<Boolean>()
         //Get user information in the database
         currentDatabase.userDatabase.getUserInformation(
             userInfoLiveData,
             currentUID
+        ).updateOnce(this, observableDBAnswer)
+
+        HelperFunctions.showProgressDialog(
+            requireActivity(), listOf(
+                observableDBAnswer
+            ), requireActivity().supportFragmentManager
         )
     }
 
@@ -159,10 +166,18 @@ class ProfileFragment(private val userId: String? = null) : Fragment(), UserModi
                 currentUser!!
             ).observe(this) { newValue ->
                 if (newValue.value) {
+                    val observableDBAnswer = Observable<Boolean>()
                     currentDatabase.userDatabase.getUserInformation(
                         userInfoLiveData,
                         currentUser!!.uid
+                    ).updateOnce(this, observableDBAnswer)
+
+                    HelperFunctions.showProgressDialog(
+                        requireActivity(), listOf(
+                            observableDBAnswer
+                        ), requireActivity().supportFragmentManager
                     )
+
                 } else {
                     HelperFunctions.showToast(getString(R.string.fail_to_update), activity)
                 }

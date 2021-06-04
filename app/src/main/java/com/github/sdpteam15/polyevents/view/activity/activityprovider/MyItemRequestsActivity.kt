@@ -13,8 +13,11 @@ import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.DatabaseHelper.addToUsersFromDB
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
-import com.github.sdpteam15.polyevents.model.entity.*
+import com.github.sdpteam15.polyevents.model.entity.Event
+import com.github.sdpteam15.polyevents.model.entity.Item
+import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest.Status.*
+import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
@@ -158,18 +161,22 @@ class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLi
      * Gets the item request of the user and then gets the item list
      */
     private fun getItemRequestsFromDB() {
+
         //Gets the item request of the user and then gets the item list
         Database.currentDatabase.materialRequestDatabase.getMaterialRequestListByUser(
             requests,
             userId
         ).observeOnce(this) {
             if (!it.value) {
+
                 HelperFunctions.showToast(
                     getString(R.string.fail_to_get_list_material_requests_eo),
                     this
                 )
             } else {
-                Database.currentDatabase.itemDatabase.getItemsList(items)
+                val allLoading = ArrayList<Observable<*>>()
+
+                val itemsTransactionOver = Database.currentDatabase.itemDatabase.getItemsList(items)
                     .observeOnce(this) { it2 ->
                         if (!it2.value) {
                             HelperFunctions.showToast(
@@ -177,13 +184,20 @@ class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLi
                                 this
                             )
                         }
-                    }
+                    }.then
+                allLoading.add(itemsTransactionOver)
+
                 val sentEventIds = mutableListOf<String>()
                 for (request in requests) {
                     if (request.eventId !in sentEventIds) {
                         sentEventIds.add(request.eventId)
                         val event = Observable<Event>()
                         val zone = Observable<Zone>()
+
+                        // Create observables to be added in the list of all observable
+                        val eventTransactionOver = Observable<Boolean>()
+                        val zoneTransactionOver = Observable<Boolean>()
+
                         Database.currentDatabase.eventDatabase.getEventFromId(
                             request.eventId,
                             event
@@ -197,12 +211,17 @@ class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLi
                                         zoneNameFromEventId[event.value!!.eventId!!] =
                                             zone.value!!.zoneName!!
                                     }
-                                }
+                                }.then.updateOnce(this, zoneTransactionOver)
+                            } else {
+                                zoneTransactionOver.postValue(false, this)
                             }
-                        }
-                    }
+                        }.then.updateOnce(this, eventTransactionOver)
 
+                        allLoading.addAll(listOf(eventTransactionOver, zoneTransactionOver))
+                    }
                 }
+                // Display a loading screen while the queries with the database are not over
+                HelperFunctions.showProgressDialog(this, allLoading, supportFragmentManager)
             }
         }
     }
@@ -211,7 +230,6 @@ class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLi
      * Launches the activity to modify the item request
      */
     private val modifyMaterialRequest = { request: MaterialRequest ->
-
         val intent = Intent(this, ItemRequestActivity::class.java).apply {
             putExtra(EXTRA_ITEM_REQUEST_ID, request.requestId)
         }
@@ -228,15 +246,19 @@ class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLi
             if (it.value)
                 requests.remove(request)
         }
-        Unit
+
+        // Display a loading screen while the queries with the database are not over
+        HelperFunctions.showProgressDialog(
+            this, listOf(l), supportFragmentManager
+        )
     }
 
     /**
-     * Launches the activity to modify the item request
+     * Listener that take a material request and set the status as RETURN_REQUEST in teh database
      */
     private val returnMaterialRequest = { request: MaterialRequest ->
         val newRequest = request.copy(status = RETURN_REQUESTED, staffInChargeId = null)
-        Database.currentDatabase.materialRequestDatabase.updateMaterialRequest(
+        val dbAnswer = Database.currentDatabase.materialRequestDatabase.updateMaterialRequest(
             request.requestId!!,
             newRequest
         ).observeOnce(this) {
@@ -244,16 +266,19 @@ class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLi
                 requests[requests.indexOfFirst { it2 -> it2.requestId == request.requestId }] =
                     newRequest
             }
-        }
-        Unit
+        }.then
+
+        // Display a loading screen while the queries with the database are not over
+        HelperFunctions.showProgressDialog(
+            this, listOf(dbAnswer), supportFragmentManager
+        )
     }
 
     override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-        currentStatus = MaterialRequest.Status.fromOrdinal(p2)!!
+        currentStatus = MaterialRequest.Status.fromOrdinal(p2)
         observableStatus.postValue(currentStatus)
     }
 
     override fun onNothingSelected(p0: AdapterView<*>?) {
-
     }
 }

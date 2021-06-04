@@ -301,9 +301,15 @@ object ZoneAreaMapHelper {
         val posMidDown = LatLngOperator.mean(listOf(pos3, pos2))
         val posCenter = LatLngOperator.mean(listOf(pos4, pos2))
 
+        var dim_dp = 35
+        if(context != null){
+            dim_dp = dim_dp.dpToPixelsFloat(context).toInt()
+        }
+
         val anchor = IconAnchor(0.5f, 0.5f)
-        val bound = IconBound(0, 0, 100, 100)
-        val dimension = IconDimension(100, 100)
+        if(context != null){}
+        val bound = IconBound(0, 0, dim_dp, dim_dp)
+        val dimension = IconDimension(dim_dp, dim_dp)
 
         moveDiagMarker = GoogleMapHelper.map!!.addMarker(
             GoogleMapHelperFunctions.newMarker(
