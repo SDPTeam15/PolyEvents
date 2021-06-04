@@ -67,9 +67,10 @@ class HeatmapDatabase(private val db: DatabaseInterface) : HeatmapDatabaseInterf
         }
         tempUsersLocations.observeOnce(false) {
             val list = mutableListOf<LatLng>()
+
             for (e in it.value)
                 list.add(e)
-
+            /*
             val dl = 0.0002
             for (i in 1..5) {
                 val latitude = Random.nextDouble(swBound.latitude, neBound.latitude)
@@ -83,7 +84,7 @@ class HeatmapDatabase(private val db: DatabaseInterface) : HeatmapDatabaseInterf
                     )
                 }
             }
-
+            */
             usersLocations.addAll(list, it.sender)
             end.postValue(true, it.sender)
         }

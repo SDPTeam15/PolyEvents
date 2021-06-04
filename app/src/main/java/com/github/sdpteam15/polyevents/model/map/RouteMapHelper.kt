@@ -45,7 +45,6 @@ object RouteMapHelper {
 
     var deleteMode = false
 
-    //var routing = false
     var currentTarget: LatLng? = null
     var chemin: MutableList<LatLng> = mutableListOf()
     var route: MutableList<Polyline> = mutableListOf()

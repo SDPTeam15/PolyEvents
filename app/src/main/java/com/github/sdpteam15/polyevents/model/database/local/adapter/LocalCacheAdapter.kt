@@ -326,9 +326,9 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
                 adapter
             ).observeOnce {
                 if (it.value) {
+                    PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
                         try
                         {
-                            PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
                                 temp.forEach { element ->
                                     PolyEventsApplication.application.localDatabase.genericEntityDao()
                                         .insert(
@@ -342,11 +342,11 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
                                         )
                                 }
                                 ended.postValue(true, it.sender)
-                            }
                         }
-                        catch (e : Exception){
+                        catch (e : ClassCastException){
                             ended.postValue(true, it.sender)
                         }
+                    }
                 } else
                     ended.postValue(false, it.sender)
             }

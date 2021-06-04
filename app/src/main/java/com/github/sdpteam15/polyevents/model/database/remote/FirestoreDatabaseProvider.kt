@@ -33,7 +33,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     override var userDatabase: UserDatabaseInterface =
         UserDatabase(localCache)
     override var heatmapDatabase: HeatmapDatabaseInterface =
-        HeatmapDatabase(localCache)
+        HeatmapDatabase(this)
     override var eventDatabase: EventDatabaseInterface =
         EventDatabase(localCache)
     override var materialRequestDatabase: MaterialRequestDatabaseInterface =
