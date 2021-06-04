@@ -17,6 +17,8 @@ import com.github.sdpteam15.polyevents.model.entity.UserEntity
 import com.github.sdpteam15.polyevents.model.entity.Zone
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
+import com.github.sdpteam15.polyevents.view.PolyEventsApplication
+import kotlinx.coroutines.Dispatchers
 import java.time.LocalDateTime
 
 class EventManagementActivity : AppCompatActivity() {
@@ -296,7 +298,9 @@ class EventManagementActivity : AppCompatActivity() {
                         break
                     }
                 }
-                spinnerOrg.setSelection(idx)
+                PolyEventsApplication.application.applicationScope.launch(Dispatchers.Main) {
+                    spinnerOrg.setSelection(idx)
+                }
             }
 
             // Select the correct zone
@@ -308,7 +312,9 @@ class EventManagementActivity : AppCompatActivity() {
                         break
                     }
                 }
-                spinnerZone.setSelection(idx)
+                PolyEventsApplication.application.applicationScope.launch(Dispatchers.Main) {
+                    spinnerZone.setSelection(idx)
+                }
             }
         }
     }
