@@ -60,6 +60,7 @@ You can also respond to staff's request for items
 
 <img src="docs/screenshots/item_request_accept.png" alt="item request accept" width="300"/>
 
+And so much more this app has to offer to make your event management life that much easier!
 
 ## Footer
 This application has been developed as part of the Software Development Project (SDP) bachelor course
