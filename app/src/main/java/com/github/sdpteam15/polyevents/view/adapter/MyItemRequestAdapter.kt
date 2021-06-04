@@ -27,7 +27,13 @@ import java.time.format.DateTimeFormatter
  * @param context context of parent view used to inflate new views
  * @param lifecycleOwner parent to enable observables to stop observing when the lifecycle is closed
  * @param requests List of all item requests
+ * @param typeToDisplay type of display
  * @param userNames Username map to retrieve usernames given their userid
+ * @param itemNames Observable map with item names
+ * @param zoneNameFromEventId Observable map from id event to event name
+ * @param onModifyListener Action on modify click
+ * @param onCancelListener Action on cancel click
+ * @param onReturnRequest Action on return request click
  */
 class MyItemRequestAdapter(
     context: Context,
