@@ -49,7 +49,6 @@ class ProviderHomeFragment : Fragment() {
             startActivity(intent)
         }
 
-
         MainActivity.instance!!.switchRoles(
             viewRoot!!.findViewById(R.id.spinner_provider),
             UserRole.ORGANIZER
