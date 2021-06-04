@@ -14,23 +14,16 @@ import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
 import com.github.sdpteam15.polyevents.model.database.remote.login.GoogleUserLogin
 import com.github.sdpteam15.polyevents.model.database.remote.login.UserLogin
-import com.github.sdpteam15.polyevents.model.database.remote.objects.UserDatabaseInterface
 import com.github.sdpteam15.polyevents.model.entity.UserEntity
+import com.github.sdpteam15.polyevents.model.entity.UserRole
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.view.activity.MainActivity
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.Mockito
-import org.mockito.Mockito.any
-import org.mockito.Mockito.mock
-import org.mockito.junit.MockitoJUnitRunner
-import org.mockito.kotlin.anyOrNull
-import org.mockito.Mockito.`when` as When
 
-@RunWith(MockitoJUnitRunner::class)
 @Suppress("UNCHECKED_CAST")
 class NavigationViewFragmentTest {
 
@@ -44,29 +37,37 @@ class NavigationViewFragmentTest {
         //Initial state
         mockedDatabase = HelperTestFunction.defaultMockDatabase()
         Database.currentDatabase = mockedDatabase
+        MainActivity.selectedRole = UserRole.PARTICIPANT
         Mockito.`when`(mockedDatabase.currentUser).thenReturn(UserEntity("uid"))
-        Mockito.`when`(mockedDatabase.currentUserObservable).thenReturn(Observable(UserEntity("uid")))
+        Mockito.`when`(mockedDatabase.currentUserObservable)
+            .thenReturn(Observable(UserEntity("uid")))
     }
+
     @After
-    fun teardown(){
+    fun teardown() {
         Database.currentDatabase = FirestoreDatabaseProvider
         UserLogin.currentUserLogin = GoogleUserLogin
+        MainActivity.selectedRole = null
     }
 
     @Test
     fun NavigationBarDisplaysCorrectFragmentIfNotConnected() {
         Mockito.`when`(mockedDatabase.currentUser).thenReturn(null)
+        Thread.sleep(200)
 
         //Initial state
         Espresso.onView(withId(R.id.ic_home)).perform(click())
         Espresso.onView(withId(R.id.id_fragment_home_visitor)).check(matches(isDisplayed()))
 
+        Thread.sleep(200)
         Espresso.onView(withId(R.id.ic_list)).perform(click())
         Espresso.onView(withId(R.id.id_fragment_event_list)).check(matches(isDisplayed()))
 
+        Thread.sleep(200)
         Espresso.onView(withId(R.id.ic_login)).perform(click())
         Espresso.onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
 
+        Thread.sleep(200)
         Espresso.onView(withId(R.id.ic_settings)).perform(click())
         Espresso.onView(withId(R.id.id_fragment_settings)).check(matches(isDisplayed()))
     }

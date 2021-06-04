@@ -84,7 +84,8 @@ class ProfileLoginFragmentTests {
         user2 = UserEntity(uid = uidTest2, email = emailTest2, name = displayNameTest2)
         profile = UserProfile()
 
-        testRule = ActivityScenarioRule<MainActivity>(MainActivity::class.java)
+
+        testRule = ActivityScenarioRule(MainActivity::class.java)
         endingRequest = Observable()
         mockedDatabaseUser = UserEntity(uid = uidTest, email = emailTest, name = displayNameTest)
 
@@ -234,6 +235,7 @@ class ProfileLoginFragmentTests {
         val profileFragment = MainActivity.fragments[R.id.id_fragment_profile] as ProfileFragment
 
         profileFragment.currentUser = user
+        Thread.sleep(500)
         onView(withId(R.id.ic_login)).perform(click())
         onView(withId(R.id.id_fragment_profile)).check(matches(isDisplayed()))
 
@@ -261,6 +263,7 @@ class ProfileLoginFragmentTests {
         val loginFragment = MainActivity.fragments[R.id.ic_login] as LoginFragment
         loginFragment.currentUser = null
 
+        Thread.sleep(500)
 
         onView(withId(R.id.ic_login)).perform(click())
         onView(withId(R.id.id_fragment_login)).check(matches(isDisplayed()))
