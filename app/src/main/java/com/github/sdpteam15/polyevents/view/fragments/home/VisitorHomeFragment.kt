@@ -84,11 +84,7 @@ class VisitorHomeFragment : Fragment() {
             }.then.updateOnce(this, observableDBAnswer)
 
 
-        HelperFunctions.showProgressDialog(
-            requireActivity(), listOf(
-                observableDBAnswer
-            ), requireActivity().supportFragmentManager
-        )
+        HelperFunctions.showProgressDialog(requireActivity(), listOf(observableDBAnswer), requireActivity().supportFragmentManager)
 
         events.observe(this) {
             recyclerView.adapter!!.notifyDataSetChanged()
