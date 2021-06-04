@@ -12,8 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
 import com.github.sdpteam15.polyevents.helper.HelperFunctions
 import com.github.sdpteam15.polyevents.model.database.remote.Database
-import com.github.sdpteam15.polyevents.model.entity.Item
-import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
+import com.github.sdpteam15.polyevents.model.entity.*
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest.Status.*
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
@@ -39,9 +38,10 @@ class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLi
     private val materialRequest =
         ObservableMap<MaterialRequest.Status, ObservableList<MaterialRequest>>()
     private val observableStatus = Observable(currentStatus)
-    private var userName = Database.currentDatabase.currentUser!!.name
+    private var userNames = ObservableMap<String, String>()
     private val itemNames = ObservableMap<String, String>()
     private val items = ObservableList<Triple<Item, Int, Int>>()
+    private val zoneNameFromEventId = ObservableMap<String, String>()
     private val statusNames = ArrayList<String>()
 
     /**
@@ -116,8 +116,9 @@ class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLi
                 this,
                 materialRequest,
                 observableStatus,
-                userName,
+                userNames,
                 itemNames,
+                zoneNameFromEventId,
                 modifyMaterialRequest,
                 cancelMaterialRequest,
                 returnMaterialRequest
@@ -128,6 +129,16 @@ class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLi
         items.group(this) { it.first.itemId!! }.then.map(this, itemNames) {
             it[0].first.itemName!!
         }
+
+        requests.observeAdd(this) {
+            if (it.value.staffInChargeId != null && !userNames.containsKey(it.value.staffInChargeId!!)) {
+                addToUsersFromDB(it.value.staffInChargeId!!)
+            }
+            if (!userNames.containsKey(it.value.userId)) {
+                addToUsersFromDB(it.value.userId)
+            }
+        }
+
 
         requests.group(this, materialRequest) {
             when (it.status) {
@@ -166,8 +177,51 @@ class MyItemRequestsActivity : AppCompatActivity(), AdapterView.OnItemSelectedLi
                             )
                         }
                     }
+                val sentEventIds = mutableListOf<String>()
+                for (request in requests) {
+                    if (request.eventId !in sentEventIds) {
+                        sentEventIds.add(request.eventId)
+                        val event = Observable<Event>()
+                        val zone = Observable<Zone>()
+                        Database.currentDatabase.eventDatabase.getEventFromId(
+                            request.eventId,
+                            event
+                        ).observeOnce(this) {
+                            if (it.value) {
+                                Database.currentDatabase.zoneDatabase.getZoneInformation(
+                                    event.value!!.zoneId!!,
+                                    zone
+                                ).observeOnce(this) {
+                                    if (it.value) {
+                                        zoneNameFromEventId[event.value!!.eventId!!] =
+                                            zone.value!!.zoneName!!
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
             }
         }
+    }
+
+    /**
+     * Gets the username of the given userId from the database and adds it to the userNames map
+     */
+    private fun addToUsersFromDB(userId: String) {
+        val tempUsers = Observable<UserEntity>()
+        Database.currentDatabase.userDatabase.getUserInformation(tempUsers, userId)
+            .observeOnce(this) { ans ->
+                if (ans.value) {
+                    userNames[userId] = tempUsers.value?.name ?: "ANONYMOUS"
+                } else {
+                    HelperFunctions.showToast(
+                        getString(R.string.failed_to_get_username_from_database),
+                        this
+                    )
+                }
+            }
     }
 
     /**
