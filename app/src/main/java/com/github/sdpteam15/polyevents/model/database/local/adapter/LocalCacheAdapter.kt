@@ -323,7 +323,7 @@ class LocalCacheAdapter(private val db: DatabaseInterface) : DatabaseInterface {
                 null,
                 date.apply { date -> { it.whereGreaterThan(LogAdapter.LAST_UPDATE, date) } },
                 collection,
-                adapter
+                LogAdapterFromDocument(adapter)
             ).observeOnce {
                 if (it.value) {
                     PolyEventsApplication.application.applicationScope.launch(Dispatchers.IO) {
