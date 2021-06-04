@@ -16,14 +16,8 @@ import com.github.sdpteam15.polyevents.TestHelper
 import com.github.sdpteam15.polyevents.model.database.remote.Database
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseInterface
 import com.github.sdpteam15.polyevents.model.database.remote.FirestoreDatabaseProvider
-import com.github.sdpteam15.polyevents.model.database.remote.objects.EventDatabaseInterface
-import com.github.sdpteam15.polyevents.model.database.remote.objects.ItemDatabaseInterface
-import com.github.sdpteam15.polyevents.model.database.remote.objects.MaterialRequestDatabaseInterface
-import com.github.sdpteam15.polyevents.model.database.remote.objects.UserDatabaseInterface
-import com.github.sdpteam15.polyevents.model.entity.Event
-import com.github.sdpteam15.polyevents.model.entity.Item
-import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
-import com.github.sdpteam15.polyevents.model.entity.UserEntity
+import com.github.sdpteam15.polyevents.model.database.remote.objects.*
+import com.github.sdpteam15.polyevents.model.entity.*
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.view.adapter.EventItemAdapter
@@ -37,18 +31,20 @@ import org.mockito.kotlin.anyOrNull
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
 
-@Suppress("UNCHECKED_CAST","TYPE_INFERENCE_ONLY_INPUT_TYPES_WARNING")
+@Suppress("UNCHECKED_CAST", "TYPE_INFERENCE_ONLY_INPUT_TYPES_WARNING")
 class MyItemRequestsActivityTest {
 
 
+    lateinit var zones: MutableList<Zone>
     lateinit var events: MutableList<Event>
-    lateinit var allUsers : MutableList<UserEntity>
+    lateinit var allUsers: MutableList<UserEntity>
     lateinit var itemsAdminActivity: ActivityScenario<MyItemRequestsActivity>
     lateinit var mockedDatabase: DatabaseInterface
     lateinit var mockedMaterialRequestDB: MaterialRequestDatabaseInterface
     lateinit var mockedItemDB: ItemDatabaseInterface
     lateinit var mockedUserDB: UserDatabaseInterface
     lateinit var mockedEventDB: EventDatabaseInterface
+    lateinit var mockedZoneDB: ZoneDatabaseInterface
 
 
     lateinit var availableItems: MutableMap<Item, Int>
@@ -159,12 +155,15 @@ class MyItemRequestsActivityTest {
             UserEntity("u1", "U1"),
             UserEntity("u2", "U2"),
             UserEntity("staff", "STAFF"),
-            UserEntity(fakeUserId,fakeUsername)
+            UserEntity(fakeUserId, fakeUsername)
         )
         events = mutableListOf(
-            Event("1", "EVENT1", "u1"),
-            Event("2", "EVENT2", "u2"),
-            Event("3","EVENT3", "u1")
+            Event("1", "EVENT1", "u1", zoneId = "z1"),
+            Event("2", "EVENT2", "u2", zoneId = "z1"),
+            Event("3", "EVENT3", "u1", zoneId = "z1")
+        )
+        zones = mutableListOf(
+            Zone("z1", "Zone1")
         )
 
         for (r in allRequests) {
@@ -172,7 +171,8 @@ class MyItemRequestsActivityTest {
                 MaterialRequest.Status.ACCEPTED -> accepted++
                 MaterialRequest.Status.REFUSED -> refused++
                 MaterialRequest.Status.PENDING -> pending++
-                else -> {}
+                else -> {
+                }
             }
         }
     }
@@ -190,6 +190,7 @@ class MyItemRequestsActivityTest {
         mockedItemDB = Mockito.mock(ItemDatabaseInterface::class.java)
         mockedUserDB = Mockito.mock(UserDatabaseInterface::class.java)
         mockedEventDB = Mockito.mock(EventDatabaseInterface::class.java)
+        mockedZoneDB = Mockito.mock(ZoneDatabaseInterface::class.java)
 
         Database.currentDatabase = mockedDatabase
 
@@ -199,14 +200,24 @@ class MyItemRequestsActivityTest {
         Mockito.`when`(mockedDatabase.itemDatabase).thenReturn(mockedItemDB)
         Mockito.`when`(mockedDatabase.userDatabase).thenReturn(mockedUserDB)
         Mockito.`when`(mockedDatabase.eventDatabase).thenReturn(mockedEventDB)
+        Mockito.`when`(mockedDatabase.zoneDatabase).thenReturn(mockedZoneDB)
 
         setupItemRequests()
 
         Mockito.`when`(
             mockedUserDB.getListAllUsers(anyOrNull())
-        ).thenAnswer{
+        ).thenAnswer {
             (it.arguments[0] as ObservableList<UserEntity>).addAll(allUsers)
-            Observable(true,this)
+            Observable(true, this)
+        }
+        Mockito.`when`(
+            mockedUserDB.getUserInformation(anyOrNull(), anyOrNull())
+        ).thenAnswer {
+            (it.arguments[0] as Observable<UserEntity>).postValue(
+                allUsers.first { it2 -> it2.uid == it.arguments[1] },
+                this
+            )
+            Observable(true, this)
         }
         Mockito.`when`(
             mockedMaterialRequestDB.getMaterialRequestListByUser(
@@ -219,7 +230,7 @@ class MyItemRequestsActivityTest {
         }
         Mockito.`when`(
             mockedEventDB.getEvents(anyOrNull(), anyOrNull(), anyOrNull())
-        ).thenAnswer{
+        ).thenAnswer {
             (it.arguments[2] as ObservableList<Event>).addAll(events)
             Observable(true, this)
         }
@@ -230,6 +241,7 @@ class MyItemRequestsActivityTest {
                 pending--
                 Observable(true, this)
             }
+
         Mockito.`when`(
             mockedMaterialRequestDB.getMaterialRequestById(
                 anyOrNull(),
@@ -240,15 +252,20 @@ class MyItemRequestsActivityTest {
                 (it.arguments[0] as Observable<MaterialRequest>).postValue(allRequests.first { it2 -> it2.requestId == it.arguments[1] })
                 Observable(true, this)
             }
-        Mockito.`when`(mockedItemDB.getItemsList(anyOrNull(), anyOrNull(), anyOrNull())).thenAnswer {
-            (it.arguments[0] as ObservableList<Triple<Item, Int, Int>>).addAll(availableItemsList)
-            Observable(true, this)
-        }
+        Mockito.`when`(mockedItemDB.getItemsList(anyOrNull(), anyOrNull(), anyOrNull()))
+            .thenAnswer {
+                (it.arguments[0] as ObservableList<Triple<Item, Int, Int>>).addAll(
+                    availableItemsList
+                )
+                Observable(true, this)
+            }
         Mockito.`when`(mockedItemDB.getAvailableItems(anyOrNull())).thenAnswer {
             (it.arguments[0] as ObservableList<Triple<Item, Int, Int>>).addAll(availableItemsList)
             Observable(true, this)
         }
-
+        Mockito.`when`(mockedZoneDB.getZoneInformation(anyOrNull(), anyOrNull())).thenAnswer{
+            (it.arguments[1] as Observable<Zone>).postValue(zones.first{it2->it2.zoneId == it.arguments[0]})
+        }
 
         itemsAdminActivity = ActivityScenario.launch(intent)
         Thread.sleep(500)

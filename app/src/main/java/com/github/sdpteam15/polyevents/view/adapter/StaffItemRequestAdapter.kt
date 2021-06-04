@@ -2,10 +2,10 @@ package com.github.sdpteam15.polyevents.view.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
+import android.graphics.Color.*
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.INVISIBLE
+import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ImageButton
@@ -13,7 +13,9 @@ import android.widget.TextView
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.ORANGE
 import com.github.sdpteam15.polyevents.model.entity.MaterialRequest
+import com.github.sdpteam15.polyevents.model.entity.MaterialRequest.Status.*
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 import com.github.sdpteam15.polyevents.model.observable.ObservableMap
@@ -93,35 +95,37 @@ class StaffItemRequestAdapter(
                 .joinToString(separator = "\n")
             status.setTextColor(
                 when (request.status) {
-                    MaterialRequest.Status.ACCEPTED -> Color.BLACK
-                    MaterialRequest.Status.DELIVERING -> Color.CYAN
-                    MaterialRequest.Status.DELIVERED -> Color.GREEN
-                    MaterialRequest.Status.RETURN_REQUESTED -> Color.BLACK
-                    MaterialRequest.Status.RETURNING -> Color.CYAN
-                    MaterialRequest.Status.RETURNED -> Color.GREEN
-                    else -> Color.BLACK
+                    ACCEPTED -> ORANGE
+                    DELIVERING -> CYAN
+                    DELIVERED -> GREEN
+                    RETURN_REQUESTED -> ORANGE
+                    RETURNING -> CYAN
+                    RETURNED -> GREEN
+                    else -> BLACK
                 }
             )
             status.text = request.status.toString()
-            staffName.text = if (request.staffInChargeId != null) {
-                "Staff : ${userNames[request.staffInChargeId]}"
+
+            if (request.staffInChargeId == null) {
+                staffName.visibility = GONE
             } else {
-                ""
+                staffName.text = "Staff : ${userNames[request.staffInChargeId]}"
+                staffName.visibility = VISIBLE
             }
 
 
-            if (request.status == MaterialRequest.Status.ACCEPTED || request.status == MaterialRequest.Status.RETURN_REQUESTED) {
+            if (request.status == ACCEPTED || request.status == RETURN_REQUESTED) {
                 btnAccept.visibility = VISIBLE
                 btnAccept.setOnClickListener { onAcceptListener(request) }
-                btnCancel.visibility = INVISIBLE
-            } else if ((request.status == MaterialRequest.Status.DELIVERING || request.status == MaterialRequest.Status.RETURNING) && request.staffInChargeId == staffId) {
+                btnCancel.visibility = GONE
+            } else if ((request.status == DELIVERING || request.status == RETURNING) && request.staffInChargeId == staffId) {
                 btnAccept.visibility = VISIBLE
                 btnAccept.setOnClickListener { onDeliveredListener(request) }
                 btnCancel.visibility = VISIBLE
                 btnCancel.setOnClickListener { onCancelListener(request) }
             } else {
-                btnAccept.visibility = INVISIBLE
-                btnCancel.visibility = INVISIBLE
+                btnAccept.visibility = GONE
+                btnCancel.visibility = GONE
             }
 
         }

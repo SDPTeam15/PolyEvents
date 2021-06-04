@@ -45,10 +45,7 @@ import org.mockito.Mockito.mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.anyOrNull
 import java.time.LocalDateTime
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNotEquals
-import kotlin.test.assertNull
+import kotlin.test.*
 import org.mockito.Mockito.`when` as When
 
 
@@ -73,6 +70,8 @@ class EventActivityTest {
 
     private lateinit var localDatabase: LocalDatabase
     private lateinit var mockedNotificationsScheduler: NotificationsScheduler
+
+    private var notificationId: Int = 0
 
     @Before
     @Suppress("UNCHECKED_CAST")
@@ -99,6 +98,7 @@ class EventActivityTest {
             eventName = "limited Event only",
             description = "Super noisy activity !",
             startTime = LocalDateTime.of(2021, 3, 7, 21, 15),
+            endTime = LocalDateTime.of(2021, 3, 7, 23, 50, 0),
             organizer = "AcademiC DeCibel",
             zoneName = "Concert Hall",
             tags = mutableListOf("music", "live", "pogo")
@@ -160,13 +160,19 @@ class EventActivityTest {
         mockedNotificationsScheduler = mock(NotificationsScheduler::class.java)
         When(mockedNotificationsScheduler.cancelNotification(anyOrNull())).then { }
         When(mockedNotificationsScheduler.generateNewNotificationId()).thenReturn(0)
+
+        notificationId = 0
         When(
             mockedNotificationsScheduler.scheduleEventNotification(
                 eventId = anyOrNull(),
                 notificationMessage = anyOrNull(),
                 scheduledTime = anyOrNull()
             )
-        ).thenReturn(0)
+        ).then {
+            val temp = notificationId
+            notificationId += 1
+            temp
+        }
 
         // Create local db
         val context: Context = ApplicationProvider.getApplicationContext()
@@ -770,6 +776,81 @@ class EventActivityTest {
         clickOn(R.id.button_subscribe_follow_event)
         val retrievedEventsAfterUnfollow = localDatabase.eventDao().getEventById(publicEventId)
         assert(retrievedEventsAfterUnfollow.isEmpty())
+    }
+
+    @Test
+    fun testNotificationsNotScheduledIfEventAlreadyEnded() {
+        goToEventActivityWithIntent(publicEventId)
+
+        val currentTime = LocalDateTime.of(2021, 6, 3, 22, 30, 0)
+        val eventStartTime = LocalDateTime.of(2021, 6, 3, 18, 0, 0)
+        val eventEndTime = LocalDateTime.of(2021, 6, 3, 20, 0, 0)
+
+        val testEvent = testPublicEvent.copy(
+            startTime = eventStartTime,
+            endTime = eventEndTime
+        )
+
+        val (notificationBeforeId, notificationStartId) =
+            EventActivity.scheduleNotificationWithRespectToCurrentTime(
+                event = testEvent,
+                currentTime = currentTime,
+                startTimeNotificationMessage = "",
+                beforeEventNotificationMessage = ""
+            )
+
+        assertNull(notificationBeforeId)
+        assertNull(notificationStartId)
+    }
+
+    @Test
+    fun testOnlyOneNotificationAtEventStartIfAlreadyStarted() {
+        goToEventActivityWithIntent(publicEventId)
+
+        val currentTime = LocalDateTime.of(2021, 6, 3, 22, 30, 0)
+        val eventStartTime = LocalDateTime.of(2021, 6, 3, 18, 0, 0)
+        val eventEndTime = LocalDateTime.of(2021, 6, 3, 23, 0, 0)
+
+        val testEvent = testPublicEvent.copy(
+            startTime = eventStartTime,
+            endTime = eventEndTime
+        )
+
+        val (notificationBeforeId, notificationStartId) =
+            EventActivity.scheduleNotificationWithRespectToCurrentTime(
+                event = testEvent,
+                currentTime = currentTime,
+                startTimeNotificationMessage = "",
+                beforeEventNotificationMessage = ""
+            )
+
+        assertNull(notificationBeforeId)
+        assertNotNull(notificationStartId)
+    }
+
+    @Test
+    fun testNotificationsScheduledIfEventHasNotStarted() {
+        goToEventActivityWithIntent(publicEventId)
+
+        val currentTime = LocalDateTime.of(2021, 6, 3, 6, 30, 0)
+        val eventStartTime = LocalDateTime.of(2021, 6, 3, 18, 0, 0)
+        val eventEndTime = LocalDateTime.of(2021, 6, 3, 20, 0, 0)
+
+        val testEvent = testPublicEvent.copy(
+            startTime = eventStartTime,
+            endTime = eventEndTime
+        )
+
+        val (notificationBeforeId, notificationStartId) =
+            EventActivity.scheduleNotificationWithRespectToCurrentTime(
+                event = testEvent,
+                currentTime = currentTime,
+                startTimeNotificationMessage = "",
+                beforeEventNotificationMessage = ""
+            )
+
+        assertNotNull(notificationBeforeId)
+        assertNotNull(notificationStartId)
     }
 
     /**

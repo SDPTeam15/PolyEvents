@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.model.database.remote.adapter
 
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.toInt
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.ItemConstants.*
 import com.github.sdpteam15.polyevents.model.entity.Item
 
@@ -35,7 +36,7 @@ object ItemEntityAdapter : AdapterInterface<Triple<Item, Int, Int>> {
                 document[ITEM_NAME.value] as String?,
                 document[ITEM_TYPE.value] as String
             ),
-            (document[ITEM_TOTAL.value] as Long).toInt(),
-            (document[ITEM_REMAINING.value] as Long).toInt()
+            document[ITEM_TOTAL.value].toInt()!!,
+            document[ITEM_REMAINING.value].toInt()!!
         )
 }

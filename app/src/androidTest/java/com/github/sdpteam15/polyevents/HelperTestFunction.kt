@@ -39,7 +39,7 @@ object HelperTestFunction {
         val zoneDatabase = Mockito.mock(ZoneDatabaseInterface::class.java)
         val heatmapDatabase = Mockito.mock(HeatmapDatabaseInterface::class.java)
         Mockito.`when`(database.zoneDatabase).thenAnswer { zoneDatabase }
-        Mockito.`when`(zoneDatabase.getAllZones(anyOrNull(), anyOrNull(), anyOrNull()))
+        Mockito.`when`(zoneDatabase.getActiveZones(anyOrNull(), anyOrNull()))
             .thenAnswer {
                 val res = it!!.arguments[0] as ObservableList<Zone>
                 res.add(

@@ -49,9 +49,8 @@ class ZoneManagementListActivity : AppCompatActivity() {
         }
 
         recyclerView.adapter = ZoneItemAdapter(zones, openZone, deleteZone)
-        Database.currentDatabase.zoneDatabase.getAllZones(
-            zones.sortAndLimitFrom(this) { it.zoneName },
-            50
+        Database.currentDatabase.zoneDatabase.getActiveZones(
+            zones.sortAndLimitFrom(this){it.zoneName}
         ).observe(this) {
             if (!it.value) {
                 HelperFunctions.showToast(getString(R.string.fail_to_get_list_zones), this)

@@ -29,7 +29,7 @@
         app:layout_constraintEnd_toStartOf="@id/fragment_zone_events_zone_name_text_view"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_baseline_arrow_back_24" />
+        app:srcCompat="@drawable/ic_arrow_back_24" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/zone_events_fragment_recycler_view"

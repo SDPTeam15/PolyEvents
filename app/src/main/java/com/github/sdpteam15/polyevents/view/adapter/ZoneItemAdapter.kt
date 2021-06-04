@@ -45,7 +45,7 @@ class ZoneItemAdapter(
         viewType: Int
     ): ItemViewHolder {
         val adapterLayout = LayoutInflater.from(parent.context)
-            .inflate(R.layout.tab_zone, parent, false)
+            .inflate(R.layout.card_zone, parent, false)
         return ItemViewHolder(adapterLayout)
     }
 

@@ -23,6 +23,7 @@ object FirestoreDatabaseProvider : DatabaseInterface {
     @SuppressLint("StaticFieldLeak")
     var firestore: FirebaseFirestore? = null
         get() = field ?: Firebase.firestore
+    val localCache by lazy { LocalCacheAdapter(this) }
 
     private val localCache by lazy { LocalCacheAdapter(this) }
 

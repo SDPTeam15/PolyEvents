@@ -8,12 +8,16 @@ import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.model.observable.ObservableList
 
 object FakeDatabaseRoute: RouteDatabaseInterface {
+    val nodes = mutableMapOf<String,RouteNode>()
+    val edges = mutableMapOf<String,RouteEdge>()
     override fun getRoute(
         nodes: ObservableList<RouteNode>,
         edges: ObservableList<RouteEdge>,
         zone: ObservableList<Zone>
     ): Observable<Boolean> {
-        TODO("Not yet implemented")
+        nodes.addAll(this.nodes.mapValues { it.value.copy(id = it.key) }.values,FakeDatabase)
+        edges.addAll(this.edges.mapValues { it.value.copy(id = it.key) }.values,FakeDatabase)
+        return FakeDatabaseZone.getActiveZones(zone)
     }
 
     override fun updateEdges(
@@ -22,7 +26,9 @@ object FakeDatabaseRoute: RouteDatabaseInterface {
         edges: ObservableList<RouteEdge>,
         nodes: ObservableList<RouteNode>
     ): Observable<Boolean> {
-        TODO("Not yet implemented")
+        this.edges.putAll(newEdges.map { FakeDatabase.generateRandomKey() to it })
+        removeEdges.forEach { removeEdge(it,edges,nodes) }
+        return Observable(true)
     }
 
     override fun removeEdge(
@@ -30,6 +36,9 @@ object FakeDatabaseRoute: RouteDatabaseInterface {
         edges: ObservableList<RouteEdge>,
         nodes: ObservableList<RouteNode>
     ): Observable<Boolean> {
-        TODO("Not yet implemented")
+        this.edges.remove(edge.id)
+        nodes.addAll(this.nodes.mapValues { it.value.copy(id = it.key) }.values,FakeDatabase)
+        edges.addAll(this.edges.mapValues { it.value.copy(id = it.key) }.values,FakeDatabase)
+        return Observable(true)
     }
 }

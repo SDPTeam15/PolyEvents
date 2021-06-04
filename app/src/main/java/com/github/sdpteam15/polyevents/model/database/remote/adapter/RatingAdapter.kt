@@ -1,5 +1,6 @@
 package com.github.sdpteam15.polyevents.model.database.remote.adapter
 
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.toFloat
 import com.github.sdpteam15.polyevents.model.database.remote.DatabaseConstant.RatingConstant.*
 import com.github.sdpteam15.polyevents.model.entity.Rating
 
@@ -20,7 +21,7 @@ object RatingAdapter : AdapterInterface<Rating> {
     override fun fromDocument(document: Map<String, Any?>, id: String): Rating = Rating(
         ratingId = id,
         feedback = document[RATING_DESCRIPTION.value] as String,
-        rate = (document[RATING_SCORE.value] as Double).toFloat(),
+        rate = document[RATING_SCORE.value].toFloat(),
         userId = document[RATING_USER_ID.value] as String,
         eventId = document[RATING_EVENT_ID.value] as String
     )

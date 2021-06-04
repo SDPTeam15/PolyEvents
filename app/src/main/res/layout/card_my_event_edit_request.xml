@@ -67,7 +67,7 @@
 
             app:layout_constraintEnd_toStartOf="@+id/id_modify_request"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_remove_red_eye_24"
+            app:srcCompat="@drawable/ic_remove_red_eye_24"
             tools:ignore="ContentDescription" />
 
         <LinearLayout

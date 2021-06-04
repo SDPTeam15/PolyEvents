@@ -30,10 +30,9 @@ object FakeDatabaseZone : ZoneDatabaseInterface {
         return Observable(true)
     }
 
-    override fun getAllZones(
+    override fun getActiveZones(
         zones: ObservableList<Zone>,
-        number: Long?,
-        matcher: Matcher?
+        number: Long?
     ): Observable<Boolean> {
         zones.clear()
         zones.addAll(this.zones)

@@ -51,7 +51,7 @@ object FakeDatabase : DatabaseInterface {
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterToDocumentInterface<in T>
     ): Observable<String> {
-        TODO("Not yet implemented")
+        throw UnsupportedOperationException("not supported for Fakedatabase")
     }
 
     override fun <T : Any> addEntity(
@@ -59,7 +59,7 @@ object FakeDatabase : DatabaseInterface {
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterToDocumentInterface<in T>
     ): Observable<Boolean> {
-        TODO("Not yet implemented")
+        throw UnsupportedOperationException("not supported for Fakedatabase")
     }
 
     override fun <T : Any> addListEntity(
@@ -67,7 +67,7 @@ object FakeDatabase : DatabaseInterface {
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterToDocumentInterface<in T>
     ): Observable<Pair<Boolean, List<String>>> {
-        TODO("Not yet implemented")
+        throw UnsupportedOperationException("not supported for Fakedatabase")
     }
 
     override fun <T : Any> setEntity(
@@ -76,7 +76,7 @@ object FakeDatabase : DatabaseInterface {
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterToDocumentInterface<in T>
     ): Observable<Boolean> {
-        TODO("Not yet implemented")
+        throw UnsupportedOperationException("not supported for Fakedatabase")
     }
 
     override fun <T : Any> setListEntity(
@@ -84,7 +84,7 @@ object FakeDatabase : DatabaseInterface {
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterToDocumentInterface<in T>
     ): Observable<Pair<Boolean, List<Boolean>>> {
-        TODO("Not yet implemented")
+        throw UnsupportedOperationException("not supported for Fakedatabase")
     }
 
     override fun <T : Any> getEntity(
@@ -93,7 +93,7 @@ object FakeDatabase : DatabaseInterface {
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterFromDocumentInterface<out T>
     ): Observable<Boolean> {
-        TODO("Not yet implemented")
+        throw UnsupportedOperationException("not supported for Fakedatabase")
     }
 
     override fun <T : Any> getMapEntity(
@@ -103,7 +103,7 @@ object FakeDatabase : DatabaseInterface {
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterFromDocumentInterface<out T>
     ): Observable<Boolean> {
-        TODO("Not yet implemented")
+        throw UnsupportedOperationException("not supported for Fakedatabase")
     }
 
     override fun <T : Any> getListEntity(
@@ -113,7 +113,7 @@ object FakeDatabase : DatabaseInterface {
         collection: DatabaseConstant.CollectionConstant,
         adapter: AdapterFromDocumentInterface<out T>
     ): Observable<Boolean> {
-        TODO("Not yet implemented")
+        throw UnsupportedOperationException("not supported for Fakedatabase")
     }
 
     /**

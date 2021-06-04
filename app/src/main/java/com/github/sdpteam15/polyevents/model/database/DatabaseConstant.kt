@@ -109,6 +109,7 @@ object DatabaseConstant {
         ZONE_NAME("zoneName"),
         ZONE_LOCATION("zoneLocation"),
         ZONE_DESCRIPTION("zoneDescription"),
+        ZONE_STATUS("zoneStatus"),
         LAT_LONG_SEP("|"),
         POINTS_SEP("!"),
         AREAS_SEP("?");

@@ -101,8 +101,7 @@ class EventManagementTest {
         When(mockedDatabase.userDatabase).thenReturn(mockedUserDb)
 
         When(
-            mockedZoneDB.getAllZones(
-                anyOrNull(),
+            mockedZoneDB.getActiveZones(
                 anyOrNull(),
                 anyOrNull()
             )
@@ -314,8 +313,7 @@ class EventManagementTest {
 
         val obs = Observable<Boolean>()
         When(
-            mockedZoneDB.getAllZones(
-                anyOrNull(),
+            mockedZoneDB.getActiveZones(
                 anyOrNull(),
                 anyOrNull()
             )
@@ -358,8 +356,7 @@ class EventManagementTest {
 
 
         When(
-            mockedZoneDB.getAllZones(
-                anyOrNull(),
+            mockedZoneDB.getActiveZones(
                 anyOrNull(),
                 anyOrNull()
             )

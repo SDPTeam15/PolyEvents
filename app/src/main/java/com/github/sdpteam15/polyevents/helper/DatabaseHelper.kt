@@ -42,6 +42,7 @@ object DatabaseHelper {
         }.observeOnce {
             if (it.value) {
                 deleteEventEdit(e).observeOnce { currentDatabase.eventDatabase.removeEvent(e.eventId!!) }
+
             }
         }
     }
@@ -60,7 +61,7 @@ object DatabaseHelper {
                 zone.zoneId!!
             )
         }, null, events)
-        currentDatabase.zoneDatabase.deleteZone(zone)
+        currentDatabase.zoneDatabase.updateZoneInformation(zone.zoneId!!,zone.copy(status = Zone.Status.DELETED))
     }
 
     /**

@@ -6,6 +6,7 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -19,6 +20,7 @@ import androidx.fragment.app.commit
 import androidx.lifecycle.LifecycleOwner
 import androidx.room.TypeConverter
 import com.github.sdpteam15.polyevents.R
+import com.github.sdpteam15.polyevents.helper.HelperFunctions.toInt
 import com.github.sdpteam15.polyevents.model.observable.Observable
 import com.github.sdpteam15.polyevents.view.PolyEventsApplication
 import com.google.android.gms.location.LocationServices
@@ -385,4 +387,66 @@ object HelperFunctions {
             }
         builder.show()
     }
+
+    /**
+     * Color.ORANGE does not exist, so we created it here
+     * by lazy is here to prevent the "color is not mocked" error
+     */
+    val ORANGE by lazy{ Color.rgb(255,165,0) }
+
+    /**
+     * Converts any Object into an Integer, if null return null.
+     * Throws an Exception if the type is not a number
+     */
+    fun Any?.toInt() = when(this){
+        is Int -> this
+        is Long -> this.toInt()
+        is Float -> this.toInt()
+        is Double -> this.toInt()
+        null -> null
+        else -> throw TypeCastException("Cannot call toInt on ${this::class.java.name}")
+    }
+    /**
+     * Converts any Object into a Long, if null return null.
+     * Throws an Exception if the type is not a number
+     */
+    fun Any?.toLong() = when(this){
+        is Int -> this.toLong()
+        is Long -> this
+        is Float -> this.toLong()
+        is Double -> this.toLong()
+        null -> null
+        else -> throw TypeCastException("Cannot call toLong on ${this::class.java.name}")
+    }
+    /**
+     * Converts any Object into an Float, if null return null.
+     * Throws an Exception if the type is not a number
+     */
+    fun Any?.toFloat() = when(this){
+        is Int -> this.toFloat()
+        is Long -> this.toFloat()
+        is Float -> this
+        is Double -> this.toFloat()
+        null -> null
+        else -> throw TypeCastException("Cannot call toFloat on ${this::class.java.name}")
+    }
+    /**
+     * Converts any Object into an Double, if null return null.
+     * Throws an Exception if the type is not a number
+     */
+    fun Any?.toDouble() = when(this){
+        is Int -> this.toDouble()
+        is Long -> this.toDouble()
+        is Float -> this.toDouble()
+        is Double -> this
+        null -> null
+        else -> throw TypeCastException("Cannot call toDouble on ${this::class.java.name}")
+    }
+
+    infix fun Any?.groupToLatLng(any : Any?) =
+        this.toDouble().apply { lat -> any.toDouble().apply { lng ->LatLng(lat,lng) } }
+
+    fun Any?.toLocalDateTime() = dateToLocalDateTime(this)
+
+
 }
