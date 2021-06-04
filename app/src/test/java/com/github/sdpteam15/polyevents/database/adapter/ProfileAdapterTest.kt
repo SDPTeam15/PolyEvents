@@ -44,7 +44,7 @@ class ProfileAdapterTest {
             DatabaseConstant.ProfileConstants.PROFILE_ID.value to profile.pid,
             DatabaseConstant.ProfileConstants.PROFILE_NAME.value to profile.profileName,
             DatabaseConstant.ProfileConstants.PROFILE_RANK.value to profile.userRole.userRole,
-            DatabaseConstant.ProfileConstants.PROFILE_USERS.value to profile.users
+            DatabaseConstant.ProfileConstants.PROFILE_USERS.value to profile.users.toList()
         )
 
         val obtainedProfile =
@@ -62,7 +62,7 @@ class ProfileAdapterTest {
             DatabaseConstant.ProfileConstants.PROFILE_ID.value to profile.pid,
             DatabaseConstant.ProfileConstants.PROFILE_NAME.value to profile.profileName,
             DatabaseConstant.ProfileConstants.PROFILE_RANK.value to null,
-            DatabaseConstant.ProfileConstants.PROFILE_USERS.value to profile.users
+            DatabaseConstant.ProfileConstants.PROFILE_USERS.value to profile.users.toList()
         )
 
         val obtainedProfile =

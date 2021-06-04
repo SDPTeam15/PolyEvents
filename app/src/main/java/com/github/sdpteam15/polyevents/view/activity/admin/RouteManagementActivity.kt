@@ -24,7 +24,6 @@ class RouteManagementActivity : AppCompatActivity() {
         //display the FrameLayout that will contain the map fragment
         findViewById<FrameLayout>(R.id.id_fl_map_edit_route).visibility = View.VISIBLE
 
-        //TODO add the area to be modified (once the zone modifier is implemented)
         //disable the back button in the navigation bar to avoid confusion
         supportActionBar!!.setDisplayHomeAsUpEnabled(false)
         //Avoid displaying the map in tests, this makes Cirrus crash
