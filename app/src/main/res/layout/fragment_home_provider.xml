@@ -11,7 +11,9 @@
     <ScrollView
         android:id="@+id/scrollView2"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -19,10 +21,11 @@
 
             <Spinner
                 android:id="@+id/spinner_provider"
-                android:layout_width="120dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:entries="@array/Ranks"
+                android:gravity="end"
                 app:layout_constraintBottom_toTopOf="@+id/textView4"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -52,66 +55,68 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView4">
 
-        <Button
-            android:id="@+id/id_request_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="15dp"
-            android:backgroundTint="@color/white"
-            android:drawableTop="@drawable/ic_requests"
-            android:drawableTint="@color/primary_variant"
-            android:text="@string/items_requests_button_text"
+                <Button
+                    android:id="@+id/id_request_button"
+                    android:layout_width="112dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="15dp"
+                    android:backgroundTint="@color/white"
+                    android:drawableTop="@drawable/ic_requests"
+                    android:drawableTint="@color/primary_variant"
+                    android:paddingHorizontal="13dp"
 
-            android:paddingHorizontal="25dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/primary_variant"
-            app:strokeColor="@color/primary_variant"
-            app:strokeWidth="2dp"
-            tools:ignore="ButtonStyle" />
-        <Button
-            android:id="@+id/id_event_manager_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
-            android:drawableTop="@drawable/ic_event"
-            android:drawableTint="@color/primary_variant"
+                    android:text="@string/new_request"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/primary_variant"
+                    app:strokeColor="@color/primary_variant"
+                    app:strokeWidth="2dp"
+                    tools:ignore="ButtonStyle" />
 
-            android:paddingHorizontal="25dp"
-            android:text="@string/admin_hub_btn_event_text"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/primary_variant"
-            app:strokeColor="@color/primary_variant"
-            app:strokeWidth="2dp"
-            tools:ignore="ButtonStyle" />
-        <Button
-            android:id="@+id/id_my_items_request_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
-            android:drawableTop="@drawable/ic_event"
-            android:drawableTint="@color/primary_variant"
-            android:paddingHorizontal="17dp"
-            android:text="@string/my_items_requests_button_text"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/primary_variant"
-            app:strokeColor="@color/primary_variant"
-            app:strokeWidth="2dp"
-            tools:ignore="ButtonStyle" />
+                <Button
+                    android:id="@+id/id_event_manager_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white"
+                    android:drawableTop="@drawable/ic_event"
+                    android:drawableTint="@color/primary_variant"
 
-        <Button
-            android:id="@+id/id_provider_edit_requests_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
-            android:drawableTop="@drawable/ic_event"
-            android:drawableTint="@color/primary_variant"
-            android:paddingHorizontal="25dp"
-            android:text="Edit Req"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/primary_variant"
-            app:strokeColor="@color/primary_variant"
-            app:strokeWidth="2dp"
-            tools:ignore="ButtonStyle" />
+                    android:paddingHorizontal="25dp"
+                    android:text="@string/admin_hub_btn_event_text"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/primary_variant"
+                    app:strokeColor="@color/primary_variant"
+                    app:strokeWidth="2dp"
+                    tools:ignore="ButtonStyle" />
+
+                <Button
+                    android:id="@+id/id_my_items_request_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white"
+                    android:drawableTop="@drawable/ic_requests"
+                    android:drawableTint="@color/primary_variant"
+                    android:paddingHorizontal="17dp"
+                    android:text="@string/my_items_requests_button_text"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/primary_variant"
+                    app:strokeColor="@color/primary_variant"
+                    app:strokeWidth="2dp"
+                    tools:ignore="ButtonStyle" />
+
+                <Button
+                    android:id="@+id/id_provider_edit_requests_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white"
+                    android:drawableTop="@drawable/ic_event"
+                    android:drawableTint="@color/primary_variant"
+                    android:paddingHorizontal="25dp"
+                    android:text="Edit Req"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/primary_variant"
+                    app:strokeColor="@color/primary_variant"
+                    app:strokeWidth="2dp"
+                    tools:ignore="ButtonStyle" />
 
             </androidx.gridlayout.widget.GridLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>

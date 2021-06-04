@@ -35,17 +35,17 @@
             android:id="@+id/id_request_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="60dp"
             android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            app:layout_constraintEnd_toStartOf="@+id/id_delete_request"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintBottom_toTopOf="@+id/id_reason_of_refusal"
+            app:layout_constraintEnd_toStartOf="@+id/id_delete_request" />
 
         <TextView
             android:id="@+id/id_modify_event_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="16dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
             app:layout_constraintBottom_toTopOf="@+id/id_reason_of_refusal"
             app:layout_constraintStart_toStartOf="@+id/id_reason_of_refusal" />
@@ -98,6 +98,7 @@
             android:id="@+id/tv_mode_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             app:layout_constraintStart_toStartOf="@+id/id_reason_of_refusal"
             app:layout_constraintTop_toTopOf="parent" />
