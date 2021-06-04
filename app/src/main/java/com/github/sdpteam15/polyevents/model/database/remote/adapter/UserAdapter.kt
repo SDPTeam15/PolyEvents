@@ -24,7 +24,7 @@ object UserAdapter : AdapterInterface<UserEntity> {
                 element.birthDate?.atStartOfDay()
             ),
             USER_EMAIL.value to element.email,
-            USER_PROFILES.value to element.profiles
+            USER_PROFILES.value to element.profiles.toList()
         )
 
     override fun fromDocument(document: Map<String, Any?>, id: String) = UserEntity(
@@ -33,6 +33,6 @@ object UserAdapter : AdapterInterface<UserEntity> {
         name = document[USER_NAME.value] as String?,
         birthDate = document[USER_BIRTH_DATE.value].toLocalDateTime()?.toLocalDate(),
         email = document[USER_EMAIL.value] as String?,
-        profiles = (document[USER_PROFILES.value] as List<String>).toMutableList()
+        profiles = (document[USER_PROFILES.value] as List<String>).toMutableSet()
     )
 }

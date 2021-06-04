@@ -19,7 +19,7 @@ class ProfileAdapterTest {
     @Before
     fun setupProfile() {
         profile = UserProfile(
-            profileId, profileName, profileRank, false, users
+            profileId, profileName, profileRank, false, users.toMutableSet()
         )
     }
 

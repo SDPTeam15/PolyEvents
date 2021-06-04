@@ -30,7 +30,7 @@ class UserAdapterTest {
             birthDate = birthDate,
             name = name,
             email = email,
-            profiles = listProfile
+            profiles = listProfile.toMutableSet()
         )
     }
 
